@@ -1,0 +1,1737 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="Diseños.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3807">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="0"
+         id="stop3809" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="1"
+         id="stop3811" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3795">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop3797" />
+      <stop
+         id="stop3805"
+         offset="0.25"
+         style="stop-color:#ffb27f;stop-opacity:1;" />
+      <stop
+         id="stop3803"
+         offset="0.5"
+         style="stop-color:#ff6600;stop-opacity:1;" />
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="1"
+         id="stop3799" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.12614479"
+     inkscape:cx="-584.05371"
+     inkscape:cy="2295.2541"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="712"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       transform="translate(484.78106,-2125.3175)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/play.png"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225" />
+    <path
+       style="fill:#000000;stroke:none"
+       d="m 722.494,-1804.4639 0,35.8112 0,35.7773 72.0027,-35.7773 -72.0027,-35.8112 z"
+       id="path2987"
+       inkscape:connector-curvature="0"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/play.png" />
+    <path
+       transform="translate(980.64184,-2125.3175)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-7"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/pausa.png"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="rect3840"
+       width="17.517242"
+       height="79.17794"
+       x="1220.9052"
+       y="-1808.2585"
+       ry="1.148644"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/pausa.png" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="rect3840-0"
+       width="17.517242"
+       height="79.17794"
+       x="1254.2899"
+       y="-1808.2585"
+       ry="1.148644"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/pausa.png" />
+    <path
+       transform="translate(646.89574,-2125.3175)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-6"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/siguiente.png"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225" />
+    <g
+       id="g3909"
+       transform="translate(647.85909,-2255.2249)"
+       style="fill:#000000;stroke:none"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/siguiente.png">
+      <rect
+         ry="1.148644"
+         y="446.96628"
+         x="236.8331"
+         height="79.17794"
+         width="17.517242"
+         id="rect3840-2"
+         style="fill:#000000;fill-opacity:1;stroke:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path2987-1"
+         d="m 267.45796,450.761 0,35.81126 0,35.77723 42.59237,-35.77723 -42.59237,-35.81126 z"
+         style="fill:#000000;stroke:none" />
+    </g>
+    <path
+       transform="translate(817.91698,-2125.3175)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-61"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/stop.png"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="rect3936"
+       width="67.820145"
+       height="67.820145"
+       x="1049.7212"
+       y="-1802.5796"
+       ry="1.0227984"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/stop.png" />
+    <path
+       transform="matrix(-1,0,0,1,862.57812,-2125.3175)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-6-5"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/atras.png"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225" />
+    <g
+       id="g3909-5"
+       transform="matrix(-1,0,0,1,861.61477,-2255.2249)"
+       style="fill:#000000;stroke:none"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/atras.png">
+      <rect
+         ry="1.148644"
+         y="446.96628"
+         x="236.8331"
+         height="79.17794"
+         width="17.517242"
+         id="rect3840-2-2"
+         style="fill:#000000;fill-opacity:1;stroke:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path2987-1-8"
+         d="m 267.45796,450.761 0,35.81126 0,35.77723 42.59237,-35.77723 -42.59237,-35.81126 z"
+         style="fill:#000000;stroke:none" />
+    </g>
+    <path
+       transform="translate(629.04577,-1920.7231)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-61-4"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMedia-7/Iconos/monitor.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5.64563179;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 859.68052,-1599.5861 c -0.52852,0 -0.96188,0.3915 -0.96188,0.869 l 0,55.4323 c 0,0.4775 0.43336,0.869 0.96188,0.869 l 24.28024,0 0,12.9825 c 0,0.4775 0.43337,0.869 0.96188,0.869 l 19.67487,0 c 0.52851,0 0.93273,-0.3915 0.93273,-0.869 l 0,-12.9825 24.30939,0 c 0.52852,0 0.96188,-0.3915 0.96188,-0.869 l 0,-55.4323 c 0,-0.4775 -0.43336,-0.869 -0.96188,-0.869 l -70.15911,0 z"
+       id="rect3936-4"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMedia-7/Iconos/monitor.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       transform="translate(786.99027,-1920.7231)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-61-4-8-8"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/volumen.png"
+       inkscape:export-xdpi="32.056667"
+       inkscape:export-ydpi="32.056667" />
+    <path
+       style="fill:#ffffff;stroke:#000000;stroke-width:4.58235836;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 1065.4112,-1521.3709 c -38.3353,-8.9452 -77.56964,-52.4408 -6.2403,-85.4085 z"
+       id="path3823"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/volumen.png"
+       inkscape:export-xdpi="32.056667"
+       inkscape:export-ydpi="32.056667" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5.64599991;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path3053"
+       sodipodi:cx="360.85519"
+       sodipodi:cy="739.15387"
+       sodipodi:rx="25.925518"
+       sodipodi:ry="53.953106"
+       d="m 386.78071,739.15387 a 25.925518,53.953106 0 1 1 -51.85103,0 25.925518,53.953106 0 1 1 51.85103,0 z"
+       transform="matrix(-0.80887438,0.06659964,0.06659964,0.80887438,1307.2819,-2185.9906)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/volumen.png"
+       inkscape:export-xdpi="32.056667"
+       inkscape:export-ydpi="32.056667" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:5.64599991;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path3053-4"
+       sodipodi:cx="360.85519"
+       sodipodi:cy="739.15387"
+       sodipodi:rx="25.925518"
+       sodipodi:ry="53.953106"
+       d="m 386.78071,739.15387 a 25.925518,53.953106 0 1 1 -51.85103,0 25.925518,53.953106 0 1 1 51.85103,0 z"
+       transform="matrix(-0.54123795,0.05442521,0.03570385,0.55340893,1234.0169,-1992.7691)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/volumen.png"
+       inkscape:export-xdpi="32.056667"
+       inkscape:export-ydpi="32.056667" />
+    <path
+       transform="translate(483.17148,-1740.5514)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-61-4-4"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMedia-9/Iconos/camara.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 707.26076,-1405.3879 c -0.48936,0 -0.875,0.4169 -0.875,0.9063 l 0,41.1875 c 0,0.4893 0.38564,0.875 0.875,0.875 l 58.15626,0 c 0.48936,0 0.875,-0.3857 0.875,-0.875 l 0,-19.375 25.09375,12.4687 0,-14.875 0,-14.875 -25.09375,12.4688 0,-17 c 0,-0.4894 -0.38564,-0.9063 -0.875,-0.9063 l -58.15626,0 z"
+       id="rect3827"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMedia-9/Iconos/camara.png"
+       inkscape:export-xdpi="32"
+       inkscape:export-ydpi="32" />
+    <path
+       transform="translate(334.13732,-1740.5514)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-61-4-4-4"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/microfono.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       transform="translate(801.9234,-1740.5514)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-61-4-9"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMedia-9/Iconos/foto.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5.64563179;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 1032.5581,-1348.3925 c -0.5285,0 -0.9618,-0.3916 -0.9618,-0.869 l 0,-55.4324 c 0,-0.4775 0.4333,-0.869 0.9618,-0.869 l 40.2803,0 0,-12.9825 c 0,-0.4775 0.4333,-0.869 0.9619,-0.869 l 19.6748,0 c 0.5285,0 0.9328,0.3915 0.9328,0.869 l 0,12.9825 8.3093,0 c 0.5286,0 0.9619,0.3915 0.9619,0.869 l 0,55.4324 c 0,0.4774 -0.4333,0.869 -0.9619,0.869 z"
+       id="rect3936-4-9"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMedia-7/Iconos/monitor.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936"
+       sodipodi:nodetypes="sssscsssscsssss" />
+    <path
+       transform="matrix(0.23987671,0,0,0.23987671,992.688,-1469.455)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:9.70134926;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-61-4-4-4-4-7"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMedia-9/Iconos/filmar.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-97-8"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       transform="translate(941.48377,-1920.7231)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/iconplay.png"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225" />
+    <path
+       style="fill:#ffffff;stroke:#000000;stroke-width:6.36800003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 1179.1967,-1599.8694 0,35.8112 0,35.7773 72.0027,-35.7773 -72.0027,-35.8112 z"
+       id="path2987-8-8"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/iconplay.png"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-97-8-5"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       transform="translate(946.08146,-1740.5514)"
+       inkscape:export-filename="/home/flavio/Documentos/Gtk3_Sugar_Port/JAMexplorer/Iconos/salir.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 1192.9412,-1425.8612 c -0.2258,0 -0.4501,0.079 -0.625,0.25 l -21.7813,21.3124 c -0.3497,0.3423 -0.3735,0.9003 -0.031,1.25 l 18.75,19.1563 -18.75,19.1563 c -0.3422,0.3497 -0.3185,0.9077 0.031,1.25 l 21.7813,21.2812 c 0.3498,0.3422 0.8765,0.3498 1.2187,0 l 18.25,-18.6562 18.25,18.6562 c 0.3423,0.3498 0.9003,0.3422 1.25,0 l 21.7813,-21.2812 c 0.3498,-0.3423 0.3422,-0.9003 0,-1.25 l -18.75,-19.1563 18.75,-19.1563 c 0.3422,-0.3497 0.3498,-0.9077 0,-1.25 l -21.7813,-21.3124 c -0.3497,-0.3423 -0.9077,-0.3186 -1.25,0.031 l -18.25,18.6562 -18.25,-18.6562 c -0.1711,-0.1749 -0.3679,-0.2788 -0.5937,-0.2813 z"
+       id="rect3096"
+       inkscape:export-filename="/home/flavio/Documentos/Gtk3_Sugar_Port/JAMexplorer/Iconos/salir.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936"
+       inkscape:connector-curvature="0" />
+    <g
+       id="g3317"
+       transform="translate(676.06238,-354.96576)">
+      <rect
+         inkscape:export-ydpi="33.810032"
+         inkscape:export-xdpi="33.810032"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/lista.png"
+         ry="0.88331699"
+         y="-1084.2921"
+         x="183.37442"
+         height="110.70896"
+         width="110.70896"
+         id="rect3059"
+         style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         inkscape:export-ydpi="33.810032"
+         inkscape:export-xdpi="33.810032"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/lista.png"
+         ry="0.88331699"
+         y="-1064.877"
+         x="196.68753"
+         height="14.013793"
+         width="84.082756"
+         id="rect3061"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         inkscape:export-ydpi="33.810032"
+         inkscape:export-xdpi="33.810032"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/lista.png"
+         ry="0.88331699"
+         y="-1036.8494"
+         x="196.68753"
+         height="14.013793"
+         width="84.082756"
+         id="rect3061-3"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         inkscape:export-ydpi="33.810032"
+         inkscape:export-xdpi="33.810032"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/lista.png"
+         ry="0.88331699"
+         y="-1009.4204"
+         x="196.68753"
+         height="14.013793"
+         width="84.082756"
+         id="rect3061-9"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <path
+       transform="translate(1089.377,-1740.5514)"
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-61-4-4-4-8"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/configurar.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:4.68413115;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 1346.2629,-1424.4199 c -0.3582,0 -0.6633,0.2823 -0.6633,0.6405 l 0,13.0597 c 0,0.056 0.01,0.1079 0.023,0.1601 -0.9157,0.3254 -1.8066,0.7064 -2.676,1.1208 -0.027,-0.045 -0.052,-0.098 -0.091,-0.1373 l -9.2402,-9.2402 c -0.2532,-0.2533 -0.6616,-0.2533 -0.9149,0 l -12.5108,12.5109 c -0.2533,0.2532 -0.2533,0.6616 0,0.9148 l 9.2402,9.2402 c 0.039,0.039 0.092,0.064 0.1372,0.091 -0.4167,0.8746 -0.7939,1.7775 -1.1207,2.6989 -0.053,-0.014 -0.1029,-0.045 -0.1601,-0.045 l -13.0598,0 c -0.3581,0 -0.6404,0.3052 -0.6404,0.6632 l 0,17.6799 c 0,0.3582 0.2823,0.6404 0.6404,0.6404 l 13.0598,0 c 0.057,0 0.1079,-0.01 0.1601,-0.023 0.3252,0.9152 0.7067,1.8072 1.1207,2.6761 -0.045,0.027 -0.098,0.053 -0.1372,0.091 l -9.2402,9.2402 c -0.2533,0.2533 -0.2533,0.6617 0,0.9149 l 12.5108,12.5108 c 0.2533,0.2534 0.6617,0.2534 0.9149,0 l 9.2402,-9.2402 c 0.034,-0.034 0.044,-0.075 0.069,-0.1143 0.8757,0.4181 1.7762,0.7929 2.6989,1.1207 -0.01,0.045 -0.023,0.089 -0.023,0.1373 l 0,13.0597 c 0,0.3582 0.3051,0.6633 0.6632,0.6633 l 17.6799,0 c 0.3581,0 0.6404,-0.3051 0.6404,-0.6633 l 0,-13.0597 c 0,-0.049 -0.013,-0.092 -0.023,-0.1373 0.9227,-0.3278 1.8231,-0.7026 2.6989,-1.1207 0.025,0.039 0.034,0.08 0.069,0.1143 l 9.2401,9.2402 c 0.2533,0.2534 0.6616,0.2534 0.9149,0 l 12.5108,-12.5108 c 0.2533,-0.2532 0.2533,-0.6616 0,-0.9149 l -9.2401,-9.2402 c -0.034,-0.034 -0.075,-0.044 -0.1144,-0.069 0.4177,-0.8752 0.7931,-1.7769 1.1207,-2.699 0.046,0.01 0.088,0.023 0.1372,0.023 l 13.0598,0 c 0.3582,0 0.6404,-0.2822 0.6404,-0.6404 l 0,-17.6799 c 0,-0.358 -0.2822,-0.6632 -0.6404,-0.6632 l -13.0598,0 c -0.05,0 -0.091,0.035 -0.1372,0.045 -0.3291,-0.9281 -0.7003,-1.841 -1.1207,-2.7217 0.039,-0.025 0.08,-0.034 0.1144,-0.069 l 9.2401,-9.2401 c 0.2533,-0.2533 0.2533,-0.6617 0,-0.9149 l -12.5108,-12.5109 c -0.2533,-0.2532 -0.6616,-0.2532 -0.9149,0 l -9.2401,9.2402 c -0.039,0.04 -0.064,0.092 -0.091,0.1373 -0.8695,-0.4144 -1.7604,-0.7953 -2.676,-1.1208 0.014,-0.052 0.023,-0.1035 0.023,-0.16 l 0,-13.0598 c 0,-0.3582 -0.2823,-0.6404 -0.6404,-0.6404 l -17.6799,0 z m 8.8284,24.1069 c 9.0634,0 16.422,7.3585 16.422,16.4219 0,9.0633 -7.3586,16.399 -16.422,16.399 -9.0633,0 -16.4218,-7.3357 -16.4218,-16.399 0,-9.0634 7.3585,-16.4219 16.4218,-16.4219 z"
+       id="path2985-61-4-4-4-4-8"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/configurar.png"
+       inkscape:export-xdpi="32"
+       inkscape:export-ydpi="32" />
+    <g
+       id="g3901"
+       transform="translate(449.02816,-2330.4769)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/microfono.png"
+       inkscape:export-xdpi="32"
+       inkscape:export-ydpi="32">
+      <path
+         inkscape:connector-curvature="0"
+         id="path2985-61-4-4-4-4"
+         d="m 150.94762,902.05097 c -15.27589,0 -27.6713,12.37304 -27.6713,27.64892 0,11.73833 7.33186,21.77608 17.64968,25.79225 l 0,36.5744 c 0,0.4057 0.31022,0.7158 0.71583,0.7158 l 18.61158,0 c 0.40561,0 0.71583,-0.3101 0.71583,-0.7158 l 0,-36.5744 c 10.31782,-4.01617 17.62731,-14.05392 17.62731,-25.79225 0,-15.27588 -12.37304,-27.64892 -27.64893,-27.64892 z"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:4.58099985;stroke-miterlimit:4;stroke-dasharray:none" />
+      <path
+         d="m 161.68414,905.21735 c 0,15.38246 -12.46995,27.85241 -27.85241,27.85241 -15.38247,0 -27.85242,-12.46995 -27.85242,-27.85241 0,-15.38247 12.46995,-27.85242 27.85242,-27.85242 15.38246,0 27.85241,12.46995 27.85241,27.85242 z m -2.52554,1.90652 c 0,0.0485 -0.0465,0.11333 -0.0876,0.0876 -17.92598,-11.21105 -34.68413,-11.21102 -50.27448,0 -0.0394,0.0283 -0.0876,-0.0391 -0.0876,-0.0876 0,-0.0485 0.0424,-0.10517 0.0876,-0.0876 13.74542,5.34077 26.59364,12.27202 50.27448,0 0.0431,-0.0223 0.0876,0.0391 0.0876,0.0876 z m -24.44247,-26.00721 c 0.0485,0 0.11332,0.0465 0.0876,0.0876 -11.21105,17.92598 -11.21102,34.68413 0,50.27448 0.0283,0.0394 -0.0391,0.0876 -0.0876,0.0876 -0.0485,0 -0.10517,-0.0424 -0.0876,-0.0876 5.34077,-13.74541 12.27202,-26.59364 0,-50.27448 -0.0223,-0.0431 0.0391,-0.0876 0.0876,-0.0876 z"
+         style="fill:none;stroke:#000000;stroke-width:4.68100023;stroke-miterlimit:4;stroke-opacity:1"
+         transform="translate(16.991724,23.049655)"
+         id="path3897"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       id="g3342"
+       transform="translate(787.04595,-329.55947)">
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/acercar.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8"
+         style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="translate(-295.38759,-1206.8613)" />
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/acercar.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8-5"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="matrix(0.78447798,0,0,0.78447798,-238.12031,-1129.9958)" />
+      <text
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/acercar.png"
+         sodipodi:linespacing="125%"
+         id="text3098"
+         y="-816.63184"
+         x="-74.553406"
+         style="font-size:107.12639618px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="-816.63184"
+           x="-74.553406"
+           id="tspan3100"
+           sodipodi:role="line">+</tspan></text>
+    </g>
+    <g
+       id="g3348"
+       transform="translate(787.04595,-329.49047)">
+      <path
+         inkscape:export-ydpi="32.785225"
+         inkscape:export-xdpi="32.785225"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/alejar.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8-6"
+         style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="translate(-441.71115,-1206.9303)" />
+      <path
+         inkscape:export-ydpi="32.785225"
+         inkscape:export-xdpi="32.785225"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/alejar.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8-5-0"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="matrix(0.78447798,0,0,0.78447798,-384.44387,-1130.0648)" />
+      <text
+         inkscape:export-ydpi="32.785225"
+         inkscape:export-xdpi="32.785225"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/alejar.png"
+         sodipodi:linespacing="125%"
+         id="text3098-5"
+         y="-784.47327"
+         x="-219.34174"
+         style="font-size:240.24443054px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="-784.47327"
+           x="-219.34174"
+           id="tspan3100-3"
+           sodipodi:role="line">-</tspan></text>
+    </g>
+    <g
+       id="g3336"
+       transform="translate(787.04595,-332.99397)">
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/escalaoriginal.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8-9"
+         style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="translate(-142.44219,-1203.4268)" />
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/escalaoriginal.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8-5-2"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="matrix(0.78447798,0,0,0.78447798,-85.17491,-1126.5614)" />
+      <text
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/escalaoriginal.png"
+         transform="scale(0.82957839,1.2054316)"
+         sodipodi:linespacing="125%"
+         id="text3098-9"
+         y="-682.2818"
+         x="103.50171"
+         style="font-size:55.38431549px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="-682.2818"
+           x="103.50171"
+           id="tspan3100-7"
+           sodipodi:role="line">1:1</tspan></text>
+    </g>
+    <g
+       id="g3323"
+       transform="translate(787.04595,-325.87037)">
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/rotar.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8-9-4"
+         style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="translate(28.094476,-1210.5504)" />
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/rotar.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8-5-2-3"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="matrix(0.78447798,0,0,0.78447798,85.361753,-1133.6849)" />
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/rotar.png"
+         sodipodi:nodetypes="cccc"
+         inkscape:connector-curvature="0"
+         id="path3097"
+         d="m 253.66302,-853.76233 19.69561,18.57674 8.98991,-24.22592 z"
+         style="fill:#000000;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/rotar.png"
+         sodipodi:nodetypes="ccccc"
+         inkscape:connector-curvature="0"
+         id="path3099"
+         d="m 262.66768,-848.19527 c -12.26423,-41.99199 58.0651,-61.42644 66.86927,-8.42287 l -12.36842,-0.49546 c -8.7542,-32.85392 -50.75365,-18.01912 -42.62791,8.40472 z"
+         style="fill:#000000;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+    <g
+       id="g3329"
+       transform="translate(787.04595,-325.10027)">
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/deshacer.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8-9-4-0"
+         style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="translate(181.68825,-1211.3205)" />
+      <path
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/deshacer.png"
+         d="m 324.28572,356.64789 c 0,32.34811 -26.22332,58.57143 -58.57143,58.57143 -32.3481,0 -58.57143,-26.22332 -58.57143,-58.57143 0,-32.34811 26.22333,-58.57143 58.57143,-58.57143 32.34811,0 58.57143,26.22332 58.57143,58.57143 z"
+         sodipodi:ry="58.57143"
+         sodipodi:rx="58.57143"
+         sodipodi:cy="356.64789"
+         sodipodi:cx="265.71429"
+         id="path2985-61-4-4-4-8-8-5-2-3-4"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+         sodipodi:type="arc"
+         transform="matrix(0.78447798,0,0,0.78447798,238.95553,-1134.455)" />
+      <g
+         inkscape:export-ydpi="32.776936"
+         inkscape:export-xdpi="32.776936"
+         inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaImagenes/icons/deshacer.png"
+         transform="translate(8.6234551,-1794.5648)"
+         id="g3132">
+        <rect
+           style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3128"
+           width="47.564392"
+           height="29.727743"
+           x="425.6022"
+           y="926.01929" />
+        <path
+           style="fill:#000000;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 400.82908,939.89222 34.18691,-27.25043 0,54.50086 z"
+           id="path3130"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -1944.9671,-1569.6374 119.4603,266.6455 -225.5956,-42.5587 209.667,325.9106 c 32.2497,85.64708 23.1488,205.60018 -140.5071,272.49928 -72.7834,21.9142 -191.9685,55.1989 -280.0623,-58.0477 l -65.2689,-100.1388 141.8901,-61.3176 16.3257,46.156 c 21.6664,48.7787 68.1176,40.0412 86.0408,9.3579 16.7449,-28.6664 5.4877,-61.0188 -14.8151,-101.91918 l -127.9585,-257.7745 -213.9182,170.7609 -83.1746,-222.3598 577.9164,-247.2139 z"
+       id="path2816-5-6"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -1916.6383,-1623.8577 119.4603,266.6454 -225.5955,-42.5586 209.667,325.9106 c 32.2497,85.64698 23.1487,205.60018 -140.5071,272.49928 -72.7835,21.9141 -191.9685,55.1988 -280.0624,-58.0477 l -65.2689,-100.1389 141.8902,-61.31748 16.3257,46.15588 c 21.6664,48.7788 68.1175,40.0413 86.0407,9.3579 16.7449,-28.6663 5.4878,-61.01868 -14.8151,-101.91918 l -127.9585,-257.7744 -213.9181,170.7609 -83.1746,-222.3598 577.9163,-247.2139 z"
+       id="path2816-9"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -1728.8835,-1572.1473 -353.9062,609.59378 268.0625,53.9063 77,-272.68758 93.1875,27.6563 12.1562,310.65628 297.5938,65.5 -145.2813,-728.62508 -248.8125,-66 z m 89.4375,193.7188 -2.5937,85.7187 -32.5625,-26.8437 35.1562,-58.875 z"
+       id="path2818-6-3"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -1700.5546,-1626.3676 -353.9063,609.5938 268.0625,53.90618 77,-272.68748 93.1875,27.6563 12.1563,310.65628 297.5937,65.5 -145.2813,-728.62508 -248.8124,-66 z m 89.4375,193.7188 -2.5938,85.7187 -32.5625,-26.8437 35.1563,-58.875 z"
+       id="path2818-8"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -1266.5569,-1584.0724 171.8756,102.3081 -2.3744,129.3408 109.46992,-63.503 151.0077,5.3154 -66.7362,722.89968 -342.21552,-9.2712 167.0886,-486.81678 -154.2206,46.5047 -33.9558,-168.4445 -298.8481,426.92298 -167.6812,-197.23098 466.59,-508.0252 z"
+       id="path2820-7-8"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -1224.2281,-1626.2927 171.8756,102.308 -2.3744,129.3409 109.46992,-63.5031 151.0077,5.3155 -66.7362,722.89968 -342.21552,-9.2712 167.0886,-486.81688 -154.2206,46.5048 -33.9558,-168.4445 -298.8481,426.92298 -167.6812,-197.23098 466.59,-508.0252 z"
+       id="path2820-4"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:0.32116789;stroke:none;font-family:Bitstream Vera Sans"
+       x="-2179.0803"
+       y="-631.52386"
+       id="text2822-1-3"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan2824-4-6"
+         x="-2179.0803"
+         y="-631.52386"
+         style="font-weight:bold;fill:#000000;fill-opacity:0.32116789;stroke:none;-inkscape-font-specification:AlArabiya Bold">edi</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564000003371px;font-style:normal;font-weight:normal;fill:#00ffff;fill-opacity:1;stroke:#000000;stroke-width:27.79999923999999822;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Bitstream Vera Sans"
+       x="-2150.1477"
+       y="-659.02399"
+       id="text2822-2"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan2824-5"
+         x="-2150.1477"
+         y="-659.02399"
+         style="font-weight:bold;fill:#00ffff;stroke:#000000;stroke-width:27.79999923999999822;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;-inkscape-font-specification:AlArabiya Bold">edi</tspan></text>
+    <g
+       transform="translate(-2448.5546,-1560.1488)"
+       id="g3861-0"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229">
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccscccccccccccccc"
+         id="path3761-8-9"
+         d="m 1772.8028,865.33376 81.2745,-2.0831 -4.1679,-31.2598 -33.3434,-20.8395 -2.0841,-395.9532 c 0,0 -41.6791,-27.09119 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.9764,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1755,33.3429 l 0.084,31.2598 -95.9463,2.0843 c -11.831,12.4926 -20.2906,26.6709 -2.0839,54.1823 l 89.6103,0 2.084,200.061 -20.8396,6.2517 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccscc"
+         id="path3789-5-0"
+         d="m 1703.3766,456.64166 c 0,0 -9.7645,-93.54274 84.0139,-116.46533 38.064,-28.63805 -56.633,-56.60839 -93.7784,-35.42837 -48.6708,27.75176 -48.8757,56.80478 -47.9311,56.26783 -17.5891,35.59336 0.7014,84.72747 57.6956,95.62587 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccc"
+         id="path3791-5-1"
+         d="m 1578.7586,433.41706 c 0,0 48.1668,-22.3863 29.411,-70.31698 -18.7556,-47.93181 -68.7706,-37.51149 -68.7706,-37.51149 0,0 -49.2071,11.39793 -45.8473,41.67892 37.7469,-16.3034 60.435,18.75633 60.435,18.75633 l 24.7719,47.39322 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ffff;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -666.13648,-714.79382 81.2745,-2.0832 -4.1679,-31.2597 -33.3434,-20.8395 -2.0841,-395.95328 c 0,0 -41.6791,-27.0912 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.9764,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1754,33.3429 l 0.084,31.2598 -95.9463,2.0843 c -11.83102,12.49258 -20.29062,26.67098 -2.0839,54.18238 l 89.6103,0 2.084,200.0609 -20.8396,6.2518 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z"
+       id="path3761-89"
+       sodipodi:nodetypes="cccccscccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763-3"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-1618.0906,-14461.086)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763-9-6"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-1700.4071,-14451.708)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:3.50105739;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -828.68568,-912.77052 c 7.0037,21.2935 14.5797,42.4912 54.1831,58.351 59.0074,-2.7915 66.6198,-24.2606 77.1065,-43.2258 l 4.1679,-42.2164 c -44.6854,31.1834 -69.0551,44.6175 -122.9537,16.6721 l -12.5038,10.4191 z"
+       id="path3787-7"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -735.56268,-1123.486 c 0,0 -9.7645,-93.5427 84.0139,-116.4653 38.064,-28.6381 -56.633,-56.6084 -93.7784,-35.4284 -48.6708,27.7518 -48.8757,56.8048 -47.9311,56.2678 -17.5891,35.5934 0.7014,84.7275 57.6956,95.6259 z"
+       id="path3789-8"
+       sodipodi:nodetypes="ccscc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ffff;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -860.18068,-1146.7106 c 0,0 48.1668,-22.3863 29.411,-70.317 -18.7556,-47.9318 -68.7706,-37.5115 -68.7706,-37.5115 0,0 -49.2071,11.398 -45.8473,41.679 37.7469,-16.3034 60.435,18.7563 60.435,18.7563 l 24.7719,47.3932 z"
+       id="path3791-8"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -1978.6001,-2946.0327 119.4603,266.6455 -225.5956,-42.5587 209.667,325.9106 c 32.2497,85.6471 23.1488,205.6002 -140.5071,272.4993 -72.7834,21.9142 -191.9685,55.1989 -280.0623,-58.0477 l -65.2689,-100.1388 141.8901,-61.3176 16.3257,46.156 c 21.6664,48.7787 68.1176,40.0412 86.0408,9.3579 16.7449,-28.6664 5.4877,-61.0188 -14.8151,-101.9192 l -127.9585,-257.7745 -213.9182,170.7609 -83.1746,-222.3598 577.9164,-247.2139 z"
+       id="path2816-5-6-6"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -1950.2713,-3000.253 119.4603,266.6454 -225.5955,-42.5586 209.667,325.9106 c 32.2497,85.647 23.1487,205.6002 -140.5071,272.4993 -72.7835,21.9141 -191.9685,55.1988 -280.0624,-58.0477 l -65.2689,-100.1389 141.8902,-61.3175 16.3257,46.1559 c 21.6664,48.7788 68.1175,40.0413 86.0407,9.3579 16.7449,-28.6663 5.4878,-61.0187 -14.8151,-101.9192 l -127.9585,-257.7744 -213.9181,170.7609 -83.1746,-222.3598 577.9163,-247.2139 z"
+       id="path2816-9-0"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -1762.5165,-2948.5426 -353.9062,609.5938 268.0625,53.9063 77,-272.6876 93.1875,27.6563 12.1562,310.6563 297.5938,65.5 -145.2813,-728.6251 -248.8125,-66 z m 89.4375,193.7188 -2.5937,85.7187 -32.5625,-26.8437 35.1562,-58.875 z"
+       id="path2818-6-3-2"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -1734.1876,-3002.7629 -353.9063,609.5938 268.0625,53.9062 77,-272.6875 93.1875,27.6563 12.1563,310.6563 297.5937,65.5 -145.2813,-728.6251 -248.8124,-66 z m 89.4375,193.7188 -2.5938,85.7187 -32.5625,-26.8437 35.1563,-58.875 z"
+       id="path2818-8-1"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -1300.1899,-2960.4677 171.8756,102.3081 -2.3744,129.3408 109.4698,-63.503 151.00772,5.3154 -66.73621,722.8997 -342.21541,-9.2712 167.0886,-486.8168 -154.2206,46.5047 -33.9558,-168.4445 -298.8481,426.923 -167.6812,-197.231 466.59,-508.0252 z"
+       id="path2820-7-8-6"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -1257.8611,-3002.688 171.8756,102.308 -2.3744,129.3409 109.46982,-63.5031 151.0077,5.3155 -66.73621,722.8997 -342.21541,-9.2712 167.0886,-486.8169 -154.2206,46.5048 -33.9558,-168.4445 -298.8481,426.923 -167.6812,-197.231 466.59,-508.0252 z"
+       id="path2820-4-0"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:0.32116789;stroke:none;font-family:Bitstream Vera Sans"
+       x="-2216.04"
+       y="-1884.0376"
+       id="text2822-1-3-0"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan2824-4-6-4"
+         x="-2216.04"
+         y="-1884.0376"
+         style="font-weight:bold;fill:#000000;fill-opacity:0.32116789;stroke:none;-inkscape-font-specification:AlArabiya Bold">edi</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564000003371px;font-style:normal;font-weight:normal;fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:27.79999923999999822;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Bitstream Vera Sans"
+       x="-2187.1074"
+       y="-1911.5377"
+       id="text2822-2-7"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan2824-5-4"
+         x="-2187.1074"
+         y="-1911.5377"
+         style="font-weight:bold;fill:#ffff00;stroke:#000000;stroke-width:27.79999923999999822;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;-inkscape-font-specification:AlArabiya Bold"><tspan
+           style="fill:#00ffff"
+           id="tspan3123">e</tspan><tspan
+           style="fill:#00ff00"
+           id="tspan3125">d</tspan><tspan
+           style="fill:#00ffff"
+           id="tspan3121">i</tspan></tspan></text>
+    <g
+       transform="translate(-2482.1876,-2936.5441)"
+       id="g3861-0-8"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229">
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccscccccccccccccc"
+         id="path3761-8-9-3"
+         d="m 1772.8028,865.33376 81.2745,-2.0831 -4.1679,-31.2598 -33.3434,-20.8395 -2.0841,-395.9532 c 0,0 -41.6791,-27.09119 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.9764,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1755,33.3429 l 0.084,31.2598 -95.9463,2.0843 c -11.831,12.4926 -20.2906,26.6709 -2.0839,54.1823 l 89.6103,0 2.084,200.061 -20.8396,6.2517 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccscc"
+         id="path3789-5-0-6"
+         d="m 1703.3766,456.64166 c 0,0 -9.7645,-93.54274 84.0139,-116.46533 38.064,-28.63805 -56.633,-56.60839 -93.7784,-35.42837 -48.6708,27.75176 -48.8757,56.80478 -47.9311,56.26783 -17.5891,35.59336 0.7014,84.72747 57.6956,95.62587 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccc"
+         id="path3791-5-1-5"
+         d="m 1578.7586,433.41706 c 0,0 48.1668,-22.3863 29.411,-70.31698 -18.7556,-47.93181 -68.7706,-37.51149 -68.7706,-37.51149 0,0 -49.2071,11.39793 -45.8473,41.67892 37.7469,-16.3034 60.435,18.75633 60.435,18.75633 l 24.7719,47.39322 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -699.76958,-2091.1891 81.2745,-2.0832 -4.1679,-31.2597 -33.3434,-20.8395 -2.0841,-395.9533 c 0,0 -41.6791,-27.0912 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.97641,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1754,33.3429 l 0.084,31.2598 -95.94631,2.0843 c -11.831,12.4926 -20.2905,26.671 -2.0839,54.1824 l 89.61031,0 2.084,200.0609 -20.8396,6.2518 0,35.4272 72.9387,0 0,-91.6939 181.47271,-2.0843 1.916,91.6939 z"
+       id="path3761-89-2"
+       sodipodi:nodetypes="cccccscccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763-3-7"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-1651.7236,-15837.482)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763-9-6-2"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-1734.0401,-15828.104)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:3.50105739;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -862.31878,-2289.1658 c 7.0037,21.2935 14.5797,42.4912 54.1831,58.351 59.0074,-2.7915 66.6198,-24.2606 77.1065,-43.2258 l 4.1679,-42.2164 c -44.6854,31.1834 -69.0551,44.6175 -122.9537,16.6721 l -12.5038,10.4191 z"
+       id="path3787-7-4"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -769.19578,-2499.8813 c 0,0 -9.7645,-93.5427 84.0139,-116.4653 38.064,-28.6381 -56.633,-56.6084 -93.7784,-35.4284 -48.6708,27.7518 -48.8757,56.8048 -47.9311,56.2678 -17.5891,35.5934 0.7014,84.7275 57.6956,95.6259 z"
+       id="path3789-8-6"
+       sodipodi:nodetypes="ccscc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -893.81379,-2523.1059 c 0,0 48.16681,-22.3863 29.41101,-70.317 -18.75561,-47.9318 -68.77061,-37.5115 -68.77061,-37.5115 0,0 -49.20709,11.398 -45.84729,41.679 37.74689,-16.3034 60.43499,18.7563 60.43499,18.7563 l 24.7719,47.3932 z"
+       id="path3791-8-8"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/JAMedia.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <g
+       id="g3008"
+       transform="matrix(34.691472,0,0,34.691472,7.0143528,-3593.0612)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaTube.png"
+       inkscape:export-xdpi="3"
+       inkscape:export-ydpi="3">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+         id="path2816-5-68"
+         d="m 17.64437,10.700511 2.845293,6.350936 -5.373214,-1.013658 4.99383,7.762509 c 0.76812,2.039933 0.551353,4.896965 -3.346586,6.490362 -1.733549,0.52195 -4.572289,1.314721 -6.6705,-1.382575 l -1.5545681,-2.385097 3.3795271,-1.460456 0.388844,1.099339 c 0.516048,1.161807 1.622418,0.953698 2.04931,0.222885 0.398828,-0.682771 0.130707,-1.453339 -0.352865,-2.427502 L 10.955737,17.817607 5.8606545,21.884774 3.87961,16.588629 17.64437,10.700511 z" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#ff6600;stroke:#000000;stroke-width:1.02417004;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="path2816-6"
+         d="m 18.319102,9.4090961 2.845296,6.3509359 -5.373216,-1.013658 4.99383,7.762509 c 0.76812,2.039932 0.551354,4.896965 -3.346585,6.490362 -1.73355,0.52195 -4.572288,1.314721 -6.6705,-1.382575 l -1.5545684,-2.385097 3.3795264,-1.460455 0.388844,1.099338 c 0.516048,1.161806 1.622419,0.953698 2.04931,0.222884 0.398829,-0.682771 0.130708,-1.453338 -0.352863,-2.427501 L 11.630471,16.526192 6.5353882,20.593359 4.5543437,15.297213 18.319102,9.4090961 z" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+         id="path2818-6-4"
+         d="m 22.791029,10.64073 -8.429307,14.519249 6.384689,1.283934 1.833979,-6.494845 2.219531,0.658713 0.289536,7.399182 7.088063,1.560073 -3.460297,-17.354324 -5.926194,-1.571982 z m 2.130214,4.613977 -0.06178,2.04164 -0.77557,-0.639362 0.837348,-1.402278 z" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#ff6600;stroke:#000000;stroke-width:1.02417004;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="path2818-9"
+         d="m 23.465764,9.3493151 -8.429307,14.5192489 6.384688,1.283934 1.833979,-6.494846 2.219531,0.658714 0.289537,7.399182 7.088061,1.560073 -3.460296,-17.354324 -5.926193,-1.5719819 z m 2.130214,4.6139759 -0.06178,2.041641 -0.775571,-0.639361 0.837349,-1.40228 z" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+         id="path2820-7-84"
+         d="m 33.802683,10.3567 4.093717,2.436763 -0.05656,3.080628 2.607344,-1.51251 3.596688,0.126603 -1.589516,17.217958 -8.150858,-0.220821 3.9797,-11.594958 -3.673212,1.107646 -0.808756,-4.011995 -7.117938,10.168411 -3.993816,-4.697629 11.1132,-12.100096 z" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#ff6600;stroke:#000000;stroke-width:1.02417004;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="path2820-3"
+         d="m 34.810867,9.3510989 4.093717,2.4367641 -0.05656,3.080628 2.607343,-1.51251 3.596689,0.126603 -1.589518,17.217958 -8.150857,-0.220821 3.979701,-11.594959 -3.673212,1.107647 -0.808754,-4.011995 -7.117939,10.168411 -3.993815,-4.697629 11.1132,-12.1000971 z" />
+      <text
+         style="font-size:14.62968159px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:0.32116789;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"
+         id="text2822-1-7"
+         transform="scale(0.90999577,1.0989062)"
+         y="28.716469"
+         x="18.395258"><tspan
+           style="font-weight:bold;fill:#000000;fill-opacity:0.32116789;stroke:none;-inkscape-font-specification:AlArabiya Bold"
+           id="tspan2824-4-0"
+           y="28.716469"
+           x="18.395258">edi</tspan></text>
+      <text
+         style="font-size:14.62968159px;font-style:normal;font-weight:normal;fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:0.66213787;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"
+         id="text2822-0"
+         transform="scale(0.90999577,1.0989062)"
+         y="28.061474"
+         x="19.084381"><tspan
+           style="font-weight:bold;fill:#00ff00;stroke:#000000;stroke-width:0.66213787;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;-inkscape-font-specification:AlArabiya Bold"
+           id="tspan2824-8"
+           y="28.061474"
+           x="19.084381"><tspan
+             id="tspan3825"
+             style="fill:#00ff00;stroke-width:0.66213787">e</tspan><tspan
+             style="fill:#00ff00;stroke-width:0.66213787"
+             id="tspan3831">d</tspan><tspan
+             id="tspan3833"
+             style="fill:#00ff00;stroke-width:0.66213787">i</tspan></tspan></text>
+      <g
+         transform="matrix(0.0238179,0,0,0.0238179,5.6499675,10.926507)"
+         id="g3861-08">
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="path3761-8-7"
+           d="m 1772.8028,865.33376 81.2745,-2.0831 -4.1679,-31.2598 -33.3434,-20.8395 -2.0841,-395.9532 c 0,0 -41.6791,-27.09119 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.9764,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1755,33.3429 l 0.084,31.2598 -95.9463,2.0843 c -11.831,12.4926 -20.2906,26.6709 -2.0839,54.1823 l 89.6103,0 2.084,200.061 -20.8396,6.2517 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z" />
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="path3789-5-3"
+           d="m 1703.3766,456.64166 c 0,0 -9.7645,-93.54274 84.0139,-116.46533 38.064,-28.63805 -56.633,-56.60839 -93.7784,-35.42837 -48.6708,27.75176 -48.8757,56.80478 -47.9311,56.26783 -17.5891,35.59336 0.7014,84.72747 57.6956,95.62587 z" />
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="path3791-5-4"
+           d="m 1578.7586,433.41706 c 0,0 48.1668,-22.3863 29.411,-70.31698 -18.7556,-47.93181 -68.7706,-37.51149 -68.7706,-37.51149 0,0 -49.2071,11.39793 -45.8473,41.67892 37.7469,-16.3034 60.435,18.75633 60.435,18.75633 l 24.7719,47.39322 z" />
+      </g>
+      <path
+         d="m 48.103441,31.061094 1.935787,-0.04962 -0.09927,-0.744542 -0.794169,-0.496353 -0.04964,-9.430778 c 0,0 -0.99271,-0.645254 -1.042349,0.148904 -0.04964,0.794186 0,1.935793 0,1.935793 l -4.715383,0.04965 c -0.416618,0.153728 -0.728856,0.370084 -0.694899,0.794158 l 0.002,0.744543 -2.285239,0.04964 c -0.281791,0.297547 -0.483279,0.635246 -0.04964,1.29051 l 2.13433,0 0.04964,4.765033 -0.496355,0.148904 0,0.843801 1.737246,0 0,-2.183956 4.322301,-0.04965 0.04564,2.183955 z"
+         id="path3761-5"
+         style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:0.05559191;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 47.368832,24.534032 a 0.47153904,0.52117475 0 0 1 -0.943078,0 0.47153904,0.52117475 0 1 1 0.943078,0 z"
+         id="path3763-0"
+         style="fill:#000000;fill-opacity:1;stroke:none"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 45.408225,24.75739 a 0.47153885,0.52117454 0 0 1 -0.943077,0 0.47153885,0.52117454 0 1 1 0.943077,0 z"
+         id="path3763-9-5"
+         style="fill:#000000;fill-opacity:1;stroke:none"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 44.23186,26.345705 c 0.166814,0.507165 0.347257,1.01205 1.290526,1.389798 1.405434,-0.06649 1.586746,-0.577836 1.836518,-1.029548 l 0.09927,-1.005505 c -1.064313,0.742723 -1.644747,1.062695 -2.928501,0.397093 l -0.297813,0.248162 z"
+         id="path3787-5"
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.08338787;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 46.449855,21.326903 c 0,0 -0.232569,-2.227992 2.001035,-2.773961 0.906605,-0.682098 -1.348881,-1.348293 -2.233604,-0.843829 -1.159237,0.660988 -1.164118,1.352972 -1.14162,1.340182 -0.418936,0.847759 0.0167,2.01803 1.374189,2.277608 z"
+         id="path3789-88"
+         style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:0.08338787;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 43.481715,20.773741 c 0,0 1.147232,-0.533195 0.700509,-1.674802 -0.44672,-1.141636 -1.637974,-0.893445 -1.637974,-0.893445 0,0 -1.172009,0.271474 -1.091986,0.992704 0.899052,-0.388313 1.439436,0.446737 1.439436,0.446737 l 0.590015,1.128806 z"
+         id="path3791-84"
+         style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:0.04763582;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         inkscape:connector-curvature="0" />
+    </g>
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-97-8-5-5"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       transform="translate(1233.7615,-1739.883)"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/agregar.png"
+       inkscape:export-xdpi="32.785225"
+       inkscape:export-ydpi="32.785225" />
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 1456.4741,-1399.5737 c -0.1596,0.1596 -0.2624,0.3741 -0.2651,0.6187 l -0.3316,30.4718 c -0.01,0.4894 0.3726,0.9007 0.8619,0.9059 l 26.8038,0.2873 0.2873,26.8038 c 0,0.4893 0.4166,0.8671 0.9059,0.8619 l 30.4498,-0.3536 c 0.4893,-0.01 0.8671,-0.3725 0.8617,-0.8618 l -0.2872,-26.0966 26.0966,0.2872 c 0.4894,0.01 0.8786,-0.3946 0.8839,-0.8839 l 0.3536,-30.4498 c 0,-0.4893 -0.3946,-0.8786 -0.8839,-0.8838 l -26.8038,-0.2873 -0.2873,-26.8038 c -0,-0.4893 -0.3945,-0.8892 -0.8839,-0.8839 l -30.4718,0.3315 c -0.4893,0.01 -0.8671,0.4166 -0.8619,0.9058 l 0.2872,26.0966 -26.0966,-0.2872 c -0.2447,0 -0.4574,0.063 -0.6188,0.2209 z"
+       id="rect3096-1"
+       inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/agregar.png"
+       inkscape:export-xdpi="32"
+       inkscape:export-ydpi="32"
+       inkscape:connector-curvature="0" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#00c1cc;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-97-8-5-1"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       transform="translate(346.68846,-1348.8982)"
+       inkscape:export-filename="/home/flavio/Documentos/Gtk3_Sugar_Port/JAMexplorer/Iconos/salir.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 593.54818,-1034.2079 c -0.22578,0 -0.45011,0.079 -0.625,0.25 l -21.78125,21.3124 c -0.34977,0.3423 -0.37349,0.9003 -0.0312,1.25 l 18.75,19.15629 -18.75,19.1563 c -0.34224,0.3497 -0.31852,0.9077 0.0312,1.25 l 21.78125,21.2812 c 0.34977,0.3422 0.87651,0.3498 1.21875,0 l 18.25,-18.6562 18.25,18.6562 c 0.34224,0.3498 0.90023,0.3422 1.25,0 l 21.78126,-21.2812 c 0.34977,-0.3423 0.34224,-0.9003 0,-1.25 l -18.75001,-19.1563 18.75001,-19.15629 c 0.34224,-0.3497 0.34977,-0.9077 0,-1.25 l -21.78126,-21.3124 c -0.34977,-0.3423 -0.90776,-0.3186 -1.25,0.031 l -18.25,18.6562 -18.25,-18.6562 c -0.17112,-0.1749 -0.36797,-0.2788 -0.59375,-0.2813 z"
+       id="rect3096-3"
+       inkscape:export-filename="/home/flavio/Documentos/Gtk3_Sugar_Port/JAMexplorer/Iconos/salir.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936"
+       inkscape:connector-curvature="0" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffc100;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path2985-97-8-5-0"
+       sodipodi:cx="265.71429"
+       sodipodi:cy="356.64789"
+       sodipodi:rx="58.57143"
+       sodipodi:ry="58.57143"
+       d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+       transform="translate(486.82638,-1348.8981)"
+       inkscape:export-filename="/home/flavio/Documentos/Gtk3_Sugar_Port/JAMexplorer/Iconos/salir.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 733.68611,-1034.2079 c -0.22578,0 -0.45011,0.079 -0.625,0.25 l -21.78125,21.3124 c -0.34977,0.3423 -0.37349,0.9003 -0.0312,1.25 l 18.75,19.15633 -18.75,19.1563 c -0.34224,0.3497 -0.31852,0.9077 0.0312,1.25 l 21.78125,21.2812 c 0.34977,0.3422 0.87651,0.3498 1.21875,0 l 18.25,-18.6562 18.25,18.6562 c 0.34224,0.3498 0.90023,0.3422 1.25,0 l 21.78125,-21.2812 c 0.34977,-0.3423 0.34224,-0.9003 0,-1.25 l -18.75,-19.1563 18.75,-19.15633 c 0.34224,-0.3497 0.34977,-0.9077 0,-1.25 l -21.78125,-21.3124 c -0.34977,-0.3423 -0.90776,-0.3186 -1.25,0.031 l -18.25,18.6562 -18.25,-18.6562 c -0.17112,-0.1749 -0.36797,-0.2788 -0.59375,-0.2813 z"
+       id="rect3096-18"
+       inkscape:export-filename="/home/flavio/Documentos/Gtk3_Sugar_Port/JAMexplorer/Iconos/salir.png"
+       inkscape:export-xdpi="32.776936"
+       inkscape:export-ydpi="32.776936"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -5690.7986,39.56115 119.4603,266.64547 -225.5956,-42.55867 209.667,325.91059 c 32.2497,85.64703 23.1488,205.60013 -140.5071,272.49923 -72.7834,21.9142 -191.9685,55.1989 -280.0623,-58.0477 l -65.2689,-100.1388 141.8901,-61.31753 16.3257,46.15593 c 21.6664,48.7787 68.1176,40.0412 86.0408,9.3579 16.7449,-28.66632 5.4877,-61.01874 -14.8151,-101.91918 l -127.9585,-257.77441 -213.9182,170.76086 -83.1746,-222.35977 577.9164,-247.21392 z"
+       id="path2816-5"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -5662.4698,-14.65919 119.4603,266.64547 -225.5955,-42.55867 209.667,325.91059 c 32.2497,85.64702 23.1487,205.60017 -140.5071,272.49927 -72.7835,21.9141 -191.9685,55.1988 -280.0624,-58.0477 l -65.2689,-100.13884 141.8902,-61.31753 16.3257,46.15594 c 21.6664,48.77873 68.1175,40.04123 86.0407,9.35785 16.7449,-28.66628 5.4878,-61.0187 -14.8151,-101.91914 l -127.9585,-257.77441 -213.9181,170.76086 -83.1746,-222.35977 577.9163,-247.21392 z"
+       id="path2816"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -5474.715,37.05128 -353.9062,609.59375 268.0625,53.90624 77,-272.68749 93.1875,27.65625 12.1562,310.65624 297.5938,65.5 -145.2813,-728.62499 -248.8125,-66 z m 89.4375,193.71875 -2.5937,85.71875 -32.5625,-26.84375 35.1562,-58.875 z"
+       id="path2818-6"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -5446.3861,-17.16906 -353.9063,609.59375 268.0625,53.90625 77,-272.6875 93.1875,27.65625 12.1563,310.65628 297.5937,65.5 -145.2813,-728.62503 -248.8124,-66 z m 89.4375,193.71875 -2.5938,85.71875 -32.5625,-26.84375 35.1563,-58.875 z"
+       id="path2818"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -5012.3884,25.12617 171.8756,102.30804 -2.3744,129.34086 109.4699,-63.50306 151.0077,5.31545 -66.7362,722.89961 -342.2155,-9.2712 167.0886,-486.81678 -154.2206,46.50476 -33.9558,-168.4445 -298.8481,426.92292 -167.6812,-197.23093 466.59,-508.02517 z"
+       id="path2820-7"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4970.0596,-17.09417 171.8756,102.30804 -2.3744,129.34086 109.4699,-63.50306 151.0077,5.31545 -66.7362,722.89965 -342.2155,-9.2712 167.0886,-486.81682 -154.2206,46.50476 -33.9558,-168.4445 -298.8481,426.92296 -167.6812,-197.23097 466.59,-508.02517 z"
+       id="path2820"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:0.32116789;stroke:none;font-family:Bitstream Vera Sans"
+       x="-6295.3984"
+       y="832.8399"
+       id="text2822-1"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan2824-4"
+         x="-6295.3984"
+         y="832.8399"
+         style="font-weight:bold;fill:#000000;fill-opacity:0.32116789;stroke:none;-inkscape-font-specification:AlArabiya Bold">edi</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564px;font-style:normal;font-weight:normal;fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27.79999924;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Bitstream Vera Sans"
+       x="-6266.4653"
+       y="805.33978"
+       id="text2822"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan2824"
+         x="-6266.4653"
+         y="805.33978"
+         style="font-weight:bold;fill:#00ff00;stroke:#000000;stroke-width:27.79999924;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;-inkscape-font-specification:AlArabiya Bold">edi</tspan></text>
+    <g
+       transform="translate(-6194.3861,49.04969)"
+       id="g3861"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229">
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccscccccccccccccc"
+         id="path3761-8"
+         d="m 1772.8028,865.33376 81.2745,-2.0831 -4.1679,-31.2598 -33.3434,-20.8395 -2.0841,-395.9532 c 0,0 -41.6791,-27.09119 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.9764,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1755,33.3429 l 0.084,31.2598 -95.9463,2.0843 c -11.831,12.4926 -20.2906,26.6709 -2.0839,54.1823 l 89.6103,0 2.084,200.061 -20.8396,6.2517 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccscc"
+         id="path3789-5"
+         d="m 1703.3766,456.64166 c 0,0 -9.7645,-93.54274 84.0139,-116.46533 38.064,-28.63805 -56.633,-56.60839 -93.7784,-35.42837 -48.6708,27.75176 -48.8757,56.80478 -47.9311,56.26783 -17.5891,35.59336 0.7014,84.72747 57.6956,95.62587 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccc"
+         id="path3791-5"
+         d="m 1578.7586,433.41706 c 0,0 48.1668,-22.3863 29.411,-70.31698 -18.7556,-47.93181 -68.7706,-37.51149 -68.7706,-37.51149 0,0 -49.2071,11.39793 -45.8473,41.67892 37.7469,-16.3034 60.435,18.75633 60.435,18.75633 l 24.7719,47.39322 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4411.968,894.40467 81.2745,-2.0832 -4.1679,-31.2597 -33.3434,-20.8395 -2.0841,-395.95324 c 0,0 -41.6791,-27.09118 -43.7632,6.25172 -2.0839,33.34407 0,81.27471 0,81.27471 l -197.9764,2.0843 c -17.4917,6.45433 -30.6012,15.53806 -29.1754,33.3429 l 0.084,31.25977 -95.9463,2.0843 c -11.831,12.49259 -20.2906,26.67094 -2.0839,54.18236 l 89.6103,0 2.084,200.06088 -20.8396,6.2518 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z"
+       id="path3761"
+       sodipodi:nodetypes="cccccscccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-5363.9221,-12851.887)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763-9"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-5446.2386,-12842.509)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:3.50252557;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4574.6308,696.42797 c 7.0095,21.2935 14.5919,42.4912 54.2285,58.351 59.0569,-2.7915 66.6757,-24.2606 77.1712,-43.2258 l 4.1714,-42.21634 c -44.7229,31.18334 -69.113,44.61744 -123.0568,16.67204 l -12.5143,10.4191 z"
+       id="path3787"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4481.3942,485.71254 c 0,0 -9.7645,-93.54274 84.0139,-116.46533 38.064,-28.63805 -56.633,-56.60839 -93.7784,-35.42837 -48.6708,27.75176 -48.8757,56.80478 -47.9311,56.26783 -17.5891,35.59336 0.7014,84.72743 57.6956,95.62587 z"
+       id="path3789"
+       sodipodi:nodetypes="ccscc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4606.0122,462.48793 c 0,0 48.1668,-22.38633 29.411,-70.31697 -18.7556,-47.93181 -68.7706,-37.51149 -68.7706,-37.51149 0,0 -49.2071,11.39793 -45.8473,41.67892 37.7469,-16.3034 60.435,18.75633 60.435,18.75633 l 24.7719,47.39321 z"
+       id="path3791"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <text
+       xml:space="preserve"
+       style="font-size:671.79956055px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:0.32156863;stroke:none;font-family:Sans"
+       x="-5972.689"
+       y="1362.0654"
+       id="text3057-3"
+       sodipodi:linespacing="125%"
+       transform="scale(1.0451718,0.95678051)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan3059-3"
+         x="-5972.689"
+         y="1362.0654"
+         style="fill:#000000;fill-opacity:0.32156863;stroke:none">Video</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:671.79956055px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0099ff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-5994.8623"
+       y="1351.4143"
+       id="text3057"
+       sodipodi:linespacing="125%"
+       transform="scale(1.0451718,0.95678051)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaVideo.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan3059"
+         x="-5994.8623"
+         y="1351.4143"
+         style="fill:#0099ff;fill-opacity:1;stroke:none">Video</tspan></text>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -5635.1757,-1737.3245 119.4603,266.6455 -225.5956,-42.5587 209.667,325.9106 c 32.2497,85.647 23.1488,205.60015 -140.5071,272.49925 -72.7834,21.9142 -191.9685,55.1989 -280.0623,-58.0477 l -65.2689,-100.13885 141.8901,-61.3175 16.3257,46.156 c 21.6664,48.7787 68.1176,40.0412 86.0408,9.3579 16.7449,-28.6664 5.4877,-61.0188 -14.8151,-101.9192 l -127.9585,-257.7744 -213.9182,170.7608 -83.1746,-222.3597 577.9164,-247.214 z"
+       id="path2816-5-2"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -5606.8469,-1791.5448 119.4603,266.6455 -225.5955,-42.5587 209.667,325.9106 c 32.2497,85.647 23.1487,205.6001 -140.5071,272.49925 -72.7835,21.9141 -191.9685,55.1988 -280.0624,-58.04775 l -65.2689,-100.1388 141.8902,-61.3175 16.3257,46.1559 c 21.6664,48.7787 68.1175,40.0413 86.0407,9.3579 16.7449,-28.6663 5.4878,-61.0187 -14.8151,-101.9192 l -127.9585,-257.7744 -213.9181,170.7609 -83.1746,-222.3598 577.9163,-247.2139 z"
+       id="path2816-94"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -5419.0921,-1739.8343 -353.9062,609.5937 268.0625,53.9062 77,-272.6874 93.1875,27.6562 12.1562,310.6563 297.5938,65.49995 -145.2813,-728.62495 -248.8125,-66 z m 89.4375,193.7187 -2.5937,85.7188 -32.5625,-26.8438 35.1562,-58.875 z"
+       id="path2818-6-7"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -5390.7632,-1794.0547 -353.9063,609.5938 268.0625,53.9062 77,-272.6875 93.1875,27.6563 12.1563,310.6562 297.5937,65.50005 -145.2813,-728.62505 -248.8124,-66 z m 89.4375,193.7188 -2.5938,85.7187 -32.5625,-26.8437 35.1563,-58.875 z"
+       id="path2818-5"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -4956.7655,-1751.7595 171.8756,102.3081 -2.3744,129.3409 109.4699,-63.5031 151.0077,5.3154 -66.7362,722.89965 -342.2155,-9.2712 167.0886,-486.81675 -154.2206,46.5047 -33.9558,-168.4445 -298.8481,426.9229 -167.6812,-197.2309 466.59,-508.0252 z"
+       id="path2820-7-4"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4914.4367,-1793.9798 171.8756,102.308 -2.3744,129.3409 109.4699,-63.503 151.0077,5.3154 -66.7362,722.89965 -342.2155,-9.2712 167.0886,-486.81685 -154.2206,46.5048 -33.9558,-168.4445 -298.8481,426.9229 -167.6812,-197.2309 466.59,-508.0252 z"
+       id="path2820-6"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:0.32116789;stroke:none;font-family:Bitstream Vera Sans"
+       x="-6234.2739"
+       y="-784.11841"
+       id="text2822-1-2"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387"><tspan
+         sodipodi:role="line"
+         id="tspan2824-4-3"
+         x="-6234.2739"
+         y="-784.11841"
+         style="font-weight:bold;fill:#000000;fill-opacity:0.32116789;stroke:none;-inkscape-font-specification:AlArabiya Bold">edi</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564px;font-style:normal;font-weight:normal;fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27.79999924;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Bitstream Vera Sans"
+       x="-6205.3413"
+       y="-811.61853"
+       id="text2822-6"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387"><tspan
+         sodipodi:role="line"
+         id="tspan2824-3"
+         x="-6205.3413"
+         y="-811.61853"
+         style="font-weight:bold;fill:#00ff00;stroke:#000000;stroke-width:27.79999924;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;-inkscape-font-specification:AlArabiya Bold">edi</tspan></text>
+    <g
+       transform="translate(-6138.7632,-1727.8359)"
+       id="g3861-8"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387">
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccscccccccccccccc"
+         id="path3761-8-98"
+         d="m 1772.8028,865.33376 81.2745,-2.0831 -4.1679,-31.2598 -33.3434,-20.8395 -2.0841,-395.9532 c 0,0 -41.6791,-27.09119 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.9764,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1755,33.3429 l 0.084,31.2598 -95.9463,2.0843 c -11.831,12.4926 -20.2906,26.6709 -2.0839,54.1823 l 89.6103,0 2.084,200.061 -20.8396,6.2517 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccscc"
+         id="path3789-5-2"
+         d="m 1703.3766,456.64166 c 0,0 -9.7645,-93.54274 84.0139,-116.46533 38.064,-28.63805 -56.633,-56.60839 -93.7784,-35.42837 -48.6708,27.75176 -48.8757,56.80478 -47.9311,56.26783 -17.5891,35.59336 0.7014,84.72747 57.6956,95.62587 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccc"
+         id="path3791-5-8"
+         d="m 1578.7586,433.41706 c 0,0 48.1668,-22.3863 29.411,-70.31698 -18.7556,-47.93181 -68.7706,-37.51149 -68.7706,-37.51149 0,0 -49.2071,11.39793 -45.8473,41.67892 37.7469,-16.3034 60.435,18.75633 60.435,18.75633 l 24.7719,47.39322 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4356.3451,-882.48095 81.2745,-2.0832 -4.1679,-31.2597 -33.3434,-20.8395 -2.0841,-395.95325 c 0,0 -41.6791,-27.0912 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.9764,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1754,33.3429 l 0.084,31.2598 -95.9463,2.0843 c -11.831,12.4926 -20.2906,26.6709 -2.0839,54.1824 l 89.6103,0 2.084,200.06085 -20.8396,6.2518 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z"
+       id="path3761-9"
+       sodipodi:nodetypes="cccccscccccccccccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763-6"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-5308.2992,-14628.773)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763-9-2"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-5390.6157,-14619.395)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:3.50105739;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4518.8943,-1080.4577 c 7.0037,21.2935 14.5797,42.4913 54.1831,58.3511 59.0074,-2.7916 66.6198,-24.2607 77.1065,-43.2258 l 4.1679,-42.2164 c -44.6854,31.1833 -69.0551,44.6175 -122.9537,16.672 l -12.5038,10.4192 z"
+       id="path3787-4"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4425.7713,-1291.1731 c 0,0 -9.7645,-93.5427 84.0139,-116.4653 38.064,-28.6381 -56.633,-56.6084 -93.7784,-35.4284 -48.6708,27.7518 -48.8757,56.8048 -47.9311,56.2679 -17.5891,35.5933 0.7014,84.7274 57.6956,95.6258 z"
+       id="path3789-6"
+       sodipodi:nodetypes="ccscc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -4550.3893,-1314.3977 c 0,0 48.1668,-22.3863 29.411,-70.317 -18.7556,-47.9318 -68.7706,-37.5115 -68.7706,-37.5115 0,0 -49.2071,11.398 -45.8473,41.679 37.7469,-16.3034 60.435,18.7563 60.435,18.7563 l 24.7719,47.3932 z"
+       id="path3791-7"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387" />
+    <text
+       xml:space="preserve"
+       style="font-size:607.22137451px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:0.32156863;stroke:none;font-family:Sans"
+       x="-6115.1592"
+       y="-500.80933"
+       id="text3057-0-7"
+       sodipodi:linespacing="125%"
+       transform="scale(1.0109503,0.98916828)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387"><tspan
+         sodipodi:role="line"
+         id="tspan3059-7-1"
+         x="-6115.1592"
+         y="-500.80933"
+         style="fill:#000000;fill-opacity:0.32156863;stroke:none">Lector</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:607.22137451000003239px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffb380;fill-opacity:1;stroke:#ffb380;stroke-width:11.50325203000000052;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans"
+       x="-6140.4683"
+       y="-522.8573"
+       id="text3057-0"
+       sodipodi:linespacing="125%"
+       transform="scale(1.0109503,0.98916828)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaLector.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387"><tspan
+         sodipodi:role="line"
+         id="tspan3059-7"
+         x="-6140.4683"
+         y="-522.8573"
+         style="fill:#ffb380;fill-opacity:1;stroke:#ffb380;stroke-width:11.50325203000000052">Lector</tspan></text>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:3.50252557;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -834.67347,-900.4957 c 7.0095,21.29346 14.5919,42.49116 54.2285,58.35096 59.0569,-2.7915 66.6757,-24.2606 77.1712,-43.2258 l 4.1714,-42.21626 c -44.7229,31.1833 -69.113,44.61736 -123.0568,16.672 l -12.5143,10.4191 z"
+       id="path3787-8"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <text
+       xml:space="preserve"
+       style="font-size:402.86340332px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:0.32156863;stroke:none;font-family:Sans"
+       x="-2543.4851"
+       y="-434.62469"
+       id="text3057-3-0"
+       sodipodi:linespacing="125%"
+       transform="scale(0.97598511,1.0246058)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan3059-3-3"
+         x="-2543.4851"
+         y="-434.62469"
+         style="fill:#000000;fill-opacity:0.32156863;stroke:none">Imágenes</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:402.86340332px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0099ff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-2556.782"
+       y="-441.01193"
+       id="text3057-8"
+       sodipodi:linespacing="125%"
+       transform="scale(0.97598511,1.0246058)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaImagenes.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan3059-75"
+         x="-2556.782"
+         y="-441.01193"
+         style="fill:#0099ff;fill-opacity:1;stroke:none">Imágenes</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:621.0692749px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:0.32156863;stroke:none;font-family:Sans"
+       x="147.20465"
+       y="-2402.5176"
+       id="text3057-0-7-2"
+       sodipodi:linespacing="125%"
+       transform="scale(1.1124098,0.89894929)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaTube.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387"><tspan
+         sodipodi:role="line"
+         id="tspan3059-7-1-6"
+         x="147.20465"
+         y="-2402.5176"
+         style="fill:#000000;fill-opacity:0.32156863;stroke:none">Tube</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:621.06927489999998215px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#00ff00;fill-opacity:1;stroke:#00ff00;stroke-width:11.76558780999999954;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans"
+       x="121.31838"
+       y="-2425.0686"
+       id="text3057-0-1"
+       sodipodi:linespacing="125%"
+       transform="scale(1.1124098,0.89894929)"
+       inkscape:export-filename="/media/4E432D364BC64012/Activity-Central/Gtk3_Sugar_Port/JAMexplorer/JAMediaObjects/Iconos/JAMediaTube.png"
+       inkscape:export-xdpi="3.026387"
+       inkscape:export-ydpi="3.026387"><tspan
+         sodipodi:role="line"
+         id="tspan3059-7-0"
+         x="121.31838"
+         y="-2425.0686"
+         style="fill:#00ff00;fill-opacity:1;stroke:#00ff00;stroke-width:11.76558780999999954">Tube</tspan></text>
+  </g>
+</svg>

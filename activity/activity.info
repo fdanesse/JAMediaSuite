@@ -1,0 +1,8 @@
+[Activity]
+name = JAMexplorer
+bundle_id = org.laptop.JAMexplorer
+exec = sugar-activity SugarExplorer.JAMexplorer
+icon = JAMexplorer
+activity_version = 3
+show_launcher = yes
+license = GPLv2+
