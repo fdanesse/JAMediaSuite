@@ -33,13 +33,15 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 import JAMediaObjects.JAMFileSystem as JAMF
 import JAMediaObjects.JAMediaGlobales as G
-
-class JAMVisor(Visor):
+    
+class VisorImagenes(Visor):
     """DrawingArea - Visor de Imágenes."""
     
+    __gtype_name__ = 'VisorImagenes'
+    
     def __init__(self):
+        
         Visor.__init__(self)
-        self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
         
         self.imagen_original = None
         self.imagen = None
@@ -50,7 +52,7 @@ class JAMVisor(Visor):
         self.presentacion = False
         
         self.show_all()
-           
+        
     def rotar(self, angulo):
         if not self.imagen_original: return
 
@@ -86,24 +88,28 @@ class JAMVisor(Visor):
         self.get_property('window').process_updates(True)
         
     def acercar(self):
+        
         if not self.imagen_original: return
         self.angulo = -90
         self.rotar(1)
         self.set_zoom(self.zoom + 0.2)
 
     def alejar(self):
+        
         if not self.imagen_original: return
         self.angulo = -90
         self.rotar(1)
         self.set_zoom(self.zoom - 0.2)
     
     def original(self):
+        
         if not self.imagen_original: return
         self.angulo = -90
         self.rotar(1)
         self.set_zoom(1.0)
         
     def set_zoom(self, zoom):
+        
         if not self.imagen_original: return
         self.zoom = zoom
         if self.zoom <= 0.2: self.zoom = 0.2
@@ -114,6 +120,7 @@ class JAMVisor(Visor):
         self.get_property('window').process_updates(True)
         
     def set_imagen(self, archivo = None):
+        
         self.zoom = 1
         self.imagen_original = None
         self.tamanio = None
@@ -132,8 +139,9 @@ class JAMVisor(Visor):
         self.get_property('window').process_updates(True)
         
     def do_draw(self, contexto):
+        
         if not self.imagen_original:
-            self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
+            #self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
             return
         width, height = self.tamanio
         self.set_size_request(width, height)
@@ -143,6 +151,7 @@ class JAMVisor(Visor):
     
         if self.rotacion:
             self.imagen = self.imagen.rotate_simple(self.rotacion)
+            
         self.imagen = self.imagen.scale_simple(width, height,
             GdkPixbuf.InterpType.TILES)
         rect = self.get_allocation()
@@ -152,6 +161,7 @@ class JAMVisor(Visor):
         contexto.paint()
         
     def draw_presentacion(self, contexto):
+        
         rect = self.get_allocation()
         width, height = (rect.width, rect.height)
         self.imagen = self.imagen.scale_simple(width, height,
@@ -160,85 +170,99 @@ class JAMVisor(Visor):
         contexto.paint()
 
 class Toolbar(Gtk.Toolbar):
+    
     __gsignals__ = {
     'acercar': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'alejar': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'original': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'rotar-izquierda': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'rotar-derecha': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'configurar': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'salir': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([]))}
+        GObject.TYPE_NONE, ([]))}
     
     def __init__(self):
+        
         Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "escalaoriginal.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "escalaoriginal.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(1))
+            rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Original")
         boton.connect("clicked", self.original)
         self.insert(boton, -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "alejar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "alejar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(1))
+            rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Alejar")
         boton.connect("clicked", self.alejar)
         self.insert(boton, -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "acercar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "acercar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(1))
+            rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Acercar")
         boton.connect("clicked", self.acercar)
         self.insert(boton, -1)
 
-        self.insert(G.get_separador(draw = True, ancho = 0, expand = False), -1)
+        self.insert(G.get_separador(draw = True,
+            ancho = 0, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "rotar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(1))
+            rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Rotar")
         boton.connect("clicked", self.rotar_izquierda)
         self.insert(boton, -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "rotar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
         boton = G.get_boton(archivo, flip = True,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(1))
+            rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Rotar")
         boton.connect("clicked", self.rotar_derecha)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = True, ancho = 0, expand = False), -1)
+        self.insert(G.get_separador(draw = True,
+            ancho = 0, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "configurar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "configurar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(1))
+            rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Configurar")
         boton.connect("clicked", self.configurar)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = True, ancho = 0, expand = False), -1)
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = True,
+            ancho = 0, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "salir.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "salir.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(1))
+            rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 2, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 2, expand = False), -1)
         
         self.show_all()
 
@@ -268,41 +292,42 @@ class ToolbarConfig(Gtk.Box):
     modo presentacion de diapositivas."""
     
     __gsignals__ = {"run":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_INT, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_INT, ))}
     
     def __init__(self):
         
         toolbar1 = Gtk.Toolbar()
-        toolbar1.modify_bg(0, Gdk.Color(0, 0, 0))
-        toolbar1.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         toolbar2 = Gtk.Toolbar()
-        toolbar2.modify_bg(0, Gdk.Color(0, 0, 0))
-        toolbar2.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         
-        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
         
         self.ocultar_controles = False
         self.intervalo = 1.0
         
-        toolbar1.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        toolbar1.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "salir.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "salir.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(0.8))
+            rotacion = None, pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         toolbar1.insert(boton, -1)
         
-        toolbar1.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        toolbar1.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "alejar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "alejar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(0.8))
+            rotacion = None, pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Restar")
         boton.connect("clicked", self.menos_intervalo)
         toolbar1.insert(boton, -1)
         
-        toolbar1.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        toolbar1.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         self.label = Gtk.Label("Cambiar Imagen cada: %s Segundos" %(self.intervalo))
@@ -310,27 +335,33 @@ class ToolbarConfig(Gtk.Box):
         item.add(self.label)
         toolbar1.insert(item, -1)
         
-        toolbar1.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        toolbar1.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "acercar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "acercar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(0.8))
+            rotacion = None, pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Sumar")
         boton.connect("clicked", self.mas_intervalo)
         toolbar1.insert(boton, -1)
         
-        toolbar1.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        toolbar1.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "play.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "play.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), rotacion = None, pixels = G.get_pixels(0.8))
+            rotacion = None, pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.run_presentacion)
         toolbar1.insert(boton, -1)
         
-        toolbar1.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        toolbar1.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        toolbar2.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        toolbar2.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         item = Gtk.ToolItem()
         label = Gtk.Label("Ocultar Controles:")
@@ -338,7 +369,8 @@ class ToolbarConfig(Gtk.Box):
         item.add(label)
         toolbar2.insert(item, -1)
         
-        toolbar2.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        toolbar2.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         switch = Gtk.Switch()
         item = Gtk.ToolItem()
@@ -346,7 +378,8 @@ class ToolbarConfig(Gtk.Box):
         item.add(switch)
         toolbar2.insert(item, -1)
         
-        toolbar2.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        toolbar2.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.pack_start(toolbar1, True, True, 0)
         self.pack_start(toolbar2, True, True, 0)
@@ -361,19 +394,23 @@ class ToolbarConfig(Gtk.Box):
         self.ocultar_controles = not widget.get_active()
         
     def mas_intervalo(self, widget= None):
+        
         self.intervalo += 0.1
         self.label.set_text("Cambiar Imagen cada: %s Segundos" %(self.intervalo))
 
     def menos_intervalo(self, widget= None):
+        
         if self.intervalo > 0.3:
             self.intervalo -= 0.1
             self.label.set_text("Cambiar Imagen cada: %s Segundos" %(self.intervalo))
 
     def run_presentacion(self, widget= None):
+        
         self.emit("run", int(self.intervalo*1000))
         self.hide()
 
     def cancelar(self, widget= None):
+        
         self.hide()
         
 class MenuList(Gtk.Menu):
@@ -382,10 +419,11 @@ class MenuList(Gtk.Menu):
     al hacer click derecho sobre él."""
     
     __gsignals__ = {'accion':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-    GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
     
     def __init__(self, widget, boton, pos, tiempo, path, modelo):
+        
         Gtk.Menu.__init__(self)
         
         iter = modelo.get_iter(path)

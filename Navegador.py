@@ -47,19 +47,20 @@ class Navegador(Gtk.Paned):
     """Navegador de Archivos."""
     
     __gsignals__ = {"info":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "cargar":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
     
     def __init__(self):
         
         Gtk.Paned.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
-        self.modify_bg(0, Gdk.Color(49000, 52000, 18000))
+        
+        #self.modify_bg(0, Gdk.Color(49000, 52000, 18000))
         self.unidades = None
         self.directorios = None
         self.infowidget = None
-        self.pack1(self.area_izquierda_del_panel(), resize=False, shrink=True)
-        self.pack2(self.area_derecha_del_panel(), resize=True, shrink=True)
+        self.pack1(self.area_izquierda_del_panel(), resize = False, shrink = True)
+        self.pack2(self.area_derecha_del_panel(), resize = True, shrink = True)
         self.show_all()
         self.unidades.connect('leer', self.leer)
         self.unidades.treeselection.select_path(0)
@@ -81,9 +82,10 @@ class Navegador(Gtk.Paned):
         self.emit('info', path)
         
     def area_izquierda_del_panel(self):
+        
         self.unidades = Unidades()
         panel_izquierdo = Gtk.Paned(orientation = Gtk.Orientation.VERTICAL)
-        panel_izquierdo.modify_bg(0, Gdk.Color(49000, 52000, 18000))
+        #panel_izquierdo.modify_bg(0, Gdk.Color(49000, 52000, 18000))
         panel_izquierdo.pack1(self.unidades, resize=False, shrink=True)
         self.infowidget = InfoWidget()
         scrolled_window = Gtk.ScrolledWindow()
@@ -94,6 +96,7 @@ class Navegador(Gtk.Paned):
         return panel_izquierdo
 
     def area_derecha_del_panel(self):
+        
         scrolled_window = Gtk.ScrolledWindow()
         scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
@@ -108,12 +111,14 @@ class Unidades(Gtk.TreeView):
     """Treview para unidades y directorios marcados."""
     
     __gsignals__ = {"leer":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "info":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
     
     def __init__(self):
+        
         Gtk.TreeView.__init__(self)
+        
         self.set_property("rules-hint", True)
         self.set_headers_clickable(False)
         self.set_headers_visible(False)
@@ -139,11 +144,13 @@ class Unidades(Gtk.TreeView):
         return True
     
     def setear_columnas(self):
+        
         self.append_column(self.construir_columa_icono('Icono', 0, True))
         self.append_column(self.construir_columa('Nombre', 1, True))
         self.append_column(self.construir_columa('Directorio', 2, False))
         
     def construir_columa(self, text, index, visible):
+        
         render = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn(text, render, text=index)
         column.set_sort_column_id(index)
@@ -151,40 +158,49 @@ class Unidades(Gtk.TreeView):
         return column
     
     def construir_columa_icono(self, text, index, visible):
+        
         render = Gtk.CellRendererPixbuf()
         column = Gtk.TreeViewColumn(text, render,pixbuf=index)
         column.set_property('visible', visible)
         return column
     
     def Llenar_ListStore(self):
+        
         icono = os.path.join(ICONOS, "root.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
         self.modelo.append([ pixbuf, 'Raiz', ROOT])
         icono = os.path.join(ICONOS, "home.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
         self.modelo.append([ pixbuf, 'Usuario', HOME])
+        
         if JAMF.describe_uri(ACTIVITIES):
             icono = os.path.join(ICONOS, "home.png")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
             self.modelo.append([ pixbuf, 'Actividades', ACTIVITIES])
+            
         icono = os.path.join(ICONOS, "usb.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
         self.modelo.append([ pixbuf, 'Unidades', MEDIA])
+        
         if JAMF.describe_uri(JAMEDIA):
             icono = os.path.join(ICONOS, "JAMedia.png")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
             self.modelo.append([ pixbuf, 'JAMediaDatos', JAMEDIA])
+            
         if JAMF.describe_uri(DIARIO):
             icono = os.path.join(ICONOS, "diario.png")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
             self.modelo.append([ pixbuf, 'Diario', DIARIO])
+            
         if JAMF.describe_uri(LOGS):
             icono = os.path.join(ICONOS, "diario.png")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
             self.modelo.append([ pixbuf, 'Logs', LOGS])
             
 class ListoreModel(Gtk.ListStore):
+    
     def __init__(self):
+        
         Gtk.ListStore.__init__(self, GdkPixbuf.Pixbuf,
         GObject.TYPE_STRING, GObject.TYPE_STRING)
 
@@ -193,10 +209,12 @@ class InfoWidget(Gtk.EventBox):
     seleccionado en la estructura de directorios y archivos."""
     
     __gsignals__ = {"cargar":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
     
     def __init__(self):
+        
         Gtk.EventBox.__init__(self)
+        
         self.normal_color = Gdk.Color(65000, 65000, 65000)
         self.select_color = Gdk.Color(61686, 65000, 48431)
         self.clicked_color = Gdk.Color(61686, 65000, 17078)
@@ -224,26 +242,35 @@ class InfoWidget(Gtk.EventBox):
         self.label.set_text(textinfo)
         self.typeinfo = typeinfo
         icono = None
+        
         if textinfo.startswith("Directorio") or textinfo.startswith("Enlace"):
             icono = os.path.join(ICONOS, "directorio.png")
+            
         else:
             if 'video' in typeinfo:
                 icono = os.path.join(ICONOS, "video.png")
+                
             elif 'pdf' in typeinfo:
                 icono = os.path.join(ICONOS, "pdf.png")
+                
             elif 'audio' in typeinfo:
                 icono = os.path.join(ICONOS, "sonido.png")
+                
             elif 'image' in typeinfo:
                 icono = os.path.join(ICONOS, "imagen.png")
+                
             elif 'zip' in typeinfo or 'tar' in typeinfo:
                 icono = os.path.join(ICONOS, "zip.png")
+                
             elif 'text' in typeinfo:
                 # FIXME: Hay un problema con los tipos,
                 # cuando el archivo es uno de creados por JAMedia.
                 icono = os.path.join(ICONOS, "archivo.png")
+                
             else:
                 icono = os.path.join(ICONOS, "archivo.png")
                 self.typeinfo = None
+                
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, 100, -1)
         self.imagen.set_from_pixbuf(pixbuf)
         
@@ -258,14 +285,17 @@ class InfoWidget(Gtk.EventBox):
         if self.typeinfo: self.emit('cargar', self.typeinfo)
         
     def do_button_release_event(self, widget):
+        
         self.modify_bg(0, self.select_color)
         self.imagen.modify_bg(0, self.select_color)
         
     def do_enter_notify_event(self, widget):
+        
         self.modify_bg(0, self.select_color)
         self.imagen.modify_bg(0, self.select_color)
         
     def do_leave_notify_event(self, widget):
+        
         self.modify_bg(0, self.normal_color)
         self.imagen.modify_bg(0, self.normal_color)
         

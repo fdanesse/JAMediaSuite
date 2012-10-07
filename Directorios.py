@@ -37,11 +37,12 @@ class Directorios(Gtk.TreeView):
     """TreView para toda la estructura de directorios."""
     
     __gsignals__ = {"info":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
     
     def __init__(self):
         
         Gtk.TreeView.__init__(self)
+        
         self.set_property("enable-grid-lines", True)
         self.set_property("rules-hint", True)
         self.set_property("enable-tree-lines", True)
@@ -75,20 +76,26 @@ class Directorios(Gtk.TreeView):
         model, iter = self.treeselection.get_selected()
         valor = self.modelo.get_value(iter, 2)
         path = self.modelo.get_path(iter)
+        
         if tecla == 22:
             if self.row_expanded(path):
                 self.collapse_row(path)
+                
         elif tecla == 113:
             if self.row_expanded(path):
                 self.collapse_row(path)
+                
         elif tecla == 114:
             if not self.row_expanded(path):
                 self.expand_to_path(path)
+                
         elif tecla == 119:
             # suprimir
             self.get_accion(None, path, "Borrar")
+            
         else:
             pass
+        
         return False
         
     def selecciones(self, treeselection, model, path, is_selected, treestore):
@@ -96,12 +103,15 @@ class Directorios(Gtk.TreeView):
         
         iter = model.get_iter(path)
         directorio =  model.get_value(iter, 2)
+        
         if not is_selected and self.dir_select != directorio:
             self.dir_select = directorio
             self.emit('info', self.dir_select)
+            
         return True
     
     def construir_columnas(self):
+        
         celda_de_imagen = Gtk.CellRendererPixbuf()
         columna = Gtk.TreeViewColumn(None, celda_de_imagen, pixbuf=0)
         columna.set_property('resizable', False)
@@ -131,119 +141,158 @@ class Directorios(Gtk.TreeView):
         self.append_column (columna)
         
     def leer_directorio(self, directorio):
+        
         self.modelo.clear()
         self.leer( (directorio, False) )
         
     def leer(self, dir):
+        
         try:
             directorio = dir[0]
             path = dir[1]
+            
             if path:
                 iter = self.modelo.get_iter(path)
+                
             else:
                 iter = self.modelo.get_iter_first()
+                
             archivos = []
+            
             for archivo in os.listdir(os.path.join(directorio)):
                 direccion = os.path.join(directorio, archivo)
+                
                 if os.path.isdir(direccion):
                     icono = None
                     lectura, escritura, ejecucion = JAMF.describe_acceso_uri(direccion)
+                    
                     if not lectura:
                         icono = os.path.join(ICONOS, "cerrado.png")
+                        
                     else:
                         icono = os.path.join(ICONOS, "directorio.png")
+                        
                     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
                     iteractual = self.modelo.append(iter,[pixbuf,
                     archivo, direccion, ""])
                     self.agregar_nada(iteractual)
+                    
                 elif os.path.isfile(direccion):
                     archivos.append(direccion)
+                    
             for x in archivos:
                 archivo = os.path.basename(x)
                 icono = None
                 tipo = JAMF.describe_archivo(x)
+                
                 if 'video' in tipo:
                     icono = os.path.join(ICONOS, "video.png")
+                    
                 elif 'audio' in tipo:
                     icono = os.path.join(ICONOS, "sonido.png")
+                    
                 elif 'image' in tipo:
                     #icono = os.path.join(x) exige en rendimiento
                     icono = os.path.join(ICONOS, "imagen.png")
+                    
                 elif 'pdf' in tipo:
                     icono = os.path.join(ICONOS, "pdf.png")
+                    
                 elif 'zip' in tipo or 'rar' in tipo:
                     icono = os.path.join(ICONOS, "zip.png")
+                    
                 else:
                     icono = os.path.join(ICONOS, "archivo.png")
+                    
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
                 self.modelo.append(iter,[pixbuf, archivo,
                 x, str(os.path.getsize(x))+" bytes"])
+                
         except:
             print "**** Error de acceso a un archivo o directorio ****", dir, archivo
             
     def agregar_nada(self, iterador):
+        
         self.modelo.append(iterador,[None, "(Vacío, Sin Permisos o link)", None, None])
         
     def expandir (self, treeview, iter, path, user_param1):
+        
         iterdelprimerhijo = treeview.modelo.iter_children(iter)
         valordelprimerhijoenlafila = treeview.modelo.get_value(iterdelprimerhijo, 1)
         valor = treeview.modelo.get_value(iter, 2)
         dir = (valor, path)
+        
         if os.path.islink(os.path.join(valor)): return
+    
         try:
             if os.listdir(os.path.join(valor)) \
                 and valordelprimerhijoenlafila == "(Vacío, Sin Permisos o link)":
                 self.leer(dir)
                 treeview.modelo.remove(iterdelprimerhijo)
+                
             else:
                 #print "Esta direccion está vacía o ya fue llenada."
                 pass
+            
         except:
                 #print "No tienes permisos de lectura sobre este directorio."
                 pass
             
     def activar (self, treeview, path, view_column, user_param1):
+        
         iter = treeview.modelo.get_iter(path)
         valor = treeview.modelo.get_value(iter, 2)
+        
         try:
             if os.path.isdir(os.path.join(valor)):
                 if treeview.row_expanded(path):
                     treeview.collapse_row(path)
+                    
                 elif not treeview.row_expanded(path):
                     treeview.expand_to_path(path)
+                    
         except:
             pass
         
     def colapsar(self, treeview, iter, path, user_param1):
+        
         while treeview.modelo.iter_n_children(iter):
             iterdelprimerhijo = treeview.modelo.iter_children(iter)
             treeview.modelo.remove(iterdelprimerhijo)
+            
         self.agregar_nada(iter)
         
     def handler_click(self, widget, event):
+        
         boton = event.button
         pos = (event.x, event.y)
         tiempo = event.time
         path, columna, xdefondo, ydefondo = (None, None, None, None)
+        
         try:
             path, columna, xdefondo, ydefondo = widget.get_path_at_pos(int(pos[0]), int(pos[1]))
         except:
             return
+        
         # TreeView.get_path_at_pos(event.x, event.y) devuelve:
         # * La ruta de acceso en el punto especificado (x, y), en relación con las coordenadas widget
         # * El gtk.TreeViewColumn en ese punto
         # * La coordenada X en relación con el fondo de la celda
         # * La coordenada Y en relación con el fondo de la celda
+        
         if boton == 1:
             return
+        
         elif boton == 3:
             menu = MenuList(widget, boton, pos, tiempo, path, self.modelo)
             menu.connect('accion', self.get_accion)
             menu.popup(None, None, None, None, boton, tiempo)
+            
         elif boton == 2:
             return
         
     def get_accion(self, widget, path, accion):
+        
         iter = self.modelo.get_iter(path)
         direccion = self.modelo.get_value(iter, 2)
         lectura, escritura, ejecucion = JAMF.describe_acceso_uri(direccion)
@@ -260,11 +309,14 @@ class Directorios(Gtk.TreeView):
             dialog.add_button("Si, Borrar", 1)
             dialog.add_button("No, no borrar", 2)
             dialog.show_all()
+            
             if dialog.run()== 1:
                 if JAMF.borrar(self.direccion_seleccionada):
                     self.modelo.remove(iter)
+                    
             elif dialog.run()== 2:
                 pass
+            
             dialog.destroy()
             self.direccion_seleccionada = None
 
@@ -274,6 +326,7 @@ class Directorios(Gtk.TreeView):
                     self.collapse_row(path)
                     self.expand_to_path(path)
                     self.direccion_seleccionada_para_cortar = None
+                    
             else:
                 if JAMF.copiar(self.direccion_seleccionada, direccion):
                     self.collapse_row(path)
@@ -298,16 +351,21 @@ class Directorios(Gtk.TreeView):
 
             if dialog.run() == 1:
                 directorio_nuevo = entry.get_text()
+                
                 if directorio_nuevo != "" and directorio_nuevo != None:
                     if JAMF.crear_directorio(direccion, directorio_nuevo):
                         self.collapse_row(path)
                         self.expand_to_path(path)
+                        
             elif dialog.run() == 2:
                 pass
+            
             dialog.destroy()
             
 class TreeStoreModel(Gtk.TreeStore):
+    
     def __init__(self):
+        
         Gtk.TreeStore.__init__(self, GdkPixbuf.Pixbuf,
         GObject.TYPE_STRING, GObject.TYPE_STRING,
         GObject.TYPE_STRING)
@@ -315,11 +373,13 @@ class TreeStoreModel(Gtk.TreeStore):
 class MenuList(Gtk.Menu):
     
     __gsignals__ = {"accion":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, GObject.TYPE_STRING))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING))}
     
     def __init__(self, widget, boton, pos, tiempo, path, modelo):
         
         Gtk.Menu.__init__(self)
+        
         self.modelo = modelo
         self.parent_objet = widget
 
@@ -328,9 +388,11 @@ class MenuList(Gtk.Menu):
             
         iter = self.modelo.get_iter(path)
         direccion = self.modelo.get_value(iter, 2)
+        
         if JAMF.describe_acceso_uri(direccion):
             lectura, escritura, ejecucion = JAMF.describe_acceso_uri(direccion)
             unidad, directorio, archivo, enlace = JAMF.describe_uri(direccion)
+            
         else:
             return
 
@@ -347,6 +409,7 @@ class MenuList(Gtk.Menu):
         if escritura and (directorio or unidad) \
             and (self.parent_objet.direccion_seleccionada != None \
             or self.parent_objet.direccion_seleccionada_para_cortar != None):
+                
             pegar = Gtk.MenuItem("Pegar")
             self.append(pegar)
             pegar.connect_object("activate", self.emit_accion, path, "Pegar")
@@ -359,14 +422,17 @@ class MenuList(Gtk.Menu):
         if escritura and (directorio or unidad):
             nuevodirectorio = Gtk.MenuItem("Crear Directorio")
             self.append(nuevodirectorio)
-            nuevodirectorio.connect_object("activate", self.emit_accion, path, "Crear Directorio")
+            nuevodirectorio.connect_object("activate",
+                self.emit_accion, path, "Crear Directorio")
 
         self.show_all()
         self.attach_to_widget(widget, self.null)
         
     def null(self):
+        
         pass
     
     def emit_accion(self, path, accion):
+        
         self.emit('accion', path, accion)
         

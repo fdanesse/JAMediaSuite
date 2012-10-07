@@ -30,6 +30,8 @@ from gi.repository import GObject
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import JAMediaButton
+from JAMediaObjects.JAMediaWidgets import ToolbarBalanceConfig
+
 import JAMediaObjects.JAMediaGlobales as G
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
@@ -39,83 +41,90 @@ class Toolbar(Gtk.Toolbar):
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
-        Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        Gtk.Toolbar.__init__(self)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos", "JAMediaVideo.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         self.label = Gtk.Label("fdanesse@gmail.com")
-        self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos","salir.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","salir.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         self.show_all()
         
@@ -130,58 +139,69 @@ class ToolbarPrincipal(Gtk.Toolbar):
     
     __gsignals__ = {
     'menu':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
+        
         Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "camara.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "camara.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Filmar")
         boton.connect("clicked", self.emit_senial, "Filmar")
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "foto.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "foto.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Fotografiar")
         boton.connect("clicked", self.emit_senial, "Fotografiar")
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "microfono.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "microfono.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Grabar")
         boton.connect("clicked", self.emit_senial, "Grabar")
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "iconplay.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "iconplay.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Reproducir")
         boton.connect("clicked", self.emit_senial, "Reproducir")
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "monitor.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "monitor.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Ver")
         boton.connect("clicked", self.emit_senial, "Ver")
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -195,9 +215,9 @@ class ToolbarVideo(Gtk.Toolbar):
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, []),
+        GObject.TYPE_NONE, []),
     'accion':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
         
@@ -206,36 +226,43 @@ class ToolbarVideo(Gtk.Toolbar):
         self.color = Gdk.Color(0, 0, 0)
         self.actualizador = None
         
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
+        self.modify_bg(0, self.color)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "camara.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "camara.png")
         self.filmar = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         self.filmar.set_tooltip_text("Filmar")
         self.filmar.connect("clicked", self.emit_senial, "filmar")
         self.insert(self.filmar, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "configurar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "configurar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Configurar")
         boton.connect("clicked", self.emit_senial, "configurar")
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos","salir.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","salir.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -249,6 +276,7 @@ class ToolbarVideo(Gtk.Toolbar):
             
         if estado == "grabando":
             self.actualizador = GObject.timeout_add(400, self.handle)
+            
         elif estado == "detenido":
             self.color = Gdk.Color(0, 0, 0)
             self.modify_bg(0, self.color)
@@ -259,6 +287,7 @@ class ToolbarVideo(Gtk.Toolbar):
         
         if self.color == Gdk.Color(0, 0, 0):
             self.color = Gdk.Color(65000,26000,0)
+            
         elif self.color == Gdk.Color(65000,26000,0):
             self.color = Gdk.Color(0, 0, 0)
             
@@ -280,9 +309,9 @@ class ToolbarFotografia(Gtk.Toolbar):
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, []),
+        GObject.TYPE_NONE, []),
     'accion':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
         
@@ -291,36 +320,43 @@ class ToolbarFotografia(Gtk.Toolbar):
         self.color = Gdk.Color(0, 0, 0)
         self.actualizador = None
         
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
+        self.modify_bg(0, self.color)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "foto.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "foto.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Fotografiar")
         boton.connect("clicked", self.emit_senial, "fotografiar")
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        #archivo = os.path.join(JAMediaObjectsPath, "Iconos", "configurar.png")
-        #boton = G.get_boton(archivo, flip = False,
-        #    color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
-        #boton.set_tooltip_text("Configurar")
-        #boton.connect("clicked", self.emit_senial, "configurar")
-        #self.insert(boton, -1)
-        
-        #self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
-        
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos","salir.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "configurar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
+        boton.set_tooltip_text("Configurar")
+        boton.connect("clicked", self.emit_senial, "configurar")
+        self.insert(boton, -1)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","salir.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -334,6 +370,7 @@ class ToolbarFotografia(Gtk.Toolbar):
             
         if estado == "grabando":
             self.actualizador = GObject.timeout_add(400, self.handle)
+            
         elif estado == "detenido":
             self.color = Gdk.Color(0, 0, 0)
             self.modify_bg(0, self.color)
@@ -344,6 +381,7 @@ class ToolbarFotografia(Gtk.Toolbar):
         
         if self.color == Gdk.Color(0, 0, 0):
             self.color = Gdk.Color(65000,26000,0)
+            
         elif self.color == Gdk.Color(65000,26000,0):
             self.color = Gdk.Color(0, 0, 0)
             
@@ -365,9 +403,9 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, []),
+        GObject.TYPE_NONE, []),
     'accion':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
         
@@ -376,18 +414,21 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         self.color = Gdk.Color(0, 0, 0)
         self.actualizador = None
         
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
+        self.modify_bg(0, self.color)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "microfono.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "microfono.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Grabar")
         boton.connect("clicked", self.emit_senial, "grabar")
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         #archivo = os.path.join(JAMediaObjectsPath, "Iconos", "configurar.png")
         #boton = G.get_boton(archivo, flip = False,
@@ -398,14 +439,16 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         
         #self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos","salir.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","salir.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -419,6 +462,7 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
             
         if estado == "grabando":
             self.actualizador = GObject.timeout_add(400, self.handle)
+            
         elif estado == "detenido":
             self.color = Gdk.Color(0, 0, 0)
             self.modify_bg(0, self.color)
@@ -429,6 +473,7 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         
         if self.color == Gdk.Color(0, 0, 0):
             self.color = Gdk.Color(65000,26000,0)
+            
         elif self.color == Gdk.Color(65000,26000,0):
             self.color = Gdk.Color(0, 0, 0)
             
@@ -444,4 +489,150 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         """Para Salir al menú principal."""
         
         self.emit('salir')
+        
+class ToolbarVideoBalance(ToolbarBalanceConfig):
+    """Toolbar de configuración para grabar Video."""
+    
+    def __init__(self):
+        
+        ToolbarBalanceConfig.__init__(self)
+        
+        self.gamma.destroy()
+        
+        self.eventbox = Gtk.EventBox()
+        self.eventbox.modify_bg(0, Gdk.Color(0, 0, 0))
+        self.attach(self.eventbox, 1, 3, 1, 2)
+        
+        self.show_all()
+        
+class ToolbarFotografiaBalance(ToolbarVideoBalance):
+    """Toolbar de configuración para fotografiar."""
+    
+    __gsignals__ = {
+    "run_rafaga":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+    
+    def __init__(self):
+        
+        ToolbarVideoBalance.__init__(self)
+        
+        self.eventbox.destroy()
+        
+        toolbarrafagas = ToolbarRafagas()
+        self.attach(toolbarrafagas, 1, 3, 1, 2)
+        
+        self.show_all()
+        
+        toolbarrafagas.connect('run_rafaga', self.re_emit_run_rafaga)
+        
+    def re_emit_run_rafaga(self, widget, valor):
+        """Re emite la señal para comenzar a fotografiar en ráfagas."""
+        
+        self.emit('run_rafaga', valor)
+        
+class ToolbarRafagas(Gtk.Toolbar):
+    """Pequeña toolbar con controles para
+    configurar rafagas fotográficas."""
+    
+    __gsignals__ = {
+    "run_rafaga":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+    
+    def __init__(self):
+        
+        Gtk.Toolbar.__init__(self)
+        
+        # > toolbar interna
+        toolbar = Gtk.Toolbar()
+        
+        toolbar.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+        
+        item = Gtk.ToolItem()
+        label = Gtk.Label("1 cada: ")
+        label.show()
+        item.add(label)
+        toolbar.insert(item, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "alejar.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Restar")
+        boton.connect("clicked", self.restar)
+        toolbar.insert(boton, -1)
+        
+        item = Gtk.ToolItem()
+        self.time_label = Gtk.Label("0.8")
+        self.time_label.show()
+        item.add(self.time_label)
+        toolbar.insert(item, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "acercar.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Sumar")
+        boton.connect("clicked", self.sumar)
+        toolbar.insert(boton, -1)
+        
+        item = Gtk.ToolItem()
+        label = Gtk.Label("Seg.")
+        label.show()
+        item.add(label)
+        toolbar.insert(item, -1)
+        
+        toolbar.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "play.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Sumar")
+        boton.connect("clicked", self.run)
+        toolbar.insert(boton, -1)
+        
+        toolbar.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+        
+        toolbar.show_all()
+        # < toolbar interna
+        
+        item = Gtk.ToolItem()
+        item.set_expand(True)
+        
+        frame = Gtk.Frame()
+        frame.set_label("Ráfaga:")
+        frame.set_label_align(0.5, 0.5)
+        frame.show()
+        
+        frame.add(toolbar)
+        
+        item.add(frame)
+        self.insert(item, -1)
+        
+        self.show_all()
+        
+    def run (self, widget):
+        """Cuando el usuario da play en fotografiar en ráfagas."""
+        
+        self.emit('run_rafaga', float(self.time_label.get_text()))
+        
+    def restar(self, widget):
+        """Aumenta la frecuencia fotográfica en las ráfagas."""
+        
+        tiempo = float(self.time_label.get_text())
+        
+        if tiempo > 0.8:
+            tiempo -= 0.1
+            
+        self.time_label.set_text(str(tiempo))
+        
+    def sumar(self, widget):
+        """Disminuye la frecuencia fotográfica en las ráfagas."""
+        
+        tiempo = float(self.time_label.get_text())
+        tiempo += 0.1
+        self.time_label.set_text(str(tiempo))
         

@@ -41,105 +41,101 @@ class Toolbar(Gtk.Toolbar):
     
     __gsignals__ = {
     'abrir':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, []),
+        GObject.TYPE_NONE, []),
     'config':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, []),
+        GObject.TYPE_NONE, []),
     'salir':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
-        Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        Gtk.Toolbar.__init__(self)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos", "JAMediaLector.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        #self.insert(G.get_separador(draw = False, ancho = 1, expand = False), -1)
-        
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "iconplay.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "iconplay.png")
         self.abrir = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         self.abrir.set_tooltip_text("Abrir un Archivo.")
         self.abrir.connect("clicked", self.emit_abrir)
         self.insert(self.abrir, -1)
-        
-        #self.insert(G.get_separador(draw = False, ancho = 1, expand = False), -1)
 
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "configurar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "configurar.png")
         self.configurar = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         self.configurar.set_tooltip_text("Configuraciones.")
         self.configurar.connect("clicked", self.emit_config)
         self.insert(self.configurar, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
-        
-        #self.insert(G.get_separador(draw = False, ancho = 1, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
-        
-        #self.insert(G.get_separador(draw = False, ancho = 1, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        #self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
-        
         item = Gtk.ToolItem()
         self.label = Gtk.Label("fdanesse@gmail.com")
-        self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos","salir.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","salir.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         self.show_all()
         
@@ -163,14 +159,14 @@ class ToolbarTry(Gtk.Toolbar):
     """Toolbar para informacion."""
     
     def __init__(self):
-        Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        Gtk.Toolbar.__init__(self)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         self.label = Gtk.Label("")
-        self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -183,44 +179,49 @@ class ToolbarLector(Gtk.Toolbar):
     
     __gsignals__ = {
     'acercar': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'alejar': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'original': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'rotar-izquierda': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([])),
+        GObject.TYPE_NONE, ([])),
     'rotar-derecha': (GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, ([]))}
+        GObject.TYPE_NONE, ([]))}
     
     def __init__(self):
+        
         Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
         
-        #self.insert(get_separador(draw = False, ancho = 3, expand = False), -1)
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos","escalaoriginal.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","escalaoriginal.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Original")
         boton.connect("clicked", self.original)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos","alejar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","alejar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Alejar")
         boton.connect("clicked", self.alejar)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos","acercar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","acercar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Acercar")
         boton.connect("clicked", self.acercar)
         self.insert(boton, -1)
@@ -242,32 +243,40 @@ class ToolbarLector(Gtk.Toolbar):
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = True, ancho = 0, expand = False), -1)'''
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
            
     def acercar(self, widget):
+        
         self.emit("acercar")
 
     def alejar(self, widget):
+        
         self.emit("alejar")
         
     def original(self, widget):
+        
         self.emit("original")
         
     def rotar_izquierda(self, widget):
+        
         self.emit("rotar_izquierda")
         
     def rotar_derecha(self, widget):
+        
         self.emit("rotar_derecha")
 
 class ToolbarPaginas(Gtk.Box):
     """Toolbara desplazarse por las páginas de un pdf."""
     
-    __gsignals__ = {"activar":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    __gsignals__ = {
+    "activar":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
+        
         Gtk.Box.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
         
         self.botonsiguiente = G.get_boton(os.path.join(JAMediaObjectsPath,
@@ -280,7 +289,8 @@ class ToolbarPaginas(Gtk.Box):
         self.pack_end(self.label, False, True, 3)
         
         self.botonatras = G.get_boton(os.path.join(JAMediaObjectsPath,
-            "Iconos", "siguiente.png"), flip = True, pixels = G.get_pixels(0.8))
+            "Iconos", "siguiente.png"), flip = True,
+            pixels = G.get_pixels(0.8))
         self.botonatras.set_tooltip_text("Anterior")
         self.botonatras.connect("clicked", self.clickenatras)
         self.pack_end(self.botonatras, False, True, 0)
@@ -288,25 +298,32 @@ class ToolbarPaginas(Gtk.Box):
         self.show_all()
         
     def set_pagina(self, pag, paginas):
+        
         if paginas:
             self.label.set_text("pág: %s de %s" % (pag, paginas))
+            
         else:
             self.label.set_text("pág: - de ----")
         
-    def clickenatras(self, widget= None, event= None):
+    def clickenatras(self, widget = None, event = None):
+        
         self.emit("activar", "atras")
         
-    def clickensiguiente(self, widget= None, event= None):
+    def clickensiguiente(self, widget = None, event = None):
+        
         self.emit("activar", "siguiente")
         
 class PreviewContainer(Gtk.Box):
     """Contenedor de previews de paginas en pdf"""
     
-    __gsignals__ = {"nueva_seleccion":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_INT,))}
+    __gsignals__ = {
+    "nueva_seleccion":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_INT,))}
     
     def __init__(self):
+        
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
+        
         self.item_seleccionado = None
         self.show_all()
         
@@ -322,6 +339,7 @@ class PreviewContainer(Gtk.Box):
         
         self.limpiar()
         paginas = documento.get_n_pages()
+        
         for pagina in range(paginas):
             pagina = documento.get_page(pagina)
             preview = Preview(pagina)
@@ -393,6 +411,7 @@ class Preview(JAMediaButton):
         self.modify_bg(0, self.colornormal)
         
     def set_zoom(self, zoom):
+        
         self.zoom = zoom
         if self.zoom <= 0.2: self.zoom = 0.2
         w,h = self.pagina.get_size()
@@ -400,6 +419,7 @@ class Preview(JAMediaButton):
         self.set_size_request( int(w), int(h) )
         
     def do_draw(self, context):
+        
         if not self.pagina: return
         context.scale(self.zoom, self.zoom)
         self.pagina.render(context)
@@ -407,12 +427,15 @@ class Preview(JAMediaButton):
     def set_imagen(self, archivo = None):
         pass
         
-class Drawing(Visor):
+class DrawingLector(Visor):
     """Donde se dibujan las paginas del documento"""
     
+    __gtype_name__ = 'DrawingLector'
+    
     def __init__(self):
+        
         Visor.__init__(self)
-        self.modify_bg(Gtk.StateType.NORMAL, Gdk.Color(65000, 65000, 65000))
+        
         self.pagina = None
         self.zoom = 1.0
         self.show_all()
@@ -424,20 +447,26 @@ class Drawing(Visor):
             self.pagina = pagina
             w,h = self.pagina.get_size()
             self.set_size_request( int(w), int(h) )
+            
         else:
             self.pagina = None
+            
         self.queue_draw()
         
     def acercar(self, widget = None):
+        
         self.set_zoom(self.zoom + 0.2)
         
     def alejar(self, widget = None):
+        
         self.set_zoom(self.zoom - 0.2)
         
     def original(self, widget = None):
+        
         self.set_zoom(1.0)
         
     def set_zoom(self, zoom):
+        
         self.zoom = zoom
         if self.zoom <= 0.2: self.zoom = 0.2
         w,h = self.pagina.get_size()
@@ -447,6 +476,7 @@ class Drawing(Visor):
         self.get_property('window').process_updates(True)
         
     def do_draw(self, context):
+        
         if not self.pagina: return
         context.scale(self.zoom, self.zoom)
         self.pagina.render(context)
@@ -455,14 +485,18 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
     """Selector de Archivos para poder cargar archivos
     desde cualquier dispositivo o directorio."""
     
-    __gsignals__ = {'archivos-seleccionados':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+    __gsignals__ = {
+    'archivos-seleccionados':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
     
     def __init__(self, jamedialector):
-        Gtk.FileChooserDialog.__init__(self, title = "Abrir Archivos pdf",
-        parent = jamedialector, action = Gtk.FileChooserAction.OPEN)
+        
+        Gtk.FileChooserDialog.__init__(self,
+            title = "Abrir Archivos pdf",
+            parent = jamedialector,
+            action = Gtk.FileChooserAction.OPEN)
+            
         self.set_default_size( 640, 480 )
-        self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
         self.set_current_folder_uri("file:///media")
         self.set_select_multiple(False)
         
@@ -498,6 +532,7 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
         self.salir(None)
         
     def salir(self, widget):
+        
         self.destroy()
         
 class TextView(Gtk.TextView):
@@ -525,12 +560,10 @@ class ToolbarConfig(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
-        self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
-        
         self.ocultar_controles = False
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         item = Gtk.ToolItem()
         label = Gtk.Label("Ocultar Controles:")
@@ -538,7 +571,8 @@ class ToolbarConfig(Gtk.Toolbar):
         item.add(label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         switch = Gtk.Switch()
         item = Gtk.ToolItem()
@@ -546,7 +580,8 @@ class ToolbarConfig(Gtk.Toolbar):
         item.add(switch)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
         

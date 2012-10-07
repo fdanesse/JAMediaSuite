@@ -39,36 +39,37 @@ class ToolbarGrabar(Gtk.Toolbar):
     """ Informa al usuario cuando se está grabando
     desde un streaming. """
     
-    __gsignals__ = {"stop":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, [])}
+    __gsignals__ = {
+    "stop":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
+        
         Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
         self.colors = [G.BLANCO, G.NARANJA]
         self.color = self.colors[0]
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "stop.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "stop.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Detener.")
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         item.set_expand(True)
         self.label = Gtk.Label("Grabador Detenido.")
-        self.label.modify_fg(0, self.color)
         self.label.set_line_wrap(True)
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
-        
-        #self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -101,6 +102,7 @@ class ToolbarGrabar(Gtk.Toolbar):
         
         if self.color == self.colors[0]:
             self.color = self.colors[1]
+            
         elif self.color == self.colors[1]:
             self.color = self.colors[0]
             
@@ -112,36 +114,40 @@ class ToolbarLista(Gtk.Toolbar):
     un menu con las listas standar de JAMedia:
     Radios, Tv, etc . . ."""
     
-    __gsignals__ = {"cargar_lista":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_INT,)),
-    "add_stream":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, [])}
+    __gsignals__ = {
+    "cargar_lista":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_INT,)),
+    "add_stream":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
-        Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "lista.png")
+        Gtk.Toolbar.__init__(self)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "lista.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000),
             pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Selecciona una Lista.")
         boton.connect("clicked", self.get_menu)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         self.label = Gtk.Label("")
-        self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "agregar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "agregar.png")
         self.boton_agregar = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         self.boton_agregar.set_tooltip_text("Agregar Streaming.")
         self.boton_agregar.connect("clicked", self.emit_add_stream)
         self.insert(self.boton_agregar, -1)
@@ -207,94 +213,91 @@ class Toolbar(Gtk.Toolbar):
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, []),
+        GObject.TYPE_NONE, []),
     'config':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
-        Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        Gtk.Toolbar.__init__(self)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos", "JAMedia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        #self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
-        
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "configurar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "configurar.png")
         self.configurar = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         self.configurar.set_tooltip_text("Configuraciones.")
         self.configurar.connect("clicked", self.emit_config)
         self.insert(self.configurar, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
-        
-        #self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
-        
-        #self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        #self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
-        
         item = Gtk.ToolItem()
         self.label = Gtk.Label("fdanesse@gmail.com")
-        self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos","salir.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","salir.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         self.show_all()
     
@@ -314,14 +317,17 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
     """Selector de Archivos para poder cargar archivos
     desde cualquier dispositivo o directorio."""
     
-    __gsignals__ = {'archivos-seleccionados':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+    __gsignals__ = {
+    'archivos-seleccionados':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
     
     def __init__(self, jamedia):
-        Gtk.FileChooserDialog.__init__(self, title = "Abrir Archivos de Audio o Video",
-        parent = jamedia, action = Gtk.FileChooserAction.OPEN)
+        
+        Gtk.FileChooserDialog.__init__(self,
+            title = "Abrir Archivos de Audio o Video",
+            parent = jamedia, action = Gtk.FileChooserAction.OPEN)
+            
         self.set_default_size( 640, 480 )
-        self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
         self.set_current_folder_uri("file:///media")
         self.set_select_multiple(True)
         
@@ -349,13 +355,16 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
         
         # Callbacks
         boton_salir.connect("clicked", self.salir)
-        boton_abrir_directorio.connect("clicked",self.abrir_directorio)
-        boton_seleccionar_todo.connect("clicked",self.seleccionar_todos_los_archivos)
+        boton_abrir_directorio.connect("clicked",
+            self.abrir_directorio)
+        boton_seleccionar_todo.connect("clicked",
+            self.seleccionar_todos_los_archivos)
         
         self.show_all()
         self.resize( 640, 480 )
         
     def seleccionar_todos_los_archivos(self, widget):
+        
         self.select_all()
         
     def abrir_directorio(self, widget):
@@ -373,9 +382,10 @@ class MenuList(Gtk.Menu):
     el streaming seleccionado en la lista de reproduccion
     al hacer click derecho sobre él."""
     
-    __gsignals__ = {'accion':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-    GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+    __gsignals__ = {
+    'accion':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
     
     def __init__(self, widget, boton, pos, tiempo, path, modelo):
         
@@ -463,34 +473,32 @@ class MenuList(Gtk.Menu):
         self.emit('accion', widget, accion, iter)
         
 class ToolbarInfo(Gtk.Toolbar):
-    """ Informa al usuario sobre el reproductor.
+    """ Informa al usuario sobre el reproductor
     que se esta utilizando.
     Permite Rotar el Video.
     Permite configurar ocultar controles automáticamente."""
     
     __gsignals__ = {
     'rotar':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
     'actualizar_streamings':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
         
         Gtk.Toolbar.__init__(self)
         
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
-        self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
-        
         self.ocultar_controles = False
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","mplayer.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         self.mplayer = Gtk.ToolItem()
         self.mplayer.add(imagen)
@@ -499,31 +507,35 @@ class ToolbarInfo(Gtk.Toolbar):
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","JAMedia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         self.jamedia = Gtk.ToolItem()
         self.jamedia.add(imagen)
         self.insert(self.jamedia, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "rotar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
         self.boton_izquierda = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         self.boton_izquierda.set_tooltip_text("Izquierda")
         self.boton_izquierda.connect("clicked", self.emit_rotar)
         self.insert(self.boton_izquierda, -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "rotar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
         self.boton_derecha = G.get_boton(archivo, flip = True,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         self.boton_derecha.set_tooltip_text("Derecha")
         self.boton_derecha.connect("clicked", self.emit_rotar)
         self.insert(self.boton_derecha, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         item = Gtk.ToolItem()
         label = Gtk.Label("Ocultar Controles:")
@@ -531,7 +543,8 @@ class ToolbarInfo(Gtk.Toolbar):
         item.add(label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         switch = Gtk.Switch()
         item = Gtk.ToolItem()
@@ -539,9 +552,11 @@ class ToolbarInfo(Gtk.Toolbar):
         item.add(switch)
         self.insert(item, -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "iconplay.png")
-        self.descarga = G.get_boton(archivo, flip = False, color = Gdk.Color(0, 0, 0),
-            rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE, pixels = G.get_pixels(0.8))
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "iconplay.png")
+        self.descarga = G.get_boton(archivo, flip = False,
+            rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE,
+            pixels = G.get_pixels(0.8))
         self.descarga.set_tooltip_text("Actualizar Streamings")
         self.descarga.connect("clicked", self.emit_actualizar_streamings)
         self.insert(self.descarga, -1)
@@ -562,6 +577,7 @@ class ToolbarInfo(Gtk.Toolbar):
         if reproductor == "MplayerReproductor":
             self.mplayer.show()
             self.jamedia.hide()
+            
         elif reproductor == "JAMediaReproductor":
             self.jamedia.show()
             self.mplayer.hide()
@@ -571,6 +587,7 @@ class ToolbarInfo(Gtk.Toolbar):
         
         if widget == self.boton_derecha:
             self.emit('rotar', "Derecha")
+            
         elif widget == self.boton_izquierda:
             self.emit('rotar', "Izquierda")
             
@@ -583,41 +600,47 @@ class ToolbarConfig(ToolbarBalanceConfig):
     """ Toolbar para intercambiar reproductores (mplayer gst) y
     modificar valores de balance en video. """
     
-    __gsignals__ = {"reproductor":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    __gsignals__ = {
+    "reproductor":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
         
         ToolbarBalanceConfig.__init__(self)
         
         toolbar = Gtk.Toolbar()
-        toolbar.modify_bg(0, Gdk.Color(0, 0, 0))
-        toolbar.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         
-        toolbar.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        toolbar.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         item = Gtk.ToolItem()
         self.label = Gtk.Label("Utilizar: ")
-        self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.label.show()
         item.add(self.label)
         toolbar.insert(item, -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "mplayer.png")
-        self.mplayer_boton = G.get_togle_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "mplayer.png")
+        self.mplayer_boton = G.get_togle_boton(archivo,
+            flip = False,
+            pixels = G.get_pixels(1))
         self.mplayer_boton.set_tooltip_text("MplayerReproductor")
-        self.mplayer_boton.connect("toggled", self.emit_reproductor, "MplayerReproductor")
+        self.mplayer_boton.connect("toggled",
+            self.emit_reproductor, "MplayerReproductor")
         toolbar.insert(self.mplayer_boton, -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "JAMedia.png")
-        self.jamedia_boton = G.get_togle_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "JAMedia.png")
+        self.jamedia_boton = G.get_togle_boton(archivo,
+            flip = False,
+            pixels = G.get_pixels(1))
         self.jamedia_boton.set_tooltip_text("JAMediaReproductor")
-        self.jamedia_boton.connect("toggled", self.emit_reproductor, "JAMediaReproductor")
+        self.jamedia_boton.connect("toggled",
+            self.emit_reproductor, "JAMediaReproductor")
         toolbar.insert(self.jamedia_boton, -1)
         
-        toolbar.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        toolbar.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.attach(toolbar, 2, 3, 1, 2)
         
@@ -643,28 +666,30 @@ class ToolbarConfig(ToolbarBalanceConfig):
 class ToolbarAddStream(Gtk.Toolbar):
     """Toolbar para agregar streamings."""
     
-    __gsignals__ = {"add-stream":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,
-    GObject.TYPE_STRING, GObject.TYPE_STRING))}
+    __gsignals__ = {
+    "add-stream":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING, GObject.TYPE_STRING))}
     
     def __init__(self):
         
         Gtk.Toolbar.__init__(self)
         
-        self.modify_bg(0, Gdk.Color(65000,65000,65000))
-        
         self.tipo = None
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "alejar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "alejar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         self.nombre = Gtk.Entry()
@@ -672,7 +697,8 @@ class ToolbarAddStream(Gtk.Toolbar):
         item.add(self.nombre)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         self.url = Gtk.Entry()
@@ -680,16 +706,19 @@ class ToolbarAddStream(Gtk.Toolbar):
         item.add(self.url)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "acercar.png")
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "acercar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.emit_add_stream)
         self.insert(boton, -1)
 
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -697,7 +726,10 @@ class ToolbarAddStream(Gtk.Toolbar):
         """Emite la señal para agregar el streaming."""
         
         nombre, url = (self.nombre.get_text(), self.url.get_text())
-        if nombre and url: self.emit('add-stream', self.tipo, nombre, url)
+        
+        if nombre and url:
+            self.emit('add-stream', self.tipo, nombre, url)
+            
         self.tipo = None
         self.nombre.set_text("")
         self.url.set_text("")

@@ -13,7 +13,7 @@ import JAMImagenes
 from JAMImagenes.JAMImagenes import JAMImagenes
 
 import JAMediaObjects
-#import JAMediaObjects.JAMediaGlobales as G
+
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 class Ventana(Gtk.Window):
@@ -22,11 +22,7 @@ class Ventana(Gtk.Window):
         
         super(Ventana, self).__init__()
         
-        #self.set_opacity(0.5)
         self.set_title("JAMImagenes")
-        self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
-        #self.set_icon_from_file(os.path.join(JAMediaObjectsPath,
-        #    "Iconos", "ver.png"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_position(Gtk.WindowPosition.CENTER)

@@ -670,7 +670,7 @@ class JAMediaGrabador(GObject.GObject):
             GObject.source_remove(self.actualizador)
             self.actualizador = None
         if reset:
-            self.actualizador = GObject.timeout_add(100, self.handle)
+            self.actualizador = GObject.timeout_add(500, self.handle)
             
     def handle(self):
         """Consulta el estado y progreso de

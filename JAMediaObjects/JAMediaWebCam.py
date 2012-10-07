@@ -90,7 +90,6 @@ class JAMediaWebCam(GObject.GObject):
         
         # Audio
         self.autoaudiosrc = None
-        self.hiloencodearaudio = None
         self.audioconvert = None
         self.vorbisenc = None
         self.hiloaudiomuxor = None
@@ -99,7 +98,6 @@ class JAMediaWebCam(GObject.GObject):
         self.mp3enc = None
         
         # Archivo
-        self.hiloarchivo = None
         self.archivo = None
         
         # Imagenes
@@ -133,19 +131,30 @@ class JAMediaWebCam(GObject.GObject):
         
         # Salida de Video 1 (a la pantalla)
         self.hilovideoapantalla = Gst.ElementFactory.make('queue', "hilovideoapantalla")
+        
         self.pantalla = Gst.ElementFactory.make('xvimagesink', "pantalla") # autovideosink o xvimagesink
         
         # Salida de Video 2 (a theoraenc)
         self.hiloencodearvideo = Gst.ElementFactory.make('queue', "hiloencodearvideo")
+        self.hiloencodearvideo.set_property('max-size-buffers', 1000)
+        self.hiloencodearvideo.set_property('max-size-bytes', 0)
+        self.hiloencodearvideo.set_property('max-size-time', 0)
+        
         self.videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
         self.theoraenc = Gst.ElementFactory.make('theoraenc', 'theoraenc')
+        self.theoraenc.set_property("bitrate", 1024) # kbps compresion + resolucion = calidad
+        self.theoraenc.set_property('keyframe-freq', 15)
+        self.theoraenc.set_property('cap-overflow', False)
+        self.theoraenc.set_property('speed-level', 0)
+        self.theoraenc.set_property('cap-underflow', True)
+        self.theoraenc.set_property('vp3-compatible', True)
         
         # Para fotografiar
         self.pngenc = Gst.ElementFactory.make('pngenc', "pngenc")
         
         # Fuente de Audio a vorbisenc.
         self.autoaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc")
-        self.hiloencodearaudio = Gst.ElementFactory.make('queue', "hiloencodearaudio")
+        
         self.audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
         self.vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
         
@@ -154,11 +163,18 @@ class JAMediaWebCam(GObject.GObject):
         
         # Muxor - Unión audio y video en oggmux.
         self.hilovideomuxor = Gst.ElementFactory.make('queue', "hilovideomuxor")
+        self.hilovideomuxor.set_property('max-size-buffers', 12000)
+        self.hilovideomuxor.set_property('max-size-bytes', 0)
+        self.hilovideomuxor.set_property('max-size-time', 0)
+        
         self.hiloaudiomuxor = Gst.ElementFactory.make('queue', "hiloaudiomuxor")
+        self.hiloaudiomuxor.set_property('max-size-buffers', 5000)
+        self.hiloaudiomuxor.set_property('max-size-bytes', 0)
+        self.hiloaudiomuxor.set_property('max-size-time', 0)
+        
         self.oggmux = Gst.ElementFactory.make('oggmux', "oggmux")
         
         # Archivo - Salida de oggmux a un archivo.
-        self.hiloarchivo = Gst.ElementFactory.make('queue', "hiloarchivo")
         self.archivo = Gst.ElementFactory.make('filesink', "archivo")
         
         self.elementos_base = [
@@ -174,26 +190,21 @@ class JAMediaWebCam(GObject.GObject):
             self.hilovideomuxor,
             self.oggmux,
             self.autoaudiosrc,
-            self.hiloencodearaudio,
             self.audioconvert,
             self.vorbisenc,
             self.hiloaudiomuxor,
-            self.hiloarchivo,
             self.archivo]
             
         self.elementos_grabacion_solo_audio = [
             self.autoaudiosrc,
-            self.hiloencodearaudio,
             self.audioconvert,
             self.mp3enc,
-            self.hiloarchivo,
             self.archivo]
             
         self.elementos_fotografia = [
             self.hiloencodearvideo,
             self.videoconvert,
             self.pngenc,
-            self.hiloarchivo,
             self.archivo]
             
         self.set_camara()
@@ -286,8 +297,7 @@ class JAMediaWebCam(GObject.GObject):
         self.hiloencodearvideo.link(self.videoconvert)
         self.videoconvert.link(self.pngenc)
         
-        self.pngenc.link(self.hiloarchivo)
-        self.hiloarchivo.link(self.archivo)
+        self.pngenc.link(self.archivo)
         
     def get_audio_video_pipe(self):
         """Linkea elementos de filmación."""
@@ -300,26 +310,22 @@ class JAMediaWebCam(GObject.GObject):
         self.theoraenc.link(self.hilovideomuxor)
         self.hilovideomuxor.link(self.oggmux)
         
-        self.autoaudiosrc.link(self.hiloencodearaudio)
-        self.hiloencodearaudio.link(self.audioconvert)
+        self.autoaudiosrc.link(self.audioconvert)
         self.audioconvert.link(self.vorbisenc)
         self.vorbisenc.link(self.hiloaudiomuxor)
         self.hiloaudiomuxor.link(self.oggmux)
         
-        self.oggmux.link(self.hiloarchivo)
-        self.hiloarchivo.link(self.archivo)
+        self.oggmux.link(self.archivo)
         
     def get_solo_audio_pipe(self):
         """Linkea elementos para grabar solamente audio."""
         
         map(self.agregar, self.elementos_grabacion_solo_audio)
         
-        self.autoaudiosrc.link(self.hiloencodearaudio)
-        self.hiloencodearaudio.link(self.audioconvert)
+        self.autoaudiosrc.link(self.audioconvert)
         self.audioconvert.link(self.mp3enc)
         
-        self.mp3enc.link(self.hiloarchivo)
-        self.hiloarchivo.link(self.archivo)
+        self.mp3enc.link(self.archivo)
         
     def pause(self, widget = None, event = None):
         

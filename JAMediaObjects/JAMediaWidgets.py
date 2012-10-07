@@ -44,13 +44,16 @@ JAMediaWidgetsBASE = os.path.dirname(__file__)
 class JAMediaButton(Gtk.EventBox):
     """Un Boton a medida"""
     
-    __gsignals__ = {"clicked":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+    __gsignals__ = {
+    "clicked":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "click_derecho":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
     
     def __init__(self):
+        
         Gtk.EventBox.__init__(self)
+        
         self.set_visible_window(True)
         self.modify_bg(0, G.BLANCO)
         self.set_border_width(1)
@@ -124,12 +127,15 @@ class Visor(Gtk.DrawingArea):
     """Visor generico para utilizar como area de
     reproduccion de videos o dibujar."""
     
-    __gsignals__ = {"ocultar_controles":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
+    __gtype_name__ = 'Visor'
+    
+    __gsignals__ = {
+    "ocultar_controles":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
     
     def __init__(self):
+        
         Gtk.DrawingArea.__init__(self)
-        self.modify_bg(Gtk.StateType.NORMAL, Gdk.Color(0, 0, 0))
         
         self.add_events(
             Gdk.EventMask.KEY_PRESS_MASK |
@@ -161,11 +167,14 @@ class Visor(Gtk.DrawingArea):
 class Lista(Gtk.TreeView):
     """Lista generica."""
     
-    __gsignals__ = {"nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+    __gsignals__ = {
+    "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
     
     def __init__(self):
+        
         Gtk.TreeView.__init__(self)
+        
         self.set_property("rules-hint", True)
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
@@ -216,11 +225,13 @@ class Lista(Gtk.TreeView):
         return True
     
     def setear_columnas(self):
+        
         self.append_column(self.construir_columa_icono('', 0, True))
         self.append_column(self.construir_columa('Nombre', 1, True))
         self.append_column(self.construir_columa('', 2, False))
         
     def construir_columa(self, text, index, visible):
+        
         render = Gtk.CellRendererText()
         columna = Gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
@@ -230,6 +241,7 @@ class Lista(Gtk.TreeView):
         return columna
     
     def construir_columa_icono(self, text, index, visible):
+        
         render = Gtk.CellRendererPixbuf()
         columna = Gtk.TreeViewColumn(text, render,pixbuf=index)
         columna.set_property('visible', visible)
@@ -238,6 +250,7 @@ class Lista(Gtk.TreeView):
         return columna
     
     def limpiar(self):
+        
         self.modelo.clear()
         
     def agregar_items(self, elementos):
@@ -253,37 +266,56 @@ class Lista(Gtk.TreeView):
                 if descripcion[2]:
                     # Es un Archivo
                     tipo = JAMF.describe_archivo(path)
+                    
                     if 'video' in tipo:
-                        icono = os.path.join(JAMediaWidgetsBASE, "Iconos", "video.png")
+                        icono = os.path.join(JAMediaWidgetsBASE,
+                            "Iconos", "video.png")
+                            
                     elif 'audio' in tipo:
-                        icono = os.path.join(JAMediaWidgetsBASE, "Iconos", "sonido.png")
+                        icono = os.path.join(JAMediaWidgetsBASE,
+                            "Iconos", "sonido.png")
+                            
                     elif 'image' in tipo:
                         icono = os.path.join(path) # exige rendimiento
-                        #icono = os.path.join(JAMediaWidgetsBASE, "Iconos", "imagen.png")
+                        #icono = os.path.join(JAMediaWidgetsBASE,
+                        #    "Iconos", "imagen.png")
+                        
                     elif 'pdf' in tipo:
-                        icono = os.path.join(JAMediaWidgetsBASE, "Iconos", "pdf.png")
+                        icono = os.path.join(JAMediaWidgetsBASE,
+                            "Iconos", "pdf.png")
+                            
                     elif 'zip' in tipo or 'rar' in tipo:
-                        icono = os.path.join(JAMediaWidgetsBASE, "Iconos", "zip.png")
+                        icono = os.path.join(JAMediaWidgetsBASE,
+                            "Iconos", "zip.png")
+                            
                     else:
-                        icono = os.path.join(JAMediaWidgetsBASE,"Iconos", "archivo.png")
+                        icono = os.path.join(JAMediaWidgetsBASE,
+                            "Iconos", "archivo.png")
             else:
-                icono = os.path.join(JAMediaWidgetsBASE,"Iconos", "archivo.png")
+                icono = os.path.join(JAMediaWidgetsBASE,
+                    "Iconos", "archivo.png")
                 
             try:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+                    G.get_pixels(0.8), -1)
                 self.modelo.append([ pixbuf, texto, path])
+                
             except:
                 pass
             
     def seleccionar_siguiente(self, widget = None):
+        
         modelo, iter = self.treeselection.get_selected()
+        
         try:
             self.treeselection.select_iter(modelo.iter_next(iter))
         except:
             self.seleccionar_primero()
     
     def seleccionar_anterior(self, widget = None):
+        
         modelo, iter = self.treeselection.get_selected()
+        
         try:
             self.treeselection.select_iter(modelo.iter_previous(iter))
         except:
@@ -291,6 +323,7 @@ class Lista(Gtk.TreeView):
             pass
     
     def seleccionar_primero(self, widget = None):
+        
         self.treeselection.select_path(0)
     
     def seleccionar_ultimo(self, widget = None):
@@ -301,11 +334,13 @@ class Lista(Gtk.TreeView):
 class ToolbarReproduccion(Gtk.Box):
     """Controles de reproduccion: play/pausa, stop, siguiente, atras."""
     
-    __gsignals__ = {"activar":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    __gsignals__ = {
+    "activar":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
-        Gtk.Box.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+        
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
         
         self.botonatras = G.get_boton(os.path.join(JAMediaWidgetsBASE,
             "Iconos", "siguiente.png"), True, pixels = G.get_pixels(0.8))
@@ -342,25 +377,31 @@ class ToolbarReproduccion(Gtk.Box):
         #self.botonpausa.hide()
         
     def set_paused(self):
+        
         #self.botonplay.show()
         #self.botonpausa.hide()
         pass
         
     def set_playing(self):
+        
         #self.botonpausa.show()
         #self.botonplay.hide()
         pass
         
-    def clickenstop(self, widget= None, event= None):
+    def clickenstop(self, widget = None, event = None):
+        
         self.emit("activar", "stop")
         
-    def clickenplay_pausa(self, widget= None, event= None):
+    def clickenplay_pausa(self, widget = None, event = None):
+        
         self.emit("activar", "pausa-play")
         
     def clickenatras(self, widget= None, event= None):
+        
         self.emit("activar", "atras")
         
     def clickensiguiente(self, widget= None, event= None):
+        
         self.emit("activar", "siguiente")
 # << -------------------- Controles de Reproducción ---------- #
 
@@ -368,11 +409,14 @@ class ToolbarReproduccion(Gtk.Box):
 class BarraProgreso(Gtk.EventBox):
     """Barra de progreso para mostrar estado de reproduccion."""
     
-    __gsignals__ = {"user-set-value":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+    __gsignals__ = {
+    "user-set-value":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
     
     def __init__(self):
+        
         Gtk.EventBox.__init__(self)
+        
         self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
         self.escala = ProgressBar(Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
         
@@ -403,8 +447,9 @@ class BarraProgreso(Gtk.EventBox):
 class ProgressBar(Gtk.Scale):
     """Escala de BarraProgreso."""
     
-    __gsignals__ = {"user-set-value":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+    __gsignals__ = {
+    "user-set-value":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
     
     def __init__(self, ajuste):
         
@@ -419,7 +464,8 @@ class ProgressBar(Gtk.Scale):
         
         icono = os.path.join(JAMediaWidgetsBASE,
             "Iconos", "iconplay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            G.get_pixels(0.8), G.get_pixels(0.8))
         self.pixbuf = pixbuf.rotate_simple(GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE)
         
         self.show_all()
@@ -490,10 +536,12 @@ class ControlVolumen(Gtk.VolumeButton):
     """Botón con escala para controlar el volúmen
     de reproducción en los reproductores."""
     
-    __gsignals__ = {"volumen":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+    __gsignals__ = {
+    "volumen":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
     
     def __init__(self):
+        
         Gtk.VolumeButton.__init__(self)
         
         self.show_all()
@@ -510,29 +558,36 @@ class ToolbarAccion(Gtk.Toolbar):
     seleccionan en la lista de reproduccion.
     (Borrar, mover, copiar, quitar)."""
     
-    __gsignals__ = {"Grabar":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    __gsignals__ = {
+    "Grabar":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
     "accion-stream":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING, GObject.TYPE_STRING))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
     
     def __init__(self):
+        
         Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(65000,65000,65000))
+        
+        #self.modify_bg(0, Gdk.Color(65000,65000,65000))
         
         self.lista = None
         self.accion = None
         self.iter = None
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
-        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "alejar.png")
+        archivo = os.path.join(JAMediaWidgetsBASE,
+            "Iconos", "alejar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         item.set_expand(True)
@@ -542,16 +597,19 @@ class ToolbarAccion(Gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "acercar.png")
+        archivo = os.path.join(JAMediaWidgetsBASE,
+            "Iconos", "acercar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.realizar_accion)
         self.insert(boton, -1)
 
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -635,7 +693,7 @@ class ToolbarBalanceConfig(Gtk.Table):
     
     __gsignals__ = {
     'valor':(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-    (GObject.TYPE_FLOAT, GObject.TYPE_STRING))}
+        (GObject.TYPE_FLOAT, GObject.TYPE_STRING))}
     
     def __init__(self):
         
@@ -685,14 +743,14 @@ class ToolbarcontrolValores(Gtk.Toolbar):
     
     __gsignals__ = {
     'valor':(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
     
     def __init__(self, label):
         
         Gtk.Toolbar.__init__(self)
         
-        self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
+        #self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
+        #self.modify_bg(0, Gdk.Color(0, 0, 0))
         
         self.titulo = label
         
@@ -729,15 +787,17 @@ class ToolbarcontrolValores(Gtk.Toolbar):
 class SlicerBalance(Gtk.EventBox):
     """Barra deslizable para cambiar valores de Balance en Video."""
     
-    __gsignals__ = {"user-set-value":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+    __gsignals__ = {
+    "user-set-value":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
     
     def __init__(self):
         
         Gtk.EventBox.__init__(self)
         
-        self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
-        self.escala = BalanceBar(Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
+        #self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
+        self.escala = BalanceBar(Gtk.Adjustment(0.0, 0.0,
+            101.0, 0.1, 1.0, 1.0))
         
         self.add(self.escala)
         self.show_all()
@@ -760,8 +820,9 @@ class SlicerBalance(Gtk.EventBox):
 class BalanceBar(Gtk.Scale):
     """Escala de SlicerBalance."""
     
-    __gsignals__ = {"user-set-value":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+    __gsignals__ = {
+    "user-set-value":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
     
     def __init__(self, ajuste):
         
@@ -785,7 +846,9 @@ class BalanceBar(Gtk.Scale):
         """Cuando el usuario se desplaza por la barra de progreso.
         Se emite el valor en % (float)."""
         
-        if event.state == Gdk.ModifierType.MOD2_MASK | Gdk.ModifierType.BUTTON1_MASK:
+        if event.state == Gdk.ModifierType.MOD2_MASK | \
+            Gdk.ModifierType.BUTTON1_MASK:
+                
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
             if valor >= 0.0 and valor <= 100.0:
@@ -834,14 +897,15 @@ class BalanceBar(Gtk.Scale):
     
 class ItemSwitch(Gtk.Frame):
     
-    __gsignals__ = {"switch":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
+    __gsignals__ = {
+    "switch":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
     
     def __init__(self, text):
         
         Gtk.Frame.__init__(self)
         
-        self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
+        #self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.set_label(text)
         self.set_label_align(0.5, 1.0)
         
@@ -859,24 +923,29 @@ class ItemSwitch(Gtk.Frame):
 class ToolbarSalir(Gtk.Toolbar):
     """Toolbar para confirmar salir de la aplicación."""
     
-    __gsignals__ = {"salir":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, [])}
+    __gsignals__ = {
+    "salir":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
         
         Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(65000,65000,65000))
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        #self.modify_bg(0, Gdk.Color(65000,65000,65000))
         
-        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "alejar.png")
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+        
+        archivo = os.path.join(JAMediaWidgetsBASE,
+            "Iconos", "alejar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         item.set_expand(True)
@@ -886,16 +955,19 @@ class ToolbarSalir(Gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
-        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "acercar.png")
+        archivo = os.path.join(JAMediaWidgetsBASE,
+            "Iconos", "acercar.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(65000, 65000, 65000), pixels = G.get_pixels(0.8))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.emit_salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -917,6 +989,84 @@ class ToolbarSalir(Gtk.Toolbar):
         
         self.label.set_text("")
         self.hide()
+        
+'''
+class ToolbarResolucion(Gtk.Toolbar):
+    """Pequeña toolbar con controles para
+    configurar resolución de video.
+    Utilizada por JAMediaVideo."""
+    
+    __gsignals__ = {"resolucion":(GObject.SIGNAL_RUN_FIRST,
+    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    
+    def __init__(self):
+        
+        Gtk.Toolbar.__init__(self)
+        
+        self.modify_bg(0, Gdk.Color(0, 0, 0))
+        self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
+        
+        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        
+        item = Gtk.ToolItem()
+        item.set_expand(True)
+        frame = Gtk.Frame()
+        frame.set_label("Resolución")
+        frame.set_label_align(0.5, 0.5)
+        
+        combo = ComboResolucion()
+        combo.connect('resolucion', self.re_emit_resolucion)
+        
+        frame.add(combo)
+        frame.modify_fg(0, Gdk.Color(65000, 65000, 65000))
+        frame.show()
+        item.add(frame)
+        self.insert(item, -1)
+        
+        #archivo = os.path.join(JAMediaObjectsPath, "Iconos", "mplayer.png")
+        #self.mplayer_boton = G.get_togle_boton(archivo, flip = False,
+        #    color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+        #self.mplayer_boton.set_tooltip_text("MplayerReproductor")
+        #self.mplayer_boton.connect("toggled", self.emit_reproductor, "MplayerReproductor")
+        #toolbar.insert(self.mplayer_boton, -1)
+        
+        #archivo = os.path.join(JAMediaObjectsPath, "Iconos", "JAMedia.png")
+        #self.jamedia_boton = G.get_togle_boton(archivo, flip = False,
+        #    color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+        #self.jamedia_boton.set_tooltip_text("JAMediaReproductor")
+        #self.jamedia_boton.connect("toggled", self.emit_reproductor, "JAMediaReproductor")
+        #toolbar.insert(self.jamedia_boton, -1)
+        
+        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        
+        self.show_all()
+        
+    def re_emit_resolucion(self, widget, resolucion):
+        """Cuando el usuario cambia la resolución en el combo."""
+        
+        self.emit('resolucion', resolucion)'''
+'''
+class ComboResolucion(Gtk.ComboBoxText):
+    """Combo con resoluciones de video.
+    Utilizado por ToolbarResolucion."""
+    
+    __gsignals__ = {"resolucion":(GObject.SIGNAL_RUN_FIRST,
+    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    
+    def __init__(self):
+        
+        Gtk.ComboBoxText.__init__(self)
+        
+        self.append_text('320 x 240')
+        self.append_text('640 x 480')
+        self.append_text('800 x 600')
+        self.set_active(1)
+        
+        self.show_all()
+        
+    def do_changed(self):
+        
+        self.emit('resolucion', self.get_active_text())'''
         
 '''
 # En base a código de Agustin Zubiaga <aguz@sugarlabs.org>

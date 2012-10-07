@@ -49,78 +49,102 @@ from Navegador import Navegador
 
 ICONOS = os.path.join(JAMediaObjects.__path__[0], "Iconos")
 
+JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    
 class Toolbar(Gtk.Toolbar):
     """Toolbar Principal de JAMexplorer."""
     
     __gsignals__ = {"salir":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
-        Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        Gtk.Toolbar.__init__(self)
+        
+        #self.modify_bg(0, Gdk.Color(0, 0, 0))
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(ICONOS, "jamexplorer.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
+        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(ICONOS, "ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
+        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(ICONOS, "uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
+        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(ICONOS, "licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, G.get_pixels(0.8))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
-        imagen.modify_bg(0, Gdk.Color(0, 0, 0))
+        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
         item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         self.label = Gtk.Label("fdanesse@gmail.com")
-        self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
+        #self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         archivo = os.path.join(ICONOS,"salir.png")
         boton = G.get_boton(archivo, flip = False,
-            color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
+            pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.emit_salir)
         self.insert(boton, -1)
@@ -137,18 +161,21 @@ class ToolbarTry(Gtk.Toolbar):
     def __init__(self):
         
         Gtk.Toolbar.__init__(self)
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
         
-        self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        #self.modify_bg(0, Gdk.Color(0, 0, 0))
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         self.label = Gtk.Label("")
-        self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
+        #self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -160,7 +187,7 @@ class Ventana(Gtk.Window):
         super(Ventana, self).__init__()
         
         self.set_title("JAMexplorer")
-        self.modify_bg(0, Gdk.Color(49000, 52000, 18000))
+        #self.modify_bg(0, Gdk.Color(49000, 52000, 18000))
         self.set_icon_from_file(os.path.join(ICONOS, "jamexplorer.png"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
@@ -177,8 +204,8 @@ class Ventana(Gtk.Window):
         switchbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         switchbox.pack_start(self.navegador, True, True, 0)
         
-        vbox.pack_start(self.toolbar, False, True, 3)
-        vbox.pack_start(self.toolbar_salir, False, True, 3)
+        vbox.pack_start(self.toolbar, False, True, 0)
+        vbox.pack_start(self.toolbar_salir, False, True, 0)
         vbox.pack_start(switchbox, True, True, 0)
         vbox.pack_start(self.toolbar_try, False, True, 0)
         
@@ -202,11 +229,15 @@ class Ventana(Gtk.Window):
         self.jamedialector = JAMediaLector()
         self.socketjamedialector.add_id(self.jamedialector.get_id())
         
-        self.sockets = [self.socketimagenes, self.socketjamedia,
+        self.sockets = [
+            self.socketimagenes,
+            self.socketjamedia,
             self.socketjamedialector]
             
-        self.objetos_no_visibles_en_switch = [self.toolbar,
-        self.navegador, self.toolbar_try]
+        self.objetos_no_visibles_en_switch = [
+            self.toolbar,
+            self.navegador,
+            self.toolbar_try]
         
         self.show_all()
         self.realize()
@@ -231,17 +262,21 @@ class Ventana(Gtk.Window):
         self.toolbar_salir.run("JAMexplorer")
         
     def setup_init(self):
+        
         self.jamediaplayer.setup_init()
         self.jamedialector.setup_init()
         map(self.ocultar, self.sockets)
         
     def ocultar(self, objeto):
+        
         if objeto.get_visible(): objeto.hide()
       
     def mostrar(self, objeto):
+        
         if not objeto.get_visible(): objeto.show()
         
     def get_explorador(self, widget):
+        
         map(self.ocultar, self.sockets)
         map(self.mostrar, self.objetos_no_visibles_en_switch)
         self.jamimagenes.limpiar()
@@ -260,6 +295,7 @@ class Ventana(Gtk.Window):
             items = self.get_items(os.path.dirname(valor), 'image')
             self.jamimagenes.set_lista(items)
             # agregar seleccionar segun valor ?
+            
         elif 'video' in tipo or 'audio' in tipo:
             map(self.ocultar, self.objetos_no_visibles_en_switch)
             self.socketjamedia.show()
@@ -269,25 +305,32 @@ class Ventana(Gtk.Window):
             items.extend(self.get_items(os.path.dirname(valor), 'audio'))
             self.jamediaplayer.set_nueva_lista(items)
             # agregar seleccionar segun valor ?
+            
         elif 'pdf' in tipo or 'text' in tipo:
             map(self.ocultar, self.objetos_no_visibles_en_switch)
             self.socketjamedialector.show()
             model, iter = self.navegador.directorios.treeselection.get_selected()
             valor = model.get_value(iter, 2)
             self.jamedialector.abrir(valor)
+            
         else:
             print tipo
+            
         self.queue_draw()
 
     def get_items(self, directorio, tipo):
+        
         if not os.path.exists(directorio) \
             or not os.path.isdir(directorio):
                 return []
+            
         items = []
+        
         for archivo in os.listdir(directorio):
             path = os.path.join(directorio, archivo)
             if tipo in JAMF.describe_archivo(path):
                 items.append( [archivo,path] )
+                
         return items
         
     def get_info(self, widget, path):

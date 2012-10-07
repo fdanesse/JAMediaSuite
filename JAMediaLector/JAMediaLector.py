@@ -44,7 +44,7 @@ from Widgets import Toolbar
 from Widgets import ToolbarConfig
 from Widgets import ToolbarLector
 from Widgets import ToolbarTry
-from Widgets import Drawing
+from Widgets import DrawingLector
 from Widgets import ToolbarPaginas
 from Widgets import PreviewContainer
 from Widgets import Selector_de_Archivos
@@ -52,6 +52,16 @@ from Widgets import TextView
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    
 class JAMediaLector(Gtk.Plug):
     """JAMediaLector:
         Lector pdf y de archivos de texto.
@@ -86,8 +96,9 @@ class JAMediaLector(Gtk.Plug):
     mediante python JAMediaLector.py
     """
     
-    __gsignals__ = {"salir":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, [])}
+    __gsignals__ = {
+    "salir":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
         """JAMediaLector: Gtk.Plug para embeber en otra aplicación."""
@@ -128,7 +139,7 @@ class JAMediaLector(Gtk.Plug):
         self.toolbar_config = ToolbarConfig()
         self.toolbarlector = ToolbarLector()
         self.toolbartry = ToolbarTry()
-        self.visor = Drawing()
+        self.visor = DrawingLector()
         self.previewcontainer = PreviewContainer()
         self.toolbarpaginas = ToolbarPaginas()
         self.textview = TextView()
@@ -216,8 +227,11 @@ class JAMediaLector(Gtk.Plug):
         """Muestra u oculta las opciones de
         configuracion (toolbar_config)."""
         
+        map(self.ocultar, [self.toolbar_salir])
+        
         if self.toolbar_config.get_visible():
             self.toolbar_config.hide()
+            
         else:
             self.toolbar_config.show_all()
             
@@ -231,8 +245,10 @@ class JAMediaLector(Gtk.Plug):
             screen = ventana.get_screen()
             w,h = ventana.get_size()
             ww, hh = (screen.get_width(), screen.get_height())
+            
             if ww == w and hh == h:
                 ventana.unfullscreen()
+                
             else:
                 ventana.fullscreen()
                 
@@ -242,6 +258,7 @@ class JAMediaLector(Gtk.Plug):
         if valor and self.toolbar_config.ocultar_controles:
             map(self.ocultar, self.controles_dinamicos)
             map(self.ocultar, [self.toolbar_config, self.toolbar_salir])
+            
         elif not valor:
             map(self.mostrar, self.controles_dinamicos)
             
@@ -256,6 +273,7 @@ class JAMediaLector(Gtk.Plug):
         if not objeto.get_visible(): objeto.show()
         
     def show_filechooser(self, widget):
+        
         selector = Selector_de_Archivos(self)
         selector.connect('archivos-seleccionados', self.cargar_archivo)
 
@@ -266,6 +284,7 @@ class JAMediaLector(Gtk.Plug):
         self.abrir( archivo)
     
     def limpiar(self):
+        
         self.toolbartry.label.set_text("")
         self.documento = None
         self.previewcontainer.limpiar()
@@ -282,6 +301,7 @@ class JAMediaLector(Gtk.Plug):
             if descripcion[2]:
                 # Es un Archivo
                 tipo = JAMF.describe_archivo(archivo)
+                
                 if 'pdf' in tipo:
                     self.toolbartry.label.set_text(archivo)
                     archivo = "file://%s" % (archivo)
@@ -334,6 +354,7 @@ class JAMediaLector(Gtk.Plug):
             self.pagina = self.documento.get_page(self.indexpaginaactiva)
             self.visor.set_pagina(self.pagina)
             self.toolbarpaginas.set_pagina(self.indexpaginaactiva+1, self.npaginas)
+            
         else:
             self.indexpaginaactiva = None
             self.pagina = None
@@ -346,11 +367,14 @@ class JAMediaLector(Gtk.Plug):
         if senial == 'atras':
             if self.indexpaginaactiva > 0:
                 self.previewcontainer.seleccionar(self.indexpaginaactiva-1)
+                
             else:
                 self.previewcontainer.seleccionar(self.npaginas-1)
+                
         elif senial == 'siguiente':
             if self.indexpaginaactiva < self.npaginas-1:
                 self.previewcontainer.seleccionar(self.indexpaginaactiva+1)
+                
             else:
                 self.previewcontainer.seleccionar(0)
     
@@ -362,6 +386,7 @@ class JAMediaLector(Gtk.Plug):
     def confirmar_salir(self, widget = None, senial = None):
         """Recibe salir y lo pasa a la toolbar de confirmación."""
         
+        map(self.ocultar, [self.toolbar_config])
         self.toolbar_salir.run("JAMediaLector")
         
     def emit_salir(self, widget = None, senial = None):

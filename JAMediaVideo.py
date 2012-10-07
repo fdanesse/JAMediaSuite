@@ -32,7 +32,6 @@ from gi.repository import GdkX11
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import Visor
 from JAMediaObjects.JAMediaWidgets import JAMediaButton
-from JAMediaObjects.JAMediaWidgets import ToolbarBalanceConfig
 from JAMediaObjects.JAMediaWebCam import JAMediaWebCam
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 
@@ -46,6 +45,8 @@ from JAMediaVideo.Widgets import ToolbarPrincipal
 from JAMediaVideo.Widgets import ToolbarVideo
 from JAMediaVideo.Widgets import ToolbarFotografia
 from JAMediaVideo.Widgets import ToolbarGrabarAudio
+from JAMediaVideo.Widgets import ToolbarVideoBalance
+from JAMediaVideo.Widgets import ToolbarFotografiaBalance
 
 import JAMedia
 from JAMedia.JAMedia import JAMediaPlayer
@@ -53,6 +54,16 @@ from JAMedia.JAMedia import JAMediaPlayer
 import JAMImagenes
 from JAMImagenes.JAMImagenes import JAMImagenes
 
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    
 GObject.threads_init()
 Gdk.threads_init()
     
@@ -99,7 +110,8 @@ class JAMediaVideo(Gtk.Window):
         self.toolbar_salir = ToolbarSalir()
         self.toolbarprincipal = ToolbarPrincipal()
         self.toolbarvideo = ToolbarVideo()
-        self.toolbarbalanceconfig = ToolbarBalanceConfig()
+        self.toolbarvideoconfig = ToolbarVideoBalance()
+        self.toolbarfotografiaconfig = ToolbarFotografiaBalance()
         self.toolbarfotografia = ToolbarFotografia()
         self.toolbargrabaraudio = ToolbarGrabarAudio()
         self.socketjamedia = Gtk.Socket()
@@ -112,7 +124,8 @@ class JAMediaVideo(Gtk.Window):
         
         vbox.pack_start(self.toolbarvideo, False, True, 0)
         vbox.pack_start(self.toolbarfotografia, False, True, 0)
-        vbox.pack_start(self.toolbarbalanceconfig, False, True, 0)
+        vbox.pack_start(self.toolbarvideoconfig, False, True, 0)
+        vbox.pack_start(self.toolbarfotografiaconfig, False, True, 0)
         
         vbox.pack_start(self.toolbargrabaraudio, False, True, 0)
         vbox.pack_start(self.socketjamedia, True, True, 0)
@@ -141,7 +154,8 @@ class JAMediaVideo(Gtk.Window):
             self.toolbar_salir,
             self.toolbarprincipal,
             self.toolbarvideo,
-            self.toolbarbalanceconfig,
+            self.toolbarvideoconfig,
+            self.toolbarfotografiaconfig,
             self.toolbarfotografia,
             self.toolbargrabaraudio,
             self.socketjamedia,
@@ -168,13 +182,33 @@ class JAMediaVideo(Gtk.Window):
         self.jamediaplayer.connect('salir', self.get_menu_base)
         self.jamimagenes.connect('salir', self.get_menu_base)
         
-        self.toolbarbalanceconfig.connect('valor', self.set_balance)
+        self.toolbarvideoconfig.connect('valor', self.set_balance)
+        #self.toolbarvideoconfig.connect('resolucion', self.set_resolucion)
+        self.toolbarfotografiaconfig.connect('valor', self.set_balance)
+        #self.toolbarfotografiaconfig.connect('resolucion', self.set_resolucion)
+        self.toolbarfotografiaconfig.connect('run_rafaga', self.run_rafaga)
         
         self.pantalla.connect("button_press_event", self.clicks_en_pantalla)
         
         self.connect("destroy", self.salir)
         
         self.jamediawebcam.play()
+        
+    #def set_resolucion(self, widget, resolucion):
+        """Cuando el usuario cambia la resolución
+        para grabar o fotografiar."""
+        
+        #print resolucion
+        # Lo quito ya que la cámara da 640x480 no tiene mucho sentido subirla,
+        # la calidad no aumentará, y bajarla tampoco.
+        
+    def run_rafaga(self, widget, valor):
+        """ Comienza fotografías en ráfaga. """
+        
+        print widget, valor
+        # comenzará a fotografiar en rafagas.
+        # debe titilar el botón de fotografiar en la toolbar correspondiente.
+        # debe ocultarse la toolbar completa
         
     def set_balance(self, widget, valor, tipo):
         """ Setea valores en Balance de Video.
@@ -202,8 +236,10 @@ class JAMediaVideo(Gtk.Window):
             screen = ventana.get_screen()
             w,h = ventana.get_size()
             ww, hh = (screen.get_width(), screen.get_height())
+            
             if ww == w and hh == h:
                 ventana.unfullscreen()
+                
             else:
                 ventana.fullscreen()
 
@@ -217,25 +253,39 @@ class JAMediaVideo(Gtk.Window):
                 #self.toolbarfotografia.set_estado("grabando")
                 time.sleep(0.9)
                 self.jamediawebcam.reset()
+                
+                config = self.jamediawebcam.get_balance()
+                self.toolbarfotografiaconfig.set_balance(
+                    brillo = config['brillo'],
+                    contraste = config['contraste'],
+                    saturacion = config['saturacion'],
+                    hue = config['hue'])
+                    
             else:
                 self.jamediawebcam.reset()
+                config = self.jamediawebcam.get_balance()
+                self.toolbarfotografiaconfig.set_balance(
+                    brillo = config['brillo'],
+                    contraste = config['contraste'],
+                    saturacion = config['saturacion'],
+                    hue = config['hue'])
+                    
                 self.toolbarfotografia.set_estado("detenido")
-        '''
+                
         elif senial == 'configurar':
             #self.jamediawebcam.reset()
-            self.toolbarfotografia.set_estado("detenido")
-            if self.toolbarbalanceconfig.get_visible():
-                self.toolbarbalanceconfig.hide()
+            #self.toolbarvideo.set_estado("detenido")
+            if self.toolbarfotografiaconfig.get_visible():
+                self.toolbarfotografiaconfig.hide()
+                
             else:
-                saturacion = self.jamediawebcam.config['saturacion']
-                contraste = self.jamediawebcam.config['contraste']
-                brillo = self.jamediawebcam.config['brillo']
-                hue = self.jamediawebcam.config['hue']
-                gamma = self.jamediawebcam.config['gamma']
-                self.toolbarbalanceconfig.set_balance(brillo = brillo,
-                    contraste = contraste, saturacion = saturacion,
-                    hue = hue, gamma = gamma)
-                self.toolbarbalanceconfig.show()'''
+                config = self.jamediawebcam.get_balance()
+                self.toolbarfotografiaconfig.set_balance(
+                    brillo = config['brillo'],
+                    contraste = config['contraste'],
+                    saturacion = config['saturacion'],
+                    hue = config['hue'])
+                self.toolbarfotografiaconfig.show()
                 
     def set_accion_audio(self, widget, senial):
         """Cuando se hace click en grabar solo audio o
@@ -245,6 +295,7 @@ class JAMediaVideo(Gtk.Window):
             if self.jamediawebcam.estado != "GrabandoAudioPulsersc":
                 self.jamediawebcam.grabarsoloaudio()
                 self.toolbargrabaraudio.set_estado("grabando")
+                
             else:
                 self.jamediawebcam.reset()
                 self.toolbargrabaraudio.set_estado("detenido")
@@ -262,23 +313,31 @@ class JAMediaVideo(Gtk.Window):
             if self.jamediawebcam.estado != "GrabandoAudioVideoWebCam":
                 self.jamediawebcam.grabar()
                 self.toolbarvideo.set_estado("grabando")
+                
             else:
                 self.jamediawebcam.reset()
+                config = self.jamediawebcam.get_balance()
+                self.toolbarvideoconfig.set_balance(
+                    brillo = config['brillo'],
+                    contraste = config['contraste'],
+                    saturacion = config['saturacion'],
+                    hue = config['hue'])
                 self.toolbarvideo.set_estado("detenido")
                 
         elif senial == 'configurar':
             #self.jamediawebcam.reset()
             #self.toolbarvideo.set_estado("detenido")
-            if self.toolbarbalanceconfig.get_visible():
-                self.toolbarbalanceconfig.hide()
+            if self.toolbarvideoconfig.get_visible():
+                self.toolbarvideoconfig.hide()
+                
             else:
                 config = self.jamediawebcam.get_balance()
-                self.toolbarbalanceconfig.set_balance(
+                self.toolbarvideoconfig.set_balance(
                     brillo = config['brillo'],
                     contraste = config['contraste'],
                     saturacion = config['saturacion'],
                     hue = config['hue'])
-                self.toolbarbalanceconfig.show()
+                self.toolbarvideoconfig.show()
                 
     def get_menu_base(self, widget):
         """Cuando se sale de un menú particular,
@@ -298,10 +357,13 @@ class JAMediaVideo(Gtk.Window):
         la toolbar principal, se entra en el menú correspondiente."""
         
         map(self.ocultar, self.controlesdinamicos)
+        
         if menu == "Filmar":
             map(self.mostrar, [self.toolbarvideo])
+            
         elif menu == "Fotografiar":
             map(self.mostrar, [self.toolbarfotografia])
+            
         elif menu == "Grabar":
             map(self.mostrar, [self.toolbargrabaraudio])
             
@@ -310,12 +372,15 @@ class JAMediaVideo(Gtk.Window):
             map(self.ocultar, [self.pantalla])
             map(self.mostrar, [self.socketjamedia])
             archivos = []
+            
             for arch in os.listdir(G.AUDIO_JAMEDIA_VIDEO):
                 ar = os.path.join(G.AUDIO_JAMEDIA_VIDEO, arch)
                 archivos.append([arch, ar])
+                
             for arch in os.listdir(G.VIDEO_JAMEDIA_VIDEO):
                 ar = os.path.join(G.VIDEO_JAMEDIA_VIDEO, arch)
                 archivos.append([arch, ar])
+                
             self.jamediaplayer.set_nueva_lista(archivos)
             
         elif menu == "Ver":
@@ -323,9 +388,11 @@ class JAMediaVideo(Gtk.Window):
             map(self.ocultar, [self.pantalla])
             map(self.mostrar, [self.socketjamimagenes])
             archivos = []
+            
             for arch in os.listdir(G.IMAGENES_JAMEDIA_VIDEO):
                 ar = os.path.join(G.IMAGENES_JAMEDIA_VIDEO, arch)
                 archivos.append([arch, ar])
+                
             self.jamimagenes.set_lista(archivos)
         
     def ocultar(self, objeto):
@@ -349,3 +416,4 @@ class JAMediaVideo(Gtk.Window):
 if __name__ == "__main__":
     JAMediaVideo()
     Gtk.main()
+    

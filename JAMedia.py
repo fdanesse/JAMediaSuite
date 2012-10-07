@@ -19,7 +19,7 @@ import JAMediaObjects
 import JAMediaObjects.JAMediaGlobales as G
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
+    
 class Ventana(Gtk.Window):
     
     def __init__(self):
@@ -50,14 +50,17 @@ class Ventana(Gtk.Window):
         GObject.idle_add(self.setup_init)
         
     def set_pista(self, pista):
+        
         self.pista = pista
         
     def setup_init(self):
+        
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
         if self.pista: self.jamediaplayer.set_nueva_lista(self.pista)
         
     def salir(self, widget = None, senial = None):
+        
         import commands
         commands.getoutput('killall mplayer')
         sys.exit(0)
@@ -67,13 +70,16 @@ if __name__ == "__main__":
     items = []
     if len(sys.argv) > 1:
         path = os.path.join(sys.argv[1])
+        
         if os.path.exists(path):
             archivo = os.path.basename(path)
             items.append( [archivo,path] )
             jamedia = Ventana()
             jamedia.set_pista(items)
+            
         else:
             jamedia = Ventana()
+            
     else:
         jamedia = Ventana()
         

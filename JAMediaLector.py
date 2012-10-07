@@ -3,7 +3,7 @@
 
 import os
 import sys
-import commands
+#import commands
 
 import gi
 from gi.repository import Gtk
@@ -17,8 +17,19 @@ from JAMediaLector.JAMediaLector import JAMediaLector
 
 import JAMediaObjects
 import JAMediaObjects.JAMediaGlobales as G
+
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    
 class Ventana(Gtk.Window):
     
     def __init__(self):
@@ -46,12 +57,15 @@ class Ventana(Gtk.Window):
         GObject.idle_add(self.setup_init)
         
     def setup_init(self):
+        
         self.jamedialector.setup_init()
         self.jamedialector.pack_standar()
         
     def salir(self, widget = None, senial = None):
+        
         sys.exit(0)
     
 if __name__ == "__main__":
     Ventana()
     Gtk.main()
+    

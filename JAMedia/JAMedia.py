@@ -87,6 +87,16 @@ from Widgets import ToolbarAddStream
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    
 GObject.threads_init()
 Gdk.threads_init()
 
@@ -125,8 +135,9 @@ class JAMediaPlayer(Gtk.Plug):
     mediante python JAMedia.py
     """
         
-    __gsignals__ = {"salir":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, [])}
+    __gsignals__ = {
+    "salir":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
         """JAMedia: Gtk.Plug para embeber en otra aplicacion."""
@@ -213,8 +224,11 @@ class JAMediaPlayer(Gtk.Plug):
         ev_box.add(self.vbox_lista_reproduccion)
         hpanel.pack2(ev_box, resize = False, shrink = False)
             
-        self.controles_dinamicos = [hbox_barra_progreso, ev_box,
-            self.toolbar, self.toolbar_info]
+        self.controles_dinamicos = [
+            hbox_barra_progreso,
+            ev_box,
+            self.toolbar,
+            self.toolbar_info]
         
         basebox.show_all()
         #self.controlesrepro.botonpausa.hide()
@@ -311,12 +325,16 @@ class JAMediaPlayer(Gtk.Plug):
         que pasa toolbaraddstream en add-stream."""
         
         G.add_stream(tipo, "%s,%s" % (nombre, url))
+        
         if "Tv" in tipo or "TV" in tipo:
             indice = 3
+            
         elif "Radio" in tipo:
             indice = 2
+            
         else:
             return
+        
         self.cargar_lista(None, indice)
         
     def set_rotacion(self, widget, valor):
@@ -355,8 +373,10 @@ class JAMediaPlayer(Gtk.Plug):
             screen = ventana.get_screen()
             w,h = ventana.get_size()
             ww, hh = (screen.get_width(), screen.get_height())
+            
             if ww == w and hh == h:
                 ventana.unfullscreen()
+                
             else:
                 ventana.fullscreen()
             
@@ -364,11 +384,14 @@ class JAMediaPlayer(Gtk.Plug):
         """Muestra u oculta las opciones de
         configuracion (toolbar_config)."""
         
-        map(self.ocultar, [self.toolbar_accion,
-            self.toolbaraddstream])
+        map(self.ocultar, [
+            self.toolbar_accion,
+            self.toolbaraddstream,
+            self.toolbar_salir])
             
         if self.toolbar_config.get_visible():
             self.toolbar_config.hide()
+            
         else:
             config = self.player.get_balance()
             
@@ -420,8 +443,10 @@ class JAMediaPlayer(Gtk.Plug):
                 self.player.stop()
             except:
                 pass
+            
             self.player = reproductor
             print "Reproduciendo con:", self.player.name
+            
             try:
                 model, iter = self.lista_de_reproduccion.treeselection.get_selected()
                 valor = model.get_value(iter, 2)
@@ -439,8 +464,10 @@ class JAMediaPlayer(Gtk.Plug):
         
         if valor and self.toolbar_info.ocultar_controles:
             map(self.ocultar, self.controles_dinamicos)
-            map(self.ocultar, [self.toolbar_config,
-                self.toolbar_accion, self.toolbaraddstream,
+            map(self.ocultar, [
+                self.toolbar_config,
+                self.toolbar_accion,
+                self.toolbaraddstream,
                 self.toolbar_salir])
                 
         elif not valor:
@@ -468,12 +495,16 @@ class JAMediaPlayer(Gtk.Plug):
         
         if not self.lista_de_reproduccion.modelo.get_iter_first():
             return
+        
         if senial == "atras":
             self.lista_de_reproduccion.seleccionar_anterior()
+            
         elif senial == "siguiente":
             self.lista_de_reproduccion.seleccionar_siguiente()
+            
         elif senial == "stop":
             self.player.stop()
+            
         elif senial == "pausa-play":
             self.player.pause_play()
         
@@ -490,8 +521,10 @@ class JAMediaPlayer(Gtk.Plug):
         
         if "playing" in valor:
             self.controlesrepro.set_playing()
+            
         elif "paused" in valor or "None" in valor:
             self.controlesrepro.set_paused()
+            
         else:
             print "Estado del Reproductor desconocido:", valor
             
@@ -519,8 +552,10 @@ class JAMediaPlayer(Gtk.Plug):
         self.toolbar_list.show_all()
         self.toolbar_list.boton_agregar.hide()
         self.toolbar_info.descarga.show()
+        
         for child in self.vbox_lista_reproduccion.get_children():
             self.vbox_lista_reproduccion.remove(child)
+            
         self.vbox_lista_reproduccion.pack_start (self.toolbar_list,
             False, False, 0)
         self.pack_vbox_lista_reproduccion()
@@ -529,13 +564,15 @@ class JAMediaPlayer(Gtk.Plug):
         """Recibe la señal add_stream desde toolbarlist
         y abre la toolbar que permite agregar un stream."""
         
-        map(self.ocultar, [self.toolbar_config,
+        map(self.ocultar, [
+            self.toolbar_config,
             self.toolbar_accion])
             
         if not self.toolbaraddstream.get_visible():
             accion = widget.label.get_text()
             self.toolbaraddstream.set_accion(accion)
             self.toolbaraddstream.show()
+            
         else:
             self.toolbaraddstream.hide()
             
@@ -579,6 +616,10 @@ class JAMediaPlayer(Gtk.Plug):
     def confirmar_salir(self, widget = None, senial = None):
         """Recibe salir y lo pasa a la toolbar de confirmación."""
         
+        map(self.ocultar, [
+            self.toolbar_config,
+            self.toolbaraddstream])
+            
         self.toolbar_salir.run("JAMedia")
         
     def emit_salir(self, widget):
@@ -608,16 +649,20 @@ class JAMediaPlayer(Gtk.Plug):
         if indice == 0:
             archivo = os.path.join(G.DIRECTORIO_DATOS, 'jamediaradio.txt')
             self.seleccionar_lista_de_stream(archivo, "JAM-Radio")
+            
         elif indice == 1:
             # HACK: Tv no funciona con JAMediaReproductor.
             if self.player == self.jamediareproductor:
                 self.switch_reproductor(None, "MplayerReproductor")
+                
             archivo = os.path.join(G.DIRECTORIO_DATOS, 'jamediatv.txt')
             self.seleccionar_lista_de_stream(archivo, "JAM-TV")
+            
         elif indice == 2:
             archivo = os.path.join(G.DIRECTORIO_DATOS, 'misradios.txt')
             self.seleccionar_lista_de_stream(archivo, "Radios")
             self.toolbar_list.boton_agregar.show()
+            
         elif indice == 3:
             # HACK: Tv no funciona con JAMediaReproductor.
             if self.player == self.jamediareproductor:
@@ -625,18 +670,23 @@ class JAMediaPlayer(Gtk.Plug):
             archivo = os.path.join(G.DIRECTORIO_DATOS, 'mistv.txt')
             self.seleccionar_lista_de_stream(archivo, "Tvs")
             self.toolbar_list.boton_agregar.show()
+            
         elif indice == 4:
             self.seleccionar_lista_de_archivos(G.DIRECTORIO_MIS_ARCHIVOS,
                 "Archivos")
+                
         elif indice == 5:
             self.seleccionar_lista_de_archivos(G.DIRECTORIO_YOUTUBE,
                 "JAM-Tube")
+                
         elif indice == 6:
             self.seleccionar_lista_de_archivos(G.AUDIO_JAMEDIA_VIDEO,
                 "JAM-Audio")
+                
         elif indice == 7:
             self.seleccionar_lista_de_archivos(G.VIDEO_JAMEDIA_VIDEO,
                 "JAM-Video")
+                
         elif indice == 8:
             selector = Selector_de_Archivos(self)
             selector.connect('archivos-seleccionados', self.cargar_directorio)
@@ -648,10 +698,12 @@ class JAMediaPlayer(Gtk.Plug):
         if not archivos: return
         self.player.stop()
         items = []
+        
         for archivo in archivos:
             path = archivo
             archivo = os.path.basename(path)
             items.append( [archivo,path] )
+            
         self.set_nueva_lista(items)
         
     def seleccionar_lista_de_archivos(self, directorio, titulo):
@@ -666,10 +718,12 @@ class JAMediaPlayer(Gtk.Plug):
         self.player.stop()
         archivos = sorted(os.listdir(directorio))
         lista = []
+        
         for texto in archivos:
             url = os.path.join(directorio, texto)
             elemento = [texto, url]
             lista.append(elemento)
+            
         self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(lista)
         self.toolbar_list.label.set_text(titulo)
@@ -689,12 +743,14 @@ class JAMediaPlayer(Gtk.Plug):
         lista = archivo.readlines()
         archivo.close()
         items = []
+        
         for linea in lista:
             elem = linea.split(",")
             texto = elem[0]
             url = elem[1]
             elemento = [texto, url]
             items.append(elemento)
+            
         self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(items)
         self.toolbar_list.label.set_text(titulo)
@@ -711,21 +767,26 @@ class JAMediaPlayer(Gtk.Plug):
         pos = (event.x, event.y)
         tiempo = event.time
         path, columna, xdefondo, ydefondo = (None, None, None, None)
+        
         try:
             path, columna, xdefondo, ydefondo = widget.get_path_at_pos(int(pos[0]), int(pos[1]))
         except:
             return
+        
         # TreeView.get_path_at_pos(event.x, event.y) devuelve:
         # * La ruta de acceso en el punto especificado (x, y), en relación con las coordenadas widget
         # * El gtk.TreeViewColumn en ese punto
         # * La coordenada X en relación con el fondo de la celda
         # * La coordenada Y en relación con el fondo de la celda
+        
         if boton == 1:
             return
+        
         elif boton == 3:
             menu = MenuList(widget, boton, pos, tiempo, path, widget.modelo)
             menu.connect('accion', self.set_accion)
             menu.popup(None, None, None, None, boton, tiempo)
+            
         elif boton == 2:
             return
         
@@ -751,6 +812,7 @@ class JAMediaPlayer(Gtk.Plug):
         if "TV" in self.toolbar_list.label.get_text() or \
             "Tv" in self.toolbar_list.label.get_text():
                 extension = ".avi"
+                
         else:
             extension = ".mp3"
             

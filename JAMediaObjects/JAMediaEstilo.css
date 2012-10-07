@@ -1,0 +1,16 @@
+GtkWindow, GtkPaned {
+    background-color: #ffffff;
+}
+
+Visor {
+    background-color: #000000;
+}
+
+DrawingLector, VisorImagenes {
+    background-color: #ffffff;
+}
+
+GtkToolbar {
+    background-color: #000000;
+    color: #ffffff;
+}
