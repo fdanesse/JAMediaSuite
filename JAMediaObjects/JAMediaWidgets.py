@@ -99,28 +99,37 @@ class JAMediaButton(Gtk.EventBox):
         self.modify_bg(0, self.colornormal)
         
     def button_release(self, widget, event):
+        
         self.modify_bg(0, self.colorselect)
         
     def leave_notify_event(self, widget, event):
+        
         self.modify_bg(0, self.colornormal)
         
     def enter_notify_event(self, widget, event):
+        
         self.modify_bg(0, self.colorselect)
         
     def button_press(self, widget, event):
+        
         self.seleccionar()
+        
         if event.button == 1:
             self.emit("clicked", event)
+            
         elif event.button == 3:
             self.emit("click_derecho", event)
             
     def set_tooltip(self, texto):
+        
         self.set_tooltip_text(texto)
         
     def set_imagen(self, archivo):
+        
         self.imagen.set_from_file(archivo)
         
     def set_tamanio(self, w, h):
+        
         self.set_size_request(w,h)
         
 class Visor(Gtk.DrawingArea):

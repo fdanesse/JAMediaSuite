@@ -64,7 +64,8 @@ context.add_provider_for_screen(
 class Toolbar(Gtk.Toolbar):
     """Toolbar Principal de JAMexplorer."""
     
-    __gsignals__ = {"salir":(GObject.SIGNAL_RUN_FIRST,
+    __gsignals__ = {
+    "salir":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
     
     def __init__(self):

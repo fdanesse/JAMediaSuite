@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   SugarExplorer.py por:
+#   JAMexplorer.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   CeibalJAM - Uruguay
 #
@@ -32,6 +32,7 @@ from gi.repository import GdkPixbuf
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
 import JAMediaObjects
+from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 import JAMediaObjects.JAMFileSystem as JAMF
 import JAMediaObjects.JAMediaGlobales as G
 
@@ -45,10 +46,12 @@ import JAMediaLector
 from JAMediaLector.JAMediaLector import JAMediaLector
 
 from Navegador import Navegador
-
-ICONOS = os.path.join(JAMediaObjects.__path__[0], "Iconos")
+from JAMexplorer import Toolbar
+from JAMexplorer import ToolbarTry
 
 from sugar3.activity import activity
+
+ICONOS = os.path.join(JAMediaObjects.__path__[0], "Iconos")
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
@@ -61,141 +64,25 @@ context.add_provider_for_screen(
     screen,
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
-    
-class Toolbar(Gtk.Toolbar):
-    
-    def __init__(self):
-        
-        Gtk.Toolbar.__init__(self)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(ICONOS, "jamexplorer.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(ICONOS, "ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(ICONOS, "uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(ICONOS, "licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("fdanesse@gmail.com")
-        #self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-        
-        archivo = os.path.join(ICONOS,"salir.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Salir")
-        boton.connect("clicked", self.salir)
-        self.insert(boton, -1)
-        
-        self.show_all()
-        
-    def salir(self, widget):
-        
-        sys.exit(0)
-        return False
 
-class ToolbarTry(Gtk.Toolbar):
-    
-    def __init__(self):
-        
-        Gtk.Toolbar.__init__(self)
-        
-        #self.modify_bg(0, Gdk.Color(0, 0, 0))
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("")
-        #self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-        
-        self.show_all()
-        
 class JAMexplorer(activity.Activity):
     
     def __init__(self, handle):
         
         activity.Activity.__init__(self, handle, False)
-        
-        self.set_title("JAMexplorer")
-        #self.modify_bg(0, Gdk.Color(49000, 52000, 18000))
-        #self.set_icon_from_file(os.path.join(ICONOS, "jamexplorer.png"))
-        self.set_resizable(True)
-        self.set_size_request(640, 480)
-        self.set_position(Gtk.WindowPosition.CENTER)
+
         self.set_border_width(3)
         
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         
         self.toolbar = Toolbar()
+        self.toolbar_salir = ToolbarSalir()
         self.navegador = Navegador()
         self.toolbar_try = ToolbarTry()
         
         switchbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         switchbox.pack_start(self.navegador, True, True, 0)
+        
         vbox.pack_start(self.toolbar, False, True, 0)
         vbox.pack_start(self.toolbar_salir, False, True, 0)
         vbox.pack_start(switchbox, True, True, 0)
@@ -234,8 +121,12 @@ class JAMexplorer(activity.Activity):
         self.show_all()
         self.realize()
         
-        self.connect("delete_event", self.delete_event)
+        self.toolbar_salir.hide()
+        
+        self.toolbar.connect('salir', self.confirmar_salir)
+        self.toolbar_salir.connect('salir', self.salir)
         self.connect("destroy", self.salir)
+        
         self.navegador.connect('info', self.get_info)
         self.navegador.connect('cargar', self.switch)
         self.jamimagenes.connect('salir', self.get_explorador)
@@ -243,7 +134,12 @@ class JAMexplorer(activity.Activity):
         self.jamedialector.connect('salir', self.get_explorador)
         
         GObject.idle_add(self.setup_init)
-    
+        
+    def confirmar_salir(self, widget = None, senial = None):
+        """Recibe salir y lo pasa a la toolbar de confirmación."""
+        
+        self.toolbar_salir.run("JAMexplorer")
+        
     def setup_init(self):
         
         self.jamediaplayer.setup_init()
@@ -306,6 +202,7 @@ class JAMexplorer(activity.Activity):
         if not os.path.exists(directorio) \
             or not os.path.isdir(directorio):
                 return []
+            
         items = []
         
         for archivo in os.listdir(directorio):
@@ -345,12 +242,6 @@ class JAMexplorer(activity.Activity):
         texto += "Ejecución: %s" % (ejecucion)
         self.navegador.infowidget.set_info(texto, typeinfo)
         
-    def delete_event(self, widget = None, event = None, data = None):
-        
-        self.salir()
-        return False
-    
     def salir(self, widget = None, senial = None):
-        
         sys.exit(0)
         

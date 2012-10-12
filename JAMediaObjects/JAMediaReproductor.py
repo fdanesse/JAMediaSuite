@@ -108,14 +108,15 @@ class JAMediaReproductor(GObject.GObject):
         Gstreamer 1.0
     """
     
-    __gsignals__ = {"endfile":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, []),
+    __gsignals__ = {
+    "endfile":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
     "estado":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-    (GObject.TYPE_STRING,)),
+        (GObject.TYPE_STRING,)),
     "newposicion":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-    (GObject.TYPE_INT,)),
+        (GObject.TYPE_INT,)),
     "volumen":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-    (GObject.TYPE_FLOAT,))}
+        (GObject.TYPE_FLOAT,))}
 
     # Estados: playing, paused, None
     
@@ -124,6 +125,7 @@ class JAMediaReproductor(GObject.GObject):
         para mostrar el video. """
         
         GObject.GObject.__init__(self)
+        
         self.name = "JAMediaReproductor"
         self.ventana_id = ventana_id
         self.pipeline = None
@@ -195,6 +197,8 @@ class JAMediaReproductor(GObject.GObject):
         
         self.player.set_property('video-sink', self.jamedia_sink)
         
+        self.player.set_window_handle(self.ventana_id)
+        
         self.config = {
             'saturacion': 1.0,
             'contraste': 1.0,
@@ -216,71 +220,91 @@ class JAMediaReproductor(GObject.GObject):
             if mensaje.get_structure().get_name() == 'prepare-window-handle':
                 mensaje.src.set_window_handle(self.ventana_id)
                 return
+            
         except:
             pass
         
         if mensaje.type == Gst.MessageType.STATE_CHANGED:
             old, new, pending = mensaje.parse_state_changed()
+            
             if old == Gst.State.PAUSED and new == Gst.State.PLAYING:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "playing")
                     self.new_handle(True)
                     return
+                
             elif old == Gst.State.READY and new == Gst.State.PAUSED:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
                     self.new_handle(False)
                     return
+                
             elif old == Gst.State.READY and new == Gst.State.NULL:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "None")
                     self.new_handle(False)
                     return
+                
             elif old == Gst.State.PLAYING and new == Gst.State.PAUSED:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
                     self.new_handle(False)
                     return
+                
             elif old == Gst.State.NULL and new == Gst.State.READY:
                 pass
+            
             elif old == Gst.State.PAUSED and new == Gst.State.READY:
                 pass
+            
             else:
                 return
             
         elif mensaje.type == Gst.MessageType.ASYNC_DONE:
             return
+        
         elif mensaje.type == Gst.MessageType.NEW_CLOCK:
             return
+        
         elif mensaje.type == Gst.MessageType.STREAM_STATUS:
             return
+        
         elif mensaje.type == Gst.MessageType.TAG:
             return
+        
         elif mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
             #print "***", 'sync_message'
             #print err, debug
             self.new_handle(False)
             return
+        
         elif mensaje.type == Gst.MessageType.EOS:
             return
+        
         else:
             try:
                 nombre = mensaje.get_structure().get_name()
+                
                 if nombre == "playbin-stream-changed":
                     pass
+                
                 elif nombre == "have-window-handle":
                     pass
+                
                 elif nombre == "prepare-window-handle":
                     pass
+                
                 else:
                     pass
+                
             except:
                 pass
+            
             return
                 
     def on_mensaje(self, bus, mensaje):
@@ -302,6 +326,7 @@ class JAMediaReproductor(GObject.GObject):
             
         elif mensaje.type == Gst.MessageType.QOS:
             pass
+        
         elif mensaje.type == Gst.MessageType.WARNING:
             #print mensaje.get_structure().to_string()
             pass
@@ -328,6 +353,7 @@ class JAMediaReproductor(GObject.GObject):
             direccion = Gst.filename_to_uri(uri)
             self.player.set_property("uri", direccion)
             self.play()
+            
         else:
             # FIXME: Funciona con la radio pero no con la Tv
             if Gst.uri_is_valid(uri):
@@ -503,6 +529,7 @@ class JAMediaReproductor(GObject.GObject):
         if self.actualizador:
             GObject.source_remove(self.actualizador)
             self.actualizador = None
+            
         if reset:
             self.actualizador = GObject.timeout_add(35, self.handle)
         
@@ -560,10 +587,12 @@ class JAMediaReproductor(GObject.GObject):
 class JAMediaGrabador(GObject.GObject):
     """Graba desde un streaming de radio o tv."""
     
-    __gsignals__ = {"update":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    __gsignals__ = {
+    "update":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self, uri, archivo):
+        
         GObject.GObject.__init__(self)
         
         self.patharchivo = archivo
@@ -645,7 +674,9 @@ class JAMediaGrabador(GObject.GObject):
         self.pipeline.set_state(Gst.State.PAUSED)
         self.pipeline.set_state(Gst.State.NULL)
         self.new_handle(False)
-        if os.path.exists(self.patharchivo): os.chmod(self.patharchivo, 0755)
+        
+        if os.path.exists(self.patharchivo):
+            os.chmod(self.patharchivo, 0755)
         
     def sync_message(self, bus, mensaje):
         """Captura los mensajes en el bus del pipe Gst."""
@@ -669,6 +700,7 @@ class JAMediaGrabador(GObject.GObject):
         if self.actualizador:
             GObject.source_remove(self.actualizador)
             self.actualizador = None
+            
         if reset:
             self.actualizador = GObject.timeout_add(500, self.handle)
             

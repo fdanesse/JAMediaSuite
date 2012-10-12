@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   JAMediaVideoDesktop.py por:
+#   JAMediaVideoEscritorio.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   CeibalJAM! - Uruguay
 #
@@ -37,14 +37,15 @@ from gi.repository import GstVideo
 import JAMediaGlobales as G
 
 GObject.threads_init()
-Gdk.threads_init()
+#Gdk.threads_init()
 Gst.init([])
 
-class JAMediaVideoDesktop(GObject.GObject):
+class JAMediaVideoEscritorio(GObject.GObject):
     """Simple Grabador de Escritorio, Versión 1.0"""
     
-    __gsignals__ = {"update":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    __gsignals__ = {
+    "update":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
         
@@ -53,43 +54,37 @@ class JAMediaVideoDesktop(GObject.GObject):
         self.name = "JAMediaVideoDesktop"
         
         self.pipeline = None
-        self.estado = None
-        
+        self.bus = None
+        self.info = None
+        self.resolucion = "video/x-raw-yuv,width=640,height=480" # 800x600 no menor a 640x480
+        self.audio_enabled = True
         self.actualizador = None
         self.file_path = None
         
-        # config
-        # GStreamer-WARNING **: 0.10-style raw video caps are being created. Should be video/x-raw,format=(string).. now.
-        self.resolucion = "video/x-raw-yuv,width=800,height=600"
-        self.audio = "audio/x-raw-int,rate=16000,channels=1,depth=16"
+        self.ximagesrc =  None
+        self.videoconvert = None
+        self.videoscale = None
+        self.video_capsfilter = None
+        self.theoraenc = None
+        self.gconfaudiosrc = None
+        self.audiorate = None
+        self.audio_capsfilter = None
+        self.audioconvert = None
+        self.vorbisenc = None
+        self.hilovideomuxor = None
+        self.hiloaudiomuxor = None
+        self.oggmux = None
+        self.filesink = None
         
-        screen = GdkX11.X11Screen()
+        self.screen = GdkX11.X11Screen()
         
         self.x = 0
         self.y = 0
-        self.width = 640 #int(screen.width())
-        self.height = 480 #int(screen.height())
-        
-        self.calidad_compresion = 16
-        
-        self.info = None
-        
-        self.config = {
-        'inicioenx': self.x,
-        'finenx': self.width,
-        'inicioeny': self.y,
-        'fineny': self.height,
-        'resolucionfinal': self.resolucion,
-        'audio': self.audio,
-        'compresion': self.calidad_compresion
-        }
+        self.width = int(self.screen.width())
+        self.height = int(self.screen.height())
         
     def set_pipeline(self):
         """Crea el pipe para grabar desde x y autoaudio."""
-        
-        print "Iniciando pipe gst:"
-        #for item in self.config.items():
-        #    print item
         
         if self.pipeline:
             del(self.pipeline)
@@ -98,122 +93,151 @@ class JAMediaVideoDesktop(GObject.GObject):
         self.pipeline = Gst.Pipeline()
         
         self.ximagesrc = Gst.ElementFactory.make('ximagesrc', "ximagesrc")
-        self.ximagesrc.set_property('use-damage', False)
+        #self.ximagesrc.set_property("screen-num", self.screen.get_screen_number())
+        #self.ximagesrc.set_property('use-damage', False)
         self.ximagesrc.set_property('startx', self.x)
         self.ximagesrc.set_property('endx', self.width)
         self.ximagesrc.set_property('starty', self.y)
         self.ximagesrc.set_property('endy', self.height)
-        #self.ximagesrc.set_property('parent', self.pipeline)
         
         # Convertir Video
         # Video scaler (required when the autovideosink does not use an X overlay)
         self.videoconvert = Gst.ElementFactory.make("videoconvert", "videoconvert")
-        self.hiloencodearvideo = Gst.ElementFactory.make('queue', "hiloencodearvideo")
-        self.hiloencodearvideo.set_property("leaky", True)
-        # Escalar la salida
-        '''
-        self.escalavideo = Gst.ElementFactory.make("videoscale", "vbscale")
-        self.scalecapsfilter = Gst.ElementFactory.make("capsfilter", "scalecaps")
+
+        self.videoscale = Gst.ElementFactory.make("videoscale", "vbscale")
+        self.video_capsfilter = Gst.ElementFactory.make("capsfilter", "scalecaps")
         scalecaps = Gst.Caps()
         scalecaps.from_string(self.resolucion)
-        self.scalecapsfilter.set_property("caps", scalecaps)'''
-        # Encodear Video
+        self.video_capsfilter.set_property("caps", scalecaps)
+        
         self.theoraenc = Gst.ElementFactory.make('theoraenc', 'theoraenc')
-        self.theoraenc.set_property("quality", self.calidad_compresion) # 48 default
-        '''
-        # Fuente de Audio
-        self.autoaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc") # autoaudiosrc - pulsesrc - autoaudiosrc
-        # Convertir Audio
+        #self.theoraenc.set_property("bitrate", 1024) # kbps compresion + resolucion = calidad
+        #self.theoraenc.set_property('keyframe-freq', 15)
+        #self.theoraenc.set_property('cap-overflow', False)
+        #self.theoraenc.set_property('speed-level', 0)
+        #self.theoraenc.set_property('cap-underflow', True)
+        #self.theoraenc.set_property('vp3-compatible', True)
+        
+        self.gconfaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc")
+        # FIXME: 'NoneType' object has no attribute 'set_property'
+        #self.gconfaudiosrc.set_property("async-handling", True)
+        
+        self.audiorate = Gst.ElementFactory.make("audiorate", "audiorate")
+        #self.audiorate.set_property('silent', True)
+        #self.audiorate.set_property('skip-to-first', True)
+        #self.audiorate.set_property('tolerance', 1000)
+        
+        audio_rate = Gst.Caps()
+        audio_rate.from_string("audio/x-raw-int,endianness=1234,rate=8000,channels=2,width=8,depth=8,signed=False")
+        self.audio_capsfilter = Gst.ElementFactory.make("capsfilter", "audio_capsfilter")
+        self.audio_capsfilter.set_property("caps", audio_rate)
+        
         self.audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
-        self.hiloencodearaudio = Gst.ElementFactory.make('queue', "hiloencodearaudio")
-        self.hiloencodearaudio.set_property("leaky", True)
+        self.audioconvert.set_property('dithering', 1)
+        self.audioconvert.set_property('qos', True)
         
-        # Filtro Audio
-        self.audiorate = Gst.ElementFactory.make("audiorate", 'audiorate')
-        self.filtroaudio = Gst.ElementFactory.make("capsfilter", "filtroaudio")
-        #  GStreamer-WARNING **: 0.10-style raw audio caps are being created. Should be audio/x-raw,format=(string).. now.
-        capaaudio = Gst.Caps()
-        capaaudio.from_string(self.audio)
-        self.filtroaudio.set_property("caps", capaaudio)
-        # Encodear Audio
-        self.vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")'''
+        self.vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
         
-        # Muxor - Unión audio y video
         self.hilovideomuxor = Gst.ElementFactory.make('queue', "hilovideomuxor")
+        self.hilovideomuxor.set_property('max-size-buffers', 12000)
+        self.hilovideomuxor.set_property('max-size-bytes', 0)
+        self.hilovideomuxor.set_property('max-size-time', 0)
+        
         self.hiloaudiomuxor = Gst.ElementFactory.make('queue', "hiloaudiomuxor")
+        self.hiloaudiomuxor.set_property('max-size-buffers', 5000)
+        self.hiloaudiomuxor.set_property('max-size-bytes', 0)
+        self.hiloaudiomuxor.set_property('max-size-time', 0)
+        
         self.oggmux = Gst.ElementFactory.make('oggmux', "oggmux")
         
-        # Archivo - Unión muxor archivo
-        self.hiloarchivo = Gst.ElementFactory.make('queue', "hiloarchivo")
-        self.hiloarchivo.set_property("leaky", True)
-        self.archivo = Gst.ElementFactory.make('filesink', "archivo")
-        self.archivo.set_property("location", self.file_path)
+        self.filesink = Gst.ElementFactory.make('filesink', "filesink")
+        self.filesink.set_property("location", self.file_path)
         
-        
-        self.pipeline.add(self.ximagesrc)
-        
-        self.pipeline.add(self.videoconvert)
-        #self.pipeline.add(self.escalavideo)# link_filtered(self.escalavideo, self.scalecapsfilter)
-        #self.pipeline.add(self.scalecapsfilter)
-        self.pipeline.add(self.hiloencodearvideo)
-        self.pipeline.add(self.theoraenc)
-        '''
-        self.pipeline.add(self.autoaudiosrc)
-        self.pipeline.add(self.audioconvert)
-        self.pipeline.add(self.audiorate)
-        self.pipeline.add(self.filtroaudio)
-        self.pipeline.add(self.hiloencodearaudio)
-        self.pipeline.add(self.vorbisenc)'''
-        
-        self.pipeline.add(self.hilovideomuxor)
-       # self.pipeline.add(self.hiloaudiomuxor)
-        
-        self.pipeline.add(self.oggmux)
-        
-        self.pipeline.add(self.hiloarchivo)
-        self.pipeline.add(self.archivo)
-        
-        
-        self.ximagesrc.link(self.videoconvert)
-        self.videoconvert.link(self.hiloencodearvideo)
-        #self.videoconvert.link(self.escalavideo)
-        #self.escalavideo.link(self.scalecapsfilter)
-        #self.scalecapsfilter.link(self.hiloencodearvideo)
-        self.hiloencodearvideo.link(self.theoraenc)
-        
-        self.theoraenc.link(self.hilovideomuxor)
-        self.hilovideomuxor.link(self.oggmux)
-        '''
-        self.autoaudiosrc.link(self.audioconvert)
-        self.audioconvert.link(self.audiorate)
-        self.audiorate.link(self.filtroaudio)
-        self.filtroaudio.link(self.hiloencodearaudio)
-        self.hiloencodearaudio.link(self.vorbisenc)
-        
-        self.vorbisenc.link(self.hiloaudiomuxor)
-        self.hiloaudiomuxor.link(self.oggmux)
-        
-        self.oggmux.link(self.hiloarchivo)
-        self.hiloarchivo.link(self.archivo)'''
-        
+        if self.audio_enabled:
+            self.add_todos()
+            self.link_todos()
+        else:
+            self.add_solo_video()
+            self.link_solo_video()
+            
         self.bus = self.pipeline.get_bus()
         self.bus.enable_sync_message_emission()
         self.bus.add_signal_watch()
+        
         self.bus.connect("sync-message::element", self.on_sync_message)
         self.bus.connect("message", self.on_message)
         
-    def set_config(self, resolucion, audiorate,
-        audiochannels, audiodepth, compresion):
-        """Configura la calidad de grabación de audio y video."""
+    def link_solo_video(self):
+        """Linkea solo los elementos de video y filesink, no de audio."""
+        
+        self.ximagesrc.link(self.videoconvert)
+        self.videoconvert.link(self.videoscale)
+        self.videoscale.link(self.video_capsfilter)
+        self.video_capsfilter.link(self.theoraenc)
+        self.theoraenc.link(self.hilovideomuxor)
+        self.hilovideomuxor.link(self.oggmux)
+        self.oggmux.link(self.filesink)
+        
+    def link_todos(self):
+        """Linkea todos los elementos del pipe, de audio, video y archivo."""
+        
+        self.gconfaudiosrc.link(self.audiorate)
+        self.audiorate.link(self.audio_capsfilter)
+        self.audio_capsfilter.link(self.audioconvert)
+        self.audioconvert.link(self.vorbisenc)
+        self.vorbisenc.link(self.oggmux)
+        
+        self.ximagesrc.link(self.videoconvert)
+        self.videoconvert.link(self.videoscale)
+        self.videoscale.link(self.video_capsfilter)
+        self.video_capsfilter.link(self.theoraenc)
+        self.theoraenc.link(self.hilovideomuxor)
+        self.hilovideomuxor.link(self.oggmux)
+        self.oggmux.link(self.filesink)
+        
+    def add_todos(self):
+        """Agrega al pipe todos los elementos, de audio y video."""
+        
+        self.pipeline.add(self.ximagesrc)
+        self.pipeline.add(self.videoconvert)
+        self.pipeline.add(self.videoscale)
+        self.pipeline.add(self.video_capsfilter)
+        self.pipeline.add(self.theoraenc)
+        self.pipeline.add(self.hilovideomuxor)
+        
+        self.pipeline.add(self.gconfaudiosrc)
+        self.pipeline.add(self.audiorate)
+        self.pipeline.add(self.audio_capsfilter)
+        self.pipeline.add(self.audioconvert)
+        self.pipeline.add(self.vorbisenc)
+        
+        self.pipeline.add(self.oggmux)
+        self.pipeline.add(self.filesink)
+        
+    def add_solo_video(self):
+        """Agrega al pipe solo los elementos de video pero no de adio."""
+        
+        self.pipeline.add(self.ximagesrc)
+        self.pipeline.add(self.videoconvert)
+        self.pipeline.add(self.videoscale)
+        self.pipeline.add(self.video_capsfilter)
+        self.pipeline.add(self.theoraenc)
+        self.pipeline.add(self.hilovideomuxor)
+        self.pipeline.add(self.oggmux)
+        self.pipeline.add(self.filesink)
+        
+    def set_audio_enabled(self, valor):
+        """Habilita y desabilita el audio en la grabación."""
         
         self.stop()
+        self.audio_enabled = valor
         
+    def set_config_video(self, resolucion):
+        """Configura la calidad de grabación de video."""
+        
+        self.stop()
         w, h = resolucion
         self.resolucion = "video/x-raw-yuv,width=%i,height=%i" % (w,h)
-        self.audio = "audio/x-raw-int,rate=%i,channels=%i,depth=%i" % (audiorate, audiochannels, audiodepth)
-        self.calidad_compresion = compresion
-        
-        self.set_pipeline()
         
     def on_sync_message(self, bus, message):
         """Captura mensajes en el bus."""
@@ -226,17 +250,17 @@ class JAMediaVideoDesktop(GObject.GObject):
         if message.type == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
             print "ERROR ON_MESSAGE: ", err, debug
-            
-            #self.pipeline.set_state(Gst.State.NULL)
+            self.pipeline.set_state(Gst.State.READY)
+            sys.exit(0)
             
     def grabar(self, location_path):
         """Comienza a Grabar."""
         
         self.new_handle(False)
-        '''
+        
         if self.pipeline:
             self.pipeline.set_state(Gst.State.PAUSED)
-            self.pipeline.set_state(Gst.State.NULL)'''
+            self.pipeline.set_state(Gst.State.NULL)
         
         fecha = datetime.date.today()
         hora = time.strftime("%H-%M-%S")
@@ -244,17 +268,16 @@ class JAMediaVideoDesktop(GObject.GObject):
         
         self.set_pipeline()
         
-        self.estado = "Grabando"
         self.pipeline.set_state(Gst.State.PLAYING)
         
         self.new_handle(True)
-        
+        '''
         for child in self.pipeline.children:
             try:
                 print child, child.parent
             except:
                 pass
-        #sys.exit(0)
+        #sys.exit(0)'''
         
     def stop(self, widget= None, event= None):
         """Detiene la grabación."""
@@ -264,8 +287,6 @@ class JAMediaVideoDesktop(GObject.GObject):
         if self.pipeline:
             self.pipeline.set_state(Gst.State.PAUSED)
             self.pipeline.set_state(Gst.State.NULL)
-        
-        self.estado = None
         
     def new_handle(self, reset):
         """Reinicia o mata el actualizador."""
@@ -291,12 +312,18 @@ class JAMediaVideoDesktop(GObject.GObject):
                 
         return True
     
+    
 if __name__=="__main__":
     
-    #default_location = os.path.dirname(__file__)
-    grabador = JAMediaVideoDesktop()
-    grabador.grabar('/home/flavio')
+    grabador = JAMediaVideoEscritorio()
+    grabador.set_audio_enabled(False)
+    if os.path.exists('/home/flavio'):
+        path = '/home/flavio'
+    else:
+        path = '/home/olpc'
+    grabador.grabar(path)
     Gtk.main()
+    
     
 ''' xo 1.75
 #!/usr/bin/env python
