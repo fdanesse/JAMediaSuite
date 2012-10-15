@@ -64,11 +64,12 @@ class JAMediaButton(Gtk.EventBox):
         self.colorselect = G.AMARILLO
         self.colorclicked = G.NARANJA
         
-        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK |
-        Gdk.EventMask.BUTTON_RELEASE_MASK |
-        Gdk.EventMask.POINTER_MOTION_MASK |
-        Gdk.EventMask.ENTER_NOTIFY_MASK |
-        Gdk.EventMask.LEAVE_NOTIFY_MASK)
+        self.add_events(
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.POINTER_MOTION_MASK |
+            Gdk.EventMask.ENTER_NOTIFY_MASK |
+            Gdk.EventMask.LEAVE_NOTIFY_MASK)
             
         self.connect("button_press_event", self.button_press)
         self.connect("button_release_event", self.button_release)
@@ -164,10 +165,12 @@ class Visor(Gtk.DrawingArea):
         x, y = (int(event.x), int(event.y))
         rect = self.get_allocation()
         xx, yy, ww, hh = (rect.x, rect.y, rect.width, rect.height)
+        
         if x in range(ww-60, ww) or y in range(yy, yy+60) \
             or y in range(hh-60, hh):
             self.emit("ocultar_controles", False)
             return
+        
         else:
             self.emit("ocultar_controles", True)
             return
@@ -228,9 +231,11 @@ class Lista(Gtk.TreeView):
         # model y listore son ==
         iter = model.get_iter(path)
         valor =  model.get_value(iter, 2)
+        
         if not is_selected and self.valor_select != valor:
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
+            
         return True
     
     def setear_columnas(self):
@@ -318,6 +323,7 @@ class Lista(Gtk.TreeView):
         
         try:
             self.treeselection.select_iter(modelo.iter_next(iter))
+            
         except:
             self.seleccionar_primero()
     
@@ -327,6 +333,7 @@ class Lista(Gtk.TreeView):
         
         try:
             self.treeselection.select_iter(modelo.iter_previous(iter))
+            
         except:
             #self.seleccionar_ultimo()
             pass
@@ -495,6 +502,7 @@ class ProgressBar(Gtk.Scale):
             x, y = (self.borde, self.borde)
             w, h = (rect.width-(self.borde*2), rect.height-(self.borde*2))
             eventx, eventy = ( int(event.x)-x, int(event.y)-y )
+            
             if (eventx > int(x) and eventx < int(w)):
                 valor = float(eventx * 100 / w)
                 self.ajuste.set_value(valor)
@@ -940,8 +948,6 @@ class ToolbarSalir(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        #self.modify_bg(0, Gdk.Color(65000,65000,65000))
-        
         self.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
@@ -957,9 +963,7 @@ class ToolbarSalir(Gtk.Toolbar):
             ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
-        item.set_expand(True)
         self.label = Gtk.Label("")
-        self.label.set_line_wrap(True)
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)

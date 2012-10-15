@@ -22,22 +22,23 @@
 # https://developers.google.com/youtube/1.0/developers_guide_python?hl=es#RetrievingVideos
 
 import os
-import gobject
-import subprocess
-import time
-import gtk
 import sys
+import time
+import subprocess
 
-#import JAMediaGlobals as G
+import gi
+from gi.repository import Gtk
+from gi.repository import GObject
+
+import JAMediaGlobales as G
 
 import gdata.youtube
 import gdata.youtube.service
 
 YOUTUBE = "gdata.youtube.com"
 
-UPDATE_TIME = 30
 STDERR = "/dev/null"
-#youtubedl = os.path.join(G.DIRECTORIO_BASE, "youtube-dl")
+youtubedl = os.path.join(os.path.dirname(__file__), "youtube-dl")
 
 def Buscar(palabras):
     """ Recibe una cadena de texto, separa las palabras,
@@ -88,81 +89,107 @@ def DetalleVideo(entry):
     except:
         pass
     return video
-'''
-class JAMediaYouyubeDownload(gtk.Widget):
+
+class JAMediaYoutube(Gtk.Widget):
     """Widget para descarga de videos a través de youtube_dl."""
     
     __gsignals__ = {
-        'progressdownload':(gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
+    'progress_download':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
     
-    def __init__(self, url, titulo):
+    def __init__(self):
         
-        gtk.Widget.__init__(self)
+        Gtk.Widget.__init__(self)
         
-        self.url = url
-        self.titulo = self.get_titulo(titulo)
+        self.url = None
+        self.titulo = None
+        self.estado = False
         
-        self.youtubedlprocess = None
+        self.youtubedl = None
         self.salida = None
-        self.actualizador = None
-        self.STDOUT = "/tmp/jamediatube%d" % time.time()
+        self.actualizador = False
+        self.STDOUT = None
         
     def get_titulo(self, titulo):
+        
         texto = ""
         excluir = ["\\", "/", ",",".","&","¿","?","@","#","$","\'",":",";","|",
         "!", "¡","%","+","*","ª","º","~","{", "}","Ç","[","]","^","`","=","¬","\""]
+        
         for l in titulo:
             if not l in excluir:
                 texto += l
+                
         return str(texto)
     
-    def download_archivo(self):
+    def download(self, url, titulo):
         """Inicia la descarga de un archivo."""
+        
+        self.estado = True
+        # http://youtu.be/XWDZMMMbvhA => codigo compartir
+        # url del video => 'http://www.youtube.com/watch?v=XWDZMMMbvhA'
+        # HACK: 5 de octubre 2012
+        # self.url = url
+        self.url = "http://youtu.be/" + url.split("http://www.youtube.com/watch?v=")[1]
+        self.titulo = self.get_titulo(titulo)
+        self.STDOUT = "/tmp/jamediatube%d" % time.time()
         
         archivo = "%s%s%s" % ("\"", self.titulo, "\"")
         destino = os.path.join(G.DIRECTORIO_YOUTUBE, archivo)
         #estructura = "%s %s -i -R %s -f %s -w --no-part -o %s" % (youtubedl, self.url, 1, 34, destino)
         estructura = "%s %s -i -R %s -f %s --no-part -o %s" % (youtubedl, self.url, 1, 34, destino)
-        self.youtubedl = subprocess.Popen(estructura, shell=True, stdout=open(self.STDOUT,"w+b"),
-        stderr=open(self.STDOUT,"r+b"), universal_newlines=True)
+        self.youtubedl = subprocess.Popen(estructura, shell = True, stdout = open(self.STDOUT,"w+b"),
+        stderr = open(self.STDOUT,"r+b"), universal_newlines=True)
         self.salida = open(self.STDOUT,"r")
         
-        if self.actualizador: gobject.source_remove(self.actualizador)
-        self.actualizador = gobject.timeout_add(UPDATE_TIME, self.get_progress)
+        if self.actualizador:
+            GObject.source_remove(self.actualizador)
+            
+        self.actualizador = GObject.timeout_add(300, self.get_progress)
         
     def get_progress(self):
         """Actualiza el Progreso de la descarga."""
         
         continuar = True
         line = self.salida.readline()
+        
         if line:
             if "100.0%" in line.split(): continuar = False
+            
         if line: self.emit_progress(line)
         return continuar
+    
         # mensajes en los que cuelga:
         # Extracting video information
         
     def emit_progress(self, progress):
-        self.emit("progressdownload", progress)
+        
+        self.emit("progress_download", progress)
         
     def end(self):
+        
         if self.actualizador:
-            gobject.source_remove(self.actualizador)
-            self.actualizador = None
+            GObject.source_remove(self.actualizador)
+            self.actualizador = False
+            
         if self.salida: self.salida.close()
+        
         if os.path.exists(self.STDOUT): os.unlink(self.STDOUT)
+        
         self.youtubedl.kill()
-        self.destroy()'''
+        self.estado = False
         
 if __name__=="__main__":
+    
     entrada = sys.argv[1:]
     palabras = ""
+    
     for palabra in entrada:
         palabras += "%s " % (palabra)
+        
     videos = Buscar(palabras)
+    
     for video in videos:
         for item in video.items():
             print item
-            pass
             

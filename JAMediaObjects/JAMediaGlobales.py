@@ -217,8 +217,10 @@ def add_stream(tipo, text):
     
     if "TV" in tipo or "Tv" in tipo:
         archivo = os.path.join(DIRECTORIO_DATOS, "mistv.txt")
+        
     elif "Radio" in tipo:
         archivo = os.path.join(DIRECTORIO_DATOS, "misradios.txt")
+        
     else:
         return
     
@@ -243,12 +245,16 @@ def eliminar_streaming(url, lista):
     
     if lista == "Radios":
         lista = os.path.join(DIRECTORIO_DATOS, "misradios.txt")
+        
     elif lista == "TVs":
         lista = os.path.join(DIRECTORIO_DATOS, "mistv.txt")
+        
     elif lista == "JAM-Radio":
         lista = os.path.join(DIRECTORIO_DATOS, "jamediaradio.txt")
+        
     elif lista == "JAM-TV":
         lista = os.path.join(DIRECTORIO_DATOS, "jamediatv.txt")
+        
     else:
         return
     
