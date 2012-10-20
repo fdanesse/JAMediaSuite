@@ -187,6 +187,8 @@ class Lista(Gtk.TreeView):
         
         Gtk.TreeView.__init__(self)
         
+        self.elementos = []
+        
         self.set_property("rules-hint", True)
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
@@ -269,54 +271,65 @@ class Lista(Gtk.TreeView):
         
     def agregar_items(self, elementos):
         """ Recibe lista de: [texto para mostrar, path oculto] y
-        Agrega un item a la lista segun esos datos."""
+        Comienza secuencia de agregado a la lista."""
         
-        for item in elementos:
-            texto, path = item
-            descripcion = JAMF.describe_uri(path)
-            
-            icono = None
-            if descripcion:
-                if descripcion[2]:
-                    # Es un Archivo
-                    tipo = JAMF.describe_archivo(path)
-                    
-                    if 'video' in tipo:
-                        icono = os.path.join(JAMediaWidgetsBASE,
-                            "Iconos", "video.png")
-                            
-                    elif 'audio' in tipo:
-                        icono = os.path.join(JAMediaWidgetsBASE,
-                            "Iconos", "sonido.png")
-                            
-                    elif 'image' in tipo:
-                        icono = os.path.join(path) # exige rendimiento
-                        #icono = os.path.join(JAMediaWidgetsBASE,
-                        #    "Iconos", "imagen.png")
+        self.elementos = elementos
+        
+        GObject.idle_add(self.ejecutar_agregar_elemento)
+        
+    def ejecutar_agregar_elemento(self):
+        """Agrega los items a la lista, uno a uno, actualizando."""
+        
+        if not self.elementos: return
+        
+        texto, path = self.elementos[0]
+        descripcion = JAMF.describe_uri(path)
+        
+        icono = None
+        if descripcion:
+            if descripcion[2]:
+                # Es un Archivo
+                tipo = JAMF.describe_archivo(path)
+                
+                if 'video' in tipo:
+                    icono = os.path.join(JAMediaWidgetsBASE,
+                        "Iconos", "video.png")
                         
-                    elif 'pdf' in tipo:
-                        icono = os.path.join(JAMediaWidgetsBASE,
-                            "Iconos", "pdf.png")
-                            
-                    elif 'zip' in tipo or 'rar' in tipo:
-                        icono = os.path.join(JAMediaWidgetsBASE,
-                            "Iconos", "zip.png")
-                            
-                    else:
-                        icono = os.path.join(JAMediaWidgetsBASE,
-                            "Iconos", "archivo.png")
-            else:
-                icono = os.path.join(JAMediaWidgetsBASE,
-                    "Iconos", "archivo.png")
-                
-            try:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-                    G.get_pixels(0.8), -1)
-                self.modelo.append([ pixbuf, texto, path])
-                
-            except:
-                pass
+                elif 'audio' in tipo:
+                    icono = os.path.join(JAMediaWidgetsBASE,
+                        "Iconos", "sonido.png")
+                        
+                elif 'image' in tipo:
+                    icono = os.path.join(path) # exige rendimiento
+                    #icono = os.path.join(JAMediaWidgetsBASE,
+                    #    "Iconos", "imagen.png")
+                    
+                elif 'pdf' in tipo:
+                    icono = os.path.join(JAMediaWidgetsBASE,
+                        "Iconos", "pdf.png")
+                        
+                elif 'zip' in tipo or 'rar' in tipo:
+                    icono = os.path.join(JAMediaWidgetsBASE,
+                        "Iconos", "zip.png")
+                        
+                else:
+                    icono = os.path.join(JAMediaWidgetsBASE,
+                        "Iconos", "archivo.png")
+        else:
+            icono = os.path.join(JAMediaWidgetsBASE,
+                "Iconos", "archivo.png")
             
+        try:
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+                G.get_pixels(0.8), -1)
+            self.modelo.append([ pixbuf, texto, path])
+            
+        except:
+            pass
+            
+        self.elementos.remove(self.elementos[0])
+        GObject.idle_add(self.ejecutar_agregar_elemento)
+        
     def seleccionar_siguiente(self, widget = None):
         
         modelo, iter = self.treeselection.get_selected()
