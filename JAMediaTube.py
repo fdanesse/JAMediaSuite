@@ -202,8 +202,14 @@ class Ventana(Gtk.Window):
             return
         
         else:
-            videoitem.get_parent().remove(videoitem)
-            destino.pack_start(videoitem, False, False, 1)
+            # E try siguiente es para evitar problemas cuando:
+            # El drag termina luego de que el origen se ha
+            # comenzado a descargar y por lo tanto, no tiene padre.
+            try:
+                videoitem.get_parent().remove(videoitem)
+                destino.pack_start(videoitem, False, False, 1)
+            except:
+                return
             
             if destino == self.paneltube.descargar:
                 text = TipDescargas

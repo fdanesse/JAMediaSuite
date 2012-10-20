@@ -609,7 +609,6 @@ class ToolbarAccion(Gtk.Toolbar):
         item = Gtk.ToolItem()
         item.set_expand(True)
         self.label = Gtk.Label("")
-        self.label.set_line_wrap(True)
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -690,6 +689,7 @@ class ToolbarAccion(Gtk.Toolbar):
             texto = uri
             if os.path.exists(uri):
                 texto = os.path.basename(uri)
+            if len(texto) > 30: texto = str(texto[0:30]) + " . . . "
             self.label.set_text("¿%s?: %s" % (accion, texto))
             self.show_all()
 

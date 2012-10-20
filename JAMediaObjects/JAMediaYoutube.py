@@ -193,3 +193,59 @@ if __name__=="__main__":
         for item in video.items():
             print item
             
+'''
+Ejemplo de detalles en un video.
+Corresponde a def DetalleVideo(entry)
+
+metadata {
+    'category': [<gdata.media.Category object at 0x19f8c10>],
+    'extension_attributes': {},
+    'title': <gdata.media.Title object at 0x19f8f10>,
+    'text': None,
+    'description': <gdata.media.Description object at 0x19f8d10>,
+    'private': None,
+    'content': [<gdata.media.Content object at 0x19f8c50>,
+        <gdata.media.Content object at 0x19f8c90>,
+        <gdata.media.Content object at 0x19f8cd0>],
+    'credit': None,
+    'player': <gdata.media.Player object at 0x19f8d90>,
+    'keywords': <gdata.media.Keywords object at 0x19f8d50>,
+    'extension_elements': [<atom.ExtensionElement object at 0x19f8dd0>],
+    'thumbnail': [<gdata.media.Thumbnail object at 0x19f8e10>,
+        <gdata.media.Thumbnail object at 0x19f8e50>,
+        <gdata.media.Thumbnail object at 0x19f8e90>,
+        <gdata.media.Thumbnail object at 0x19f8ed0>],
+    'duration': <gdata.media.Duration object at 0x19f8f50>,
+    'name': None}
+
+entrada {
+    'control': None,
+    'rating': <gdata.youtube.Rating object at 0x19f8650>,
+    '_GDataEntry__id': <atom.Id object at 0x19f8750>,
+    'text': None,
+    'contributor': [],
+    'summary': None,
+    'category': [<atom.Category object at 0x19f86d0>,
+        <atom.Category object at 0x19f8710>],
+    'statistics': <gdata.youtube.Statistics object at 0x19f8bd0>,
+    'author': [<atom.Author object at 0x19f8790>],
+    'media': <gdata.media.Group object at 0x19f8b50>,
+    'recorded': None,
+    'comments': <gdata.youtube.Comments object at 0x19f8b10>,
+    'content': <atom.Content object at 0x19f87d0>,
+    'source': None,
+    'extension_elements': [],
+    'updated': <atom.Updated object at 0x1750890>,
+    'link': [<atom.Link object at 0x19f8910>,
+        <atom.Link object at 0x19f8950>,
+        <atom.Link object at 0x19f89d0>,
+        <atom.Link object at 0x19f8a50>,
+        <atom.Link object at 0x19f8a90>],
+    'geo': None,
+    'noembed': None,
+    'extension_attributes': {},
+    'rights': None,
+    'title': <atom.Title object at 0x19f88d0>,
+    'racy': None,
+    'published': <atom.Published object at 0x1750a90>} '''
+    
