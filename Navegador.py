@@ -30,6 +30,7 @@ from gi.repository import GObject
 from Directorios import Directorios
 
 import JAMediaObjects
+from JAMediaObjects.JAMFileSystem import DeviceManager
 import JAMediaObjects.JAMFileSystem as JAMF
 import JAMediaObjects.JAMediaGlobales as G
 
@@ -40,7 +41,6 @@ ACTIVITIES = os.path.join(HOME, "Activities")
 DIARIO = os.path.join(HOME, ".sugar/default")
 LOGS = os.path.join(DIARIO, "logs")
 ROOT = "/"
-MEDIA = "/media"
 JAMEDIA = os.path.join(HOME, "JAMediaDatos")
 
 class Navegador(Gtk.Paned):
@@ -122,14 +122,48 @@ class Unidades(Gtk.TreeView):
         self.set_property("rules-hint", True)
         self.set_headers_clickable(False)
         self.set_headers_visible(False)
+        
         self.dir_select = None
         self.modelo = ListoreModel()
+        
+        self.demonio_unidades = DeviceManager()
+        
         self.setear_columnas()
         self.Llenar_ListStore()
+        
         self.treeselection = self.get_selection()
         self.treeselection.set_select_function(self.selecciones, self.modelo)
+        
         self.set_model(self.modelo)
         self.show_all()
+        
+        self.demonio_unidades.connect('nueva_unidad_conectada', self.nueva_unidad_conectada)
+        self.demonio_unidades.connect('nueva_unidad_desconectada', self.nueva_unidad_desconectada)
+        
+    def nueva_unidad_conectada(self, widget, unidad):
+        """Cuando se conecta una unidad, se agrega a la lista."""
+        
+        icono = os.path.join(ICONOS, "usb.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
+        self.modelo.append([ pixbuf, unidad['label'], unidad['mount_path']])
+    
+    def nueva_unidad_desconectada(self, widget, unidad):
+        """Cuando se desconecta una unidad, se quita de la lista."""
+        
+        iter = self.modelo.get_iter_first()
+        self.remover_unidad(iter, unidad)
+        
+    def remover_unidad(self, iter, unidad):
+        """Cuando se desconecta una unidad, se quita de la lista."""
+        
+        directorio =  self.modelo.get_value(iter, 2)
+        
+        if directorio == unidad['mount_path']:
+            self.modelo.remove(iter)
+            
+        else:
+            iter = self.modelo.iter_next(iter)
+            self.remover_unidad(iter, unidad)
         
     def selecciones(self, treeselection, model, path, is_selected, listore):
         """Cuando se hace click sobre una unidad de almacenamiento."""
@@ -178,10 +212,6 @@ class Unidades(Gtk.TreeView):
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
             self.modelo.append([ pixbuf, 'Actividades', ACTIVITIES])
             
-        icono = os.path.join(ICONOS, "usb.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
-        self.modelo.append([ pixbuf, 'Unidades', MEDIA])
-        
         if JAMF.describe_uri(JAMEDIA):
             icono = os.path.join(ICONOS, "JAMedia.png")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
@@ -196,6 +226,11 @@ class Unidades(Gtk.TreeView):
             icono = os.path.join(ICONOS, "diario.png")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
             self.modelo.append([ pixbuf, 'Logs', LOGS])
+            
+        icono = os.path.join(ICONOS, "usb.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, G.get_pixels(0.8), -1)
+        for unidad in self.demonio_unidades.get_unidades():
+            self.modelo.append([ pixbuf, unidad['label'], unidad['mount_path']])
             
 class ListoreModel(Gtk.ListStore):
     

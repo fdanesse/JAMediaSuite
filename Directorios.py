@@ -147,6 +147,8 @@ class Directorios(Gtk.TreeView):
         
     def leer(self, dir):
         
+        archivo = ""
+        
         try:
             directorio = dir[0]
             path = dir[1]
