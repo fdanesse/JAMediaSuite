@@ -66,7 +66,7 @@ class ToolbarGrabar(Gtk.Toolbar):
         item = Gtk.ToolItem()
         item.set_expand(True)
         self.label = Gtk.Label("Grabador Detenido.")
-        self.label.set_line_wrap(True)
+        #self.label.set_line_wrap(True)
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
