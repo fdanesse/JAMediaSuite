@@ -46,10 +46,14 @@ JAMEDIA = os.path.join(HOME, "JAMediaDatos")
 class Navegador(Gtk.Paned):
     """Navegador de Archivos."""
     
-    __gsignals__ = {"info":(GObject.SIGNAL_RUN_FIRST,
+    __gsignals__ = {
+    "info":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "cargar":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    "borrar":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
     
     def __init__(self):
         
@@ -59,15 +63,26 @@ class Navegador(Gtk.Paned):
         self.unidades = None
         self.directorios = None
         self.infowidget = None
+        
         self.pack1(self.area_izquierda_del_panel(), resize = False, shrink = True)
         self.pack2(self.area_derecha_del_panel(), resize = True, shrink = True)
+        
         self.show_all()
+        
         self.unidades.connect('leer', self.leer)
         self.unidades.treeselection.select_path(0)
         self.unidades.connect('info', self.emit_info)
+        
         self.directorios.connect('info', self.emit_info)
+        self.directorios.connect('borrar', self.emit_borrar)
+        
         self.infowidget.connect('cargar', self.emit_cargar)
-
+        
+    def emit_borrar(self, widget, direccion, modelo, iter):
+        """Cuando se selecciona borrar en el menu de un item."""
+        
+        self.emit('borrar', direccion, modelo, iter)
+        
     def emit_cargar(self, widget, tipo):
         """Cuando se hace click en infowidget se pasa
         los datos a la ventana principal."""
@@ -110,7 +125,8 @@ class Navegador(Gtk.Paned):
 class Unidades(Gtk.TreeView):
     """Treview para unidades y directorios marcados."""
     
-    __gsignals__ = {"leer":(GObject.SIGNAL_RUN_FIRST,
+    __gsignals__ = {
+    "leer":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "info":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
@@ -243,7 +259,8 @@ class InfoWidget(Gtk.EventBox):
     """Widgets con información sobre en path
     seleccionado en la estructura de directorios y archivos."""
     
-    __gsignals__ = {"cargar":(GObject.SIGNAL_RUN_FIRST,
+    __gsignals__ = {
+    "cargar":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
     
     def __init__(self):

@@ -36,8 +36,12 @@ ICONOS = os.path.join(JAMediaObjects.__path__[0], "Iconos")
 class Directorios(Gtk.TreeView):
     """TreView para toda la estructura de directorios."""
     
-    __gsignals__ = {"info":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+    __gsignals__ = {
+    "info":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+    "borrar":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
     
     def __init__(self):
         
@@ -304,22 +308,8 @@ class Directorios(Gtk.TreeView):
             
         elif accion == "Borrar":
             self.direccion_seleccionada = direccion
-            dialog = Gtk.Dialog("Borrar . . . ", self.get_toplevel(),
-            Gtk.DialogFlags.MODAL, None)
-            etiqueta = Gtk.Label("¿Realmente deseas borrar: %s" % (direccion))
-            dialog.vbox.pack_start(etiqueta, True, True, 5)
-            dialog.add_button("Si, Borrar", 1)
-            dialog.add_button("No, no borrar", 2)
-            dialog.show_all()
-            
-            if dialog.run()== 1:
-                if JAMF.borrar(self.direccion_seleccionada):
-                    self.modelo.remove(iter)
-                    
-            elif dialog.run()== 2:
-                pass
-            
-            dialog.destroy()
+            # "Emite 'borrar' para pedir confirmacion en toolbaraccion."
+            self.emit('borrar', self.direccion_seleccionada, self.modelo, iter)
             self.direccion_seleccionada = None
 
         elif accion == "Pegar":
@@ -374,7 +364,8 @@ class TreeStoreModel(Gtk.TreeStore):
 
 class MenuList(Gtk.Menu):
     
-    __gsignals__ = {"accion":(GObject.SIGNAL_RUN_FIRST,
+    __gsignals__ = {
+    "accion":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_STRING))}
     

@@ -586,7 +586,6 @@ class JAMediaPlayer(Gtk.Plug):
         self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(lista)
         if self.toolbar_list: self.toolbar_list.label.set_text("")
-        self.lista_de_reproduccion.seleccionar_primero()
 
     def cargar_reproducir(self, widget, path):
         """Recibe lo que se selecciona en la lista de
@@ -727,7 +726,6 @@ class JAMediaPlayer(Gtk.Plug):
         self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(lista)
         self.toolbar_list.label.set_text(titulo)
-        self.lista_de_reproduccion.seleccionar_primero()
 
     def seleccionar_lista_de_stream(self, archivo, titulo):
         """Responde a la seleccion en el menu de la toolbarlist.
@@ -754,7 +752,6 @@ class JAMediaPlayer(Gtk.Plug):
         self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(items)
         self.toolbar_list.label.set_text(titulo)
-        self.lista_de_reproduccion.seleccionar_primero()
         
     def click_derecho_en_lista(self, widget, event):
         """Esto es para abrir un menu de opciones cuando

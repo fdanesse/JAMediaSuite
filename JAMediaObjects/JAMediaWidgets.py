@@ -280,7 +280,9 @@ class Lista(Gtk.TreeView):
     def ejecutar_agregar_elemento(self):
         """Agrega los items a la lista, uno a uno, actualizando."""
         
-        if not self.elementos: return
+        if not self.elementos:
+            self.seleccionar_primero()
+            return
         
         texto, path = self.elementos[0]
         descripcion = JAMF.describe_uri(path)
@@ -616,8 +618,8 @@ class ToolbarAccion(Gtk.Toolbar):
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
+        #self.insert(G.get_separador(draw = False,
+        #    ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
         item.set_expand(True)
@@ -626,8 +628,8 @@ class ToolbarAccion(Gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
+        #self.insert(G.get_separador(draw = False,
+        #    ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaWidgetsBASE,
             "Iconos", "acercar.png")
