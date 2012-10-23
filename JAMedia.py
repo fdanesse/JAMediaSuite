@@ -33,7 +33,6 @@ class Ventana(Gtk.Window):
         self.set_size_request(640, 480)
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
-        self.modify_bg(0, G.GRIS)
         
         self.pista = ""
         
