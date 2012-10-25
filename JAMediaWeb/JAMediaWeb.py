@@ -25,7 +25,8 @@ import sys
 import gi
 from gi.repository import Gtk
 from gi.repository import GObject
-from gi.repository import WebKit
+
+from Navegador import Navegador
 
 import JAMediaObjects
 import JAMediaObjects.JAMediaGlobales as G
@@ -53,7 +54,7 @@ class JAMediaWeb(Gtk.Plug):
         """Se crea la interfaz grafica,
         se setea y se empaqueta todo."""
         
-        self.navegador = WebKit.WebView()
+        self.navegador = Navegador()
         
         base_panel = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
         
@@ -62,7 +63,7 @@ class JAMediaWeb(Gtk.Plug):
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         #scroll.add_with_viewport (self.lista_de_reproduccion)
         
-        base_panel.pack1(scroll, resize = True, shrink = True)
+        #base_panel.pack1(scroll, resize = True, shrink = True)
         
         # Derecha
         scroll = Gtk.ScrolledWindow()
@@ -72,9 +73,55 @@ class JAMediaWeb(Gtk.Plug):
         base_panel.pack2(scroll, resize = True, shrink = True)
         
         self.add(base_panel)
-        self.show_all()
-        self.navegador.open('https://www.google.com/')
         
+        self.show_all()
+        
+        #self.navegador.connect("title-changed", self.set_titulo)
+        #self.navegador.connect("load-finished", self.listo)
+        #self.navegador.connect("load-started", self.cargando)
+        #self.navegador.connect("load-progress-changed", self.set_progreso)
+        #self.navegador.connect("load-error", self.error)
+        #self.navegador.connect("download-requested", self.descargar_archivo, gtk.Window())
+        #self.navegador.connect("create-web-view", self.ventana_con_webview)
+        #self.navegador.connect("populate-popup", self.menu_webview)
+        #self.navegador.connect("status-bar-text-changed", self.set_text_status)
+        #self.navegador.connect("icon-loaded", self.favicon)
+        
+        #self.navegador.open('https://www.google.com/')
+        #self.navegador.set_zoom_level(1.0)
+        #print self.navegador.get_view_mode()
+        #self.navegador.set_view_mode(WebKit.WebViewViewMode.FLOATING)
+        
+    def anterior(self, widget):
+        """Carga la página anterior."""
+        
+        self.navegador.go_back()
+
+    def siguiente(self, widget):
+        """Carga la página siguiente."""
+        
+        self.navegador.go_forward()
+    
+    def recargar(self, widget):
+        """Recarga la página actual."""
+        
+        self.navegador.reload()
+
+    def detener(self, widget):
+        """Detiene la carga de la página."""
+        
+        self.navegador.stop_loading()
+        
+    def acercar(self, widget):
+        """Hace zoom in."""
+        
+        pass
+    
+    def alejar(self, widget):
+        """Hace zoom out."""
+        
+        pass
+    
     def embed_event(self, widget):
         """No hace nada por ahora."""
         

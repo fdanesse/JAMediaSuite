@@ -56,8 +56,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.12614479"
-     inkscape:cx="-3225.4027"
-     inkscape:cy="759.1588"
+     inkscape:cx="-3300.713"
+     inkscape:cy="624.39303"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -1459,7 +1459,7 @@
          style="fill:#000000;fill-opacity:0.32156863;stroke:none">Video</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:671.79956055px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0099ff;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:671.79956055000002380px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0099ff;fill-opacity:1;stroke:#000000;font-family:Sans;stroke-opacity:1;stroke-width:13.99999995;stroke-miterlimit:4;stroke-dasharray:none"
        x="-5994.8623"
        y="1351.4143"
        id="text3057"
@@ -1472,7 +1472,7 @@
          id="tspan3059"
          x="-5994.8623"
          y="1351.4143"
-         style="fill:#0099ff;fill-opacity:1;stroke:none">Video</tspan></text>
+         style="fill:#0099ff;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:13.99999995;stroke-miterlimit:4;stroke-dasharray:none">Video</tspan></text>
     <path
        inkscape:connector-curvature="0"
        style="fill:#000000;fill-opacity:0.32116789;stroke:none"
@@ -1662,7 +1662,7 @@
          style="fill:#000000;fill-opacity:0.32156863;stroke:none">Lector</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:607.22137451000003239px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffb380;fill-opacity:1;stroke:#ffb380;stroke-width:11.50325203000000052;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans"
+       style="font-size:607.22137451000003239px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffb380;fill-opacity:1;stroke:#000000;stroke-width:14.00000021;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans"
        x="-6140.4683"
        y="-522.8573"
        id="text3057-0"
@@ -1675,7 +1675,7 @@
          id="tspan3059-7"
          x="-6140.4683"
          y="-522.8573"
-         style="fill:#ffb380;fill-opacity:1;stroke:#ffb380;stroke-width:11.50325203000000052">Lector</tspan></text>
+         style="fill:#ffb380;fill-opacity:1;stroke:#000000;stroke-width:14.00000021;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none">Lector</tspan></text>
     <path
        inkscape:connector-curvature="0"
        style="fill:#ff6600;stroke:#000000;stroke-width:3.50252557;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
@@ -1703,7 +1703,7 @@
          style="fill:#000000;fill-opacity:0.32156863;stroke:none">Imágenes</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:402.86340332px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0099ff;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:402.86340332000003173px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0099ff;fill-opacity:1;stroke:#000000;font-family:Sans;stroke-opacity:1;stroke-width:13.99999997;stroke-miterlimit:4;stroke-dasharray:none"
        x="-2556.782"
        y="-441.01193"
        id="text3057-8"
@@ -1716,7 +1716,7 @@
          id="tspan3059-75"
          x="-2556.782"
          y="-441.01193"
-         style="fill:#0099ff;fill-opacity:1;stroke:none">Imágenes</tspan></text>
+         style="fill:#0099ff;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:13.99999997;stroke-miterlimit:4;stroke-dasharray:none">Imágenes</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:621.0692749px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:0.32156863;stroke:none;font-family:Sans"
@@ -1928,7 +1928,7 @@
        inkscape:export-ydpi="3.0869229" />
     <text
        xml:space="preserve"
-       style="font-size:462.60974121px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff6600;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:462.60974120999992465px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff6600;fill-opacity:1;stroke:#000000;font-family:Sans;stroke-opacity:1;stroke-width:14.00000006;stroke-miterlimit:4;stroke-dasharray:none"
        x="-2605.0149"
        y="1058.7407"
        id="text3057-8-6"
@@ -1941,6 +1941,213 @@
          id="tspan3059-75-8"
          x="-2605.0149"
          y="1058.7407"
-         style="fill:#ff6600;fill-opacity:1;stroke:none">Explorer</tspan></text>
+         style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:14.00000006;stroke-miterlimit:4;stroke-dasharray:none">Explorer</tspan></text>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -1984.9284,1382.6138 119.4603,266.6455 -225.5956,-42.5587 209.667,325.9106 c 32.2497,85.6471 23.1488,205.6002 -140.5071,272.4993 -72.7834,21.9142 -191.9685,55.1989 -280.0623,-58.0477 l -65.2689,-100.1388 141.8901,-61.3176 16.3257,46.156 c 21.6664,48.7787 68.1176,40.0412 86.0408,9.3579 16.7449,-28.6664 5.4877,-61.0188 -14.8151,-101.9192 l -127.9585,-257.7744 -213.9182,170.7608 -83.1746,-222.3597 577.9164,-247.214 z"
+       id="path2816-5-4"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -1956.5996,1328.3935 119.4603,266.6455 -225.5955,-42.5587 209.667,325.9106 c 32.2497,85.647 23.1487,205.6002 -140.5071,272.4993 -72.7835,21.9141 -191.9685,55.1988 -280.0624,-58.0477 l -65.2689,-100.1389 141.8902,-61.3175 16.3257,46.1559 c 21.6664,48.7788 68.1175,40.0413 86.0407,9.3579 16.7449,-28.6663 5.4878,-61.0187 -14.8151,-101.9192 l -127.9585,-257.7744 -213.9181,170.7609 -83.1746,-222.3598 577.9163,-247.2139 z"
+       id="path2816-1"
+       sodipodi:nodetypes="cccccccccsscccc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -1768.8448,1380.104 -353.9062,609.5937 268.0625,53.9063 77,-272.6875 93.1875,27.6562 12.1562,310.6563 297.5938,65.5 -145.2813,-728.625 -248.8125,-66 z m 89.4375,193.7187 -2.5937,85.7188 -32.5625,-26.8438 35.1562,-58.875 z"
+       id="path2818-6-44"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -1740.5159,1325.8836 -353.9063,609.5938 268.0625,53.9062 77,-272.6875 93.1875,27.6563 12.1563,310.6563 297.5937,65.5 -145.2813,-728.6251 -248.8124,-66 z m 89.4375,193.7188 -2.5938,85.7187 -32.5625,-26.8437 35.1563,-58.875 z"
+       id="path2818-59"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:0.32116789;stroke:none"
+       d="m -1306.5182,1368.1789 171.8756,102.308 -2.3744,129.3409 109.4699,-63.5031 151.00766,5.3154 -66.7362,722.8997 -342.21546,-9.2712 167.0886,-486.8168 -154.2206,46.5047 -33.9558,-168.4445 -298.8481,426.923 -167.6812,-197.231 466.59,-508.0251 z"
+       id="path2820-7-6"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:43;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -1264.1894,1325.9585 171.8756,102.3081 -2.3744,129.3408 109.46986,-63.503 151.0077,5.3154 -66.7362,722.8997 -342.21546,-9.2712 167.0886,-486.8169 -154.2206,46.5048 -33.9558,-168.4445 -298.8481,426.923 -167.6812,-197.231 466.59,-508.0252 z"
+       id="path2820-0"
+       sodipodi:nodetypes="ccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:0.32116789;stroke:none;font-family:Bitstream Vera Sans"
+       x="-2222.9946"
+       y="2055.012"
+       id="text2822-1-0"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan2824-4-5"
+         x="-2222.9946"
+         y="2055.012"
+         style="font-weight:bold;fill:#000000;fill-opacity:0.32116789;stroke:none;-inkscape-font-specification:AlArabiya Bold">edi</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:614.23028564000003371px;font-style:normal;font-weight:normal;fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27.8;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Bitstream Vera Sans"
+       x="-2194.0615"
+       y="2027.512"
+       id="text2822-63"
+       transform="scale(0.9099957,1.0989063)"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan2824-2"
+         x="-2194.0615"
+         y="2027.512"
+         style="font-weight:bold;fill:#00ff00;stroke:#000000;stroke-width:27.8;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;-inkscape-font-specification:AlArabiya Bold"><tspan
+   style="fill:#00ffff;fill-opacity:1"
+   id="tspan4069">e</tspan>d<tspan
+   style="fill:#00ffff;fill-opacity:1"
+   id="tspan4075">i</tspan></tspan></text>
+    <g
+       transform="translate(-2488.5159,1392.1024)"
+       id="g3861-3"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229">
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccscccccccccccccc"
+         id="path3761-8-1"
+         d="m 1772.8028,865.33376 81.2745,-2.0831 -4.1679,-31.2598 -33.3434,-20.8395 -2.0841,-395.9532 c 0,0 -41.6791,-27.09119 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.9764,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1755,33.3429 l 0.084,31.2598 -95.9463,2.0843 c -11.831,12.4926 -20.2906,26.6709 -2.0839,54.1823 l 89.6103,0 2.084,200.061 -20.8396,6.2517 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccscc"
+         id="path3789-5-35"
+         d="m 1703.3766,456.64166 c 0,0 -9.7645,-93.54274 84.0139,-116.46533 38.064,-28.63805 -56.633,-56.60839 -93.7784,-35.42837 -48.6708,27.75176 -48.8757,56.80478 -47.9311,56.26783 -17.5891,35.59336 0.7014,84.72747 57.6956,95.62587 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccc"
+         id="path3791-5-7"
+         d="m 1578.7586,433.41706 c 0,0 48.1668,-22.3863 29.411,-70.31698 -18.7556,-47.93181 -68.7706,-37.51149 -68.7706,-37.51149 0,0 -49.2071,11.39793 -45.8473,41.67892 37.7469,-16.3034 60.435,18.75633 60.435,18.75633 l 24.7719,47.39322 z"
+         style="fill:#000000;fill-opacity:0.35036495;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -706.09784,2237.4574 81.2745,-2.0832 -4.1679,-31.2597 -33.3434,-20.8395 -2.0841,-395.9533 c 0,0 -41.6791,-27.0912 -43.7632,6.2517 -2.0839,33.3441 0,81.2747 0,81.2747 l -197.9764,2.0843 c -17.4917,6.4544 -30.6012,15.5381 -29.1754,33.3429 l 0.084,31.2598 -95.94626,2.0843 c -11.831,12.4926 -20.2906,26.671 -2.0839,54.1824 l 89.61026,0 2.084,200.0609 -20.8396,6.2518 0,35.4272 72.9387,0 0,-91.6939 181.4727,-2.0843 1.916,91.6939 z"
+       id="path3761-4"
+       sodipodi:nodetypes="cccccscccccccccccccc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763-93"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-1658.0519,-11508.834)"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="path3763-9-52"
+       sodipodi:cx="77.23214"
+       sodipodi:cy="1154.4158"
+       sodipodi:rx="1.6964285"
+       sodipodi:ry="1.875"
+       d="m 78.928568,1154.4158 a 1.6964285,1.875 0 1 1 -3.392857,0 1.6964285,1.875 0 1 1 3.392857,0 z"
+       transform="matrix(11.670191,0,0,11.670191,-1740.3684,-11499.456)"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:3.50252557;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -868.76064,2039.4807 c 7.0095,21.2935 14.5919,42.4912 54.2285,58.351 59.0569,-2.7915 66.6757,-24.2606 77.1712,-43.2258 l 4.1714,-42.2164 c -44.7229,31.1834 -69.113,44.6175 -123.0568,16.6721 l -12.5143,10.4191 z"
+       id="path3787-9"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff6600;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -775.52404,1828.7652 c 0,0 -9.7645,-93.5427 84.0139,-116.4653 38.064,-28.6381 -56.633,-56.6084 -93.7784,-35.4284 -48.6708,27.7518 -48.8757,56.8048 -47.9311,56.2679 -17.5891,35.5933 0.7014,84.7274 57.6956,95.6258 z"
+       id="path3789-1"
+       sodipodi:nodetypes="ccscc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:27;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -900.14204,1805.5406 c 0,0 48.1668,-22.3863 29.411,-70.317 -18.7556,-47.9318 -68.7706,-37.5114 -68.7706,-37.5114 0,0 -49.2071,11.3979 -45.8473,41.6789 37.7469,-16.3034 60.435,18.7563 60.435,18.7563 l 24.7719,47.3932 z"
+       id="path3791-6"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229" />
+    <text
+       xml:space="preserve"
+       style="font-size:671.79956055px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:0.32156863;stroke:none;font-family:Sans"
+       x="-2426.9849"
+       y="2765.7861"
+       id="text3057-3-8"
+       sodipodi:linespacing="125%"
+       transform="scale(1.0451718,0.95678051)"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan3059-3-5"
+         x="-2426.9849"
+         y="2765.7861"
+         style="fill:#000000;fill-opacity:0.32156863;stroke:none">Web</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:671.79956055000002380px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#00ff00;fill-opacity:1;stroke:#000000;font-family:Sans;stroke-width:14.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="-2449.1582"
+       y="2755.135"
+       id="text3057-31"
+       sodipodi:linespacing="125%"
+       transform="scale(1.0451718,0.95678051)"
+       inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/jamediaweb.png"
+       inkscape:export-xdpi="3.0869229"
+       inkscape:export-ydpi="3.0869229"><tspan
+         sodipodi:role="line"
+         id="tspan3059-39"
+         x="-2449.1582"
+         y="2755.135"
+         style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:14.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">Web</tspan></text>
   </g>
 </svg>
