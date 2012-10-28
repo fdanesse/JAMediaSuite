@@ -135,10 +135,34 @@ class PanelTube(Gtk.Paned):
             destino = self.encontrados
             text = TipEncontrados
             
-        for child in origen.get_children():
-            origen.remove(child)
-            destino.pack_start(child, False, False, 1)
-            child.set_tooltip_text(text)
+        elementos = origen.get_children()
+        
+        GObject.idle_add(
+            self.ejecutar_mover_videos,
+            origen,
+            destino,
+            text,
+            elementos)
+    
+    def ejecutar_mover_videos(self, origen, destino, text, elementos):
+        """Ejecuta secuencia que pasa videos desde una lista a otra."""
+        
+        if not elementos: return False
+    
+        if elementos[0].get_parent() == origen:
+            origen.remove(elementos[0])
+            destino.pack_start(elementos[0], False, False, 1)
+            elementos[0].set_tooltip_text(text)
+            
+        elementos.remove(elementos[0])
+        
+        if elementos:
+            GObject.idle_add(
+                self.ejecutar_mover_videos,
+                origen,
+                destino,
+                text,
+                elementos)
             
     def set_vista_inicial(self):
         """Las toolbar accion deben estar ocultas inicialmente."""

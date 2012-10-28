@@ -187,8 +187,6 @@ class Lista(Gtk.TreeView):
         
         Gtk.TreeView.__init__(self)
         
-        self.elementos = []
-        
         self.set_property("rules-hint", True)
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
@@ -273,18 +271,16 @@ class Lista(Gtk.TreeView):
         """ Recibe lista de: [texto para mostrar, path oculto] y
         Comienza secuencia de agregado a la lista."""
         
-        self.elementos = elementos
+        GObject.idle_add(self.ejecutar_agregar_elemento, elementos)
         
-        GObject.idle_add(self.ejecutar_agregar_elemento)
-        
-    def ejecutar_agregar_elemento(self):
+    def ejecutar_agregar_elemento(self, elementos):
         """Agrega los items a la lista, uno a uno, actualizando."""
         
-        if not self.elementos:
+        if not elementos:
             self.seleccionar_primero()
-            return
+            return False
         
-        texto, path = self.elementos[0]
+        texto, path = elementos[0]
         descripcion = JAMF.describe_uri(path)
         
         icono = None
@@ -329,8 +325,8 @@ class Lista(Gtk.TreeView):
         except:
             pass
             
-        self.elementos.remove(self.elementos[0])
-        GObject.idle_add(self.ejecutar_agregar_elemento)
+        elementos.remove(elementos[0])
+        GObject.idle_add(self.ejecutar_agregar_elemento, elementos)
         
     def seleccionar_siguiente(self, widget = None):
         
