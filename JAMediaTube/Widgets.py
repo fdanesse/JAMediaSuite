@@ -278,6 +278,12 @@ class Toolbar_Videos_Derecha(Gtk.Toolbar):
 class Mini_Toolbar(Gtk.Toolbar):
     """Mini toolbars izquierda y derecha."""
     
+    __gsignals__ = {
+    "guardar":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
+    "abrir":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        
     def __init__(self, text):
         
         Gtk.Toolbar.__init__(self)
@@ -292,7 +298,64 @@ class Mini_Toolbar(Gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
         
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+            
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "lista.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Abrir Lista.")
+        boton.connect("clicked", self.get_menu)
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "play.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8),
+            rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE)
+        boton.set_tooltip_text("Guardar Lista.")
+        boton.connect("clicked", self.emit_guardar)
+        self.insert(boton, -1)
+        
         self.show_all()
+        
+    def emit_guardar(self, widget):
+        """Emite guardar, para que se guarden todos
+        los videos en un archivo shelve."""
+        
+        self.emit('guardar')
+        
+    def emit_abrir(self, archivo):
+        """Emite abrir, para que se carguen todos
+        los videos desde un archivo shelve."""
+        
+        self.emit('abrir', archivo)
+        
+    def get_menu(self, widget):
+        """El menu con las listas de videos
+        almacenadas en archivos shelve."""
+        
+        menu = Gtk.Menu()
+        
+        archivos = os.listdir(G.DIRECTORIO_DATOS)
+        
+        for archivo in archivos:
+            
+            if archivo[-5:] != ".tube":
+                archivos.remove(archivo)
+                
+            else:
+                item = Gtk.MenuItem(archivo)
+                menu.append(item)
+                item.connect_object("activate", self.emit_abrir, archivo)
+        
+        menu.show_all()
+        menu.attach_to_widget(widget, self.null)
+        menu.popup(None, None, None, None, 1, 0)
+        
+    def null(self):
+        pass
         
     def set_info(self, valor):
         """Recibe un entero y actualiza la información."""
@@ -648,7 +711,11 @@ class Toolbar_Descarga(Gtk.Box):
         self.url = video_item.videodict["url"]
         self.titulo = video_item.videodict["titulo"]
         
-        self.label_titulo.set_text(self.titulo)
+        texto = self.titulo
+        if len(self.titulo) > 30:
+            texto = str(self.titulo[0:30]) + " . . . "
+            
+        self.label_titulo.set_text(texto)
         self.jamediayoutube.download(self.url, self.titulo)
         
         if self.actualizador:
@@ -816,3 +883,68 @@ class ProgressBar(Gtk.Scale):
         contexto.fill()
         
         return True
+
+class Toolbar_Guardar(Gtk.Toolbar):
+    """Toolbar con widgets para guardar una lista de videos."""
+    
+    __gsignals__ = {
+    "ok":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+    
+    def __init__(self):
+        
+        Gtk.Toolbar.__init__(self)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "alejar.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Cancelar")
+        boton.connect("clicked", self.cancel)
+        self.insert(boton, -1)
+        
+        item = Gtk.ToolItem()
+        label = Gtk.Label("Nombre: ")
+        label.show()
+        item.add(label)
+        self.insert(item, -1)
+            
+        item = Gtk.ToolItem()
+        self.entrytext = Gtk.Entry()
+        self.entrytext.set_size_request(20, -1)
+        self.entrytext.set_max_length(10)
+        self.entrytext.set_tooltip_text("Nombre de Archivo.")
+        self.entrytext.show()
+        self.entrytext.connect('activate', self.activate_entrytext)
+        item.add(self.entrytext)
+        self.insert(item, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "acercar.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Aceptar")
+        boton.connect("clicked", self.emit_ok)
+        self.insert(boton, -1)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+
+        self.show_all()
+        
+    def emit_ok(self, widget):
+        
+        texto = self.entrytext.get_text()
+        if texto: self.emit("ok", texto)
+        self.cancel()
+        
+    def activate_entrytext(self, widget):
+        """Cuando se da enter en el entrytext."""
+        
+        self.emit_ok()
+    
+    def cancel(self, widget=None):
+        
+        self.entrytext.set_text("")
+        self.hide()
+        

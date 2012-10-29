@@ -22,6 +22,7 @@
 import os
 import commands
 import urllib
+import shelve
 
 import gi
 from gi.repository import Gtk
@@ -296,6 +297,38 @@ def stream_en_archivo(streaming, archivo):
         except:
             pass
     
+def set_shelve_lista(archivo, videos):
+    """Recibe un nombre de archivo para almacenar datos
+    de videos de JAMediaTube.
+    
+    datos es una lista de diccionarios que representan videos."""
+    
+    archivo = "%s.tube" % archivo
+    archivo = archivo = os.path.join(DIRECTORIO_DATOS, archivo)
+    
+    lista = shelve.open(archivo)
+    
+    for elemento in videos:
+        lista[elemento["id"]] = elemento
+    
+    lista.close()
+    
+def get_shelve_lista(archivo):
+    """Recibe un nombre de archivo shelve que contiene
+    videos de JAMediaTube y los devuelve."""
+    
+    lista = shelve.open(archivo)
+    
+    keys = lista.keys()
+    videos = []
+    
+    for item in keys:
+        videos.append(lista[item])
+    
+    lista.close()
+    
+    return videos
+
 '''
 Anotaciones para describir las clases de JAMedia:
     import pydoc

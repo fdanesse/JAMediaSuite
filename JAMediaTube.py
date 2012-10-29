@@ -147,7 +147,9 @@ class Ventana(Gtk.Window):
         map(self.ocultar,[
             self.toolbar_descarga,
             self.toolbar_salir,
-            self.alerta_busqueda])
+            self.alerta_busqueda,
+            self.paneltube.toolbar_guardar_encontrados,
+            self.paneltube.toolbar_guardar_descargar])
         
         if self.pista:
             self.jamedia.set_nueva_lista(self.pista)
@@ -177,7 +179,27 @@ class Ventana(Gtk.Window):
         self.jamedia.connect('salir', self.switch, 'jamediatube')
         self.toolbar_busqueda.connect("comenzar_busqueda", self.comenzar_busqueda)
         self.paneltube.connect('download', self.run_download)
+        self.paneltube.connect('open_shelve_list', self.open_shelve_list)
         self.toolbar_descarga.connect('end', self.run_download)
+        
+    def open_shelve_list(self, widget, shelve_list, toolbarwidget):
+        """ Carga una lista de videos almacenada en un
+        archivo shelve en el area del panel correspondiente
+        según que toolbarwidget haya lanzado la señal."""
+        
+        destino = False
+        
+        if toolbarwidget == self.paneltube.toolbar_encontrados:
+            destino = self.paneltube.encontrados
+            
+        elif toolbarwidget == self.paneltube.toolbar_descargar:
+            destino = self.paneltube.descargar
+            
+        videos = []
+        for video in shelve_list:
+            videos.append(video)
+        
+        GObject.idle_add(self.add_videos, videos, destino)
         
     def run_download(self, widget):
         """Comienza descarga de un video."""
@@ -235,19 +257,31 @@ class Ventana(Gtk.Window):
         for video in YT.Buscar(palabras):
             self.videos_temp.append(video)
         
-        GObject.idle_add(self.add_videos)
-        
-    def add_videos(self):
-        """Se agregan los videos encontrados al panel."""
+        GObject.idle_add(self.add_videos, self.videos_temp, self.paneltube.encontrados)
+        return False
+    
+    def add_videos(self, videos, destino):
+        """Se crean los video_widgets de videos y
+        se agregan al panel, segun destino."""
         
         if len(self.videos_temp) < 1:
+            # self.videos_temp contiene solo los videos
+            # encontrados en las búsquedas, no los que se cargan
+            # desde un archivo.
             map(self.ocultar,[self.alerta_busqueda])
-            
-        else:
-            video = self.videos_temp[0]
+        
+        if videos:
+            video = videos[0]
             
             videowidget = WidgetVideoItem(video)
             text = TipEncontrados
+            
+            if destino == self.paneltube.encontrados:
+                text = TipEncontrados
+                
+            elif destino == self.paneltube.descargar:
+                text = TipDescargas
+                
             videowidget.set_tooltip_text(text)
             videowidget.show_all()
             
@@ -264,13 +298,13 @@ class Ventana(Gtk.Window):
             #videowidget.drag_source_set_icon_pixbuf(pixbuf)
             #commands.getoutput('rm %s' % (archivo))
             
-            self.videos_temp.remove(video)
-            self.paneltube.encontrados.pack_start(videowidget, False, False, 1)
+            videos.remove(video)
+            destino.pack_start(videowidget, False, False, 1)
             self.alerta_busqueda.label.set_text("Encontrado: %s" % (video["titulo"]))
             self.get_property('window').invalidate_rect(self.get_allocation(), True)
             self.get_property('window').process_updates(True)
             
-            GObject.idle_add(self.add_videos)
+            GObject.idle_add(self.add_videos, videos, destino)
         
     def set_pista(self, pista):
         """Cuando se ejecuta pasandole un archivo."""

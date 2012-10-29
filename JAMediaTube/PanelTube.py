@@ -30,7 +30,7 @@ from gi.repository import GObject
 import JAMediaObjects
 
 #import JAMediaObjects.JAMFileSystem as JAMF
-#import JAMediaObjects.JAMediaGlobales as G
+import JAMediaObjects.JAMediaGlobales as G
 
 #JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
@@ -38,6 +38,7 @@ from Widgets import Mini_Toolbar
 from Widgets import ToolbarAccionListasVideos
 from Widgets import Toolbar_Videos_Izquierda
 from Widgets import Toolbar_Videos_Derecha
+from Widgets import Toolbar_Guardar
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
@@ -47,7 +48,10 @@ class PanelTube(Gtk.Paned):
     
     __gsignals__ = {
     'download':(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, []),
+    'open_shelve_list':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_PYOBJECT))}
     
     def __init__(self):
         
@@ -55,11 +59,13 @@ class PanelTube(Gtk.Paned):
         
         self.toolbar_encontrados = None
         self.encontrados = None
+        self.toolbar_guardar_encontrados = None
         self.toolbar_videos_izquierda = None
         self.toolbar_accion_izquierda = None
         
         self.toolbar_descargar = None
         self.descargar = None
+        self.toolbar_guardar_descargar = None
         self.toolbar_videos_derecha = None
         self.toolbar_accion_derecha = None
         
@@ -69,11 +75,13 @@ class PanelTube(Gtk.Paned):
         """Crea y Empaqueta todo."""
         
         self.toolbar_encontrados = Mini_Toolbar("Videos Encontrados")
+        self.toolbar_guardar_encontrados = Toolbar_Guardar()
         self.encontrados = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.toolbar_accion_izquierda = ToolbarAccionListasVideos()
         self.toolbar_videos_izquierda = Toolbar_Videos_Izquierda()
         
         self.toolbar_descargar = Mini_Toolbar("Videos Para Descargar")
+        self.toolbar_guardar_descargar = Toolbar_Guardar()
         self.descargar = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.toolbar_accion_derecha = ToolbarAccionListasVideos()
         self.toolbar_videos_derecha = Toolbar_Videos_Derecha()
@@ -83,6 +91,7 @@ class PanelTube(Gtk.Paned):
         scroll.add_with_viewport (self.encontrados)
         box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         box.pack_start(self.toolbar_encontrados, False, False, 0)
+        box.pack_start(self.toolbar_guardar_encontrados, False, False, 0)
         box.pack_start(scroll, True, True, 0)
         box.pack_start(self.toolbar_accion_izquierda, False, False, 0)
         box.pack_end(self.toolbar_videos_izquierda, False, False, 0)
@@ -93,6 +102,7 @@ class PanelTube(Gtk.Paned):
         scroll.add_with_viewport (self.descargar)
         box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         box.pack_start(self.toolbar_descargar, False, False, 0)
+        box.pack_start(self.toolbar_guardar_descargar, False, False, 0)
         box.pack_start(scroll, True, True, 0)
         box.pack_start(self.toolbar_accion_derecha, False, False, 0)
         box.pack_end(self.toolbar_videos_derecha, False, False, 0)
@@ -106,11 +116,56 @@ class PanelTube(Gtk.Paned):
         self.toolbar_videos_derecha.connect('borrar', self.set_borrar)
         self.toolbar_accion_izquierda.connect('ok', self.ejecutar_borrar)
         self.toolbar_accion_derecha.connect('ok', self.ejecutar_borrar)
-        
+        self.toolbar_encontrados.connect('abrir', self.abrir_lista_shelve)
+        self.toolbar_encontrados.connect('guardar', self.show_toolbar_guardar)
+        self.toolbar_guardar_encontrados.connect('ok', self.guardar_lista_shelve)
+        self.toolbar_descargar.connect('abrir', self.abrir_lista_shelve)
+        self.toolbar_descargar.connect('guardar', self.show_toolbar_guardar)
+        self.toolbar_guardar_descargar.connect('ok', self.guardar_lista_shelve)
         self.toolbar_videos_derecha.connect("comenzar_descarga",
             self.comenzar_descarga)
         
         GObject.timeout_add(300, self.update)
+        
+    def abrir_lista_shelve(self, widget, archivo):
+        """Agrega a la lista, todos los videos almacenados en
+        un archivo shelve."""
+        
+        archivo = os.path.join(G.DIRECTORIO_DATOS, archivo)
+        videos = G.get_shelve_lista(archivo)
+        
+        self.emit('open_shelve_list', videos, widget)
+        
+    def show_toolbar_guardar(self, widget):
+        """Muestra la toolbar para escribir nombre de archivo
+        donde se guardarán los videos de la lista correspondiente."""
+        
+        if widget == self.toolbar_encontrados:
+            self.toolbar_guardar_encontrados.show()
+            
+        elif widget == self.toolbar_descargar:
+            self.toolbar_guardar_descargar.show()
+    
+    def guardar_lista_shelve(self, widget, texto):
+        """Guarda todos los videos de la lista en un archivo shelve."""
+        
+        origen = False
+        
+        if widget == self.toolbar_guardar_encontrados:
+            origen = self.encontrados
+            
+        elif widget == self.toolbar_guardar_descargar:
+            origen = self.descargar
+            
+        videos = []
+        if origen:
+            video_items = origen.get_children()
+            
+            if video_items:
+                for video in video_items:
+                    videos.append(video.videodict)
+        
+        if videos: G.set_shelve_lista(texto, videos)
         
     def comenzar_descarga(self, widget):
         """Envia la señal descargar para comenzar la
@@ -171,7 +226,7 @@ class PanelTube(Gtk.Paned):
         self.toolbar_accion_derecha.cancelar()
         
     def ejecutar_borrar(self, widget, objetos):
-        """Elimina una lista de videos de las listas."""
+        """Elimina una lista de videos."""
         
         for objeto in objetos:
             objeto.destroy()

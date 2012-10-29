@@ -80,14 +80,19 @@ def DetalleVideo(entry):
     video["url"] = metadata['player'].url.split("&")[0]
     #video["flash player"] = entry.GetSwfUrl()
     video["duracion"] = metadata['duration'].seconds
+    
     try:
         previews = []
+        
         for thumbnail in metadata['thumbnail']:
             tubn = [thumbnail.url, thumbnail.height, thumbnail.width]
             previews.append(tubn)
+            
         video["previews"] = previews
+        
     except:
         pass
+    
     return video
 
 class JAMediaYoutube(Gtk.Widget):
