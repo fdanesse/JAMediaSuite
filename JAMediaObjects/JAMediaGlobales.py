@@ -33,7 +33,8 @@ from gi.repository import GdkX11
 if not os.path.exists(os.path.join(os.environ["HOME"], "JAMediaDatos")):
     os.mkdir(os.path.join(os.environ["HOME"], "JAMediaDatos"))
     os.chmod(os.path.join(os.environ["HOME"], "JAMediaDatos"), 0755)
-
+    
+'''
 # unificar directorios de JAMedia, JAMediaVideo y JAMediaImagenes
 directorio_viejo = os.path.join(os.environ["HOME"], ".JAMediaDatos")
 directorio_nuevo = os.path.join(os.environ["HOME"], "JAMediaDatos")
@@ -41,16 +42,19 @@ if os.path.exists(directorio_viejo):
     for elemento in os.listdir(directorio_viejo):
         commands.getoutput('mv %s %s' % (os.path.join(directorio_viejo,
             elemento), directorio_nuevo))
-    commands.getoutput('rm -r %s' % (directorio_viejo))
+    commands.getoutput('rm -r %s' % (directorio_viejo))'''
 
 # Directorios JAMedia
 DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
     "JAMediaDatos", "MisArchivos")
+    
 DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
     "JAMediaDatos", "Datos")
+    
 if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
     os.mkdir(DIRECTORIO_MIS_ARCHIVOS)
     os.chmod(DIRECTORIO_MIS_ARCHIVOS, 0755)
+    
 if not os.path.exists(DIRECTORIO_DATOS):
     os.mkdir(DIRECTORIO_DATOS)
     os.chmod(DIRECTORIO_DATOS, 0755)
@@ -58,6 +62,7 @@ if not os.path.exists(DIRECTORIO_DATOS):
 # Directorio JAMediaTube
 DIRECTORIO_YOUTUBE = os.path.join(os.environ["HOME"],
     "JAMediaDatos", "YoutubeVideos")
+    
 if not os.path.exists(DIRECTORIO_YOUTUBE):
     os.mkdir(DIRECTORIO_YOUTUBE)
     os.chmod(DIRECTORIO_YOUTUBE, 0755)
@@ -65,16 +70,21 @@ if not os.path.exists(DIRECTORIO_YOUTUBE):
 # Directorios JAMediaVideo
 AUDIO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
     "JAMediaDatos", "Audio")
+    
 if not os.path.exists(AUDIO_JAMEDIA_VIDEO):
     os.mkdir(AUDIO_JAMEDIA_VIDEO)
     os.chmod(AUDIO_JAMEDIA_VIDEO, 0755)
+    
 VIDEO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
     "JAMediaDatos", "Videos")
+    
 if not os.path.exists(VIDEO_JAMEDIA_VIDEO):
     os.mkdir(VIDEO_JAMEDIA_VIDEO)
     os.chmod(VIDEO_JAMEDIA_VIDEO, 0755)
+    
 IMAGENES_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
     "JAMediaDatos", "Fotos")
+    
 if not os.path.exists(IMAGENES_JAMEDIA_VIDEO):
     os.mkdir(IMAGENES_JAMEDIA_VIDEO)
     os.chmod(IMAGENES_JAMEDIA_VIDEO, 0755)
@@ -86,7 +96,7 @@ BLANCO = Gdk.Color(65535, 65535, 65535)
 NEGRO = Gdk.Color(0, 0, 0)
 
 def get_pixels(centimetros):
-    """ Recibe un tamaño centimetros y
+    """ Recibe un tamaño en centimetros y
     devuelve el tamaño en pixels que le corresponde,
     según tamaño del monitor que se está utilizando.
     
@@ -117,7 +127,7 @@ def get_separador(draw = False, ancho = 0, expand = False):
 
 def get_boton(archivo, flip = False,
     color = Gdk.Color(65000, 65000, 65000), rotacion = None, pixels = 0):
-    """ Devuelve un toolbarbutton generico."""
+    """ Devuelve un toolbutton generico."""
     
     if not pixels:
         pixels = get_pixels(1)
@@ -135,7 +145,7 @@ def get_boton(archivo, flip = False,
 
 def get_togle_boton(archivo, flip = False,
     color = Gdk.Color(65000, 65000, 65000), pixels = 0):
-    """ Devuelve un toolbarbutton generico."""
+    """ Devuelve un toggletoolbutton generico."""
     
     if not pixels:
         pixels = get_pixels(1.5)
@@ -150,153 +160,199 @@ def get_togle_boton(archivo, flip = False,
     boton.show()
     return boton
 
-def get_streaming_default():
-    """ Descarga los streaming desde la web de JAMedia. """
+
+# >>> JAMedia
+canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/canales'
+radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/radios'
+
+def descarga_lista_de_streamings(url):
+    """Recibe la web donde se publican los streamings
+    de radio o televisión de JAMedia y devuelve la lista
+    de streamings. Un streaming se representa por una lista:
+    [nombre, url]"""
     
     try:
-        # streaming JAMediatv
-        url = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/CanalesJAMediaTV?attredirects=0'
-        urllib.urlretrieve(url, os.path.join(DIRECTORIO_DATOS, "jamediatv.txt"))
-        os.chmod(os.path.join(DIRECTORIO_DATOS, "jamediatv.txt"), 0666)
+        streamings = []
+        
+        web = urllib.urlopen(url)
+        lineas = web.readlines()
+        web.close()
+        
+        for linea in lineas:
+            if 'table' in linea:
+                l = linea.split('table')
+                
+                for x in l:
+                    if '<div>' in x:
+                        xx = x.split('<div>')
+                        
+                        for z in xx:
+                            if "," in z:
+                                s = z.split('</div>')[0]
+                                stream = s.split(",")
+                                streamings.append(stream)
+                                
+        return streamings
+    
+    except:
+        return []
+    
+def clear_lista_de_streamings(path):
+    """Limpia la lista de streamings en un archivo."""
+    
+    archivo = shelve.open(path)
+    archivo.clear()
+    archivo.close()
+    
+def guarda_lista_de_streamings(path, items):
+    """Recibe el path a un archivo de lista de streamings
+    de JAMedia y una lista de items [nombre, url] y los almacena
+    en el archivo."""
+    
+    archivo = shelve.open(path)
+    for item in items:
+        archivo[item[0]] = item[1]
+    archivo.close()
+    
+def get_streamings(path):
+    """Recibe el path a un archivo de streamings
+    y devuelve la lista de streamings que contiene."""
+    
+    archivo = shelve.open(path)
+    items = archivo.items()
+    archivo.close()
+    
+    return items
+
+def set_listas_default():
+    """ Crea las listas para JAMedia si es que no existen y
+    llena las default en caso de estar vacías."""
+
+    listas = [
+        os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"),
+        os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"),
+        os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia"),
+        os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
+        ]
+        
+    for archivo in listas:
+        if not os.path.exists(archivo):
+            jamedialista = shelve.open(archivo)
+            jamedialista.close()
+            os.chmod(archivo, 0666)
+            
+    # verificar si las listas están vacías,
+    # si lo están se descargan las de JAMedia
+    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"))
+    lista = archivo.items()
+    archivo.close()
+    
+    if not lista:
+        try:
+            # Streamings JAMediatv
+            lista_canales = descarga_lista_de_streamings(canales)
+            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"), lista_canales)
+            
+        except:
+            print "Error al descargar Streamings de TV."
+            
+    # verificar si las listas están vacías,
+    # si lo están se descargan las de JAMedia
+    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"))
+    lista = archivo.items()
+    archivo.close()
+    
+    if not lista:
+        try:
+            # Streamings JAMediaradio
+            lista_radios = descarga_lista_de_streamings(radios)
+            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"), lista_radios)
+
+        except:
+            print "Error al descargar Streamings de Radios."
+    
+def get_streaming_default():
+    """ Descarga los streaming desde la web de JAMedia
+    cuando el usuario lo solicita."""
+    
+    try:
+        # Streamings JAMediatv
+        lista_canales = descarga_lista_de_streamings(canales)
+        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"))
+        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"), lista_canales)
+        
     except:
         print "Error al descargar Streamings de TV."
         
     try:
-        # streaming JAMediaradio
-        url = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/CanalesJAMediaRadios?attredirects=0'
-        urllib.urlretrieve(url, os.path.join(DIRECTORIO_DATOS, "jamediaradio.txt"))
-        os.chmod(os.path.join(DIRECTORIO_DATOS, "jamediaradio.txt"), 0666)
+        # Streamings JAMediaradio
+        lista_radios = descarga_lista_de_streamings(radios)
+        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"))
+        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"), lista_radios)
+        
     except:
         print "Error al descargar Streamings de Radios."
         
-def set_listas_default():
-    """ Crea las listas para JAMedia."""
-
-    listas = [
-        os.path.join(DIRECTORIO_DATOS, "jamediatv.txt"),
-        os.path.join(DIRECTORIO_DATOS, "jamediaradio.txt"),
-        os.path.join(DIRECTORIO_DATOS, "misradios.txt"),
-        os.path.join(DIRECTORIO_DATOS, "mistv.txt")
-        ]
-        
-    for lista in listas:
-        if not os.path.exists(lista):
-            archivo = open(lista, "w")
-            archivo.close()
-            os.chmod(lista, 0666)
-            
-    # verificar si las listas están vacías,
-    # si lo están se descargan las de JAMedia
-    archivo = open(listas[0], "r")
-    lista = archivo.readlines()
-    archivo.close()
-    
-    if not lista:
-        try:
-            # streaming JAMediatv
-            url = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/CanalesJAMediaTV?attredirects=0'
-            urllib.urlretrieve(url, os.path.join(DIRECTORIO_DATOS, "jamediatv.txt"))
-            os.chmod(os.path.join(DIRECTORIO_DATOS, "jamediatv.txt"), 0666)
-        except:
-            print "Error al descargar Streamings de TV."
-            
-    archivo = open(listas[1], "r")
-    lista = archivo.readlines()
-    archivo.close()
-    
-    if not lista:
-        try:
-            # streaming JAMediaradio
-            url = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/CanalesJAMediaRadios?attredirects=0'
-            urllib.urlretrieve(url, os.path.join(DIRECTORIO_DATOS, "jamediaradio.txt"))
-            os.chmod(os.path.join(DIRECTORIO_DATOS, "jamediaradio.txt"), 0666)
-        except:
-            print "Error al descargar Streamings de Radios."
-            
-def add_stream(tipo, text):
+def add_stream(tipo, item):
     """Agrega un streaming a la lista correspondiente de jamedia."""
     
     if "TV" in tipo or "Tv" in tipo:
-        archivo = os.path.join(DIRECTORIO_DATOS, "mistv.txt")
+        path = os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
         
     elif "Radio" in tipo:
-        archivo = os.path.join(DIRECTORIO_DATOS, "misradios.txt")
+        path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
         
     else:
         return
     
-    arch = open(archivo, "r")
-    lista = arch.readlines()
-    arch.close()
-    
-    stream = "%s" % (text)
-    if not stream in lista:
-        lista.append(stream)
-        
-        text = ""
-        for x in lista:
-            text += x
-            
-        arch = open(archivo, "w")
-        arch.write(text)
-        arch.close()
+    archivo = shelve.open(path)
+    archivo[item[0]] = item[1]
+    archivo.close()
 
 def eliminar_streaming(url, lista):
     """Elimina un Streaming de una lista de jamedia."""
     
     if lista == "Radios":
-        lista = os.path.join(DIRECTORIO_DATOS, "misradios.txt")
+        path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
         
     elif lista == "TVs":
-        lista = os.path.join(DIRECTORIO_DATOS, "mistv.txt")
+        path = os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
         
     elif lista == "JAM-Radio":
-        lista = os.path.join(DIRECTORIO_DATOS, "jamediaradio.txt")
+        path = os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia")
         
     elif lista == "JAM-TV":
-        lista = os.path.join(DIRECTORIO_DATOS, "jamediatv.txt")
+        path = os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia")
         
     else:
         return
     
-    archivo = open(lista, "r")
-    streamings = archivo.readlines()
+    archivo = shelve.open(path)
+    items = archivo.items()
+    
+    for item in items:
+        if url == str(item[1]):
+            del (archivo[item[0]])
+            
     archivo.close()
-        
-    for stream in streamings:
-        if url == stream.split(",")[1]:
-            return del_stream(lista, url)
-        
-def del_stream(archivo, stream):
-    """Borra un streaming de una lista de jamedia.
-    Esta función es llamada desde eliminar_streaming."""
-    
-    arch = open(archivo, "r")
-    streamings = arch.readlines()
-    arch.close()
-    
-    newlist = ""
-    for s in streamings:
-        if not stream in s: newlist += s
-        
-    arch = open(archivo, "w")
-    arch.write(newlist)
-    arch.close()
 
-def stream_en_archivo(streaming, archivo):
+def stream_en_archivo(streaming, path):
     """Verifica si un streaming está en
     un archivo de lista de jamedia determinado."""
     
-    arch = open(archivo, "r")
-    streamings = arch.readlines()
-    arch.close()
+    archivo = shelve.open(path)
+    items = archivo.values()
     
-    for stream in streamings:
-        try: # FIXME: Si hay una linea vacía falla
-            if streaming == stream.split(",")[1]: return True
-        except:
-            pass
-    
+    for item in items:
+        if streaming == item:
+            archivo.close()
+            return True
+        
+    archivo.close()
+    return False
+# <<< JAMedia
+
+# >>> JAMediaTube
 def set_shelve_lista(archivo, videos):
     """Recibe un nombre de archivo para almacenar datos
     de videos de JAMediaTube.
@@ -304,7 +360,7 @@ def set_shelve_lista(archivo, videos):
     datos es una lista de diccionarios que representan videos."""
     
     archivo = "%s.tube" % archivo
-    archivo = archivo = os.path.join(DIRECTORIO_DATOS, archivo)
+    archivo = os.path.join(DIRECTORIO_DATOS, archivo)
     
     lista = shelve.open(archivo)
     
@@ -328,6 +384,7 @@ def get_shelve_lista(archivo):
     lista.close()
     
     return videos
+# <<< JAMediaTube
 
 '''
 Anotaciones para describir las clases de JAMedia:

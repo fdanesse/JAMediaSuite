@@ -695,12 +695,16 @@ class ToolbarAccion(Gtk.Toolbar):
         self.lista = lista
         self.accion = accion
         self.iter = iter
+        
         if self.lista and self.accion and self.iter:
             uri = self.lista.modelo.get_value(self.iter, 2)
             texto = uri
+            
             if os.path.exists(uri):
                 texto = os.path.basename(uri)
+                
             if len(texto) > 30: texto = str(texto[0:30]) + " . . . "
+            
             self.label.set_text("¿%s?: %s" % (accion, texto))
             self.show_all()
 

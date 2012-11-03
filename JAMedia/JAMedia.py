@@ -306,15 +306,14 @@ class JAMediaPlayer(Gtk.Plug):
             nombre = modelo.get_value(iter, 1)
             url = modelo.get_value(iter, 2)
             tipo = self.toolbar_list.label.get_text()
-            G.add_stream(tipo, "%s,%s" % (nombre, url))
+            G.add_stream(tipo, [nombre, url])
             
         elif accion == "Mover":
             modelo, iter = self.lista_de_reproduccion.treeselection.get_selected()
             nombre = modelo.get_value(iter, 1)
             url = modelo.get_value(iter, 2)
             tipo = self.toolbar_list.label.get_text()
-            G.add_stream(tipo, "%s,%s" % (nombre, url))
-            
+            G.add_stream(tipo, [nombre, url])
             G.eliminar_streaming(url, lista)
             
         else:
@@ -324,7 +323,7 @@ class JAMediaPlayer(Gtk.Plug):
         """Ejecuta agregar stream, de acuerdo a los datos
         que pasa toolbaraddstream en add-stream."""
         
-        G.add_stream(tipo, "%s,%s" % (nombre, url))
+        G.add_stream(tipo, [nombre, url])
         
         if "Tv" in tipo or "TV" in tipo:
             indice = 3
@@ -646,7 +645,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.toolbar_list.boton_agregar.hide()
         
         if indice == 0:
-            archivo = os.path.join(G.DIRECTORIO_DATOS, 'jamediaradio.txt')
+            archivo = os.path.join(G.DIRECTORIO_DATOS, 'JAMediaRadio.JAMedia')
             self.seleccionar_lista_de_stream(archivo, "JAM-Radio")
             
         elif indice == 1:
@@ -654,11 +653,11 @@ class JAMediaPlayer(Gtk.Plug):
             if self.player == self.jamediareproductor:
                 self.switch_reproductor(None, "MplayerReproductor")
                 
-            archivo = os.path.join(G.DIRECTORIO_DATOS, 'jamediatv.txt')
+            archivo = os.path.join(G.DIRECTORIO_DATOS, 'JAMediaTV.JAMedia')
             self.seleccionar_lista_de_stream(archivo, "JAM-TV")
             
         elif indice == 2:
-            archivo = os.path.join(G.DIRECTORIO_DATOS, 'misradios.txt')
+            archivo = os.path.join(G.DIRECTORIO_DATOS, 'MisRadios.JAMedia')
             self.seleccionar_lista_de_stream(archivo, "Radios")
             self.toolbar_list.boton_agregar.show()
             
@@ -666,8 +665,8 @@ class JAMediaPlayer(Gtk.Plug):
             # HACK: Tv no funciona con JAMediaReproductor.
             if self.player == self.jamediareproductor:
                 self.switch_reproductor(None, "MplayerReproductor")
-            archivo = os.path.join(G.DIRECTORIO_DATOS, 'mistv.txt')
-            self.seleccionar_lista_de_stream(archivo, "Tvs")
+            archivo = os.path.join(G.DIRECTORIO_DATOS, 'MisTvs.JAMedia')
+            self.seleccionar_lista_de_stream(archivo, "TVs")
             self.toolbar_list.boton_agregar.show()
             
         elif indice == 4:
@@ -731,24 +730,15 @@ class JAMediaPlayer(Gtk.Plug):
         """Responde a la seleccion en el menu de la toolbarlist.
         
         Recibe un archivo desde donde cargar una lista de
-        streamings y los pasa a la lista de reproduccion,
-        y recibe un titulo para la nueva lista.
+        streamings, carga los streamings y los pasa a la lista de
+        reproduccion, y recibe un titulo para la nueva lista.
         
         Esto es solo para las listas standar de JAMedia no embebido."""
         
         self.player.stop()
-        archivo = open(archivo, "r")
-        lista = archivo.readlines()
-        archivo.close()
-        items = []
         
-        for linea in lista:
-            elem = linea.split(",")
-            texto = elem[0]
-            url = elem[1]
-            elemento = [texto, url]
-            items.append(elemento)
-            
+        items = G.get_streamings(archivo)
+        
         self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(items)
         self.toolbar_list.label.set_text(titulo)

@@ -427,27 +427,27 @@ class MenuList(Gtk.Menu):
                 widget, path, "Borrar")
                 
             listas = [
-                os.path.join(G.DIRECTORIO_DATOS, "jamediatv.txt"),
-                os.path.join(G.DIRECTORIO_DATOS, "jamediaradio.txt"),
-                os.path.join(G.DIRECTORIO_DATOS, "misradios.txt"),
-                os.path.join(G.DIRECTORIO_DATOS, "mistv.txt")
+                os.path.join(G.DIRECTORIO_DATOS, "JAMediaTV.JAMedia"),
+                os.path.join(G.DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"),
+                os.path.join(G.DIRECTORIO_DATOS, "MisRadios.JAMedia"),
+                os.path.join(G.DIRECTORIO_DATOS, "MisTvs.JAMedia")
                 ]
-                
+            
             if (G.stream_en_archivo(uri, listas[0]) and \
                 not G.stream_en_archivo(uri, listas[3])) or \
                 (G.stream_en_archivo(uri, listas[1]) and \
                 not G.stream_en_archivo(uri, listas[2])):
                     
-                    copiar = Gtk.MenuItem("Copiar a JAMedia")
-                    self.append(copiar)
-                    copiar.connect_object("activate", self.set_accion,
-                        widget, path, "Copiar")
-                        
-                    mover = Gtk.MenuItem("Mover a JAMedia")
-                    self.append(mover)
-                    mover.connect_object("activate", self.set_accion,
-                        widget, path, "Mover")
-                        
+                copiar = Gtk.MenuItem("Copiar a JAMedia")
+                self.append(copiar)
+                copiar.connect_object("activate", self.set_accion,
+                    widget, path, "Copiar")
+                    
+                mover = Gtk.MenuItem("Mover a JAMedia")
+                self.append(mover)
+                mover.connect_object("activate", self.set_accion,
+                    widget, path, "Mover")
+                
             grabar = Gtk.MenuItem("Grabar")
             self.append(grabar)
             grabar.connect_object("activate", self.set_accion,
