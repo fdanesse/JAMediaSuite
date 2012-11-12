@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   JAMVisor.py por:
+#   Widgets.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   CeibalJAM - Uruguay
 #
@@ -61,20 +61,28 @@ class VisorImagenes(Visor):
         
         if self.angulo == 0:
             self.rotacion = GdkPixbuf.PixbufRotation.NONE
+            
         elif self.angulo == 90:
             self.rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE
+            
         elif self.angulo == 180:
             self.rotacion = GdkPixbuf.PixbufRotation.UPSIDEDOWN
+            
         elif self.angulo == 270:
             self.rotacion = GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE
+            
         elif self.angulo == 360:
             self.rotacion = GdkPixbuf.PixbufRotation.NONE
+            
         elif self.angulo == -90:
             self.rotacion = GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE
+            
         elif self.angulo == -180:
             self.rotacion = GdkPixbuf.PixbufRotation.UPSIDEDOWN
+            
         elif self.angulo == -270:
             self.rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE
+            
         elif self.angulo == -360:
             self.rotacion = GdkPixbuf.PixbufRotation.NONE
         
@@ -125,6 +133,7 @@ class VisorImagenes(Visor):
         self.imagen_original = None
         self.tamanio = None
         self.rotacion = None
+        
         if archivo and os.path.exists(archivo):
             self.imagen_original = GdkPixbuf.Pixbuf.new_from_file(archivo)
             self.tamanio = (self.imagen_original.get_width(),
@@ -143,6 +152,7 @@ class VisorImagenes(Visor):
         if not self.imagen_original:
             #self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
             return
+        
         width, height = self.tamanio
         self.set_size_request(width, height)
         self.imagen = self.imagen_original.copy()
@@ -198,7 +208,7 @@ class Toolbar(Gtk.Toolbar):
             "Iconos", "escalaoriginal.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Original")
+        boton.set_tooltip_text("Original.")
         boton.connect("clicked", self.original)
         self.insert(boton, -1)
         
@@ -206,7 +216,7 @@ class Toolbar(Gtk.Toolbar):
             "Iconos", "alejar.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Alejar")
+        boton.set_tooltip_text("Alejar.")
         boton.connect("clicked", self.alejar)
         self.insert(boton, -1)
         
@@ -214,7 +224,7 @@ class Toolbar(Gtk.Toolbar):
             "Iconos", "acercar.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Acercar")
+        boton.set_tooltip_text("Acercar.")
         boton.connect("clicked", self.acercar)
         self.insert(boton, -1)
 
@@ -225,7 +235,7 @@ class Toolbar(Gtk.Toolbar):
             "Iconos", "rotar.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Rotar")
+        boton.set_tooltip_text("Izquierda.")
         boton.connect("clicked", self.rotar_izquierda)
         self.insert(boton, -1)
         
@@ -233,7 +243,7 @@ class Toolbar(Gtk.Toolbar):
             "Iconos", "rotar.png")
         boton = G.get_boton(archivo, flip = True,
             rotacion = None, pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Rotar")
+        boton.set_tooltip_text("Derecha.")
         boton.connect("clicked", self.rotar_derecha)
         self.insert(boton, -1)
         
@@ -244,7 +254,7 @@ class Toolbar(Gtk.Toolbar):
             "Iconos", "configurar.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Configurar")
+        boton.set_tooltip_text("Configurar.")
         boton.connect("clicked", self.configurar)
         self.insert(boton, -1)
         
@@ -257,7 +267,7 @@ class Toolbar(Gtk.Toolbar):
             "Iconos", "salir.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Salir")
+        boton.set_tooltip_text("Salir.")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
@@ -311,7 +321,7 @@ class ToolbarConfig(Gtk.Box):
             "Iconos", "salir.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Cancelar")
+        boton.set_tooltip_text("Cancelar.")
         boton.connect("clicked", self.cancelar)
         toolbar1.insert(boton, -1)
         
@@ -322,7 +332,7 @@ class ToolbarConfig(Gtk.Box):
             "Iconos", "alejar.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Restar")
+        boton.set_tooltip_text("Restar.")
         boton.connect("clicked", self.menos_intervalo)
         toolbar1.insert(boton, -1)
         
@@ -342,7 +352,7 @@ class ToolbarConfig(Gtk.Box):
             "Iconos", "acercar.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Sumar")
+        boton.set_tooltip_text("Sumar.")
         boton.connect("clicked", self.mas_intervalo)
         toolbar1.insert(boton, -1)
         
@@ -353,7 +363,7 @@ class ToolbarConfig(Gtk.Box):
             "Iconos", "play.png")
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Aceptar")
+        boton.set_tooltip_text("Aceptar.")
         boton.connect("clicked", self.run_presentacion)
         toolbar1.insert(boton, -1)
         
@@ -418,7 +428,8 @@ class MenuList(Gtk.Menu):
     el streaming seleccionado en la lista de reproduccion
     al hacer click derecho sobre él."""
     
-    __gsignals__ = {'accion':(GObject.SIGNAL_RUN_FIRST,
+    __gsignals__ = {
+    'accion':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
     

@@ -150,7 +150,7 @@ class JAMediaYoutube(Gtk.Widget):
         if self.actualizador:
             GObject.source_remove(self.actualizador)
             
-        self.actualizador = GObject.timeout_add(300, self.get_progress)
+        self.actualizador = GObject.timeout_add(500, self.get_progress)
         
     def get_progress(self):
         """Actualiza el Progreso de la descarga."""

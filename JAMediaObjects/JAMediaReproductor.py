@@ -349,6 +349,7 @@ class JAMediaReproductor(GObject.GObject):
         
         self.stop()
         self.set_pipeline()
+        
         if os.path.exists(uri):
             direccion = Gst.filename_to_uri(uri)
             self.player.set_property("uri", direccion)
@@ -373,12 +374,14 @@ class JAMediaReproductor(GObject.GObject):
         if valor == "Derecha":
             if rot < 3:
                 rot += 1
+                
             else:
                 rot = 0
                 
         elif valor == "Izquierda":
             if rot > 0:
                 rot -= 1
+                
             else:
                 rot = 3
                 
@@ -516,8 +519,10 @@ class JAMediaReproductor(GObject.GObject):
             or self.estado == Gst.State.NULL \
             or self.estado == Gst.State.READY:
             self.play()
+            
         elif self.estado == Gst.State.PLAYING:
             self.pause()
+            
         else:
             print self.estado
             
@@ -531,7 +536,7 @@ class JAMediaReproductor(GObject.GObject):
             self.actualizador = None
             
         if reset:
-            self.actualizador = GObject.timeout_add(35, self.handle)
+            self.actualizador = GObject.timeout_add(500, self.handle)
         
     def handle(self):
         """Envia los datos de actualizacion para
@@ -546,6 +551,7 @@ class JAMediaReproductor(GObject.GObject):
         pos = 0
         try:
             pos = int(posicion * 100 / duracion)
+            
         except:
             pass
         
@@ -569,8 +575,12 @@ class JAMediaReproductor(GObject.GObject):
             return
         
         posicion = self.duracion * posicion / 100
-        self.pipeline.seek_simple(Gst.Format.TIME,
-        Gst.SeekFlags.FLUSH, posicion)
+        
+        self.pipeline.seek_simple(
+            Gst.Format.TIME,
+            Gst.SeekFlags.FLUSH |
+            Gst.SeekFlags.KEY_UNIT,
+            posicion)
     
     def get_volumen(self):
         """Obtiene el volumen de reproducción.

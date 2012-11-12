@@ -97,6 +97,8 @@ class JAMediaVideo(Gtk.Window):
         
         self.controlesdinamicos = None
         
+        self.update_rafagas = False
+        
         self.setup_init()
         
     def setup_init(self):
@@ -183,9 +185,7 @@ class JAMediaVideo(Gtk.Window):
         self.jamimagenes.connect('salir', self.get_menu_base)
         
         self.toolbarvideoconfig.connect('valor', self.set_balance)
-        #self.toolbarvideoconfig.connect('resolucion', self.set_resolucion)
         self.toolbarfotografiaconfig.connect('valor', self.set_balance)
-        #self.toolbarfotografiaconfig.connect('resolucion', self.set_resolucion)
         self.toolbarfotografiaconfig.connect('run_rafaga', self.run_rafaga)
         
         self.pantalla.connect("button_press_event", self.clicks_en_pantalla)
@@ -194,21 +194,21 @@ class JAMediaVideo(Gtk.Window):
         
         self.jamediawebcam.play()
         
-    #def set_resolucion(self, widget, resolucion):
-        """Cuando el usuario cambia la resolución
-        para grabar o fotografiar."""
-        
-        #print resolucion
-        # Lo quito ya que la cámara da 640x480 no tiene mucho sentido subirla,
-        # la calidad no aumentará, y bajarla tampoco.
-        
     def run_rafaga(self, widget, valor):
         """ Comienza fotografías en ráfaga. """
         
-        print widget, valor
-        # comenzará a fotografiar en rafagas.
-        # debe titilar el botón de fotografiar en la toolbar correspondiente.
-        # debe ocultarse la toolbar completa
+        if self.update_rafagas:
+            GObject.source_remove(self.update_rafagas)
+            self.update_rafagas = False
+            
+        self.update_rafagas = GObject.timeout_add(int(valor)*1000, self.ejecute_rafaga)
+        self.toolbarfotografia.set_estado("grabando")
+        
+    def ejecute_rafaga(self):
+        
+        self.jamediawebcam.fotografiar()
+        time.sleep(0.8)
+        return True
         
     def set_balance(self, widget, valor, tipo):
         """ Setea valores en Balance de Video.
@@ -248,10 +248,15 @@ class JAMediaVideo(Gtk.Window):
         en configurar."""
         
         if senial == 'fotografiar':
+            if self.update_rafagas:
+                GObject.source_remove(self.update_rafagas)
+                self.update_rafagas = False
+                self.toolbarfotografia.set_estado("detenido")
+            
             if self.jamediawebcam.estado != "FotografiandoWebCam":
                 self.jamediawebcam.fotografiar()
-                #self.toolbarfotografia.set_estado("grabando")
-                time.sleep(0.9)
+                self.toolbarfotografia.set_estado("grabando")
+                time.sleep(0.8)
                 self.jamediawebcam.reset()
                 
                 config = self.jamediawebcam.get_balance()
@@ -261,6 +266,8 @@ class JAMediaVideo(Gtk.Window):
                     saturacion = config['saturacion'],
                     hue = config['hue'])
                     
+                self.toolbarfotografia.set_estado("detenido")
+                
             else:
                 self.jamediawebcam.reset()
                 config = self.jamediawebcam.get_balance()
@@ -273,8 +280,6 @@ class JAMediaVideo(Gtk.Window):
                 self.toolbarfotografia.set_estado("detenido")
                 
         elif senial == 'configurar':
-            #self.jamediawebcam.reset()
-            #self.toolbarvideo.set_estado("detenido")
             if self.toolbarfotografiaconfig.get_visible():
                 self.toolbarfotografiaconfig.hide()
                 
@@ -325,8 +330,6 @@ class JAMediaVideo(Gtk.Window):
                 self.toolbarvideo.set_estado("detenido")
                 
         elif senial == 'configurar':
-            #self.jamediawebcam.reset()
-            #self.toolbarvideo.set_estado("detenido")
             if self.toolbarvideoconfig.get_visible():
                 self.toolbarvideoconfig.hide()
                 
@@ -343,6 +346,10 @@ class JAMediaVideo(Gtk.Window):
         """Cuando se sale de un menú particular,
         se vuelve al menú principal."""
         
+        if self.update_rafagas:
+            GObject.source_remove(self.update_rafagas)
+            self.update_rafagas = False
+            
         self.jamediawebcam.reset()
         self.toolbargrabaraudio.set_estado("detenido")
         self.toolbarvideo.set_estado("detenido")

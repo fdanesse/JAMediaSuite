@@ -170,10 +170,13 @@ class JAMImagenes(Gtk.Plug):
         pos = (event.x, event.y)
         tiempo = event.time
         path, columna, xdefondo, ydefondo = (None, None, None, None)
+        
         try:
             path, columna, xdefondo, ydefondo = widget.get_path_at_pos(int(pos[0]), int(pos[1]))
+            
         except:
             return
+        
         # TreeView.get_path_at_pos(event.x, event.y) devuelve:
         # * La ruta de acceso en el punto especificado (x, y), en relación con las coordenadas widget
         # * El gtk.TreeViewColumn en ese punto
@@ -181,10 +184,12 @@ class JAMImagenes(Gtk.Plug):
         # * La coordenada Y en relación con el fondo de la celda
         if boton == 1:
             return
+        
         elif boton == 3:
             menu = MenuList(widget, boton, pos, tiempo, path, widget.modelo)
             menu.connect('accion', self.set_accion)
             menu.popup(None, None, None, None, boton, tiempo)
+            
         elif boton == 2:
             return
         
@@ -210,8 +215,10 @@ class JAMImagenes(Gtk.Plug):
             screen = ventana.get_screen()
             w,h = ventana.get_size()
             ww, hh = (screen.get_width(), screen.get_height())
+            
             if ww == w and hh == h:
                 ventana.unfullscreen()
+                
             else:
                 ventana.fullscreen()
                 
@@ -287,6 +294,7 @@ class JAMImagenes(Gtk.Plug):
             
         if self.toolbar_config.get_visible():
             self.toolbar_config.hide()
+            
         else:
             self.toolbar_config.show_all()
         

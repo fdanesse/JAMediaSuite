@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   JAMediaVideo.py por:
+#   Widgets.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   CeibalJAM! - Uruguay
 #
@@ -223,13 +223,20 @@ class ToolbarVideo(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.color = Gdk.Color(0, 0, 0)
-        self.actualizador = None
+        self.color = Gdk.Color(65000, 65000, 65000)
+        #self.modify_bg(0, self.color)
         
-        self.modify_bg(0, self.color)
+        self.actualizador = None
         
         self.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
+        
+        item = Gtk.ToolItem()
+        item.set_expand(False)
+        self.label = Gtk.Label("")
+        self.label.show()
+        item.add(self.label)
+        self.insert(item, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "camara.png")
@@ -270,28 +277,35 @@ class ToolbarVideo(Gtk.Toolbar):
         """Cuando está grabando cambiará los colores
         intermitentemente en el botón correspondiente."""
         
+        self.estado = estado
+        
         if self.actualizador:
             GObject.source_remove(self.actualizador)
             self.actualizador = None
             
         if estado == "grabando":
             self.actualizador = GObject.timeout_add(400, self.handle)
+            self.label.set_text("Grabando . . .")
             
         elif estado == "detenido":
-            self.color = Gdk.Color(0, 0, 0)
-            self.modify_bg(0, self.color)
+            self.label.set_text("")
+            self.color = Gdk.Color(65000, 65000, 65000)
+            #self.modify_bg(0, self.color)
             
     def handle(self):
         """Cambia el color para advertir al usuario
         de que está grabando desde la webcam."""
         
-        if self.color == Gdk.Color(0, 0, 0):
+        # FIXME: El color de fondo de la toolbar
+        # no se puede cambiar, por eso agregué el label.
+        if self.color == Gdk.Color(65000, 65000, 65000):
             self.color = Gdk.Color(65000,26000,0)
             
         elif self.color == Gdk.Color(65000,26000,0):
-            self.color = Gdk.Color(0, 0, 0)
+            self.color = Gdk.Color(65000, 65000, 65000)
             
-        self.modify_bg(0, self.color)
+        #self.modify_bg(0, self.color)
+        self.label.modify_fg(0, self.color)
         return True
     
     def emit_senial(self, widget, senial):
@@ -317,13 +331,20 @@ class ToolbarFotografia(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.color = Gdk.Color(0, 0, 0)
+        self.color = Gdk.Color(65000, 65000, 65000)
         self.actualizador = None
         
-        self.modify_bg(0, self.color)
+        #self.modify_bg(0, self.color)
         
         self.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
+        
+        item = Gtk.ToolItem()
+        item.set_expand(False)
+        self.label = Gtk.Label("")
+        self.label.show()
+        item.add(self.label)
+        self.insert(item, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "foto.png")
@@ -364,28 +385,35 @@ class ToolbarFotografia(Gtk.Toolbar):
         """Cuando está grabando cambiará los colores
         intermitentemente en el botón correspondiente."""
         
+        self.estado = estado
+        
         if self.actualizador:
             GObject.source_remove(self.actualizador)
             self.actualizador = None
             
         if estado == "grabando":
             self.actualizador = GObject.timeout_add(400, self.handle)
+            self.label.set_text("Fotografiando . . .")
             
         elif estado == "detenido":
-            self.color = Gdk.Color(0, 0, 0)
-            self.modify_bg(0, self.color)
+            self.color = Gdk.Color(65000, 65000, 65000)
+            self.label.set_text("")
+            #self.modify_bg(0, self.color)
             
     def handle(self):
         """Cambia el color para advertir al usuario
         de que está grabando desde la webcam."""
         
-        if self.color == Gdk.Color(0, 0, 0):
+        # FIXME: El color de fondo de la toolbar
+        # no se puede cambiar, por eso agregué el label.
+        if self.color == Gdk.Color(65000, 65000, 65000):
             self.color = Gdk.Color(65000,26000,0)
             
         elif self.color == Gdk.Color(65000,26000,0):
-            self.color = Gdk.Color(0, 0, 0)
+            self.color = Gdk.Color(65000, 65000, 65000)
             
-        self.modify_bg(0, self.color)
+        #self.modify_bg(0, self.color)
+        self.label.modify_fg(0, self.color)
         return True
     
     def emit_senial(self, widget, senial):
@@ -411,13 +439,20 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.color = Gdk.Color(0, 0, 0)
+        self.color = Gdk.Color(65000, 65000, 65000)
         self.actualizador = None
         
-        self.modify_bg(0, self.color)
+        #self.modify_bg(0, self.color)
         
         self.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
+        
+        item = Gtk.ToolItem()
+        item.set_expand(False)
+        self.label = Gtk.Label("")
+        self.label.show()
+        item.add(self.label)
+        self.insert(item, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "microfono.png")
@@ -456,28 +491,35 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         """Cuando está grabando cambiará los colores
         intermitentemente en el botón correspondiente."""
         
+        self.estado = estado
+        
         if self.actualizador:
             GObject.source_remove(self.actualizador)
             self.actualizador = None
             
         if estado == "grabando":
             self.actualizador = GObject.timeout_add(400, self.handle)
+            self.label.set_text("Grabando . . .")
             
         elif estado == "detenido":
-            self.color = Gdk.Color(0, 0, 0)
-            self.modify_bg(0, self.color)
+            self.label.set_text("")
+            self.color = Gdk.Color(65000, 65000, 65000)
+            #self.modify_bg(0, self.color)
             
     def handle(self):
         """Cambia el color para advertir al usuario
         de que está grabando desde la webcam."""
         
-        if self.color == Gdk.Color(0, 0, 0):
+        # FIXME: El color de fondo de la toolbar
+        # no se puede cambiar, por eso agregué el label.
+        if self.color == Gdk.Color(65000, 65000, 65000):
             self.color = Gdk.Color(65000,26000,0)
             
         elif self.color == Gdk.Color(65000,26000,0):
-            self.color = Gdk.Color(0, 0, 0)
+            self.color = Gdk.Color(65000, 65000, 65000)
             
-        self.modify_bg(0, self.color)
+        #self.modify_bg(0, self.color)
+        self.label.modify_fg(0, self.color)
         return True
     
     def emit_senial(self, widget, senial):
@@ -558,12 +600,12 @@ class ToolbarRafagas(Gtk.Toolbar):
             "Iconos", "alejar.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Restar")
+        boton.set_tooltip_text("Disminuir.")
         boton.connect("clicked", self.restar)
         toolbar.insert(boton, -1)
         
         item = Gtk.ToolItem()
-        self.time_label = Gtk.Label("0.8")
+        self.time_label = Gtk.Label("1.6")
         self.time_label.show()
         item.add(self.time_label)
         toolbar.insert(item, -1)
@@ -572,7 +614,7 @@ class ToolbarRafagas(Gtk.Toolbar):
             "Iconos", "acercar.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Sumar")
+        boton.set_tooltip_text("Aumentar.")
         boton.connect("clicked", self.sumar)
         toolbar.insert(boton, -1)
         
@@ -589,7 +631,7 @@ class ToolbarRafagas(Gtk.Toolbar):
             "Iconos", "play.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Sumar")
+        boton.set_tooltip_text("Comenzar.")
         boton.connect("clicked", self.run)
         toolbar.insert(boton, -1)
         
@@ -624,7 +666,7 @@ class ToolbarRafagas(Gtk.Toolbar):
         
         tiempo = float(self.time_label.get_text())
         
-        if tiempo > 0.8:
+        if tiempo > 1.6:
             tiempo -= 0.1
             
         self.time_label.set_text(str(tiempo))

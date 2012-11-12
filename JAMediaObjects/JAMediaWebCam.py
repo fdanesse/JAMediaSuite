@@ -342,11 +342,14 @@ class JAMediaWebCam(GObject.GObject):
         
         self.pipeline.set_state(Gst.State.PAUSED)
         self.pipeline.set_state(Gst.State.NULL)
+        
         try:
             if os.path.exists(self.patharchivo):
                 os.chmod(self.patharchivo, 0755)
+                
         except:
             pass
+        
         map(self.remover, self.pipeline.children)
         
         self.estado = "stoped"
@@ -419,6 +422,7 @@ class JAMediaWebCam(GObject.GObject):
             if mensaje.get_structure().get_name() == 'prepare-window-handle':
                 mensaje.src.set_window_handle(self.ventana_id)
                 return
+            
         except:
             pass
     
