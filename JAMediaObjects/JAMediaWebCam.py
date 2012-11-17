@@ -60,6 +60,33 @@ CONFIG_DEFAULT = {
     'hue': 0,
     }
 
+def get_efecto(efecto):
+    """Crea un bin con efecto para agregar al pipe."""
+    
+    efectobin = Gst.Bin()#Gst.ElementFactory.make("bin")
+    
+    queue = Gst.ElementFactory.make("queue", "queue")
+    queue.set_property('max-size-buffers', 1000)
+    queue.set_property('max-size-bytes', 0)
+    queue.set_property('max-size-time', 0)
+    videoconvert1 = Gst.ElementFactory.make("videoconvert", "videoconvert1")
+    efecto = Gst.ElementFactory.make(efecto, efecto)
+    videoconvert2 = Gst.ElementFactory.make("videoconvert", "videoconvert2")
+    
+    efectobin.add(queue)
+    efectobin.add(videoconvert1)
+    efectobin.add(efecto)
+    efectobin.add(videoconvert2)
+    
+    queue.link(videoconvert1)
+    videoconvert1.link(efecto)
+    efecto.link(videoconvert2)
+    
+    efectobin.add_pad(Gst.GhostPad.new("sink", queue.get_static_pad ("sink")))
+    efectobin.add_pad(Gst.GhostPad.new("src", videoconvert2.get_static_pad("src")))
+    
+    return efectobin
+
 class JAMediaWebCam(GObject.GObject):
     """Interfaz para Webcam, en base a Gstreamer 1.0."""
     
@@ -114,6 +141,8 @@ class JAMediaWebCam(GObject.GObject):
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
         self.config['brillo'] = CONFIG_DEFAULT['brillo']
         self.config['hue'] = CONFIG_DEFAULT['hue']
+        
+        self.efectos = []
         
         self.setup_init()
         
@@ -284,7 +313,33 @@ class JAMediaWebCam(GObject.GObject):
         
         map(self.agregar, self.elementos_base)
         
-        self.camara.link(self.multi)
+        efectos = list(self.efectos)
+        ef = []
+        for efecto in efectos:
+            ef.append(get_efecto(efecto))
+            
+        #videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
+        if ef:
+            for efecto in ef:
+                self.pipeline.add(efecto)
+        #else:
+        #    self.pipeline.add(videoconvert)
+            
+            
+        if ef:
+            self.camara.link(ef[0])
+            
+            for efecto in ef:
+                index = ef.index(efecto)
+                if len(ef) > index + 1:
+                    ef[index].link(ef[index + 1])
+                
+            ef[-1].link(self.multi)
+            
+        else:
+            self.camara.link(self.multi)
+            
+        #self.camara.link(self.multi)
         self.multi.link(self.hilovideoapantalla)
         self.hilovideoapantalla.link(self.pantalla)
         
@@ -326,6 +381,22 @@ class JAMediaWebCam(GObject.GObject):
         self.audioconvert.link(self.mp3enc)
         
         self.mp3enc.link(self.archivo)
+        
+    def agregar_efecto(self, nombre_efecto):
+        """Agrega un efecto según nombre_efecto."""
+        
+        self.efectos.append(nombre_efecto)
+        self.stop()
+        self.get_base_pipe()
+        self.play()
+        
+    def quitar_efecto(self, indice_efecto):
+        """Quita el efecto correspondiente al indice que recibe."""
+        
+        self.efectos.remove(self.efectos[indice_efecto])
+        self.stop()
+        self.get_base_pipe()
+        self.play()
         
     def pause(self, widget = None, event = None):
         

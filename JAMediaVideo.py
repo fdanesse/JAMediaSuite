@@ -34,6 +34,7 @@ from JAMediaObjects.JAMediaWidgets import Visor
 from JAMediaObjects.JAMediaWidgets import JAMediaButton
 from JAMediaObjects.JAMediaWebCam import JAMediaWebCam
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+from JAMediaObjects.JAMediaWidgets import ToolbarGstreamerEfectos
 
 import JAMediaObjects.JAMediaGlobales as G
 
@@ -83,17 +84,25 @@ class JAMediaVideo(Gtk.Window):
         #self.modify_bg(0, G.GRIS)
         #self.set_opacity(0.5)
         
-        self.pantalla = None
         self.jamediawebcam = None
+        
         self.toolbar = None
         self.toolbar_salir = None
         self.toolbarprincipal = None
         self.toolbarvideo = None
+        self.toolbarvideoconfig = None
         self.toolbarbalanceconfig = None
+        self.toolbargstreamerefectos = None
         self.toolbarfotografia = None
+        self.toolbarfotografiaconfig = None
         self.toolbargrabaraudio = None
+        
+        self.socketjamedia = None
+        self.socketjamimagenes = None
+        
         self.jamediaplayer = None
         self.jamimagenes = None
+        self.pantalla = None
         
         self.controlesdinamicos = None
         
@@ -111,13 +120,20 @@ class JAMediaVideo(Gtk.Window):
         self.toolbar = Toolbar()
         self.toolbar_salir = ToolbarSalir()
         self.toolbarprincipal = ToolbarPrincipal()
+        
         self.toolbarvideo = ToolbarVideo()
         self.toolbarvideoconfig = ToolbarVideoBalance()
-        self.toolbarfotografiaconfig = ToolbarFotografiaBalance()
+        
         self.toolbarfotografia = ToolbarFotografia()
+        self.toolbarfotografiaconfig = ToolbarFotografiaBalance()
+        
+        self.toolbargstreamerefectos = ToolbarGstreamerEfectos()
+        
         self.toolbargrabaraudio = ToolbarGrabarAudio()
+        
         self.socketjamedia = Gtk.Socket()
         self.socketjamimagenes = Gtk.Socket()
+        
         self.pantalla = Visor()
         
         vbox.pack_start(self.toolbar, False, True, 0)
@@ -133,6 +149,7 @@ class JAMediaVideo(Gtk.Window):
         vbox.pack_start(self.socketjamedia, True, True, 0)
         vbox.pack_start(self.socketjamimagenes, True, True, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
+        vbox.pack_start(self.toolbargstreamerefectos, False, False, 0)
         
         self.jamediaplayer = JAMediaPlayer()
         self.socketjamedia.add_id(self.jamediaplayer.get_id())
@@ -161,7 +178,8 @@ class JAMediaVideo(Gtk.Window):
             self.toolbarfotografia,
             self.toolbargrabaraudio,
             self.socketjamedia,
-            self.socketjamimagenes]
+            self.socketjamimagenes,
+            self.toolbargstreamerefectos]
             
         map(self.ocultar, self.controlesdinamicos)
         map(self.mostrar, [self.toolbar, self.toolbarprincipal])
@@ -190,9 +208,24 @@ class JAMediaVideo(Gtk.Window):
         
         self.pantalla.connect("button_press_event", self.clicks_en_pantalla)
         
+        self.toolbargstreamerefectos.connect("agregar_efecto", self.agregar_efecto)
+        self.toolbargstreamerefectos.connect("quitar_efecto", self.quitar_efecto)
+        
         self.connect("destroy", self.salir)
         
         self.jamediawebcam.play()
+        
+    def agregar_efecto(self, widget, nombre_efecto):
+        """Recibe el nombre del efecto que debe agregarse
+        al pipe de  JAMediaWebcam y ejecuta la acción."""
+        
+        self.jamediawebcam.agregar_efecto( nombre_efecto )
+        
+    def quitar_efecto(self, widget, indice_efecto):
+        """Recibe el indice del efecto que debe quitarse
+        del pipe de  JAMediaWebcam y ejecuta la acción."""
+        
+        self.jamediawebcam.quitar_efecto( indice_efecto )
         
     def run_rafaga(self, widget, valor):
         """ Comienza fotografías en ráfaga. """
@@ -282,6 +315,7 @@ class JAMediaVideo(Gtk.Window):
         elif senial == 'configurar':
             if self.toolbarfotografiaconfig.get_visible():
                 self.toolbarfotografiaconfig.hide()
+                self.toolbargstreamerefectos.hide()
                 
             else:
                 config = self.jamediawebcam.get_balance()
@@ -291,6 +325,7 @@ class JAMediaVideo(Gtk.Window):
                     saturacion = config['saturacion'],
                     hue = config['hue'])
                 self.toolbarfotografiaconfig.show()
+                self.toolbargstreamerefectos.show()
                 
     def set_accion_audio(self, widget, senial):
         """Cuando se hace click en grabar solo audio o
@@ -332,6 +367,7 @@ class JAMediaVideo(Gtk.Window):
         elif senial == 'configurar':
             if self.toolbarvideoconfig.get_visible():
                 self.toolbarvideoconfig.hide()
+                self.toolbargstreamerefectos.hide()
                 
             else:
                 config = self.jamediawebcam.get_balance()
@@ -341,6 +377,7 @@ class JAMediaVideo(Gtk.Window):
                     saturacion = config['saturacion'],
                     hue = config['hue'])
                 self.toolbarvideoconfig.show()
+                self.toolbargstreamerefectos.show()
                 
     def get_menu_base(self, widget):
         """Cuando se sale de un menú particular,

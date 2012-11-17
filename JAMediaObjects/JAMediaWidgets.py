@@ -37,7 +37,7 @@ from gi.repository import cairo
 
 import JAMFileSystem as JAMF
 
-import JAMediaObjects.JAMediaGlobales as G
+import JAMediaGlobales as G
 
 JAMediaWidgetsBASE = os.path.dirname(__file__)
 
@@ -734,7 +734,7 @@ class ToolbarBalanceConfig(Gtk.Table):
         self.brillo = ToolbarcontrolValores("Brillo")
         self.contraste = ToolbarcontrolValores("Contraste")
         self.saturacion = ToolbarcontrolValores("Saturación")
-        self.hue = ToolbarcontrolValores("Hue")
+        self.hue = ToolbarcontrolValores("Matíz")
         self.gamma = ToolbarcontrolValores("Gamma")
         
         self.attach(self.brillo, 0, 1, 0, 1)
@@ -1018,6 +1018,109 @@ class ToolbarSalir(Gtk.Toolbar):
         self.label.set_text("")
         self.hide()
         
+class ToolbarGstreamerEfectos(Gtk.Box):
+    """Toolbar con 18 widgets que representan
+    efectos de video para gstreamer."""
+    
+    __gsignals__ = {
+    "agregar_efecto":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "quitar_efecto":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_INT,))}
+        
+    def __init__(self):
+        
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
+        
+        frame = Gtk.Frame()
+        frame.set_label(" Efectos en el Pipe ")
+        frame.set_label_align(0.5, 0.5)
+        self.efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+        self.efectos_en_pipe.set_size_request(-1, G.get_pixels(1.0)+2)
+        frame.add(self.efectos_en_pipe)
+        self.pack_start(frame, False, False, 1)
+        
+        frame = Gtk.Frame()
+        frame.set_label(" Efectos Disponibles ")
+        frame.set_label_align(0.5, 0.5)
+        self.gstreamer_efectos = GstreamerVideoEfectos()
+        frame.add(self.gstreamer_efectos)
+        self.pack_start(frame, False, False, 1)
+        
+        self.show_all()
+        
+        self.efectos_en_pipe.drag_dest_set(
+            Gtk.DestDefaults.ALL,
+            target_gstreamer_video_efectos,
+            Gdk.DragAction.MOVE)
+        self.efectos_en_pipe.connect("drag-drop", self.drag_drop)
+        self.efectos_en_pipe.drag_dest_add_uri_targets()
+        
+        self.gstreamer_efectos.drag_dest_set(
+            Gtk.DestDefaults.ALL,
+            target_gstreamer_video_efectos,
+            Gdk.DragAction.MOVE)
+        self.gstreamer_efectos.connect("drag-drop", self.drag_drop)
+        self.gstreamer_efectos.drag_dest_add_uri_targets()
+        
+    def drag_drop(self, destino, drag_context, x, y, n):
+        """Ejecuta drop sobre un destino."""
+        
+        #print destino, drag_context, x, y, n # x y para insertar el efecto
+        
+        botonefecto = Gtk.drag_get_source_widget(drag_context)
+        parent = botonefecto.get_parent()
+        
+        if parent == destino:
+            return
+        
+        else:
+            try:
+                objetos = parent.get_children()
+                indice = objetos.index(botonefecto)
+                parent.remove(botonefecto)
+                destino.pack_start(botonefecto, False, False, 1)
+                
+            except:
+                return
+            
+            if destino == self.efectos_en_pipe:
+                #text = TipDescargas
+                self.emit('agregar_efecto', botonefecto.get_tooltip_text())
+                
+            elif destino == self.gstreamer_efectos:
+                #text = TipEncontrados
+                self.emit('quitar_efecto', indice)
+                
+            #botonefecto.set_tooltip_text(text)
+
+class GstreamerVideoEfectos(Gtk.Box):
+    """Toolbar con 18 widgets que representan
+    efectos de video para gstreamer."""
+    
+    def __init__(self):
+        
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
+        
+        self.set_size_request(-1, G.get_pixels(1.0)+2)
+        
+        for nombre in G.VIDEOEFECTOS:
+            botonefecto = JAMediaButton()
+            botonefecto.set_tooltip(nombre)
+            lado = G.get_pixels(1.0)
+            botonefecto.set_tamanio(lado, lado)
+            botonefecto.set_imagen(os.path.join(JAMediaWidgetsBASE, 'Iconos', 'ver.png'))
+            self.pack_start(botonefecto, False, False, 1)
+            
+            botonefecto.drag_source_set(
+                Gdk.ModifierType.BUTTON1_MASK,
+                target_gstreamer_video_efectos,
+                Gdk.DragAction.MOVE)
+        
+        self.show_all()
+        
+target_gstreamer_video_efectos = [Gtk.TargetEntry.new('Mover', Gtk.TargetFlags.SAME_APP, 0)]
+
 '''
 class ToolbarResolucion(Gtk.Toolbar):
     """Pequeña toolbar con controles para

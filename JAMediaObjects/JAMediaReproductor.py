@@ -274,6 +274,15 @@ class JAMediaReproductor(GObject.GObject):
             return
         
         elif mensaje.type == Gst.MessageType.TAG:
+            taglist = mensaje.parse_tag()
+            #print taglist.to_string() # parecido a: mensaje.get_structure().to_string()
+            #print taglist.to_string().split(',')
+            #self.duracion = int(taglist.to_string().split("duration=(guint64)")[1].split(',')[0])
+            #Ejemplo:
+                # taglist,
+                # duration=(guint64)780633000000,
+                # video-codec=(string)H.264,
+                # audio-codec=(string)"MPEG-4\ AAC"
             return
         
         elif mensaje.type == Gst.MessageType.ERROR:
@@ -312,6 +321,7 @@ class JAMediaReproductor(GObject.GObject):
         
         #if mensaje.type == Gst.MessageType.ASYNC_DONE:
         #    print mensaje.get_structure().get_name()
+        
         #elif mensaje.type == Gst.MessageType.NEW_CLOCK:
         #    pass
         
@@ -341,6 +351,7 @@ class JAMediaReproductor(GObject.GObject):
             
         elif mensaje.type == Gst.MessageType.LATENCY:
             pass
+        
         else:
             pass
         

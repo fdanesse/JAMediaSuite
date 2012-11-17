@@ -386,6 +386,31 @@ def get_shelve_lista(archivo):
     return videos
 # <<< JAMediaTube
 
+# >>> JAMediaVideo
+VIDEOEFECTOS = [
+    #'gaussianblur',    # FIXME: Demasiado lento
+    'solarize',
+    'exclusion',        # FIXME: Lento
+    #'dodge',           # FIXME: No percibo ningún efecto
+    #'dilate',          # FIXME: No percibo ningún efecto
+    'chromium',
+    #'burn',            # FIXME: No percibo ningún efecto
+    'edgetv',
+    'agingtv',
+    'dicetv',
+    'warptv',
+    'shagadelictv',
+    'vertigotv',
+    'revtv',
+    #'quarktv',         # Muy Lento, pero buenisimo
+    'optv',
+    'radioactv',
+    'streaktv',
+    'rippletv'
+    ]
+
+# <<< JAMediaVideo
+
 '''
 Anotaciones para describir las clases de JAMedia:
     import pydoc
