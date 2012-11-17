@@ -627,6 +627,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         if self.grabador != None:
             self.grabador.stop()
+        self.lista_de_reproduccion.limpiar()
         self.player.stop()
         
         self.emit('salir')
@@ -643,6 +644,9 @@ class JAMediaPlayer(Gtk.Plug):
             self.toolbar_accion,
             self.toolbaraddstream])
         self.toolbar_list.boton_agregar.hide()
+        
+        self.lista_de_reproduccion.limpiar()
+        self.player.stop()
         
         if indice == 0:
             archivo = os.path.join(G.DIRECTORIO_DATOS, 'JAMediaRadio.JAMedia')
@@ -694,7 +698,7 @@ class JAMediaPlayer(Gtk.Plug):
         de reproduccion con ellos."""
         
         if not archivos: return
-        self.player.stop()
+        #self.player.stop()
         items = []
         
         for archivo in archivos:
@@ -713,7 +717,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         Esto es solo para las listas standar de JAMedia no embebido."""
         
-        self.player.stop()
+        #self.player.stop()
         archivos = sorted(os.listdir(directorio))
         lista = []
         
@@ -722,7 +726,7 @@ class JAMediaPlayer(Gtk.Plug):
             elemento = [texto, url]
             lista.append(elemento)
             
-        self.lista_de_reproduccion.limpiar()
+        #self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(lista)
         self.toolbar_list.label.set_text(titulo)
 
@@ -735,11 +739,11 @@ class JAMediaPlayer(Gtk.Plug):
         
         Esto es solo para las listas standar de JAMedia no embebido."""
         
-        self.player.stop()
+        #self.player.stop()
         
         items = G.get_streamings(archivo)
         
-        self.lista_de_reproduccion.limpiar()
+        #self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(items)
         self.toolbar_list.label.set_text(titulo)
         

@@ -119,7 +119,7 @@ class Toolbar(Gtk.Toolbar):
             "Iconos","salir.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Salir")
+        boton.set_tooltip_text("Salir.")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
@@ -152,7 +152,7 @@ class ToolbarPrincipal(Gtk.Toolbar):
             "Iconos", "camara.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Filmar")
+        boton.set_tooltip_text("Filmar.")
         boton.connect("clicked", self.emit_senial, "Filmar")
         self.insert(boton, -1)
         
@@ -163,7 +163,7 @@ class ToolbarPrincipal(Gtk.Toolbar):
             "Iconos", "foto.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Fotografiar")
+        boton.set_tooltip_text("Fotografiar.")
         boton.connect("clicked", self.emit_senial, "Fotografiar")
         self.insert(boton, -1)
         
@@ -174,7 +174,7 @@ class ToolbarPrincipal(Gtk.Toolbar):
             "Iconos", "microfono.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Grabar")
+        boton.set_tooltip_text("Grabar.")
         boton.connect("clicked", self.emit_senial, "Grabar")
         self.insert(boton, -1)
         
@@ -185,7 +185,7 @@ class ToolbarPrincipal(Gtk.Toolbar):
             "Iconos", "iconplay.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Reproducir")
+        boton.set_tooltip_text("Reproducir.")
         boton.connect("clicked", self.emit_senial, "Reproducir")
         self.insert(boton, -1)
         
@@ -196,8 +196,19 @@ class ToolbarPrincipal(Gtk.Toolbar):
             "Iconos", "monitor.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Ver")
+        boton.set_tooltip_text("Ver.")
         boton.connect("clicked", self.emit_senial, "Ver")
+        self.insert(boton, -1)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "stop.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(1))
+        boton.set_tooltip_text("Reset.")
+        boton.connect("clicked", self.emit_senial, "Reset")
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
@@ -242,7 +253,7 @@ class ToolbarVideo(Gtk.Toolbar):
             "Iconos", "camara.png")
         self.filmar = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        self.filmar.set_tooltip_text("Filmar")
+        self.filmar.set_tooltip_text("Filmar.")
         self.filmar.connect("clicked", self.emit_senial, "filmar")
         self.insert(self.filmar, -1)
         
@@ -253,7 +264,7 @@ class ToolbarVideo(Gtk.Toolbar):
             "Iconos", "configurar.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Configurar")
+        boton.set_tooltip_text("Configurar.")
         boton.connect("clicked", self.emit_senial, "configurar")
         self.insert(boton, -1)
         
@@ -261,10 +272,21 @@ class ToolbarVideo(Gtk.Toolbar):
             ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "stop.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(1))
+        boton.set_tooltip_text("Reset.")
+        boton.connect("clicked", self.emit_senial, "Reset")
+        self.insert(boton, -1)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+            
+        archivo = os.path.join(JAMediaObjectsPath,
             "Iconos","salir.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Salir")
+        boton.set_tooltip_text("Salir.")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         
@@ -350,7 +372,7 @@ class ToolbarFotografia(Gtk.Toolbar):
             "Iconos", "foto.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Fotografiar")
+        boton.set_tooltip_text("Fotografiar.")
         boton.connect("clicked", self.emit_senial, "fotografiar")
         self.insert(boton, -1)
         
@@ -361,8 +383,19 @@ class ToolbarFotografia(Gtk.Toolbar):
             "Iconos", "configurar.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Configurar")
+        boton.set_tooltip_text("Configurar.")
         boton.connect("clicked", self.emit_senial, "configurar")
+        self.insert(boton, -1)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+            
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "stop.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(1))
+        boton.set_tooltip_text("Reset.")
+        boton.connect("clicked", self.emit_senial, "Reset")
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
@@ -372,7 +405,7 @@ class ToolbarFotografia(Gtk.Toolbar):
             "Iconos","salir.png")
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Salir")
+        boton.set_tooltip_text("Salir.")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
         

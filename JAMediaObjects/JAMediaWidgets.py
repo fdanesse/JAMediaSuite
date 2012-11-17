@@ -1036,15 +1036,21 @@ class ToolbarGstreamerEfectos(Gtk.Box):
         frame.set_label(" Efectos en el Pipe ")
         frame.set_label_align(0.5, 0.5)
         self.efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        self.efectos_en_pipe.set_size_request(-1, G.get_pixels(1.0)+2)
-        frame.add(self.efectos_en_pipe)
+        self.efectos_en_pipe.set_size_request(-1, G.get_pixels(2.0)+2)
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+        scroll.add_with_viewport (self.efectos_en_pipe)
+        frame.add(scroll)
         self.pack_start(frame, False, False, 1)
         
         frame = Gtk.Frame()
         frame.set_label(" Efectos Disponibles ")
         frame.set_label_align(0.5, 0.5)
         self.gstreamer_efectos = GstreamerVideoEfectos()
-        frame.add(self.gstreamer_efectos)
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+        scroll.add_with_viewport (self.gstreamer_efectos)
+        frame.add(scroll)
         self.pack_start(frame, False, False, 1)
         
         self.show_all()
@@ -1093,6 +1099,13 @@ class ToolbarGstreamerEfectos(Gtk.Box):
                 self.emit('quitar_efecto', indice)
                 
             #botonefecto.set_tooltip_text(text)
+            
+    def reset(self):
+        """Devuelve la toolbar a su estado original."""
+        
+        for efecto in self.efectos_en_pipe.get_children():
+            self.efectos_en_pipe.remove(efecto)
+            self.gstreamer_efectos.pack_start(efecto, False, False, 1)
 
 class GstreamerVideoEfectos(Gtk.Box):
     """Toolbar con 18 widgets que representan
@@ -1102,14 +1115,17 @@ class GstreamerVideoEfectos(Gtk.Box):
         
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
         
-        self.set_size_request(-1, G.get_pixels(1.0)+2)
+        self.set_size_request(-1, G.get_pixels(2.0)+2)
         
         for nombre in G.VIDEOEFECTOS:
             botonefecto = JAMediaButton()
             botonefecto.set_tooltip(nombre)
-            lado = G.get_pixels(1.0)
+            lado = G.get_pixels(2.0)
             botonefecto.set_tamanio(lado, lado)
-            botonefecto.set_imagen(os.path.join(JAMediaWidgetsBASE, 'Iconos', 'ver.png'))
+            #botonefecto.set_imagen(os.path.join(JAMediaWidgetsBASE, 'Iconos', 'ver.png'))
+            archivo = os.path.join(G.IMAGENES_JAMEDIA_VIDEO, '%s.png' %(nombre))
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
+            botonefecto.imagen.set_from_pixbuf(pixbuf)
             self.pack_start(botonefecto, False, False, 1)
             
             botonefecto.drag_source_set(

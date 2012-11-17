@@ -388,25 +388,25 @@ def get_shelve_lista(archivo):
 
 # >>> JAMediaVideo
 VIDEOEFECTOS = [
-    #'gaussianblur',    # FIXME: Demasiado lento
-    'solarize',
-    'exclusion',        # FIXME: Lento
-    #'dodge',           # FIXME: No percibo ningún efecto
-    #'dilate',          # FIXME: No percibo ningún efecto
-    'chromium',
-    #'burn',            # FIXME: No percibo ningún efecto
-    'edgetv',
     'agingtv',
+    #'burn',            # FIXME: No percibo ningún efecto
+    'chromium',
     'dicetv',
-    'warptv',
-    'shagadelictv',
-    'vertigotv',
-    'revtv',
-    #'quarktv',         # Muy Lento, pero buenisimo
+    #'dilate',          # FIXME: No percibo ningún efecto
+    #'dodge',           # FIXME: No percibo ningún efecto
+    'edgetv',
+    'exclusion',        # FIXME: Lento
+    #'gaussianblur',    # FIXME: Demasiado lento
     'optv',
+    #'quarktv',         # Muy Lento, pero buenisimo
     'radioactv',
+    'rippletv',
+    'revtv',
+    'shagadelictv',
+    'solarize',
     'streaktv',
-    'rippletv'
+    'vertigotv',
+    'warptv',
     ]
 
 # <<< JAMediaVideo

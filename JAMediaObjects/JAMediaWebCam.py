@@ -291,7 +291,7 @@ class JAMediaWebCam(GObject.GObject):
     
     def reset(self):
         """Re establece el pipe al estado
-        original (sólo camara a pantalla)."""
+        original (sólo camara a pantalla y sin efectos)."""
         
         self.config['device'] = CONFIG_DEFAULT['device']
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
@@ -304,6 +304,16 @@ class JAMediaWebCam(GObject.GObject):
         self.camara.set_property('brightness', self.config['brillo'])
         self.camara.set_property('hue', self.config['hue'])
         
+        self.stop()
+        self.efectos = []
+        self.get_base_pipe()
+        self.play()
+        
+    def re_init(self):
+        """Restablece el pipe al estado original,
+        pero manteniendo los valores de balance y
+        los efectos configurados."""
+    
         self.stop()
         self.get_base_pipe()
         self.play()
