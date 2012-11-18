@@ -139,6 +139,8 @@ class ToolbarPrincipal(Gtk.Toolbar):
     
     __gsignals__ = {
     'menu':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'rotar':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
@@ -204,9 +206,25 @@ class ToolbarPrincipal(Gtk.Toolbar):
             ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Izquierda.")
+        boton.connect("clicked", self.emit_rotar, 'Izquierda')
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = G.get_boton(archivo, flip = True,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Derecha.")
+        boton.connect("clicked", self.emit_rotar, 'Derecha')
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "stop.png")
         boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(1))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Reset.")
         boton.connect("clicked", self.emit_senial, "Reset")
         self.insert(boton, -1)
@@ -215,6 +233,11 @@ class ToolbarPrincipal(Gtk.Toolbar):
             ancho = 0, expand = True), -1)
         
         self.show_all()
+        
+    def emit_rotar(self, widget, valor):
+        """ Emite la señal rotar con su valor Izquierda o Derecha. """
+        
+        self.emit('rotar', valor)
         
     def emit_senial(self, widget, text):
         """Cuando se hace click en algún boton."""
@@ -228,6 +251,8 @@ class ToolbarVideo(Gtk.Toolbar):
     'salir':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, []),
     'accion':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'rotar':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
@@ -270,11 +295,27 @@ class ToolbarVideo(Gtk.Toolbar):
         
         self.insert(G.get_separador(draw = False,
             ancho = 3, expand = False), -1)
+
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Izquierda.")
+        boton.connect("clicked", self.emit_rotar, 'Izquierda')
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = G.get_boton(archivo, flip = True,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Derecha.")
+        boton.connect("clicked", self.emit_rotar, 'Derecha')
+        self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "stop.png")
         boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(1))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Reset.")
         boton.connect("clicked", self.emit_senial, "Reset")
         self.insert(boton, -1)
@@ -330,6 +371,11 @@ class ToolbarVideo(Gtk.Toolbar):
         self.label.modify_fg(0, self.color)
         return True
     
+    def emit_rotar(self, widget, valor):
+        """ Emite la señal rotar con su valor Izquierda o Derecha. """
+        
+        self.emit('rotar', valor)
+        
     def emit_senial(self, widget, senial):
         """Emite filmar o configurar."""
         
@@ -347,6 +393,8 @@ class ToolbarFotografia(Gtk.Toolbar):
     'salir':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, []),
     'accion':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'rotar':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
@@ -391,9 +439,25 @@ class ToolbarFotografia(Gtk.Toolbar):
             ancho = 3, expand = False), -1)
             
         archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Izquierda.")
+        boton.connect("clicked", self.emit_rotar, 'Izquierda')
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = G.get_boton(archivo, flip = True,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Derecha.")
+        boton.connect("clicked", self.emit_rotar, 'Derecha')
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "stop.png")
         boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(1))
+            pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Reset.")
         boton.connect("clicked", self.emit_senial, "Reset")
         self.insert(boton, -1)
@@ -449,6 +513,11 @@ class ToolbarFotografia(Gtk.Toolbar):
         self.label.modify_fg(0, self.color)
         return True
     
+    def emit_rotar(self, widget, valor):
+        """ Emite la señal rotar con su valor Izquierda o Derecha. """
+        
+        self.emit('rotar', valor)
+        
     def emit_senial(self, widget, senial):
         """Emite grabar o configurar."""
         
@@ -579,6 +648,17 @@ class ToolbarVideoBalance(ToolbarBalanceConfig):
         self.attach(self.eventbox, 1, 3, 1, 2)
         
         self.show_all()
+        
+    def set_balance(self, brillo = None, contraste = None,
+        saturacion = None, hue = None, gamma = None):
+        """Setea las barras segun valores."""
+        
+        if saturacion != None: self.saturacion.set_progress(saturacion)
+        if contraste != None: self.contraste.set_progress(contraste)
+        if brillo != None: self.brillo.set_progress(brillo)
+        if hue != None: self.hue.set_progress(hue)
+        #if gamma != None: self.gamma.set_progress(gamma)
+        #print brillo, contraste, saturacion, hue, gamma
         
 class ToolbarFotografiaBalance(ToolbarVideoBalance):
     """Toolbar de configuración para fotografiar."""

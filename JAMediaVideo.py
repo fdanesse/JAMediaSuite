@@ -191,21 +191,24 @@ class JAMediaVideo(Gtk.Window):
         self.toolbar_salir.connect('salir', self.salir)
         
         self.toolbarprincipal.connect("menu", self.get_menu)
+        self.toolbarprincipal.connect("rotar", self.set_rotacion)
         
         self.toolbarvideo.connect("accion", self.set_accion_video)
-        #self.toolbargrabaraudio.connect("accion", self.set_accion_audio)
-        self.toolbarfotografia.connect("accion", self.set_accion_fotografia)
-        
+        self.toolbarvideo.connect("rotar", self.set_rotacion)
         self.toolbarvideo.connect("salir", self.get_menu_base)
-        self.toolbarfotografia.connect("salir", self.get_menu_base)
-        self.toolbargrabaraudio.connect("salir", self.get_menu_base)
-        
-        self.jamediaplayer.connect('salir', self.get_menu_base_and_re_init)
-        self.jamimagenes.connect('salir', self.get_menu_base_and_re_init)
-        
         self.toolbarvideoconfig.connect('valor', self.set_balance)
+        
+        self.toolbarfotografia.connect("accion", self.set_accion_fotografia)
+        self.toolbarfotografia.connect("rotar", self.set_rotacion)
+        self.toolbarfotografia.connect("salir", self.get_menu_base)
         self.toolbarfotografiaconfig.connect('valor', self.set_balance)
         #self.toolbarfotografiaconfig.connect('run_rafaga', self.run_rafaga)
+        
+        self.toolbargrabaraudio.connect("accion", self.set_accion_audio)
+        self.toolbargrabaraudio.connect("salir", self.get_menu_base)
+        
+        self.jamediaplayer.connect('salir', self.get_menu_base)
+        self.jamimagenes.connect('salir', self.get_menu_base)
         
         self.pantalla.connect("button_press_event", self.clicks_en_pantalla)
         
@@ -218,9 +221,36 @@ class JAMediaVideo(Gtk.Window):
         
         GObject.idle_add(self.jamediawebcam.reset)
         
+    def set_rotacion(self, widget, valor):
+        """Recibe rotación y la pasa a la webcam."""
+        
+        self.jamediawebcam.rotar(valor)
+        
+    def update_balance_toolbars(self):
+        """Actualiza las toolbars de balance en video."""
+        
+        config = self.jamediawebcam.get_balance()
+        
+        self.toolbarvideoconfig.set_balance(
+            brillo = config['brillo'],
+            contraste = config['contraste'],
+            saturacion = config['saturacion'],
+            hue = config['hue'])
+            
+        self.toolbarfotografiaconfig.set_balance(
+            brillo = config['brillo'],
+            contraste = config['contraste'],
+            saturacion = config['saturacion'],
+            hue = config['hue'])
+        
     def agregar_efecto(self, widget, nombre_efecto):
         """Recibe el nombre del efecto que debe agregarse
         al pipe de  JAMediaWebcam y ejecuta la acción."""
+        
+        if self.jamediawebcam.estado == "GrabandoAudioVideoWebCam":
+            self.jamediawebcam.re_init()
+            #self.update_balance_toolbars()
+            self.toolbarvideo.set_estado("detenido")
         
         self.jamediawebcam.agregar_efecto( nombre_efecto )
         
@@ -228,6 +258,11 @@ class JAMediaVideo(Gtk.Window):
         """Recibe el indice del efecto que debe quitarse
         del pipe de  JAMediaWebcam y ejecuta la acción."""
         
+        if self.jamediawebcam.estado == "GrabandoAudioVideoWebCam":
+            self.jamediawebcam.re_init()
+            #self.update_balance_toolbars()
+            self.toolbarvideo.set_estado("detenido")
+            
         self.jamediawebcam.quitar_efecto( indice_efecto )
         
     def reset(self):
@@ -235,7 +270,23 @@ class JAMediaVideo(Gtk.Window):
         actualiza los widgets correspondientes."""
         
         self.toolbargstreamerefectos.reset()
-        GObject.idle_add(self.jamediawebcam.reset)
+        self.jamediaplayer.lista_de_reproduccion.limpiar()
+        self.jamimagenes.lista.limpiar()
+        self.toolbargrabaraudio.set_estado("detenido")
+        self.toolbarvideo.set_estado("detenido")
+        self.toolbarfotografia.set_estado("detenido")
+        self.jamediawebcam.reset()
+        GObject.idle_add(self.update_balance_toolbars)
+        
+    def re_init(self):
+        
+        self.jamediaplayer.lista_de_reproduccion.limpiar()
+        self.jamimagenes.lista.limpiar()
+        self.toolbargrabaraudio.set_estado("detenido")
+        self.toolbarvideo.set_estado("detenido")
+        self.toolbarfotografia.set_estado("detenido")
+        self.jamediawebcam.re_init()
+        GObject.idle_add(self.update_balance_toolbars)
         
     '''
     def run_rafaga(self, widget, valor):
@@ -292,66 +343,47 @@ class JAMediaVideo(Gtk.Window):
         en configurar."""
         
         if senial == 'fotografiar':
-            '''
+            
+            # FIXME:
+                # Debido a que no todos los efectos se activan instantáneamente
+                # es necesario modificar esto de forma tal que:
+                    # O bien la imagen se toma del widget en el que se dibuja (problemas: escala y calidad).
+                    # O bien se obtiene el frame de video en el pipe (lo ideal, pero como? :)).
+                    # O bien se obtiene el buffer de video en el pipe (como hace record.activity).
+            #'''
             if self.update_rafagas:
                 # Si se está ejecutando ráfagas, la detiene.
                 GObject.source_remove(self.update_rafagas)
                 self.update_rafagas = False
-                self.toolbarfotografia.set_estado("detenido")
+                self.re_init()
+                return
             
             if self.jamediawebcam.estado != "FotografiandoWebCam":
+                # Si no se está fotografiando, toma una fotografía.
                 self.jamediawebcam.fotografiar()
                 self.toolbarfotografia.set_estado("grabando")
                 time.sleep(0.8)
-                #self.jamediawebcam.reset()
-                
-                config = self.jamediawebcam.get_balance()
-                self.toolbarfotografiaconfig.set_balance(
-                    brillo = config['brillo'],
-                    contraste = config['contraste'],
-                    saturacion = config['saturacion'],
-                    hue = config['hue'])
-                    
-                self.toolbarfotografia.set_estado("detenido")
-                
+                self.re_init()
+            
             else:
-                #self.jamediawebcam.reset()
-                config = self.jamediawebcam.get_balance()
-                self.toolbarfotografiaconfig.set_balance(
-                    brillo = config['brillo'],
-                    contraste = config['contraste'],
-                    saturacion = config['saturacion'],
-                    hue = config['hue'])
-                    
-                self.toolbarfotografia.set_estado("detenido")'''
+                # Si se está fotografiando, reinicia la camara.
+                self.re_init()
                 
         elif senial == 'configurar':
+            # Sólo muestra u oculta controles.
             if self.toolbarfotografiaconfig.get_visible():
                 self.toolbarfotografiaconfig.hide()
                 self.toolbargstreamerefectos.hide()
                 
             else:
-                config = self.jamediawebcam.get_balance()
-                self.toolbarfotografiaconfig.set_balance(
-                    brillo = config['brillo'],
-                    contraste = config['contraste'],
-                    saturacion = config['saturacion'],
-                    hue = config['hue'])
+                self.update_balance_toolbars()
                 self.toolbarfotografiaconfig.show()
                 self.toolbargstreamerefectos.show()
-                
+        
         elif senial == 'Reset':
+            # Resetea completamente la cámara.
             self.reset()
-            config = self.jamediawebcam.get_balance()
-            self.toolbarfotografiaconfig.set_balance(
-                brillo = config['brillo'],
-                contraste = config['contraste'],
-                saturacion = config['saturacion'],
-                hue = config['hue'])
-                
-            self.toolbarfotografia.set_estado("detenido")
             
-    '''
     def set_accion_audio(self, widget, senial):
         """Cuando se hace click en grabar solo audio o
         en configurar."""
@@ -362,14 +394,22 @@ class JAMediaVideo(Gtk.Window):
                 self.toolbargrabaraudio.set_estado("grabando")
                 
             else:
-                #self.jamediawebcam.reset()
-                self.toolbargrabaraudio.set_estado("detenido")
+                self.re_init()
                 
+        '''
         elif senial == 'configurar':
-            #self.jamediawebcam.reset()
-            self.toolbargrabaraudio.set_estado("detenido")
-            # Mostrar controles de configuración.
-            '''
+            # Sólo muestra u oculta los controles.
+            if self.toolbarvideoconfig.get_visible():
+                self.toolbaraudioconfig.hide()
+                self.toolbaraudioefectos.hide()
+                
+            else:
+                #self.update_balance_toolbars()
+                self.toolbaraudioconfig.show()
+                self.toolbaraudioefectos.show()
+                
+        elif senial == 'Reset':
+            self.reset()'''
             
     def set_accion_video(self, widget, senial):
         """Cuando se hace click en filmar o
@@ -383,14 +423,7 @@ class JAMediaVideo(Gtk.Window):
                 
             else:
                 # Si está grabando, detiene.
-                self.jamediawebcam.re_init()
-                config = self.jamediawebcam.get_balance()
-                self.toolbarvideoconfig.set_balance(
-                    brillo = config['brillo'],
-                    contraste = config['contraste'],
-                    saturacion = config['saturacion'],
-                    hue = config['hue'])
-                self.toolbarvideo.set_estado("detenido")
+                self.re_init()
                 
         elif senial == 'configurar':
             # Sólo muestra u oculta los controles.
@@ -399,24 +432,12 @@ class JAMediaVideo(Gtk.Window):
                 self.toolbargstreamerefectos.hide()
                 
             else:
-                config = self.jamediawebcam.get_balance()
-                self.toolbarvideoconfig.set_balance(
-                    brillo = config['brillo'],
-                    contraste = config['contraste'],
-                    saturacion = config['saturacion'],
-                    hue = config['hue'])
+                self.update_balance_toolbars()
                 self.toolbarvideoconfig.show()
                 self.toolbargstreamerefectos.show()
                 
         elif senial == 'Reset':
             self.reset()
-            config = self.jamediawebcam.get_balance()
-            self.toolbarvideoconfig.set_balance(
-                brillo = config['brillo'],
-                contraste = config['contraste'],
-                saturacion = config['saturacion'],
-                hue = config['hue'])
-            self.toolbarvideo.set_estado("detenido")
             
     def get_menu_base(self, widget):
         """Cuando se sale de un menú particular,
@@ -425,29 +446,12 @@ class JAMediaVideo(Gtk.Window):
         if self.update_rafagas:
             GObject.source_remove(self.update_rafagas)
             self.update_rafagas = False
-            
-        self.toolbargrabaraudio.set_estado("detenido")
-        self.toolbarvideo.set_estado("detenido")
-        self.toolbarfotografia.set_estado("detenido")
         
         map(self.ocultar, self.controlesdinamicos)
         map(self.mostrar, [self.toolbar,
         self.toolbarprincipal, self.pantalla])
         
-    def get_menu_base_and_re_init(self, widget):
-        """Cuando se sale de una aplicación embebida,
-        se vuelve al menú principal y se hace
-        re_init sobre la camara."""
-        
-        map(self.ocultar, self.controlesdinamicos)
-        map(self.mostrar, [self.toolbar,
-        self.toolbarprincipal, self.pantalla])
-        
-        self.jamediaplayer.lista_de_reproduccion.limpiar()
-        self.jamimagenes.lista.limpiar()
-        
-        #GObject.idle_add(self.jamediawebcam.reset)
-        GObject.idle_add(self.jamediawebcam.re_init) # manteniendo balance
+        GObject.idle_add(self.re_init)
         
     def get_menu(self, widget, menu):
         """Cuando se hace click en algún botón de
@@ -463,6 +467,8 @@ class JAMediaVideo(Gtk.Window):
             map(self.mostrar, [self.toolbarfotografia])
             
         elif menu == "Grabar":
+            # stop y re pipe gráfico para el audio.
+            # self.jamediawebcam.stop()
             map(self.mostrar, [self.toolbargrabaraudio])
             
         elif menu == "Reproducir":
@@ -479,7 +485,7 @@ class JAMediaVideo(Gtk.Window):
                 ar = os.path.join(G.VIDEO_JAMEDIA_VIDEO, arch)
                 archivos.append([arch, ar])
                 
-            self.jamediaplayer.set_nueva_lista(archivos)
+            GObject.idle_add(self.jamediaplayer.set_nueva_lista, archivos)
             
         elif menu == "Ver":
             self.jamediawebcam.stop()
@@ -491,7 +497,7 @@ class JAMediaVideo(Gtk.Window):
                 ar = os.path.join(G.IMAGENES_JAMEDIA_VIDEO, arch)
                 archivos.append([arch, ar])
                 
-            self.jamimagenes.set_lista(archivos)
+            GObject.idle_add(self.jamimagenes.set_lista, archivos)
             
         elif menu == "Reset":
             map(self.mostrar, [self.toolbar,

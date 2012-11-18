@@ -46,11 +46,19 @@ gi.require_version('Gst', '1.0')
 from gi.repository import GObject
 from gi.repository import Gst
 from gi.repository import GstVideo
+from gi.repository import GdkPixbuf
 
 import JAMediaGlobales as G
    
 GObject.threads_init()
 Gst.init([])
+
+# Notas:
+#   Actualmente, las imágenes y el video se toman
+#   Al tamaño y framerate en el que sale de la cámara
+#   640x480 en mi caso. Una fotografía ocupa 2.5 Mb
+#   En xo, en video, probablemente lo mejor sea escalar a
+#   320x240 o 160x120, en ambos casos la calidad no es mala.
 
 CONFIG_DEFAULT = {
     'device': "/dev/video0",
@@ -63,7 +71,7 @@ CONFIG_DEFAULT = {
 def get_efecto(efecto):
     """Crea un bin con efecto para agregar al pipe."""
     
-    efectobin = Gst.Bin()#Gst.ElementFactory.make("bin")
+    efectobin = Gst.Bin()# Gst.ElementFactory.make("bin")
     
     queue = Gst.ElementFactory.make("queue", "queue")
     queue.set_property('max-size-buffers', 1000)
@@ -108,32 +116,7 @@ class JAMediaWebCam(GObject.GObject):
         self.hilovideoapantalla = None
         self.pantalla = None
         
-        # Video
-        self.hiloencodearvideo = None
-        self.videoconvert = None
-        self.theoraenc = None
-        self.hilovideomuxor = None
-        self.oggmux = None
-        
-        # Audio
-        self.autoaudiosrc = None
-        self.audioconvert = None
-        self.vorbisenc = None
-        self.hiloaudiomuxor = None
-        
-        # Solo audio
-        self.mp3enc = None
-        
-        # Archivo
-        self.archivo = None
-        
-        # Imagenes
-        self.pngenc = None
-        
         self.elementos_base = []
-        self.elementos_grabacion = []
-        self.elementos_grabacion_solo_audio = []
-        self.elementos_fotografia = []
         
         self.config = {}
         self.config['device'] = CONFIG_DEFAULT['device']
@@ -155,6 +138,9 @@ class JAMediaWebCam(GObject.GObject):
         # Fuente de Video
         self.camara = Gst.ElementFactory.make('v4l2src', "webcam")
         
+        # Rotación
+        self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
+        
         # Enlace doble desde fuente de video.
         self.multi = Gst.ElementFactory.make('tee', "tee")
         
@@ -163,79 +149,19 @@ class JAMediaWebCam(GObject.GObject):
         
         self.pantalla = Gst.ElementFactory.make('xvimagesink', "pantalla") # autovideosink o xvimagesink
         
-        # Salida de Video 2 (a theoraenc)
-        self.hiloencodearvideo = Gst.ElementFactory.make('queue', "hiloencodearvideo")
-        self.hiloencodearvideo.set_property('max-size-buffers', 1000)
-        self.hiloencodearvideo.set_property('max-size-bytes', 0)
-        self.hiloencodearvideo.set_property('max-size-time', 0)
-        
-        self.videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
-        self.theoraenc = Gst.ElementFactory.make('theoraenc', 'theoraenc')
-        self.theoraenc.set_property("bitrate", 1024) # kbps compresion + resolucion = calidad
-        self.theoraenc.set_property('keyframe-freq', 15)
-        self.theoraenc.set_property('cap-overflow', False)
-        self.theoraenc.set_property('speed-level', 0)
-        self.theoraenc.set_property('cap-underflow', True)
-        self.theoraenc.set_property('vp3-compatible', True)
-        
-        # Para fotografiar
-        self.pngenc = Gst.ElementFactory.make('pngenc', "pngenc")
-        
-        # Fuente de Audio a vorbisenc.
-        self.autoaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc")
-        
-        self.audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
-        self.vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
-        
-        # Solo audio
-        self.mp3enc = Gst.ElementFactory.make('lamemp3enc', "lamemp3enc")
-        
-        # Muxor - Unión audio y video en oggmux.
-        self.hilovideomuxor = Gst.ElementFactory.make('queue', "hilovideomuxor")
-        self.hilovideomuxor.set_property('max-size-buffers', 12000)
-        self.hilovideomuxor.set_property('max-size-bytes', 0)
-        self.hilovideomuxor.set_property('max-size-time', 0)
-        
-        self.hiloaudiomuxor = Gst.ElementFactory.make('queue', "hiloaudiomuxor")
-        self.hiloaudiomuxor.set_property('max-size-buffers', 5000)
-        self.hiloaudiomuxor.set_property('max-size-bytes', 0)
-        self.hiloaudiomuxor.set_property('max-size-time', 0)
-        
-        self.oggmux = Gst.ElementFactory.make('oggmux', "oggmux")
-        
-        # Archivo - Salida de oggmux a un archivo.
-        self.archivo = Gst.ElementFactory.make('filesink', "archivo")
-        
         self.elementos_base = [
             self.camara,
+            self.videoflip,
             self.multi,
             self.hilovideoapantalla,
             self.pantalla]
             
-        self.elementos_grabacion = [
-            self.hiloencodearvideo,
-            self.videoconvert,
-            self.theoraenc,
-            self.hilovideomuxor,
-            self.oggmux,
-            self.autoaudiosrc,
-            self.audioconvert,
-            self.vorbisenc,
-            self.hiloaudiomuxor,
-            self.archivo]
-            
-        self.elementos_grabacion_solo_audio = [
-            self.autoaudiosrc,
-            self.audioconvert,
-            self.mp3enc,
-            self.archivo]
-            
-        self.elementos_fotografia = [
-            self.hiloencodearvideo,
-            self.videoconvert,
-            self.pngenc,
-            self.archivo]
-            
+        #self.elementos_grabacion_solo_audio = [
+        #    self.autoaudiosrc,
+        #    self.audioconvert,
+        #    self.mp3enc,
+        #    self.archivo]
+        
         self.set_camara()
         self.get_base_pipe()
         
@@ -246,6 +172,29 @@ class JAMediaWebCam(GObject.GObject):
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.sync_message)
         
+    def rotar(self, valor):
+        """ Rota el Video. """
+        
+        self.pause()
+        rot = self.videoflip.get_property('method')
+        
+        if valor == "Derecha":
+            if rot < 3:
+                rot += 1
+                
+            else:
+                rot = 0
+                
+        elif valor == "Izquierda":
+            if rot > 0:
+                rot -= 1
+                
+            else:
+                rot = 3
+                
+        self.videoflip.set_property('method', rot)
+        GObject.idle_add(self.play)
+        
     def set_camara(self, device = None):
         """Setea una cámara fuente de video."""
         
@@ -255,37 +204,59 @@ class JAMediaWebCam(GObject.GObject):
         
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None):
-        """Seteos de balance en la fuente de video."""
+        """Seteos de balance en la fuente de video.
+        Recibe % en float."""
         
         # Rangos: int. -2147483648 2147483647
-        #valor = 2147483647 - (-2147483648)
-        valor = 100 -(-100)
+        min	= 2147483648
+        #max = 2147483647
+        total = 4294967295
+        
         if saturacion != None:
-            self.config['saturacion'] = int((valor * int(saturacion) / 100) - valor/2)
+            new_valor = int (total * int(saturacion) / 100)
+            new_valor -= min
+            self.config['saturacion'] = new_valor
             self.camara.set_property('saturation', self.config['saturacion'])
             
         if contraste != None:
-            self.config['contraste'] = int((valor * int(contraste) / 100) - valor/2)
+            new_valor = int (total * int(contraste) / 100)
+            new_valor -= min
+            self.config['contraste'] = new_valor
             self.camara.set_property('contrast', self.config['contraste'])
             
         if brillo != None:
-            self.config['brillo'] = int( (valor * int(brillo) / 100) - (valor/2))
+            new_valor = int (total * int(brillo) / 100)
+            new_valor -= min
+            self.config['brillo'] = new_valor
             self.camara.set_property('brightness', self.config['brillo'])
             
         if hue != None:
-            self.config['hue'] = int( (valor * int(hue) / 100) - (valor/2) )
+            new_valor = int (total * int(hue) / 100)
+            new_valor -= min
+            self.config['hue'] = new_valor
             self.camara.set_property('hue', self.config['hue'])
         
     def get_balance(self):
-        """Retorna los valores actuales de balance en % float."""
+        """Retorna los valores actuales de balance en %."""
         
-        #valor = 2147483647 - (-2147483648) # 4294967295
+        # Rangos: int. -2147483648 2147483647
+        min	= 2147483648
+        #max = 2147483647
+        total = 4294967295
+        
         config = {}
-        valor = 100 -(-100)
-        config['brillo'] = float( (self.camara.get_property('brightness') + (valor/2)) * 100 / valor)
-        config['contraste'] = float( (self.camara.get_property('contrast') + (valor/2)) * 100 / valor)
-        config['saturacion'] = float( (self.camara.get_property('saturation') + (valor/2)) * 100 / valor)
-        config['hue'] = float( (self.camara.get_property('hue') + (valor/2)) * 100 / valor)
+        
+        brillo = self.config['brillo'] + min
+        config['brillo'] = brillo * 100 / total
+        
+        contraste = self.config['contraste'] + min
+        config['contraste'] = contraste * 100 / total
+        
+        saturacion = self.config['saturacion'] + min
+        config['saturacion'] = saturacion * 100 / total
+        
+        hue = self.config['hue'] + min
+        config['hue'] = hue * 100 / total
         
         return config
     
@@ -303,6 +274,8 @@ class JAMediaWebCam(GObject.GObject):
         self.camara.set_property('contrast', self.config['contraste'])
         self.camara.set_property('brightness', self.config['brillo'])
         self.camara.set_property('hue', self.config['hue'])
+        
+        self.videoflip.set_property('method', 0)
         
         self.stop()
         self.efectos = []
@@ -328,13 +301,8 @@ class JAMediaWebCam(GObject.GObject):
         for efecto in efectos:
             ef.append(get_efecto(efecto))
             
-        #videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
         if ef:
-            for efecto in ef:
-                self.pipeline.add(efecto)
-        #else:
-        #    self.pipeline.add(videoconvert)
-            
+            map(self.agregar, ef)
             
         if ef:
             self.camara.link(ef[0])
@@ -344,53 +312,187 @@ class JAMediaWebCam(GObject.GObject):
                 if len(ef) > index + 1:
                     ef[index].link(ef[index + 1])
                 
-            ef[-1].link(self.multi)
+            ef[-1].link(self.videoflip)
             
         else:
-            self.camara.link(self.multi)
+            self.camara.link(self.videoflip)
             
-        #self.camara.link(self.multi)
+        self.videoflip.link(self.multi)
         self.multi.link(self.hilovideoapantalla)
         self.hilovideoapantalla.link(self.pantalla)
-        
+    
     def get_foto_pipe(self):
         """linkea elementos fotograficos."""
         
-        map(self.agregar, self.elementos_fotografia)
+        queue = Gst.ElementFactory.make("queue", "pbqueue")
+        queue.set_property("leaky", True)
+        queue.set_property("max-size-buffers", 1)
+
+        videoconvert = Gst.ElementFactory.make("videoconvert", "videoconvert")
+        pngenc = Gst.ElementFactory.make("pngenc", "pngenc")
         
-        self.multi.link(self.hiloencodearvideo)
-        self.hiloencodearvideo.link(self.videoconvert)
-        self.videoconvert.link(self.pngenc)
+        sink = Gst.ElementFactory.make('filesink', "archivo")
         
-        self.pngenc.link(self.archivo)
+        fecha = datetime.date.today()
+        hora = time.strftime("%H-%M-%S")
+        archivo = os.path.join(G.IMAGENES_JAMEDIA_VIDEO,"%s-%s.png" % (fecha, hora))
+        self.patharchivo = archivo
+        sink.set_property("location", self.patharchivo)
+
+        fotobin = Gst.Bin()
+
+        fotobin.add(queue)
+        fotobin.add(videoconvert)
+        fotobin.add(pngenc)
+        fotobin.add(sink)
+
+        queue.link(videoconvert)
+        videoconvert.link(pngenc)
+        pngenc.link(sink)
+
+        pad = queue.get_static_pad("sink")
+        fotobin.add_pad(Gst.GhostPad.new("sink", pad))
         
+        map(self.agregar, [fotobin])
+        
+        self.multi.link(fotobin)
+    
     def get_audio_video_pipe(self):
         """Linkea elementos de filmación."""
         
-        map(self.agregar, self.elementos_grabacion)
+        # >>> Video
+        que_encode_video = Gst.ElementFactory.make("queue", "que_encode_video")
+        que_encode_video.set_property('max-size-buffers', 1000)
+        que_encode_video.set_property('max-size-bytes', 0)
+        que_encode_video.set_property('max-size-time', 0)
         
-        self.multi.link(self.hiloencodearvideo)
-        self.hiloencodearvideo.link(self.videoconvert)
-        self.videoconvert.link(self.theoraenc)
-        self.theoraenc.link(self.hilovideomuxor)
-        self.hilovideomuxor.link(self.oggmux)
+        theoraenc = Gst.ElementFactory.make('theoraenc', 'theoraenc')
+        theoraenc.set_property("bitrate", 1024) # kbps compresion + resolucion = calidad
+        theoraenc.set_property('keyframe-freq', 15)
+        theoraenc.set_property('cap-overflow', False)
+        theoraenc.set_property('speed-level', 0)
+        theoraenc.set_property('cap-underflow', True)
+        theoraenc.set_property('vp3-compatible', True)
         
-        self.autoaudiosrc.link(self.audioconvert)
-        self.audioconvert.link(self.vorbisenc)
-        self.vorbisenc.link(self.hiloaudiomuxor)
-        self.hiloaudiomuxor.link(self.oggmux)
+        que_video_mux = Gst.ElementFactory.make('queue', "que_video_mux")
+        que_video_mux.set_property('max-size-buffers', 12000)
+        que_video_mux.set_property('max-size-bytes', 0)
+        que_video_mux.set_property('max-size-time', 0)
+
+        videobin = Gst.Bin()
+
+        videobin.add(que_encode_video)
+        videobin.add(theoraenc)
+        videobin.add(que_video_mux)
+
+        que_encode_video.link(theoraenc)
+        theoraenc.link(que_video_mux)
+
+        pad = que_encode_video.get_static_pad("sink")
+        videobin.add_pad(Gst.GhostPad.new("sink", pad))
+        pad = que_video_mux.get_static_pad("src")
+        videobin.add_pad(Gst.GhostPad.new("src", pad))
+        # <<< Video
         
-        self.oggmux.link(self.archivo)
+        # >>> Audio
+        autoaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc")
+        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
+        vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
+        
+        que_audio_mux = Gst.ElementFactory.make('queue', "que_audio_mux")
+        que_audio_mux.set_property('max-size-buffers', 5000)
+        que_audio_mux.set_property('max-size-bytes', 0)
+        que_audio_mux.set_property('max-size-time', 0)
+        
+        audiobin = Gst.Bin()
+        
+        audiobin.add(autoaudiosrc)
+        audiobin.add(audioconvert)
+        audiobin.add(vorbisenc)
+        audiobin.add(que_audio_mux)
+        
+        autoaudiosrc.link(audioconvert)
+        audioconvert.link(vorbisenc)
+        vorbisenc.link(que_audio_mux)
+        
+        pad = que_audio_mux.get_static_pad("src")
+        audiobin.add_pad(Gst.GhostPad.new("src", pad))
+        # <<< Audio
+        
+        oggmux = Gst.ElementFactory.make('oggmux', "oggmux")
+        
+        sink = Gst.ElementFactory.make('filesink', "archivo")
+        
+        fecha = datetime.date.today()
+        hora = time.strftime("%H-%M-%S")
+        archivo = os.path.join(G.VIDEO_JAMEDIA_VIDEO,"%s-%s.ogg" % (fecha, hora))
+        self.patharchivo = archivo
+        sink.set_property("location", archivo)
+        
+        map(self.agregar, [videobin, audiobin, oggmux, sink])
+        
+        self.multi.link(videobin)
+        videobin.link(oggmux)
+        audiobin.link(oggmux)
+        oggmux.link(sink)
         
     def get_solo_audio_pipe(self):
         """Linkea elementos para grabar solamente audio."""
-        
+        '''
         map(self.agregar, self.elementos_grabacion_solo_audio)
         
         self.autoaudiosrc.link(self.audioconvert)
         self.audioconvert.link(self.mp3enc)
         
-        self.mp3enc.link(self.archivo)
+        self.mp3enc.link(self.archivo)'''
+        #self.elementos_grabacion_solo_audio = [
+        #    self.autoaudiosrc,
+        #    self.audioconvert,
+        #    self.mp3enc,
+        #    self.archivo]
+        
+        # >>> Audio
+        autoaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc")
+        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
+        vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
+        
+        que_audio_mux = Gst.ElementFactory.make('queue', "que_audio_mux")
+        que_audio_mux.set_property('max-size-buffers', 5000)
+        que_audio_mux.set_property('max-size-bytes', 0)
+        que_audio_mux.set_property('max-size-time', 0)
+        
+        audiobin = Gst.Bin()
+        
+        audiobin.add(autoaudiosrc)
+        audiobin.add(audioconvert)
+        audiobin.add(vorbisenc)
+        audiobin.add(que_audio_mux)
+        
+        autoaudiosrc.link(audioconvert)
+        audioconvert.link(vorbisenc)
+        vorbisenc.link(que_audio_mux)
+        
+        pad = que_audio_mux.get_static_pad("src")
+        audiobin.add_pad(Gst.GhostPad.new("src", pad))
+        # <<< Audio
+        
+        oggmux = Gst.ElementFactory.make('oggmux', "oggmux")
+        
+        sink = Gst.ElementFactory.make('filesink', "archivo")
+        
+        fecha = datetime.date.today()
+        hora = time.strftime("%H-%M-%S")
+        archivo = os.path.join(G.AUDIO_JAMEDIA_VIDEO,"%s-%s.ogg" % (fecha, hora))
+        self.patharchivo = archivo
+        sink.set_property("location", archivo)
+        
+        #map(self.agregar, [videobin, audiobin, oggmux, sink])
+        map(self.agregar, [audiobin, oggmux, sink])
+        
+        #self.multi.link(videobin)
+        #videobin.link(oggmux)
+        audiobin.link(oggmux)
+        oggmux.link(sink)
         
     def agregar_efecto(self, nombre_efecto):
         """Agrega un efecto según nombre_efecto."""
@@ -450,28 +552,22 @@ class JAMediaWebCam(GObject.GObject):
         
         self.stop()
         
-        fecha = datetime.date.today()
-        hora = time.strftime("%H-%M-%S")
-        archivo = os.path.join(G.VIDEO_JAMEDIA_VIDEO,"%s-%s.ogg" % (fecha, hora))
-        self.patharchivo = archivo
-        self.archivo.set_property("location", archivo)
-        
         self.get_base_pipe()
         self.get_audio_video_pipe()
         
         self.play()
         self.estado = "GrabandoAudioVideoWebCam"
-        
+    
     def grabarsoloaudio(self, widget = None, event = None):
         """Grabar solo audio."""
         
         self.stop()
         
-        fecha = datetime.date.today()
-        hora = time.strftime("%H-%M-%S")
-        archivo = os.path.join(G.AUDIO_JAMEDIA_VIDEO,"%s-%s.mp3" % (fecha, hora))
-        self.patharchivo = archivo
-        self.archivo.set_property("location", archivo)
+        #fecha = datetime.date.today()
+        #hora = time.strftime("%H-%M-%S")
+        #archivo = os.path.join(G.AUDIO_JAMEDIA_VIDEO,"%s-%s.mp3" % (fecha, hora))
+        #self.patharchivo = archivo
+        #self.archivo.set_property("location", archivo)
         
         self.get_base_pipe()
         self.get_solo_audio_pipe()
@@ -483,12 +579,6 @@ class JAMediaWebCam(GObject.GObject):
         """Toma una fotografia."""
         
         self.stop()
-        
-        fecha = datetime.date.today()
-        hora = time.strftime("%H-%M-%S")
-        archivo = os.path.join(G.IMAGENES_JAMEDIA_VIDEO,"%s-%s.png" % (fecha, hora))
-        self.patharchivo = archivo
-        self.archivo.set_property("location", archivo)
         
         self.get_base_pipe()
         self.get_foto_pipe()
