@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   JAMediaWebCam.py por:
+#   JAMediaAudio.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   CeibalJAM! - Uruguay
 #
@@ -27,15 +27,6 @@
 #    gstreamer1.0-plugins-bad,
 #    gstreamer1.0-libav
 
-# brightness    Integer. Range: -2147483648 - 2147483647 Default: 0
-# contrast      Integer. Range: -2147483648 - 2147483647 Default: 0
-# saturation    Integer. Range: -2147483648 - 2147483647 Default: 0
-# hue           Integer. Range: -2147483648 - 2147483647 Default: 0
-
-# http://wiki.oz9aec.net/index.php/Gstreamer_cheat_sheet
-# http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/index.html
-# http://fossies.org/unix/privat/gst-plugins-base-0.11.93.tar.gz:a/gst-plugins-base-0.11.93/docs/plugins/html/index.html
-
 import os
 import time
 import datetime
@@ -52,22 +43,14 @@ import JAMediaGlobales as G
    
 GObject.threads_init()
 Gst.init([])
-
-# Notas:
-#   Actualmente, las imágenes y el video se toman
-#   Al tamaño y framerate en el que sale de la cámara
-#   640x480 en mi caso. Una fotografía ocupa 2.5 Mb
-#   En xo, en video, probablemente lo mejor sea escalar a
-#   320x240 o 160x120, en ambos casos la calidad no es mala.
-
+'''
 CONFIG_DEFAULT = {
-    'device': "/dev/video0",
     'saturacion': 5,
     'contraste': 6,
     'brillo': 8,
     'hue': 0,
-    }
-
+    }'''
+'''
 def get_efecto(efecto):
     """Crea un bin con efecto para agregar al pipe."""
     
@@ -93,10 +76,10 @@ def get_efecto(efecto):
     efectobin.add_pad(Gst.GhostPad.new("sink", queue.get_static_pad ("sink")))
     efectobin.add_pad(Gst.GhostPad.new("src", videoconvert2.get_static_pad("src")))
     
-    return efectobin
+    return efectobin'''
 
-class JAMediaWebCam(GObject.GObject):
-    """Interfaz para Webcam, en base a Gstreamer 1.0."""
+class JAMediaAudio(GObject.GObject):
+    """Interfaz para Audio, en base a Gstreamer 1.0."""
     
     def __init__(self, ventana_id):
         """ Recibe el id de un DrawingArea
@@ -104,27 +87,28 @@ class JAMediaWebCam(GObject.GObject):
         
         GObject.GObject.__init__(self)
         
-        self.name = "JAMediaWebCam"
+        self.name = "JAMediaAudio"
         self.ventana_id = ventana_id
         self.pipeline = None
         self.estado = None
         self.patharchivo = None
         
-        # Camara Base
-        self.camara = None
+        self.autoaudiosrc = None
         self.multi = None
         self.hilovideoapantalla = None
         self.pantalla = None
         
         self.elementos_base = []
-        
+        '''
         self.config = {}
         self.config['device'] = CONFIG_DEFAULT['device']
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
         self.config['brillo'] = CONFIG_DEFAULT['brillo']
-        self.config['hue'] = CONFIG_DEFAULT['hue']
+        self.config['hue'] = CONFIG_DEFAULT['hue']'''
         
+        self.efecto_grafico_sobre_audio = 'wavescope'
+        #wavescope, synaescope, spectrascope, spacescope, goom(problemas en calidad de grabacion de audio)
         self.efectos = []
         
         self.setup_init()
@@ -136,27 +120,22 @@ class JAMediaWebCam(GObject.GObject):
         self.pipeline = Gst.Pipeline()
         
         # Fuente de Video
-        self.camara = Gst.ElementFactory.make('v4l2src', "webcam")
+        self.autoaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc")
         
-        # Rotación
-        self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
-        
-        # Enlace doble desde fuente de video.
+        # Enlace doble desde fuente.
         self.multi = Gst.ElementFactory.make('tee', "tee")
         
-        # Salida de Video 1 (a la pantalla)
-        self.hilovideoapantalla = Gst.ElementFactory.make('queue', "hilovideoapantalla")
+        self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
+        self.videobalance = Gst.ElementFactory.make('videobalance', "videobalance")
+        self.gamma = Gst.ElementFactory.make('gamma', "gamma")
         
+        self.hilovideoapantalla = Gst.ElementFactory.make('queue', "hilovideoapantalla")
         self.pantalla = Gst.ElementFactory.make('xvimagesink', "pantalla") # autovideosink o xvimagesink
         
         self.elementos_base = [
-            self.camara,
-            self.videoflip,
-            self.multi,
-            self.hilovideoapantalla,
-            self.pantalla]
+            self.autoaudiosrc,
+            self.multi]
         
-        self.set_camara()
         self.get_base_pipe()
         
         self.bus = self.pipeline.get_bus()
@@ -165,6 +144,13 @@ class JAMediaWebCam(GObject.GObject):
         
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.sync_message)
+    
+    def set_base_efecto(self, nombre):
+        """Setea el efecto gráfico principal para el audio."""
+        
+        self.efecto_grafico_sobre_audio = nombre
+        # Detener grabacion
+        # reiniciar el pipe
         
     def rotar(self, valor):
         """ Rota el Video. """
@@ -189,13 +175,7 @@ class JAMediaWebCam(GObject.GObject):
         self.videoflip.set_property('method', rot)
         GObject.idle_add(self.play)
         
-    def set_camara(self, device = None):
-        """Setea una cámara fuente de video."""
-        
-        if device != None:
-            self.config['device'] = device
-            self.camara.set_property("device", self.config['device'])
-        
+    '''
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None):
         """Seteos de balance en la fuente de video.
@@ -252,12 +232,11 @@ class JAMediaWebCam(GObject.GObject):
         hue = self.config['hue'] + min
         config['hue'] = hue * 100 / total
         
-        return config
+        return config'''
     
     def reset(self):
-        """Re establece el pipe al estado
-        original (sólo camara a pantalla y sin efectos)."""
-        
+        """Re establece el pipe al estado original (sin efectos)."""
+        '''
         self.config['device'] = CONFIG_DEFAULT['device']
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
@@ -267,7 +246,7 @@ class JAMediaWebCam(GObject.GObject):
         self.camara.set_property('saturation', self.config['saturacion'])
         self.camara.set_property('contrast', self.config['contraste'])
         self.camara.set_property('brightness', self.config['brillo'])
-        self.camara.set_property('hue', self.config['hue'])
+        self.camara.set_property('hue', self.config['hue'])'''
         
         self.videoflip.set_property('method', 0)
         
@@ -284,112 +263,52 @@ class JAMediaWebCam(GObject.GObject):
         self.stop()
         self.get_base_pipe()
         self.play()
-        
+    
     def get_base_pipe(self):
         """Linkea los elementos base."""
         
         map(self.agregar, self.elementos_base)
         
-        efectos = list(self.efectos)
-        ef = []
-        for efecto in efectos:
-            ef.append(get_efecto(efecto))
-            
-        if ef:
-            map(self.agregar, ef)
-            
-        if ef:
-            self.camara.link(ef[0])
-            
-            for efecto in ef:
-                index = ef.index(efecto)
-                if len(ef) > index + 1:
-                    ef[index].link(ef[index + 1])
-                
-            ef[-1].link(self.videoflip)
-            
-        else:
-            self.camara.link(self.videoflip)
-            
-        self.videoflip.link(self.multi)
-        self.multi.link(self.hilovideoapantalla)
-        self.hilovideoapantalla.link(self.pantalla)
-    
-    def get_foto_pipe(self):
-        """linkea elementos fotograficos."""
+        queue = Gst.ElementFactory.make("queue", "queue")
+        efecto = Gst.ElementFactory.make(self.efecto_grafico_sobre_audio,
+            self.efecto_grafico_sobre_audio)
+        videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
         
-        queue = Gst.ElementFactory.make("queue", "pbqueue")
-        queue.set_property("leaky", True)
-        queue.set_property("max-size-buffers", 1)
-
-        videoconvert = Gst.ElementFactory.make("videoconvert", "videoconvert")
-        pngenc = Gst.ElementFactory.make("pngenc", "pngenc")
+        audiobin = Gst.Bin()
         
-        sink = Gst.ElementFactory.make('filesink', "archivo")
-        
-        fecha = datetime.date.today()
-        hora = time.strftime("%H-%M-%S")
-        archivo = os.path.join(G.IMAGENES_JAMEDIA_VIDEO,"%s-%s.png" % (fecha, hora))
-        self.patharchivo = archivo
-        sink.set_property("location", self.patharchivo)
+        audiobin.add(queue)
+        audiobin.add(efecto)
+        audiobin.add(videoconvert)
 
-        fotobin = Gst.Bin()
-
-        fotobin.add(queue)
-        fotobin.add(videoconvert)
-        fotobin.add(pngenc)
-        fotobin.add(sink)
-
-        queue.link(videoconvert)
-        videoconvert.link(pngenc)
-        pngenc.link(sink)
+        queue.link(efecto)
+        efecto.link(videoconvert)
 
         pad = queue.get_static_pad("sink")
-        fotobin.add_pad(Gst.GhostPad.new("sink", pad))
+        audiobin.add_pad(Gst.GhostPad.new("sink", pad))
+        pad = videoconvert.get_static_pad("src")
+        audiobin.add_pad(Gst.GhostPad.new("src", pad))
         
-        map(self.agregar, [fotobin])
+        map(self.agregar, [
+            audiobin,
+            # self.efectos,
+            self.videobalance,
+            self.videoflip,
+            self.gamma,
+            self.hilovideoapantalla,
+            self.pantalla])
         
-        self.multi.link(fotobin)
-    
-    def get_audio_video_pipe(self):
-        """Linkea elementos para grabar audio y video."""
+        self.autoaudiosrc.link(self.multi)
+        self.multi.link(audiobin)
+        audiobin.link(self.videobalance)
+        self.videobalance.link(self.videoflip)
+        self.videoflip.link(self.gamma)
+        self.gamma.link(self.hilovideoapantalla)
+        self.hilovideoapantalla.link(self.pantalla)
         
-        # >>> Video
-        que_encode_video = Gst.ElementFactory.make("queue", "que_encode_video")
-        que_encode_video.set_property('max-size-buffers', 1000)
-        que_encode_video.set_property('max-size-bytes', 0)
-        que_encode_video.set_property('max-size-time', 0)
+    def get_grabar_pipe(self):
+        """Linkea elementos para grabar audio."""
         
-        theoraenc = Gst.ElementFactory.make('theoraenc', 'theoraenc')
-        theoraenc.set_property("bitrate", 1024) # kbps compresion + resolucion = calidad
-        theoraenc.set_property('keyframe-freq', 15)
-        theoraenc.set_property('cap-overflow', False)
-        theoraenc.set_property('speed-level', 0)
-        theoraenc.set_property('cap-underflow', True)
-        theoraenc.set_property('vp3-compatible', True)
-        
-        que_video_mux = Gst.ElementFactory.make('queue', "que_video_mux")
-        que_video_mux.set_property('max-size-buffers', 12000)
-        que_video_mux.set_property('max-size-bytes', 0)
-        que_video_mux.set_property('max-size-time', 0)
-
-        videobin = Gst.Bin()
-
-        videobin.add(que_encode_video)
-        videobin.add(theoraenc)
-        videobin.add(que_video_mux)
-
-        que_encode_video.link(theoraenc)
-        theoraenc.link(que_video_mux)
-
-        pad = que_encode_video.get_static_pad("sink")
-        videobin.add_pad(Gst.GhostPad.new("sink", pad))
-        pad = que_video_mux.get_static_pad("src")
-        videobin.add_pad(Gst.GhostPad.new("src", pad))
-        # <<< Video
-        
-        # >>> Audio
-        autoaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc")
+        queue = Gst.ElementFactory.make("queue", "queue")
         audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
         vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
         
@@ -398,38 +317,38 @@ class JAMediaWebCam(GObject.GObject):
         que_audio_mux.set_property('max-size-bytes', 0)
         que_audio_mux.set_property('max-size-time', 0)
         
-        audiobin = Gst.Bin()
-        
-        audiobin.add(autoaudiosrc)
-        audiobin.add(audioconvert)
-        audiobin.add(vorbisenc)
-        audiobin.add(que_audio_mux)
-        
-        autoaudiosrc.link(audioconvert)
-        audioconvert.link(vorbisenc)
-        vorbisenc.link(que_audio_mux)
-        
-        pad = que_audio_mux.get_static_pad("src")
-        audiobin.add_pad(Gst.GhostPad.new("src", pad))
-        # <<< Audio
-        
         oggmux = Gst.ElementFactory.make('oggmux', "oggmux")
-        
         sink = Gst.ElementFactory.make('filesink', "archivo")
         
         fecha = datetime.date.today()
         hora = time.strftime("%H-%M-%S")
-        archivo = os.path.join(G.VIDEO_JAMEDIA_VIDEO,"%s-%s.ogg" % (fecha, hora))
+        archivo = os.path.join(G.AUDIO_JAMEDIA_VIDEO,"%s-%s.ogg" % (fecha, hora))
         self.patharchivo = archivo
         sink.set_property("location", archivo)
         
-        map(self.agregar, [videobin, audiobin, oggmux, sink])
+        audiobin = Gst.Bin()
         
-        self.multi.link(videobin)
-        videobin.link(oggmux)
-        audiobin.link(oggmux)
+        audiobin.add(queue)
+        audiobin.add(audioconvert)
+        audiobin.add(vorbisenc)
+        audiobin.add(que_audio_mux)
+        audiobin.add(oggmux)
+        audiobin.add(sink)
+        
+        queue.link(audioconvert)
+        audioconvert.link(vorbisenc)
+        vorbisenc.link(que_audio_mux)
+        que_audio_mux.link(oggmux)
         oggmux.link(sink)
         
+        pad = queue.get_static_pad("sink")
+        audiobin.add_pad(Gst.GhostPad.new("sink", pad))
+        
+        map(self.agregar, [audiobin])
+        
+        self.multi.link(audiobin)
+        
+    '''
     def agregar_efecto(self, nombre_efecto):
         """Agrega un efecto según nombre_efecto."""
         
@@ -444,7 +363,7 @@ class JAMediaWebCam(GObject.GObject):
         self.efectos.remove(self.efectos[indice_efecto])
         self.stop()
         self.get_base_pipe()
-        self.play()
+        self.play()'''
         
     def pause(self, widget = None, event = None):
         
@@ -482,28 +401,17 @@ class JAMediaWebCam(GObject.GObject):
         """Para agregar objetos al pipe."""
         
         if not objeto in self.pipeline.children: self.pipeline.add(objeto)
-        
+    
     def grabar(self, widget= None, event= None):
         """ Graba Audio y Video desde la webcam. """
         
         self.stop()
         
         self.get_base_pipe()
-        self.get_audio_video_pipe()
+        self.get_grabar_pipe()
         
         self.play()
-        self.estado = "GrabandoAudioVideoWebCam"
-        
-    def fotografiar(self, widget = None, event = None):
-        """Toma una fotografia."""
-        
-        self.stop()
-        
-        self.get_base_pipe()
-        self.get_foto_pipe()
-        
-        self.play()
-        self.estado = "FotografiandoWebCam"
+        self.estado = "GrabandoAudio"
         
     def sync_message(self, bus, mensaje):
         """Captura los mensajes en el bus del pipe Gst."""
@@ -524,6 +432,7 @@ class JAMediaWebCam(GObject.GObject):
             print "***", 'on_mensaje'
             print err, debug
             self.pipeline.set_state(Gst.State.READY)
+            
             
 def salir(widget):
     import sys
@@ -546,8 +455,8 @@ if __name__=="__main__":
     ventana.realize()
     
     xid = pantalla.get_property('window').get_xid()
-    jamediawebcam = JAMediaWebCam(xid)
-    jamediawebcam.play()
+    jamediaaudio = JAMediaAudio(xid)
+    jamediaaudio.play()
     
     ventana.connect("destroy", salir)
     

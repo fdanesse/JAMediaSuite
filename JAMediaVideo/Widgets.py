@@ -535,6 +535,8 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
     'salir':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, []),
     'accion':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'rotar':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
@@ -543,8 +545,6 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         
         self.color = Gdk.Color(65000, 65000, 65000)
         self.actualizador = None
-        
-        #self.modify_bg(0, self.color)
         
         self.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
@@ -567,14 +567,43 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         self.insert(G.get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
-        #archivo = os.path.join(JAMediaObjectsPath, "Iconos", "configurar.png")
-        #boton = G.get_boton(archivo, flip = False,
-        #    color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
-        #boton.set_tooltip_text("Configurar")
-        #boton.connect("clicked", self.emit_senial, "configurar")
-        #self.insert(boton, -1)
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "configurar.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(1))
+        boton.set_tooltip_text("Configurar.")
+        boton.connect("clicked", self.emit_senial, "configurar")
+        self.insert(boton, -1)
         
-        #self.insert(G.get_separador(draw = False, ancho = 3, expand = False), -1)
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+            
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Izquierda.")
+        boton.connect("clicked", self.emit_rotar, 'Izquierda')
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = G.get_boton(archivo, flip = True,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Derecha.")
+        boton.connect("clicked", self.emit_rotar, 'Derecha')
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "stop.png")
+        boton = G.get_boton(archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+        boton.set_tooltip_text("Reset.")
+        boton.connect("clicked", self.emit_senial, "Reset")
+        self.insert(boton, -1)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos","salir.png")
@@ -624,6 +653,11 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         self.label.modify_fg(0, self.color)
         return True
     
+    def emit_rotar(self, widget, valor):
+        """ Emite la señal rotar con su valor Izquierda o Derecha. """
+        
+        self.emit('rotar', valor)
+        
     def emit_senial(self, widget, senial):
         """Emite grabar o configurar."""
         
