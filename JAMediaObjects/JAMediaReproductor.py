@@ -59,7 +59,9 @@ class JAMediaReproductor(GObject.GObject):
     "newposicion":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
         (GObject.TYPE_INT,)),
     "volumen":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_FLOAT,))}
+        (GObject.TYPE_FLOAT,)),
+    "video":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_BOOLEAN,))}
 
     # Estados: playing, paused, None
     
@@ -86,7 +88,7 @@ class JAMediaReproductor(GObject.GObject):
         self.videoflip = None
         self.pantalla = None
         
-        self.video_in_stream = True
+        self.video_in_stream = None
         
         self.config = {
             'saturacion': 1.0,
@@ -128,6 +130,8 @@ class JAMediaReproductor(GObject.GObject):
         
         self.pipeline.add(self.player)
         self.player.set_property('video-sink', video_balance_bin)
+        
+        self.video_in_stream = None
         
         # Bin de Audio.
         
@@ -333,14 +337,14 @@ class JAMediaReproductor(GObject.GObject):
             datos = taglist.to_string()
             
             if not 'video-codec' in datos:
-                if self.video_in_stream == True:
+                if self.video_in_stream == True or self.video_in_stream == None:
                     self.video_in_stream = False
-                    print "Solo Audio"
+                    self.emit("video", False)
                     
             if 'video-codec' in datos:
-                if self.video_in_stream == False:
+                if self.video_in_stream == False or self.video_in_stream == None:
                     self.video_in_stream = True
-                    print "Audio y Video"
+                    self.emit("video", True)
                     
             #self.duracion = int(taglist.to_string().split("duration=(guint64)")[1].split(',')[0])
             #Ejemplo:

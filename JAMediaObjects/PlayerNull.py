@@ -64,7 +64,9 @@ class Player(GObject.Object):
     "newposicion":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
         (GObject.TYPE_INT,)),
     "volumen":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_FLOAT,))}
+        (GObject.TYPE_FLOAT,)),
+    "video":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_BOOLEAN,))}
     
     def __init__(self, ventana):
         

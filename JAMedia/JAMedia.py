@@ -259,10 +259,13 @@ class JAMediaPlayer(Gtk.Plug):
         self.mplayerreproductor.connect("estado", self.cambioestadoreproductor)
         self.mplayerreproductor.connect("newposicion", self.update_progress)
         self.mplayerreproductor.connect("volumen", self.get_volumen)
+        self.mplayerreproductor.connect("video", self.set_video)
+        
         self.jamediareproductor.connect("endfile", self.endfile)
         self.jamediareproductor.connect("estado", self.cambioestadoreproductor)
         self.jamediareproductor.connect("newposicion", self.update_progress)
         self.jamediareproductor.connect("volumen", self.get_volumen)
+        self.jamediareproductor.connect("video", self.set_video)
         
         self.lista_de_reproduccion.connect("nueva-seleccion", self.cargar_reproducir)
         self.lista_de_reproduccion.connect("button-press-event", self.click_derecho_en_lista)
@@ -850,4 +853,9 @@ class JAMediaPlayer(Gtk.Plug):
         
         valor = valor / 100
         self.volumen.set_value(valor)
+        
+    def set_video(self, widget, valor):
+        """Si hay video o no en la fuente . . ."""
+        
+        print widget, valor
         

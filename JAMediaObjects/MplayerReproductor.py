@@ -47,7 +47,9 @@ class MplayerReproductor(GObject.GObject):
     "newposicion":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
         (GObject.TYPE_INT,)),
     "volumen":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_FLOAT,))}
+        (GObject.TYPE_FLOAT,)),
+    "video":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_BOOLEAN,))}
     
     # Estados: playing, paused, None
     
@@ -68,6 +70,7 @@ class MplayerReproductor(GObject.GObject):
         self.volumen = 0
         self.actualizador = None
         self.uri = None
+        self.video_in_stream = None
         
         self.config = {
             'saturacion': 0,
@@ -111,6 +114,7 @@ class MplayerReproductor(GObject.GObject):
         self.salida = open(STDOUT,"r")
         self.entrada.write("loadfile %s 0\n" % uri)
         self.entrada.flush()
+        self.video_in_stream = None
         self.new_handle(True)
         
     def handle(self):
@@ -148,21 +152,23 @@ class MplayerReproductor(GObject.GObject):
                     "Cuando no hay video en la fuente. Ejemplo"
                     "Audio only file format detected."
                     "Video: no video"
-                    #self.emit("video", False)
-                    pass
+                    if self.video_in_stream == True or self.video_in_stream == None:
+                        self.video_in_stream = False
+                        self.emit("video", False)
                 
+                elif "Movie-Aspect" in linea:
+                    "Información sobre el aspecto del video. Ejemplo:"
+                    "Movie-Aspect is 1.78:1 - prescaling to correct movie aspect."
+                    if self.video_in_stream == False or self.video_in_stream == None:
+                        self.video_in_stream = True
+                        self.emit("video", True)
+                    
                 elif "Cache" in linea:
                     "Información Sobre Carga de caché. Ejemplo:"
                     "Cache fill:  6.25% (65536 bytes)"
                     #self.get_progress_cache_in_mplayer(linea)
                     pass
                 
-                elif "Movie-Aspect" in linea:
-                    "Información sobre el aspecto del video. Ejemplo:"
-                    "Movie-Aspect is 1.78:1 - prescaling to correct movie aspect."
-                    #self.emit("video", True)
-                    pass
-                    
                 elif "Starting playback" in linea:
                     "Cuando comienza la Reproducción. Ejemplo:"
                     "Starting playback..."
