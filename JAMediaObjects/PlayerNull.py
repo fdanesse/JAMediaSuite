@@ -56,17 +56,20 @@ def get_text_path(contexto, texto, rect):
     
 class Player(GObject.Object):
     
-    __gsignals__ = {"endfile":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, []),
+    __gsignals__ = {
+    "endfile":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
     "estado":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-    (GObject.TYPE_STRING,)),
+        (GObject.TYPE_STRING,)),
     "newposicion":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-    (GObject.TYPE_INT,)),
+        (GObject.TYPE_INT,)),
     "volumen":(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-    (GObject.TYPE_FLOAT,))}
+        (GObject.TYPE_FLOAT,))}
     
     def __init__(self, ventana):
+        
         GObject.Object.__init__(self)
+        
         self.name = "PlayerNull"
         self.ventana = ventana
         

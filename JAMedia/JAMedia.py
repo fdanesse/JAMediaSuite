@@ -440,6 +440,7 @@ class JAMediaPlayer(Gtk.Plug):
         if self.player != reproductor:
             try:
                 self.player.stop()
+                
             except:
                 pass
             
@@ -450,6 +451,7 @@ class JAMediaPlayer(Gtk.Plug):
                 model, iter = self.lista_de_reproduccion.treeselection.get_selected()
                 valor = model.get_value(iter, 2)
                 self.player.load(valor)
+                
             except:
                 pass
 
@@ -643,6 +645,7 @@ class JAMediaPlayer(Gtk.Plug):
             self.toolbar_config,
             self.toolbar_accion,
             self.toolbaraddstream])
+            
         self.toolbar_list.boton_agregar.hide()
         
         self.lista_de_reproduccion.limpiar()
@@ -669,6 +672,7 @@ class JAMediaPlayer(Gtk.Plug):
             # HACK: Tv no funciona con JAMediaReproductor.
             if self.player == self.jamediareproductor:
                 self.switch_reproductor(None, "MplayerReproductor")
+                
             archivo = os.path.join(G.DIRECTORIO_DATOS, 'MisTvs.JAMedia')
             self.seleccionar_lista_de_stream(archivo, "TVs")
             self.toolbar_list.boton_agregar.show()
@@ -761,6 +765,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         try:
             path, columna, xdefondo, ydefondo = widget.get_path_at_pos(int(pos[0]), int(pos[1]))
+            
         except:
             return
         

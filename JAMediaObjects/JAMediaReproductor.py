@@ -19,15 +19,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# Se remplaza:
-# Depends:
-#   python-gst0.10
-#   gstreamer0.10-plugins-good
-#   gstreamer0.10-plugins-ugly
-#   gstreamer0.10-plugins-bad
-#   gstreamer0.10-ffmpeg
-
-# Con:
 # Depends:
 #   python-gi
 #   gir1.2-gstreamer-1.0
@@ -37,10 +28,6 @@
 #   gstreamer1.0-plugins-ugly
 #   gstreamer1.0-plugins-bad
 #   gstreamer1.0-libav
-    
-# https://wiki.ubuntu.com/Novacut/GStreamer1.0#Using_GStreamer_1.0_from_Python
-# http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBus.html#gst-bus-create-watch
-# http://www.roojs.org/seed/gir-1.1-gtk-2.0/Gst.MessageType.html#expand
 
 import os
 
@@ -53,50 +40,6 @@ from gi.repository import GstVideo
 
 GObject.threads_init()
 Gst.init([])
-
-PROPIEDADES_PLAYBIN = [
-'name',
-'parent',
-'async-handling',
-'message-forward',
-'delay',
-'auto-flush-bus',
-'uri',
-'current-uri',
-'suburi',
-'current-suburi',
-'source',
-'flags',
-'n-video',
-'current-video',
-'n-audio',
-'current-audio',
-'n-text',
-'current-text',
-'subtitle-encoding',
-'audio-sink',
-'video-sink',
-'vis-plugin',
-'text-sink',
-'volume',
-'mute',
-'sample',
-'subtitle-font-desc',
-'connection-speed',
-'buffer-size',
-'buffer-duration',
-'av-offset',
-'ring-buffer-max-size',
-'force-aspect-ratio']
-
-PROPIEDADES_FILESRC = [
-'name',
-'parent',
-'blocksize',
-'num-buffers',
-'typefind',
-'do-timestamp',
-'location']
 
 class JAMediaReproductor(GObject.GObject):
     """
@@ -138,6 +81,13 @@ class JAMediaReproductor(GObject.GObject):
         self.player = None
         self.bus = None
         
+        self.videobalance = None
+        self.gamma = None
+        self.videoflip = None
+        self.pantalla = None
+        
+        self.video_in_stream = True
+        
         self.config = {
             'saturacion': 1.0,
             'contraste': 1.0,
@@ -145,84 +95,198 @@ class JAMediaReproductor(GObject.GObject):
             'hue': 0.0,
             'gamma': 1.0
             }
-            
+        
         self.set_pipeline()
         
     def set_pipeline(self):
-        """Crea el pipe de Gst. (playbin)"""
         
-        if self.pipeline: del(self.pipeline)
-        
+        if self.pipeline:
+            del(self.pipeline)
+            
         self.pipeline = Gst.Pipeline()
         
-        # http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-plugins/html/gst-plugins-base-plugins-playbin2.html
         self.player = Gst.ElementFactory.make("playbin", "player")
         
-        self.multi = Gst.ElementFactory.make('tee', "tee")
+        # Elementos configurables permanentes.
         self.videobalance = Gst.ElementFactory.make('videobalance', "videobalance")
         self.gamma = Gst.ElementFactory.make('gamma', "gamma")
         self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
-        self.hilovideoapantalla = Gst.ElementFactory.make('queue', "hilovideoapantalla")
+        
         self.pantalla = Gst.ElementFactory.make('xvimagesink', "pantalla")
         
-        self.player.connect("video-changed", self.video_changed)
-        self.player.connect("audio-changed", self.audio_changed)
-        self.player.connect("about-to-finish", self.about_to_finish)
-        self.player.connect("text-changed", self.text_changed)
-        self.player.connect("video-tags-changed", self.video_tags_changed)
-        self.player.connect("audio-tags-changed", self.audio_tags_changed)
-        self.player.connect("text-tags-changed", self.text_tags_changed)
-        self.player.connect("source-setup", self.source_setup)
-        
-        self.pipeline.add(self.player)
-        
-        self.jamedia_sink = Gst.Bin()
-        self.jamedia_sink.add(self.videobalance)
-        
-        pad = self.videobalance.get_static_pad('sink')
-        ghostpad = Gst.GhostPad.new('sink', pad)
-        self.jamedia_sink.add_pad(ghostpad)
-        
-        self.jamedia_sink.add(self.gamma)
-        self.jamedia_sink.add(self.videoflip)
-        self.jamedia_sink.add(self.multi)
-        self.jamedia_sink.add(self.hilovideoapantalla)
-        self.jamedia_sink.add(self.pantalla)
-        
-        self.videobalance.link(self.gamma)
-        self.gamma.link(self.videoflip)
-        self.videoflip.link(self.multi)
-        self.multi.link(self.hilovideoapantalla)
-        self.hilovideoapantalla.link(self.pantalla)
-        
-        self.player.set_property('video-sink', self.jamedia_sink)
-        
         self.player.set_window_handle(self.ventana_id)
-        
-        self.config = {
-            'saturacion': 1.0,
-            'contraste': 1.0,
-            'brillo': 0.0,
-            'hue': 0.0,
-            'gamma': 1.0
-            }
         
         self.bus = self.pipeline.get_bus()
         self.bus.add_signal_watch()
         self.bus.connect('message', self.on_mensaje)
+        
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.sync_message)
+        
+        # Bin de video
+        video_balance_bin = self.get_balance_bin()
+        
+        self.pipeline.add(self.player)
+        self.player.set_property('video-sink', video_balance_bin)
+        
+        # Bin de Audio.
+        
+        # FIXME:
+        # Intento obtener la salida de audio de playbin para poder
+        # aplicar efectos sobre la salida de audio.
+        # En teoría bastaría con crear un bin y establecer:
+        #    self.player.set_property('audio-sink', audio_bin)
+        # sin embargo no funciona: Element 'bin5' is not in bin 'abin'
+        # Intenté buscando en los hijos de playbin, aunque tampoco puede
+        # lograrlo, sin embargo es interesante aprender a estructurar los
+        # elementos:
+        
+        #    La estructura de playbin es:
+        #        GstPlaySink
+        #            GstStreamSynchronizer (el cual no es accesible)
+        
+        '''
+        audio_bin = self.get_audio_bin()
+        
+        self.pipeline.add(audio_bin)
+        
+        self.player.set_property('audio-sink', audio_bin)
+        
+        # Para imprimir la estructura interna de playbin
+        for ele in self.player.children:
+            self.print_children(ele)
+        
+    def print_children(self, elemento):
+        
+        print "Elemento:", elemento
+        
+        try:
+            for ele in elemento.children:
+                print "\tChild:", self.print_children(ele)
+                
+        except:
+            print "\t\tSin hijos:", elemento'''
+            
+    def get_balance_bin(self):
+        """Bin queue + efectos de video + Balance + flip."""
+        
+        bin = Gst.Bin()
+        
+        player_queue = Gst.ElementFactory.make("queue", "player_queue")
+        
+        bin.add(player_queue)
+        bin.add(self.videobalance)
+        bin.add(self.gamma)
+        bin.add(self.videoflip)
+        
+        player_queue.link(self.videobalance)
+        self.videobalance.link(self.gamma)
+        self.gamma.link(self.videoflip)
+        
+        pantalla_bin = self.get_xvimagesink_video_bin()
+        bin.add(pantalla_bin)
+        self.videoflip.link(pantalla_bin)
+        
+        bin.add_pad(Gst.GhostPad.new("sink", player_queue.get_static_pad ("sink")))
+        
+        return bin
+    
+    def get_xvimagesink_video_bin(self):
+        """Bin queue + pantalla para dibujar video."""
+        
+        bin = Gst.Bin()
+        
+        xvimage_queue = Gst.ElementFactory.make("queue", "xvimage_queue")
+        
+        bin.add(xvimage_queue)
+        bin.add(self.pantalla)
+        
+        xvimage_queue.link(self.pantalla)
+        
+        bin.add_pad(Gst.GhostPad.new("sink", xvimage_queue.get_static_pad ("sink")))
+        
+        return bin
+    
+    '''
+    def get_audio_bin(self):
+        """Salida de audio a sonido."""
+        
+        bin = Gst.Bin()
+    
+        audio_queue = Gst.ElementFactory.make("queue", "audio_queue")
+        autoaudiosink = Gst.ElementFactory.make("autoaudiosink", "autoaudio_bin")
+        
+        bin.add(audio_queue)
+        bin.add(autoaudiosink)
+        
+        audio_queue.link(autoaudiosink)
+        
+        bin.add_pad(Gst.GhostPad.new("sink", audio_queue.get_static_pad ("sink")))
+        
+        return bin'''
+    
+    def load(self, uri):
+        """Carga un archivo o stream en el pipe de Gst."""
+        
+        self.stop()
+        self.set_pipeline()
+        
+        if os.path.exists(uri):
+            direccion = Gst.filename_to_uri(uri)
+            self.player.set_property("uri", direccion)
+            self.play()
+            # reconfigurar balance y flip
+            
+        else:
+            # FIXME: Funciona con la radio pero no con la Tv
+            if Gst.uri_is_valid(uri):
+                self.player.set_property("uri", uri)
+                self.play()
+                # reconfigurar balance y flip
+        
+    def play(self):
+        """Pone el pipe de Gst en Gst.State.PLAYING"""
+        
+        self.pipeline.set_state(Gst.State.PLAYING)
+
+    def stop(self):
+        """Pone el pipe de Gst en Gst.State.NULL"""
+        
+        self.pipeline.set_state(Gst.State.NULL)
+        
+    def pause(self):
+        """Pone el pipe de Gst en Gst.State.PAUSED"""
+        
+        self.pipeline.set_state(Gst.State.PAUSED)
+        
+    def pause_play(self):
+        """Llama a play() o pause()
+        segun el estado actual del pipe de Gst."""
+        
+        if self.estado == Gst.State.PAUSED \
+            or self.estado == Gst.State.NULL \
+            or self.estado == Gst.State.READY:
+            self.play()
+            
+        elif self.estado == Gst.State.PLAYING:
+            self.pause()
+            
+        else:
+            print self.estado
         
     def sync_message(self, bus, mensaje):
         """Captura los mensajes en el bus del pipe Gst."""
         
+        '''
+        # Esto no es necesario si:
+        # self.player.set_window_handle(self.ventana_id)
         try:
             if mensaje.get_structure().get_name() == 'prepare-window-handle':
                 mensaje.src.set_window_handle(self.ventana_id)
                 return
             
         except:
-            pass
+            pass'''
         
         if mensaje.type == Gst.MessageType.STATE_CHANGED:
             old, new, pending = mensaje.parse_state_changed()
@@ -254,7 +318,7 @@ class JAMediaReproductor(GObject.GObject):
                     self.emit("estado", "paused")
                     self.new_handle(False)
                     return
-                
+            '''
             elif old == Gst.State.NULL and new == Gst.State.READY:
                 pass
             
@@ -262,21 +326,22 @@ class JAMediaReproductor(GObject.GObject):
                 pass
             
             else:
-                return
-            
-        elif mensaje.type == Gst.MessageType.ASYNC_DONE:
-            return
-        
-        elif mensaje.type == Gst.MessageType.NEW_CLOCK:
-            return
-        
-        elif mensaje.type == Gst.MessageType.STREAM_STATUS:
-            return
+                return'''
         
         elif mensaje.type == Gst.MessageType.TAG:
             taglist = mensaje.parse_tag()
-            #print taglist.to_string() # parecido a: mensaje.get_structure().to_string()
-            #print taglist.to_string().split(',')
+            datos = taglist.to_string()
+            
+            if not 'video-codec' in datos:
+                if self.video_in_stream == True:
+                    self.video_in_stream = False
+                    print "Solo Audio"
+                    
+            if 'video-codec' in datos:
+                if self.video_in_stream == False:
+                    self.video_in_stream = True
+                    print "Audio y Video"
+                    
             #self.duracion = int(taglist.to_string().split("duration=(guint64)")[1].split(',')[0])
             #Ejemplo:
                 # taglist,
@@ -287,12 +352,23 @@ class JAMediaReproductor(GObject.GObject):
         
         elif mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
-            #print "***", 'sync_message'
-            #print err, debug
+            print "***", 'sync_message'
+            print err, debug
+            self.pipeline.set_state(Gst.State.READY)
             self.new_handle(False)
             return
         
+        '''
         elif mensaje.type == Gst.MessageType.EOS:
+            return
+        
+        elif mensaje.type == Gst.MessageType.ASYNC_DONE:
+            return
+        
+        elif mensaje.type == Gst.MessageType.NEW_CLOCK:
+            return
+        
+        elif mensaje.type == Gst.MessageType.STREAM_STATUS:
             return
         
         else:
@@ -314,68 +390,44 @@ class JAMediaReproductor(GObject.GObject):
             except:
                 pass
             
-            return
-                
+            return'''
+        
     def on_mensaje(self, bus, mensaje):
         """Captura los mensajes en el bus del pipe Gst."""
         
-        #if mensaje.type == Gst.MessageType.ASYNC_DONE:
-        #    print mensaje.get_structure().get_name()
-        
-        #elif mensaje.type == Gst.MessageType.NEW_CLOCK:
-        #    pass
-        
-        if mensaje.type == Gst.MessageType.ELEMENT:
-            nombre = mensaje.get_structure().get_name()
-            
         if mensaje.type == Gst.MessageType.EOS:
             #self.pipeline.seek_simple(Gst.Format.TIME,
             #Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0)
             self.new_handle(False)
             self.emit("endfile")
             
+        elif mensaje.type == Gst.MessageType.ERROR:
+            err, debug = mensaje.parse_error()
+            print "***", 'on_mensaje'
+            print err, debug
+            self.new_handle(False)
+            
+        '''
+        if mensaje.type == Gst.MessageType.ELEMENT:
+            nombre = mensaje.get_structure().get_name()
+            
+        if mensaje.type == Gst.MessageType.ASYNC_DONE:
+            print mensaje.get_structure().get_name()
+        
+        elif mensaje.type == Gst.MessageType.NEW_CLOCK:
+            pass
+        
         elif mensaje.type == Gst.MessageType.QOS:
             pass
         
         elif mensaje.type == Gst.MessageType.WARNING:
-            #print mensaje.get_structure().to_string()
             pass
-            
-        elif mensaje.type == Gst.MessageType.ERROR:
-            err, debug = mensaje.parse_error()
-            #print "***", 'on_mensaje'
-            #print err, debug
-            self.new_handle(False)
-            #self.stop()
-            #self.set_pipeline()
-            
+        
         elif mensaje.type == Gst.MessageType.LATENCY:
             pass
         
         else:
-            pass
-        
-    def load(self, uri):
-        """Carga un archivo o stream en el pipe de Gst."""
-        
-        self.stop()
-        self.set_pipeline()
-        
-        if os.path.exists(uri):
-            direccion = Gst.filename_to_uri(uri)
-            self.player.set_property("uri", direccion)
-            self.play()
-            
-        else:
-            # FIXME: Funciona con la radio pero no con la Tv
-            if Gst.uri_is_valid(uri):
-                self.player.set_property("uri", uri)
-                self.play()
-        
-    def play(self):
-        """Pone el pipe de Gst en Gst.State.PLAYING"""
-        
-        self.pipeline.set_state(Gst.State.PLAYING)
+            pass'''
         
     def rotar(self, valor):
         """ Rota el Video. """
@@ -451,92 +503,6 @@ class JAMediaReproductor(GObject.GObject):
         'gamma': 10.0
         }
         
-    def video_changed(self, player):
-        
-        #print "\n>>>", "video-changed"
-        #print player
-        #print "\t", 'name', player.get_property('name')
-        #print "\t", 'parent', player.get_property('parent')
-        #print "\t", 'source', player.get_property('source')
-        #print "\t", 'n-video', player.get_property('n-video')
-        #print "\t", 'video-sink', player.get_property('video-sink')
-        #print "\t", 'vis-plugin', player.get_property('vis-plugin')
-        #print "\t", 'force-aspect-ratio', player.get_property('force-aspect-ratio')
-        pass
-    
-    def audio_changed(self, player):
-        
-        #print "\n>>>", "audio-changed"
-        #print player
-        #print "\t", 'name', player.get_property('name')
-        #print "\t", 'parent', player.get_property('parent')
-        #print "\t", 'source', player.get_property('source')
-        #print "\t", 'volume', player.get_property('volume')
-        #print "\t", 'n-audio', player.get_property('n-audio')
-        #print "\t", 'audio-sink', player.get_property('audio-sink')
-        #print "\t", 'sample', player.get_property('sample')
-        pass
-    
-    def about_to_finish(self, player):
-        
-        #print "\n>>>", "about-to-finish"
-        #print "\t", player
-        pass
-    
-    def text_changed(self, player):
-        
-        #print ">>>", "text-changed"
-        pass
-        
-    def video_tags_changed(self, player, otro):
-        
-        #print "\n>>>", "video-tags-changed"
-        pass
-        
-    def audio_tags_changed(self, player, otro):
-        
-        #print "\n>>>", "audio-tags-changed"
-        pass
-        
-    def text_tags_changed(self, player, otro):
-        
-        #print ">>>", "text-tags-changed"
-        pass
-        
-    def source_setup(self, player, source):
-        
-        #print "\n>>>", "source-setup"
-        #print "\t", player
-        #print "\t", filesrc
-        #for p in PROPIEDADES_FILESRC:
-        #    print "\t", p, source.get_property(p)
-        pass
-    
-    def stop(self):
-        """Pone el pipe de Gst en Gst.State.NULL"""
-        
-        self.pipeline.set_state(Gst.State.NULL)
-        
-    def pause(self):
-        """Pone el pipe de Gst en Gst.State.PAUSED"""
-        
-        self.pipeline.set_state(Gst.State.PAUSED)
-        
-    def pause_play(self):
-        """Llama a play() o pause()
-        segun el estado actual del pipe de Gst."""
-        
-        if self.estado == Gst.State.PAUSED \
-            or self.estado == Gst.State.NULL \
-            or self.estado == Gst.State.READY:
-            self.play()
-            
-        elif self.estado == Gst.State.PLAYING:
-            self.pause()
-            
-        else:
-            print self.estado
-            
     def new_handle(self, reset):
         """Elimina o reinicia la funcion que
         envia los datos de actualizacion para
@@ -604,7 +570,7 @@ class JAMediaReproductor(GObject.GObject):
         """Cambia el volúmen de Reproducción."""
         
         self.player.set_property('volume', float(valor/100))
-    
+        
 class JAMediaGrabador(GObject.GObject):
     """Graba desde un streaming de radio o tv."""
     
@@ -643,7 +609,8 @@ class JAMediaGrabador(GObject.GObject):
     def set_pipeline(self):
         """Crea el pipe de Gst. (playbin)"""
         
-        if self.pipeline: del(self.pipeline)
+        if self.pipeline:
+            del(self.pipeline)
         
         self.pipeline = Gst.Pipeline()
         
@@ -713,6 +680,7 @@ class JAMediaGrabador(GObject.GObject):
             print "***", 'on_mensaje'
             print err, debug
             self.pipeline.set_state(Gst.State.READY)
+            self.new_handle(False)
             
     def new_handle(self, reset):
         """Elimina o reinicia la funcion que

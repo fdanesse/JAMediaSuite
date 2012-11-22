@@ -107,8 +107,9 @@ class JAMediaAudio(GObject.GObject):
         self.config['brillo'] = CONFIG_DEFAULT['brillo']
         self.config['hue'] = CONFIG_DEFAULT['hue']'''
         
-        self.efecto_grafico_sobre_audio = 'wavescope'
-        #wavescope, synaescope, spectrascope, spacescope, goom(problemas en calidad de grabacion de audio)
+        self.efecto_grafico_sobre_audio = 'monoscope'
+        #wavescope, synaescope, spectrascope, monoscope
+        # spacescope, goom(problemas en calidad de grabacion de audio)
         self.efectos = []
         
         self.setup_init()
