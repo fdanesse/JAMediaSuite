@@ -358,7 +358,7 @@ class JAMediaReproductor(GObject.GObject):
             err, debug = mensaje.parse_error()
             print "***", 'sync_message'
             print err, debug
-            self.pipeline.set_state(Gst.State.READY)
+            #self.pipeline.set_state(Gst.State.READY)
             self.new_handle(False)
             return
         

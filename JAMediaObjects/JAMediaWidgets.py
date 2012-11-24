@@ -26,6 +26,7 @@
 
 import os
 import sys
+import commands
 
 import gi
 from gi.repository import Gtk
@@ -1019,7 +1020,7 @@ class ToolbarSalir(Gtk.Toolbar):
         self.hide()
         
 class ToolbarGstreamerEfectos(Gtk.Box):
-    """Toolbar con 18 widgets que representan
+    """Toolbar con widgets que representan
     efectos de video para gstreamer."""
     
     __gsignals__ = {
@@ -1108,31 +1109,41 @@ class ToolbarGstreamerEfectos(Gtk.Box):
             self.gstreamer_efectos.pack_start(efecto, False, False, 1)
 
 class GstreamerVideoEfectos(Gtk.Box):
-    """Toolbar con 18 widgets que representan
+    """Toolbar con widgets que representan
     efectos de video para gstreamer."""
     
     def __init__(self):
         
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
         
-        self.set_size_request(-1, G.get_pixels(2.0)+2)
+        self.set_size_request(-1, G.get_pixels(1.0)+2)
         
         for nombre in G.VIDEOEFECTOS:
-            botonefecto = JAMediaButton()
-            botonefecto.set_tooltip(nombre)
-            lado = G.get_pixels(2.0)
-            botonefecto.set_tamanio(lado, lado)
-            archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %('ver'))
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
-            botonefecto.imagen.set_from_pixbuf(pixbuf)
-            self.pack_start(botonefecto, False, False, 1)
+            datos = commands.getoutput('gst-inspect-1.0 %s' % (nombre))
             
-            botonefecto.drag_source_set(
-                Gdk.ModifierType.BUTTON1_MASK,
-                target_gstreamer_video_efectos,
-                Gdk.DragAction.MOVE)
+            if 'gst-plugins-good' in datos and \
+                ('Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos):
+            #if 'Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos:
+                
+                botonefecto = JAMediaButton()
+                botonefecto.set_tooltip(nombre)
+                lado = G.get_pixels(2.0)
+                botonefecto.set_tamanio(lado, lado)
+                archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %('ver'))
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
+                botonefecto.imagen.set_from_pixbuf(pixbuf)
+                self.pack_start(botonefecto, False, False, 1)
+                
+                botonefecto.drag_source_set(
+                    Gdk.ModifierType.BUTTON1_MASK,
+                    target_gstreamer_video_efectos,
+                    Gdk.DragAction.MOVE)
         
         self.show_all()
+        
+        # FIXME: Para obtener los filtros y efectos de video.
+        #for x in G.get_video_filters():
+        #   print x
         
 target_gstreamer_video_efectos = [Gtk.TargetEntry.new('Mover', Gtk.TargetFlags.SAME_APP, 0)]
 

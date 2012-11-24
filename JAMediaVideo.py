@@ -34,8 +34,8 @@ from JAMediaObjects.JAMediaWidgets import Visor
 from JAMediaObjects.JAMediaWidgets import JAMediaButton
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 from JAMediaObjects.JAMediaWidgets import ToolbarGstreamerEfectos
-from JAMediaObjects.JAMediaWebCam import JAMediaWebCam
-from JAMediaObjects.JAMediaAudio import JAMediaAudio
+from JAMediaObjects.JAMediaGstreamer.JAMediaWebCam import JAMediaWebCam
+from JAMediaObjects.JAMediaGstreamer.JAMediaAudio import JAMediaAudio
 
 import JAMediaObjects.JAMediaGlobales as G
 
@@ -396,7 +396,7 @@ class JAMediaVideo(Gtk.Window):
                 # Si no se está fotografiando, toma una fotografía.
                 self.jamediawebcam.fotografiar()
                 self.toolbarfotografia.set_estado("grabando")
-                time.sleep(0.8)
+                time.sleep(1.6)
                 self.re_init()
             
             else:
