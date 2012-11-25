@@ -153,6 +153,7 @@ class JAMediaVideoWidget(Gtk.Plug):
         self.balance_widget.connect('valor', self.set_balance)
         
         self.widget_efectos.connect("click_efecto", self.click_efecto)
+        self.widget_efectos.connect('configurar_efecto', self.configurar_efecto)
         #self.widget_efectos.connect("quitar_efecto", self.quitar_efecto)
         
         self.toolbar_salir.connect('salir', self.emit_salir)
@@ -182,6 +183,22 @@ class JAMediaVideoWidget(Gtk.Plug):
         """Agrega los widgets con efectos a la paleta de configuración."""
         
         self.widget_efectos.cargar_efectos(efectos)
+
+    def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
+        
+        # Si el efecto no está agregado al pipe, lo agrega
+        if self.jamediawebcam.efectos:
+            if not nombre_efecto in self.jamediawebcam.efectos:
+                self.click_efecto(None, nombre_efecto)
+                self.widget_efectos.seleccionar_efecto(nombre_efecto)
+                
+        else:
+            self.click_efecto(None, nombre_efecto)
+            self.widget_efectos.seleccionar_efecto(nombre_efecto)
+
+        # Setea el efecto
+        self.jamediawebcam.configurar_efecto(nombre_efecto, propiedad, valor)
         
     def click_efecto(self, widget, nombre_efecto):
         """Recibe el nombre del efecto sobre el que
@@ -443,6 +460,7 @@ class JAMediaFotografiaWidget(Gtk.Plug):
         self.balance_widget.connect('valor', self.set_balance)
         
         self.widget_efectos.connect("click_efecto", self.click_efecto)
+        self.widget_efectos.connect('configurar_efecto', self.configurar_efecto)
         #self.widget_efectos.connect("quitar_efecto", self.quitar_efecto)
         
         self.toolbar_salir.connect('salir', self.emit_salir)
@@ -472,7 +490,23 @@ class JAMediaFotografiaWidget(Gtk.Plug):
         """Agrega los widgets con efectos a la paleta de configuración."""
         
         self.widget_efectos.cargar_efectos(efectos)
-    
+
+    def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
+        
+        # Si el efecto no está agregado al pipe, lo agrega
+        if self.jamediawebcam.efectos:
+            if not nombre_efecto in self.jamediawebcam.efectos:
+                self.click_efecto(None, nombre_efecto)
+                self.widget_efectos.seleccionar_efecto(nombre_efecto)
+                
+        else:
+            self.click_efecto(None, nombre_efecto)
+            self.widget_efectos.seleccionar_efecto(nombre_efecto)
+
+        # Setea el efecto
+        self.jamediawebcam.configurar_efecto(nombre_efecto, propiedad, valor)
+        
     def click_efecto(self, widget, nombre_efecto):
         """Recibe el nombre del efecto sobre el que
         se ha hecho click y decide si debe agregarse
@@ -743,7 +777,9 @@ class JAMediaAudioWidget(Gtk.Plug):
         self.balance_widget.connect('valor', self.set_balance)
         
         self.widget_efectos.connect("click_efecto", self.click_efecto)
+        self.widget_efectos.connect('configurar_efecto', self.configurar_efecto)
         self.widget_visualizadores_de_audio.connect("click_efecto", self.click_visualizador)
+        self.widget_visualizadores_de_audio.connect('configurar_efecto', self.configurar_visualizador)
         #self.widget_efectos.connect("quitar_efecto", self.quitar_efecto)
         
         self.toolbar_salir.connect('salir', self.emit_salir)
@@ -774,14 +810,46 @@ class JAMediaAudioWidget(Gtk.Plug):
         
         self.widget_efectos.cargar_efectos(efectos)
         
+    def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
+        
+        # Si el efecto no está agregado al pipe, lo agrega
+        if self.jamediawebcam.efectos:
+            if not nombre_efecto in self.jamediawebcam.efectos:
+                self.click_efecto(None, nombre_efecto)
+                self.widget_efectos.seleccionar_efecto(nombre_efecto)
+                
+        else:
+            self.click_efecto(None, nombre_efecto)
+            self.widget_efectos.seleccionar_efecto(nombre_efecto)
+
+        # Setea el efecto
+        self.jamediawebcam.configurar_efecto(nombre_efecto, propiedad, valor)
+        
     def cargar_visualizadores(self, efectos):
         """Agrega los widgets con efectos a la paleta de configuración."""
         
         self.widget_visualizadores_de_audio.cargar_efectos(efectos)
         
+    def configurar_visualizador(self, widget, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
+        '''
+        # Si el efecto no está agregado al pipe, lo agrega
+        if self.jamediawebcam.efectos:
+            if not nombre_efecto in self.jamediawebcam.efectos:
+                self.click_efecto(None, nombre_efecto)
+                self.widget_efectos.seleccionar_efecto(nombre_efecto)
+                
+        else:
+            self.click_efecto(None, nombre_efecto)
+            self.widget_efectos.seleccionar_efecto(nombre_efecto)
+        '''
+        # Setea el efecto
+        self.jamediawebcam.configurar_visualizador(nombre_efecto, propiedad, valor)
+        #print "Configurar Visualizador:", nombre_efecto, propiedad, valor
+        
     def click_visualizador(self, widget, nombre_efecto):
         
-        print "click_visualizador:", widget, nombre_efecto
         self.jamediawebcam.set_base_efecto(nombre_efecto)
         # detener y actualizar toolbar si está grabando.
         # desmarcar todos los otros widget de visualizadores.
@@ -790,8 +858,8 @@ class JAMediaAudioWidget(Gtk.Plug):
         """Recibe el nombre del efecto sobre el que
         se ha hecho click y decide si debe agregarse
         al pipe de JAMediaWebcam."""
-        
-        print "click_efecto:", widget, nombre_efecto
+        pass
+        #print "click_efecto:", widget, nombre_efecto
         '''
         agregar = False
         

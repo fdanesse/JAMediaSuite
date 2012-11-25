@@ -149,6 +149,11 @@ class JAMediaAudio(GObject.GObject):
         self.efecto_grafico_sobre_audio = nombre
         self.re_init()
         
+    def configurar_visualizador(self, widget, nombre_efecto, propiedad, valor):
+        """Configura el visualizador de audio."""
+        
+        print "Configurar Visualizador:", nombre_efecto, propiedad, valor
+        
     def rotar(self, valor):
         """ Rota el Video. """
         
@@ -350,6 +355,11 @@ class JAMediaAudio(GObject.GObject):
         #self.stop()
         #self.get_base_pipe()
         #self.play()
+        
+    def configurar_efecto(self, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe."""
+        
+        print "Configurar efecto:", nombre_efecto, propiedad, valor
         
     def quitar_efecto(self, indice_efecto):
         """Quita el efecto correspondiente al indice que recibe."""

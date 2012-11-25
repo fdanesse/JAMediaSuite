@@ -1000,25 +1000,34 @@ class ToolbarSalir(Gtk.Toolbar):
         self.label.set_text("")
         self.hide()
 
+# >>> JAMediaVideo
 class WidgetsGstreamerEfectos(Gtk.Frame):
-    """Toolbar con widgets que representan
-    efectos de video para gstreamer."""
+    """Frame exterior de Contenedor de widgets que
+    representan efectos de video para gstreamer."""
     
     __gsignals__ = {
     "click_efecto":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'configurar_efecto':(
+        GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
         
     def __init__(self):
         
         Gtk.Frame.__init__(self)
         
         self.set_label(" Efectos: ")
-        self.set_label_align(0.5, 0.5)
+        self.set_label_align(0.0, 0.5)
         self.gstreamer_efectos = GstreamerVideoEfectos()
         self.gstreamer_efectos.connect('agregar_efecto', self.emit_click_efecto)
+        self.gstreamer_efectos.connect('configurar_efecto', self.configurar_efecto)
         self.add(self.gstreamer_efectos)
         
         self.show_all()
+        
+    def configurar_efecto(self, widget, efecto, propiedad, valor):
+        
+        self.emit('configurar_efecto', efecto, propiedad, valor)
         
     def emit_click_efecto(self, widget, nombre_efecto):
         
@@ -1033,20 +1042,25 @@ class WidgetsGstreamerEfectos(Gtk.Frame):
         
         self.gstreamer_efectos.des_seleccionar_efecto(nombre)
         
+    def seleccionar_efecto(self, nombre):
+        
+        self.gstreamer_efectos.seleccionar_efecto(nombre)
+        
 class GstreamerVideoEfectos(Gtk.Box):
-    """Toolbar con widgets que representan
+    """Contenedor de widgets que representan
     efectos de video para gstreamer."""
     
     __gsignals__ = {
     'agregar_efecto':(
         GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_STRING,))}
+        (GObject.TYPE_STRING,)),
+    'configurar_efecto':(
+        GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
         
     def __init__(self):
         
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
-        
-        self.set_size_request(-1, G.get_pixels(1.0)+2)
         
         self.show_all()
         
@@ -1063,32 +1077,24 @@ class GstreamerVideoEfectos(Gtk.Box):
         #if 'gst-plugins-good' in datos and \
         #    ('Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos):
         if 'Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos:
-            
-            botonefecto = JAMediaButton()
-            botonefecto.connect('clicked', self.efecto_click)
-            botonefecto.connect('click_derecho', self.efecto_click_derecho)
-            botonefecto.set_tooltip(nombre)
-            lado = G.get_pixels(2.0)
-            botonefecto.set_tamanio(lado, lado)
-            
-            archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %(nombre))
-            
-            if not os.path.exists(archivo):
-                archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %('ver'))
-                
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
-            botonefecto.imagen.set_from_pixbuf(pixbuf)
+            botonefecto = Efecto_widget_Config(nombre)
+            botonefecto.connect('agregar_efecto', self.agregar_efecto)
+            botonefecto.connect('configurar_efecto', self.configurar_efecto)
             self.pack_start(botonefecto, False, False, 1)
             
         self.show_all()
         elementos.remove(elementos[0])
         GObject.idle_add(self.cargar_efectos, elementos)
         
-    def efecto_click(self, widget, void):
+    def configurar_efecto(self, widget, efecto, propiedad, valor):
+        
+        self.emit('configurar_efecto', efecto, propiedad, valor)
+        
+    def agregar_efecto(self, widget, nombre_efecto):
         """Cuando se hace click en el botón del efecto
         se envía la señal 'agregar-efecto'."""
         
-        self.emit('agregar_efecto', widget.get_tooltip_text())
+        self.emit('agregar_efecto', nombre_efecto)
         
     def efecto_click_derecho(self, widget, void):
         
@@ -1101,17 +1107,30 @@ class GstreamerVideoEfectos(Gtk.Box):
         
         for efecto in efectos:
             
-            if efecto.get_tooltip_text() == nombre:
+            if efecto.botonefecto.get_tooltip_text() == nombre:
                 efecto.des_seleccionar()
+                return
+            
+    def seleccionar_efecto(self, nombre):
+        
+        efectos = self.get_children()
+        
+        for efecto in efectos:
+            
+            if efecto.botonefecto.get_tooltip_text() == nombre:
+                efecto.seleccionar()
                 return
 
 class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
-    """Toolbar con widgets que representan
-    efectos de video para gstreamer."""
+    """Frame exterior de Contenedor de widgets que
+    representan visualizadores de audio para gstreamer."""
     
     __gsignals__ = {
     "click_efecto":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'configurar_efecto':(
+        GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
         
     def __init__(self):
         
@@ -1121,9 +1140,14 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
         self.set_label_align(0.0, 0.5)
         self.gstreamer_efectos = GstreamerAudioVisualizador()
         self.gstreamer_efectos.connect('agregar_efecto', self.emit_click_efecto)
+        self.gstreamer_efectos.connect('configurar_efecto', self.configurar_efecto)
         self.add(self.gstreamer_efectos)
         
         self.show_all()
+        
+    def configurar_efecto(self, widget, efecto, propiedad, valor):
+        
+        self.emit('configurar_efecto', efecto, propiedad, valor)
         
     def emit_click_efecto(self, widget, nombre_efecto):
         
@@ -1138,9 +1162,13 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
         
         self.gstreamer_efectos.des_seleccionar_efecto(nombre)
         
+    def seleccionar_efecto(self, nombre):
+        
+        self.gstreamer_efectos.seleccionar_efecto(nombre)
+        
 class GstreamerAudioVisualizador(GstreamerVideoEfectos):
-    """Toolbar con widgets que representan
-    visualizador de audio para gstreamer."""
+    """Contenedor de widgets que representan
+    visualizadores de audio para gstreamer."""
 
     def __init__(self):
         
@@ -1161,26 +1189,95 @@ class GstreamerAudioVisualizador(GstreamerVideoEfectos):
         
         #if 'gst-plugins-good' in datos and 'Visualization' in datos:
         if 'Visualization' in datos:
-            
-            botonefecto = JAMediaButton()
-            botonefecto.connect('clicked', self.efecto_click)
-            botonefecto.connect('click_derecho', self.efecto_click_derecho)
-            botonefecto.set_tooltip(nombre)
-            lado = G.get_pixels(1.0)
-            botonefecto.set_tamanio(lado, lado)
-            
-            archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %(nombre))
-            
-            if not os.path.exists(archivo):
-                archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %('ver'))
-                
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
-            botonefecto.imagen.set_from_pixbuf(pixbuf)
+            botonefecto = Efecto_widget_Config(nombre)
+            botonefecto.connect('agregar_efecto', self.agregar_efecto)
             self.pack_start(botonefecto, False, False, 1)
             
         self.show_all()
         elementos.remove(elementos[0])
         GObject.idle_add(self.cargar_efectos, elementos)
+
+class Efecto_widget_Config(Gtk.Box):
+    """Contiene el botón para el efecto y los
+    controles de configuración del mismo."""
+    
+    __gsignals__ = {
+    'agregar_efecto':(
+        GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_STRING,)),
+    'configurar_efecto':(
+        GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+        
+    def __init__(self, nombre):
+        
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
+        
+        #self.set_size_request(-1, G.get_pixels(1.0)+2)
+        
+        self.botonefecto = JAMediaButton()
+        self.botonefecto.connect('clicked', self.efecto_click)
+        self.botonefecto.connect('click_derecho', self.efecto_click_derecho)
+        self.botonefecto.set_tooltip(nombre)
+        lado = G.get_pixels(2.0)
+        self.botonefecto.set_tamanio(lado, lado)
+        
+        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %(nombre))
+        
+        if not os.path.exists(archivo):
+            archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %('configurar'))
+            
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
+        self.botonefecto.imagen.set_from_pixbuf(pixbuf)
+        
+        frame = Gtk.Frame()
+        frame.set_label(nombre)
+        frame.set_label_align(0.5, 1.0)
+        frame.add(self.botonefecto)
+        
+        self.pack_start(frame, False, False, 1)
+        
+        self.widget_config = G.get_widget_config_efecto(nombre)
+        if self.widget_config:
+            self.widget_config.connect('propiedad', self.set_efecto)
+            frame = Gtk.Frame()
+            frame.set_label("Configuración")
+            frame.set_label_align(0.5, 1.0)
+            frame.add(self.widget_config)
+        
+            self.pack_start(frame, False, False, 1)
+        
+        self.show_all()
+        # y ocultar configuraciones.
+        
+    def set_efecto(self, widget, propiedad, valor):
+        
+        self.emit('configurar_efecto', self.botonefecto.get_tooltip_text(), propiedad, valor)
+        
+    def efecto_click(self, widget, void):
+        """Cuando se hace click en el botón del efecto
+        se envía la señal 'agregar-efecto'."""
+        
+        self.emit('agregar_efecto', widget.get_tooltip_text())
+        
+    def efecto_click_derecho(self, widget, void):
+        
+        #print "Click", widget.get_tooltip_text(), "Select", widget.estado_select
+        pass
+    
+    def seleccionar(self):
+        """Marca como seleccionado"""
+        
+        self.botonefecto.seleccionar()
+        # y mostrar configuracion
+        
+    def des_seleccionar(self):
+        """Desmarca como seleccionado"""
+        
+        self.botonefecto.des_seleccionar()
+        #y ocultar configuracion
+        
+# <<< JAMediaVideo
 
 '''
 # En base a código de Agustin Zubiaga <aguz@sugarlabs.org>

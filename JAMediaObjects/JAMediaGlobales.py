@@ -515,6 +515,24 @@ AUDIOVISUALIZADORES = [
     'libvisual_corona',
     #'libvisual_bumpscope',                      # Feo
     ]
+    
+def get_widget_config_efecto(nombre):
+    """Devulve el widget de configuración de un
+    determinado efecto de video o visualizador de audio."""
+    
+    if nombre == 'radioactv':
+        import JAMediaGstreamer
+        from JAMediaGstreamer.WidgetsEfectosGood import Radioactv
+        return Radioactv()
+    
+    elif nombre == 'agingtv':
+        import JAMediaGstreamer
+        from JAMediaGstreamer.WidgetsEfectosGood import Agingtv
+        return Agingtv()
+
+    else:
+        return False
+    
 # <<< JAMediaVideo
 
 '''

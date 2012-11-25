@@ -432,6 +432,12 @@ class JAMediaWebCam(GObject.GObject):
         self.get_base_pipe()
         self.play()
         
+    def configurar_efecto(self, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe."""
+        
+        print nombre_efecto, propiedad, valor
+        #self.efectos_dic[nombre_efecto].set_property(propiedad, valor)
+        
     def quitar_efecto(self, indice_efecto):
         """Quita el efecto correspondiente al indice que recibe."""
         
