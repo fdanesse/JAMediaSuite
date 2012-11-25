@@ -137,6 +137,9 @@ class JAMediaWebCam(GObject.GObject):
         
         # Salida de Video 1 (a la pantalla)
         self.hilovideoapantalla = Gst.ElementFactory.make('queue', "hilovideoapantalla")
+        self.hilovideoapantalla.set_property('max-size-buffers', 1000)
+        self.hilovideoapantalla.set_property('max-size-bytes', 0)
+        self.hilovideoapantalla.set_property('max-size-time', 0)
         
         self.pantalla = Gst.ElementFactory.make('xvimagesink', "pantalla") # autovideosink o xvimagesink
         
@@ -432,7 +435,16 @@ class JAMediaWebCam(GObject.GObject):
     def quitar_efecto(self, indice_efecto):
         """Quita el efecto correspondiente al indice que recibe."""
         
-        self.efectos.remove(self.efectos[indice_efecto])
+        if type(indice_efecto) == int:
+            self.efectos.remove(self.efectos[indice_efecto])
+            
+        elif type(indice_efecto) == str:
+            
+            for efecto in self.efectos:
+                if efecto == indice_efecto:
+                    self.efectos.remove(efecto)
+                    break
+                
         self.stop()
         self.get_base_pipe()
         self.play()

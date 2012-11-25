@@ -29,8 +29,8 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
+from JAMediaObjects.JAMediaWidgets import ToolbarcontrolValores
 from JAMediaObjects.JAMediaWidgets import JAMediaButton
-from JAMediaObjects.JAMediaWidgets import ToolbarBalanceConfig
 
 import JAMediaObjects.JAMediaGlobales as G
 
@@ -139,8 +139,6 @@ class ToolbarPrincipal(Gtk.Toolbar):
     
     __gsignals__ = {
     'menu':(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    'rotar':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
@@ -203,41 +201,9 @@ class ToolbarPrincipal(Gtk.Toolbar):
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "rotar.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Izquierda.")
-        boton.connect("clicked", self.emit_rotar, 'Izquierda')
-        self.insert(boton, -1)
-        
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "rotar.png")
-        boton = G.get_boton(archivo, flip = True,
-            pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Derecha.")
-        boton.connect("clicked", self.emit_rotar, 'Derecha')
-        self.insert(boton, -1)
-        
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "stop.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(0.8))
-        boton.set_tooltip_text("Reset.")
-        boton.connect("clicked", self.emit_senial, "Reset")
-        self.insert(boton, -1)
-        
-        self.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         self.show_all()
-        
-    def emit_rotar(self, widget, valor):
-        """ Emite la señal rotar con su valor Izquierda o Derecha. """
-        
-        self.emit('rotar', valor)
         
     def emit_senial(self, widget, text):
         """Cuando se hace click en algún boton."""
@@ -259,8 +225,7 @@ class ToolbarVideo(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.color = Gdk.Color(65000, 65000, 65000)
-        #self.modify_bg(0, self.color)
+        self.color = G.BLANCO
         
         self.actualizador = None
         
@@ -321,7 +286,7 @@ class ToolbarVideo(Gtk.Toolbar):
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
+            ancho = 0, expand = True), -1)
             
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos","salir.png")
@@ -330,9 +295,6 @@ class ToolbarVideo(Gtk.Toolbar):
         boton.set_tooltip_text("Salir.")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -352,8 +314,7 @@ class ToolbarVideo(Gtk.Toolbar):
             
         elif estado == "detenido":
             self.label.set_text("")
-            self.color = Gdk.Color(65000, 65000, 65000)
-            #self.modify_bg(0, self.color)
+            self.color = G.BLANCO
             
     def handle(self):
         """Cambia el color para advertir al usuario
@@ -361,13 +322,12 @@ class ToolbarVideo(Gtk.Toolbar):
         
         # FIXME: El color de fondo de la toolbar
         # no se puede cambiar, por eso agregué el label.
-        if self.color == Gdk.Color(65000, 65000, 65000):
-            self.color = Gdk.Color(65000,26000,0)
+        if self.color == G.BLANCO:
+            self.color = G.NARANJA
             
-        elif self.color == Gdk.Color(65000,26000,0):
-            self.color = Gdk.Color(65000, 65000, 65000)
+        elif self.color == G.NARANJA:
+            self.color = G.BLANCO
             
-        #self.modify_bg(0, self.color)
         self.label.modify_fg(0, self.color)
         return True
     
@@ -385,7 +345,7 @@ class ToolbarVideo(Gtk.Toolbar):
         """Para Salir al menú principal."""
         
         self.emit('salir')
-        
+
 class ToolbarFotografia(Gtk.Toolbar):
     """ Toolbar Fotografias. """
     
@@ -401,10 +361,8 @@ class ToolbarFotografia(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.color = Gdk.Color(65000, 65000, 65000)
+        self.color = G.BLANCO
         self.actualizador = None
-        
-        #self.modify_bg(0, self.color)
         
         self.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
@@ -463,7 +421,7 @@ class ToolbarFotografia(Gtk.Toolbar):
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
+            ancho = 0, expand = True), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos","salir.png")
@@ -472,9 +430,6 @@ class ToolbarFotografia(Gtk.Toolbar):
         boton.set_tooltip_text("Salir.")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -493,9 +448,8 @@ class ToolbarFotografia(Gtk.Toolbar):
             self.label.set_text("Fotografiando . . .")
             
         elif estado == "detenido":
-            self.color = Gdk.Color(65000, 65000, 65000)
+            self.color = G.BLANCO
             self.label.set_text("")
-            #self.modify_bg(0, self.color)
             
     def handle(self):
         """Cambia el color para advertir al usuario
@@ -503,13 +457,12 @@ class ToolbarFotografia(Gtk.Toolbar):
         
         # FIXME: El color de fondo de la toolbar
         # no se puede cambiar, por eso agregué el label.
-        if self.color == Gdk.Color(65000, 65000, 65000):
-            self.color = Gdk.Color(65000,26000,0)
+        if self.color == G.BLANCO:
+            self.color = G.NARANJA
             
-        elif self.color == Gdk.Color(65000,26000,0):
-            self.color = Gdk.Color(65000, 65000, 65000)
+        elif self.color == G.NARANJA:
+            self.color = G.BLANCO
             
-        #self.modify_bg(0, self.color)
         self.label.modify_fg(0, self.color)
         return True
     
@@ -543,7 +496,7 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.color = Gdk.Color(65000, 65000, 65000)
+        self.color = G.BLANCO
         self.actualizador = None
         
         self.insert(G.get_separador(draw = False,
@@ -603,7 +556,7 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
+            ancho = 0, expand = True), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos","salir.png")
@@ -612,9 +565,6 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.salir)
         self.insert(boton, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
         
         self.show_all()
         
@@ -634,8 +584,7 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
             
         elif estado == "detenido":
             self.label.set_text("")
-            self.color = Gdk.Color(65000, 65000, 65000)
-            #self.modify_bg(0, self.color)
+            self.color = G.BLANCO
             
     def handle(self):
         """Cambia el color para advertir al usuario
@@ -643,13 +592,12 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         
         # FIXME: El color de fondo de la toolbar
         # no se puede cambiar, por eso agregué el label.
-        if self.color == Gdk.Color(65000, 65000, 65000):
-            self.color = Gdk.Color(65000,26000,0)
+        if self.color == G.BLANCO:
+            self.color = G.NARANJA
             
-        elif self.color == Gdk.Color(65000,26000,0):
-            self.color = Gdk.Color(65000, 65000, 65000)
+        elif self.color == G.NARANJA:
+            self.color = G.BLANCO
             
-        #self.modify_bg(0, self.color)
         self.label.modify_fg(0, self.color)
         return True
     
@@ -667,58 +615,7 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         """Para Salir al menú principal."""
         
         self.emit('salir')
-        
-class ToolbarVideoBalance(ToolbarBalanceConfig):
-    """Toolbar de configuración para grabar Video."""
-    
-    def __init__(self):
-        
-        ToolbarBalanceConfig.__init__(self)
-        
-        self.gamma.destroy()
-        
-        self.eventbox = Gtk.EventBox()
-        self.eventbox.modify_bg(0, Gdk.Color(0, 0, 0))
-        self.attach(self.eventbox, 1, 3, 1, 2)
-        
-        self.show_all()
-        
-    def set_balance(self, brillo = None, contraste = None,
-        saturacion = None, hue = None, gamma = None):
-        """Setea las barras segun valores."""
-        
-        if saturacion != None: self.saturacion.set_progress(saturacion)
-        if contraste != None: self.contraste.set_progress(contraste)
-        if brillo != None: self.brillo.set_progress(brillo)
-        if hue != None: self.hue.set_progress(hue)
-        #if gamma != None: self.gamma.set_progress(gamma)
-        #print brillo, contraste, saturacion, hue, gamma
-        
-class ToolbarFotografiaBalance(ToolbarVideoBalance):
-    """Toolbar de configuración para fotografiar."""
-    
-    __gsignals__ = {
-    "run_rafaga":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
-    
-    def __init__(self):
-        
-        ToolbarVideoBalance.__init__(self)
-        
-        self.eventbox.destroy()
-        
-        toolbarrafagas = ToolbarRafagas()
-        self.attach(toolbarrafagas, 1, 3, 1, 2)
-        
-        self.show_all()
-        
-        toolbarrafagas.connect('run_rafaga', self.re_emit_run_rafaga)
-        
-    def re_emit_run_rafaga(self, widget, valor):
-        """Re emite la señal para comenzar a fotografiar en ráfagas."""
-        
-        self.emit('run_rafaga', valor)
-        
+'''
 class ToolbarRafagas(Gtk.Toolbar):
     """Pequeña toolbar con controles para
     configurar rafagas fotográficas."""
@@ -823,5 +720,72 @@ class ToolbarRafagas(Gtk.Toolbar):
         
         tiempo = float(self.time_label.get_text())
         tiempo += 0.1
-        self.time_label.set_text(str(tiempo))
+        self.time_label.set_text(str(tiempo))'''
         
+class ToolbarBalanceConfig(Gtk.Table):
+    """ Toolbar de Configuración de Balance
+    en Video. (Utilizado por JAMedia). """
+    
+    __gsignals__ = {
+    'valor':(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_FLOAT, GObject.TYPE_STRING))}
+    
+    def __init__(self):
+        
+        Gtk.Table.__init__(self, rows=4, columns=1, homogeneous=True)
+        
+        self.brillo = ToolbarcontrolValores("Brillo")
+        self.contraste = ToolbarcontrolValores("Contraste")
+        self.saturacion = ToolbarcontrolValores("Saturación")
+        self.hue = ToolbarcontrolValores("Matíz")
+        #self.gamma = ToolbarcontrolValores("Gamma")
+        
+        self.attach(self.brillo, 0, 1, 0, 1)
+        self.attach(self.contraste, 0, 1, 1, 2)
+        self.attach(self.saturacion, 0, 1, 2, 3)
+        self.attach(self.hue, 0, 1, 3, 4)
+        #self.attach(self.gamma, 1, 2, 1, 2)
+        
+        self.show_all()
+        
+        self.brillo.connect('valor', self.emit_senial, 'brillo')
+        self.contraste.connect('valor', self.emit_senial, 'contraste')
+        self.saturacion.connect('valor', self.emit_senial, 'saturacion')
+        self.hue.connect('valor', self.emit_senial, 'hue')
+        #self.gamma.connect('valor', self.emit_senial, 'gamma')
+        
+    def emit_senial(self, widget, valor, tipo):
+        """Emite valor, que representa un valor
+        en % float y un valor tipo para:
+            brillo - contraste - saturacion - hue - gamma"""
+            
+        self.emit('valor', valor, tipo)
+        
+    def set_balance(self, brillo = None, contraste = None,
+        saturacion = None, hue = None, gamma = None):
+        """Setea las barras segun valores."""
+        
+        if saturacion != None: self.saturacion.set_progress(saturacion)
+        if contraste != None: self.contraste.set_progress(contraste)
+        if brillo != None: self.brillo.set_progress(brillo)
+        if hue != None: self.hue.set_progress(hue)
+        #if gamma != None: self.gamma.set_progress(gamma)
+        
+class WidgetEfecto_en_Pipe(JAMediaButton):
+    """Representa un efecto agregado al pipe de JAMediaVideo.
+    Es simplemente un objeto gráfico que se agrega debajo del
+    visor de video, para que el usuario tenga una referencia de
+    los efectos que ha agregado y en que orden se encuentran."""
+    
+    def __init__(self):
+        
+        JAMediaButton.__init__(self)
+        
+        self.show_all()
+        
+    def seleccionar(self):
+        pass
+        
+    def des_seleccionar(self):
+        pass
+    

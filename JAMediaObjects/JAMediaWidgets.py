@@ -19,11 +19,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# Contiene:
-#   Visor => DrawingArea para mostrar imágenes o video o dibujar sobre el.
-#   Lista => TreeView con modelo ListStore asociado, para operar como lista de reproducción.
-#   ToolbarReproduccion(Gtk.Box) => Controles de Reproducción: play/pausa-stop-atras-siguiente
-
 import os
 import sys
 import commands
@@ -445,7 +440,7 @@ class BarraProgreso(Gtk.EventBox):
         
         Gtk.EventBox.__init__(self)
         
-        self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
+        self.modify_bg(0, G.BLANCO)
         self.escala = ProgressBar(Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
         
         self.valor = 0
@@ -598,8 +593,6 @@ class ToolbarAccion(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        #self.modify_bg(0, Gdk.Color(65000,65000,65000))
-        
         self.lista = None
         self.accion = None
         self.iter = None
@@ -615,18 +608,12 @@ class ToolbarAccion(Gtk.Toolbar):
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
-        #self.insert(G.get_separador(draw = False,
-        #    ancho = 3, expand = False), -1)
-        
         item = Gtk.ToolItem()
         item.set_expand(True)
         self.label = Gtk.Label("")
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
-        
-        #self.insert(G.get_separador(draw = False,
-        #    ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaWidgetsBASE,
             "Iconos", "acercar.png")
@@ -782,9 +769,6 @@ class ToolbarcontrolValores(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        #self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
-        #self.modify_bg(0, Gdk.Color(0, 0, 0))
-        
         self.titulo = label
         
         self.escala = SlicerBalance()
@@ -828,7 +812,6 @@ class SlicerBalance(Gtk.EventBox):
         
         Gtk.EventBox.__init__(self)
         
-        #self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
         self.escala = BalanceBar(Gtk.Adjustment(0.0, 0.0,
             101.0, 0.1, 1.0, 1.0))
         
@@ -836,7 +819,6 @@ class SlicerBalance(Gtk.EventBox):
         self.show_all()
         
         self.escala.connect('user-set-value', self.emit_valor)
-        #self.set_size_request(-1, G.get_pixels(1.2))
         
     def set_progress(self, valor = 0.0):
         """El reproductor modifica la escala."""
@@ -938,7 +920,6 @@ class ItemSwitch(Gtk.Frame):
         
         Gtk.Frame.__init__(self)
         
-        #self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
         self.set_label(text)
         self.set_label_align(0.5, 1.0)
         
@@ -1018,213 +999,112 @@ class ToolbarSalir(Gtk.Toolbar):
         
         self.label.set_text("")
         self.hide()
-        
-class ToolbarGstreamerEfectos(Gtk.Box):
+
+class WidgetsGstreamerEfectos(Gtk.Frame):
     """Toolbar con widgets que representan
     efectos de video para gstreamer."""
     
     __gsignals__ = {
-    "agregar_efecto":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "quitar_efecto":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_INT,))}
+    "click_efecto":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        
+    def __init__(self):
+        
+        Gtk.Frame.__init__(self)
+        
+        self.set_label(" Efectos: ")
+        self.set_label_align(0.5, 0.5)
+        self.gstreamer_efectos = GstreamerVideoEfectos()
+        self.gstreamer_efectos.connect('agregar_efecto', self.emit_click_efecto)
+        self.add(self.gstreamer_efectos)
+        
+        self.show_all()
+        
+    def emit_click_efecto(self, widget, nombre_efecto):
+        
+        self.emit('click_efecto', nombre_efecto)
+        
+    def cargar_efectos(self, elementos):
+        """Agrega los widgets de efectos."""
+        
+        self.gstreamer_efectos.cargar_efectos(elementos)
+        
+    def des_seleccionar_efecto(self, nombre):
+        
+        self.gstreamer_efectos.des_seleccionar_efecto(nombre)
+        
+class GstreamerVideoEfectos(Gtk.Box):
+    """Toolbar con widgets que representan
+    efectos de video para gstreamer."""
+    
+    __gsignals__ = {
+    'agregar_efecto':(
+        GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_STRING,))}
         
     def __init__(self):
         
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
         
-        frame = Gtk.Frame()
-        frame.set_label(" Efectos en el Pipe ")
-        frame.set_label_align(0.5, 0.5)
-        self.efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        self.efectos_en_pipe.set_size_request(-1, G.get_pixels(2.0)+2)
-        scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
-        scroll.add_with_viewport (self.efectos_en_pipe)
-        frame.add(scroll)
-        self.pack_start(frame, False, False, 1)
-        
-        frame = Gtk.Frame()
-        frame.set_label(" Efectos Disponibles ")
-        frame.set_label_align(0.5, 0.5)
-        self.gstreamer_efectos = GstreamerVideoEfectos()
-        scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
-        scroll.add_with_viewport (self.gstreamer_efectos)
-        frame.add(scroll)
-        self.pack_start(frame, False, False, 1)
-        
-        self.show_all()
-        
-        self.efectos_en_pipe.drag_dest_set(
-            Gtk.DestDefaults.ALL,
-            target_gstreamer_video_efectos,
-            Gdk.DragAction.MOVE)
-        self.efectos_en_pipe.connect("drag-drop", self.drag_drop)
-        self.efectos_en_pipe.drag_dest_add_uri_targets()
-        
-        self.gstreamer_efectos.drag_dest_set(
-            Gtk.DestDefaults.ALL,
-            target_gstreamer_video_efectos,
-            Gdk.DragAction.MOVE)
-        self.gstreamer_efectos.connect("drag-drop", self.drag_drop)
-        self.gstreamer_efectos.drag_dest_add_uri_targets()
-        
-    def drag_drop(self, destino, drag_context, x, y, n):
-        """Ejecuta drop sobre un destino."""
-        
-        #print destino, drag_context, x, y, n # x y para insertar el efecto
-        
-        botonefecto = Gtk.drag_get_source_widget(drag_context)
-        parent = botonefecto.get_parent()
-        
-        if parent == destino:
-            return
-        
-        else:
-            try:
-                objetos = parent.get_children()
-                indice = objetos.index(botonefecto)
-                parent.remove(botonefecto)
-                destino.pack_start(botonefecto, False, False, 1)
-                
-            except:
-                return
-            
-            if destino == self.efectos_en_pipe:
-                #text = TipDescargas
-                self.emit('agregar_efecto', botonefecto.get_tooltip_text())
-                
-            elif destino == self.gstreamer_efectos:
-                #text = TipEncontrados
-                self.emit('quitar_efecto', indice)
-                
-            #botonefecto.set_tooltip_text(text)
-            
-    def reset(self):
-        """Devuelve la toolbar a su estado original."""
-        
-        for efecto in self.efectos_en_pipe.get_children():
-            self.efectos_en_pipe.remove(efecto)
-            self.gstreamer_efectos.pack_start(efecto, False, False, 1)
-
-class GstreamerVideoEfectos(Gtk.Box):
-    """Toolbar con widgets que representan
-    efectos de video para gstreamer."""
-    
-    def __init__(self):
-        
-        Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
-        
         self.set_size_request(-1, G.get_pixels(1.0)+2)
         
-        for nombre in G.VIDEOEFECTOS:
-            datos = commands.getoutput('gst-inspect-1.0 %s' % (nombre))
+        self.show_all()
+        
+    def cargar_efectos(self, elementos):
+        """Agrega los items a la lista, uno a uno, actualizando."""
+        
+        if not elementos:
+            return False
+        
+        nombre = elementos[0]
+        # Los efectos se definen en globales pero hay que ver si están instalados.
+        datos = commands.getoutput('gst-inspect-1.0 %s' % (nombre))
+        
+        #if 'gst-plugins-good' in datos and \
+        #    ('Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos):
+        if 'Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos:
             
-            if 'gst-plugins-good' in datos and \
-                ('Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos):
-            #if 'Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos:
-                
-                botonefecto = JAMediaButton()
-                botonefecto.set_tooltip(nombre)
-                lado = G.get_pixels(2.0)
-                botonefecto.set_tamanio(lado, lado)
+            botonefecto = JAMediaButton()
+            botonefecto.connect('clicked', self.efecto_click)
+            botonefecto.connect('click_derecho', self.efecto_click_derecho)
+            botonefecto.set_tooltip(nombre)
+            lado = G.get_pixels(2.0)
+            botonefecto.set_tamanio(lado, lado)
+            
+            archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %(nombre))
+            
+            if not os.path.exists(archivo):
                 archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %('ver'))
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
-                botonefecto.imagen.set_from_pixbuf(pixbuf)
-                self.pack_start(botonefecto, False, False, 1)
                 
-                botonefecto.drag_source_set(
-                    Gdk.ModifierType.BUTTON1_MASK,
-                    target_gstreamer_video_efectos,
-                    Gdk.DragAction.MOVE)
-        
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
+            botonefecto.imagen.set_from_pixbuf(pixbuf)
+            self.pack_start(botonefecto, False, False, 1)
+            
         self.show_all()
+        elementos.remove(elementos[0])
+        GObject.idle_add(self.cargar_efectos, elementos)
         
-        # FIXME: Para obtener los filtros y efectos de video.
-        #for x in G.get_video_filters():
-        #   print x
+    def efecto_click(self, widget, void):
+        """Cuando se hace click en el botón del efecto
+        se envía la señal 'agregar-efecto'."""
         
-target_gstreamer_video_efectos = [Gtk.TargetEntry.new('Mover', Gtk.TargetFlags.SAME_APP, 0)]
+        self.emit('agregar_efecto', widget.get_tooltip_text())
+        
+    def efecto_click_derecho(self, widget, void):
+        
+        #print "Click", widget.get_tooltip_text(), "Select", widget.estado_select
+        pass
 
-'''
-class ToolbarResolucion(Gtk.Toolbar):
-    """Pequeña toolbar con controles para
-    configurar resolución de video.
-    Utilizada por JAMediaVideo."""
-    
-    __gsignals__ = {"resolucion":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
-    
-    def __init__(self):
+    def des_seleccionar_efecto(self, nombre):
         
-        Gtk.Toolbar.__init__(self)
+        efectos = self.get_children()
         
-        self.modify_bg(0, Gdk.Color(0, 0, 0))
-        self.modify_fg(0, Gdk.Color(65000, 65000, 65000))
-        
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
-        
-        item = Gtk.ToolItem()
-        item.set_expand(True)
-        frame = Gtk.Frame()
-        frame.set_label("Resolución")
-        frame.set_label_align(0.5, 0.5)
-        
-        combo = ComboResolucion()
-        combo.connect('resolucion', self.re_emit_resolucion)
-        
-        frame.add(combo)
-        frame.modify_fg(0, Gdk.Color(65000, 65000, 65000))
-        frame.show()
-        item.add(frame)
-        self.insert(item, -1)
-        
-        #archivo = os.path.join(JAMediaObjectsPath, "Iconos", "mplayer.png")
-        #self.mplayer_boton = G.get_togle_boton(archivo, flip = False,
-        #    color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
-        #self.mplayer_boton.set_tooltip_text("MplayerReproductor")
-        #self.mplayer_boton.connect("toggled", self.emit_reproductor, "MplayerReproductor")
-        #toolbar.insert(self.mplayer_boton, -1)
-        
-        #archivo = os.path.join(JAMediaObjectsPath, "Iconos", "JAMedia.png")
-        #self.jamedia_boton = G.get_togle_boton(archivo, flip = False,
-        #    color = Gdk.Color(0, 0, 0), pixels = G.get_pixels(1))
-        #self.jamedia_boton.set_tooltip_text("JAMediaReproductor")
-        #self.jamedia_boton.connect("toggled", self.emit_reproductor, "JAMediaReproductor")
-        #toolbar.insert(self.jamedia_boton, -1)
-        
-        self.insert(G.get_separador(draw = False, ancho = 0, expand = True), -1)
-        
-        self.show_all()
-        
-    def re_emit_resolucion(self, widget, resolucion):
-        """Cuando el usuario cambia la resolución en el combo."""
-        
-        self.emit('resolucion', resolucion)'''
-'''
-class ComboResolucion(Gtk.ComboBoxText):
-    """Combo con resoluciones de video.
-    Utilizado por ToolbarResolucion."""
-    
-    __gsignals__ = {"resolucion":(GObject.SIGNAL_RUN_FIRST,
-    GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
-    
-    def __init__(self):
-        
-        Gtk.ComboBoxText.__init__(self)
-        
-        self.append_text('320 x 240')
-        self.append_text('640 x 480')
-        self.append_text('800 x 600')
-        self.set_active(1)
-        
-        self.show_all()
-        
-    def do_changed(self):
-        
-        self.emit('resolucion', self.get_active_text())'''
-        
+        for efecto in efectos:
+            
+            if efecto.get_tooltip_text() == nombre:
+                efecto.des_seleccionar()
+                return
+            
 '''
 # En base a código de Agustin Zubiaga <aguz@sugarlabs.org>
 

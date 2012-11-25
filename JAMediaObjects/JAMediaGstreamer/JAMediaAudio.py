@@ -43,14 +43,14 @@ from JAMediaObjects import JAMediaGlobales as G
    
 GObject.threads_init()
 Gst.init([])
-'''
+
 CONFIG_DEFAULT = {
     'saturacion': 5,
     'contraste': 6,
     'brillo': 8,
     'hue': 0,
-    }'''
-'''
+    }
+
 def get_efecto(efecto):
     """Crea un bin con efecto para agregar al pipe."""
     
@@ -76,7 +76,7 @@ def get_efecto(efecto):
     efectobin.add_pad(Gst.GhostPad.new("sink", queue.get_static_pad ("sink")))
     efectobin.add_pad(Gst.GhostPad.new("src", videoconvert2.get_static_pad("src")))
     
-    return efectobin'''
+    return efectobin
 
 class JAMediaAudio(GObject.GObject):
     """Interfaz para Audio, en base a Gstreamer 1.0."""
@@ -99,13 +99,13 @@ class JAMediaAudio(GObject.GObject):
         self.pantalla = None
         
         self.elementos_base = []
-        '''
+        
         self.config = {}
-        self.config['device'] = CONFIG_DEFAULT['device']
+        #self.config['device'] = CONFIG_DEFAULT['device']
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
         self.config['brillo'] = CONFIG_DEFAULT['brillo']
-        self.config['hue'] = CONFIG_DEFAULT['hue']'''
+        self.config['hue'] = CONFIG_DEFAULT['hue']
         
         self.efecto_grafico_sobre_audio = 'monoscope'
         #wavescope, synaescope, spectrascope, monoscope
@@ -176,7 +176,6 @@ class JAMediaAudio(GObject.GObject):
         self.videoflip.set_property('method', rot)
         GObject.idle_add(self.play)
         
-    '''
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None):
         """Seteos de balance en la fuente de video.
@@ -190,26 +189,26 @@ class JAMediaAudio(GObject.GObject):
         if saturacion != None:
             new_valor = int (total * int(saturacion) / 100)
             new_valor -= min
-            self.config['saturacion'] = new_valor
-            self.camara.set_property('saturation', self.config['saturacion'])
+            #self.config['saturacion'] = new_valor
+            #self.camara.set_property('saturation', self.config['saturacion'])
             
         if contraste != None:
             new_valor = int (total * int(contraste) / 100)
             new_valor -= min
-            self.config['contraste'] = new_valor
-            self.camara.set_property('contrast', self.config['contraste'])
+            #self.config['contraste'] = new_valor
+            #self.camara.set_property('contrast', self.config['contraste'])
             
         if brillo != None:
             new_valor = int (total * int(brillo) / 100)
             new_valor -= min
-            self.config['brillo'] = new_valor
-            self.camara.set_property('brightness', self.config['brillo'])
+            #self.config['brillo'] = new_valor
+            #self.camara.set_property('brightness', self.config['brillo'])
             
         if hue != None:
             new_valor = int (total * int(hue) / 100)
             new_valor -= min
-            self.config['hue'] = new_valor
-            self.camara.set_property('hue', self.config['hue'])
+            #self.config['hue'] = new_valor
+            #self.camara.set_property('hue', self.config['hue'])
         
     def get_balance(self):
         """Retorna los valores actuales de balance en %."""
@@ -233,21 +232,21 @@ class JAMediaAudio(GObject.GObject):
         hue = self.config['hue'] + min
         config['hue'] = hue * 100 / total
         
-        return config'''
+        return config
     
     def reset(self):
         """Re establece el pipe al estado original (sin efectos)."""
-        '''
-        self.config['device'] = CONFIG_DEFAULT['device']
+        
+        #self.config['device'] = CONFIG_DEFAULT['device']
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
         self.config['brillo'] = CONFIG_DEFAULT['brillo']
         self.config['hue'] = CONFIG_DEFAULT['hue']
         
-        self.camara.set_property('saturation', self.config['saturacion'])
-        self.camara.set_property('contrast', self.config['contraste'])
-        self.camara.set_property('brightness', self.config['brillo'])
-        self.camara.set_property('hue', self.config['hue'])'''
+        #self.camara.set_property('saturation', self.config['saturacion'])
+        #self.camara.set_property('contrast', self.config['contraste'])
+        #self.camara.set_property('brightness', self.config['brillo'])
+        #self.camara.set_property('hue', self.config['hue'])
         
         self.videoflip.set_property('method', 0)
         
@@ -349,22 +348,21 @@ class JAMediaAudio(GObject.GObject):
         
         self.multi.link(audiobin)
         
-    '''
     def agregar_efecto(self, nombre_efecto):
         """Agrega un efecto según nombre_efecto."""
-        
-        self.efectos.append(nombre_efecto)
-        self.stop()
-        self.get_base_pipe()
-        self.play()
+        print 'agregar_efecto', nombre_efecto
+        #self.efectos.append(nombre_efecto)
+        #self.stop()
+        #self.get_base_pipe()
+        #self.play()
         
     def quitar_efecto(self, indice_efecto):
         """Quita el efecto correspondiente al indice que recibe."""
-        
-        self.efectos.remove(self.efectos[indice_efecto])
-        self.stop()
-        self.get_base_pipe()
-        self.play()'''
+        print 'quitar_efecto', indice_efecto
+        #self.efectos.remove(self.efectos[indice_efecto])
+        #self.stop()
+        #self.get_base_pipe()
+        #self.play()
         
     def pause(self, widget = None, event = None):
         
