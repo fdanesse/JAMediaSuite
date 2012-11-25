@@ -101,15 +101,12 @@ class JAMediaAudio(GObject.GObject):
         self.elementos_base = []
         
         self.config = {}
-        #self.config['device'] = CONFIG_DEFAULT['device']
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
         self.config['brillo'] = CONFIG_DEFAULT['brillo']
         self.config['hue'] = CONFIG_DEFAULT['hue']
         
         self.efecto_grafico_sobre_audio = 'monoscope'
-        #wavescope, synaescope, spectrascope, monoscope
-        # spacescope, goom(problemas en calidad de grabacion de audio)
         self.efectos = []
         
         self.setup_init()
@@ -147,11 +144,10 @@ class JAMediaAudio(GObject.GObject):
         self.bus.connect('sync-message', self.sync_message)
     
     def set_base_efecto(self, nombre):
-        """Setea el efecto gráfico principal para el audio."""
+        """Setea el visualizador de audio."""
         
         self.efecto_grafico_sobre_audio = nombre
-        # Detener grabacion
-        # reiniciar el pipe
+        self.re_init()
         
     def rotar(self, valor):
         """ Rota el Video. """
@@ -237,7 +233,6 @@ class JAMediaAudio(GObject.GObject):
     def reset(self):
         """Re establece el pipe al estado original (sin efectos)."""
         
-        #self.config['device'] = CONFIG_DEFAULT['device']
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
         self.config['brillo'] = CONFIG_DEFAULT['brillo']

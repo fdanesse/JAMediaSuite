@@ -33,6 +33,7 @@ import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 from JAMediaObjects.JAMediaWidgets import Visor
 from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerEfectos
+from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerAudioVisualizador
 from JAMediaObjects.JAMediaGstreamer.JAMediaWebCam import JAMediaWebCam
 from JAMediaObjects.JAMediaGstreamer.JAMediaAudio import JAMediaAudio
 
@@ -652,6 +653,7 @@ class JAMediaAudioWidget(Gtk.Plug):
         self.jamediawebcam = None
         self.box_config = None
         self.widget_efectos = None
+        self.widget_visualizadores_de_audio = None
         self.hbox_efectos_en_pipe = None
         
         self.show_all()
@@ -698,9 +700,16 @@ class JAMediaAudioWidget(Gtk.Plug):
         self.box_config.set_size_request(G.get_pixels(5.0), -1)
         
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-
+        
+        self.widget_visualizadores_de_audio = WidgetsGstreamerAudioVisualizador()
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+        scroll.add_with_viewport(self.widget_visualizadores_de_audio)
+        
         self.balance_widget = ToolbarBalanceConfig()
-        vbox.pack_start(self.balance_widget , False, True, 0)
+        vbox.pack_start(scroll, False, True, 0)
+        vbox.pack_start(self.balance_widget, False, True, 0)
+        
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(vbox)
@@ -733,7 +742,8 @@ class JAMediaAudioWidget(Gtk.Plug):
         
         self.balance_widget.connect('valor', self.set_balance)
         
-        #self.widget_efectos.connect("click_efecto", self.click_efecto)
+        self.widget_efectos.connect("click_efecto", self.click_efecto)
+        self.widget_visualizadores_de_audio.connect("click_efecto", self.click_visualizador)
         #self.widget_efectos.connect("quitar_efecto", self.quitar_efecto)
         
         self.toolbar_salir.connect('salir', self.emit_salir)
@@ -763,12 +773,26 @@ class JAMediaAudioWidget(Gtk.Plug):
         """Agrega los widgets con efectos a la paleta de configuración."""
         
         self.widget_efectos.cargar_efectos(efectos)
-    '''
+        
+    def cargar_visualizadores(self, efectos):
+        """Agrega los widgets con efectos a la paleta de configuración."""
+        
+        self.widget_visualizadores_de_audio.cargar_efectos(efectos)
+        
+    def click_visualizador(self, widget, nombre_efecto):
+        
+        print "click_visualizador:", widget, nombre_efecto
+        self.jamediawebcam.set_base_efecto(nombre_efecto)
+        # detener y actualizar toolbar si está grabando.
+        # desmarcar todos los otros widget de visualizadores.
+        
     def click_efecto(self, widget, nombre_efecto):
         """Recibe el nombre del efecto sobre el que
         se ha hecho click y decide si debe agregarse
         al pipe de JAMediaWebcam."""
         
+        print "click_efecto:", widget, nombre_efecto
+        '''
         agregar = False
         
         if self.jamediawebcam.efectos:

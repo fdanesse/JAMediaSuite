@@ -1104,7 +1104,84 @@ class GstreamerVideoEfectos(Gtk.Box):
             if efecto.get_tooltip_text() == nombre:
                 efecto.des_seleccionar()
                 return
+
+class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
+    """Toolbar con widgets que representan
+    efectos de video para gstreamer."""
+    
+    __gsignals__ = {
+    "click_efecto":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        
+    def __init__(self):
+        
+        Gtk.Frame.__init__(self)
+        
+        self.set_label(" Visualizadores: ")
+        self.set_label_align(0.0, 0.5)
+        self.gstreamer_efectos = GstreamerAudioVisualizador()
+        self.gstreamer_efectos.connect('agregar_efecto', self.emit_click_efecto)
+        self.add(self.gstreamer_efectos)
+        
+        self.show_all()
+        
+    def emit_click_efecto(self, widget, nombre_efecto):
+        
+        self.emit('click_efecto', nombre_efecto)
+        
+    def cargar_efectos(self, elementos):
+        """Agrega los widgets de efectos."""
+        
+        self.gstreamer_efectos.cargar_efectos(elementos)
+        
+    def des_seleccionar_efecto(self, nombre):
+        
+        self.gstreamer_efectos.des_seleccionar_efecto(nombre)
+        
+class GstreamerAudioVisualizador(GstreamerVideoEfectos):
+    """Toolbar con widgets que representan
+    visualizador de audio para gstreamer."""
+
+    def __init__(self):
+        
+        GstreamerVideoEfectos.__init__(self)
+        
+        self.set_property('orientation', Gtk.Orientation.HORIZONTAL)
+        self.show_all()
+        
+    def cargar_efectos(self, elementos):
+        """Agrega los items a la lista, uno a uno, actualizando."""
+        
+        if not elementos:
+            return False
+        
+        nombre = elementos[0]
+        # Los efectos se definen en globales pero hay que ver si están instalados.
+        datos = commands.getoutput('gst-inspect-1.0 %s' % (nombre))
+        
+        #if 'gst-plugins-good' in datos and 'Visualization' in datos:
+        if 'Visualization' in datos:
             
+            botonefecto = JAMediaButton()
+            botonefecto.connect('clicked', self.efecto_click)
+            botonefecto.connect('click_derecho', self.efecto_click_derecho)
+            botonefecto.set_tooltip(nombre)
+            lado = G.get_pixels(1.0)
+            botonefecto.set_tamanio(lado, lado)
+            
+            archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %(nombre))
+            
+            if not os.path.exists(archivo):
+                archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %('ver'))
+                
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
+            botonefecto.imagen.set_from_pixbuf(pixbuf)
+            self.pack_start(botonefecto, False, False, 1)
+            
+        self.show_all()
+        elementos.remove(elementos[0])
+        GObject.idle_add(self.cargar_efectos, elementos)
+
 '''
 # En base a código de Agustin Zubiaga <aguz@sugarlabs.org>
 

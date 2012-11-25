@@ -497,6 +497,24 @@ VIDEOEFECTOS = [
     'mirror',
     'fisheye',
     ]
+    
+AUDIOVISUALIZADORES = [
+    'wavescope',
+    'synaescope',
+    'spectrascope',
+    'monoscope',
+    #'spacescope',                               # problemas en calidad de grabacion de audio
+    #'goom',                                     # problemas en calidad de grabacion de audio
+    #'goom2k1',                                  # Al parecer no funciona
+    'libvisual_oinksie',
+    'libvisual_lv_scope',
+    'libvisual_lv_analyzer',
+    'libvisual_jess',
+    'libvisual_jakdaw',
+    'libvisual_infinite',
+    'libvisual_corona',
+    #'libvisual_bumpscope',                      # Feo
+    ]
 # <<< JAMediaVideo
 
 '''

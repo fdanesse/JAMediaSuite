@@ -202,6 +202,7 @@ class JAMediaVideo(Gtk.Window):
         self.jamediavideo.cargar_efectos(list(G.VIDEOEFECTOS))
         self.jamediafotografia.cargar_efectos(list(G.VIDEOEFECTOS))
         self.jamediaaudio.cargar_efectos(list(G.VIDEOEFECTOS))
+        self.jamediaaudio.cargar_visualizadores(list(G.AUDIOVISUALIZADORES))
         GObject.idle_add(self.jamediawebcam.reset)
         
     def clicks_en_pantalla(self, widget, event):
