@@ -94,6 +94,9 @@ AMARILLO = Gdk.Color(65000,65000,40275)
 NARANJA = Gdk.Color(65000,26000,0)
 BLANCO = Gdk.Color(65535, 65535, 65535)
 NEGRO = Gdk.Color(0, 0, 0)
+ROJO = Gdk.Color(65000, 0, 0)
+VERDE = Gdk.Color(0, 65000, 0)
+AZUL = Gdk.Color(0, 0, 65000)
 
 def get_pixels(centimetros):
     """ Recibe un tamaño en centimetros y
@@ -455,11 +458,11 @@ VIDEOEFECTOS = [
     'agingtv',                                  # gst-plugins-good
     'dicetv',                                   # gst-plugins-good
     'warptv',                                   # gst-plugins-good
-    'shagadelictv',                             # gst-plugins-good
+    #'shagadelictv',                             # gst-plugins-good
     'vertigotv',                                # gst-plugins-good
     'revtv',                                    # gst-plugins-good
     #'quarktv',                                 # gst-plugins-good Demasiado Lento
-    'optv',                                     # gst-plugins-good
+    #'optv',                                     # gst-plugins-good
     'radioactv',                                # gst-plugins-good
     'streaktv',                                 # gst-plugins-good
     'rippletv',                                 # gst-plugins-good

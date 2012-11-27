@@ -38,27 +38,32 @@ import JAMediaGlobales as G
 JAMediaWidgetsBASE = os.path.dirname(__file__)
 
 class JAMediaButton(Gtk.EventBox):
-    """Un Boton a medida"""
+    """Un Boton a medida."""
     
     __gsignals__ = {
     "clicked":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "click_derecho":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
-    
+        
     def __init__(self):
         
         Gtk.EventBox.__init__(self)
         
+        self.cn = G.BLANCO
+        self.cs = G.AMARILLO
+        self.cc = G.NARANJA
+        self.text_color = G.NEGRO
+        self.colornormal = self.cn
+        self.colorselect = self.cs
+        self.colorclicked = self.cc
+        
         self.set_visible_window(True)
-        self.modify_bg(0, G.BLANCO)
+        self.modify_bg(0, self.colornormal)
+        self.modify_fg(0, self.text_color)
         self.set_border_width(1)
         
         self.estado_select = False
-        
-        self.colornormal = G.BLANCO
-        self.colorselect = G.AMARILLO
-        self.colorclicked = G.NARANJA
         
         self.add_events(
             Gdk.EventMask.BUTTON_PRESS_MASK |
@@ -74,25 +79,49 @@ class JAMediaButton(Gtk.EventBox):
         
         self.imagen = Gtk.Image()
         self.add(self.imagen)
-            
+        
         self.show_all()
         
+    def set_colores(self, colornormal = False, colorselect = False, colorclicked = False):
+        
+        if colornormal:
+            self.cn = colornormal
+            
+        if colorselect:
+            self.cs = colorselect
+            
+        if colorclicked:
+            self.cc = colorclicked
+        
+        self.colornormal = self.cn
+        self.colorselect = self.cs
+        self.colorclicked = self.cc
+        
+        if self.estado_select:
+            self.seleccionar()
+            
+        else:
+            self.des_seleccionar()
+            
     def seleccionar(self):
         """Marca como seleccionado"""
         
         self.estado_select = True
-        self.colornormal = G.NARANJA
-        self.colorselect = G.NARANJA
-        self.colorclicked = G.NARANJA
+        self.colornormal = self.cc
+        self.colorselect = self.cc
+        self.colorclicked = self.cc
+        
         self.modify_bg(0, self.colornormal)
         
     def des_seleccionar(self):
         """Desmarca como seleccionado"""
         
         self.estado_select = False
-        self.colornormal = G.BLANCO
-        self.colorselect = G.AMARILLO
-        self.colorclicked = G.NARANJA
+        
+        self.colornormal = self.cn
+        self.colorselect = self.cs
+        self.colorclicked = self.cc
+        
         self.modify_bg(0, self.colornormal)
         
     def button_release(self, widget, event):
@@ -121,13 +150,22 @@ class JAMediaButton(Gtk.EventBox):
         
         self.set_tooltip_text(texto)
         
+    def set_label(self, texto):
+        
+        for child in self.get_children():
+            child.destroy()
+            
+        label = Gtk.Label(texto)
+        label.show()
+        self.add(label)
+        
     def set_imagen(self, archivo):
         
         self.imagen.set_from_file(archivo)
         
     def set_tamanio(self, w, h):
         
-        self.set_size_request(w,h)
+        self.set_size_request(w, h)
         
 class Visor(Gtk.DrawingArea):
     """Visor generico para utilizar como area de
@@ -709,7 +747,7 @@ class ToolbarAccion(Gtk.Toolbar):
         
 class ToolbarBalanceConfig(Gtk.Table):
     """ Toolbar de Configuración de Balance
-    en Video. (Utilizado por JAMedia). """
+    en Video. (Utilizado por JAMediaVideo). """
     
     __gsignals__ = {
     'valor':(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
@@ -717,7 +755,7 @@ class ToolbarBalanceConfig(Gtk.Table):
     
     def __init__(self):
         
-        Gtk.Table.__init__(self, rows=2, columns=3, homogeneous=True)
+        Gtk.Table.__init__(self, rows=5, columns=1, homogeneous=True)
         
         self.brillo = ToolbarcontrolValores("Brillo")
         self.contraste = ToolbarcontrolValores("Contraste")
@@ -726,10 +764,10 @@ class ToolbarBalanceConfig(Gtk.Table):
         self.gamma = ToolbarcontrolValores("Gamma")
         
         self.attach(self.brillo, 0, 1, 0, 1)
-        self.attach(self.contraste, 1, 2, 0, 1)
-        self.attach(self.saturacion, 2, 3, 0, 1)
-        self.attach(self.hue, 0, 1, 1, 2)
-        self.attach(self.gamma, 1, 2, 1, 2)
+        self.attach(self.contraste, 0, 1, 1, 2)
+        self.attach(self.saturacion, 0, 1, 2, 3)
+        self.attach(self.hue, 0, 1, 3, 4)
+        self.attach(self.gamma, 0, 1, 4, 5)
         
         self.show_all()
         
@@ -1080,7 +1118,7 @@ class GstreamerVideoEfectos(Gtk.Box):
             botonefecto = Efecto_widget_Config(nombre)
             botonefecto.connect('agregar_efecto', self.agregar_efecto)
             botonefecto.connect('configurar_efecto', self.configurar_efecto)
-            self.pack_start(botonefecto, False, False, 1)
+            self.pack_start(botonefecto, False, False, 10)
             
         self.show_all()
         elementos.remove(elementos[0])
@@ -1151,6 +1189,14 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
         
     def emit_click_efecto(self, widget, nombre_efecto):
         
+        # HACK: Deselecciona todos los demás visualizadores
+        # ya que solo se puede aplicar uno a la vez a diferencia
+        # de los efectos de video que pueden encolarse.
+        efectos = self.gstreamer_efectos.get_children()
+        for efecto in efectos:
+            if not efecto.botonefecto.get_tooltip_text() == nombre_efecto:
+                efecto.des_seleccionar()
+                
         self.emit('click_efecto', nombre_efecto)
         
     def cargar_efectos(self, elementos):
@@ -1191,6 +1237,8 @@ class GstreamerAudioVisualizador(GstreamerVideoEfectos):
         if 'Visualization' in datos:
             botonefecto = Efecto_widget_Config(nombre)
             botonefecto.connect('agregar_efecto', self.agregar_efecto)
+            # FIXME: Agregar configuracion para visualizador
+            #botonefecto.connect('configurar_efecto', self.configurar_efecto)
             self.pack_start(botonefecto, False, False, 1)
             
         self.show_all()
@@ -1212,8 +1260,6 @@ class Efecto_widget_Config(Gtk.Box):
     def __init__(self, nombre):
         
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
-        
-        #self.set_size_request(-1, G.get_pixels(1.0)+2)
         
         self.botonefecto = JAMediaButton()
         self.botonefecto.connect('clicked', self.efecto_click)
@@ -1244,9 +1290,14 @@ class Efecto_widget_Config(Gtk.Box):
             frame.set_label("Configuración")
             frame.set_label_align(0.5, 1.0)
             frame.add(self.widget_config)
-        
-            self.pack_start(frame, False, False, 1)
-        
+            
+            box = Gtk.EventBox()
+            box.modify_bg(0, G.NEGRO)
+            box.modify_fg(0, G.BLANCO)
+            box.add(frame)
+            
+            self.pack_start(box, False, False, 1)
+            
         self.show_all()
         # y ocultar configuraciones.
         

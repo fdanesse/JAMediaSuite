@@ -113,25 +113,34 @@ class Radioactv(Gtk.VBox):
         
         white = JAMediaButton()
         white.connect('clicked', self.set_color, 3)
+        white.set_colores(colornormal = G.BLANCO)
+        white.set_tooltip('Blanco')
         
         red = JAMediaButton()
         red.connect('clicked', self.set_color, 0)
+        red.set_colores(colornormal = G.ROJO)
+        red.set_tooltip('Rojo')
         
         green = JAMediaButton()
         green.connect('clicked', self.set_color, 1)
+        green.set_colores(colornormal = G.VERDE)
+        green.set_tooltip('Verde')
         
         blue = JAMediaButton()
         blue.connect('clicked', self.set_color, 2)
+        blue.set_colores(colornormal = G.AZUL)
+        blue.set_tooltip('Azul')
         
-        buttons = [
+        self.botones_colores = [
             white,
             red,
             green,
             blue]
         
-        for button in buttons:
+        for button in self.botones_colores:
             button.set_tamanio(G.get_pixels(1.0), G.get_pixels(1.0))
-            color_widgets.pack_start(button, False, False, 1)
+            color_widgets.pack_start(button, True, True, 1)
+            button.connect('clicked', self.clicked_color)
             
         return color_widgets
         
@@ -142,25 +151,34 @@ class Radioactv(Gtk.VBox):
         
         white = JAMediaButton()
         white.connect('clicked', self.set_modo, 0)
+        white.set_label(0)
+        white.set_tooltip('normal')
         
         red = JAMediaButton()
         red.connect('clicked', self.set_modo, 1)
-        
+        red.set_label(1)
+        red.set_tooltip('strobe1')
+         
         green = JAMediaButton()
         green.connect('clicked', self.set_modo, 2)
+        green.set_label(2)
+        green.set_tooltip('strobe2')
         
         blue = JAMediaButton()
         blue.connect('clicked', self.set_modo, 3)
+        blue.set_label(3)
+        blue.set_tooltip('trigger')
         
-        buttons = [
+        self.botones_modo = [
             white,
             red,
             green,
             blue]
         
-        for button in buttons:
+        for button in self.botones_modo:
             button.set_tamanio(G.get_pixels(1.0), G.get_pixels(1.0))
-            modo_widgets.pack_start(button, False, False, 1)
+            modo_widgets.pack_start(button, True, True, 1)
+            button.connect('clicked', self.clicked_modo)
             
         return modo_widgets
     
@@ -170,6 +188,9 @@ class Radioactv(Gtk.VBox):
         
         toolbar = Gtk.Toolbar()
         
+        toolbar.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+            
         item = Gtk.ToolItem()
         label = Gtk.Label("on:")
         label.show()
@@ -179,17 +200,31 @@ class Radioactv(Gtk.VBox):
         toolbar.insert(G.get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
-        switch = Gtk.Switch()
-        switch.set_active(True)
+        self.switch = Gtk.Switch()
+        self.switch.set_active(True)
         item = Gtk.ToolItem()
         item.set_expand(False)
-        item.add(switch)
+        item.add(self.switch)
         toolbar.insert(item, -1)
         
-        switch.connect('button-press-event', self.set_trigger)
+        self.switch.connect('button-press-event', self.set_trigger)
         
         return toolbar
         
+    def clicked_color(self, widget, void):
+        
+        for boton in self.botones_colores:
+            
+            if not boton == widget:
+                boton.des_seleccionar()
+        
+    def clicked_modo(self, widget, void):
+        
+        for boton in self.botones_modo:
+            
+            if not boton == widget:
+                boton.des_seleccionar()
+                
     def set_interval(self, widget, valor):
         """Setea el intervalo."""
         
@@ -210,6 +245,10 @@ class Radioactv(Gtk.VBox):
         """Activa y desactiva el efecto."""
         
         self.emit("propiedad", 'trigger', not widget.get_active())
+    
+    
+    
+    
     
     
 class Agingtv(Gtk.VBox):
@@ -251,7 +290,8 @@ class Agingtv(Gtk.VBox):
         interval.connect('valor', self.set_scratch_lines)
         
         self.pack_start(interval, False, False, 0)
-        self.pack_start(self.get_toolbar_color_aging(), False, False, 0)
+        # FIXME: Desactivo porque no funciona bien.
+        #self.pack_start(self.get_toolbar_color_aging(), False, False, 0)
         self.pack_start(self.get_toolbar_pits(), False, False, 0)
         self.pack_start(self.get_toolbar_dusts(), False, False, 0)
         
@@ -261,6 +301,9 @@ class Agingtv(Gtk.VBox):
         
         toolbar = Gtk.Toolbar()
         
+        toolbar.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+            
         item = Gtk.ToolItem()
         label = Gtk.Label("dusts:")
         label.show()
@@ -285,6 +328,9 @@ class Agingtv(Gtk.VBox):
         
         toolbar = Gtk.Toolbar()
         
+        toolbar.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+            
         item = Gtk.ToolItem()
         label = Gtk.Label("pits:")
         label.show()
@@ -309,6 +355,9 @@ class Agingtv(Gtk.VBox):
         
         toolbar = Gtk.Toolbar()
         
+        toolbar.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+            
         item = Gtk.ToolItem()
         label = Gtk.Label("color-aging:")
         label.show()

@@ -194,7 +194,7 @@ class JAMediaPlayer(Gtk.Plug):
         hpanel = Gtk.HPaned()
         basebox.pack_start(self.toolbar, False, False, 0)
         basebox.pack_start(self.toolbar_salir, False, False, 0)
-        basebox.pack_start(self.toolbar_config, False, False, 0)
+        #basebox.pack_start(self.toolbar_config, False, False, 0)
         basebox.pack_start(self.toolbar_accion, False, False, 0)
         basebox.pack_start(self.toolbaraddstream, False, False, 0)
         basebox.pack_start(hpanel, True, True, 0)
@@ -214,16 +214,22 @@ class JAMediaPlayer(Gtk.Plug):
         hpanel.pack1(vbox, resize = True, shrink = True)
         
         # Area Derecha del Panel
+        vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        vbox.pack_start(self.toolbar_config, False, False, 0)
+        
         ev_box = Gtk.EventBox() # Para poder pintarlo
-        ev_box.modify_bg(0, Gdk.Color(65000, 65000, 65000))
+        #ev_box.modify_bg(0, Gdk.Color(65000, 65000, 65000))
+        vbox.pack_start(ev_box, True, True, 0)
+        
         self.vbox_lista_reproduccion = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.scroll_list = Gtk.ScrolledWindow()
         self.scroll_list.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.scroll_list.add_with_viewport (self.lista_de_reproduccion)
         self.pack_vbox_lista_reproduccion()
         ev_box.add(self.vbox_lista_reproduccion)
-        hpanel.pack2(ev_box, resize = False, shrink = False)
-            
+        #hpanel.pack2(ev_box, resize = False, shrink = False)
+        hpanel.pack2(vbox, resize = False, shrink = True)
+        
         self.controles_dinamicos = [
             hbox_barra_progreso,
             ev_box,
@@ -857,5 +863,5 @@ class JAMediaPlayer(Gtk.Plug):
     def set_video(self, widget, valor):
         """Si hay video o no en la fuente . . ."""
         
-        print widget, valor
+        print "Video en la Fuente:", valor
         

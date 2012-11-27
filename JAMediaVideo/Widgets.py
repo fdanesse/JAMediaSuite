@@ -29,7 +29,6 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import ToolbarcontrolValores
 from JAMediaObjects.JAMediaWidgets import JAMediaButton
 
 import JAMediaObjects.JAMediaGlobales as G
@@ -721,55 +720,6 @@ class ToolbarRafagas(Gtk.Toolbar):
         tiempo = float(self.time_label.get_text())
         tiempo += 0.1
         self.time_label.set_text(str(tiempo))'''
-        
-class ToolbarBalanceConfig(Gtk.Table):
-    """ Toolbar de Configuración de Balance
-    en Video. (Utilizado por JAMedia). """
-    
-    __gsignals__ = {
-    'valor':(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_FLOAT, GObject.TYPE_STRING))}
-    
-    def __init__(self):
-        
-        Gtk.Table.__init__(self, rows=4, columns=1, homogeneous=True)
-        
-        self.brillo = ToolbarcontrolValores("Brillo")
-        self.contraste = ToolbarcontrolValores("Contraste")
-        self.saturacion = ToolbarcontrolValores("Saturación")
-        self.hue = ToolbarcontrolValores("Matíz")
-        #self.gamma = ToolbarcontrolValores("Gamma")
-        
-        self.attach(self.brillo, 0, 1, 0, 1)
-        self.attach(self.contraste, 0, 1, 1, 2)
-        self.attach(self.saturacion, 0, 1, 2, 3)
-        self.attach(self.hue, 0, 1, 3, 4)
-        #self.attach(self.gamma, 1, 2, 1, 2)
-        
-        self.show_all()
-        
-        self.brillo.connect('valor', self.emit_senial, 'brillo')
-        self.contraste.connect('valor', self.emit_senial, 'contraste')
-        self.saturacion.connect('valor', self.emit_senial, 'saturacion')
-        self.hue.connect('valor', self.emit_senial, 'hue')
-        #self.gamma.connect('valor', self.emit_senial, 'gamma')
-        
-    def emit_senial(self, widget, valor, tipo):
-        """Emite valor, que representa un valor
-        en % float y un valor tipo para:
-            brillo - contraste - saturacion - hue - gamma"""
-            
-        self.emit('valor', valor, tipo)
-        
-    def set_balance(self, brillo = None, contraste = None,
-        saturacion = None, hue = None, gamma = None):
-        """Setea las barras segun valores."""
-        
-        if saturacion != None: self.saturacion.set_progress(saturacion)
-        if contraste != None: self.contraste.set_progress(contraste)
-        if brillo != None: self.brillo.set_progress(brillo)
-        if hue != None: self.hue.set_progress(hue)
-        #if gamma != None: self.gamma.set_progress(gamma)
         
 class WidgetEfecto_en_Pipe(JAMediaButton):
     """Representa un efecto agregado al pipe de JAMediaVideo.

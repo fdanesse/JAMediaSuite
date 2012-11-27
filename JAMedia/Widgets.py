@@ -28,7 +28,7 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import ToolbarBalanceConfig
+from JAMediaObjects.JAMediaWidgets import ToolbarcontrolValores
 
 import JAMediaObjects.JAMFileSystem as JAMF
 import JAMediaObjects.JAMediaGlobales as G
@@ -596,17 +596,31 @@ class ToolbarInfo(Gtk.Toolbar):
         
         self.ocultar_controles = not widget.get_active()
         
-class ToolbarConfig(ToolbarBalanceConfig):
+class ToolbarConfig(Gtk.Table):
     """ Toolbar para intercambiar reproductores (mplayer gst) y
     modificar valores de balance en video. """
     
     __gsignals__ = {
     "reproductor":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'valor':(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
+        (GObject.TYPE_FLOAT, GObject.TYPE_STRING))}
     
     def __init__(self):
         
-        ToolbarBalanceConfig.__init__(self)
+        Gtk.Table.__init__(self, rows=6, columns=1, homogeneous=True)
+        
+        self.brillo = ToolbarcontrolValores("Brillo")
+        self.contraste = ToolbarcontrolValores("Contraste")
+        self.saturacion = ToolbarcontrolValores("Saturación")
+        self.hue = ToolbarcontrolValores("Matíz")
+        self.gamma = ToolbarcontrolValores("Gamma")
+        
+        self.attach(self.brillo, 0, 1, 0, 1)
+        self.attach(self.contraste, 0, 1, 1, 2)
+        self.attach(self.saturacion, 0, 1, 2, 3)
+        self.attach(self.hue, 0, 1, 3, 4)
+        self.attach(self.gamma, 0, 1, 4, 5)
         
         toolbar = Gtk.Toolbar()
         
@@ -641,10 +655,33 @@ class ToolbarConfig(ToolbarBalanceConfig):
         
         toolbar.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
-        
-        self.attach(toolbar, 2, 3, 1, 2)
+            
+        self.attach(toolbar, 0, 1, 5, 6)
         
         self.show_all()
+        
+        self.brillo.connect('valor', self.emit_senial, 'brillo')
+        self.contraste.connect('valor', self.emit_senial, 'contraste')
+        self.saturacion.connect('valor', self.emit_senial, 'saturacion')
+        self.hue.connect('valor', self.emit_senial, 'hue')
+        self.gamma.connect('valor', self.emit_senial, 'gamma')
+        
+    def emit_senial(self, widget, valor, tipo):
+        """Emite valor, que representa un valor
+        en % float y un valor tipo para:
+            brillo - contraste - saturacion - hue - gamma"""
+            
+        self.emit('valor', valor, tipo)
+        
+    def set_balance(self, brillo = None, contraste = None,
+        saturacion = None, hue = None, gamma = None):
+        """Setea las barras segun valores."""
+        
+        if saturacion != None: self.saturacion.set_progress(saturacion)
+        if contraste != None: self.contraste.set_progress(contraste)
+        if brillo != None: self.brillo.set_progress(brillo)
+        if hue != None: self.hue.set_progress(hue)
+        if gamma != None: self.gamma.set_progress(gamma)
         
     def emit_reproductor(self, widget, nombre):
         """Emite la señal que cambia de reproductor
@@ -662,7 +699,7 @@ class ToolbarConfig(ToolbarBalanceConfig):
         if not self.mplayer_boton.get_active() and \
             not self.jamedia_boton.get_active():
                 widget.set_active(True)
-            
+        
 class ToolbarAddStream(Gtk.Toolbar):
     """Toolbar para agregar streamings."""
     

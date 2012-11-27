@@ -462,29 +462,28 @@ class JAMediaReproductor(GObject.GObject):
         if saturacion != None:
             # Double. Range: 0 - 2 Default: 1
             self.config['saturacion'] = 2.0 * saturacion / 100.0
+            self.videobalance.set_property('saturation', self.config['saturacion'])
             
         if contraste != None:
             # Double. Range: 0 - 2 Default: 1
             self.config['contraste'] = 2.0 * contraste / 100.0
+            self.videobalance.set_property('contrast', self.config['contraste'])
             
         if brillo != None:
             # Double. Range: -1 - 1 Default: 0
             self.config['brillo'] = (2.0 * brillo / 100.0) - 1.0
+            self.videobalance.set_property('brightness', self.config['brillo'])
             
         if hue != None:
             # Double. Range: -1 - 1 Default: 0
             self.config['hue'] = (2.0 * hue / 100.0) - 1.0
+            self.videobalance.set_property('hue', self.config['hue'])
             
         if gamma != None:
             # Double. Range: 0,01 - 10 Default: 1
             self.config['gamma'] = (10.0 * gamma / 100.0)
+            self.gamma.set_property('gamma', self.config['gamma'])
             
-        self.videobalance.set_property('saturation', self.config['saturacion'])
-        self.videobalance.set_property('contrast', self.config['contraste'])
-        self.videobalance.set_property('brightness', self.config['brillo'])
-        self.videobalance.set_property('hue', self.config['hue'])
-        self.gamma.set_property('gamma', self.config['gamma'])
-        
     def get_balance(self):
         """Retorna los valores actuales de balance en % float."""
         

@@ -34,14 +34,14 @@ from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 from JAMediaObjects.JAMediaWidgets import Visor
 from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerEfectos
 from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerAudioVisualizador
+from JAMediaObjects.JAMediaWidgets import ToolbarBalanceConfig
+
 from JAMediaObjects.JAMediaGstreamer.JAMediaWebCam import JAMediaWebCam
 from JAMediaObjects.JAMediaGstreamer.JAMediaAudio import JAMediaAudio
 
 from Widgets import ToolbarVideo
 from Widgets import ToolbarFotografia
 from Widgets import ToolbarGrabarAudio
-
-from Widgets import ToolbarBalanceConfig
 from Widgets import WidgetEfecto_en_Pipe
 
 import JAMediaObjects.JAMediaGlobales as G
@@ -265,7 +265,8 @@ class JAMediaVideoWidget(Gtk.Plug):
             brillo = config['brillo'],
             contraste = config['contraste'],
             saturacion = config['saturacion'],
-            hue = config['hue'])
+            hue = config['hue'],
+            gamma = config['gamma'])
             
     def set_balance(self, widget, valor, tipo):
         """ Setea valores en Balance de Video.
@@ -282,6 +283,9 @@ class JAMediaVideoWidget(Gtk.Plug):
             
         elif tipo == "hue":
             self.jamediawebcam.set_balance(hue = valor)
+            
+        elif tipo == "gamma":
+            self.jamediawebcam.set_balance(gamma = valor)
             
     def set_rotacion(self, widget, valor):
         """Recibe rotación y la pasa a la webcam."""
@@ -572,7 +576,8 @@ class JAMediaFotografiaWidget(Gtk.Plug):
             brillo = config['brillo'],
             contraste = config['contraste'],
             saturacion = config['saturacion'],
-            hue = config['hue'])
+            hue = config['hue'],
+            gamma = config['gamma'])
             
     def set_balance(self, widget, valor, tipo):
         """ Setea valores en Balance de Video.
@@ -589,6 +594,9 @@ class JAMediaFotografiaWidget(Gtk.Plug):
             
         elif tipo == "hue":
             self.jamediawebcam.set_balance(hue = valor)
+            
+        elif tipo == "gamma":
+            self.jamediawebcam.set_balance(gamma = valor)
             
     def set_rotacion(self, widget, valor):
         """Recibe rotación y la pasa a la webcam."""
@@ -833,20 +841,20 @@ class JAMediaAudioWidget(Gtk.Plug):
         
     def configurar_visualizador(self, widget, nombre_efecto, propiedad, valor):
         """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
-        '''
-        # Si el efecto no está agregado al pipe, lo agrega
-        if self.jamediawebcam.efectos:
-            if not nombre_efecto in self.jamediawebcam.efectos:
-                self.click_efecto(None, nombre_efecto)
-                self.widget_efectos.seleccionar_efecto(nombre_efecto)
-                
+        
+        # Si el visualizador en el pipe es otro.
+        if nombre_efecto != self.jamediawebcam.efecto_grafico_sobre_audio:
+            #self.click_efecto(None, nombre_efecto)
+            #self.widget_efectos.seleccionar_efecto(nombre_efecto)
+            pass
+            
         else:
-            self.click_efecto(None, nombre_efecto)
-            self.widget_efectos.seleccionar_efecto(nombre_efecto)
-        '''
+            #self.click_efecto(None, nombre_efecto)
+            #self.widget_efectos.seleccionar_efecto(nombre_efecto)
+            pass
+        
         # Setea el efecto
         self.jamediawebcam.configurar_visualizador(nombre_efecto, propiedad, valor)
-        #print "Configurar Visualizador:", nombre_efecto, propiedad, valor
         
     def click_visualizador(self, widget, nombre_efecto):
         
@@ -858,9 +866,7 @@ class JAMediaAudioWidget(Gtk.Plug):
         """Recibe el nombre del efecto sobre el que
         se ha hecho click y decide si debe agregarse
         al pipe de JAMediaWebcam."""
-        pass
-        #print "click_efecto:", widget, nombre_efecto
-        '''
+        
         agregar = False
         
         if self.jamediawebcam.efectos:
@@ -873,7 +879,7 @@ class JAMediaAudioWidget(Gtk.Plug):
             agregar = True
             
         if agregar:
-            if self.jamediawebcam.estado == "FotografiandoWebCam":
+            if self.jamediawebcam.estado == "GrabandoAudio":
                 self.jamediawebcam.re_init()
                 self.toolbar.set_estado("detenido")
             
@@ -898,7 +904,7 @@ class JAMediaAudioWidget(Gtk.Plug):
             # Si el usuario hace click sobre el botón de un efecto
             # que ya se encuentra en el pipe de la camara, se quita
             # el efecto del pipe y se deseleccia el botón correspondiente.
-            if self.jamediawebcam.estado == "FotografiandoWebCam":
+            if self.jamediawebcam.estado == "GrabandoAudio":
                 self.jamediawebcam.re_init()
                 self.toolbar.set_estado("detenido")
                 
@@ -910,7 +916,7 @@ class JAMediaAudioWidget(Gtk.Plug):
                     efecto.destroy()
                     break
             
-            self.jamediawebcam.quitar_efecto(nombre_efecto)'''
+            self.jamediawebcam.quitar_efecto(nombre_efecto)
         
     def update_balance_toolbars(self):
         """Actualiza las toolbars de balance en video."""
@@ -921,7 +927,8 @@ class JAMediaAudioWidget(Gtk.Plug):
             brillo = config['brillo'],
             contraste = config['contraste'],
             saturacion = config['saturacion'],
-            hue = config['hue'])
+            hue = config['hue'],
+            gamma = config['gamma'])
             
     def set_balance(self, widget, valor, tipo):
         """ Setea valores en Balance de Video.
@@ -938,6 +945,9 @@ class JAMediaAudioWidget(Gtk.Plug):
             
         elif tipo == "hue":
             self.jamediawebcam.set_balance(hue = valor)
+            
+        elif tipo == "gamma":
+            self.jamediawebcam.set_balance(gamma = valor)
             
     def set_rotacion(self, widget, valor):
         """Recibe rotación y la pasa a la webcam."""

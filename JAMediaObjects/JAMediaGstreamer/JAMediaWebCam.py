@@ -57,6 +57,7 @@ CONFIG_DEFAULT = {
     'contraste': 6,
     'brillo': 8,
     'hue': 0,
+    'gamma': 1.0,
     }
 
 def get_efecto(efecto):
@@ -115,6 +116,7 @@ class JAMediaWebCam(GObject.GObject):
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
         self.config['brillo'] = CONFIG_DEFAULT['brillo']
         self.config['hue'] = CONFIG_DEFAULT['hue']
+        self.config['gamma'] = CONFIG_DEFAULT['gamma']
         
         self.efectos = []
         
@@ -128,6 +130,8 @@ class JAMediaWebCam(GObject.GObject):
         
         # Fuente de Video
         self.camara = Gst.ElementFactory.make('v4l2src', "webcam")
+        
+        self.gamma = Gst.ElementFactory.make('gamma', "gamma")
         
         # Rotación
         self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
@@ -145,6 +149,7 @@ class JAMediaWebCam(GObject.GObject):
         
         self.elementos_base = [
             self.camara,
+            self.gamma,
             self.videoflip,
             self.multi,
             self.hilovideoapantalla,
@@ -191,7 +196,7 @@ class JAMediaWebCam(GObject.GObject):
             self.camara.set_property("device", self.config['device'])
         
     def set_balance(self, brillo = None, contraste = None,
-        saturacion = None, hue = None):
+        saturacion = None, hue = None, gamma = None):
         """Seteos de balance en la fuente de video.
         Recibe % en float."""
         
@@ -223,6 +228,11 @@ class JAMediaWebCam(GObject.GObject):
             new_valor -= min
             self.config['hue'] = new_valor
             self.camara.set_property('hue', self.config['hue'])
+            
+        if gamma != None:
+            # Double. Range: 0,01 - 10 Default: 1
+            self.config['gamma'] = (10.0 * gamma / 100.0)
+            self.gamma.set_property('gamma', self.config['gamma'])
         
     def get_balance(self):
         """Retorna los valores actuales de balance en %."""
@@ -246,6 +256,7 @@ class JAMediaWebCam(GObject.GObject):
         hue = self.config['hue'] + min
         config['hue'] = hue * 100 / total
         
+        config['gamma'] = self.config['gamma'] * 100.0 / 10.0
         return config
     
     def reset(self):
@@ -257,11 +268,13 @@ class JAMediaWebCam(GObject.GObject):
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
         self.config['brillo'] = CONFIG_DEFAULT['brillo']
         self.config['hue'] = CONFIG_DEFAULT['hue']
+        self.config['gamma'] = CONFIG_DEFAULT['gamma']
         
         self.camara.set_property('saturation', self.config['saturacion'])
         self.camara.set_property('contrast', self.config['contraste'])
         self.camara.set_property('brightness', self.config['brillo'])
         self.camara.set_property('hue', self.config['hue'])
+        self.gamma.set_property('gamma', self.config['gamma'])
         
         self.videoflip.set_property('method', 0)
         
@@ -300,11 +313,12 @@ class JAMediaWebCam(GObject.GObject):
                 if len(ef) > index + 1:
                     ef[index].link(ef[index + 1])
                 
-            ef[-1].link(self.videoflip)
+            ef[-1].link(self.gamma)
             
         else:
-            self.camara.link(self.videoflip)
+            self.camara.link(self.gamma)
             
+        self.gamma.link(self.videoflip)
         self.videoflip.link(self.multi)
         self.multi.link(self.hilovideoapantalla)
         self.hilovideoapantalla.link(self.pantalla)
@@ -435,8 +449,7 @@ class JAMediaWebCam(GObject.GObject):
     def configurar_efecto(self, nombre_efecto, propiedad, valor):
         """Configura un efecto en el pipe."""
         
-        print nombre_efecto, propiedad, valor
-        #self.efectos_dic[nombre_efecto].set_property(propiedad, valor)
+        self.pipeline.get_by_name(nombre_efecto).set_property(propiedad, valor)
         
     def quitar_efecto(self, indice_efecto):
         """Quita el efecto correspondiente al indice que recibe."""
