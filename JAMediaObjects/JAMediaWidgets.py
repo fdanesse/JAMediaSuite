@@ -1265,7 +1265,7 @@ class Efecto_widget_Config(Gtk.Box):
         self.botonefecto.connect('clicked', self.efecto_click)
         self.botonefecto.connect('click_derecho', self.efecto_click_derecho)
         self.botonefecto.set_tooltip(nombre)
-        lado = G.get_pixels(2.0)
+        lado = G.get_pixels(1.0)
         self.botonefecto.set_tamanio(lado, lado)
         
         archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %(nombre))

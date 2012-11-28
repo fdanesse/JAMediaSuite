@@ -733,6 +733,13 @@ class WidgetEfecto_en_Pipe(JAMediaButton):
         
         self.show_all()
         
+        self.set_colores(
+            colornormal = G.NEGRO,
+            colorselect = G.NEGRO,
+            colorclicked = G.NEGRO)
+            
+        self.modify_bg(0, self.colornormal)
+        
     def seleccionar(self):
         pass
         

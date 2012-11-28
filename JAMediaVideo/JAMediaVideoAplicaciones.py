@@ -99,7 +99,7 @@ class JAMediaVideoWidget(Gtk.Plug):
         eventbox.modify_bg(0, G.NEGRO)
         
         self.hbox_efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(1.0))
+        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
         
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
@@ -117,16 +117,16 @@ class JAMediaVideoWidget(Gtk.Plug):
         self.box_config.set_size_request(G.get_pixels(5.0), -1)
         
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-
         self.balance_widget = ToolbarBalanceConfig()
-        vbox.pack_start(self.balance_widget , False, True, 0)
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(vbox)
+        
         self.box_config.add(scroll)
         
         self.widget_efectos = WidgetsGstreamerEfectos()
         
+        vbox.pack_start(self.balance_widget , False, True, 0)
         vbox.pack_start(self.widget_efectos , False, True, 0)
         
         hpanel.pack2(self.box_config, resize = False, shrink = False)
@@ -224,14 +224,12 @@ class JAMediaVideoWidget(Gtk.Plug):
             # Agrega un widget a self.hbox_efectos_en_pipe
             botonefecto = WidgetEfecto_en_Pipe()
             botonefecto.set_tooltip(nombre_efecto)
-            lado = G.get_pixels(1.0)
+            botonefecto.connect('clicked', self.clicked_mini_efecto)
+            lado = G.get_pixels(0.5)
             botonefecto.set_tamanio(lado, lado)
             
-            archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %(nombre_efecto))
+            archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %('configurar'))
             
-            if not os.path.exists(archivo):
-                archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %('ver'))
-                
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
             botonefecto.imagen.set_from_pixbuf(pixbuf)
             
@@ -241,7 +239,7 @@ class JAMediaVideoWidget(Gtk.Plug):
         else:
             # Si el usuario hace click sobre el botón de un efecto
             # que ya se encuentra en el pipe de la camara, se quita
-            # el efecto del pipe y se deseleccia el botón correspondiente.
+            # el efecto del pipe y se deselecciona el botón correspondiente.
             if self.jamediawebcam.estado == "GrabandoAudioVideoWebCam":
                 self.jamediawebcam.re_init()
                 self.toolbar.set_estado("detenido")
@@ -255,6 +253,16 @@ class JAMediaVideoWidget(Gtk.Plug):
                     break
             
             self.jamediawebcam.quitar_efecto(nombre_efecto)
+        
+    def clicked_mini_efecto(self, widget, void = None):
+        """Cuando se hace click en el mini objeto en pantalla
+        para efecto agregado, este se quita del pipe de la cámara."""
+        
+        nombre_efecto = widget.get_tooltip_text()
+        self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
+        widget.destroy()
+        
+        self.jamediawebcam.quitar_efecto(nombre_efecto)
         
     def update_balance_toolbars(self):
         """Actualiza las toolbars de balance en video."""
@@ -410,7 +418,7 @@ class JAMediaFotografiaWidget(Gtk.Plug):
         eventbox.modify_bg(0, G.NEGRO)
         
         self.hbox_efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(1.0))
+        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
         
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
@@ -428,16 +436,16 @@ class JAMediaFotografiaWidget(Gtk.Plug):
         self.box_config.set_size_request(G.get_pixels(5.0), -1)
         
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-
         self.balance_widget = ToolbarBalanceConfig()
-        vbox.pack_start(self.balance_widget , False, True, 0)
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(vbox)
+        
         self.box_config.add(scroll)
         
         self.widget_efectos = WidgetsGstreamerEfectos()
         
+        vbox.pack_start(self.balance_widget , False, True, 0)
         vbox.pack_start(self.widget_efectos , False, True, 0)
         
         hpanel.pack2(self.box_config, resize = False, shrink = False)
@@ -535,14 +543,12 @@ class JAMediaFotografiaWidget(Gtk.Plug):
             # Agrega un widget a self.hbox_efectos_en_pipe
             botonefecto = WidgetEfecto_en_Pipe()
             botonefecto.set_tooltip(nombre_efecto)
-            lado = G.get_pixels(1.0)
+            botonefecto.connect('clicked', self.clicked_mini_efecto)
+            lado = G.get_pixels(0.5)
             botonefecto.set_tamanio(lado, lado)
             
-            archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %(nombre_efecto))
+            archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %('configurar'))
             
-            if not os.path.exists(archivo):
-                archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %('ver'))
-                
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
             botonefecto.imagen.set_from_pixbuf(pixbuf)
             
@@ -552,7 +558,7 @@ class JAMediaFotografiaWidget(Gtk.Plug):
         else:
             # Si el usuario hace click sobre el botón de un efecto
             # que ya se encuentra en el pipe de la camara, se quita
-            # el efecto del pipe y se deseleccia el botón correspondiente.
+            # el efecto del pipe y se deselecciona el botón correspondiente.
             if self.jamediawebcam.estado == "FotografiandoWebCam":
                 self.jamediawebcam.re_init()
                 self.toolbar.set_estado("detenido")
@@ -566,6 +572,16 @@ class JAMediaFotografiaWidget(Gtk.Plug):
                     break
             
             self.jamediawebcam.quitar_efecto(nombre_efecto)
+            
+    def clicked_mini_efecto(self, widget, void = None):
+        """Cuando se hace click en el mini objeto en pantalla
+        para efecto agregado, este se quita del pipe de la cámara."""
+        
+        nombre_efecto = widget.get_tooltip_text()
+        self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
+        widget.destroy()
+        
+        self.jamediawebcam.quitar_efecto(nombre_efecto)
         
     def update_balance_toolbars(self):
         """Actualiza las toolbars de balance en video."""
@@ -724,7 +740,7 @@ class JAMediaAudioWidget(Gtk.Plug):
         eventbox.modify_bg(0, G.NEGRO)
         
         self.hbox_efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(1.0))
+        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
         
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
@@ -749,8 +765,8 @@ class JAMediaAudioWidget(Gtk.Plug):
         scroll.add_with_viewport(self.widget_visualizadores_de_audio)
         
         self.balance_widget = ToolbarBalanceConfig()
-        vbox.pack_start(scroll, False, True, 0)
         vbox.pack_start(self.balance_widget, False, True, 0)
+        vbox.pack_start(scroll, False, True, 0)
         
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -886,14 +902,12 @@ class JAMediaAudioWidget(Gtk.Plug):
             # Agrega un widget a self.hbox_efectos_en_pipe
             botonefecto = WidgetEfecto_en_Pipe()
             botonefecto.set_tooltip(nombre_efecto)
-            lado = G.get_pixels(1.0)
+            botonefecto.connect('clicked', self.clicked_mini_efecto)
+            lado = G.get_pixels(0.5)
             botonefecto.set_tamanio(lado, lado)
             
-            archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %(nombre_efecto))
+            archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %('configurar'))
             
-            if not os.path.exists(archivo):
-                archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %('ver'))
-                
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
             botonefecto.imagen.set_from_pixbuf(pixbuf)
             
@@ -903,7 +917,7 @@ class JAMediaAudioWidget(Gtk.Plug):
         else:
             # Si el usuario hace click sobre el botón de un efecto
             # que ya se encuentra en el pipe de la camara, se quita
-            # el efecto del pipe y se deseleccia el botón correspondiente.
+            # el efecto del pipe y se deselecciona el botón correspondiente.
             if self.jamediawebcam.estado == "GrabandoAudio":
                 self.jamediawebcam.re_init()
                 self.toolbar.set_estado("detenido")
@@ -917,6 +931,16 @@ class JAMediaAudioWidget(Gtk.Plug):
                     break
             
             self.jamediawebcam.quitar_efecto(nombre_efecto)
+        
+    def clicked_mini_efecto(self, widget, void = None):
+        """Cuando se hace click en el mini objeto en pantalla
+        para efecto agregado, este se quita del pipe de la cámara."""
+        
+        nombre_efecto = widget.get_tooltip_text()
+        self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
+        widget.destroy()
+        
+        self.jamediawebcam.quitar_efecto(nombre_efecto)
         
     def update_balance_toolbars(self):
         """Actualiza las toolbars de balance en video."""
