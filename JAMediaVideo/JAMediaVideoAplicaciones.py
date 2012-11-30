@@ -263,6 +263,7 @@ class JAMediaVideoWidget(Gtk.Plug):
         widget.destroy()
         
         self.jamediawebcam.quitar_efecto(nombre_efecto)
+        self.toolbar.set_estado("detenido")
         
     def update_balance_toolbars(self):
         """Actualiza las toolbars de balance en video."""
@@ -582,6 +583,7 @@ class JAMediaFotografiaWidget(Gtk.Plug):
         widget.destroy()
         
         self.jamediawebcam.quitar_efecto(nombre_efecto)
+        self.toolbar.set_estado("detenido")
         
     def update_balance_toolbars(self):
         """Actualiza las toolbars de balance en video."""
@@ -881,7 +883,7 @@ class JAMediaAudioWidget(Gtk.Plug):
     def click_efecto(self, widget, nombre_efecto):
         """Recibe el nombre del efecto sobre el que
         se ha hecho click y decide si debe agregarse
-        al pipe de JAMediaWebcam."""
+        al pipe de JAMediaAudio."""
         
         agregar = False
         
@@ -941,6 +943,7 @@ class JAMediaAudioWidget(Gtk.Plug):
         widget.destroy()
         
         self.jamediawebcam.quitar_efecto(nombre_efecto)
+        self.toolbar.set_estado("detenido")
         
     def update_balance_toolbars(self):
         """Actualiza las toolbars de balance en video."""
@@ -979,8 +982,8 @@ class JAMediaAudioWidget(Gtk.Plug):
         self.jamediawebcam.rotar(valor)
     
     def set_accion(self, widget, senial):
-        """Cuando se hace click en fotografiar o
-        en configurar filmacion."""
+        """Cuando se hace click en grabar o
+        en configurar."""
         
         if senial == 'grabar':
             if self.jamediawebcam.estado != "GrabandoAudio":
