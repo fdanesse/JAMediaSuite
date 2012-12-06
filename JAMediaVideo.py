@@ -101,6 +101,8 @@ class JAMediaVideo(Gtk.Window):
         
         self.controlesdinamicos = None
         
+        self.pistas = []
+        
         self.setup_init()
         
     def setup_init(self):
@@ -205,6 +207,13 @@ class JAMediaVideo(Gtk.Window):
         self.jamediaaudio.cargar_visualizadores(list(G.AUDIOVISUALIZADORES))
         GObject.idle_add(self.jamediawebcam.reset)
         
+        if self.pistas:
+            map(self.ocultar, self.controlesdinamicos)
+            self.jamediawebcam.stop()
+            map(self.ocultar, [self.pantalla])
+            map(self.mostrar, [self.socketjamedia])
+            self.jamediaplayer.set_nueva_lista(self.pistas)
+            
     def clicks_en_pantalla(self, widget, event):
         """Hace fullscreen y unfullscreen sobre la
         ventana principal cuando el usuario hace
@@ -299,6 +308,10 @@ class JAMediaVideo(Gtk.Window):
         
         if not objeto.get_visible(): objeto.show()
         
+    def set_pistas(self, pistas):
+        
+        self.pistas = pistas
+        
     def confirmar_salir(self, widget = None, senial = None):
         """Recibe salir y lo pasa a la toolbar de confirmación."""
         
@@ -310,6 +323,26 @@ class JAMediaVideo(Gtk.Window):
         sys.exit(0)
     
 if __name__ == "__main__":
-    JAMediaVideo()
+    
+    items = []
+    
+    if len(sys.argv) > 1:
+        for item in sys.argv[1:]:
+            path = os.path.join(item)
+            
+            if os.path.exists(path):
+                archivo = os.path.basename(path)
+                items.append( [archivo,path] )
+                
+        if items:
+            jamediavideo = JAMediaVideo()
+            jamediavideo.set_pistas(items)
+            
+        else:
+            jamediavideo = JAMediaVideo()
+        
+    else:
+        jamediavideo = JAMediaVideo()
+        
     Gtk.main()
     

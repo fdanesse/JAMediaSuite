@@ -96,7 +96,7 @@ class Ventana(Gtk.Window):
         self.socketjamedia = Gtk.Socket()
         self.jamedia = None
         
-        self.pista = None
+        self.pistas = None
         self.videos_temp = []
         
         self.setup_init()
@@ -151,8 +151,8 @@ class Ventana(Gtk.Window):
             self.paneltube.toolbar_guardar_encontrados,
             self.paneltube.toolbar_guardar_descargar])
         
-        if self.pista:
-            self.jamedia.set_nueva_lista(self.pista)
+        if self.pistas:
+            self.jamedia.set_nueva_lista(self.pistas)
             self.switch(None, 'jamedia')
             
         else:
@@ -306,10 +306,10 @@ class Ventana(Gtk.Window):
             
             GObject.idle_add(self.add_videos, videos, destino)
         
-    def set_pista(self, pista):
+    def set_pistas(self, pistas):
         """Cuando se ejecuta pasandole un archivo."""
         
-        self.pista = pista
+        self.pistas = pistas
         
     def switch(self, widget, valor):
         """Cambia entre la vista de descargas y
@@ -348,13 +348,16 @@ if __name__ == "__main__":
     
     items = []
     if len(sys.argv) > 1:
-        path = os.path.join(sys.argv[1])
-        
-        if os.path.exists(path):
-            archivo = os.path.basename(path)
-            items.append( [archivo,path] )
+        for item in sys.argv[1:]:
+            path = os.path.join(item)
+            
+            if os.path.exists(path):
+                archivo = os.path.basename(path)
+                items.append( [archivo,path] )
+                
+        if items:
             jamediatube = Ventana()
-            jamediatube.set_pista(items)
+            jamediatube.set_pistas(items)
             
         else:
             jamediatube = Ventana()
@@ -363,3 +366,4 @@ if __name__ == "__main__":
         jamediatube = Ventana()
         
     Gtk.main()
+    

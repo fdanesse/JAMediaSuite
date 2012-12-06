@@ -34,7 +34,7 @@ class Ventana(Gtk.Window):
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
         
-        self.pista = ""
+        self.pistas = ""
         
         self.socket = Gtk.Socket()
         self.add(self.socket)
@@ -48,15 +48,15 @@ class Ventana(Gtk.Window):
         
         GObject.idle_add(self.setup_init)
         
-    def set_pista(self, pista):
+    def set_pistas(self, pistas):
         
-        self.pista = pista
+        self.pistas = pistas
         
     def setup_init(self):
         
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
-        if self.pista: self.jamediaplayer.set_nueva_lista(self.pista)
+        if self.pistas: self.jamediaplayer.set_nueva_lista(self.pistas)
         
     def salir(self, widget = None, senial = None):
         
@@ -67,18 +67,22 @@ class Ventana(Gtk.Window):
 if __name__ == "__main__":
     
     items = []
+    
     if len(sys.argv) > 1:
-        path = os.path.join(sys.argv[1])
-        
-        if os.path.exists(path):
-            archivo = os.path.basename(path)
-            items.append( [archivo,path] )
+        for item in sys.argv[1:]:
+            path = os.path.join(item)
+            
+            if os.path.exists(path):
+                archivo = os.path.basename(path)
+                items.append( [archivo,path] )
+                
+        if items:
             jamedia = Ventana()
-            jamedia.set_pista(items)
+            jamedia.set_pistas(items)
             
         else:
             jamedia = Ventana()
-            
+        
     else:
         jamedia = Ventana()
         
