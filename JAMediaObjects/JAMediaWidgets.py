@@ -495,7 +495,7 @@ class BarraProgreso(Gtk.EventBox):
         if self.escala.presed: return
         if self.valor != valor:
             self.valor = valor
-            self.escala.ajuste.set_value(valor)
+            self.escala.get_adjustment().set_value(valor)
             self.escala.queue_draw()
         
     def emit_valor(self, widget, valor):
@@ -516,7 +516,7 @@ class ProgressBar(Gtk.Scale):
         
         Gtk.Scale.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
         
-        self.ajuste = ajuste
+        self.set_adjustment(ajuste)
         self.set_digits(0)
         self.set_draw_value(False)
         
@@ -550,7 +550,7 @@ class ProgressBar(Gtk.Scale):
             
             if (eventx > int(x) and eventx < int(w)):
                 valor = float(eventx * 100 / w)
-                self.ajuste.set_value(valor)
+                self.get_adjustment().set_value(valor)
                 self.queue_draw()
                 self.emit("user-set-value", valor)
                     
@@ -577,7 +577,7 @@ class ProgressBar(Gtk.Scale):
         Gdk.cairo_set_source_color(contexto, G.NARANJA)
         rect = Gdk.Rectangle()
         
-        ximage = int(self.ajuste.get_value() * ww / 100)
+        ximage = int(self.get_adjustment().get_value() * ww / 100)
         rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
             ximage, hh)
         

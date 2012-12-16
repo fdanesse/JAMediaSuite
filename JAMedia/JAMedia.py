@@ -46,6 +46,7 @@ import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkX11
+from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
@@ -63,13 +64,16 @@ import JAMediaObjects.JAMFileSystem as JAMF
 if JAMF.get_programa("mplayer"):
     from JAMediaObjects.MplayerReproductor import MplayerReproductor
     from JAMediaObjects.MplayerReproductor import MplayerGrabador
+    
 else:
     from JAMediaObjects.PlayerNull import MplayerReproductor
     from JAMediaObjects.PlayerNull import MplayerGrabador
+    
 # HACK: La aplicación nunca debe explotar :P
 if JAMF.verificar_Gstreamer():
     from JAMediaObjects.JAMediaReproductor import JAMediaReproductor
     from JAMediaObjects.JAMediaReproductor import JAMediaGrabador
+    
 else:
     from JAMediaObjects.PlayerNull import JAMediaReproductor
     from JAMediaObjects.PlayerNull import JAMediaGrabador
@@ -251,14 +255,17 @@ class JAMediaPlayer(Gtk.Plug):
         # HACK: La aplicación nunca debe explotar :P
         if JAMF.get_programa("mplayer"):
             self.mplayerreproductor = MplayerReproductor(xid)
+            
         else:
             self.mplayerreproductor = MplayerReproductor(self.pantalla)
             
         # HACK: La aplicación nunca debe explotar :P
         if JAMF.verificar_Gstreamer():
             self.jamediareproductor = JAMediaReproductor(xid)
+            
         else:
             self.jamediareproductor = JAMediaReproductor(self.pantalla)
+            
         self.switch_reproductor(None, "JAMediaReproductor") # default Gst.
         
         self.mplayerreproductor.connect("endfile", self.endfile)
@@ -295,6 +302,14 @@ class JAMediaPlayer(Gtk.Plug):
         self.volumen.connect("volumen", self.set_volumen)
         self.toolbaraddstream.connect("add-stream", self.ejecutar_add_stream)
         
+        icono = os.path.join(JAMediaObjectsPath,
+            "Iconos", "jamedia_cursor.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, G.get_pixels(0.8))
+        jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
+            Gdk.Display.get_default(), pixbuf, 0, 0)
+        self.get_parent_window().set_cursor(jamedia_cursor)
+        
     def actualizar_streamings(self, widget):
         """Actualiza los streamings de jamedia,
         descargandolos desde su web."""
@@ -307,6 +322,7 @@ class JAMediaPlayer(Gtk.Plug):
         copiar a jamedia, mover a jamedia."""
         
         lista = self.toolbar_list.label.get_text()
+        
         if accion == "Borrar":
             G.eliminar_streaming(url, lista)
             
@@ -711,7 +727,6 @@ class JAMediaPlayer(Gtk.Plug):
         de reproduccion con ellos."""
         
         if not archivos: return
-        #self.player.stop()
         items = []
         
         for archivo in archivos:
@@ -730,7 +745,6 @@ class JAMediaPlayer(Gtk.Plug):
         
         Esto es solo para las listas standar de JAMedia no embebido."""
         
-        #self.player.stop()
         archivos = sorted(os.listdir(directorio))
         lista = []
         
@@ -739,7 +753,6 @@ class JAMediaPlayer(Gtk.Plug):
             elemento = [texto, url]
             lista.append(elemento)
             
-        #self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(lista)
         self.toolbar_list.label.set_text(titulo)
 
@@ -752,11 +765,8 @@ class JAMediaPlayer(Gtk.Plug):
         
         Esto es solo para las listas standar de JAMedia no embebido."""
         
-        #self.player.stop()
-        
         items = G.get_streamings(archivo)
         
-        #self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(items)
         self.toolbar_list.label.set_text(titulo)
         

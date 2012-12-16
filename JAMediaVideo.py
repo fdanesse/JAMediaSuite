@@ -136,8 +136,6 @@ class JAMediaVideo(Gtk.Window):
         
         vbox.pack_start(self.pantalla, True, True, 0)
         
-        self.jamediaaudio = None
-        
         self.jamediavideo = JAMediaVideoWidget()
         self.socketjamediavideo.add_id(self.jamediavideo.get_id())
         

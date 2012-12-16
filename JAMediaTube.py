@@ -96,7 +96,8 @@ class Ventana(Gtk.Window):
         self.socketjamedia = Gtk.Socket()
         self.jamedia = None
         
-        self.pistas = None
+        self.pistas = []
+        
         self.videos_temp = []
         
         self.setup_init()
