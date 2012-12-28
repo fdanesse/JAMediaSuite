@@ -41,6 +41,8 @@ from gi.repository import GstVideo
 GObject.threads_init()
 Gst.init([])
 
+# Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html
+
 class JAMediaReproductor(GObject.GObject):
     """
     Reproductor de Audio, Video y Streaming de
@@ -335,7 +337,8 @@ class JAMediaReproductor(GObject.GObject):
         elif mensaje.type == Gst.MessageType.TAG:
             taglist = mensaje.parse_tag()
             datos = taglist.to_string()
-            
+            print taglist
+            print datos
             if not 'video-codec' in datos:
                 if self.video_in_stream == True or self.video_in_stream == None:
                     self.video_in_stream = False

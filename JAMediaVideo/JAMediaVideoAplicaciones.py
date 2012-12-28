@@ -53,7 +53,7 @@ Gdk.threads_init()
 
 class JAMediaVideoWidget(Gtk.Plug):
     """Plug - Interfaz para Webcam con grabación de audio y video."""
-        
+    
     __gsignals__ = {
     "salir":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
@@ -144,6 +144,8 @@ class JAMediaVideoWidget(Gtk.Plug):
             
         map(self.ocultar, self.controles_dinamicos)
         
+        self.jamediawebcam.connect('estado', self.set_estado)
+        
         self.pantalla.connect("button_press_event", self.clicks_en_pantalla)
         
         self.toolbar.connect("rotar", self.set_rotacion)
@@ -154,7 +156,6 @@ class JAMediaVideoWidget(Gtk.Plug):
         
         self.widget_efectos.connect("click_efecto", self.click_efecto)
         self.widget_efectos.connect('configurar_efecto', self.configurar_efecto)
-        #self.widget_efectos.connect("quitar_efecto", self.quitar_efecto)
         
         self.toolbar_salir.connect('salir', self.emit_salir)
         
@@ -162,7 +163,6 @@ class JAMediaVideoWidget(Gtk.Plug):
         """Resetea la cámara quitando los efectos y
         actualiza los widgets correspondientes."""
         
-        self.toolbar.set_estado("detenido")
         for efecto in self.hbox_efectos_en_pipe.get_children():
             efecto.destroy()
             
@@ -170,30 +170,60 @@ class JAMediaVideoWidget(Gtk.Plug):
             button.des_seleccionar()
             
         self.jamediawebcam.reset()
-        GObject.idle_add(self.update_balance_toolbars)
         
-    def re_init(self):
-        """Vuelve la camara al estado original manteniendo efectos."""
+    def set_estado(self, widget, valor):
         
-        self.toolbar.set_estado("detenido")
-        self.jamediawebcam.re_init()
-        GObject.idle_add(self.update_balance_toolbars)
+        if valor == 'playing':
+            self.toolbar.set_estado("detenido")
+            GObject.idle_add(self.update_balance_toolbars)
+        
+        elif valor == 'stoped':
+            self.toolbar.set_estado("detenido")
+            GObject.idle_add(self.update_balance_toolbars)
+            
+        elif valor == 'GrabandoAudioVideo':
+            self.toolbar.set_estado("grabando")
+            GObject.idle_add(self.update_balance_toolbars)
+            
+        # FIXME: Solo por JAMediaAudio - JAMediaAudioWidget. por ahora
+        elif valor == 'GrabandoAudio':
+            self.toolbar.set_estado("grabando")
+            GObject.idle_add(self.update_balance_toolbars)
+
+        # FIXME: Para JAMediaFotografiaWidget. Pero por ahora no se utiliza
+        elif valor == 'Fotografiando':
+            self.toolbar.set_estado("grabando")
+            GObject.idle_add(self.update_balance_toolbars)
+            
+        else:
+            print "### Estado:", valor
         
     def cargar_efectos(self, efectos):
         """Agrega los widgets con efectos a la paleta de configuración."""
         
         self.widget_efectos.cargar_efectos(efectos)
-
+    
     def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
         """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
-        
+
         # Si el efecto no está agregado al pipe, lo agrega
         if self.jamediawebcam.efectos:
             if not nombre_efecto in self.jamediawebcam.efectos:
+                
+                # HACK: si se agregan o quitan efectos mientras se graba, las grabaciones se reinician.
+                if self.jamediawebcam.estado == "GrabandoAudioVideo" or \
+                    self.jamediawebcam.estado == "GrabandoAudio":
+                        return
+                    
                 self.click_efecto(None, nombre_efecto)
                 self.widget_efectos.seleccionar_efecto(nombre_efecto)
                 
         else:
+            # HACK: si se agregan o quitan efectos mientras se graba, las grabaciones se reinician.
+            if self.jamediawebcam.estado == "GrabandoAudioVideo" or \
+                self.jamediawebcam.estado == "GrabandoAudio":
+                    return
+                
             self.click_efecto(None, nombre_efecto)
             self.widget_efectos.seleccionar_efecto(nombre_efecto)
 
@@ -205,6 +235,17 @@ class JAMediaVideoWidget(Gtk.Plug):
         se ha hecho click y decide si debe agregarse
         al pipe de JAMediaWebcam."""
         
+        # HACK: si se agregan o quitan efectos mientras se graba, las grabaciones se reinician.
+        if self.jamediawebcam.estado == "GrabandoAudioVideo" or \
+            self.jamediawebcam.estado == "GrabandoAudio":
+                for efecto in self.hbox_efectos_en_pipe.get_children():
+                    n_efecto = efecto.get_tooltip_text()
+                    if n_efecto == nombre_efecto:
+                        self.widget_efectos.seleccionar_efecto(nombre_efecto)
+                        return
+                self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
+                return
+                
         agregar = False
         
         if self.jamediawebcam.efectos:
@@ -217,9 +258,11 @@ class JAMediaVideoWidget(Gtk.Plug):
             agregar = True
             
         if agregar:
-            if self.jamediawebcam.estado == "GrabandoAudioVideoWebCam":
-                self.jamediawebcam.re_init()
-                self.toolbar.set_estado("detenido")
+            #if self.jamediawebcam.estado == "GrabandoAudioVideo":
+                # self.jamediawebcam.re_init()
+            #    pass
+            
+            self.jamediawebcam.agregar_efecto( nombre_efecto )
             
             # Agrega un widget a self.hbox_efectos_en_pipe
             botonefecto = WidgetEfecto_en_Pipe()
@@ -228,22 +271,23 @@ class JAMediaVideoWidget(Gtk.Plug):
             lado = G.get_pixels(0.5)
             botonefecto.set_tamanio(lado, lado)
             
-            archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %('configurar'))
+            archivo = os.path.join(JAMediaObjectsPath, "Iconos", 'configurar.png')
             
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
             botonefecto.imagen.set_from_pixbuf(pixbuf)
             
             self.hbox_efectos_en_pipe.pack_start(botonefecto, False, False, 0)
-            self.jamediawebcam.agregar_efecto( nombre_efecto )
             
         else:
             # Si el usuario hace click sobre el botón de un efecto
             # que ya se encuentra en el pipe de la camara, se quita
             # el efecto del pipe y se deselecciona el botón correspondiente.
-            if self.jamediawebcam.estado == "GrabandoAudioVideoWebCam":
-                self.jamediawebcam.re_init()
-                self.toolbar.set_estado("detenido")
+            #if self.jamediawebcam.estado == "GrabandoAudioVideo":
+                # self.jamediawebcam.re_init()
+            #    pass
                 
+            self.jamediawebcam.quitar_efecto(nombre_efecto)
+            
             self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
             
             # Quitar el widget de self.hbox_efectos_en_pipe
@@ -251,19 +295,20 @@ class JAMediaVideoWidget(Gtk.Plug):
                 if efecto.get_tooltip_text() == nombre_efecto:
                     efecto.destroy()
                     break
-            
-            self.jamediawebcam.quitar_efecto(nombre_efecto)
         
     def clicked_mini_efecto(self, widget, void = None):
         """Cuando se hace click en el mini objeto en pantalla
         para efecto agregado, este se quita del pipe de la cámara."""
         
+        # HACK: si se agregan o quitan efectos mientras se graba, las grabaciones se reinician.
+        if self.jamediawebcam.estado == "GrabandoAudioVideo" or \
+            self.jamediawebcam.estado == "GrabandoAudio":
+                return
+            
         nombre_efecto = widget.get_tooltip_text()
+        self.jamediawebcam.quitar_efecto(nombre_efecto)
         self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
         widget.destroy()
-        
-        self.jamediawebcam.quitar_efecto(nombre_efecto)
-        self.toolbar.set_estado("detenido")
         
     def update_balance_toolbars(self):
         """Actualiza las toolbars de balance en video."""
@@ -306,17 +351,13 @@ class JAMediaVideoWidget(Gtk.Plug):
         en configurar filmacion."""
         
         if senial == 'filmar':
-            if self.jamediawebcam.estado != "GrabandoAudioVideoWebCam":
-                # Si no está grabando, graba.
-                self.jamediawebcam.grabar()
-                self.toolbar.set_estado("grabando")
+            if self.jamediawebcam.estado != "GrabandoAudioVideo":
+                    self.jamediawebcam.grabar()
                 
             else:
-                # Si está grabando, detiene.
-                self.re_init()
+                self.jamediawebcam.stop_grabar()
             
         elif senial == 'configurar':
-            # Sólo muestra u oculta los controles.
             if self.box_config.get_visible():
                 self.box_config.hide()
                 
@@ -328,8 +369,9 @@ class JAMediaVideoWidget(Gtk.Plug):
             self.reset()
             
     def play(self):
+        """ Comienza a correr la aplicación."""
         
-        GObject.idle_add(self.jamediawebcam.re_init)
+        GObject.idle_add(self.jamediawebcam.reset)
         
     def ocultar(self, objeto):
         
@@ -370,30 +412,12 @@ class JAMediaVideoWidget(Gtk.Plug):
         self.jamediawebcam.stop()
         self.emit('salir')
     
-
-class JAMediaFotografiaWidget(Gtk.Plug):
-    """Plug - Interfaz para Webcam con grabación de audio y video."""
-        
-    __gsignals__ = {
-    "salir":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+class JAMediaFotografiaWidget(JAMediaVideoWidget):
+    """Plug - Interfaz para Webcam con cámara fotográfica."""
     
     def __init__(self):
-        """JAMediaFotografiaWidget: Gtk.Plug para embeber en otra aplicacion."""
         
-        Gtk.Plug.__init__(self, 0L)
-        
-        self.toolbar_salir = None
-        self.toolbar = None
-        self.pantalla = None
-        self.balance_widget = None
-        self.controles_dinamicos = []
-        self.jamediawebcam = None
-        self.box_config = None
-        self.widget_efectos = None
-        self.hbox_efectos_en_pipe = None
-        
-        self.show_all()
+        JAMediaVideoWidget.__init__(self)
         
     def setup_init(self):
         """Se crea la interfaz grafica,
@@ -464,6 +488,8 @@ class JAMediaFotografiaWidget(Gtk.Plug):
             
         map(self.ocultar, self.controles_dinamicos)
         
+        self.jamediawebcam.connect('estado', self.set_estado)
+        
         self.pantalla.connect("button_press_event", self.clicks_en_pantalla)
         
         self.toolbar.connect("rotar", self.set_rotacion)
@@ -474,172 +500,24 @@ class JAMediaFotografiaWidget(Gtk.Plug):
         
         self.widget_efectos.connect("click_efecto", self.click_efecto)
         self.widget_efectos.connect('configurar_efecto', self.configurar_efecto)
-        #self.widget_efectos.connect("quitar_efecto", self.quitar_efecto)
         
         self.toolbar_salir.connect('salir', self.emit_salir)
         
-    def reset(self):
-        """Resetea la cámara quitando los efectos y
-        actualiza los widgets correspondientes."""
-        
-        self.toolbar.set_estado("detenido")
-        for efecto in self.hbox_efectos_en_pipe.get_children():
-            efecto.destroy()
-            
-        for button in self.widget_efectos.gstreamer_efectos.get_children():
-            button.des_seleccionar()
-            
-        self.jamediawebcam.reset()
-        GObject.idle_add(self.update_balance_toolbars)
-        
-    def re_init(self):
-        """Vuelve la camara al estado original manteniendo efectos."""
-        
-        self.toolbar.set_estado("detenido")
-        self.jamediawebcam.re_init()
-        GObject.idle_add(self.update_balance_toolbars)
-        
-    def cargar_efectos(self, efectos):
-        """Agrega los widgets con efectos a la paleta de configuración."""
-        
-        self.widget_efectos.cargar_efectos(efectos)
-
-    def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
-        """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
-        
-        # Si el efecto no está agregado al pipe, lo agrega
-        if self.jamediawebcam.efectos:
-            if not nombre_efecto in self.jamediawebcam.efectos:
-                self.click_efecto(None, nombre_efecto)
-                self.widget_efectos.seleccionar_efecto(nombre_efecto)
-                
-        else:
-            self.click_efecto(None, nombre_efecto)
-            self.widget_efectos.seleccionar_efecto(nombre_efecto)
-
-        # Setea el efecto
-        self.jamediawebcam.configurar_efecto(nombre_efecto, propiedad, valor)
-        
-    def click_efecto(self, widget, nombre_efecto):
-        """Recibe el nombre del efecto sobre el que
-        se ha hecho click y decide si debe agregarse
-        al pipe de JAMediaWebcam."""
-        
-        agregar = False
-        
-        if self.jamediawebcam.efectos:
-            if not nombre_efecto in self.jamediawebcam.efectos:
-            # Si el efecto no está en el pipe.
-                agregar = True
-            
-        else:
-            # Si no se han agregado efectos.
-            agregar = True
-            
-        if agregar:
-            if self.jamediawebcam.estado == "FotografiandoWebCam":
-                self.jamediawebcam.re_init()
-                self.toolbar.set_estado("detenido")
-            
-            # Agrega un widget a self.hbox_efectos_en_pipe
-            botonefecto = WidgetEfecto_en_Pipe()
-            botonefecto.set_tooltip(nombre_efecto)
-            botonefecto.connect('clicked', self.clicked_mini_efecto)
-            lado = G.get_pixels(0.5)
-            botonefecto.set_tamanio(lado, lado)
-            
-            archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %('configurar'))
-            
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
-            botonefecto.imagen.set_from_pixbuf(pixbuf)
-            
-            self.hbox_efectos_en_pipe.pack_start(botonefecto, False, False, 0)
-            self.jamediawebcam.agregar_efecto( nombre_efecto )
-            
-        else:
-            # Si el usuario hace click sobre el botón de un efecto
-            # que ya se encuentra en el pipe de la camara, se quita
-            # el efecto del pipe y se deselecciona el botón correspondiente.
-            if self.jamediawebcam.estado == "FotografiandoWebCam":
-                self.jamediawebcam.re_init()
-                self.toolbar.set_estado("detenido")
-                
-            self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
-            
-            # Quitar el widget de self.hbox_efectos_en_pipe
-            for efecto in self.hbox_efectos_en_pipe.get_children():
-                if efecto.get_tooltip_text() == nombre_efecto:
-                    efecto.destroy()
-                    break
-            
-            self.jamediawebcam.quitar_efecto(nombre_efecto)
-            
-    def clicked_mini_efecto(self, widget, void = None):
-        """Cuando se hace click en el mini objeto en pantalla
-        para efecto agregado, este se quita del pipe de la cámara."""
-        
-        nombre_efecto = widget.get_tooltip_text()
-        self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
-        widget.destroy()
-        
-        self.jamediawebcam.quitar_efecto(nombre_efecto)
-        self.toolbar.set_estado("detenido")
-        
-    def update_balance_toolbars(self):
-        """Actualiza las toolbars de balance en video."""
-        
-        config = self.jamediawebcam.get_balance()
-        
-        self.balance_widget.set_balance(
-            brillo = config['brillo'],
-            contraste = config['contraste'],
-            saturacion = config['saturacion'],
-            hue = config['hue'],
-            gamma = config['gamma'])
-            
-    def set_balance(self, widget, valor, tipo):
-        """ Setea valores en Balance de Video.
-        valor es % float"""
-        
-        if tipo == "saturacion":
-            self.jamediawebcam.set_balance(saturacion = valor)
-            
-        elif tipo == "contraste":
-            self.jamediawebcam.set_balance(contraste = valor)
-            
-        elif tipo == "brillo":
-            self.jamediawebcam.set_balance(brillo = valor)
-            
-        elif tipo == "hue":
-            self.jamediawebcam.set_balance(hue = valor)
-            
-        elif tipo == "gamma":
-            self.jamediawebcam.set_balance(gamma = valor)
-            
-    def set_rotacion(self, widget, valor):
-        """Recibe rotación y la pasa a la webcam."""
-        
-        self.jamediawebcam.rotar(valor)
-    
     def set_accion(self, widget, senial):
         """Cuando se hace click en fotografiar o
         en configurar filmacion."""
         
         if senial == 'fotografiar':
-            if self.jamediawebcam.estado != "FotografiandoWebCam":
-                # Si no está fotografiando, fotografía.
+            if self.jamediawebcam.estado != "Fotografiando":
                 self.jamediawebcam.fotografiar()
-                self.toolbar.set_estado("grabando")
-                # FIXME: Hay que mejorar las fotografias.
-                time.sleep(3.5)
-                self.re_init()
-                
-            else:
-                # Si está grabando, detiene.
-                self.re_init()
+            
+            # FIXME: Al estar gdkpixbufsink en forma permanente en
+            # el pipe, esto no se necesita, pero hay que ver como se
+            # implementan las ráfagas de fotos.
+            #else:
+            #    self.jamediawebcam.stop_grabar()
             
         elif senial == 'configurar':
-            # Sólo muestra u oculta los controles.
             if self.box_config.get_visible():
                 self.box_config.hide()
                 
@@ -650,60 +528,18 @@ class JAMediaFotografiaWidget(Gtk.Plug):
         elif senial == 'Reset':
             self.reset()
             
-    def play(self):
-        
-        GObject.idle_add(self.jamediawebcam.re_init)
-        
-    def ocultar(self, objeto):
-        
-        if objeto.get_visible(): objeto.hide()
-        
-    def mostrar(self, objeto):
-        
-        if not objeto.get_visible(): objeto.show()
-        
-    def clicks_en_pantalla(self, widget, event):
-        """Hace fullscreen y unfullscreen sobre la
-        ventana principal cuando el usuario hace
-        doble click en el visor."""
-        
-        if event.type.value_name == "GDK_2BUTTON_PRESS":
-            ventana = self.get_toplevel()
-            screen = ventana.get_screen()
-            w,h = ventana.get_size()
-            ww, hh = (screen.get_width(), screen.get_height())
-            
-            if ww == w and hh == h:
-                ventana.unfullscreen()
-                
-            else:
-                ventana.fullscreen()
-                
     def confirmar_salir(self, widget = None, senial = None):
         """Recibe salir y lo pasa a la toolbar de confirmación."""
         
-        self.toolbar_salir.run("Menú Video.")
+        self.toolbar_salir.run("Menú Fotografía.")
         
-    def emit_salir(self, widget):
-        """Emite salir para que cuando esta embebida, la
-        aplicacion decida que hacer, si salir, o cerrar solo
-        la aplicacion embebida."""
-        
-        self.reset()
-        self.jamediawebcam.stop()
-        self.emit('salir')
-        
-class JAMediaAudioWidget(Gtk.Plug):
+class JAMediaAudioWidget(JAMediaVideoWidget):
     """Plug - Interfaz para Webcam con grabación de audio."""
-        
-    __gsignals__ = {
-    "salir":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
     
     def __init__(self):
         """JAMediaAudioWidget: Gtk.Plug para embeber en otra aplicacion."""
         
-        Gtk.Plug.__init__(self, 0L)
+        JAMediaVideoWidget.__init__(self)
         
         self.toolbar_salir = None
         self.toolbar = None
@@ -794,6 +630,8 @@ class JAMediaAudioWidget(Gtk.Plug):
             
         map(self.ocultar, self.controles_dinamicos)
         
+        self.jamediawebcam.connect('estado', self.set_estado)
+        
         self.pantalla.connect("button_press_event", self.clicks_en_pantalla)
         
         self.toolbar.connect("rotar", self.set_rotacion)
@@ -805,181 +643,9 @@ class JAMediaAudioWidget(Gtk.Plug):
         self.widget_efectos.connect("click_efecto", self.click_efecto)
         self.widget_efectos.connect('configurar_efecto', self.configurar_efecto)
         self.widget_visualizadores_de_audio.connect("click_efecto", self.click_visualizador)
-        self.widget_visualizadores_de_audio.connect('configurar_efecto', self.configurar_visualizador)
-        #self.widget_efectos.connect("quitar_efecto", self.quitar_efecto)
+        #self.widget_visualizadores_de_audio.connect('configurar_efecto', self.configurar_visualizador)
         
         self.toolbar_salir.connect('salir', self.emit_salir)
-        
-    def reset(self):
-        """Resetea la cámara quitando los efectos y
-        actualiza los widgets correspondientes."""
-        
-        self.toolbar.set_estado("detenido")
-        for efecto in self.hbox_efectos_en_pipe.get_children():
-            efecto.destroy()
-            
-        for button in self.widget_efectos.gstreamer_efectos.get_children():
-            button.des_seleccionar()
-            
-        self.jamediawebcam.reset()
-        GObject.idle_add(self.update_balance_toolbars)
-        
-    def re_init(self):
-        """Vuelve la camara al estado original manteniendo efectos."""
-        
-        self.toolbar.set_estado("detenido")
-        self.jamediawebcam.re_init()
-        GObject.idle_add(self.update_balance_toolbars)
-        
-    def cargar_efectos(self, efectos):
-        """Agrega los widgets con efectos a la paleta de configuración."""
-        
-        self.widget_efectos.cargar_efectos(efectos)
-        
-    def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
-        """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
-        
-        # Si el efecto no está agregado al pipe, lo agrega
-        if self.jamediawebcam.efectos:
-            if not nombre_efecto in self.jamediawebcam.efectos:
-                self.click_efecto(None, nombre_efecto)
-                self.widget_efectos.seleccionar_efecto(nombre_efecto)
-                
-        else:
-            self.click_efecto(None, nombre_efecto)
-            self.widget_efectos.seleccionar_efecto(nombre_efecto)
-
-        # Setea el efecto
-        self.jamediawebcam.configurar_efecto(nombre_efecto, propiedad, valor)
-        
-    def cargar_visualizadores(self, efectos):
-        """Agrega los widgets con efectos a la paleta de configuración."""
-        
-        self.widget_visualizadores_de_audio.cargar_efectos(efectos)
-        
-    def configurar_visualizador(self, widget, nombre_efecto, propiedad, valor):
-        """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
-        
-        # Si el visualizador en el pipe es otro.
-        if nombre_efecto != self.jamediawebcam.efecto_grafico_sobre_audio:
-            #self.click_efecto(None, nombre_efecto)
-            #self.widget_efectos.seleccionar_efecto(nombre_efecto)
-            pass
-            
-        else:
-            #self.click_efecto(None, nombre_efecto)
-            #self.widget_efectos.seleccionar_efecto(nombre_efecto)
-            pass
-        
-        # Setea el efecto
-        self.jamediawebcam.configurar_visualizador(nombre_efecto, propiedad, valor)
-        
-    def click_visualizador(self, widget, nombre_efecto):
-        
-        self.jamediawebcam.set_base_efecto(nombre_efecto)
-        # detener y actualizar toolbar si está grabando.
-        # desmarcar todos los otros widget de visualizadores.
-        
-    def click_efecto(self, widget, nombre_efecto):
-        """Recibe el nombre del efecto sobre el que
-        se ha hecho click y decide si debe agregarse
-        al pipe de JAMediaAudio."""
-        
-        agregar = False
-        
-        if self.jamediawebcam.efectos:
-            if not nombre_efecto in self.jamediawebcam.efectos:
-            # Si el efecto no está en el pipe.
-                agregar = True
-            
-        else:
-            # Si no se han agregado efectos.
-            agregar = True
-            
-        if agregar:
-            if self.jamediawebcam.estado == "GrabandoAudio":
-                self.jamediawebcam.re_init()
-                self.toolbar.set_estado("detenido")
-            
-            # Agrega un widget a self.hbox_efectos_en_pipe
-            botonefecto = WidgetEfecto_en_Pipe()
-            botonefecto.set_tooltip(nombre_efecto)
-            botonefecto.connect('clicked', self.clicked_mini_efecto)
-            lado = G.get_pixels(0.5)
-            botonefecto.set_tamanio(lado, lado)
-            
-            archivo = os.path.join(JAMediaObjectsPath, "Iconos", '%s.png' %('configurar'))
-            
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
-            botonefecto.imagen.set_from_pixbuf(pixbuf)
-            
-            self.hbox_efectos_en_pipe.pack_start(botonefecto, False, False, 0)
-            self.jamediawebcam.agregar_efecto( nombre_efecto )
-            
-        else:
-            # Si el usuario hace click sobre el botón de un efecto
-            # que ya se encuentra en el pipe de la camara, se quita
-            # el efecto del pipe y se deselecciona el botón correspondiente.
-            if self.jamediawebcam.estado == "GrabandoAudio":
-                self.jamediawebcam.re_init()
-                self.toolbar.set_estado("detenido")
-                
-            self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
-            
-            # Quitar el widget de self.hbox_efectos_en_pipe
-            for efecto in self.hbox_efectos_en_pipe.get_children():
-                if efecto.get_tooltip_text() == nombre_efecto:
-                    efecto.destroy()
-                    break
-            
-            self.jamediawebcam.quitar_efecto(nombre_efecto)
-        
-    def clicked_mini_efecto(self, widget, void = None):
-        """Cuando se hace click en el mini objeto en pantalla
-        para efecto agregado, este se quita del pipe de la cámara."""
-        
-        nombre_efecto = widget.get_tooltip_text()
-        self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
-        widget.destroy()
-        
-        self.jamediawebcam.quitar_efecto(nombre_efecto)
-        self.toolbar.set_estado("detenido")
-        
-    def update_balance_toolbars(self):
-        """Actualiza las toolbars de balance en video."""
-        
-        config = self.jamediawebcam.get_balance()
-        
-        self.balance_widget.set_balance(
-            brillo = config['brillo'],
-            contraste = config['contraste'],
-            saturacion = config['saturacion'],
-            hue = config['hue'],
-            gamma = config['gamma'])
-            
-    def set_balance(self, widget, valor, tipo):
-        """ Setea valores en Balance de Video.
-        valor es % float"""
-        
-        if tipo == "saturacion":
-            self.jamediawebcam.set_balance(saturacion = valor)
-            
-        elif tipo == "contraste":
-            self.jamediawebcam.set_balance(contraste = valor)
-            
-        elif tipo == "brillo":
-            self.jamediawebcam.set_balance(brillo = valor)
-            
-        elif tipo == "hue":
-            self.jamediawebcam.set_balance(hue = valor)
-            
-        elif tipo == "gamma":
-            self.jamediawebcam.set_balance(gamma = valor)
-            
-    def set_rotacion(self, widget, valor):
-        """Recibe rotación y la pasa a la webcam."""
-        
-        self.jamediawebcam.rotar(valor)
     
     def set_accion(self, widget, senial):
         """Cuando se hace click en grabar o
@@ -987,16 +653,12 @@ class JAMediaAudioWidget(Gtk.Plug):
         
         if senial == 'grabar':
             if self.jamediawebcam.estado != "GrabandoAudio":
-                # Si no está fotografiando, fotografía.
                 self.jamediawebcam.grabar()
-                self.toolbar.set_estado("grabando")
                 
             else:
-                # Si está grabando, detiene.
-                self.re_init()
+                self.jamediawebcam.stop_grabar()
             
         elif senial == 'configurar':
-            # Sólo muestra u oculta los controles.
             if self.box_config.get_visible():
                 self.box_config.hide()
                 
@@ -1006,47 +668,25 @@ class JAMediaAudioWidget(Gtk.Plug):
                 
         elif senial == 'Reset':
             self.reset()
-            
-    def play(self):
+
+    def cargar_visualizadores(self, efectos):
+        """Agrega los widgets con efectos a la paleta de configuración."""
         
-        GObject.idle_add(self.jamediawebcam.re_init)
+        self.widget_visualizadores_de_audio.cargar_efectos(efectos)
         
-    def ocultar(self, objeto):
+    #def configurar_visualizador(self, widget, nombre_efecto, propiedad, valor):
+    #    """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
         
-        if objeto.get_visible(): objeto.hide()
+    #    self.jamediawebcam.configurar_visualizador(nombre_efecto, propiedad, valor)
         
-    def mostrar(self, objeto):
+    def click_visualizador(self, widget, nombre_efecto):
         
-        if not objeto.get_visible(): objeto.show()
+        if self.jamediawebcam.estado != "GrabandoAudio":
+            self.jamediawebcam.set_visualizador(nombre_efecto)
+        # FIXME: Agregar seleccionar visualizador actual
         
-    def clicks_en_pantalla(self, widget, event):
-        """Hace fullscreen y unfullscreen sobre la
-        ventana principal cuando el usuario hace
-        doble click en el visor."""
-        
-        if event.type.value_name == "GDK_2BUTTON_PRESS":
-            ventana = self.get_toplevel()
-            screen = ventana.get_screen()
-            w,h = ventana.get_size()
-            ww, hh = (screen.get_width(), screen.get_height())
-            
-            if ww == w and hh == h:
-                ventana.unfullscreen()
-                
-            else:
-                ventana.fullscreen()
-                
     def confirmar_salir(self, widget = None, senial = None):
         """Recibe salir y lo pasa a la toolbar de confirmación."""
         
         self.toolbar_salir.run("Menú Audio.")
-        
-    def emit_salir(self, widget):
-        """Emite salir para que cuando esta embebida, la
-        aplicacion decida que hacer, si salir, o cerrar solo
-        la aplicacion embebida."""
-        
-        self.reset()
-        self.jamediawebcam.stop()
-        self.emit('salir')
         

@@ -206,6 +206,8 @@ class JAMediaVideo(Gtk.Window):
         GObject.idle_add(self.jamediawebcam.reset)
         
         if self.pistas:
+            # FIXME: Agregar reconocer tipo de archivo para cargar
+            # la lista en jamedia o jamediaimagenes.
             map(self.ocultar, self.controlesdinamicos)
             self.jamediawebcam.stop()
             map(self.ocultar, [self.pantalla])
@@ -236,12 +238,8 @@ class JAMediaVideo(Gtk.Window):
         map(self.ocultar, self.controlesdinamicos)
         map(self.mostrar, [self.toolbar,
             self.toolbarprincipal, self.pantalla])
-        
-        # FIXME: JAMediaWebCam deslinkea todos los elementos
-        # cuando se hace stop, por eso no debe usarse play sobre
-        # ella si se ha hecho stop anteriormente. En este caso hay
-        # que reiniciar con re_init.
-        GObject.idle_add(self.jamediawebcam.re_init)
+            
+        GObject.idle_add(self.jamediawebcam.reset)
         
     def get_menu(self, widget, menu):
         """Cuando se hace click en algún botón de
@@ -255,19 +253,19 @@ class JAMediaVideo(Gtk.Window):
             map(self.ocultar, [self.pantalla])
             map(self.mostrar, [self.socketjamediavideo])
             self.jamediavideo.play()
-            
+        
         elif menu == "Fotografiar":
             self.jamediawebcam.stop()
             map(self.ocultar, [self.pantalla])
             map(self.mostrar, [self.socketjamediafotografia])
             self.jamediafotografia.play()
-            
+        
         elif menu == "Grabar":
             self.jamediawebcam.stop()
             map(self.ocultar, [self.pantalla])
             map(self.mostrar, [self.socketjamediaaudio])
             self.jamediaaudio.play()
-            
+        
         elif menu == "Reproducir":
             self.jamediawebcam.stop()
             map(self.ocultar, [self.pantalla])
@@ -316,6 +314,8 @@ class JAMediaVideo(Gtk.Window):
         self.toolbar_salir.run("JAMediaVideo")
         
     def salir(self, widget = None, senial = None):
+        """Reconfigurar la cámara y salir."""
+        
         self.jamediawebcam.reset()
         self.jamediawebcam.stop()
         sys.exit(0)

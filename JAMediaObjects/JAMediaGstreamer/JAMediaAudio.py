@@ -19,14 +19,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# Depends: python-gi,
-#    gir1.2-gstreamer-1.0,
-#    gir1.2-gst-plugins-base-1.0,
-#    gstreamer1.0-plugins-good,
-#    gstreamer1.0-plugins-ugly,
-#    gstreamer1.0-plugins-bad,
-#    gstreamer1.0-libav
-
 import os
 import time
 import datetime
@@ -52,36 +44,31 @@ CONFIG_DEFAULT = {
     'gamma': 1.0,
     }
 
-def get_efecto(efecto):
-    """Crea un bin con efecto para agregar al pipe."""
-    
-    efectobin = Gst.Bin()# Gst.ElementFactory.make("bin")
-    
-    queue = Gst.ElementFactory.make("queue", "queue")
-    queue.set_property('max-size-buffers', 1000)
-    queue.set_property('max-size-bytes', 0)
-    queue.set_property('max-size-time', 0)
-    videoconvert1 = Gst.ElementFactory.make("videoconvert", "videoconvert1")
-    efecto = Gst.ElementFactory.make(efecto, efecto)
-    videoconvert2 = Gst.ElementFactory.make("videoconvert", "videoconvert2")
-    
-    efectobin.add(queue)
-    efectobin.add(videoconvert1)
-    efectobin.add(efecto)
-    efectobin.add(videoconvert2)
-    
-    queue.link(videoconvert1)
-    videoconvert1.link(efecto)
-    efecto.link(videoconvert2)
-    
-    efectobin.add_pad(Gst.GhostPad.new("sink", queue.get_static_pad ("sink")))
-    efectobin.add_pad(Gst.GhostPad.new("src", videoconvert2.get_static_pad("src")))
-    
-    return efectobin
-
 class JAMediaAudio(GObject.GObject):
-    """Interfaz para Audio, en base a Gstreamer 1.0."""
+    """
+    Interfaz para Audio, en base a Gstreamer 1.0.
     
+    estados posibles:
+        
+        stoped
+        playing
+        GrabandoAudio
+        
+    Guía para utilizar JAMediaAudio:
+        
+        from gi.repository import GdkX11
+        
+        xid = self.pantalla.get_property('window').get_xid()
+        self.jamediaaudio = JAMediaAudio(xid)
+        GObject.idle_add(self.jamediaaudio.reset)
+        o
+        GObject.idle_add(self.jamediaaudio.play)
+    """
+    
+    __gsignals__ = {
+    "estado":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        
     def __init__(self, ventana_id):
         """ Recibe el id de un DrawingArea
         para mostrar el video. """
@@ -95,11 +82,9 @@ class JAMediaAudio(GObject.GObject):
         self.patharchivo = None
         
         self.autoaudiosrc = None
-        self.multi = None
-        self.hilovideoapantalla = None
-        self.pantalla = None
-        
-        self.elementos_base = []
+        self.videobalance = None
+        self.gamma = None
+        self.videoflip = None
         
         self.config = {}
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
@@ -108,8 +93,10 @@ class JAMediaAudio(GObject.GObject):
         self.config['hue'] = CONFIG_DEFAULT['hue']
         self.config['gamma'] = CONFIG_DEFAULT['gamma']
         
-        self.efecto_grafico_sobre_audio = 'monoscope'
+        self.audio_visualizador = 'monoscope'
+        
         self.efectos = []
+        self.config_efectos = {}
         
         self.setup_init()
         
@@ -117,26 +104,25 @@ class JAMediaAudio(GObject.GObject):
         """Crea todos los elementos a utilizar en el pipe.
         Linkea solo desde fuente de video a la pantalla."""
         
+        if self.pipeline:
+            del(self.pipeline)
+            
         self.pipeline = Gst.Pipeline()
         
-        # Fuente de Video
+        self.audio_visualizador = 'monoscope'
+        
+        self.efectos = []
+        self.config_efectos = {}
+        
         self.autoaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc")
         
-        # Enlace doble desde fuente.
-        self.multi = Gst.ElementFactory.make('tee', "tee")
-        
-        self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
         self.videobalance = Gst.ElementFactory.make('videobalance', "videobalance")
+        
         self.gamma = Gst.ElementFactory.make('gamma', "gamma")
         
-        self.hilovideoapantalla = Gst.ElementFactory.make('queue', "hilovideoapantalla")
-        self.pantalla = Gst.ElementFactory.make('xvimagesink', "pantalla") # autovideosink o xvimagesink
+        self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
         
-        self.elementos_base = [
-            self.autoaudiosrc,
-            self.multi]
-        
-        self.get_base_pipe()
+        self.set_base_pipe()
         
         self.bus = self.pipeline.get_bus()
         self.bus.add_signal_watch()
@@ -145,22 +131,119 @@ class JAMediaAudio(GObject.GObject):
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.sync_message)
     
-    def set_base_efecto(self, nombre):
-        """Setea el visualizador de audio."""
+    def set_base_pipe(self):
+        """Linkea los elementos base."""
         
-        self.efecto_grafico_sobre_audio = nombre
-        self.re_init()
+        #self.autoaudiosrc
         
-    def configurar_visualizador(self, widget, nombre_efecto, propiedad, valor):
-        """Configura el visualizador de audio."""
+        multi_out_tee = Gst.ElementFactory.make('tee', "multi_out_tee")
         
-        print "Configurar Visualizador:", nombre_efecto, propiedad, valor
-        #self.pipeline.get_by_name(nombre_efecto).set_property(propiedad, valor)
+        audio_visualizador_bin = JAMedia_Audio_Visualizador_bin(self.audio_visualizador)
+        
+        efectos_bin = Efectos_Video_bin(self.efectos, self.config_efectos)
+        
+        #self.videobalance
+        #self.gamma
+        #self.videoflip
+        
+        queue_xvimagesink = Gst.ElementFactory.make('queue', "queue_xvimagesink")
+        queue_xvimagesink.set_property('max-size-buffers', 1000)
+        queue_xvimagesink.set_property('max-size-bytes', 0)
+        queue_xvimagesink.set_property('max-size-time', 0)
+        
+        pantalla = Gst.ElementFactory.make('xvimagesink', "xvimagesink")
+        
+        self.pipeline.add(self.autoaudiosrc)
+        self.pipeline.add(multi_out_tee)
+        self.pipeline.add(audio_visualizador_bin)
+        self.pipeline.add(efectos_bin)
+        self.pipeline.add(self.videobalance)
+        self.pipeline.add(self.gamma)
+        self.pipeline.add(self.videoflip)
+        self.pipeline.add(queue_xvimagesink)
+        self.pipeline.add(pantalla)
+        
+        self.autoaudiosrc.link(multi_out_tee)
+        
+        multi_out_tee.link(audio_visualizador_bin)
+        audio_visualizador_bin.link(efectos_bin)
+        efectos_bin.link(self.videobalance)
+        self.videobalance.link(self.gamma)
+        self.gamma.link(self.videoflip)
+        self.videoflip.link(queue_xvimagesink)
+        queue_xvimagesink.link(pantalla)
+        
+    def reset(self):
+        """Re establece el pipe al estado original (sin efectos)."""
+        
+        self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
+        self.config['contraste'] = CONFIG_DEFAULT['contraste']
+        self.config['brillo'] = CONFIG_DEFAULT['brillo']
+        self.config['hue'] = CONFIG_DEFAULT['hue']
+        self.config['gamma'] = CONFIG_DEFAULT['gamma']
+        
+        self.videobalance.set_property('saturation', self.config['saturacion'])
+        self.videobalance.set_property('contrast', self.config['contraste'])
+        self.videobalance.set_property('brightness', self.config['brillo'])
+        self.videobalance.set_property('hue', self.config['hue'])
+        self.gamma.set_property('gamma', self.config['gamma'])
+        
+        self.videoflip.set_property('method', 0)
+        
+        self.stop()
+        
+        map(self.remover, self.pipeline.children)
+        
+        self.setup_init()
+        
+        self.play()
+
+    def set_estado(self, valor):
+        """Autoseteo e informe de estado del pipe, según
+        esté corriendo o no y segun los elementos en el pipe."""
+        
+        estado = valor
+        
+        if estado == 'stoped':
+            pass
+            
+        elif estado == 'playing':
+            #if self.pipeline.get_by_name('foto_bin'):
+            #    estado = 'Fotografiando'
+            
+            #elif self.pipeline.get_by_name('video_bin'):
+            if self.pipeline.get_by_name('audio_bin'):
+                estado = 'GrabandoAudio'
+                
+        else:
+            print "????", valor
+        
+        if estado != self.estado:
+            self.estado = estado
+            self.emit('estado', self.estado)
+            
+    def play(self, widget = None, event = None):
+        
+        self.pipeline.set_state(Gst.State.PLAYING)
+        self.set_estado("playing")
+        
+    def stop(self, widget= None, event= None):
+        """Detiene y limpia el pipe."""
+        
+        self.pipeline.set_state(Gst.State.NULL)
+        
+        try:
+            if os.path.exists(self.patharchivo):
+                os.chmod(self.patharchivo, 0755)
+                
+        except:
+            pass
+        
+        self.set_estado("stoped")
         
     def rotar(self, valor):
         """ Rota el Video. """
         
-        self.pause()
         rot = self.videoflip.get_property('method')
         
         if valor == "Derecha":
@@ -220,232 +303,69 @@ class JAMediaAudio(GObject.GObject):
         'hue': (self.config['hue']+1) * 100.0 / 2.0,
         'gamma': self.config['gamma'] * 100.0 / 10.0
         }
-    '''
-    def get_balance_default(self):
-        """ Retorna los valores por defecto para balance y gamma. """
         
-        return {
-        'saturacion': 50.0,
-        'contraste': 50.0,
-        'brillo': 50.0,
-        'hue': 50.0,
-        'gamma': 10.0
-        }'''
-        
-    def reset(self):
-        """Re establece el pipe al estado original (sin efectos)."""
-        
-        self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
-        self.config['contraste'] = CONFIG_DEFAULT['contraste']
-        self.config['brillo'] = CONFIG_DEFAULT['brillo']
-        self.config['hue'] = CONFIG_DEFAULT['hue']
-        self.config['gamma'] = CONFIG_DEFAULT['gamma']
-        
-        self.videobalance.set_property('saturation', self.config['saturacion'])
-        self.videobalance.set_property('contrast', self.config['contraste'])
-        self.videobalance.set_property('brightness', self.config['brillo'])
-        self.videobalance.set_property('hue', self.config['hue'])
-        self.gamma.set_property('gamma', self.config['gamma'])
-        
-        self.videoflip.set_property('method', 0)
+    def grabar(self, widget= None, event= None):
+        """ Graba Audio. """
         
         self.stop()
-        self.efectos = []
-        self.get_base_pipe()
-        self.play()
         
-    def re_init(self):
-        """Restablece el pipe al estado original,
-        pero manteniendo los valores de balance y
-        los efectos configurados."""
-    
-        self.stop()
-        self.get_base_pipe()
-        self.play()
-    
-    def get_base_pipe(self):
-        """Linkea los elementos base."""
+        multi_out_tee = self.pipeline.get_by_name('multi_out_tee')
         
-        map(self.agregar, self.elementos_base)
-        
-        queue = Gst.ElementFactory.make("queue", "queue")
-        efecto = Gst.ElementFactory.make(self.efecto_grafico_sobre_audio,
-            self.efecto_grafico_sobre_audio)
-        videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
-        
-        audiobin = Gst.Bin()
-        
-        audiobin.add(queue)
-        audiobin.add(efecto)
-        audiobin.add(videoconvert)
-
-        queue.link(efecto)
-        efecto.link(videoconvert)
-
-        pad = queue.get_static_pad("sink")
-        audiobin.add_pad(Gst.GhostPad.new("sink", pad))
-        pad = videoconvert.get_static_pad("src")
-        audiobin.add_pad(Gst.GhostPad.new("src", pad))
-        
-        map(self.agregar, [
-            audiobin,
-            # self.efectos,
-            self.videobalance,
-            self.videoflip,
-            self.gamma,
-            self.hilovideoapantalla,
-            self.pantalla])
-        
-        # Efectos gráficos
-        efectos = list(self.efectos)
-        ef = []
-        for efecto in efectos:
-            ef.append(get_efecto(efecto))
-            
-        if ef:
-            map(self.agregar, ef)
-            
-        if ef:
-            audiobin.link(ef[0])
-            
-            for efecto in ef:
-                index = ef.index(efecto)
-                if len(ef) > index + 1:
-                    ef[index].link(ef[index + 1])
-                
-            ef[-1].link(self.videobalance)
-            
-        else:
-            audiobin.link(self.videobalance)
-        
-        self.autoaudiosrc.link(self.multi)
-        self.multi.link(audiobin)
-        #audiobin.link(self.efectos)
-        self.videobalance.link(self.gamma)
-        self.gamma.link(self.videoflip)
-        self.videoflip.link(self.hilovideoapantalla)
-        self.hilovideoapantalla.link(self.pantalla)
-        
-    def get_grabar_pipe(self):
-        """Linkea elementos para grabar audio."""
-        
-        queue = Gst.ElementFactory.make("queue", "queue")
-        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
-        vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
-        
-        que_audio_mux = Gst.ElementFactory.make('queue', "que_audio_mux")
-        que_audio_mux.set_property('max-size-buffers', 5000)
-        que_audio_mux.set_property('max-size-bytes', 0)
-        que_audio_mux.set_property('max-size-time', 0)
+        # FIXME: Verificar que ya no estén estos elementos en el pipe
+        #video_bin = Theoraenc_bin()
+        audio_bin = Vorbisenc_bin()
         
         oggmux = Gst.ElementFactory.make('oggmux', "oggmux")
-        sink = Gst.ElementFactory.make('filesink', "archivo")
+        filesink = Gst.ElementFactory.make('filesink', "filesink")
         
         fecha = datetime.date.today()
         hora = time.strftime("%H-%M-%S")
-        archivo = os.path.join(G.AUDIO_JAMEDIA_VIDEO,"%s-%s.ogg" % (fecha, hora))
+        archivo = os.path.join(
+            G.AUDIO_JAMEDIA_VIDEO,"%s-%s.ogg" % (fecha, hora))
         self.patharchivo = archivo
-        sink.set_property("location", archivo)
+        filesink.set_property("location", archivo)
         
-        audiobin = Gst.Bin()
+        #self.pipeline.add(video_bin)
+        self.pipeline.add(audio_bin)
+        self.pipeline.add(oggmux)
+        self.pipeline.add(filesink)
         
-        audiobin.add(queue)
-        audiobin.add(audioconvert)
-        audiobin.add(vorbisenc)
-        audiobin.add(que_audio_mux)
-        audiobin.add(oggmux)
-        audiobin.add(sink)
+        multi_out_tee.link(audio_bin)
+        #video_bin.link(oggmux)
+        audio_bin.link(oggmux)
+        oggmux.link(filesink)
         
-        queue.link(audioconvert)
-        audioconvert.link(vorbisenc)
-        vorbisenc.link(que_audio_mux)
-        que_audio_mux.link(oggmux)
-        oggmux.link(sink)
-        
-        pad = queue.get_static_pad("sink")
-        audiobin.add_pad(Gst.GhostPad.new("sink", pad))
-        
-        map(self.agregar, [audiobin])
-        
-        self.multi.link(audiobin)
-        
-    def agregar_efecto(self, nombre_efecto):
-        """Agrega un efecto según nombre_efecto."""
-        
-        self.efectos.append(nombre_efecto)
-        self.stop()
-        self.get_base_pipe()
         self.play()
         
-    def configurar_efecto(self, nombre_efecto, propiedad, valor):
-        """Configura un efecto en el pipe."""
-        
-        self.pipeline.get_by_name(nombre_efecto).set_property(propiedad, valor)
-        
-    def quitar_efecto(self, indice_efecto):
-        """Quita el efecto correspondiente al indice que recibe."""
-        
-        if type(indice_efecto) == int:
-            self.efectos.remove(self.efectos[indice_efecto])
-            
-        elif type(indice_efecto) == str:
-            
-            for efecto in self.efectos:
-                if efecto == indice_efecto:
-                    self.efectos.remove(efecto)
-                    break
-                
+    def stop_grabar(self):
+        """Detiene la grabación en progreso."""
+
         self.stop()
-        self.get_base_pipe()
+        
+        multi_out_tee = self.pipeline.get_by_name('multi_out_tee')
+        
+        #video_bin = self.pipeline.get_by_name('video_bin')
+        audio_bin = self.pipeline.get_by_name('audio_bin')
+        
+        oggmux = self.pipeline.get_by_name('oggmux')
+        filesink = self.pipeline.get_by_name('filesink')
+        
+        multi_out_tee.unlink(audio_bin)
+        #video_bin.unlink(oggmux)
+        audio_bin.unlink(oggmux)
+        oggmux.unlink(filesink)
+        
+        #self.pipeline.remove(video_bin)
+        self.pipeline.remove(audio_bin)
+        self.pipeline.remove(oggmux)
+        self.pipeline.remove(filesink)
+        
         self.play()
-        
-    def pause(self, widget = None, event = None):
-        
-        self.pipeline.set_state(Gst.State.PAUSED)
-        self.estado = "paused"
-        
-    def play(self, widget = None, event = None):
-        
-        self.pipeline.set_state(Gst.State.PLAYING)
-        self.estado = "playing"
-        
-    def stop(self, widget= None, event= None):
-        """Detiene y limpia el pipe."""
-        
-        self.pipeline.set_state(Gst.State.PAUSED)
-        self.pipeline.set_state(Gst.State.NULL)
-        
-        try:
-            if os.path.exists(self.patharchivo):
-                os.chmod(self.patharchivo, 0755)
-                
-        except:
-            pass
-        
-        map(self.remover, self.pipeline.children)
-        
-        self.estado = "stoped"
         
     def remover(self, objeto):
         """Para remover objetos en el pipe."""
         
         if objeto in self.pipeline.children: self.pipeline.remove(objeto)
-        
-    def agregar(self, objeto):
-        """Para agregar objetos al pipe."""
-        
-        if not objeto in self.pipeline.children: self.pipeline.add(objeto)
-    
-    def grabar(self, widget= None, event= None):
-        """ Graba Audio y Video desde la webcam. """
-        
-        self.stop()
-        
-        self.get_base_pipe()
-        self.get_grabar_pipe()
-        
-        self.play()
-        self.estado = "GrabandoAudio"
         
     def sync_message(self, bus, mensaje):
         """Captura los mensajes en el bus del pipe Gst."""
@@ -463,11 +383,251 @@ class JAMediaAudio(GObject.GObject):
         
         if mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
-            print "***", 'on_mensaje'
             print err, debug
-            self.pipeline.set_state(Gst.State.READY)
             
+    def agregar_efecto(self, nombre_efecto):
+        """Agrega un efecto según su nombre."""
+        
+        self.efectos.append( nombre_efecto )
+        self.config_efectos[nombre_efecto] = {}
+        
+        self.stop()
+        
+        # Quitar efectos
+        efectos_bin = self.pipeline.get_by_name('efectos_bin')
+        audio_visualizador_bin = self.pipeline.get_by_name('audio_visualizador_bin')
+        audio_visualizador_bin.unlink(efectos_bin)
+        efectos_bin.unlink(self.videobalance)
+        self.pipeline.remove(efectos_bin)
+        del(efectos_bin)
+        
+        # Agregar efectos
+        efectos_bin = Efectos_Video_bin(self.efectos, self.config_efectos)
+        self.pipeline.add(efectos_bin)
+        audio_visualizador_bin.link(efectos_bin)
+        efectos_bin.link(self.videobalance)
+        
+        self.play()
+        
+    def quitar_efecto(self, indice_efecto):
+        """Quita el efecto correspondiente al indice o
+        al nombre que recibe."""
+
+        if type(indice_efecto) == int:
+            self.efectos.remove(self.efectos[indice_efecto])
+            if self.efectos[indice_efecto] in self.config_efectos.keys():
+                del (self.config_efectos[self.efectos[indice_efecto]])
+                
+        elif type(indice_efecto) == str:
+            for efecto in self.efectos:
+                if efecto == indice_efecto:
+                    self.efectos.remove(efecto)
+                    if efecto in self.config_efectos.keys():
+                        del (self.config_efectos[efecto])
+                    break
+        
+        self.stop()
+        
+        # Quitar efectos
+        efectos_bin = self.pipeline.get_by_name('efectos_bin')
+        audio_visualizador_bin = self.pipeline.get_by_name('audio_visualizador_bin')
+        audio_visualizador_bin.unlink(efectos_bin)
+        efectos_bin.unlink(self.videobalance)
+        self.pipeline.remove(efectos_bin)
+        del(efectos_bin)
+        
+        # Agregar efectos
+        efectos_bin = Efectos_Video_bin(self.efectos, self.config_efectos)
+        self.pipeline.add(efectos_bin)
+        audio_visualizador_bin.link(efectos_bin)
+        efectos_bin.link(self.videobalance)
+        
+        self.play()
+        
+    def configurar_efecto(self, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe."""
+        
+        efectos_bin = self.pipeline.get_by_name('efectos_bin')
+        bin_efecto = efectos_bin.get_by_name(nombre_efecto)
+        bin_efecto.get_by_name(nombre_efecto).set_property(propiedad, valor)
+        self.config_efectos[nombre_efecto][propiedad] = valor
+        efectos_bin.config_efectos[nombre_efecto][propiedad] = valor
+        
+    def set_visualizador(self, nombre):
+        """Setea el visualizador de audio."""
+        
+        self.audio_visualizador = nombre
+        
+        self.stop()
+        
+        # Quitar efectos
+        multi_out_tee = self.pipeline.get_by_name('multi_out_tee')
+        audio_visualizador_bin = self.pipeline.get_by_name('audio_visualizador_bin')
+        efectos_bin = self.pipeline.get_by_name('efectos_bin')
+        multi_out_tee.unlink(audio_visualizador_bin)
+        audio_visualizador_bin.unlink(efectos_bin)
+        self.pipeline.remove(audio_visualizador_bin)
+        del(audio_visualizador_bin)
+        
+        # Agregar efectos
+        audio_visualizador_bin = JAMedia_Audio_Visualizador_bin(self.audio_visualizador)
+        self.pipeline.add(audio_visualizador_bin)
+        multi_out_tee.link(audio_visualizador_bin)
+        audio_visualizador_bin.link(efectos_bin)
+        
+        self.play()
+        
+    '''
+    def configurar_visualizador(self, widget, nombre_efecto, propiedad, valor):
+        """Configura el visualizador de audio."""
+        
+        print "Configurar Visualizador:", nombre_efecto, propiedad, valor
+        #self.pipeline.get_by_name(nombre_efecto).set_property(propiedad, valor)'''
+        
+class Vorbisenc_bin(Gst.Bin):
+    """Bin para elementos codificadores
+    de audio a vorbisenc."""
+    
+    def __init__(self):
+        
+        Gst.Bin.__init__(self)
+        
+        self.set_name('audio_bin')
+        
+        audiorate = Gst.ElementFactory.make('audiorate', "audiorate")
+        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
+        vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
+        
+        self.add(audiorate)
+        self.add(audioconvert)
+        self.add(vorbisenc)
+        
+        audiorate.link(audioconvert)
+        audioconvert.link(vorbisenc)
+        
+        pad = audiorate.get_static_pad("sink")
+        self.add_pad(Gst.GhostPad.new("sink", pad))
+        
+        pad = vorbisenc.get_static_pad("src")
+        self.add_pad(Gst.GhostPad.new("src", pad))
+        
+class JAMedia_Audio_Visualizador_bin(Gst.Bin):
+    """Bin visualizador de audio."""
+    
+    def __init__(self, visualizador):
+        
+        Gst.Bin.__init__(self)
+        
+        self.set_name('audio_visualizador_bin')
+        
+        self.visualizador = visualizador
+        
+        queue = Gst.ElementFactory.make("queue", "queue")
+        
+        efecto = Gst.ElementFactory.make(
+            self.visualizador,
+            self.visualizador)
             
+        videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
+        
+        self.add(queue)
+        self.add(efecto)
+        self.add(videoconvert)
+
+        queue.link(efecto)
+        efecto.link(videoconvert)
+
+        pad = queue.get_static_pad("sink")
+        self.add_pad(Gst.GhostPad.new("sink", pad))
+        
+        pad = videoconvert.get_static_pad("src")
+        self.add_pad(Gst.GhostPad.new("src", pad))
+        
+class JAMedia_Efecto_bin(Gst.Bin):
+    """Bin para efecto de video individual."""
+    
+    def __init__(self, efecto):
+        
+        Gst.Bin.__init__(self)
+        
+        self.set_name(efecto)
+    
+        videoconvert = Gst.ElementFactory.make("videoconvert",
+            "videoconvert_%s" % (efecto))
+            
+        efecto = Gst.ElementFactory.make(efecto, efecto)
+
+        self.add(videoconvert)
+        self.add(efecto)
+
+        videoconvert.link(efecto)
+    
+        self.add_pad(Gst.GhostPad.new("sink", videoconvert.get_static_pad ("sink")))
+        self.add_pad(Gst.GhostPad.new("src", efecto.get_static_pad("src")))
+        
+class Efectos_Video_bin(Gst.Bin):
+    """Bin para agregar efectos de video."""
+    
+    def __init__(self, efectos, config_efectos):
+        
+        Gst.Bin.__init__(self)
+        
+        self.set_name('efectos_bin')
+        
+        self.efectos = efectos
+        self.config_efectos = config_efectos
+        
+        queue = Gst.ElementFactory.make('queue', "queue")
+        queue.set_property('max-size-buffers', 1000)
+        queue.set_property('max-size-bytes', 0)
+        queue.set_property('max-size-time', 0)
+        
+        videoconvert = Gst.ElementFactory.make(
+            'videoconvert',
+            "videoconvert_efectos")
+        
+        self.add(queue)
+        
+        efectos = []
+        for nombre in self.efectos:
+            # Crea el efecto
+            efecto = JAMedia_Efecto_bin(nombre)
+            if efecto and efecto != None:
+                efectos.append(efecto)
+        
+        if efectos:
+            for efecto in efectos:
+                # Agrega el efecto
+                self.add(efecto)
+                
+            # queue a primer efecto
+            queue.link(efectos[0])
+            
+            for efecto in efectos:
+                index = efectos.index(efecto)
+                if len(efectos) > index + 1:
+                    # Linkea los efectos entre si
+                    efecto.link(efectos[efectos.index(efecto) + 1])
+                    
+            self.add(videoconvert)
+            # linkea el ultimo efecto a videoconvert
+            efectos[-1].link(videoconvert)
+            
+        else:
+            self.add(videoconvert)
+            queue.link(videoconvert)
+        
+        # Mantener la configuración de cada efecto.
+        for efecto in self.config_efectos.keys():
+            for property in self.config_efectos[efecto].keys():
+                bin_efecto = self.get_by_name(efecto)
+                elemento = bin_efecto.get_by_name(efecto)
+                elemento.set_property(property, self.config_efectos[efecto][property])
+        
+        self.add_pad(Gst.GhostPad.new("sink", queue.get_static_pad ("sink")))
+        self.add_pad(Gst.GhostPad.new("src", videoconvert.get_static_pad("src")))
+        
+        
 def salir(widget):
     import sys
     sys.exit()
