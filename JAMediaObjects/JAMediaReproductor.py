@@ -19,16 +19,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# Depends:
-#   python-gi
-#   gir1.2-gstreamer-1.0
-#   gstreamer1.0-tools
-#   gir1.2-gst-plugins-base-1.0
-#   gstreamer1.0-plugins-good
-#   gstreamer1.0-plugins-ugly
-#   gstreamer1.0-plugins-bad
-#   gstreamer1.0-libav
-
 import os
 
 import gi
@@ -38,9 +28,20 @@ from gi.repository import GObject
 from gi.repository import Gst
 from gi.repository import GstVideo
 
+import JAMediaGstreamer
+from JAMediaGstreamer.JAMediaWebCam import Efectos_Video_bin
+
 GObject.threads_init()
 Gst.init([])
 
+CONFIG_DEFAULT = {
+    'saturacion': 1.0,
+    'contraste': 1.0,
+    'brillo': 0.0,
+    'hue': 0.0,
+    'gamma': 1.0,
+    }
+    
 # Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html
 
 class JAMediaReproductor(GObject.GObject):
@@ -88,17 +89,19 @@ class JAMediaReproductor(GObject.GObject):
         self.videobalance = None
         self.gamma = None
         self.videoflip = None
-        self.pantalla = None
+        self.video_balance_bin = None
         
         self.video_in_stream = None
         
-        self.config = {
-            'saturacion': 1.0,
-            'contraste': 1.0,
-            'brillo': 0.0,
-            'hue': 0.0,
-            'gamma': 1.0
-            }
+        self.config = {}
+        self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
+        self.config['contraste'] = CONFIG_DEFAULT['contraste']
+        self.config['brillo'] = CONFIG_DEFAULT['brillo']
+        self.config['hue'] = CONFIG_DEFAULT['hue']
+        self.config['gamma'] = CONFIG_DEFAULT['gamma']
+        
+        self.efectos = []
+        self.config_efectos = {}
         
         self.set_pipeline()
         
@@ -111,12 +114,11 @@ class JAMediaReproductor(GObject.GObject):
         
         self.player = Gst.ElementFactory.make("playbin", "player")
         
-        # Elementos configurables permanentes.
         self.videobalance = Gst.ElementFactory.make('videobalance', "videobalance")
-        self.gamma = Gst.ElementFactory.make('gamma', "gamma")
-        self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
         
-        self.pantalla = Gst.ElementFactory.make('xvimagesink', "pantalla")
+        self.gamma = Gst.ElementFactory.make('gamma', "gamma")
+        
+        self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
         
         self.player.set_window_handle(self.ventana_id)
         
@@ -127,109 +129,44 @@ class JAMediaReproductor(GObject.GObject):
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.sync_message)
         
-        # Bin de video
-        video_balance_bin = self.get_balance_bin()
+        if self.video_balance_bin:
+            del(self.video_balance_bin)
+        
+        self.video_balance_bin = self.get_balance_bin()
         
         self.pipeline.add(self.player)
-        self.player.set_property('video-sink', video_balance_bin)
+        self.player.set_property('video-sink', self.video_balance_bin)
         
         self.video_in_stream = None
         
-        # Bin de Audio.
-        
-        # FIXME:
-        # Intento obtener la salida de audio de playbin para poder
-        # aplicar efectos sobre la salida de audio.
-        # En teoría bastaría con crear un bin y establecer:
-        #    self.player.set_property('audio-sink', audio_bin)
-        # sin embargo no funciona: Element 'bin5' is not in bin 'abin'
-        # Intenté buscando en los hijos de playbin, aunque tampoco puede
-        # lograrlo, sin embargo es interesante aprender a estructurar los
-        # elementos:
-        
-        #    La estructura de playbin es:
-        #        GstPlaySink
-        #            GstStreamSynchronizer (el cual no es accesible)
-        
-        '''
-        audio_bin = self.get_audio_bin()
-        
-        self.pipeline.add(audio_bin)
-        
-        self.player.set_property('audio-sink', audio_bin)
-        
-        # Para imprimir la estructura interna de playbin
-        for ele in self.player.children:
-            self.print_children(ele)
-        
-    def print_children(self, elemento):
-        
-        print "Elemento:", elemento
-        
-        try:
-            for ele in elemento.children:
-                print "\tChild:", self.print_children(ele)
-                
-        except:
-            print "\t\tSin hijos:", elemento'''
-            
     def get_balance_bin(self):
         """Bin queue + efectos de video + Balance + flip."""
         
         bin = Gst.Bin()
+        bin.set_name('balance_bin')
         
-        player_queue = Gst.ElementFactory.make("queue", "player_queue")
+        efectos_bin = Efectos_Video_bin(self.efectos, self.config_efectos)
         
-        bin.add(player_queue)
+        # self.videobalance
+        # self.self.gamma
+        # self.self.videoflip
+        
+        pantalla = Gst.ElementFactory.make('xvimagesink', "pantalla")
+        
+        bin.add(efectos_bin)
         bin.add(self.videobalance)
         bin.add(self.gamma)
         bin.add(self.videoflip)
+        bin.add(pantalla)
         
-        player_queue.link(self.videobalance)
+        efectos_bin.link(self.videobalance)
         self.videobalance.link(self.gamma)
         self.gamma.link(self.videoflip)
+        self.videoflip.link(pantalla)
         
-        pantalla_bin = self.get_xvimagesink_video_bin()
-        bin.add(pantalla_bin)
-        self.videoflip.link(pantalla_bin)
-        
-        bin.add_pad(Gst.GhostPad.new("sink", player_queue.get_static_pad ("sink")))
+        bin.add_pad(Gst.GhostPad.new("sink", efectos_bin.get_static_pad ("sink")))
         
         return bin
-    
-    def get_xvimagesink_video_bin(self):
-        """Bin queue + pantalla para dibujar video."""
-        
-        bin = Gst.Bin()
-        
-        xvimage_queue = Gst.ElementFactory.make("queue", "xvimage_queue")
-        
-        bin.add(xvimage_queue)
-        bin.add(self.pantalla)
-        
-        xvimage_queue.link(self.pantalla)
-        
-        bin.add_pad(Gst.GhostPad.new("sink", xvimage_queue.get_static_pad ("sink")))
-        
-        return bin
-    
-    '''
-    def get_audio_bin(self):
-        """Salida de audio a sonido."""
-        
-        bin = Gst.Bin()
-    
-        audio_queue = Gst.ElementFactory.make("queue", "audio_queue")
-        autoaudiosink = Gst.ElementFactory.make("autoaudiosink", "autoaudio_bin")
-        
-        bin.add(audio_queue)
-        bin.add(autoaudiosink)
-        
-        audio_queue.link(autoaudiosink)
-        
-        bin.add_pad(Gst.GhostPad.new("sink", audio_queue.get_static_pad ("sink")))
-        
-        return bin'''
     
     def load(self, uri):
         """Carga un archivo o stream en el pipe de Gst."""
@@ -276,9 +213,6 @@ class JAMediaReproductor(GObject.GObject):
             
         elif self.estado == Gst.State.PLAYING:
             self.pause()
-            
-        else:
-            print self.estado
         
     def sync_message(self, bus, mensaje):
         """Captura los mensajes en el bus del pipe Gst."""
@@ -337,8 +271,7 @@ class JAMediaReproductor(GObject.GObject):
         elif mensaje.type == Gst.MessageType.TAG:
             taglist = mensaje.parse_tag()
             datos = taglist.to_string()
-            print taglist
-            print datos
+            
             if not 'video-codec' in datos:
                 if self.video_in_stream == True or self.video_in_stream == None:
                     self.video_in_stream = False
@@ -359,9 +292,7 @@ class JAMediaReproductor(GObject.GObject):
         
         elif mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
-            print "***", 'sync_message'
             print err, debug
-            #self.pipeline.set_state(Gst.State.READY)
             self.new_handle(False)
             return
         
@@ -410,7 +341,6 @@ class JAMediaReproductor(GObject.GObject):
             
         elif mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
-            print "***", 'on_mensaje'
             print err, debug
             self.new_handle(False)
             
@@ -509,6 +439,32 @@ class JAMediaReproductor(GObject.GObject):
         'gamma': 10.0
         }
         
+    '''
+    def reset(self):
+        """Re establece el pipe al estado original (sin efectos)."""
+        
+        self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
+        self.config['contraste'] = CONFIG_DEFAULT['contraste']
+        self.config['brillo'] = CONFIG_DEFAULT['brillo']
+        self.config['hue'] = CONFIG_DEFAULT['hue']
+        self.config['gamma'] = CONFIG_DEFAULT['gamma']
+        
+        self.videobalance.set_property('saturation', self.config['saturacion'])
+        self.videobalance.set_property('contrast', self.config['contraste'])
+        self.videobalance.set_property('brightness', self.config['brillo'])
+        self.videobalance.set_property('hue', self.config['hue'])
+        self.gamma.set_property('gamma', self.config['gamma'])
+        
+        self.videoflip.set_property('method', 0)
+        
+        self.stop()
+        
+        map(self.remover, self.pipeline.children)
+        
+        self.setup_init()
+        
+        self.play()'''
+        
     def new_handle(self, reset):
         """Elimina o reinicia la funcion que
         envia los datos de actualizacion para
@@ -576,6 +532,67 @@ class JAMediaReproductor(GObject.GObject):
         """Cambia el volúmen de Reproducción."""
         
         self.player.set_property('volume', float(valor/100))
+        
+    def agregar_efecto(self, nombre_efecto):
+        """Agrega un efecto según su nombre."""
+        
+        self.efectos.append( nombre_efecto )
+        self.config_efectos[nombre_efecto] = {}
+        '''
+        self.new_handle(False)
+        self.pause_play()
+        
+        for child in self.video_balance_bin.children:
+            self.video_balance_bin.remove(child)
+        
+        self.video_balance_bin = self.get_balance_bin()
+        
+        self.player.set_property('video-sink', self.video_balance_bin)
+        
+        self.pause_play()
+        self.new_handle(True)'''
+        
+        self.stop()
+        
+        uri = self.player.get_property("uri")
+        
+        self.set_pipeline()
+        
+        if uri: self.load(uri)
+        
+    def quitar_efecto(self, indice_efecto):
+        """Quita el efecto correspondiente al indice o
+        al nombre que recibe."""
+        
+        if type(indice_efecto) == int:
+            self.efectos.remove(self.efectos[indice_efecto])
+            if self.efectos[indice_efecto] in self.config_efectos.keys():
+                del (self.config_efectos[self.efectos[indice_efecto]])
+                
+        elif type(indice_efecto) == str:
+            for efecto in self.efectos:
+                if efecto == indice_efecto:
+                    self.efectos.remove(efecto)
+                    if efecto in self.config_efectos.keys():
+                        del (self.config_efectos[efecto])
+                    break
+        
+        self.stop()
+        
+        uri = self.player.get_property("uri")
+        
+        self.set_pipeline()
+        
+        if uri: self.load(uri)
+        
+    def configurar_efecto(self, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe."""
+        
+        efectos_bin = self.video_balance_bin.get_by_name('efectos_bin')
+        bin_efecto = efectos_bin.get_by_name(nombre_efecto)
+        bin_efecto.get_by_name(nombre_efecto).set_property(propiedad, valor)
+        self.config_efectos[nombre_efecto][propiedad] = valor
+        efectos_bin.config_efectos[nombre_efecto][propiedad] = valor
         
 class JAMediaGrabador(GObject.GObject):
     """Graba desde un streaming de radio o tv."""
@@ -683,9 +700,7 @@ class JAMediaGrabador(GObject.GObject):
         
         if mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
-            print "***", 'on_mensaje'
             print err, debug
-            self.pipeline.set_state(Gst.State.READY)
             self.new_handle(False)
             
     def new_handle(self, reset):

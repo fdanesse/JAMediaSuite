@@ -56,7 +56,9 @@ class Ventana(Gtk.Window):
         
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
-        if self.pistas: self.jamediaplayer.set_nueva_lista(self.pistas)
+        if self.pistas:
+            GObject.idle_add(self.jamediaplayer.set_nueva_lista, self.pistas)
+        GObject.idle_add(self.jamediaplayer.cargar_efectos, list(G.VIDEOEFECTOS))
         
     def salir(self, widget = None, senial = None):
         
@@ -73,6 +75,8 @@ if __name__ == "__main__":
             path = os.path.join(item)
             
             if os.path.exists(path):
+                # FIXME: Agregar detectar tipo de archivo
+                # para que abra solo video y audio.
                 archivo = os.path.basename(path)
                 items.append( [archivo,path] )
                 

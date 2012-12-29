@@ -19,24 +19,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# Se remplaza:
-# Depends: python-gst0.10
-#   gstreamer-plugins-base
-#   gstreamer0.10-plugins-good
-#   gstreamer0.10-plugins-ugly
-#   gstreamer0.10-plugins-bad
-#   gstreamer0.10-ffmpeg
-
-# Con:
-# Depends: python-gi
-#   gir1.2-gstreamer-1.0
-#   gstreamer1.0-tools
-#   gir1.2-gst-plugins-base-1.0
-#   gstreamer1.0-plugins-good
-#   gstreamer1.0-plugins-ugly
-#   gstreamer1.0-plugins-bad
-#   gstreamer1.0-libav
-
 import os
 import sys
 import time
@@ -57,6 +39,7 @@ from JAMediaObjects.JAMediaWidgets import BarraProgreso
 from JAMediaObjects.JAMediaWidgets import ControlVolumen
 from JAMediaObjects.JAMediaWidgets import ToolbarAccion
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerEfectos
 
 import JAMediaObjects.JAMFileSystem as JAMF
 
@@ -88,6 +71,7 @@ from Widgets import ToolbarGrabar
 from Widgets import Selector_de_Archivos
 from Widgets import ToolbarInfo
 from Widgets import ToolbarAddStream
+from Widgets import WidgetEfecto_en_Pipe
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
@@ -161,13 +145,16 @@ class JAMediaPlayer(Gtk.Plug):
         self.barradeprogreso = None
         self.volumen = None
         self.toolbar_list = None
+        self.scroll_config = None
         self.toolbar_config = None
+        self.widget_efectos = None
         self.toolbar_grabar = None
         self.toolbar_info = None
         self.lista_de_reproduccion = None
         self.controlesrepro = None
         self.toolbaraddstream = None
         self.toolbar_salir = None
+        self.hbox_efectos_en_pipe = None
         
         self.controles_dinamicos = None
         
@@ -188,6 +175,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.controlesrepro = ToolbarReproduccion()
         self.toolbar = Toolbar()
         self.toolbar_config = ToolbarConfig()
+        self.widget_efectos = WidgetsGstreamerEfectos()
         self.toolbar_accion = ToolbarAccion()
         self.toolbar_grabar = ToolbarGrabar()
         self.toolbar_info = ToolbarInfo()
@@ -198,15 +186,29 @@ class JAMediaPlayer(Gtk.Plug):
         hpanel = Gtk.HPaned()
         basebox.pack_start(self.toolbar, False, False, 0)
         basebox.pack_start(self.toolbar_salir, False, False, 0)
-        #basebox.pack_start(self.toolbar_config, False, False, 0)
         basebox.pack_start(self.toolbar_accion, False, False, 0)
         basebox.pack_start(self.toolbaraddstream, False, False, 0)
         basebox.pack_start(hpanel, True, True, 0)
         
         # Area Izquierda del Panel
+        eventbox = Gtk.EventBox()
+        eventbox.modify_bg(0, G.NEGRO)
+        
+        self.hbox_efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
+        
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+        scroll.add_with_viewport(eventbox)
+        
+        eventbox.add(self.hbox_efectos_en_pipe)
+        
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         vbox.pack_start(self.toolbar_grabar, False, False, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
+        
+        vbox.pack_start(scroll, False, False, 0)
+        
         vbox.pack_start(self.toolbar_info, False, False, 0)
         ev_box = Gtk.EventBox() # Para poder pintarlo
         ev_box.modify_bg(0, Gdk.Color(65000, 65000, 65000))
@@ -219,7 +221,18 @@ class JAMediaPlayer(Gtk.Plug):
         
         # Area Derecha del Panel
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        vbox.pack_start(self.toolbar_config, False, False, 0)
+        #vbox.pack_start(self.toolbar_config, False, False, 0)
+        #vbox.pack_start(self.widget_efectos, False, False, 0)
+        
+        vbox_config = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        self.scroll_config = Gtk.ScrolledWindow()
+        self.scroll_config.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self.scroll_config.add_with_viewport (vbox_config)
+        
+        vbox_config.pack_start(self.toolbar_config, False, False, 0)
+        vbox_config.pack_start(self.widget_efectos, False, False, 0)
+        
+        vbox.pack_start(self.scroll_config, True, True, 0)
         
         ev_box = Gtk.EventBox() # Para poder pintarlo
         #ev_box.modify_bg(0, Gdk.Color(65000, 65000, 65000))
@@ -243,7 +256,9 @@ class JAMediaPlayer(Gtk.Plug):
         basebox.show_all()
         #self.controlesrepro.botonpausa.hide()
         self.toolbar_salir.hide()
-        self.toolbar_config.hide()
+        #self.toolbar_config.hide()
+        #self.widget_efectos.hide()
+        self.scroll_config.hide()
         self.toolbar_accion.hide()
         self.toolbar_grabar.hide()
         self.toolbaraddstream.hide()
@@ -302,6 +317,9 @@ class JAMediaPlayer(Gtk.Plug):
         self.volumen.connect("volumen", self.set_volumen)
         self.toolbaraddstream.connect("add-stream", self.ejecutar_add_stream)
         
+        self.widget_efectos.connect("click_efecto", self.click_efecto)
+        self.widget_efectos.connect('configurar_efecto', self.configurar_efecto)
+        
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos", "jamedia_cursor.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
@@ -309,6 +327,91 @@ class JAMediaPlayer(Gtk.Plug):
         jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
             Gdk.Display.get_default(), pixbuf, 0, 0)
         self.get_parent_window().set_cursor(jamedia_cursor)
+        
+    def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
+
+        # Si el efecto no está agregado al pipe, lo agrega
+        if self.jamediareproductor.efectos:
+            if not nombre_efecto in self.jamediareproductor.efectos:
+                self.click_efecto(None, nombre_efecto)
+                self.widget_efectos.seleccionar_efecto(nombre_efecto)
+                
+        else:
+            self.click_efecto(None, nombre_efecto)
+            self.widget_efectos.seleccionar_efecto(nombre_efecto)
+
+        # Setea el efecto
+        self.jamediareproductor.configurar_efecto(nombre_efecto, propiedad, valor)
+        
+    def click_efecto(self, widget, nombre_efecto):
+        """Recibe el nombre del efecto sobre el que
+        se ha hecho click y decide si debe agregarse
+        al pipe de JAMedia."""
+        
+        agregar = False
+        
+        if self.jamediareproductor.efectos:
+            if not nombre_efecto in self.jamediareproductor.efectos:
+                agregar = True
+            
+        else:
+            agregar = True
+            
+        if agregar:
+            self.jamediareproductor.agregar_efecto( nombre_efecto )
+            
+            # Agrega un widget a self.hbox_efectos_en_pipe
+            botonefecto = WidgetEfecto_en_Pipe()
+            botonefecto.set_tooltip(nombre_efecto)
+            botonefecto.connect('clicked', self.clicked_mini_efecto)
+            lado = G.get_pixels(0.5)
+            botonefecto.set_tamanio(lado, lado)
+            
+            archivo = os.path.join(JAMediaObjectsPath, "Iconos", 'configurar.png')
+            
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
+            botonefecto.imagen.set_from_pixbuf(pixbuf)
+            
+            self.hbox_efectos_en_pipe.pack_start(botonefecto, False, False, 0)
+            
+        else:
+            self.jamediareproductor.quitar_efecto(nombre_efecto)
+            
+            self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
+            
+            # Quitar el widget de self.hbox_efectos_en_pipe
+            for efecto in self.hbox_efectos_en_pipe.get_children():
+                if efecto.get_tooltip_text() == nombre_efecto:
+                    efecto.destroy()
+                    break
+        
+    def clicked_mini_efecto(self, widget, void = None):
+        """Cuando se hace click en el mini objeto en pantalla
+        para efecto agregado, este se quita del pipe de la cámara."""
+        
+        nombre_efecto = widget.get_tooltip_text()
+        self.jamediareproductor.quitar_efecto(nombre_efecto)
+        self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
+        widget.destroy()
+        
+    '''
+    def reset(self):
+        """Resetea la cámara quitando los efectos y
+        actualiza los widgets correspondientes."""
+        
+        for efecto in self.hbox_efectos_en_pipe.get_children():
+            efecto.destroy()
+            
+        for button in self.widget_efectos.gstreamer_efectos.get_children():
+            button.des_seleccionar()
+            
+        self.jamediawebcam.reset()'''
+        
+    def cargar_efectos(self, efectos):
+        """Agrega los widgets con efectos a la paleta de configuración."""
+        
+        self.widget_efectos.cargar_efectos(efectos)
         
     def actualizar_streamings(self, widget):
         """Actualiza los streamings de jamedia,
@@ -400,10 +503,12 @@ class JAMediaPlayer(Gtk.Plug):
             
             if ww == w and hh == h:
                 ventana.unfullscreen()
+                ventana.set_border_width(2)
                 
             else:
                 ventana.fullscreen()
-            
+                ventana.set_border_width(0)
+                
     def mostrar_config(self, widget):
         """Muestra u oculta las opciones de
         configuracion (toolbar_config)."""
@@ -413,8 +518,11 @@ class JAMediaPlayer(Gtk.Plug):
             self.toolbaraddstream,
             self.toolbar_salir])
             
-        if self.toolbar_config.get_visible():
-            self.toolbar_config.hide()
+        #if self.toolbar_config.get_visible():
+            #self.toolbar_config.hide()
+            #self.widget_efectos.hide()
+        if self.scroll_config.get_visible():
+            self.scroll_config.hide()
             
         else:
             config = self.player.get_balance()
@@ -429,7 +537,9 @@ class JAMediaPlayer(Gtk.Plug):
                 contraste = contraste, saturacion = saturacion,
                 hue = hue, gamma = gamma)
                 
-            self.toolbar_config.show_all()
+            #self.toolbar_config.show_all()
+            #self.widget_efectos.show_all()
+            self.scroll_config.show_all()
             
     def switch_reproductor(self, widget, nombre):
         """Recibe la señal "reproductor" desde toolbar_config y
@@ -491,7 +601,7 @@ class JAMediaPlayer(Gtk.Plug):
         if valor and self.toolbar_info.ocultar_controles:
             map(self.ocultar, self.controles_dinamicos)
             map(self.ocultar, [
-                self.toolbar_config,
+                self.scroll_config,
                 self.toolbar_accion,
                 self.toolbaraddstream,
                 self.toolbar_salir])
@@ -621,7 +731,8 @@ class JAMediaPlayer(Gtk.Plug):
         # reestablecer los valores de balance para
         # que no cuelgue la aplicación, por lo tanto,
         # el usuario no puede estar modificando estos
-        # valores en el momento en cambia la pista en el reproductor.
+        # valores en el momento en que cambia la pista
+        # en el reproductor.
         self.toolbar_config.hide()
         
         self.player.load(path)

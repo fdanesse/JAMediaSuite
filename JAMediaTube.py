@@ -353,6 +353,8 @@ if __name__ == "__main__":
             path = os.path.join(item)
             
             if os.path.exists(path):
+                # FIXME: Agregar detectar tipo de archivo
+                # para que abra solo video y audio.
                 archivo = os.path.basename(path)
                 items.append( [archivo,path] )
                 

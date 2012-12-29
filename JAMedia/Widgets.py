@@ -29,6 +29,7 @@ from gi.repository import GObject
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import ToolbarcontrolValores
+from JAMediaObjects.JAMediaWidgets import JAMediaButton
 
 import JAMediaObjects.JAMFileSystem as JAMF
 import JAMediaObjects.JAMediaGlobales as G
@@ -791,3 +792,28 @@ class ToolbarAddStream(Gtk.Toolbar):
         
         self.hide()
         
+class WidgetEfecto_en_Pipe(JAMediaButton):
+    """Representa un efecto agregado al pipe de JAMediaVideo.
+    Es simplemente un objeto gráfico que se agrega debajo del
+    visor de video, para que el usuario tenga una referencia de
+    los efectos que ha agregado y en que orden se encuentran."""
+    
+    def __init__(self):
+        
+        JAMediaButton.__init__(self)
+        
+        self.show_all()
+        
+        self.set_colores(
+            colornormal = G.NEGRO,
+            colorselect = G.NEGRO,
+            colorclicked = G.NEGRO)
+            
+        self.modify_bg(0, self.colornormal)
+        
+    def seleccionar(self):
+        pass
+        
+    def des_seleccionar(self):
+        pass
+    
