@@ -16,7 +16,6 @@ from JAMedia.JAMedia import JAMediaPlayer
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
 import JAMediaObjects
-import JAMediaObjects.JAMediaGlobales as G
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
     
@@ -58,7 +57,6 @@ class Ventana(Gtk.Window):
         self.jamediaplayer.pack_standar()
         if self.pistas:
             GObject.idle_add(self.jamediaplayer.set_nueva_lista, self.pistas)
-        GObject.idle_add(self.jamediaplayer.cargar_efectos, list(G.VIDEOEFECTOS))
         
     def salir(self, widget = None, senial = None):
         

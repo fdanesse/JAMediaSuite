@@ -85,6 +85,9 @@ class Player(GObject.Object):
             'gamma': 1.0
             }
         
+        self.efectos = []
+        self.config_efectos = {}
+        
     def pintar_fondo(self, widget, contexto):
         rect = widget.get_allocation()
         w, h = (rect.width, rect.height)
@@ -158,11 +161,6 @@ class Player(GObject.Object):
     
     def get_balance(self):
         
-        return self.get_balance_default()
-    
-    def get_balance_default(self):
-        """ Retorna los valores por defecto para balance y gamma. """
-        
         return {
         'saturacion': 50.0,
         'contraste': 50.0,
@@ -171,6 +169,18 @@ class Player(GObject.Object):
         'gamma': 10.0
         }
         
+    def agregar_efecto(self, nombre_efecto):
+        
+        pass
+        
+    def quitar_efecto(self, indice_efecto):
+        
+        pass
+    
+    def configurar_efecto(self, nombre_efecto, propiedad, valor):
+        
+        pass
+    
     def rotar(self, valor):
         pass
     

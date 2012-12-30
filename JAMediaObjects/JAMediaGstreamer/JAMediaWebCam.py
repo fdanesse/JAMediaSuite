@@ -652,9 +652,9 @@ class Efectos_Video_bin(Gst.Bin):
         self.config_efectos = config_efectos
         
         queue = Gst.ElementFactory.make('queue', "queue")
-        queue.set_property('max-size-buffers', 1000)
-        queue.set_property('max-size-bytes', 0)
-        queue.set_property('max-size-time', 0)
+        #queue.set_property('max-size-buffers', 1000)
+        #queue.set_property('max-size-bytes', 0)
+        #queue.set_property('max-size-time', 0)
         
         videoconvert = Gst.ElementFactory.make(
             'videoconvert',

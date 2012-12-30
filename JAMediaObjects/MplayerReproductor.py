@@ -80,6 +80,9 @@ class MplayerReproductor(GObject.GObject):
             'gamma': 0
             }
             
+        self.efectos = []
+        self.config_efectos = {}
+        
     def stop(self):
         """Detiene todo."""
         
@@ -428,17 +431,18 @@ class MplayerReproductor(GObject.GObject):
         'gamma': (self.config['gamma']+100) * 100.0 / 200.0
         }
     
-    def get_balance_default(self):
-        """ Retorna los valores por defecto para balance y gamma en %. """
+    def agregar_efecto(self, nombre_efecto):
         
-        return {
-        'saturacion': 50.0,
-        'contraste': 50.0,
-        'brillo': 50.0,
-        'hue': 50.0,
-        'gamma': 10.0
-        }
+        pass
         
+    def quitar_efecto(self, indice_efecto):
+        
+        pass
+    
+    def configurar_efecto(self, nombre_efecto, propiedad, valor):
+        
+        pass
+    
     def rotar(self, valor):
         """Mplayer no permite rotación de video."""
         

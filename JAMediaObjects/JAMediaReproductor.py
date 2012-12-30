@@ -30,6 +30,7 @@ from gi.repository import GstVideo
 
 import JAMediaGstreamer
 from JAMediaGstreamer.JAMediaWebCam import Efectos_Video_bin
+from JAMediaGstreamer.JAMediaWebCam import Foto_bin
 
 GObject.threads_init()
 Gst.init([])
@@ -76,22 +77,23 @@ class JAMediaReproductor(GObject.GObject):
         
         self.name = "JAMediaReproductor"
         self.ventana_id = ventana_id
-        self.pipeline = None
+        
         self.estado = None
         
         self.duracion = 0
         self.posicion = 0
-        self.actualizador = None
+        self.actualizador = False
         
         self.player = None
         self.bus = None
+        self.video_pipeline = None
+        self.efectos_bin = None
         
         self.videobalance = None
         self.gamma = None
         self.videoflip = None
-        self.video_balance_bin = None
         
-        self.video_in_stream = None
+        self.video_in_stream = False
         
         self.config = {}
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
@@ -103,104 +105,123 @@ class JAMediaReproductor(GObject.GObject):
         self.efectos = []
         self.config_efectos = {}
         
-        self.set_pipeline()
+        self.reset()
         
-    def set_pipeline(self):
+    def reset(self):
         
-        if self.pipeline:
-            del(self.pipeline)
+        if self.video_pipeline:
+            del(self.video_pipeline)
             
-        self.pipeline = Gst.Pipeline()
+        if self.efectos_bin:
+            del(self.efectos_bin)
+            
+        self.video_pipeline = Gst.Pipeline()
         
-        self.player = Gst.ElementFactory.make("playbin", "player")
+        self.player = Gst.ElementFactory.make(
+            "playbin", "player")
+        self.player.set_property(
+            'force-aspect-ratio', True)
+
+        self.videobalance = Gst.ElementFactory.make(
+            'videobalance', "videobalance")
         
-        self.videobalance = Gst.ElementFactory.make('videobalance', "videobalance")
+        self.gamma = Gst.ElementFactory.make(
+            'gamma', "gamma")
         
-        self.gamma = Gst.ElementFactory.make('gamma', "gamma")
-        
-        self.videoflip = Gst.ElementFactory.make('videoflip', "videoflip")
+        self.videoflip = Gst.ElementFactory.make(
+            'videoflip', "videoflip")
         
         self.player.set_window_handle(self.ventana_id)
         
-        self.bus = self.pipeline.get_bus()
+        self.bus = self.player.get_bus()
         self.bus.add_signal_watch()
         self.bus.connect('message', self.on_mensaje)
         
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.sync_message)
         
-        if self.video_balance_bin:
-            del(self.video_balance_bin)
+        self.multi_out_tee = Gst.ElementFactory.make(
+            'tee', "multi_out_tee")
         
-        self.video_balance_bin = self.get_balance_bin()
+        self.efectos_bin = Efectos_Video_bin(
+            self.efectos, self.config_efectos)
         
-        self.pipeline.add(self.player)
-        self.player.set_property('video-sink', self.video_balance_bin)
+        pantalla = Gst.ElementFactory.make(
+            'xvimagesink', "pantalla")
         
-        self.video_in_stream = None
+        #self.foto_bin = Foto_bin()
         
-    def get_balance_bin(self):
-        """Bin queue + efectos de video + Balance + flip."""
+        self.video_pipeline.add(self.multi_out_tee)
+        self.video_pipeline.add(self.efectos_bin)
+        self.video_pipeline.add(self.videobalance)
+        self.video_pipeline.add(self.gamma)
+        self.video_pipeline.add(self.videoflip)
+        self.video_pipeline.add(pantalla)
+        #self.video_pipeline.add(self.foto_bin)
         
-        bin = Gst.Bin()
-        bin.set_name('balance_bin')
-        
-        efectos_bin = Efectos_Video_bin(self.efectos, self.config_efectos)
-        
-        # self.videobalance
-        # self.self.gamma
-        # self.self.videoflip
-        
-        pantalla = Gst.ElementFactory.make('xvimagesink', "pantalla")
-        
-        bin.add(efectos_bin)
-        bin.add(self.videobalance)
-        bin.add(self.gamma)
-        bin.add(self.videoflip)
-        bin.add(pantalla)
-        
-        efectos_bin.link(self.videobalance)
+        self.multi_out_tee.link(self.efectos_bin)
+        self.efectos_bin.link(self.videobalance)
         self.videobalance.link(self.gamma)
         self.gamma.link(self.videoflip)
         self.videoflip.link(pantalla)
         
-        bin.add_pad(Gst.GhostPad.new("sink", efectos_bin.get_static_pad ("sink")))
+        #self.multi_out_tee.link(self.foto_bin)
         
-        return bin
+        self.video_pipeline.add_pad(
+            Gst.GhostPad.new(
+                "sink",
+                self.multi_out_tee.get_static_pad ("sink")))
+        
+        self.player.set_property('video-sink', self.video_pipeline)
+        
+        self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
+        self.config['contraste'] = CONFIG_DEFAULT['contraste']
+        self.config['brillo'] = CONFIG_DEFAULT['brillo']
+        self.config['hue'] = CONFIG_DEFAULT['hue']
+        self.config['gamma'] = CONFIG_DEFAULT['gamma']
+        
+        self.videobalance.set_property('saturation', self.config['saturacion'])
+        self.videobalance.set_property('contrast', self.config['contraste'])
+        self.videobalance.set_property('brightness', self.config['brillo'])
+        self.videobalance.set_property('hue', self.config['hue'])
+        
+        self.gamma.set_property('gamma', self.config['gamma'])
+        
+        self.videoflip.set_property('method', 0)
+        
+        self.video_in_stream = False
     
     def load(self, uri):
         """Carga un archivo o stream en el pipe de Gst."""
         
         self.stop()
-        self.set_pipeline()
+        self.reset()
         
         if os.path.exists(uri):
             direccion = Gst.filename_to_uri(uri)
             self.player.set_property("uri", direccion)
             self.play()
-            # reconfigurar balance y flip
             
         else:
             # FIXME: Funciona con la radio pero no con la Tv
             if Gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
                 self.play()
-                # reconfigurar balance y flip
         
     def play(self):
         """Pone el pipe de Gst en Gst.State.PLAYING"""
         
-        self.pipeline.set_state(Gst.State.PLAYING)
+        self.player.set_state(Gst.State.PLAYING)
 
     def stop(self):
         """Pone el pipe de Gst en Gst.State.NULL"""
         
-        self.pipeline.set_state(Gst.State.NULL)
+        self.player.set_state(Gst.State.NULL)
         
     def pause(self):
         """Pone el pipe de Gst en Gst.State.PAUSED"""
         
-        self.pipeline.set_state(Gst.State.PAUSED)
+        self.player.set_state(Gst.State.PAUSED)
         
     def pause_play(self):
         """Llama a play() o pause()
@@ -213,6 +234,213 @@ class JAMediaReproductor(GObject.GObject):
             
         elif self.estado == Gst.State.PLAYING:
             self.pause()
+        
+    def rotar(self, valor):
+        """ Rota el Video. """
+        
+        rot = self.videoflip.get_property('method')
+        
+        if valor == "Derecha":
+            if rot < 3:
+                rot += 1
+                
+            else:
+                rot = 0
+                
+        elif valor == "Izquierda":
+            if rot > 0:
+                rot -= 1
+                
+            else:
+                rot = 3
+                
+        self.videoflip.set_property('method', rot)
+        
+    def set_balance(self, brillo = None, contraste = None,
+        saturacion = None, hue = None, gamma = None):
+        """Seteos de balance en la fuente de video.
+        Recibe % en float y convierte a los valores del filtro."""
+        
+        if saturacion != None:
+            # Double. Range: 0 - 2 Default: 1
+            self.config['saturacion'] = 2.0 * saturacion / 100.0
+            self.videobalance.set_property('saturation', self.config['saturacion'])
+            
+        if contraste != None:
+            # Double. Range: 0 - 2 Default: 1
+            self.config['contraste'] = 2.0 * contraste / 100.0
+            self.videobalance.set_property('contrast', self.config['contraste'])
+            
+        if brillo != None:
+            # Double. Range: -1 - 1 Default: 0
+            self.config['brillo'] = (2.0 * brillo / 100.0) - 1.0
+            self.videobalance.set_property('brightness', self.config['brillo'])
+            
+        if hue != None:
+            # Double. Range: -1 - 1 Default: 0
+            self.config['hue'] = (2.0 * hue / 100.0) - 1.0
+            self.videobalance.set_property('hue', self.config['hue'])
+            
+        if gamma != None:
+            # Double. Range: 0,01 - 10 Default: 1
+            self.config['gamma'] = (10.0 * gamma / 100.0)
+            self.gamma.set_property('gamma', self.config['gamma'])
+            
+    def get_balance(self):
+        """Retorna los valores actuales de balance en % float."""
+        
+        return {
+        'saturacion': self.config['saturacion'] * 100.0 / 2.0,
+        'contraste': self.config['contraste'] * 100.0 / 2.0,
+        'brillo': (self.config['brillo']+1) * 100.0 / 2.0,
+        'hue': (self.config['hue']+1) * 100.0 / 2.0,
+        'gamma': self.config['gamma'] * 100.0 / 10.0
+        }
+        
+    def new_handle(self, reset):
+        """Elimina o reinicia la funcion que
+        envia los datos de actualizacion para
+        la barra de progreso del reproductor."""
+        
+        if self.actualizador:
+            GObject.source_remove(self.actualizador)
+            self.actualizador = False
+            
+        if reset:
+            self.actualizador = GObject.timeout_add(500, self.handle)
+        
+    def handle(self):
+        """Envia los datos de actualizacion para
+        la barra de progreso del reproductor."""
+        
+        bool1, valor1 = self.player.query_duration(Gst.Format.TIME)
+        bool2, valor2 = self.player.query_position(Gst.Format.TIME)
+        
+        duracion = float(valor1)
+        posicion = float(valor2)
+        
+        pos = 0
+        try:
+            pos = int(posicion * 100 / duracion)
+            
+        except:
+            pass
+        
+        if pos < 0 or pos > self.duracion: return True
+        
+        if self.duracion != duracion: self.duracion = duracion
+        
+        if pos != self.posicion:
+            self.posicion = pos
+            self.emit("newposicion", self.posicion)
+            # print "***", gst.video_convert_frame(self.player.get_property("frame"))
+            
+        return True
+    
+    def set_position(self, posicion):
+        """Permite desplazarse por
+        la pista que se esta reproduciendo."""
+        
+        if self.duracion < posicion:
+            self.emit("newposicion", self.posicion)
+            return
+        
+        posicion = self.duracion * posicion / 100
+        
+        self.player.seek_simple(
+            Gst.Format.TIME,
+            Gst.SeekFlags.FLUSH |
+            Gst.SeekFlags.KEY_UNIT,
+            posicion)
+    
+    def get_volumen(self):
+        """Obtiene el volumen de reproducción.
+        Lo hace solo al reproducir el primer archivo
+        o streaming y envía el dato para actualizar
+        el control de volúmen."""
+        
+        print "Volumen:", self.player.get_property('volume')
+        
+    def set_volumen(self, valor):
+        """Cambia el volúmen de Reproducción."""
+        
+        self.player.set_property('volume', float(valor/100))
+        
+    def agregar_efecto(self, nombre_efecto):
+        """Agrega un efecto según su nombre."""
+        
+        self.efectos.append( nombre_efecto )
+        self.config_efectos[nombre_efecto] = {}
+        
+        self.new_handle(False)
+        self.reconstruir_efectos()
+        self.new_handle(True)
+        
+    def quitar_efecto(self, indice_efecto):
+        """Quita el efecto correspondiente al indice o
+        al nombre que recibe."""
+        
+        if type(indice_efecto) == int:
+            self.efectos.remove(self.efectos[indice_efecto])
+            if self.efectos[indice_efecto] in self.config_efectos.keys():
+                del (self.config_efectos[self.efectos[indice_efecto]])
+                
+        elif type(indice_efecto) == str:
+            for efecto in self.efectos:
+                if efecto == indice_efecto:
+                    self.efectos.remove(efecto)
+                    if efecto in self.config_efectos.keys():
+                        del (self.config_efectos[efecto])
+                    break
+        
+        self.new_handle(False)
+        self.reconstruir_efectos()
+        self.new_handle(True)
+        
+    def reconstruir_efectos(self):
+        
+        # FIXME: stream stopped, reason not-negotiated
+        """
+        uri = self.player.get_property("uri")
+        
+        if uri and uri != None:
+            self.pause()
+            
+        self.multi_out_tee.unlink(self.efectos_bin)
+        self.efectos_bin.unlink(self.videobalance)
+        
+        self.video_pipeline.remove(self.efectos_bin)
+        del(self.efectos_bin)
+        
+        self.efectos_bin = Efectos_Video_bin(
+            self.efectos, self.config_efectos)
+        
+        self.video_pipeline.add(self.efectos_bin)
+        
+        self.multi_out_tee.link(self.efectos_bin)
+        self.efectos_bin.link(self.videobalance)
+        
+        self.player.set_property('video-sink', self.video_pipeline)
+        
+        if uri and uri != None:
+            self.play()"""
+            
+        self.stop()
+        
+        uri = self.player.get_property("uri")
+        
+        self.reset()
+        
+        if uri: self.load(uri)
+        
+    def configurar_efecto(self, nombre_efecto, propiedad, valor):
+        """Configura un efecto en el pipe."""
+        
+        efectos_bin = self.video_pipeline.get_by_name('efectos_bin')
+        bin_efecto = efectos_bin.get_by_name(nombre_efecto)
+        self.config_efectos[nombre_efecto][propiedad] = valor
+        efectos_bin.config_efectos[nombre_efecto][propiedad] = valor
+        bin_efecto.get_by_name(nombre_efecto).set_property(propiedad, valor)
         
     def sync_message(self, bus, mensaje):
         """Captura los mensajes en el bus del pipe Gst."""
@@ -334,7 +562,7 @@ class JAMediaReproductor(GObject.GObject):
         """Captura los mensajes en el bus del pipe Gst."""
         
         if mensaje.type == Gst.MessageType.EOS:
-            #self.pipeline.seek_simple(Gst.Format.TIME,
+            #self.video_pipeline.seek_simple(Gst.Format.TIME,
             #Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0)
             self.new_handle(False)
             self.emit("endfile")
@@ -366,233 +594,6 @@ class JAMediaReproductor(GObject.GObject):
         else:
             pass'''
         
-    def rotar(self, valor):
-        """ Rota el Video. """
-        
-        rot = self.videoflip.get_property('method')
-        
-        if valor == "Derecha":
-            if rot < 3:
-                rot += 1
-                
-            else:
-                rot = 0
-                
-        elif valor == "Izquierda":
-            if rot > 0:
-                rot -= 1
-                
-            else:
-                rot = 3
-                
-        self.videoflip.set_property('method', rot)
-        
-    def set_balance(self, brillo = None, contraste = None,
-        saturacion = None, hue = None, gamma = None):
-        """Seteos de balance en la fuente de video.
-        Recibe % en float y convierte a los valores del filtro."""
-        
-        if saturacion != None:
-            # Double. Range: 0 - 2 Default: 1
-            self.config['saturacion'] = 2.0 * saturacion / 100.0
-            self.videobalance.set_property('saturation', self.config['saturacion'])
-            
-        if contraste != None:
-            # Double. Range: 0 - 2 Default: 1
-            self.config['contraste'] = 2.0 * contraste / 100.0
-            self.videobalance.set_property('contrast', self.config['contraste'])
-            
-        if brillo != None:
-            # Double. Range: -1 - 1 Default: 0
-            self.config['brillo'] = (2.0 * brillo / 100.0) - 1.0
-            self.videobalance.set_property('brightness', self.config['brillo'])
-            
-        if hue != None:
-            # Double. Range: -1 - 1 Default: 0
-            self.config['hue'] = (2.0 * hue / 100.0) - 1.0
-            self.videobalance.set_property('hue', self.config['hue'])
-            
-        if gamma != None:
-            # Double. Range: 0,01 - 10 Default: 1
-            self.config['gamma'] = (10.0 * gamma / 100.0)
-            self.gamma.set_property('gamma', self.config['gamma'])
-            
-    def get_balance(self):
-        """Retorna los valores actuales de balance en % float."""
-        
-        return {
-        'saturacion': self.config['saturacion'] * 100.0 / 2.0,
-        'contraste': self.config['contraste'] * 100.0 / 2.0,
-        'brillo': (self.config['brillo']+1) * 100.0 / 2.0,
-        'hue': (self.config['hue']+1) * 100.0 / 2.0,
-        'gamma': self.config['gamma'] * 100.0 / 10.0
-        }
-        
-    def get_balance_default(self):
-        """ Retorna los valores por defecto para balance y gamma. """
-        
-        return {
-        'saturacion': 50.0,
-        'contraste': 50.0,
-        'brillo': 50.0,
-        'hue': 50.0,
-        'gamma': 10.0
-        }
-        
-    '''
-    def reset(self):
-        """Re establece el pipe al estado original (sin efectos)."""
-        
-        self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
-        self.config['contraste'] = CONFIG_DEFAULT['contraste']
-        self.config['brillo'] = CONFIG_DEFAULT['brillo']
-        self.config['hue'] = CONFIG_DEFAULT['hue']
-        self.config['gamma'] = CONFIG_DEFAULT['gamma']
-        
-        self.videobalance.set_property('saturation', self.config['saturacion'])
-        self.videobalance.set_property('contrast', self.config['contraste'])
-        self.videobalance.set_property('brightness', self.config['brillo'])
-        self.videobalance.set_property('hue', self.config['hue'])
-        self.gamma.set_property('gamma', self.config['gamma'])
-        
-        self.videoflip.set_property('method', 0)
-        
-        self.stop()
-        
-        map(self.remover, self.pipeline.children)
-        
-        self.setup_init()
-        
-        self.play()'''
-        
-    def new_handle(self, reset):
-        """Elimina o reinicia la funcion que
-        envia los datos de actualizacion para
-        la barra de progreso del reproductor."""
-        
-        if self.actualizador:
-            GObject.source_remove(self.actualizador)
-            self.actualizador = None
-            
-        if reset:
-            self.actualizador = GObject.timeout_add(500, self.handle)
-        
-    def handle(self):
-        """Envia los datos de actualizacion para
-        la barra de progreso del reproductor."""
-        
-        bool1, valor1 = self.pipeline.query_duration(Gst.Format.TIME)
-        bool2, valor2 = self.pipeline.query_position(Gst.Format.TIME)
-        
-        duracion = float(valor1)
-        posicion = float(valor2)
-        
-        pos = 0
-        try:
-            pos = int(posicion * 100 / duracion)
-            
-        except:
-            pass
-        
-        if pos < 0 or pos > self.duracion: return True
-        
-        if self.duracion != duracion: self.duracion = duracion
-        
-        if pos != self.posicion:
-            self.posicion = pos
-            self.emit("newposicion", self.posicion)
-            # print "***", gst.video_convert_frame(self.player.get_property("frame"))
-            
-        return True
-    
-    def set_position(self, posicion):
-        """Permite desplazarse por
-        la pista que se esta reproduciendo."""
-        
-        if self.duracion < posicion:
-            self.emit("newposicion", self.posicion)
-            return
-        
-        posicion = self.duracion * posicion / 100
-        
-        self.pipeline.seek_simple(
-            Gst.Format.TIME,
-            Gst.SeekFlags.FLUSH |
-            Gst.SeekFlags.KEY_UNIT,
-            posicion)
-    
-    def get_volumen(self):
-        """Obtiene el volumen de reproducción.
-        Lo hace solo al reproducir el primer archivo
-        o streaming y envía el dato para actualizar
-        el control de volúmen."""
-        pass
-        
-    def set_volumen(self, valor):
-        """Cambia el volúmen de Reproducción."""
-        
-        self.player.set_property('volume', float(valor/100))
-        
-    def agregar_efecto(self, nombre_efecto):
-        """Agrega un efecto según su nombre."""
-        
-        self.efectos.append( nombre_efecto )
-        self.config_efectos[nombre_efecto] = {}
-        '''
-        self.new_handle(False)
-        self.pause_play()
-        
-        for child in self.video_balance_bin.children:
-            self.video_balance_bin.remove(child)
-        
-        self.video_balance_bin = self.get_balance_bin()
-        
-        self.player.set_property('video-sink', self.video_balance_bin)
-        
-        self.pause_play()
-        self.new_handle(True)'''
-        
-        self.stop()
-        
-        uri = self.player.get_property("uri")
-        
-        self.set_pipeline()
-        
-        if uri: self.load(uri)
-        
-    def quitar_efecto(self, indice_efecto):
-        """Quita el efecto correspondiente al indice o
-        al nombre que recibe."""
-        
-        if type(indice_efecto) == int:
-            self.efectos.remove(self.efectos[indice_efecto])
-            if self.efectos[indice_efecto] in self.config_efectos.keys():
-                del (self.config_efectos[self.efectos[indice_efecto]])
-                
-        elif type(indice_efecto) == str:
-            for efecto in self.efectos:
-                if efecto == indice_efecto:
-                    self.efectos.remove(efecto)
-                    if efecto in self.config_efectos.keys():
-                        del (self.config_efectos[efecto])
-                    break
-        
-        self.stop()
-        
-        uri = self.player.get_property("uri")
-        
-        self.set_pipeline()
-        
-        if uri: self.load(uri)
-        
-    def configurar_efecto(self, nombre_efecto, propiedad, valor):
-        """Configura un efecto en el pipe."""
-        
-        efectos_bin = self.video_balance_bin.get_by_name('efectos_bin')
-        bin_efecto = efectos_bin.get_by_name(nombre_efecto)
-        bin_efecto.get_by_name(nombre_efecto).set_property(propiedad, valor)
-        self.config_efectos[nombre_efecto][propiedad] = valor
-        efectos_bin.config_efectos[nombre_efecto][propiedad] = valor
         
 class JAMediaGrabador(GObject.GObject):
     """Graba desde un streaming de radio o tv."""
@@ -606,7 +607,7 @@ class JAMediaGrabador(GObject.GObject):
         GObject.GObject.__init__(self)
         
         self.patharchivo = archivo
-        self.actualizador = None
+        self.actualizador = False
         self.info = ""
         self.uri = ""
         
@@ -632,8 +633,8 @@ class JAMediaGrabador(GObject.GObject):
     def set_pipeline(self):
         """Crea el pipe de Gst. (playbin)"""
         
-        if self.pipeline:
-            del(self.pipeline)
+        if self.video_pipeline:
+            del(self.video_pipeline)
         
         self.pipeline = Gst.Pipeline()
         
@@ -664,7 +665,7 @@ class JAMediaGrabador(GObject.GObject):
         
         self.player.set_property('audio-sink', self.jamedia_sink)
         
-        self.bus = self.pipeline.get_bus()
+        self.bus = self.video_pipeline.get_bus()
         self.bus.add_signal_watch()
         self.bus.connect('message', self.on_mensaje)
         
@@ -709,7 +710,7 @@ class JAMediaGrabador(GObject.GObject):
         
         if self.actualizador:
             GObject.source_remove(self.actualizador)
-            self.actualizador = None
+            self.actualizador = False
             
         if reset:
             self.actualizador = GObject.timeout_add(500, self.handle)
