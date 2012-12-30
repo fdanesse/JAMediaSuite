@@ -35,6 +35,7 @@ from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 from JAMediaObjects.JAMediaGstreamer.JAMediaWebCam import JAMediaWebCam
 
 import JAMediaObjects.JAMediaGlobales as G
+import JAMediaObjects.JAMFileSystem as JAMF
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
@@ -319,21 +320,46 @@ class JAMediaVideo(Gtk.Window):
         self.jamediawebcam.reset()
         self.jamediawebcam.stop()
         sys.exit(0)
+
+
+def get_item_list(path):
     
+    if os.path.exists(path):
+        if os.path.isfile(path):
+            archivo = os.path.basename(path)
+            
+            if 'audio' in JAMF.describe_archivo(path) or \
+                'video' in JAMF.describe_archivo(path):
+                    return [archivo, path]
+        
+    return False
+
 if __name__ == "__main__":
     
     items = []
     
     if len(sys.argv) > 1:
-        for item in sys.argv[1:]:
-            path = os.path.join(item)
+        
+        for campo in sys.argv[1:]:
+            path = os.path.join(campo)
             
-            if os.path.exists(path):
-                # FIXME: Agregar detectar tipo de archivo
-                # para que abra solo video, audio e imagenes.
-                archivo = os.path.basename(path)
-                items.append( [archivo,path] )
+            if os.path.isfile(path):
+                item = get_item_list(path)
                 
+                if item:
+                    items.append( item )
+                    
+            elif os.path.isdir(path):
+                
+                for arch in os.listdir(path):
+                    newpath = os.path.join(path, arch)
+                    
+                    if os.path.isfile(newpath):
+                        item = get_item_list(newpath)
+                        
+                        if item:
+                            items.append( item )
+                            
         if items:
             jamediavideo = JAMediaVideo()
             jamediavideo.set_pistas(items)

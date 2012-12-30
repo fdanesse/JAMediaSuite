@@ -10,15 +10,15 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 
-import JAMedia
-from JAMedia.JAMedia import JAMediaPlayer
-
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
 import JAMediaObjects
-from JAMediaObjects import JAMFileSystem as JAMF
+import JAMediaObjects.JAMFileSystem as JAMF
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+import JAMedia
+from JAMedia.JAMedia import JAMediaPlayer
     
 class Ventana(Gtk.Window):
     
@@ -118,29 +118,4 @@ if __name__ == "__main__":
         jamedia = Ventana()
         
     Gtk.main()
-    
-    '''
-    items = []
-    
-    if len(sys.argv) > 1:
-        for item in sys.argv[1:]:
-            path = os.path.join(item)
-            
-            if os.path.exists(path):
-                # FIXME: Agregar detectar tipo de archivo
-                # para que abra solo video y audio.
-                archivo = os.path.basename(path)
-                items.append( [archivo,path] )
-                
-        if items:
-            jamedia = Ventana()
-            jamedia.set_pistas(items)
-            
-        else:
-            jamedia = Ventana()
-        
-    else:
-        jamedia = Ventana()
-        
-    Gtk.main()'''
     
