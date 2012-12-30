@@ -112,13 +112,14 @@ class JAMediaPlayer(Gtk.Plug):
         
     y luego proceder de la siguiente forma:
         
-            GObject.idle_add(self.setup_init)
+    GObject.idle_add(self.setup_init)
         
-        def setup_init(self):
-            self.jamediaplayer.setup_init()
-            # self.jamediaplayer.pack_standar()
-            # Esta última linea no debe ir cuando se embebe
-            
+    def setup_init(self):
+        self.jamediaplayer.setup_init()
+        # Empaqueta las listas standar de JAMedia
+        # self.jamediaplayer.pack_standar()
+        # self.jamediaplayer.pack_efectos()
+        
     NOTA: Tambien se puede ejecutar JAMedia directamente
     mediante python JAMedia.py
     """
@@ -230,7 +231,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.scroll_config.add_with_viewport (self.vbox_config)
         
         self.vbox_config.pack_start(self.toolbar_config, False, False, 0)
-        self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
+        #self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
         
         vbox.pack_start(self.scroll_config, True, True, 0)
         
@@ -330,7 +331,7 @@ class JAMediaPlayer(Gtk.Plug):
             Gdk.Display.get_default(), pixbuf, 0, 0)
         self.get_parent_window().set_cursor(jamedia_cursor)
         
-        GObject.idle_add(self.cargar_efectos, list(G.JAMedia_VIDEOEFECTOS))
+        #GObject.idle_add(self.cargar_efectos, list(G.JAMedia_VIDEOEFECTOS))
         
     def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
         """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
@@ -712,6 +713,11 @@ class JAMediaPlayer(Gtk.Plug):
             False, False, 0)
         self.pack_vbox_lista_reproduccion()
         
+    def pack_efectos(self):
+        
+        self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
+        GObject.idle_add(self.cargar_efectos, list(G.JAMedia_VIDEOEFECTOS))
+        
     def add_stream(self, widget):
         """Recibe la señal add_stream desde toolbarlist
         y abre la toolbar que permite agregar un stream."""
@@ -783,6 +789,19 @@ class JAMediaPlayer(Gtk.Plug):
         Esto es solo para JAMedia no embebido ya que cuando JAMedia
         esta embebida, no posee la toolbarlist."""
         
+        model, iter = self.lista_de_reproduccion.treeselection.get_selected()
+        ultimopath = False
+        
+        if model and iter:
+            valor = model.get_value(iter, 2)
+            
+            if valor:
+                descripcion = JAMF.describe_uri(valor)
+                
+                if descripcion:
+                    if descripcion[2]:
+                        ultimopath = valor
+                
         map(self.ocultar, [
             self.toolbar_accion,
             self.toolbaraddstream])
@@ -836,6 +855,11 @@ class JAMediaPlayer(Gtk.Plug):
                 
         elif indice == 8:
             selector = Selector_de_Archivos(self)
+            
+            if ultimopath:
+                directorio = "file://%s" % os.path.dirname(ultimopath)
+                selector.set_current_folder_uri(directorio)
+                
             selector.connect('archivos-seleccionados', self.cargar_directorio)
             
     def cargar_directorio(self, widget, archivos):

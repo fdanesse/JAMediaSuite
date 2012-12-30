@@ -16,6 +16,7 @@ from JAMedia.JAMedia import JAMediaPlayer
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
 import JAMediaObjects
+from JAMediaObjects import JAMFileSystem as JAMF
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
     
@@ -55,8 +56,11 @@ class Ventana(Gtk.Window):
         
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
+        
         if self.pistas:
             GObject.idle_add(self.jamediaplayer.set_nueva_lista, self.pistas)
+        
+        self.jamediaplayer.pack_efectos()
         
     def salir(self, widget = None, senial = None):
         
@@ -64,8 +68,58 @@ class Ventana(Gtk.Window):
         commands.getoutput('killall mplayer')
         sys.exit(0)
         
+
+def get_item_list(path):
+    
+    if os.path.exists(path):
+        if os.path.isfile(path):
+            archivo = os.path.basename(path)
+            
+            if 'audio' in JAMF.describe_archivo(path) or \
+                'video' in JAMF.describe_archivo(path):
+                    return [archivo, path]
+        
+    return False
+
 if __name__ == "__main__":
     
+    items = []
+    
+    if len(sys.argv) > 1:
+        
+        for campo in sys.argv[1:]:
+            path = os.path.join(campo)
+            
+            if os.path.isfile(path):
+                item = get_item_list(path)
+                
+                if item:
+                    items.append( item )
+                    
+            elif os.path.isdir(path):
+                
+                for arch in os.listdir(path):
+                    newpath = os.path.join(path, arch)
+                    
+                    if os.path.isfile(newpath):
+                        item = get_item_list(newpath)
+                        
+                        if item:
+                            items.append( item )
+                            
+        if items:
+            jamedia = Ventana()
+            jamedia.set_pistas(items)
+            
+        else:
+            jamedia = Ventana()
+        
+    else:
+        jamedia = Ventana()
+        
+    Gtk.main()
+    
+    '''
     items = []
     
     if len(sys.argv) > 1:
@@ -88,5 +142,5 @@ if __name__ == "__main__":
     else:
         jamedia = Ventana()
         
-    Gtk.main()
+    Gtk.main()'''
     
