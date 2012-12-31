@@ -31,8 +31,13 @@ from gi.repository import Gst
 from gi.repository import GstVideo
 from gi.repository import GdkPixbuf
 
+import JAMediaObjects
 from JAMediaObjects import JAMediaGlobales as G
-   
+
+from JAMediaBins import Efectos_Video_bin
+from JAMediaBins import Vorbisenc_bin
+from JAMediaBins import Audio_Visualizador_bin
+
 GObject.threads_init()
 Gst.init([])
 
@@ -138,7 +143,7 @@ class JAMediaAudio(GObject.GObject):
         
         multi_out_tee = Gst.ElementFactory.make('tee', "multi_out_tee")
         
-        audio_visualizador_bin = JAMedia_Audio_Visualizador_bin(self.audio_visualizador)
+        audio_visualizador_bin = Audio_Visualizador_bin(self.audio_visualizador)
         
         efectos_bin = Efectos_Video_bin(self.efectos, self.config_efectos)
         
@@ -212,7 +217,7 @@ class JAMediaAudio(GObject.GObject):
             #    estado = 'Fotografiando'
             
             #elif self.pipeline.get_by_name('video_bin'):
-            if self.pipeline.get_by_name('audio_bin'):
+            if self.pipeline.get_by_name('audio_vorbisenc_bin'):
                 estado = 'GrabandoAudio'
                 
         else:
@@ -345,7 +350,7 @@ class JAMediaAudio(GObject.GObject):
         multi_out_tee = self.pipeline.get_by_name('multi_out_tee')
         
         #video_bin = self.pipeline.get_by_name('video_bin')
-        audio_bin = self.pipeline.get_by_name('audio_bin')
+        audio_bin = self.pipeline.get_by_name('audio_vorbisenc_bin')
         
         oggmux = self.pipeline.get_by_name('oggmux')
         filesink = self.pipeline.get_by_name('filesink')
@@ -483,150 +488,6 @@ class JAMediaAudio(GObject.GObject):
         
         print "Configurar Visualizador:", nombre_efecto, propiedad, valor
         #self.pipeline.get_by_name(nombre_efecto).set_property(propiedad, valor)'''
-        
-class Vorbisenc_bin(Gst.Bin):
-    """Bin para elementos codificadores
-    de audio a vorbisenc."""
-    
-    def __init__(self):
-        
-        Gst.Bin.__init__(self)
-        
-        self.set_name('audio_bin')
-        
-        audiorate = Gst.ElementFactory.make('audiorate', "audiorate")
-        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
-        vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
-        
-        self.add(audiorate)
-        self.add(audioconvert)
-        self.add(vorbisenc)
-        
-        audiorate.link(audioconvert)
-        audioconvert.link(vorbisenc)
-        
-        pad = audiorate.get_static_pad("sink")
-        self.add_pad(Gst.GhostPad.new("sink", pad))
-        
-        pad = vorbisenc.get_static_pad("src")
-        self.add_pad(Gst.GhostPad.new("src", pad))
-        
-class JAMedia_Audio_Visualizador_bin(Gst.Bin):
-    """Bin visualizador de audio."""
-    
-    def __init__(self, visualizador):
-        
-        Gst.Bin.__init__(self)
-        
-        self.set_name('audio_visualizador_bin')
-        
-        self.visualizador = visualizador
-        
-        queue = Gst.ElementFactory.make("queue", "queue")
-        
-        efecto = Gst.ElementFactory.make(
-            self.visualizador,
-            self.visualizador)
-            
-        videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
-        
-        self.add(queue)
-        self.add(efecto)
-        self.add(videoconvert)
-
-        queue.link(efecto)
-        efecto.link(videoconvert)
-
-        pad = queue.get_static_pad("sink")
-        self.add_pad(Gst.GhostPad.new("sink", pad))
-        
-        pad = videoconvert.get_static_pad("src")
-        self.add_pad(Gst.GhostPad.new("src", pad))
-        
-class JAMedia_Efecto_bin(Gst.Bin):
-    """Bin para efecto de video individual."""
-    
-    def __init__(self, efecto):
-        
-        Gst.Bin.__init__(self)
-        
-        self.set_name(efecto)
-    
-        videoconvert = Gst.ElementFactory.make("videoconvert",
-            "videoconvert_%s" % (efecto))
-            
-        efecto = Gst.ElementFactory.make(efecto, efecto)
-
-        self.add(videoconvert)
-        self.add(efecto)
-
-        videoconvert.link(efecto)
-    
-        self.add_pad(Gst.GhostPad.new("sink", videoconvert.get_static_pad ("sink")))
-        self.add_pad(Gst.GhostPad.new("src", efecto.get_static_pad("src")))
-        
-class Efectos_Video_bin(Gst.Bin):
-    """Bin para agregar efectos de video."""
-    
-    def __init__(self, efectos, config_efectos):
-        
-        Gst.Bin.__init__(self)
-        
-        self.set_name('efectos_bin')
-        
-        self.efectos = efectos
-        self.config_efectos = config_efectos
-        
-        queue = Gst.ElementFactory.make('queue', "queue")
-        queue.set_property('max-size-buffers', 1000)
-        queue.set_property('max-size-bytes', 0)
-        queue.set_property('max-size-time', 0)
-        
-        videoconvert = Gst.ElementFactory.make(
-            'videoconvert',
-            "videoconvert_efectos")
-        
-        self.add(queue)
-        
-        efectos = []
-        for nombre in self.efectos:
-            # Crea el efecto
-            efecto = JAMedia_Efecto_bin(nombre)
-            if efecto and efecto != None:
-                efectos.append(efecto)
-        
-        if efectos:
-            for efecto in efectos:
-                # Agrega el efecto
-                self.add(efecto)
-                
-            # queue a primer efecto
-            queue.link(efectos[0])
-            
-            for efecto in efectos:
-                index = efectos.index(efecto)
-                if len(efectos) > index + 1:
-                    # Linkea los efectos entre si
-                    efecto.link(efectos[efectos.index(efecto) + 1])
-                    
-            self.add(videoconvert)
-            # linkea el ultimo efecto a videoconvert
-            efectos[-1].link(videoconvert)
-            
-        else:
-            self.add(videoconvert)
-            queue.link(videoconvert)
-        
-        # Mantener la configuración de cada efecto.
-        for efecto in self.config_efectos.keys():
-            for property in self.config_efectos[efecto].keys():
-                bin_efecto = self.get_by_name(efecto)
-                elemento = bin_efecto.get_by_name(efecto)
-                elemento.set_property(property, self.config_efectos[efecto][property])
-        
-        self.add_pad(Gst.GhostPad.new("sink", queue.get_static_pad ("sink")))
-        self.add_pad(Gst.GhostPad.new("src", videoconvert.get_static_pad("src")))
-        
         
 def salir(widget):
     import sys

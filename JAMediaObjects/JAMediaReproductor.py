@@ -20,6 +20,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import time
+import datetime
 
 import gi
 gi.require_version('Gst', '1.0')
@@ -29,8 +31,10 @@ from gi.repository import Gst
 from gi.repository import GstVideo
 
 import JAMediaGstreamer
-from JAMediaGstreamer.JAMediaWebCam import Efectos_Video_bin
-from JAMediaGstreamer.JAMediaWebCam import Foto_bin
+from JAMediaGstreamer.JAMediaBins import Efectos_Video_bin
+from JAMediaGstreamer.JAMediaBins import Foto_bin
+
+import JAMediaGlobales as G
 
 GObject.threads_init()
 Gst.init([])
@@ -86,8 +90,10 @@ class JAMediaReproductor(GObject.GObject):
         
         self.player = None
         self.bus = None
+        
         self.video_pipeline = None
         self.efectos_bin = None
+        self.audio_pipelin = None
         
         self.videobalance = None
         self.gamma = None
@@ -174,6 +180,32 @@ class JAMediaReproductor(GObject.GObject):
         
         self.player.set_property('video-sink', self.video_pipeline)
         
+        # Pipe de Audio
+        self.audio_pipelin = Gst.Pipeline()
+        
+        self.tee_audio = Gst.ElementFactory.make(
+            "tee", "tee_audio")
+        
+        audioconvert = Gst.ElementFactory.make(
+            "audioconvert", "audioconvert")
+            
+        autoaudiosink = Gst.ElementFactory.make(
+            "autoaudiosink", "autoaudiosink")
+        
+        self.audio_pipelin.add(self.tee_audio)
+        self.audio_pipelin.add(audioconvert)
+        self.audio_pipelin.add(autoaudiosink)
+        
+        self.tee_audio.link(audioconvert)
+        audioconvert.link(autoaudiosink)
+        
+        self.audio_pipelin.add_pad(
+            Gst.GhostPad.new(
+                "sink",
+                self.tee_audio.get_static_pad ("sink")))
+            
+        self.player.set_property('audio-sink', self.audio_pipelin)
+        
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
         self.config['brillo'] = CONFIG_DEFAULT['brillo']
@@ -190,7 +222,39 @@ class JAMediaReproductor(GObject.GObject):
         self.videoflip.set_property('method', 0)
         
         self.video_in_stream = False
-    
+        
+    '''
+    def fotografiar(self, widget = None, event = None):
+        """Toma una fotografia."""
+        
+        #foto_bin = self.pipeline.get_by_name("foto_bin")
+        gdkpixbufsink = self.foto_bin.get_by_name("gdkpixbufsink")
+        
+        if gdkpixbufsink and gdkpixbufsink != None:
+            pixbuf = gdkpixbufsink.get_property('last-pixbuf')
+            
+            if pixbuf and pixbuf != None:
+                
+                fecha = datetime.date.today()
+                hora = time.strftime("%H-%M-%S")
+                archivo = os.path.join(
+                    G.IMAGENES_JAMEDIA_VIDEO,
+                    "%s-%s.png" % (fecha, hora))
+                
+                self.patharchivo = archivo
+                
+                pixbuf.savev(self.patharchivo, "png", [], [])'''
+                
+    '''
+    def link_visualizador(self):
+        
+        self.pause()
+        
+        self.audio_pipelin.add(self.audio_grafico_pipeline)
+        self.tee_audio.link(self.audio_grafico_pipeline)
+        
+        self.play()'''
+        
     def load(self, uri):
         """Carga un archivo o stream en el pipe de Gst."""
         

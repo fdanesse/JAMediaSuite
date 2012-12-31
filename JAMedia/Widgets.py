@@ -216,6 +216,8 @@ class Toolbar(Gtk.Toolbar):
     'salir':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, []),
     'config':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
+    'capturar':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
     
     def __init__(self):
@@ -243,6 +245,14 @@ class Toolbar(Gtk.Toolbar):
         self.configurar.set_tooltip_text("Configuraciones.")
         self.configurar.connect("clicked", self.emit_config)
         self.insert(self.configurar, -1)
+        
+        #archivo = os.path.join(JAMediaObjectsPath,
+        #    "Iconos", "foto.png")
+        #boton = G.get_boton(archivo, flip = False,
+        #    pixels = G.get_pixels(1))
+        #boton.set_tooltip_text("Captura.")
+        #boton.connect("clicked", self.emit_capturar)
+        #self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
@@ -302,6 +312,11 @@ class Toolbar(Gtk.Toolbar):
         
         self.show_all()
     
+    #def emit_capturar(self, widget):
+    #    """Emite Capturar para obtener la imagen del video."""
+        
+    #    self.emit('capturar')
+        
     def emit_config(self, widget):
         """Cuando se hace click en el boton configurar
         de la toolbar principal de JAMedia."""

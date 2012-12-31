@@ -308,8 +308,10 @@ class JAMediaPlayer(Gtk.Plug):
         #self.pantalla.connect('expose-event', self.paint_pantalla)
         
         self.toolbar.connect('salir', self.confirmar_salir)
-        self.toolbar_salir.connect('salir', self.emit_salir)
+        #self.toolbar.connect('capturar', self.fotografiar)
         self.toolbar.connect('config', self.mostrar_config)
+        
+        self.toolbar_salir.connect('salir', self.emit_salir)
         self.toolbar_config.connect('reproductor', self.switch_reproductor)
         self.toolbar_config.connect('valor', self.set_balance)
         self.toolbar_info.connect('rotar', self.set_rotacion)
@@ -332,6 +334,11 @@ class JAMediaPlayer(Gtk.Plug):
         self.get_parent_window().set_cursor(jamedia_cursor)
         
         #GObject.idle_add(self.cargar_efectos, list(G.JAMedia_VIDEOEFECTOS))
+        
+    #def fotografiar(self, widget):
+    #    """Captura una imagen desde el video en reproduccion."""
+        
+    #    self.player.fotografiar()
         
     def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
         """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
@@ -1014,4 +1021,5 @@ class JAMediaPlayer(Gtk.Plug):
         """Si hay video o no en la fuente . . ."""
         
         print "Video en la Fuente:", valor
+        #if not valor: self.player.link_visualizador()
         
