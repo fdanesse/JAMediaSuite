@@ -31,21 +31,13 @@ from gi.repository import Gst
 from gi.repository import GstVideo
 
 import JAMediaGstreamer
-from JAMediaGstreamer.JAMediaBins import Efectos_Video_bin
-from JAMediaGstreamer.JAMediaBins import Foto_bin
+from JAMediaGstreamer.JAMediaBins import JAMedia_Video_Pipeline
+from JAMediaGstreamer.JAMediaBins import JAMedia_Audio_Pipeline
 
 import JAMediaGlobales as G
 
 GObject.threads_init()
 Gst.init([])
-
-CONFIG_DEFAULT = {
-    'saturacion': 1.0,
-    'contraste': 1.0,
-    'brillo': 0.0,
-    'hue': 0.0,
-    'gamma': 1.0,
-    }
     
 # Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html
 
@@ -88,56 +80,36 @@ class JAMediaReproductor(GObject.GObject):
         self.posicion = 0
         self.actualizador = False
         
-        self.player = None
+        self.player = None              # reproductor
         self.bus = None
         
-        self.video_pipeline = None
-        self.efectos_bin = None
-        self.audio_pipelin = None
+        # Gestor de la salida de Video del reproductor.
+        self.video_pipeline = JAMedia_Video_Pipeline()
         
-        self.videobalance = None
-        self.gamma = None
-        self.videoflip = None
+        # Gestor de salida de Audio del reproductor.
+        self.audio_pipelin = JAMedia_Audio_Pipeline()
         
         self.video_in_stream = False
         
-        self.config = {}
-        self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
-        self.config['contraste'] = CONFIG_DEFAULT['contraste']
-        self.config['brillo'] = CONFIG_DEFAULT['brillo']
-        self.config['hue'] = CONFIG_DEFAULT['hue']
-        self.config['gamma'] = CONFIG_DEFAULT['gamma']
-        
         self.efectos = []
-        self.config_efectos = {}
+        #self.config_efectos = {}
         
         self.reset()
         
     def reset(self):
         
-        if self.video_pipeline:
-            del(self.video_pipeline)
-            
-        if self.efectos_bin:
-            del(self.efectos_bin)
-            
-        self.video_pipeline = Gst.Pipeline()
-        
+        # Reproductor.
         self.player = Gst.ElementFactory.make(
             "playbin", "player")
         self.player.set_property(
             'force-aspect-ratio', True)
-
-        self.videobalance = Gst.ElementFactory.make(
-            'videobalance', "videobalance")
         
-        self.gamma = Gst.ElementFactory.make(
-            'gamma', "gamma")
-        
-        self.videoflip = Gst.ElementFactory.make(
-            'videoflip', "videoflip")
+        # Si no se establecen los valores al original, se produce un error.
+        self.video_pipeline.reset_balance()
         
         self.player.set_window_handle(self.ventana_id)
+        self.player.set_property('video-sink', self.video_pipeline)
+        self.player.set_property('audio-sink', self.audio_pipelin)
         
         self.bus = self.player.get_bus()
         self.bus.add_signal_watch()
@@ -146,114 +118,7 @@ class JAMediaReproductor(GObject.GObject):
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.sync_message)
         
-        self.multi_out_tee = Gst.ElementFactory.make(
-            'tee', "multi_out_tee")
-        
-        self.efectos_bin = Efectos_Video_bin(
-            self.efectos, self.config_efectos)
-        
-        pantalla = Gst.ElementFactory.make(
-            'xvimagesink', "pantalla")
-        
-        #self.foto_bin = Foto_bin()
-        
-        self.video_pipeline.add(self.multi_out_tee)
-        self.video_pipeline.add(self.efectos_bin)
-        self.video_pipeline.add(self.videobalance)
-        self.video_pipeline.add(self.gamma)
-        self.video_pipeline.add(self.videoflip)
-        self.video_pipeline.add(pantalla)
-        #self.video_pipeline.add(self.foto_bin)
-        
-        self.multi_out_tee.link(self.efectos_bin)
-        self.efectos_bin.link(self.videobalance)
-        self.videobalance.link(self.gamma)
-        self.gamma.link(self.videoflip)
-        self.videoflip.link(pantalla)
-        
-        #self.multi_out_tee.link(self.foto_bin)
-        
-        self.video_pipeline.add_pad(
-            Gst.GhostPad.new(
-                "sink",
-                self.multi_out_tee.get_static_pad ("sink")))
-        
-        self.player.set_property('video-sink', self.video_pipeline)
-        
-        # Pipe de Audio
-        self.audio_pipelin = Gst.Pipeline()
-        
-        self.tee_audio = Gst.ElementFactory.make(
-            "tee", "tee_audio")
-        
-        audioconvert = Gst.ElementFactory.make(
-            "audioconvert", "audioconvert")
-            
-        autoaudiosink = Gst.ElementFactory.make(
-            "autoaudiosink", "autoaudiosink")
-        
-        self.audio_pipelin.add(self.tee_audio)
-        self.audio_pipelin.add(audioconvert)
-        self.audio_pipelin.add(autoaudiosink)
-        
-        self.tee_audio.link(audioconvert)
-        audioconvert.link(autoaudiosink)
-        
-        self.audio_pipelin.add_pad(
-            Gst.GhostPad.new(
-                "sink",
-                self.tee_audio.get_static_pad ("sink")))
-            
-        self.player.set_property('audio-sink', self.audio_pipelin)
-        
-        self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
-        self.config['contraste'] = CONFIG_DEFAULT['contraste']
-        self.config['brillo'] = CONFIG_DEFAULT['brillo']
-        self.config['hue'] = CONFIG_DEFAULT['hue']
-        self.config['gamma'] = CONFIG_DEFAULT['gamma']
-        
-        self.videobalance.set_property('saturation', self.config['saturacion'])
-        self.videobalance.set_property('contrast', self.config['contraste'])
-        self.videobalance.set_property('brightness', self.config['brillo'])
-        self.videobalance.set_property('hue', self.config['hue'])
-        
-        self.gamma.set_property('gamma', self.config['gamma'])
-        
-        self.videoflip.set_property('method', 0)
-        
         self.video_in_stream = False
-        
-    '''
-    def fotografiar(self, widget = None, event = None):
-        """Toma una fotografia."""
-        
-        #foto_bin = self.pipeline.get_by_name("foto_bin")
-        gdkpixbufsink = self.foto_bin.get_by_name("gdkpixbufsink")
-        
-        if gdkpixbufsink and gdkpixbufsink != None:
-            pixbuf = gdkpixbufsink.get_property('last-pixbuf')
-            
-            if pixbuf and pixbuf != None:
-                
-                fecha = datetime.date.today()
-                hora = time.strftime("%H-%M-%S")
-                archivo = os.path.join(
-                    G.IMAGENES_JAMEDIA_VIDEO,
-                    "%s-%s.png" % (fecha, hora))
-                
-                self.patharchivo = archivo
-                
-                pixbuf.savev(self.patharchivo, "png", [], [])'''
-                
-    '''
-    def link_visualizador(self):
-        
-        self.pause()
-        
-        self.audio_pipelin.add(self.audio_grafico_pipeline)
-        self.tee_audio.link(self.audio_grafico_pipeline)
-        
-        self.play()'''
         
     def load(self, uri):
         """Carga un archivo o stream en el pipe de Gst."""
@@ -302,64 +167,19 @@ class JAMediaReproductor(GObject.GObject):
     def rotar(self, valor):
         """ Rota el Video. """
         
-        rot = self.videoflip.get_property('method')
-        
-        if valor == "Derecha":
-            if rot < 3:
-                rot += 1
-                
-            else:
-                rot = 0
-                
-        elif valor == "Izquierda":
-            if rot > 0:
-                rot -= 1
-                
-            else:
-                rot = 3
-                
-        self.videoflip.set_property('method', rot)
+        self.video_pipeline.rotar(valor)
         
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None, gamma = None):
-        """Seteos de balance en la fuente de video.
+        """Seteos de balance en video.
         Recibe % en float y convierte a los valores del filtro."""
         
-        if saturacion != None:
-            # Double. Range: 0 - 2 Default: 1
-            self.config['saturacion'] = 2.0 * saturacion / 100.0
-            self.videobalance.set_property('saturation', self.config['saturacion'])
-            
-        if contraste != None:
-            # Double. Range: 0 - 2 Default: 1
-            self.config['contraste'] = 2.0 * contraste / 100.0
-            self.videobalance.set_property('contrast', self.config['contraste'])
-            
-        if brillo != None:
-            # Double. Range: -1 - 1 Default: 0
-            self.config['brillo'] = (2.0 * brillo / 100.0) - 1.0
-            self.videobalance.set_property('brightness', self.config['brillo'])
-            
-        if hue != None:
-            # Double. Range: -1 - 1 Default: 0
-            self.config['hue'] = (2.0 * hue / 100.0) - 1.0
-            self.videobalance.set_property('hue', self.config['hue'])
-            
-        if gamma != None:
-            # Double. Range: 0,01 - 10 Default: 1
-            self.config['gamma'] = (10.0 * gamma / 100.0)
-            self.gamma.set_property('gamma', self.config['gamma'])
-            
+        self.video_pipeline.set_balance(brillo, contraste, saturacion, hue, gamma)
+        
     def get_balance(self):
         """Retorna los valores actuales de balance en % float."""
         
-        return {
-        'saturacion': self.config['saturacion'] * 100.0 / 2.0,
-        'contraste': self.config['contraste'] * 100.0 / 2.0,
-        'brillo': (self.config['brillo']+1) * 100.0 / 2.0,
-        'hue': (self.config['hue']+1) * 100.0 / 2.0,
-        'gamma': self.config['gamma'] * 100.0 / 10.0
-        }
+        return self.video_pipeline.get_balance()
         
     def new_handle(self, reset):
         """Elimina o reinicia la funcion que
@@ -429,82 +249,46 @@ class JAMediaReproductor(GObject.GObject):
         """Cambia el volúmen de Reproducción."""
         
         self.player.set_property('volume', float(valor/100))
-        
+    
     def agregar_efecto(self, nombre_efecto):
-        """Agrega un efecto según su nombre."""
-        
-        self.efectos.append( nombre_efecto )
-        self.config_efectos[nombre_efecto] = {}
         
         self.new_handle(False)
-        self.reconstruir_efectos()
+        self.stop()
+        
+        self.efectos.append( nombre_efecto )
+        #self.config_efectos[nombre_efecto] = {}
+        self.video_pipeline.agregar_efecto(nombre_efecto)
+        
+        self.play()
         self.new_handle(True)
         
     def quitar_efecto(self, indice_efecto):
-        """Quita el efecto correspondiente al indice o
-        al nombre que recibe."""
-        
+
         if type(indice_efecto) == int:
             self.efectos.remove(self.efectos[indice_efecto])
-            if self.efectos[indice_efecto] in self.config_efectos.keys():
-                del (self.config_efectos[self.efectos[indice_efecto]])
-                
+            #if self.efectos[indice_efecto] in self.config_efectos.keys():
+            #    del (self.config_efectos[self.efectos[indice_efecto]])
+            
         elif type(indice_efecto) == str:
             for efecto in self.efectos:
                 if efecto == indice_efecto:
                     self.efectos.remove(efecto)
-                    if efecto in self.config_efectos.keys():
-                        del (self.config_efectos[efecto])
-                    break
-        
+                    #if efecto in self.config_efectos.keys():
+                    #    del (self.config_efectos[efecto])
+                    #break
+                
         self.new_handle(False)
-        self.reconstruir_efectos()
-        self.new_handle(True)
-        
-    def reconstruir_efectos(self):
-        
-        # FIXME: stream stopped, reason not-negotiated
-        """
-        uri = self.player.get_property("uri")
-        
-        if uri and uri != None:
-            self.pause()
-            
-        self.multi_out_tee.unlink(self.efectos_bin)
-        self.efectos_bin.unlink(self.videobalance)
-        
-        self.video_pipeline.remove(self.efectos_bin)
-        del(self.efectos_bin)
-        
-        self.efectos_bin = Efectos_Video_bin(
-            self.efectos, self.config_efectos)
-        
-        self.video_pipeline.add(self.efectos_bin)
-        
-        self.multi_out_tee.link(self.efectos_bin)
-        self.efectos_bin.link(self.videobalance)
-        
-        self.player.set_property('video-sink', self.video_pipeline)
-        
-        if uri and uri != None:
-            self.play()"""
-            
         self.stop()
         
-        uri = self.player.get_property("uri")
+        self.video_pipeline.quitar_efecto(indice_efecto)
         
-        self.reset()
-        
-        if uri: self.load(uri)
+        self.play()
+        self.new_handle(True)
         
     def configurar_efecto(self, nombre_efecto, propiedad, valor):
         """Configura un efecto en el pipe."""
         
-        efectos_bin = self.video_pipeline.get_by_name('efectos_bin')
-        bin_efecto = efectos_bin.get_by_name(nombre_efecto)
-        self.config_efectos[nombre_efecto][propiedad] = valor
-        efectos_bin.config_efectos[nombre_efecto][propiedad] = valor
-        bin_efecto.get_by_name(nombre_efecto).set_property(propiedad, valor)
+        self.video_pipeline.configurar_efecto(nombre_efecto, propiedad, valor)
         
     def sync_message(self, bus, mensaje):
         """Captura los mensajes en el bus del pipe Gst."""

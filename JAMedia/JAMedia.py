@@ -407,19 +407,6 @@ class JAMediaPlayer(Gtk.Plug):
         self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
         widget.destroy()
         
-    '''
-    def reset(self):
-        """Resetea la cámara quitando los efectos y
-        actualiza los widgets correspondientes."""
-        
-        for efecto in self.hbox_efectos_en_pipe.get_children():
-            efecto.destroy()
-            
-        for button in self.widget_efectos.gstreamer_efectos.get_children():
-            button.des_seleccionar()
-            
-        self.jamediawebcam.reset()'''
-        
     def cargar_efectos(self, efectos):
         """Agrega los widgets con efectos a la paleta de configuración."""
         
