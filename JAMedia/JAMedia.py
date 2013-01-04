@@ -1003,6 +1003,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         valor = valor / 100
         self.volumen.set_value(valor)
+        print "Volumen:", valor
         
     def set_video(self, widget, valor):
         """Si hay video o no en la fuente . . ."""

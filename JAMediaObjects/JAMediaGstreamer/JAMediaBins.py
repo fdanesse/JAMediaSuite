@@ -246,7 +246,7 @@ class Audio_Visualizador_bin(Gst.Bin):
         efecto = Gst.ElementFactory.make(
             self.visualizador,
             self.visualizador)
-            
+        
         videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
         
         self.add(queue)
@@ -436,7 +436,7 @@ class JAMedia_Audio_Pipeline (Gst.Pipeline):
         Gst.Pipeline.__init__(self)
         
         self.set_name('jamedia_audio_pipeline')
-
+        
         self.tee_audio = Gst.ElementFactory.make(
             "tee", "tee_audio")
         
@@ -457,7 +457,35 @@ class JAMedia_Audio_Pipeline (Gst.Pipeline):
             Gst.GhostPad.new(
                 "sink",
                 self.tee_audio.get_static_pad ("sink")))
-
+                
+        self.visualizador_bin = None
+        self.xvimagesink = None
+        
+    def agregar_visualizador(self, visualizador):
+        
+        if not self.visualizador_bin:
+            self.visualizador_bin = Audio_Visualizador_bin(visualizador)
+            self.xvimagesink = Gst.ElementFactory.make(
+                "xvimagesink", "xvimagesink")
+                
+            self.add(self.visualizador_bin)
+            self.add(self.xvimagesink)
+            
+            self.tee_audio.link(self.visualizador_bin)
+            self.visualizador_bin.link(self.xvimagesink)
+        
+    def quitar_visualizador(self):
+        
+        if self.visualizador_bin:
+            self.visualizador_bin.unlink(self.xvimagesink)
+            self.tee_audio.unlink(self.visualizador_bin)
+            
+            self.remove(self.visualizador_bin)
+            self.remove(self.xvimagesink)
+            
+            del(self.visualizador_bin)
+            del(self.xvimagesink)
+        
 class JAMedia_Video_Pipeline (Gst.Pipeline):
     """Gestor de Video de JAMedia."""
     

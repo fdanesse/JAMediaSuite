@@ -75,6 +75,7 @@ class JAMediaReproductor(GObject.GObject):
         self.ventana_id = ventana_id
         
         self.estado = None
+        self.volumen = 0.0
         
         self.duracion = 0
         self.posicion = 0
@@ -89,7 +90,7 @@ class JAMediaReproductor(GObject.GObject):
         # Gestor de salida de Audio del reproductor.
         self.audio_pipelin = JAMedia_Audio_Pipeline()
         
-        self.video_in_stream = False
+        self.video_in_stream = None # Debe iniciarse como None (ver señal video)
         
         self.efectos = []
         #self.config_efectos = {}
@@ -106,6 +107,7 @@ class JAMediaReproductor(GObject.GObject):
         
         # Si no se establecen los valores al original, se produce un error.
         self.video_pipeline.reset_balance()
+        self.player.set_property('volume', self.volumen)
         
         self.player.set_window_handle(self.ventana_id)
         self.player.set_property('video-sink', self.video_pipeline)
@@ -118,7 +120,7 @@ class JAMediaReproductor(GObject.GObject):
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.sync_message)
         
-        self.video_in_stream = False
+        #self.video_in_stream = False
         
     def load(self, uri):
         """Carga un archivo o stream en el pipe de Gst."""
@@ -236,19 +238,12 @@ class JAMediaReproductor(GObject.GObject):
             Gst.SeekFlags.FLUSH |
             Gst.SeekFlags.KEY_UNIT,
             posicion)
-    
-    def get_volumen(self):
-        """Obtiene el volumen de reproducción.
-        Lo hace solo al reproducir el primer archivo
-        o streaming y envía el dato para actualizar
-        el control de volúmen."""
-        
-        print "Volumen:", self.player.get_property('volume')
         
     def set_volumen(self, valor):
         """Cambia el volúmen de Reproducción."""
         
-        self.player.set_property('volume', float(valor/100))
+        self.volumen = float(valor/100)
+        self.player.set_property('volume', self.volumen)
     
     def agregar_efecto(self, nombre_efecto):
         
@@ -312,6 +307,9 @@ class JAMediaReproductor(GObject.GObject):
                     self.estado = new
                     self.emit("estado", "playing")
                     self.new_handle(True)
+                    GObject.idle_add(
+                        self.player.set_property,
+                        'volume', self.volumen)
                     return
                 
             elif old == Gst.State.READY and new == Gst.State.PAUSED:
@@ -348,15 +346,17 @@ class JAMediaReproductor(GObject.GObject):
             taglist = mensaje.parse_tag()
             datos = taglist.to_string()
             
-            if not 'video-codec' in datos:
+            if 'audio-codec' in datos and not 'video-codec' in datos:
                 if self.video_in_stream == True or self.video_in_stream == None:
                     self.video_in_stream = False
                     self.emit("video", False)
+                    #self.audio_pipelin.agregar_visualizador('monoscope')
                     
-            if 'video-codec' in datos:
+            elif 'video-codec' in datos:
                 if self.video_in_stream == False or self.video_in_stream == None:
                     self.video_in_stream = True
                     self.emit("video", True)
+                    #self.audio_pipelin.quitar_visualizador()
                     
             #self.duracion = int(taglist.to_string().split("duration=(guint64)")[1].split(',')[0])
             #Ejemplo:
