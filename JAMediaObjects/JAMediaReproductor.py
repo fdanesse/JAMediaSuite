@@ -75,7 +75,7 @@ class JAMediaReproductor(GObject.GObject):
         self.ventana_id = ventana_id
         
         self.estado = None
-        self.volumen = 0.0
+        self.volumen = 0.10
         self.config = {
             'saturacion': 50.0,
             'contraste': 50.0,
@@ -149,7 +149,7 @@ class JAMediaReproductor(GObject.GObject):
     def re_config(self):
         """Luego de que está en play,
         recupera los valores configurados para balance y
-        rotación y configua con ellos el balance en el pipe."""
+        rotación y configura con ellos el balance en el pipe."""
         
         self.player.set_property('volume', self.volumen)
         self.video_pipeline.set_rotacion(self.config['rotacion'])
@@ -159,6 +159,7 @@ class JAMediaReproductor(GObject.GObject):
             saturacion = self.config['saturacion'],
             hue = self.config['hue'],
             gamma = self.config['gamma'])
+        self.emit('volumen', self.volumen)
         
     def play(self):
         """Pone el pipe de Gst en Gst.State.PLAYING"""
@@ -214,7 +215,9 @@ class JAMediaReproductor(GObject.GObject):
     def get_balance(self):
         """Retorna los valores actuales de balance en % float."""
         
-        return self.video_pipeline.get_balance()
+        # FIXME: No es correcto si se llama a los valores reales.
+        #return self.video_pipeline.get_balance()
+        return self.config
         
     def new_handle(self, reset):
         """Elimina o reinicia la funcion que
@@ -490,17 +493,11 @@ class JAMediaGrabador(GObject.GObject):
         self.info = ""
         self.uri = ""
         
-        self.pipeline = None
-        self.audioconvert = None
-        self.mp3enc = None
-        self.hiloarchivo = None
-        self.archivo = None
-        self.jamedia_sink = None
-        
         self.player = None
+        self.archivo = None
         self.bus = None
         
-        self.set_pipeline()
+        self.reset()
         
         # FIXME: Funciona con la radio pero no con la Tv
         if Gst.uri_is_valid(uri):
@@ -509,42 +506,32 @@ class JAMediaGrabador(GObject.GObject):
             self.play()
             self.new_handle(True)
         
-    def set_pipeline(self):
+    def reset(self):
         """Crea el pipe de Gst. (playbin)"""
-        
-        if self.video_pipeline:
-            del(self.video_pipeline)
-        
-        self.pipeline = Gst.Pipeline()
         
         self.player = Gst.ElementFactory.make("playbin", "player")
         
-        self.pipeline.add(self.player)
+        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
+        mp3enc = Gst.ElementFactory.make('lamemp3enc', "lamemp3enc")
         
-        self.audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
-        self.mp3enc = Gst.ElementFactory.make('lamemp3enc', "lamemp3enc")
-        
-        self.hiloarchivo = Gst.ElementFactory.make('queue', "hiloarchivo")
         self.archivo = Gst.ElementFactory.make('filesink', "archivo")
         
-        self.jamedia_sink = Gst.Bin()
-        self.jamedia_sink.add(self.audioconvert)
+        jamedia_sink = Gst.Bin()
+        jamedia_sink.add(audioconvert)
         
-        pad = self.audioconvert.get_static_pad('sink')
+        pad = audioconvert.get_static_pad('sink')
         ghostpad = Gst.GhostPad.new('sink', pad)
-        self.jamedia_sink.add_pad(ghostpad)
+        jamedia_sink.add_pad(ghostpad)
         
-        self.jamedia_sink.add(self.mp3enc)
-        self.jamedia_sink.add(self.hiloarchivo)
-        self.jamedia_sink.add(self.archivo)
+        jamedia_sink.add(mp3enc)
+        jamedia_sink.add(self.archivo)
         
-        self.audioconvert.link(self.mp3enc)
-        self.mp3enc.link(self.hiloarchivo)
-        self.hiloarchivo.link(self.archivo)
+        audioconvert.link(mp3enc)
+        mp3enc.link(self.archivo)
         
-        self.player.set_property('audio-sink', self.jamedia_sink)
+        self.player.set_property('audio-sink', jamedia_sink)
         
-        self.bus = self.video_pipeline.get_bus()
+        self.bus = self.player.get_bus()
         self.bus.add_signal_watch()
         self.bus.connect('message', self.on_mensaje)
         
@@ -557,13 +544,13 @@ class JAMediaGrabador(GObject.GObject):
         
     def play(self, widget = None, event = None):
         
-        self.pipeline.set_state(Gst.State.PLAYING)
+        self.player.set_state(Gst.State.PLAYING)
         
     def stop(self, widget= None, event= None):
         """Detiene y limpia el pipe."""
         
-        self.pipeline.set_state(Gst.State.PAUSED)
-        self.pipeline.set_state(Gst.State.NULL)
+        self.player.set_state(Gst.State.PAUSED)
+        self.player.set_state(Gst.State.NULL)
         self.new_handle(False)
         
         if os.path.exists(self.patharchivo):

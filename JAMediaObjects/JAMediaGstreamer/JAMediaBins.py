@@ -320,7 +320,7 @@ class Video_Balance_Bin (Gst.Bin):
         self.add_pad(Gst.GhostPad.new("src", pad))
         
     def reset(self):
-        """Devulve balance y rotación al estado original."""
+        """Devuelve balance y rotación al estado original."""
         
         self.config['saturacion'] = self.config_default['saturacion']
         self.config['contraste'] = self.config_default['contraste']
@@ -366,16 +366,17 @@ class Video_Balance_Bin (Gst.Bin):
             self.config['gamma'] = (10.0 * gamma / 100.0)
             self.gamma.set_property('gamma', self.config['gamma'])
             
-    def get_balance(self):
-        """Retorna los valores actuales de balance en % float."""
+    # FIXME: No es correcto si se llama a los valores reales.
+    #def get_balance(self):
+    #    """Retorna los valores actuales de balance en % float."""
         
-        return {
-        'saturacion': self.config['saturacion'] * 100.0 / 2.0,
-        'contraste': self.config['contraste'] * 100.0 / 2.0,
-        'brillo': (self.config['brillo']+1) * 100.0 / 2.0,
-        'hue': (self.config['hue']+1) * 100.0 / 2.0,
-        'gamma': self.config['gamma'] * 100.0 / 10.0
-        }
+    #    return {
+    #    'saturacion': self.config['saturacion'] * 100.0 / 2.0,
+    #    'contraste': self.config['contraste'] * 100.0 / 2.0,
+    #    'brillo': (self.config['brillo']+1) * 100.0 / 2.0,
+    #    'hue': (self.config['hue']+1) * 100.0 / 2.0,
+    #    'gamma': self.config['gamma'] * 100.0 / 10.0
+    #    }
         
     def rotar(self, valor):
         """ Rota el Video. """

@@ -646,7 +646,7 @@ class JAMediaPlayer(Gtk.Plug):
         y llama a seleccionar_siguiente en la lista de reproduccion."""
         
         self.controlesrepro.set_paused()
-        self.lista_de_reproduccion.seleccionar_siguiente()
+        GObject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
         
     def cambioestadoreproductor(self, widget = None, valor = None):
         """Recibe los cambios de estado del reproductor (paused y playing)
@@ -1001,9 +1001,7 @@ class JAMediaPlayer(Gtk.Plug):
     def get_volumen(self, widget, valor):
         """El volumen con el que se reproduce actualmente."""
         
-        valor = valor / 100
         self.volumen.set_value(valor)
-        print "Volumen:", valor
         
     def set_video(self, widget, valor):
         """Si hay video o no en la fuente . . ."""
