@@ -76,7 +76,14 @@ class JAMediaReproductor(GObject.GObject):
         
         self.estado = None
         self.volumen = 0.0
-        
+        self.config = {
+            'saturacion': 50.0,
+            'contraste': 50.0,
+            'brillo': 50.0,
+            'hue': 50.0,
+            'gamma': 10.0,
+            'rotacion':0}
+            
         self.duracion = 0
         self.posicion = 0
         self.actualizador = False
@@ -139,6 +146,20 @@ class JAMediaReproductor(GObject.GObject):
                 self.player.set_property("uri", uri)
                 self.play()
         
+    def re_config(self):
+        """Luego de que está en play,
+        recupera los valores configurados para balance y
+        rotación y configua con ellos el balance en el pipe."""
+        
+        self.player.set_property('volume', self.volumen)
+        self.video_pipeline.set_rotacion(self.config['rotacion'])
+        self.video_pipeline.set_balance(
+            brillo = self.config['brillo'],
+            contraste = self.config['contraste'],
+            saturacion = self.config['saturacion'],
+            hue = self.config['hue'],
+            gamma = self.config['gamma'])
+        
     def play(self):
         """Pone el pipe de Gst en Gst.State.PLAYING"""
         
@@ -170,13 +191,25 @@ class JAMediaReproductor(GObject.GObject):
         """ Rota el Video. """
         
         self.video_pipeline.rotar(valor)
+        self.config['rotacion'] = self.video_pipeline.get_rotacion()
         
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None, gamma = None):
         """Seteos de balance en video.
         Recibe % en float y convierte a los valores del filtro."""
         
-        self.video_pipeline.set_balance(brillo, contraste, saturacion, hue, gamma)
+        if brillo: self.config['brillo'] = brillo
+        if contraste: self.config['contraste'] = contraste
+        if saturacion: self.config['saturacion'] = saturacion
+        if hue: self.config['hue'] = hue
+        if gamma: self.config['gamma'] = gamma
+        
+        self.video_pipeline.set_balance(
+            brillo = brillo,
+            contraste = contraste,
+            saturacion = saturacion,
+            hue = hue,
+            gamma = gamma)
         
     def get_balance(self):
         """Retorna los valores actuales de balance en % float."""
@@ -307,9 +340,7 @@ class JAMediaReproductor(GObject.GObject):
                     self.estado = new
                     self.emit("estado", "playing")
                     self.new_handle(True)
-                    GObject.idle_add(
-                        self.player.set_property,
-                        'volume', self.volumen)
+                    GObject.idle_add(self.re_config)
                     return
                 
             elif old == Gst.State.READY and new == Gst.State.PAUSED:

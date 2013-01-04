@@ -398,6 +398,16 @@ class Video_Balance_Bin (Gst.Bin):
                 
         self.videoflip.set_property('method', rot)
         
+    def get_rotacion(self):
+        """Devuelve el valor configurado para rotacion."""
+        
+        return self.videoflip.get_property('method')
+        
+    def set_rotacion(self, valor):
+        """Setea la rotacion directamente, recibe un entero."""
+        
+        return self.videoflip.set_property('method', valor)
+    
 class Pantalla_Bin (Gst.Bin):
     
     def __init__(self):
@@ -538,6 +548,16 @@ class JAMedia_Video_Pipeline (Gst.Pipeline):
         """ Rota el Video. """
         
         self.video_balance_bin.rotar(valor)
+        
+    def set_rotacion(self, valor):
+        """Setea la rotacion directamente, recibe un entero."""
+        
+        return self.video_balance_bin.set_rotacion(valor)
+    
+    def get_rotacion(self):
+        """Devuelve el valor configurado para rotacion."""
+        
+        return self.video_balance_bin.get_rotacion()
         
     def agregar_efecto(self, nombre_efecto):
         """Agrega un efecto según su nombre."""
