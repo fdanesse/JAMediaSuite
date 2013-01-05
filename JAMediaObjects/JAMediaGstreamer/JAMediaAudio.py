@@ -475,7 +475,7 @@ class JAMediaAudio(GObject.GObject):
         del(audio_visualizador_bin)
         
         # Agregar efectos
-        audio_visualizador_bin = JAMedia_Audio_Visualizador_bin(self.audio_visualizador)
+        audio_visualizador_bin = Audio_Visualizador_bin(self.audio_visualizador)
         self.pipeline.add(audio_visualizador_bin)
         multi_out_tee.link(audio_visualizador_bin)
         audio_visualizador_bin.link(efectos_bin)

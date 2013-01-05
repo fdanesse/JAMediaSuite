@@ -197,8 +197,8 @@ class Directorios(Gtk.TreeView):
                 elif 'audio' in tipo:
                     icono = os.path.join(ICONOS, "sonido.png")
                     
-                elif 'image' in tipo:
-                    #icono = os.path.join(x) exige en rendimiento
+                elif 'image' in tipo and not 'iso' in tipo:
+                    #icono = os.path.join(x) #exige en rendimiento
                     icono = os.path.join(ICONOS, "imagen.png")
                     
                 elif 'pdf' in tipo:

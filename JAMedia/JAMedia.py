@@ -133,34 +133,36 @@ class JAMediaPlayer(Gtk.Plug):
         
         Gtk.Plug.__init__(self, 0L)
         
-        self.mplayerreproductor = None
-        self.jamediareproductor = None
-        self.mplayergrabador = None
-        self.jamediagrabador = None
-        self.player = None
-        self.grabador = None
+        self.pantalla = None                # visor para gstreamer
+        self.barradeprogreso = None         # progreso de reproducción
+        self.volumen = None                 # volumen de audio
+        self.lista_de_reproduccion = None   # lista de reproducción
+        self.controlesrepro = None          # controles de reproducción
         
-        self.toolbar = None
-        self.toolbar_accion = None
-        self.pantalla = None
-        self.barradeprogreso = None
-        self.volumen = None
-        self.toolbar_list = None
-        self.scroll_config = None
-        self.toolbar_config = None
-        self.widget_efectos = None
-        self.toolbar_grabar = None
-        self.toolbar_info = None
-        self.lista_de_reproduccion = None
-        self.evnt_box_lista_reproduccion = None
-        self.controlesrepro = None
-        self.toolbaraddstream = None
-        self.toolbar_salir = None
-        self.hbox_efectos_en_pipe = None
+        self.toolbar = None             # toolbar principal
+        self.toolbar_list = None        # Para el nombre de la lista . . .
+        self.toolbar_config = None      # control de balance y gamma
+        self.widget_efectos = None      # efectos gráficos
+        self.toolbar_accion = None      # para confirmar acciones ejem: salir
+        self.toolbar_grabar = None      # informa sobre grabacion en progreso
+        self.toolbar_info = None        # rotar, ocultar controles, etc
+        self.toolbaraddstream = None    # agregar un stream
+        self.toolbar_salir = None       # confirmar salir
         
-        self.controles_dinamicos = None
+        self.hbox_efectos_en_pipe = None        # informa sobre efectos que se aplican
+        self.vbox_config = None                 # contiene balance y efectos
+        self.scroll_config = None               # contiene self.vbox_config
+        self.evnt_box_lista_reproduccion = None # contiene self.scroll_list
+        self.scroll_list = None                 # contiene self.lista_de_reproduccion
         
-        self.vbox_lista_reproduccion = None
+        self.controles_dinamicos = None # controles que se ocultan o muestran segun config
+        
+        self.mplayerreproductor = None  # mplayer
+        self.jamediareproductor = None  # Gstreamer 1.0
+        self.mplayergrabador = None     # grabador mplayer
+        self.jamediagrabador = None     # grabador Gstreamer 1.0
+        self.player = None              # reproductor actual mplayer o Gstreamer 1.0
+        self.grabador = None            # grabador actual mplayer o Gstreamer 1.0
         
         self.show_all()
         
@@ -259,13 +261,15 @@ class JAMediaPlayer(Gtk.Plug):
             self.hbox_efectos_en_pipe]
         
         basebox.show_all()
-        #self.controlesrepro.botonpausa.hide()
-        self.toolbar_salir.hide()
-        self.scroll_config.hide()
-        self.toolbar_accion.hide()
-        self.toolbar_grabar.hide()
-        self.toolbaraddstream.hide()
-        self.toolbar_info.descarga.hide()
+        
+        map(self.ocultar,
+            [self.toolbar_salir,
+            self.scroll_config,
+            self.toolbar_accion,
+            self.toolbar_grabar,
+            self.toolbaraddstream,
+            self.toolbar_info.descarga])
+            
         self.add(basebox)
         
         xid = self.pantalla.get_property('window').get_xid()
@@ -332,8 +336,6 @@ class JAMediaPlayer(Gtk.Plug):
         jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
             Gdk.Display.get_default(), pixbuf, 0, 0)
         self.get_parent_window().set_cursor(jamedia_cursor)
-        
-        #GObject.idle_add(self.cargar_efectos, list(G.JAMedia_VIDEOEFECTOS))
         
     #def fotografiar(self, widget):
     #    """Captura una imagen desde el video en reproduccion."""

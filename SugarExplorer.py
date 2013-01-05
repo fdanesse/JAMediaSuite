@@ -207,7 +207,10 @@ class JAMexplorer(activity.Activity):
         
         for archivo in os.listdir(directorio):
             path = os.path.join(directorio, archivo)
-            if tipo in JAMF.describe_archivo(path):
+            # FIXME: and not 'iso' in tipo es un hack para que no tome
+            # imagenes iso como imagenes gráficas.
+            descripcion = JAMF.describe_archivo(path)
+            if tipo in descripcion and not 'iso' in descripcion:
                 items.append( [archivo,path] )
                 
         return items

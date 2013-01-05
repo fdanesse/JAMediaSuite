@@ -183,11 +183,15 @@ class Ventana(Gtk.Window):
         
         map(self.ocultar, self.sockets)
         map(self.mostrar, self.objetos_no_visibles_en_switch)
-        self.toolbar_accion.hide()
-        self.toolbar_salir.hide()
-        self.jamimagenes.limpiar()
-        self.jamedialector.limpiar()
+        
+        map(self.ocultar,
+            [self.toolbar_accion,
+            self.toolbar_salir])
+            
         self.queue_draw()
+        
+        GObject.idle_add(self.jamimagenes.limpiar)
+        GObject.idle_add(self.jamedialector.limpiar)
         
     def switch(self, widget, tipo):
         """Carga una aplicacion embebida de acuerdo
@@ -199,7 +203,7 @@ class Ventana(Gtk.Window):
             model, iter = self.navegador.directorios.treeselection.get_selected()
             valor = model.get_value(iter, 2)
             items = self.get_items(os.path.dirname(valor), 'image')
-            self.jamimagenes.set_lista(items)
+            GObject.idle_add(self.jamimagenes.set_lista, items)
             # agregar seleccionar segun valor ?
             
         elif 'video' in tipo or 'audio' in tipo:
@@ -209,7 +213,7 @@ class Ventana(Gtk.Window):
             valor = model.get_value(iter, 2)
             items = self.get_items(os.path.dirname(valor), 'video')
             items.extend(self.get_items(os.path.dirname(valor), 'audio'))
-            self.jamediaplayer.set_nueva_lista(items)
+            GObject.idle_add(self.jamediaplayer.set_nueva_lista, items)
             # agregar seleccionar segun valor ?
             
         elif 'pdf' in tipo or 'text' in tipo:
@@ -217,7 +221,7 @@ class Ventana(Gtk.Window):
             self.socketjamedialector.show()
             model, iter = self.navegador.directorios.treeselection.get_selected()
             valor = model.get_value(iter, 2)
-            self.jamedialector.abrir(valor)
+            GObject.idle_add(self.jamedialector.abrir, valor)
             
         else:
             print tipo
@@ -234,7 +238,10 @@ class Ventana(Gtk.Window):
         
         for archivo in os.listdir(directorio):
             path = os.path.join(directorio, archivo)
-            if tipo in JAMF.describe_archivo(path):
+            # FIXME: and not 'iso' in tipo es un hack para que no tome
+            # imagenes iso como imagenes gráficas.
+            descripcion = JAMF.describe_archivo(path)
+            if tipo in descripcion and not 'iso' in descripcion:
                 items.append( [archivo,path] )
                 
         return items

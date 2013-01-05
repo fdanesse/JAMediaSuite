@@ -331,7 +331,7 @@ class Lista(Gtk.TreeView):
                     icono = os.path.join(JAMediaWidgetsBASE,
                         "Iconos", "sonido.png")
                         
-                elif 'image' in tipo:
+                elif 'image' in tipo and not 'iso' in tipo:
                     icono = os.path.join(path) # exige rendimiento
                     #icono = os.path.join(JAMediaWidgetsBASE,
                     #    "Iconos", "imagen.png")

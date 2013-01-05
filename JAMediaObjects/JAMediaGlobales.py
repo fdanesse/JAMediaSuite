@@ -246,7 +246,11 @@ def set_listas_default():
             
     # verificar si las listas están vacías,
     # si lo están se descargan las de JAMedia
-    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"))
+    archivo = shelve.open(
+        os.path.join(
+            DIRECTORIO_DATOS,
+            "JAMediaTV.JAMedia"))
+            
     lista = archivo.items()
     archivo.close()
     
@@ -254,14 +258,23 @@ def set_listas_default():
         try:
             # Streamings JAMediatv
             lista_canales = descarga_lista_de_streamings(canales)
-            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"), lista_canales)
+            
+            guarda_lista_de_streamings(
+                os.path.join(
+                DIRECTORIO_DATOS,
+                "JAMediaTV.JAMedia"),
+                lista_canales)
             
         except:
             print "Error al descargar Streamings de TV."
             
     # verificar si las listas están vacías,
     # si lo están se descargan las de JAMedia
-    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"))
+    archivo = shelve.open(
+        os.path.join(
+            DIRECTORIO_DATOS,
+            "JAMediaRadio.JAMedia"))
+            
     lista = archivo.items()
     archivo.close()
     
@@ -269,7 +282,12 @@ def set_listas_default():
         try:
             # Streamings JAMediaradio
             lista_radios = descarga_lista_de_streamings(radios)
-            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"), lista_radios)
+            
+            guarda_lista_de_streamings(
+                os.path.join(
+                    DIRECTORIO_DATOS,
+                    "JAMediaRadio.JAMedia"),
+                    lista_radios)
 
         except:
             print "Error al descargar Streamings de Radios."
@@ -281,8 +299,17 @@ def get_streaming_default():
     try:
         # Streamings JAMediatv
         lista_canales = descarga_lista_de_streamings(canales)
-        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"))
-        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"), lista_canales)
+        
+        clear_lista_de_streamings(
+            os.path.join(
+                DIRECTORIO_DATOS,
+                "JAMediaTV.JAMedia"))
+                
+        guarda_lista_de_streamings(
+            os.path.join(
+                DIRECTORIO_DATOS,
+                "JAMediaTV.JAMedia"),
+                lista_canales)
         
     except:
         print "Error al descargar Streamings de TV."
@@ -290,8 +317,17 @@ def get_streaming_default():
     try:
         # Streamings JAMediaradio
         lista_radios = descarga_lista_de_streamings(radios)
-        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"))
-        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"), lista_radios)
+        
+        clear_lista_de_streamings(
+            os.path.join(
+                DIRECTORIO_DATOS,
+                "JAMediaRadio.JAMedia"))
+                
+        guarda_lista_de_streamings(
+            os.path.join(
+                DIRECTORIO_DATOS,
+                "JAMediaRadio.JAMedia"),
+                lista_radios)
         
     except:
         print "Error al descargar Streamings de Radios."
@@ -458,11 +494,11 @@ VIDEOEFECTOS = [
     'agingtv',                                  # gst-plugins-good
     'dicetv',                                   # gst-plugins-good
     'warptv',                                   # gst-plugins-good
-    #'shagadelictv',                             # gst-plugins-good
+    #'shagadelictv',                            # gst-plugins-good
     'vertigotv',                                # gst-plugins-good
     'revtv',                                    # gst-plugins-good
     #'quarktv',                                 # gst-plugins-good Demasiado Lento
-    #'optv',                                     # gst-plugins-good
+    #'optv',                                    # gst-plugins-good
     'radioactv',                                # gst-plugins-good
     'streaktv',                                 # gst-plugins-good
     'rippletv',                                 # gst-plugins-good
@@ -485,7 +521,7 @@ VIDEOEFECTOS = [
     
     # Transform/Effect/Video:
     #'circle',
-    #'diffuse',                                 Demasiado Lento
+    #'diffuse',                                 # Demasiado Lento
     'kaleidoscope',
     'marble',
     'pinch',
@@ -564,11 +600,11 @@ JAMedia_VIDEOEFECTOS = [
     'agingtv',                                  # gst-plugins-good
     'dicetv',                                   # gst-plugins-good
     'warptv',                                   # gst-plugins-good
-    #'shagadelictv',                             # gst-plugins-good
+    #'shagadelictv',                            # gst-plugins-good
     'vertigotv',                                # gst-plugins-good
-    #'revtv',                                    # gst-plugins-good
+    #'revtv',                                   # gst-plugins-good
     #'quarktv',                                 # gst-plugins-good Demasiado Lento
-    #'optv',                                     # gst-plugins-good
+    #'optv',                                    # gst-plugins-good
     'radioactv',                                # gst-plugins-good
     'streaktv',                                 # gst-plugins-good
     'rippletv',                                 # gst-plugins-good
@@ -591,7 +627,7 @@ JAMedia_VIDEOEFECTOS = [
     
     # Transform/Effect/Video:
     #'circle',
-    #'diffuse',                                 #Demasiado Lento
+    #'diffuse',                                 # Demasiado Lento
     'kaleidoscope',
     'marble',
     #'pinch',

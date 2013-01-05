@@ -106,6 +106,8 @@ class JAMediaWebCam(GObject.GObject):
         self.efectos = []
         self.config_efectos = {}
         
+        self.control_rafaga = False
+        
         self.setup_init()
         
     def setup_init(self):
@@ -357,6 +359,37 @@ class JAMediaWebCam(GObject.GObject):
                 self.patharchivo = archivo
                 
                 pixbuf.savev(self.patharchivo, "png", [], [])
+        
+    def set_rafaga(self, segundos):
+        """Comienza secuencia de fotografías en ráfaga."""
+        
+        if self.control_rafaga:
+            GObject.source_remove(self.control_rafaga)
+            self.control_rafaga = False
+            
+        self.set_estado("Fotografiando")
+        
+        self.control_rafaga = GObject.timeout_add(
+            int(segundos*1000), self.rafaga)
+        
+    def stop_rafagas(self):
+        """Detiene el proceso de fotografías en ráfagas."""
+        
+        self.set_estado("playing")
+        
+        if self.control_rafaga:
+            GObject.source_remove(self.control_rafaga)
+            self.control_rafaga = False
+        
+    def rafaga(self):
+        """Toma una fotografía cuando se ha seteado ráfagas."""
+        
+        if not self.estado == "Fotografiando":
+            return False
+    
+        else:
+            self.fotografiar(widget = None, event = None)
+            return True
         
     def grabar(self, widget= None, event= None):
         """ Graba Audio y Video desde la webcam. """

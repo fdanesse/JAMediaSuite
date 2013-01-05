@@ -43,6 +43,7 @@ from Widgets import ToolbarVideo
 from Widgets import ToolbarFotografia
 from Widgets import ToolbarGrabarAudio
 from Widgets import WidgetEfecto_en_Pipe
+from Widgets import ToolbarRafagas
 
 import JAMediaObjects.JAMediaGlobales as G
 
@@ -410,7 +411,10 @@ class JAMediaVideoWidget(Gtk.Plug):
         
         self.reset()
         self.jamediawebcam.stop()
-        self.emit('salir')
+        # FIXME: emitir la señal directamente se ve mejor,
+        # pero aveces falla la cámara, la segunda opcion
+        # evita esto, pero no se ve bien.
+        GObject.idle_add(self.emit, 'salir') # self.emit('salir')
     
 class JAMediaFotografiaWidget(JAMediaVideoWidget):
     """Plug - Interfaz para Webcam con cámara fotográfica."""
@@ -469,8 +473,10 @@ class JAMediaFotografiaWidget(JAMediaVideoWidget):
         self.box_config.add(scroll)
         
         self.widget_efectos = WidgetsGstreamerEfectos()
+        self.toolbar_rafagas = ToolbarRafagas()
         
         vbox.pack_start(self.balance_widget , False, True, 0)
+        vbox.pack_start(self.toolbar_rafagas , False, True, 0)
         vbox.pack_start(self.widget_efectos , False, True, 0)
         
         hpanel.pack2(self.box_config, resize = False, shrink = False)
@@ -501,7 +507,15 @@ class JAMediaFotografiaWidget(JAMediaVideoWidget):
         self.widget_efectos.connect("click_efecto", self.click_efecto)
         self.widget_efectos.connect('configurar_efecto', self.configurar_efecto)
         
+        self.toolbar_rafagas.connect('run_rafaga', self.set_rafaga)
+        
         self.toolbar_salir.connect('salir', self.emit_salir)
+        
+    def set_rafaga(self, widget, valor):
+        """Cuando se hace click en play de la toolbar
+        de ráfagas se setea y comienza a fotografiar."""
+        
+        self.jamediawebcam.set_rafaga(valor)
         
     def set_accion(self, widget, senial):
         """Cuando se hace click en fotografiar o
@@ -511,11 +525,9 @@ class JAMediaFotografiaWidget(JAMediaVideoWidget):
             if self.jamediawebcam.estado != "Fotografiando":
                 self.jamediawebcam.fotografiar()
             
-            # FIXME: Al estar gdkpixbufsink en forma permanente en
-            # el pipe, esto no se necesita, pero hay que ver como se
-            # implementan las ráfagas de fotos.
-            #else:
-            #    self.jamediawebcam.stop_grabar()
+            else:
+                # Solo puede estar en estado Fotografiando si hay ráfagas en proceso.
+                self.jamediawebcam.stop_rafagas()
             
         elif senial == 'configurar':
             if self.box_config.get_visible():

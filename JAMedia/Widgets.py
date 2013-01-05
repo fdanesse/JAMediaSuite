@@ -744,19 +744,26 @@ class ToolbarAddStream(Gtk.Toolbar):
         self.insert(G.get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
-        item = Gtk.ToolItem()
+        frame = Gtk.Frame()
+        frame.set_label('Nombre')
         self.nombre = Gtk.Entry()
-        self.nombre.show()
-        item.add(self.nombre)
+        frame.add(self.nombre)
+        frame.show_all()
+        item = Gtk.ToolItem()
+        item.add(frame)
         self.insert(item, -1)
         
         self.insert(G.get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
-        item = Gtk.ToolItem()
+        frame = Gtk.Frame()
+        frame.set_label('URL')
         self.url = Gtk.Entry()
+        frame.add(self.url)
+        frame.show_all()
+        item = Gtk.ToolItem()
         self.url.show()
-        item.add(self.url)
+        item.add(frame)
         self.insert(item, -1)
         
         self.insert(G.get_separador(draw = False,

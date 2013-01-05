@@ -614,7 +614,7 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         """Para Salir al menú principal."""
         
         self.emit('salir')
-'''
+
 class ToolbarRafagas(Gtk.Toolbar):
     """Pequeña toolbar con controles para
     configurar rafagas fotográficas."""
@@ -630,15 +630,6 @@ class ToolbarRafagas(Gtk.Toolbar):
         # > toolbar interna
         toolbar = Gtk.Toolbar()
         
-        toolbar.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-        
-        item = Gtk.ToolItem()
-        label = Gtk.Label("1 cada: ")
-        label.show()
-        item.add(label)
-        toolbar.insert(item, -1)
-        
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "alejar.png")
         boton = G.get_boton(archivo, flip = False,
@@ -648,7 +639,7 @@ class ToolbarRafagas(Gtk.Toolbar):
         toolbar.insert(boton, -1)
         
         item = Gtk.ToolItem()
-        self.time_label = Gtk.Label("1.6")
+        self.time_label = Gtk.Label("1.0")
         self.time_label.show()
         item.add(self.time_label)
         toolbar.insert(item, -1)
@@ -667,9 +658,6 @@ class ToolbarRafagas(Gtk.Toolbar):
         item.add(label)
         toolbar.insert(item, -1)
         
-        toolbar.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "play.png")
         boton = G.get_boton(archivo, flip = False,
@@ -677,9 +665,6 @@ class ToolbarRafagas(Gtk.Toolbar):
         boton.set_tooltip_text("Comenzar.")
         boton.connect("clicked", self.run)
         toolbar.insert(boton, -1)
-        
-        toolbar.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
         
         toolbar.show_all()
         # < toolbar interna
@@ -709,7 +694,7 @@ class ToolbarRafagas(Gtk.Toolbar):
         
         tiempo = float(self.time_label.get_text())
         
-        if tiempo > 1.6:
+        if tiempo > 1.0:
             tiempo -= 0.1
             
         self.time_label.set_text(str(tiempo))
@@ -719,7 +704,7 @@ class ToolbarRafagas(Gtk.Toolbar):
         
         tiempo = float(self.time_label.get_text())
         tiempo += 0.1
-        self.time_label.set_text(str(tiempo))'''
+        self.time_label.set_text(str(tiempo))
         
 class WidgetEfecto_en_Pipe(JAMediaButton):
     """Representa un efecto agregado al pipe de JAMediaVideo.

@@ -308,7 +308,7 @@ class InfoWidget(Gtk.EventBox):
             elif 'audio' in typeinfo:
                 icono = os.path.join(ICONOS, "sonido.png")
                 
-            elif 'image' in typeinfo:
+            elif 'image' in typeinfo and not 'iso' in typeinfo:
                 icono = os.path.join(ICONOS, "imagen.png")
                 
             elif 'zip' in typeinfo or 'tar' in typeinfo:
