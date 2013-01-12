@@ -22,6 +22,7 @@
 import os
 import sys
 import commands
+import cairo
 
 import gi
 from gi.repository import Gtk
@@ -29,7 +30,6 @@ from gi.repository import Gdk
 from gi.repository import GdkX11
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
-from gi.repository import cairo
 
 import JAMFileSystem as JAMF
 
@@ -37,6 +37,74 @@ import JAMediaGlobales as G
 
 JAMediaWidgetsBASE = os.path.dirname(__file__)
 
+class JAMediaToolButton(Gtk.ToolButton):
+    """Toolbutton con drawingarea donde se
+    dibuja una imagen con cairo."""
+    
+    def __init__(self, pixels = 0):
+        
+        Gtk.ToolButton.__init__(self)
+        
+        if not pixels: pixels = G.get_pixels(1)
+        
+        self.imagen = Imagen_Button()
+        self.set_icon_widget(self.imagen)
+        self.imagen.show()
+        
+        self.set_size_request(pixels, pixels)
+        self.imagen.set_size_request(pixels, pixels)
+        
+        self.show_all()
+        
+    def set_imagen(self, archivo = None, flip = False, rotacion = False):
+        print archivo
+        if archivo == None:
+            pixbuf = None
+            
+        else:
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file(os.path.join(archivo))
+            if flip: pixbuf = pixbuf.flip(True)
+            if rotacion: pixbuf = pixbuf.rotate_simple(rotacion)
+        
+        self.imagen.set_imagen(pixbuf)
+
+class Imagen_Button(Gtk.DrawingArea):
+    """DrawingArea de JAMediaToolButton."""
+    
+    def __init__(self):
+        
+        Gtk.DrawingArea.__init__(self)
+    
+        self.pixbuf = None
+        
+        self.show_all()
+        
+    def do_draw(self, context):
+        
+        if self.pixbuf != None:
+            rect = self.get_allocation()
+            x, y, w, h = (rect.x, rect.y, rect.width, rect.height)
+            ww, hh = self.pixbuf.get_width(), self.pixbuf.get_height()
+            
+            scaledPixbuf = self.pixbuf.scale_simple(
+                w, h, GdkPixbuf.InterpType.BILINEAR)
+            
+            surface = cairo.ImageSurface(
+                cairo.FORMAT_ARGB32,
+                scaledPixbuf.get_width(),
+                scaledPixbuf.get_height())
+                
+            tmpcontext = cairo.Context(surface)
+            Gdk.cairo_set_source_pixbuf(tmpcontext, scaledPixbuf, 0, 0)
+            tmpcontext.paint()
+            context.set_source_surface(surface)
+            context.paint()
+        
+    def set_imagen(self, pixbuf):
+        
+        self.pixbuf = pixbuf
+        self.queue_draw()
+        
 class JAMediaButton(Gtk.EventBox):
     """Un Boton a medida."""
     
@@ -403,51 +471,63 @@ class ToolbarReproduccion(Gtk.Box):
         
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
         
-        self.botonatras = G.get_boton(os.path.join(JAMediaWidgetsBASE,
-            "Iconos", "siguiente.png"), True, pixels = G.get_pixels(0.8))
+        self.botonatras = JAMediaToolButton(pixels = G.get_pixels(0.8))
+        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "siguiente.png")
+        self.botonatras.set_imagen(
+            archivo = archivo,
+            flip = True,
+            rotacion = False)
         self.botonatras.set_tooltip_text("Anterior")
         self.botonatras.connect("clicked", self.clickenatras)
         self.pack_start(self.botonatras, False, True, 0)
         
-        self.botonplay = G.get_boton(os.path.join(JAMediaWidgetsBASE,
-            "Iconos", "play.png"), pixels = G.get_pixels(0.8))
+        self.botonplay = JAMediaToolButton(pixels = G.get_pixels(0.8))
+        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "play.png")
+        self.botonplay.set_imagen(
+            archivo = archivo,
+            flip = False,
+            rotacion = False)
         self.botonplay.set_tooltip_text("Reproducir")
         self.botonplay.connect("clicked", self.clickenplay_pausa)
         self.pack_start(self.botonplay, False, True, 0)
         
-        #self.botonpausa = G.get_boton(os.path.join(JAMediaWidgetsBASE,
-        #    "Iconos", "pausa.png"), pixels = G.get_pixels(0.8))
-        #self.botonpausa.set_tooltip_text("Pausar")
-        #self.botonpausa.connect("clicked", self.clickenplay_pausa)
-        #self.pack_start(self.botonpausa, False, True, 0)
-        
-        self.botonsiguiente = G.get_boton(os.path.join(JAMediaWidgetsBASE,
-            "Iconos", "siguiente.png"), pixels = G.get_pixels(0.8))
+        self.botonsiguiente = JAMediaToolButton(pixels = G.get_pixels(0.8))
+        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "siguiente.png")
+        self.botonsiguiente.set_imagen(
+            archivo = archivo,
+            flip = False,
+            rotacion = False)
         self.botonsiguiente.set_tooltip_text("Siguiente")
         self.botonsiguiente.connect("clicked", self.clickensiguiente)
         self.pack_start(self.botonsiguiente, False, True, 0)
         
-        self.botonstop = G.get_boton(os.path.join(JAMediaWidgetsBASE,
-            "Iconos", "stop.png"), pixels = G.get_pixels(0.8))
+        self.botonstop = JAMediaToolButton(pixels = G.get_pixels(0.8))
+        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "stop.png")
+        self.botonstop.set_imagen(
+            archivo = archivo,
+            flip = False,
+            rotacion = False)
         self.botonstop.set_tooltip_text("Detener Reproducción")
         self.botonstop.connect("clicked", self.clickenstop)
         self.pack_start(self.botonstop, False, True, 0)
         
         self.show_all()
         
-        #self.botonpausa.hide()
-        
     def set_paused(self):
         
-        #self.botonplay.show()
-        #self.botonpausa.hide()
-        pass
+        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "play.png")
+        self.botonplay.set_imagen(
+            archivo = archivo,
+            flip = False,
+            rotacion = False)
         
     def set_playing(self):
         
-        #self.botonpausa.show()
-        #self.botonplay.hide()
-        pass
+        archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "pausa.png")
+        self.botonplay.set_imagen(
+            archivo = archivo,
+            flip = False,
+            rotacion = False)
         
     def clickenstop(self, widget = None, event = None):
         
