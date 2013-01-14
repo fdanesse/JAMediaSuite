@@ -187,7 +187,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.toolbar_salir = ToolbarSalir()
         
         basebox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        hpanel = Gtk.HPaned()
+        hpanel = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
         basebox.pack_start(self.toolbar, False, False, 0)
         basebox.pack_start(self.toolbar_salir, False, False, 0)
         basebox.pack_start(self.toolbar_accion, False, False, 0)

@@ -57,7 +57,7 @@ class JAMediaToolButton(Gtk.ToolButton):
         self.show_all()
         
     def set_imagen(self, archivo = None, flip = False, rotacion = False):
-        print archivo
+        
         if archivo == None:
             pixbuf = None
             
