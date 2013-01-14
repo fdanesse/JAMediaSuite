@@ -28,11 +28,6 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
-'''
-from JAMediaObjects.JAMediaWidgets import ToolbarcontrolValores
-from JAMediaObjects.JAMediaWidgets import JAMediaButton
-
-import JAMediaObjects.JAMFileSystem as JAMF'''
 import JAMediaObjects.JAMediaGlobales as G
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
@@ -50,10 +45,10 @@ class Toolbar(Gtk.Toolbar):
         
         self.insert(G.get_separador(draw = False,
             ancho = 3, expand = False), -1)
-        '''
+        
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia.png")
+            "Iconos", "ver.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
             -1, G.get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
@@ -62,16 +57,8 @@ class Toolbar(Gtk.Toolbar):
         item.add(imagen)
         self.insert(item, -1)
         
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "configurar.png")
-        self.configurar = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(1))
-        self.configurar.set_tooltip_text("Configuraciones.")
-        self.configurar.connect("clicked", self.emit_config)
-        self.insert(self.configurar, -1)
-        
         self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)'''
+            ancho = 0, expand = True), -1)
         
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
@@ -149,7 +136,9 @@ class TreeStoreModel(Gtk.TreeStore):
     
     def __init__(self):
         
-        Gtk.TreeStore.__init__(self, GObject.TYPE_STRING, GObject.TYPE_STRING)
+        Gtk.TreeStore.__init__(
+            self, GObject.TYPE_STRING,
+            GObject.TYPE_STRING)
         
 class Lista(Gtk.TreeView):
     
@@ -229,11 +218,13 @@ class Lista(Gtk.TreeView):
     def construir_columa(self, text, index, visible):
         
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn(text, render, text=index)
+        columna = Gtk.TreeViewColumn(text, render, text = index)
+        
         columna.set_sort_column_id(index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', True)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        
         return columna
     
     def selecciones(self, treeselection, model, path, is_selected, listore):

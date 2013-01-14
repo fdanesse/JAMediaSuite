@@ -22,8 +22,11 @@ class Ventana(Gtk.Window):
         super(Ventana, self).__init__()
         
         self.set_title("JAMedia Gstreamer Introspector.")
-        #self.set_icon_from_file(os.path.join(JAMediaObjectsPath,
-        #    "Iconos", "JAMedia.png"))
+        
+        self.set_icon_from_file(
+            os.path.join(JAMediaObjectsPath,
+            "Iconos", "ver.png"))
+            
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)

@@ -9,12 +9,31 @@ import gi
 gi.require_version('Gst', '1.0')
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import Gst
 
 from Widgets import Toolbar
 from Widgets import TextView
 from Widgets import Lista
+
+import JAMediaObjects
+from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+
+JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    
+GObject.threads_init()
+Gdk.threads_init()
 
 Gst.init([])
 
@@ -37,6 +56,7 @@ class JAMediaGstreamerInstrospector(Gtk.Plug):
         Gtk.Plug.__init__(self, 0L)
         
         self.toolbar = None
+        self.toolbar_salir = None
         self.textview = None
         self.lista = None
         
@@ -49,6 +69,7 @@ class JAMediaGstreamerInstrospector(Gtk.Plug):
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         
         self.toolbar = Toolbar()
+        self.toolbar_salir = ToolbarSalir()
         self.lista = Lista()
         
         panel_base = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
@@ -70,16 +91,28 @@ class JAMediaGstreamerInstrospector(Gtk.Plug):
         
         # Todo
         vbox.pack_start(self.toolbar, False, False, 0)
+        vbox.pack_start(self.toolbar_salir, False, False, 0)
         vbox.pack_start(panel_base, True, True, 0)
         
         self.add(vbox)
         
         self.show_all()
         
+        self.toolbar_salir.hide()
+        
         self.llenar_lista()
         
-        self.toolbar.connect('salir', self.salir)
+        self.toolbar.connect('salir', self.confirmar_salir)
+        self.toolbar_salir.connect('salir', self.emit_salir)
         self.lista.connect('nueva-seleccion', self.get_element)
+        
+    def emit_salir(self, widget):
+        
+        self.emit('salir')
+        
+    def confirmar_salir(self, widget = None, senial = None):
+        
+        self.toolbar_salir.run("JAMediaGstreamerInstrospector")
         
     def llenar_lista(self):
         
@@ -105,7 +138,3 @@ class JAMediaGstreamerInstrospector(Gtk.Plug):
     def embed_event(self, widget):
         
         print "JAMediaGstreamerInstrospector OK"
-        
-    def salir(self, widget):
-        
-        self.emit('salir')
