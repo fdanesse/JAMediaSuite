@@ -32,12 +32,14 @@ import pydoc
 import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import Vte
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import WebKit
 
 import JAMediaObjects
 import JAMediaObjects.JAMediaGlobales as G
+import JAMediaObjects.JAMFileSystem as JAMF
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
@@ -46,46 +48,6 @@ DATOS = os.path.join(os.environ["HOME"], "Datos-pygi-hack")
 if not os.path.exists(DATOS):
     os.mkdir(DATOS)
     os.chmod(DATOS, 0755)
-    
-# http://www.roojs.org/seed/gir-1.1-gtk-2.0/
-PaquetesObjetos1 = ['Atk', 'Avahi', 'Clutter', 'ClutterJson',
-'DBusGLib', 'Epiphany', 'Everything', 'GConf',
-'GIMarshallingTests' 'GIRepository', 'GLib', 'GObject',
-'GSSDP', 'GUPnP', 'Gda', 'Gdaui', 'Gdk', 'GdkPixbuf',
-'Gio', 'Gladeui', 'GnomeVFS', 'GooCanvas', 'Gsf', 'Gst',
-'GstApp', 'GstAudio', 'GstBase', 'GstController',
-'GstInterfaces', 'GstNet', 'GstRtp', 'GstTag', 'GstVideo',
-'Gtk', 'GtkClutter', 'GtkSource', 'Midgard', 'Notify',
-'PanelApplet', 'Pango', 'PangoCairo', 'PangoFT2',
-'PangoXft', 'Peas', 'PeasUI', 'Polkit', 'Poppler',
-'Soup', 'SoupGNOME', 'TelepathyGLib', 'Unique',
-'Vte', 'WebKit']
-PaquetesNoObjetos1 = ['AvahiCore', 'Babl', 'Cogl', 'DBus',
-'GL', 'GMenu', 'GModule', 'GnomeKeyring', 'GstCheck',
-'GstFft', 'GstNetbuffer', 'GstPbutils', 'GstRiff',
-'GstRtsp', 'GstSdp', 'Gtop', 'JSCore', 'PangoX', 'cairo',
-'fontconfig', 'freetype2', 'libbonobo', 'libc',
-'libxml2', 'sqlite3', 'xfixes', 'xft', 'xlib', 'xrandr']
-
-# http://www.roojs.com/seed/gir-1.2-gtk-3.0/seed/
-PaquetesObjetos2 = [
-'AccountsService', 'Atk', 'Cally', 'Champlain', 'Clutter',
-'ClutterGst', 'ClutterX11', 'DBusGLib', 'Dbusmenu',
-'Dee', 'EvinceDocument', 'Wnck', 'Totem', 'Abi',
-'EvinceView', 'GConf', 'GIRepository', 'GLib', 'GObject',
-'GWeather', 'Gdk', 'GdkPixbuf', 'GdkX11', 'Gio', 'Gkbd',
-'GnomeBluetooth', 'Gtk', 'GtkChamplain', 'GtkClutter',
-'GtkSource', 'Gucharmap', 'Json', 'MPID', 'Nautilus',
-'Notify', 'Pango', 'PangoCairo', 'PangoFT2', 'PangoXft',
-'Peas', 'PeasGtk', 'Polkit', 'PolkitAgent', 'Soup',
-'SoupGNOME', 'TelepathyGLib', 'TelepathyLogger',
-'UPowerGlib', 'Vte', 'WebKit', 'GES', 'NetworkManager',
-'Rsvg', 'SugarExt', 'Cheese']
-# GES : http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-editing-services/html/
-PaquetesNoObjetos2 = [
-'Cogl', 'DBus', 'GL', 'GMenu', 'GModule',
-'JSCore', 'cairo', 'fontconfig', 'freetype2',
-'libxml2', 'xfixes', 'xft', 'xlib', 'xrandr']
 
 import Funciones as FUNC
 
@@ -195,7 +157,7 @@ class Toolbar(Gtk.Toolbar):
         
         self.emit('salir')
         
-class Navegador(Gtk.HPaned):
+class Navegador(Gtk.Paned):
     
     __gsignals__ = {
     "info":(GObject.SIGNAL_RUN_FIRST,
@@ -203,10 +165,13 @@ class Navegador(Gtk.HPaned):
         
     def __init__(self):
         
-        Gtk.HPaned.__init__(self)
+        Gtk.Paned.__init__(
+            self, orientation = Gtk.Orientation.HORIZONTAL)
         
         self.api = None
-        self.descriptor = None
+        self.webview = None
+        self.terminal = None
+        self.lista_modulos = None
         
         self.pack1(
             self.area_izquierda_del_panel(),
@@ -218,6 +183,9 @@ class Navegador(Gtk.HPaned):
         
         self.show_all()
 
+        self.webview.set_zoom_level(0.8)
+        
+        self.lista_modulos.connect('nueva-seleccion', self.set_api)
         self.api.connect('objeto', self.ver_objeto)
         self.api.connect('info', self.re_emit_info)
     
@@ -231,82 +199,47 @@ class Navegador(Gtk.HPaned):
         
         try:
             if objeto:
-                pydoc.writedoc(objeto)
                 archivo = os.path.join(DATOS, '%s.html' % (objeto.__name__))
-                self.descriptor.open(archivo)
+                
+                #if not os.path.exists(archivo):
+                pydoc.writedoc(objeto)
+                
+                self.webview.open(archivo)
+                # http://nullege.com/codes/show/src@g@n@gnome-bubbles-HEAD@bubble.py/67/webkit.WebView.open
+                # http://nullege.com/codes/show/src@t@u@Turpial-HEAD@turpial@ui@gtk@tweetslistwk.py/45/webkit.WebView.set_settings
                 
             else:
-                self.descriptor.open('')
+                self.webview.open('')
                 
         except:
-            self.descriptor.open('')
+            self.webview.open('')
         
     def area_izquierda_del_panel(self):
         
-        vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+        panel = Gtk.Paned(orientation = Gtk.Orientation.VERTICAL)
         
-        frame = Gtk.Frame()
-        frame.set_label("Objects")
-        frame.set_label_align(0.5, 0.5)
-        combo = Gtk.ComboBoxText()
+        scrolled_window = Gtk.ScrolledWindow()
         
-        for item in PaquetesObjetos1:
-            combo.append_text(item)
-            
-        combo.connect('changed', self.get_item)
-        frame.add(combo)
-        hbox.pack_start(frame, True, True, 2)
+        scrolled_window.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
         
-        frame = Gtk.Frame()
-        frame.set_label("No Objects")
-        frame.set_label_align(0.5, 0.5)
-        combo2 = Gtk.ComboBoxText()
+        scrolled_window.set_size_request(250, -1)
         
-        for item in PaquetesNoObjetos1:
-            combo2.append_text(item)
-            
-        combo2.connect('changed', self.get_item)
-        frame.add(combo2)
-        hbox.pack_start(frame, True, True, 2)
+        self.lista_modulos = Lista()
         
-        frame = Gtk.Frame()
-        frame.set_label("gir-1.1-gtk-2.0")
-        frame.set_label_align(0.5, 0.5)
-        frame.add(hbox)
-        vbox.pack_start(frame, False, False, 0)
+        modulos = FUNC.get_modulos()
         
-        hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+        iter = self.lista_modulos.modelo.get_iter_first()
+        for elemento in modulos:
+            iteractual = self.lista_modulos.modelo.append(iter, [elemento])
         
-        frame = Gtk.Frame()
-        frame.set_label("Objects")
-        frame.set_label_align(0.5, 0.5)
-        combo = Gtk.ComboBoxText()
+        scrolled_window.add_with_viewport (self.lista_modulos)
         
-        for item in PaquetesObjetos2:
-            combo.append_text(item)
-            
-        combo.connect('changed', self.get_item)
-        frame.add(combo)
-        hbox.pack_start(frame, True, True, 2)
-        
-        frame = Gtk.Frame()
-        frame.set_label("No Objects")
-        frame.set_label_align(0.5, 0.5)
-        combo2 = Gtk.ComboBoxText()
-        
-        for item in PaquetesNoObjetos2:
-            combo2.append_text(item)
-            
-        combo2.connect('changed', self.get_item)
-        frame.add(combo2)
-        hbox.pack_start(frame, True, True, 2)
-        
-        frame = Gtk.Frame()
-        frame.set_label("gir-1.2-gtk-3.0")
-        frame.set_label_align(0.5, 0.5)
-        frame.add(hbox)
-        vbox.pack_start(frame, False, False, 0)
+        panel.pack1(
+            scrolled_window,
+            resize = False,
+            shrink = True)
         
         scrolled_window = Gtk.ScrolledWindow()
         
@@ -316,28 +249,53 @@ class Navegador(Gtk.HPaned):
             
         self.api = Api()
         scrolled_window.add_with_viewport (self.api)
-        vbox.pack_start(scrolled_window, True, True, 0)
         
-        combo.set_active(0)
+        panel.pack2(
+            scrolled_window,
+            resize = False,
+            shrink = True)
         
-        return vbox
+        return panel
 
     def area_derecha_del_panel(self):
         
+        panel = Gtk.Paned(orientation = Gtk.Orientation.VERTICAL)
+
         scrolled_window = Gtk.ScrolledWindow()
         
         scrolled_window.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
             
-        self.descriptor = WebKit.WebView()
-        scrolled_window.add_with_viewport(self.descriptor)
+        self.webview = WebKit.WebView()
+        self.webview.set_settings(WebKit.WebSettings())
+        scrolled_window.add_with_viewport(self.webview)
         
-        return scrolled_window
+        panel.pack1(
+            scrolled_window,
+            resize = False,
+            shrink = True)
+        '''
+        scrolled_window = Gtk.ScrolledWindow()
+        
+        scrolled_window.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+            
+        self.terminal = Vte.Terminal()
+        
+        scrolled_window.add_with_viewport(self.terminal)
+        
+        panel.pack2(
+            scrolled_window,
+            resize = False,
+            shrink = True)'''
+            
+        return panel
     
-    def get_item(self, widget):
+    def set_api(self, widget, valor):
         
-        self.api.llenar( [widget.get_active_text()] )
+        self.api.llenar(valor)
         
 class Api(Gtk.TreeView):
     """TreeView para mostrar:
@@ -406,13 +364,6 @@ class Api(Gtk.TreeView):
         
         iter = treeview.modelo.get_iter(path)
         valor = treeview.modelo.get_value(iter, 1)
-        objeto = None
-        
-        try:
-            objeto = self.objetos[valor]
-            
-        except:
-            pass
         
         if treeview.row_expanded(path):
             treeview.collapse_row(path)
@@ -444,10 +395,15 @@ class Api(Gtk.TreeView):
             
         return True
     
-    def llenar(self, paquetes):
+    def llenar(self, paquete):
         """Llena el treeview con los datos de un modulo."""
         
+        self.objetos = {}
+        self.objeto = None
         self.modelo.clear()
+        
+        for archivo in os.listdir(DATOS):
+            JAMF.borrar(os.path.join(DATOS, archivo))
         
         icono = os.path.join(JAMediaObjectsPath, "Iconos", "ver.png")
         pixbufver = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
@@ -461,38 +417,38 @@ class Api(Gtk.TreeView):
         pixbufotros = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
             
         iter = self.modelo.get_iter_first()
-        for paq in paquetes:
-            modulo, CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS = FUNC.get_info(paq)
+        
+        modulo, CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS = FUNC.get_info(paquete)
+        
+        if not modulo or not CLASES:
+            self.emit('objeto', None)
+            self.emit('info', "El Objeto %s no se ha Podido Localizar."  % (paquete))
+            return
             
-            if not modulo or not CLASES:
-                self.emit('objeto', None)
-                self.emit('info', "El Objeto %s no se ha Podido Localizar."  % (paq))
-                return
-                
-            iteractual = self.modelo.append(iter,[ pixbufver, paq, str(modulo), ""])
-            iterclass = self.modelo.append(iteractual,[ pixbufclase, 'Clases', str(modulo), ""])
-            iterfunc = self.modelo.append(iteractual,[ pixbuffunc, 'Funciones', str(modulo), ""])
-            iterconst = self.modelo.append(iteractual,[ pixbufconst, 'Constantes', str(modulo), ""])
-            iterotros = self.modelo.append(iteractual,[ pixbufotros, 'Otros', str(modulo), ""])
+        iteractual = self.modelo.append(iter,[ pixbufver, paquete, str(modulo), ""])
+        iterclass = self.modelo.append(iteractual,[ pixbufclase, 'Clases', str(modulo), ""])
+        iterfunc = self.modelo.append(iteractual,[ pixbuffunc, 'Funciones', str(modulo), ""])
+        iterconst = self.modelo.append(iteractual,[ pixbufconst, 'Constantes', str(modulo), ""])
+        iterotros = self.modelo.append(iteractual,[ pixbufotros, 'Otros', str(modulo), ""])
+        
+        for clase in CLASES:
+            self.modelo.append(iterclass,[ pixbufclase, clase[0], str(modulo), ""])
+            self.objetos[clase[0]] = clase[1]
             
-            for clase in CLASES:
-                self.modelo.append(iterclass,[ pixbufclase, clase[0], str(modulo), ""])
-                self.objetos[clase[0]] = clase[1]
-                
-            for funcion in FUNCIONES:
-                self.modelo.append(iterfunc,[ pixbuffunc, funcion[0], str(modulo), ""])
-                self.objetos[funcion[0]] = funcion[1]
-                
-            for const in CONSTANTES:
-                self.modelo.append(iterconst,[ pixbufconst, const[0], str(modulo), ""])
-                self.objetos[const[0]] = const[1]
-                
-            for otros in DESCONOCIDOS:
-                self.modelo.append(iterotros,[ pixbufotros, otros, str(modulo), ""])
-                self.objetos[otros[0]] = otros[1]
-                
-            self.emit('info', "El Objeto %s se ha Cargado Correctamente."  % (paq))
-                
+        for funcion in FUNCIONES:
+            self.modelo.append(iterfunc,[ pixbuffunc, funcion[0], str(modulo), ""])
+            self.objetos[funcion[0]] = funcion[1]
+            
+        for const in CONSTANTES:
+            self.modelo.append(iterconst,[ pixbufconst, const[0], str(modulo), ""])
+            self.objetos[const[0]] = const[1]
+            
+        for otros in DESCONOCIDOS:
+            self.modelo.append(iterotros,[ pixbufotros, otros, str(modulo), ""])
+            self.objetos[otros[0]] = otros[1]
+        
+        self.emit('info', "El Objeto %s se ha Cargado Correctamente."  % (paquete))
+        
     def construir_columnas(self):
         
         celda_de_imagen = Gtk.CellRendererPixbuf()
@@ -533,3 +489,69 @@ class TreeStoreModelAPI(Gtk.TreeStore):
             GObject.TYPE_STRING,
             GObject.TYPE_STRING)
         
+class TreeStoreModel(Gtk.TreeStore):
+    
+    def __init__(self):
+        
+        Gtk.TreeStore.__init__(
+            self, GObject.TYPE_STRING)
+        
+class Lista(Gtk.TreeView):
+    
+    __gsignals__ = {
+    "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+    
+    def __init__(self):
+        
+        Gtk.TreeView.__init__(self)
+        
+        self.set_property("rules-hint", True)
+        self.set_property("enable-grid-lines", True)
+        self.set_property("enable-tree-lines", True)
+        
+        self.set_headers_clickable(True)
+        self.set_headers_visible(True)
+
+        self.valor_select = None
+        
+        self.modelo = TreeStoreModel()
+        
+        self.setear_columnas()
+        
+        self.treeselection = self.get_selection()
+        self.treeselection.set_select_function(self.selecciones, self.modelo)
+        
+        self.set_model(self.modelo)
+        
+        self.show_all()
+        
+    def setear_columnas(self):
+        
+        self.append_column(self.construir_columa('Modulos', 0, True))
+        
+    def construir_columa(self, text, index, visible):
+        
+        render = Gtk.CellRendererText()
+        columna = Gtk.TreeViewColumn(text, render, text = index)
+        
+        columna.set_sort_column_id(index)
+        columna.set_property('visible', visible)
+        columna.set_property('resizable', True)
+        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        
+        return columna
+    
+    def selecciones(self, treeselection, model, path, is_selected, listore):
+        """Cuando se selecciona un item en la lista."""
+        
+        # model y listore son ==
+        iter = model.get_iter(path)
+        valor =  model.get_value(iter, 0)
+        
+        if not is_selected and self.valor_select != valor:
+            self.valor_select = valor
+            self.emit('nueva-seleccion', self.valor_select)
+            
+        return True
+    

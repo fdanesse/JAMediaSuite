@@ -39,6 +39,7 @@ css_provider = Gtk.CssProvider()
 style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
+
 context.add_provider_for_screen(
     screen,
     css_provider,
