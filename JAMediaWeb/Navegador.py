@@ -31,7 +31,8 @@ class Navegador(WebKit.WebView):
         
         self.show_all()
         
-        self.open('https://www.google.com/')
+        #self.open('https://www.google.com/')
+        #self.open('/home/flavio/Datos-pygi-hack/Widget.html')
         
         self.set_zoom_level(1.0)
         

@@ -70,7 +70,7 @@ class ToolbarTry(Gtk.Toolbar):
             ancho = 0, expand = True), -1)
         
         self.show_all()
-
+'''
 class Toolbar(Gtk.Toolbar):
     
     __gsignals__ = {
@@ -84,15 +84,10 @@ class Toolbar(Gtk.Toolbar):
         self.insert(G.get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos", "ver.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
         item = Gtk.ToolItem()
-        item.add(imagen)
+        self.label = Gtk.Label("JAMedia PygiHack")
+        self.label.show()
+        item.add(self.label)
         self.insert(item, -1)
         
         self.insert(G.get_separador(draw = False,
@@ -155,7 +150,7 @@ class Toolbar(Gtk.Toolbar):
         
     def salir(self, widget):
         
-        self.emit('salir')
+        self.emit('salir')'''
         
 class Navegador(Gtk.Paned):
     
@@ -203,7 +198,6 @@ class Navegador(Gtk.Paned):
                 
                 #if not os.path.exists(archivo):
                 pydoc.writedoc(objeto)
-                
                 self.webview.open(archivo)
                 # http://nullege.com/codes/show/src@g@n@gnome-bubbles-HEAD@bubble.py/67/webkit.WebView.open
                 # http://nullege.com/codes/show/src@t@u@Turpial-HEAD@turpial@ui@gtk@tweetslistwk.py/45/webkit.WebView.set_settings
@@ -275,7 +269,7 @@ class Navegador(Gtk.Paned):
             scrolled_window,
             resize = False,
             shrink = True)
-        '''
+        
         scrolled_window = Gtk.ScrolledWindow()
         
         scrolled_window.set_policy(
@@ -289,7 +283,7 @@ class Navegador(Gtk.Paned):
         panel.pack2(
             scrolled_window,
             resize = False,
-            shrink = True)'''
+            shrink = True)
             
         return panel
     

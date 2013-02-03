@@ -25,7 +25,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 
-from Widgets import Toolbar
+#from Widgets import Toolbar
 from Widgets import ToolbarTry
 from Widgets import Navegador
 
@@ -60,29 +60,29 @@ class JAMediaPygiHack(Gtk.Plug):
         
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         
-        self.toolbar = Toolbar()
-        self.toolbar_salir = ToolbarSalir()
+        #self.toolbar = Toolbar()
+        #self.toolbar_salir = ToolbarSalir()
         self.toolbartry = ToolbarTry()
         self.navegador = Navegador()
         
-        vbox.pack_start(self.toolbar, False, False, 0)
-        vbox.pack_start(self.toolbar_salir, False, False, 0)
+        #vbox.pack_start(self.toolbar, False, False, 0)
+        #vbox.pack_start(self.toolbar_salir, False, False, 0)
         vbox.pack_start(self.navegador, True, True, 0)
         vbox.pack_start(self.toolbartry, False, False, 3)
         
         self.add(vbox)
         self.show_all()
         
-        self.toolbar_salir.hide()
+        #self.toolbar_salir.hide()
         
         self.navegador.connect('info', self.get_info)
         self.connect("embedded", self.embed_event)
-        self.toolbar.connect('salir', self.confirmar_salir)
-        self.toolbar_salir.connect('salir', self.emit_salir)
+        #self.toolbar.connect('salir', self.confirmar_salir)
+        #self.toolbar_salir.connect('salir', self.emit_salir)
         
-    def confirmar_salir(self, widget = None, senial = None):
+    #def confirmar_salir(self, widget = None, senial = None):
         
-        self.toolbar_salir.run("JAMediaPygiHack")
+    #    self.toolbar_salir.run("JAMediaPygiHack")
         
     def embed_event(self, widget):
         """No hace nada por ahora."""
@@ -93,6 +93,6 @@ class JAMediaPygiHack(Gtk.Plug):
         
         self.toolbartry.label.set_text( str(objeto) )
     
-    def emit_salir(self, widget):
+    #def emit_salir(self, widget):
         
-        self.emit('salir')
+    #    self.emit('salir')

@@ -68,7 +68,7 @@ class JAMediaWeb(Gtk.Plug):
         # Derecha
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        scroll.add_with_viewport (self.navegador)
+        scroll.add_with_viewport(self.navegador)
         
         base_panel.pack2(scroll, resize = True, shrink = True)
         
