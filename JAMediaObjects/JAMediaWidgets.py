@@ -30,6 +30,7 @@ from gi.repository import Gdk
 from gi.repository import GdkX11
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+from gi.repository import Vte
 
 import JAMFileSystem as JAMF
 
@@ -1409,6 +1410,36 @@ class Efecto_widget_Config(Gtk.Box):
         #y ocultar configuracion
         
 # <<< JAMediaVideo
+
+class JAMediaTerminal(Vte.Terminal):
+    
+    def __init__(self,
+        path = os.environ["HOME"],
+        interprete = "/bin/bash"):
+        
+        Vte.Terminal.__init__(self)
+        
+        self.path = path
+        self.interprete = interprete
+        
+        self.reset()
+        
+        self.show_all()
+        
+    def do_child_exited(self):
+        
+        self.reset()
+        
+    def reset(self, widget = None):
+        
+        pty_flags = Vte.PtyFlags(0)
+        
+        self.fork_command_full(
+            pty_flags,
+            self.path,
+            (self.interprete,),
+            "", 0, None, None)
+            
 
 '''
 # En base a código de Agustin Zubiaga <aguz@sugarlabs.org>

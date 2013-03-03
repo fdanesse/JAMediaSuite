@@ -20,6 +20,7 @@ from Widgets import Lista
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+from JAMediaObjects.JAMediaWidgets import JAMediaTerminal
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
@@ -103,23 +104,24 @@ class JAMediaGstreamer(Gtk.Plug):
         scroll.add_with_viewport(self.textview)
         panel.pack1(
             scroll,
-            resize = False,
+            resize = True,
             shrink = True)
         
         scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_size_request(-1, 150)
         
         scrolled_window.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
             
-        self.terminal = Vte.Terminal()
+        self.terminal = JAMediaTerminal()
         
         scrolled_window.add_with_viewport(self.terminal)
         
         panel.pack2(
             scrolled_window,
             resize = False,
-            shrink = True)
+            shrink = False)
         
         # Todo
         #vbox.pack_start(self.toolbar, False, False, 0)

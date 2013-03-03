@@ -38,6 +38,8 @@ from gi.repository import GObject
 from gi.repository import WebKit
 
 import JAMediaObjects
+from JAMediaObjects.JAMediaWidgets import JAMediaTerminal
+
 import JAMediaObjects.JAMediaGlobales as G
 import JAMediaObjects.JAMFileSystem as JAMF
 
@@ -196,7 +198,6 @@ class Navegador(Gtk.Paned):
             if objeto:
                 archivo = os.path.join(DATOS, '%s.html' % (objeto.__name__))
                 
-                #if not os.path.exists(archivo):
                 pydoc.writedoc(objeto)
                 self.webview.open(archivo)
                 # http://nullege.com/codes/show/src@g@n@gnome-bubbles-HEAD@bubble.py/67/webkit.WebView.open
@@ -267,23 +268,24 @@ class Navegador(Gtk.Paned):
         
         panel.pack1(
             scrolled_window,
-            resize = False,
+            resize = True,
             shrink = True)
         
         scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_size_request(-1, 150)
         
         scrolled_window.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
             
-        self.terminal = Vte.Terminal()
-        
+        self.terminal = JAMediaTerminal()
+            
         scrolled_window.add_with_viewport(self.terminal)
         
         panel.pack2(
             scrolled_window,
             resize = False,
-            shrink = True)
+            shrink = False)
             
         return panel
     
