@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   Widgets.py por:
-#   Flavio Danesse <fdanesse@activitycentral.com>
-#   CeibalJAM - Uruguay - Activity Central
+#   Flavio Danesse <fdanesse@gmail.com>
+#   CeibalJAM - Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,13 +32,13 @@ import pydoc
 import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import Vte
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import WebKit
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import JAMediaTerminal
+from JAMediaObjects.JAMediaWidgets import ToolbarTerminal
 
 import JAMediaObjects.JAMediaGlobales as G
 import JAMediaObjects.JAMFileSystem as JAMF
@@ -72,87 +72,6 @@ class ToolbarTry(Gtk.Toolbar):
             ancho = 0, expand = True), -1)
         
         self.show_all()
-'''
-class Toolbar(Gtk.Toolbar):
-    
-    __gsignals__ = {
-    'salir':(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
-        
-    def __init__(self):
-        
-        Gtk.Toolbar.__init__(self)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("JAMedia PygiHack")
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-            
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("fdanesse@gmail.com")
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-        
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos","salir.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Salir")
-        boton.connect("clicked", self.salir)
-        self.insert(boton, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        self.show_all()
-        
-    def salir(self, widget):
-        
-        self.emit('salir')'''
         
 class Navegador(Gtk.Paned):
     
@@ -167,8 +86,8 @@ class Navegador(Gtk.Paned):
         
         self.api = None
         self.webview = None
-        self.terminal = None
         self.lista_modulos = None
+        self.notebook = None
         
         self.pack1(
             self.area_izquierda_del_panel(),
@@ -271,22 +190,15 @@ class Navegador(Gtk.Paned):
             resize = True,
             shrink = True)
         
-        scrolled_window = Gtk.ScrolledWindow()
-        scrolled_window.set_size_request(-1, 150)
-        
-        scrolled_window.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-            
-        self.terminal = JAMediaTerminal()
-            
-        scrolled_window.add_with_viewport(self.terminal)
+        # Derecha - Abajo
+        terminal = JAMediaTerminal()
+        terminal.set_size_request(-1, 150)
         
         panel.pack2(
-            scrolled_window,
+            terminal,
             resize = False,
             shrink = False)
-            
+        
         return panel
     
     def set_api(self, widget, valor):

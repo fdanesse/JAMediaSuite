@@ -31,89 +31,7 @@ import JAMediaObjects
 import JAMediaObjects.JAMediaGlobales as G
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
-'''
-class Toolbar(Gtk.Toolbar):
-    """Toolbar principal de JAMedia."""
-    
-    __gsignals__ = {
-    'salir':(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
-    
-    def __init__(self):
-        
-        Gtk.Toolbar.__init__(self)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("JAMedia Gstreamer")
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("fdanesse@gmail.com")
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-        
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos","salir.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(1))
-        boton.set_tooltip_text("Salir")
-        boton.connect("clicked", self.salir)
-        self.insert(boton, -1)
-        
-        self.insert(G.get_separador(draw = False,
-            ancho = 3, expand = False), -1)
-        
-        self.show_all()
-        
-    def salir(self, widget):
-        
-        self.emit('salir')'''
-        
+
 class TextView(Gtk.TextView):
     
     def __init__(self):
@@ -172,7 +90,6 @@ class Lista(Gtk.TreeView):
             Gdk.EventMask.KEY_PRESS_MASK |
             Gdk.EventMask.TOUCH_MASK)
             
-        #self.connect("button-press-event", self.handler_click)
         self.connect("key-press-event", self.keypress)
         
     def keypress(self, widget, event):

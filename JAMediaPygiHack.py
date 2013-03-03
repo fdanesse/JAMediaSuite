@@ -3,7 +3,7 @@
 
 #   JAMediaPygiHack.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM - Uruguay - Activity Central
+#   CeibalJAM - Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,6 +40,20 @@ from JAMediaPygiHack.JAMediaPygiHack import JAMediaPygiHack
 import JAMediaGstreamer
 from JAMediaGstreamer.JAMediaGstreamer import JAMediaGstreamer
 
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+
+style_path = os.path.join(
+    JAMediaObjectsPath, "JAMediaPygiHackEstilo.css")
+    
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    
 class Ventana(Gtk.Window):
     
     def __init__(self):
@@ -85,8 +99,6 @@ class Ventana(Gtk.Window):
         self.toolbar_salir.hide()
         
         self.connect("destroy", self.salir)
-        #self.jamediapygihack.connect('salir', self.salir)
-        #self.jamediagstreamer.connect('salir', self.salir)
     
         self.toolbar.connect('salir', self.confirmar_salir)
         self.toolbar.connect('view', self.switch)
@@ -103,6 +115,9 @@ class Ventana(Gtk.Window):
         elif nombre == 'gstreamer':
             self.socket_pygihack.hide()
             self.socket_gstreamer.show()
+            
+        elif nombre == 'cristianedit':
+            pass
             
     def confirmar_salir(self, widget = None, senial = None):
         
@@ -126,24 +141,36 @@ class Toolbar(Gtk.Toolbar):
         
         self.insert(G.get_separador(draw = False,
             ancho = 3, expand = False), -1)
-        
-        self.boton_pygi = Gtk.ToggleToolButton()
-        label = Gtk.Label('Pygi')
-        label.modify_fg(0, Gdk.Color(65535, 65535, 65535))
-        self.boton_pygi.set_icon_widget(label)
-        label.show()
+            
+        item = Gtk.ToolItem()
+        item.set_expand(False)
+        self.boton_pygi = Gtk.RadioButton.new_with_label(
+                None, 'Pygi')
         self.boton_pygi.set_tooltip_text("JAMedia PygiHack")
-        self.boton_pygi.connect("clicked", self.switch)
-        self.insert(self.boton_pygi, -1)
+        self.boton_pygi.connect("toggled", self.switch)
+        item.add(self.boton_pygi)
+        self.insert(item, -1)
         
-        self.boton_gstreamer = Gtk.ToggleToolButton()
-        label = Gtk.Label('Gstreamer')
-        label.modify_fg(0, Gdk.Color(65535, 65535, 65535))
-        self.boton_gstreamer.set_icon_widget(label)
-        label.show()
+        item = Gtk.ToolItem()
+        item.set_expand(False)
+        self.boton_gstreamer = Gtk.RadioButton.new_with_label(
+                None, 'Gstreamer')
         self.boton_gstreamer.set_tooltip_text("JAMedia Gstreamer")
-        self.boton_gstreamer.connect("clicked", self.switch)
-        self.insert(self.boton_gstreamer, -1)
+        self.boton_gstreamer.connect("toggled", self.switch)
+        item.add(self.boton_gstreamer)
+        self.insert(item, -1)
+        '''
+        item = Gtk.ToolItem()
+        item.set_expand(False)
+        self.boton_edit = Gtk.RadioButton.new_with_label(
+                None, 'CristianEdit')
+        self.boton_edit.set_tooltip_text("Cristian Edit")
+        self.boton_edit.connect("toggled", self.switch)
+        item.add(self.boton_edit)
+        self.insert(item, -1)'''
+        
+        self.boton_gstreamer.join_group(self.boton_pygi)
+        #self.boton_edit.join_group(self.boton_pygi)
         
         self.insert(G.get_separador(draw = False,
             ancho = 0, expand = True), -1)
@@ -207,16 +234,18 @@ class Toolbar(Gtk.Toolbar):
         
     def switch(self, widget):
         
-        if widget == self.boton_pygi:
-            nombre = 'pygi'
-            self.emit('view', nombre)
-            
-        elif widget == self.boton_gstreamer:
-            nombre = 'gstreamer'
-            self.emit('view', nombre)
+        nombre = None
         
-        self.boton_gstreamer.set_active(False)
-        self.boton_pygi.set_active(False)
+        if self.boton_pygi.get_active():
+            nombre = 'pygi'
+            
+        elif self.boton_gstreamer.get_active():
+            nombre = 'gstreamer'
+            
+        elif self.boton_edit.get_active():
+            nombre = 'cristianedit'
+        
+        self.emit('view', nombre)
         
     def salir(self, widget):
         

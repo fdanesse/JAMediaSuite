@@ -31,6 +31,7 @@ from gi.repository import GdkX11
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import Vte
+from gi.repository import Pango
 
 import JAMFileSystem as JAMF
 
@@ -151,7 +152,8 @@ class JAMediaButton(Gtk.EventBox):
         
         self.show_all()
         
-    def set_colores(self, colornormal = False, colorselect = False, colorclicked = False):
+    def set_colores(self, colornormal = False,
+        colorselect = False, colorclicked = False):
         
         if colornormal:
             self.cn = colornormal
@@ -1129,7 +1131,8 @@ class WidgetsGstreamerEfectos(Gtk.Frame):
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
     'configurar_efecto':(
         GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+        (GObject.TYPE_STRING, GObject.TYPE_STRING,
+        GObject.TYPE_PYOBJECT))}
         
     def __init__(self):
         
@@ -1411,13 +1414,96 @@ class Efecto_widget_Config(Gtk.Box):
         
 # <<< JAMediaVideo
 
-class JAMediaTerminal(Vte.Terminal):
+class JAMediaTerminal(Gtk.Box):
+    
+    def __init__(self, path = os.environ["HOME"],
+        interprete = "/bin/bash"):
+        
+        self.path = path
+        self.interprete = interprete
+        
+        self.bash_path = None
+        self.python_path = None
+        
+        paths = os.environ["PATH"].split(':')
+        
+        for path in paths:
+            if 'bash' in os.listdir(path):
+                self.bash_path = os.path.join(path, 'bash')
+                
+            if 'python' in os.listdir(path):
+                self.python_path = os.path.join(path, 'python')
+                
+            if self.bash_path and self.python_path: break
+        
+        for path in paths:
+            if 'ipython' in os.listdir(path):
+                self.python_path = os.path.join(path, 'ipython')
+                break
+            
+        Gtk.Box.__init__(self,
+            orientation = Gtk.Orientation.VERTICAL)
+            
+        self.terminal = Terminal(
+            path = self.path,
+            interprete = self.interprete)
+            
+        self.toolbar = ToolbarTerminal()
+        
+        self.pack_start(self.terminal, True, True, 0)
+        self.pack_start(self.toolbar, False, False, 0)
+        
+        self.show_all()
+    
+        self.toolbar.connect('accion', self.accion_terminal)
+        self.toolbar.connect('reset', self.reset_terminal)
+        
+    def reset_terminal(self, widget, valor):
+        
+        if 'bash' in valor:
+            self.terminal.set_interprete(
+                path = os.environ["HOME"],
+                interprete = self.bash_path)
+        
+        elif 'python' in valor:
+            self.terminal.set_interprete(
+                path = os.environ["HOME"],
+                interprete = self.python_path)
+        
+    def accion_terminal(self, widget, accion):
+        
+        if accion == 'copiar':
+            if self.terminal.get_has_selection():
+                self.terminal.copy_clipboard()
+                
+        elif accion == 'pegar':
+            self.terminal.paste_clipboard()
+            
+    def set_interprete(self, path = os.environ["HOME"],
+        interprete = "/bin/bash"):
+        
+        self.terminal.set_interprete(
+            path = path, interprete = interprete)
+        
+    
+class Terminal(Vte.Terminal):
+    """
+    Terminal Configurable en distintos intérpretes
+        Con Aportes de Cristian García <cristian99garcia@gmail.com>
+    """
     
     def __init__(self,
         path = os.environ["HOME"],
         interprete = "/bin/bash"):
         
         Vte.Terminal.__init__(self)
+        
+        self.set_encoding('utf-8')
+        font = 'Monospace ' + str(10)
+        self.set_font(Pango.FontDescription(font))
+        self.set_colors(
+            Gdk.color_parse('#ffffff'),
+            Gdk.color_parse('#000000'),[])
         
         self.path = path
         self.interprete = interprete
@@ -1430,6 +1516,14 @@ class JAMediaTerminal(Vte.Terminal):
         
         self.reset()
         
+    def set_interprete(self, path = os.environ["HOME"],
+        interprete = "/bin/bash"):
+        
+        self.path = path
+        self.interprete = interprete
+        
+        self.reset()
+        
     def reset(self, widget = None):
         
         pty_flags = Vte.PtyFlags(0)
@@ -1439,8 +1533,89 @@ class JAMediaTerminal(Vte.Terminal):
             self.path,
             (self.interprete,),
             "", 0, None, None)
-            
 
+class ToolbarTerminal(Gtk.Toolbar):
+    
+    __gtype_name__ = 'ToolbarTerminal'
+    
+    __gsignals__ = {
+    "accion":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "reset":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        
+    def __init__(self):
+        
+        Gtk.Toolbar.__init__(self,
+            orientation = Gtk.Orientation.HORIZONTAL)
+        
+        archivo = os.path.join(
+            JAMediaWidgetsBASE,
+            "Iconos", "play.png")
+            
+        boton = G.get_boton(
+            archivo, flip = False,
+            pixels = G.get_pixels(0.8),
+            rotacion = GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE)
+
+        boton.set_tooltip_text("Copiar")
+        boton.connect("clicked", self.emit_copiar)
+        self.insert(boton, -1)
+        
+        boton = G.get_boton(
+            archivo, flip = False,
+            pixels = G.get_pixels(0.8),
+            rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE)
+
+        boton.set_tooltip_text("Pegar")
+        boton.connect("clicked", self.emit_pegar)
+        self.insert(boton, -1)
+        
+        self.insert(G.get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+            
+        archivo = os.path.join(
+            JAMediaWidgetsBASE,
+            "Iconos", "bash.png")
+            
+        boton = G.get_boton(
+            archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+
+        boton.set_tooltip_text("Bash")
+        boton.connect("clicked", self.emit_reset_bash)
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(
+            JAMediaWidgetsBASE,
+            "Iconos", "python.png")
+            
+        boton = G.get_boton(
+            archivo, flip = False,
+            pixels = G.get_pixels(0.8))
+
+        boton.set_tooltip_text("python")
+        boton.connect("clicked", self.emit_reset_python)
+        self.insert(boton, -1)
+        
+        self.show_all()
+        
+    def emit_reset_python(self, widget):
+        
+        self.emit('reset', 'python')
+        
+    def emit_reset_bash(self, widget):
+        
+        self.emit('reset', 'bash')
+        
+    def emit_copiar(self, widget):
+        
+        self.emit('accion', 'copiar')
+        
+    def emit_pegar(self, widget):
+        
+        self.emit('accion', 'pegar')
+        
 '''
 # En base a código de Agustin Zubiaga <aguz@sugarlabs.org>
 
