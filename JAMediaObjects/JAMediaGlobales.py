@@ -105,7 +105,7 @@ def get_pixels(centimetros):
     
     # 1 px = 0.026458333 cm #int(centimetros/0.026458333)
     # 1 Pixel = 0.03 Centimetros = 0.01 Pulgadas. """
-
+    '''
     screen = GdkX11.X11Screen()
     
     res_w = screen.width()
@@ -116,8 +116,19 @@ def get_pixels(centimetros):
     
     ancho = int (float(res_w) / float(mm_w) * 10.0 * centimetros)
     alto = int (float(res_h) / float(mm_h) * 10.0 * centimetros)
+    print ">>>>", centimetros, int(min([ancho, alto]))
+    return int(min([ancho, alto]))'''
     
-    return int(min([ancho, alto]))
+    res = {
+        1.0:37,
+        1.2:45,
+        0.2:7,
+        0.5:18,
+        0.6:22,
+        0.8:30,
+        }
+        
+    return res[centimetros]
 
 def get_separador(draw = False, ancho = 0, expand = False):
     """ Devuelve un separador generico."""

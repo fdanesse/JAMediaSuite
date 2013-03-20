@@ -30,6 +30,7 @@
 # http://www.roojs.org/seed/gir-1.1-gtk-2.0/
 PaquetesObjetos1 = [
     'Atk',
+    'Atspi',
     'Avahi',
     'Clutter',
     'ClutterJson',
@@ -188,18 +189,6 @@ PaquetesNoObjetos2 = [
     'xft',
     'xlib',
     'xrandr']
-    
-def get_modulos():
-    
-    modulos = []
-    for e in PaquetesObjetos1 + PaquetesNoObjetos1 + PaquetesObjetos2 + PaquetesNoObjetos2:
-        
-        if not e in modulos:
-            modulos.append(e)
-            
-    modulos.sort()
-    
-    return modulos
 
 pygi = __import__("gi.repository")
 
@@ -207,18 +196,26 @@ import gi.types
 import types
 
 def get_info(modulo_name):
+    """
+    Devuelve las clases, funciones y constantes de
+    un modulo determinado en un paquete dado.
+    """
     
     CONSTANTES = []
     DESCONOCIDOS = []
     FUNCIONES = []
     CLASES = []
     
+    modulo = False
+    
     try:
         modulo = pygi.module.IntrospectionModule(modulo_name)
         
     except:
-        print "No He Poodido Acceder a %s" % (modulo_name)
-        return [None, None, None, None, None]
+        return [False, False, False, False, False]
+    
+    if not modulo or modulo == None:
+        return [False, False, False, False, False]
 
     attr = None
     
@@ -226,24 +223,67 @@ def get_info(modulo_name):
         if func.startswith("__") and func.endswith("__"):
             continue
         
-        try:
-            attr = getattr(modulo, func)
-            
-        except:
-            DESCONOCIDOS.append(func)
+        else:
+            try:
+                attr = getattr(modulo, func)
+                
+            except:
+                DESCONOCIDOS.append(func)
+                continue
 
-        objeto = "%s.%s" % (modulo_name, func) # str
-        
-        if isinstance(attr, int):
-            CONSTANTES.append( (objeto, attr) ) # La Constante
+            objeto = "%s.%s" % (modulo_name, func) # str
             
-        if isinstance(attr, types.FunctionType):
-            FUNCIONES.append((objeto, attr)) # La Función
+            try:
+                if isinstance(attr, int):
+                    CONSTANTES.append( (objeto, attr) ) # La Constante
+                    continue
+            except:
+                pass
             
-        if isinstance(attr, type):
-            CLASES.append((objeto, attr)) # La Clase
+            try:
+                if isinstance(attr, types.FunctionType):
+                    FUNCIONES.append( (objeto, attr) ) # La Función
+                    continue
+            
+            except:
+                pass
+            
+            try:
+                if isinstance(attr, type):
+                    CLASES.append( (objeto, attr) ) # La Clase
+                    continue
+                    
+            except:
+                pass
             
     return [modulo, CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS]
+
+def get_modulos():
+    """
+    Devuelve la lista de paquetes gi que
+    se encuentra en el sistema.
+    """
+    
+    modulos = []
+    
+    for paquete in PaquetesObjetos1 + PaquetesNoObjetos1 + PaquetesObjetos2 + PaquetesNoObjetos2:
+        
+        if not paquete in modulos:
+            
+            modulo = False
+            
+            try:
+                modulo = pygi.module.IntrospectionModule(paquete)
+        
+            except:
+                pass
+            
+            if modulo and modulo != None:
+                modulos.append(paquete)
+            
+    modulos.sort()
+    
+    return modulos
 
 ''' Pa no olvidarme:
 g = __import__( 'gi.repository.Gtk' )

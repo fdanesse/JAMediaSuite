@@ -297,8 +297,12 @@ class Lista(Gtk.TreeView):
         self.set_headers_visible(True)
 
         self.valor_select = None
-        self.modelo = Gtk.ListStore(GdkPixbuf.Pixbuf,
-        GObject.TYPE_STRING, GObject.TYPE_STRING)
+        
+        self.modelo = Gtk.ListStore(
+            GdkPixbuf.Pixbuf,
+            GObject.TYPE_STRING,
+            GObject.TYPE_STRING)
+            
         self.setear_columnas()
         
         self.treeselection = self.get_selection()
@@ -1415,6 +1419,9 @@ class Efecto_widget_Config(Gtk.Box):
 # <<< JAMediaVideo
 
 class JAMediaTerminal(Gtk.Box):
+    """
+    Terminal Vte.
+    """
     
     def __init__(self, path = os.environ["HOME"],
         interprete = "/bin/bash"):
@@ -1455,10 +1462,13 @@ class JAMediaTerminal(Gtk.Box):
         
         self.show_all()
     
-        self.toolbar.connect('accion', self.accion_terminal)
-        self.toolbar.connect('reset', self.reset_terminal)
+        self.toolbar.connect('accion', self.__accion_terminal)
+        self.toolbar.connect('reset', self.__reset_terminal)
         
-    def reset_terminal(self, widget, valor):
+    def __reset_terminal(self, widget, valor):
+        """
+        Resetea la terminal para interprete segun valor.
+        """
         
         if 'bash' in valor:
             self.terminal.set_interprete(
@@ -1470,7 +1480,10 @@ class JAMediaTerminal(Gtk.Box):
                 path = os.environ["HOME"],
                 interprete = self.python_path)
         
-    def accion_terminal(self, widget, accion):
+    def __accion_terminal(self, widget, accion):
+        """
+        Soporte para clipboard.
+        """
         
         if accion == 'copiar':
             if self.terminal.get_has_selection():
@@ -1481,6 +1494,9 @@ class JAMediaTerminal(Gtk.Box):
             
     def set_interprete(self, path = os.environ["HOME"],
         interprete = "/bin/bash"):
+        """
+        Seteo externo de la terminal a un determinado interprete.
+        """
         
         self.terminal.set_interprete(
             path = path, interprete = interprete)
@@ -1489,7 +1505,9 @@ class JAMediaTerminal(Gtk.Box):
 class Terminal(Vte.Terminal):
     """
     Terminal Configurable en distintos intérpretes
-        Con Aportes de Cristian García <cristian99garcia@gmail.com>
+        Con Aportes de:
+            Cristian García <cristian99garcia@gmail.com>
+            python_joven - Uruguay
     """
     
     def __init__(self,
@@ -1508,23 +1526,33 @@ class Terminal(Vte.Terminal):
         self.path = path
         self.interprete = interprete
         
-        self.reset()
+        self.__reset()
         
         self.show_all()
         
     def do_child_exited(self):
+        """
+        Cuando se hace exit en la terminal,
+        esta se resetea.
+        """
         
-        self.reset()
+        self.__reset()
         
     def set_interprete(self, path = os.environ["HOME"],
         interprete = "/bin/bash"):
+        """
+        Setea la terminal a un determinado interprete.
+        """
         
         self.path = path
         self.interprete = interprete
         
-        self.reset()
+        self.__reset()
         
-    def reset(self, widget = None):
+    def __reset(self, widget = None):
+        """
+        Reseteo de la Terminal.
+        """
         
         pty_flags = Vte.PtyFlags(0)
         
@@ -1535,6 +1563,9 @@ class Terminal(Vte.Terminal):
             "", 0, None, None)
 
 class ToolbarTerminal(Gtk.Toolbar):
+    """
+    Toolbar de JAMediaTerminal.
+    """
     
     __gtype_name__ = 'ToolbarTerminal'
     
@@ -1559,7 +1590,7 @@ class ToolbarTerminal(Gtk.Toolbar):
             rotacion = GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE)
 
         boton.set_tooltip_text("Copiar")
-        boton.connect("clicked", self.emit_copiar)
+        boton.connect("clicked", self.__emit_copiar)
         self.insert(boton, -1)
         
         boton = G.get_boton(
@@ -1568,7 +1599,7 @@ class ToolbarTerminal(Gtk.Toolbar):
             rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE)
 
         boton.set_tooltip_text("Pegar")
-        boton.connect("clicked", self.emit_pegar)
+        boton.connect("clicked", self.__emit_pegar)
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
@@ -1583,7 +1614,7 @@ class ToolbarTerminal(Gtk.Toolbar):
             pixels = G.get_pixels(0.8))
 
         boton.set_tooltip_text("Bash")
-        boton.connect("clicked", self.emit_reset_bash)
+        boton.connect("clicked", self.__emit_reset_bash)
         self.insert(boton, -1)
         
         archivo = os.path.join(
@@ -1595,24 +1626,24 @@ class ToolbarTerminal(Gtk.Toolbar):
             pixels = G.get_pixels(0.8))
 
         boton.set_tooltip_text("python")
-        boton.connect("clicked", self.emit_reset_python)
+        boton.connect("clicked", self.__emit_reset_python)
         self.insert(boton, -1)
         
         self.show_all()
         
-    def emit_reset_python(self, widget):
+    def __emit_reset_python(self, widget):
         
         self.emit('reset', 'python')
         
-    def emit_reset_bash(self, widget):
+    def __emit_reset_bash(self, widget):
         
         self.emit('reset', 'bash')
         
-    def emit_copiar(self, widget):
+    def __emit_copiar(self, widget):
         
         self.emit('accion', 'copiar')
         
-    def emit_pegar(self, widget):
+    def __emit_pegar(self, widget):
         
         self.emit('accion', 'pegar')
         

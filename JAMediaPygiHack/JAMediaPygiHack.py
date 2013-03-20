@@ -37,7 +37,15 @@ GObject.threads_init()
 Gdk.threads_init()
 
 class JAMediaPygiHack(Gtk.Plug):
+    """
+    Plug de PygiHack.
     
+    Contiene:
+        Instrospeccion sobre paquete y modulos de Gtk.
+        Visor webkit para sus docs.
+        Terminal bash-python-ipython para pruebas interactivas.
+    """
+        
     __gsignals__ = {
     "salir":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
@@ -57,14 +65,14 @@ class JAMediaPygiHack(Gtk.Plug):
         self.add(vbox)
         self.show_all()
         
-        self.navegador.connect('info', self.get_info)
-        self.connect("embedded", self.embed_event)
+        self.navegador.connect('info', self.__set_info)
+        self.connect("embedded", self.__embed_event)
         
-    def embed_event(self, widget):
+    def __embed_event(self, widget):
         """No hace nada por ahora."""
         
         print "JAMediaPygiHack => OK"
     
-    def get_info(self, widget, objeto):
+    def __set_info(self, widget, info):
         
-        self.toolbartry.label.set_text( str(objeto) )
+        self.toolbartry.label.set_text( str(info) )

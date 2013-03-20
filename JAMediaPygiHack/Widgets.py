@@ -54,6 +54,9 @@ if not os.path.exists(DATOS):
 import Funciones as FUNC
 
 class ToolbarTry(Gtk.Toolbar):
+    """
+    Barra de estado.
+    """
     
     def __init__(self):
         
@@ -74,6 +77,13 @@ class ToolbarTry(Gtk.Toolbar):
         self.show_all()
         
 class Navegador(Gtk.Paned):
+    """
+    Panel con:
+        Lista de Paquetes.
+        Lista de Módulos en paquete Seleccionado.
+        Visor WebKit para el doc generado sobre el módulo seleccionado.
+        Terminal bash-python para pruebas.
+    """
     
     __gsignals__ = {
     "info":(GObject.SIGNAL_RUN_FIRST,
@@ -90,26 +100,37 @@ class Navegador(Gtk.Paned):
         self.notebook = None
         
         self.pack1(
-            self.area_izquierda_del_panel(),
+            self.__area_izquierda_del_panel(),
             resize = False, shrink = True)
             
         self.pack2(
-            self.area_derecha_del_panel(),
+            self.__area_derecha_del_panel(),
             resize = True, shrink = True)
         
         self.show_all()
 
         self.webview.set_zoom_level(0.8)
         
-        self.lista_modulos.connect('nueva-seleccion', self.set_api)
-        self.api.connect('objeto', self.ver_objeto)
-        self.api.connect('info', self.re_emit_info)
+        self.lista_modulos.connect('nueva-seleccion', self.__set_api)
+        
+        self.api.connect('objeto', self.__ver_objeto)
+        self.api.connect('info', self.__re_emit_info)
     
-    def re_emit_info(self, widget, objeto):
+    def __re_emit_info(self, widget, info):
+        """
+        Emite información para la barra de estado.
+        """
         
-        self.emit('info', objeto)
+        self.emit('info', info)
         
-    def ver_objeto(self, widget, objeto):
+    def __ver_objeto(self, widget, objeto):
+        """
+        Recibe la clase, funcion o constante a cargar,
+        del tipo:
+            <class 'gi.repository.Atk.Action'>
+            
+        Y genera el Doc correspondiente.
+        """
         
         os.chdir(DATOS)
         
@@ -128,7 +149,10 @@ class Navegador(Gtk.Paned):
         except:
             self.webview.open('')
         
-    def area_izquierda_del_panel(self):
+    def __area_izquierda_del_panel(self):
+        """
+        Empaqueta las listas de la izquierda.
+        """
         
         panel = Gtk.Paned(orientation = Gtk.Orientation.VERTICAL)
         
@@ -145,6 +169,7 @@ class Navegador(Gtk.Paned):
         modulos = FUNC.get_modulos()
         
         iter = self.lista_modulos.modelo.get_iter_first()
+        
         for elemento in modulos:
             iteractual = self.lista_modulos.modelo.append(iter, [elemento])
         
@@ -171,7 +196,11 @@ class Navegador(Gtk.Paned):
         
         return panel
 
-    def area_derecha_del_panel(self):
+    def __area_derecha_del_panel(self):
+        """
+        Empaqueta el visor webkit y la terminal
+        de la izquierda.
+        """
         
         panel = Gtk.Paned(orientation = Gtk.Orientation.VERTICAL)
 
@@ -201,19 +230,32 @@ class Navegador(Gtk.Paned):
         
         return panel
     
-    def set_api(self, widget, valor):
+    def __set_api(self, widget, valor):
+        """
+        Setea la lista de clases, funciones y constantes
+        para el paquete cargado.
+        
+        Por ejemplo:
+            Para Gtk:
+                Listar:
+                    Window
+                    Widget
+                    etc . . .
+        """
         
         self.api.llenar(valor)
         
 class Api(Gtk.TreeView):
-    """TreeView para mostrar:
-    Clases, Funciones, Constantes y Otros items del modulo."""
+    """
+    TreeView para mostrar:
+        Clases, Funciones, Constantes y Otros items del modulo.
+    """
     
     __gsignals__ = {
     "objeto":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
     "info":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
         
@@ -227,27 +269,34 @@ class Api(Gtk.TreeView):
         self.modulo = None
         self.objeto = None
         
-        self.modelo = TreeStoreModelAPI()
-        self.construir_columnas()
+        self.modelo = Gtk.TreeStore(
+            GdkPixbuf.Pixbuf,
+            GObject.TYPE_STRING,
+            GObject.TYPE_STRING,
+            GObject.TYPE_STRING)
+            
+        self.__construir_columnas()
         
-        self.connect("row-activated", self.activar, None)
+        self.connect("row-activated", self.__activar, None)
         
         self.add_events(
             Gdk.EventMask.BUTTON_PRESS_MASK |
             Gdk.EventMask.KEY_PRESS_MASK |
             Gdk.EventMask.TOUCH_MASK)
             
-        self.connect("key-press-event", self.keypress)
+        self.connect("key-press-event", self.__keypress)
         
         self.set_model(self.modelo)
         
         self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(self.selecciones, self.modelo)
+        self.treeselection.set_select_function(self.__selecciones, self.modelo)
         
         self.show_all()
     
-    def keypress(self, widget, event):
-        """Cuando se presiona una tecla."""
+    def __keypress(self, widget, event):
+        """
+        Cuando se presiona una tecla.
+        """
         
         tecla = event.get_keycode()[1]
         model, iter = self.treeselection.get_selected()
@@ -267,8 +316,10 @@ class Api(Gtk.TreeView):
         
         return False
     
-    def activar (self, treeview, path, view_column, user_param1):
-        """Cuando se hace doble click en "Clases", "Funciones", etc . . ."""
+    def __activar (self, treeview, path, view_column, user_param1):
+        """
+        Cuando se hace doble click en "Clases", "Funciones", etc . . .
+        """
         
         iter = treeview.modelo.get_iter(path)
         valor = treeview.modelo.get_value(iter, 1)
@@ -279,8 +330,10 @@ class Api(Gtk.TreeView):
         elif not treeview.row_expanded(path):
             treeview.expand_to_path(path)
 
-    def selecciones(self, treeselection, modelo, path, is_selected, treestore):
-        """Cuando se selecciona una clase, funcion, etc . . ."""
+    def __selecciones(self, treeselection, modelo, path, is_selected, treestore):
+        """
+        Cuando se selecciona una clase, funcion, etc . . .
+        """
         
         iter = modelo.get_iter(path)
         modulo =  modelo.get_value(iter, 2)
@@ -289,7 +342,7 @@ class Api(Gtk.TreeView):
         
         if not is_selected and modulo != self.modulo:
             self.modulo = modulo
-            self.emit('info', self.modulo )
+            #self.emit('info', self.modulo)
             
         try:
             objeto = self.objetos[valor]
@@ -304,10 +357,22 @@ class Api(Gtk.TreeView):
         return True
     
     def llenar(self, paquete):
-        """Llena el treeview con los datos de un modulo."""
+        """
+        Llena el treeview con los datos de un paquete.
+        (Clases, funciones, constantes y otros.)
+        """
         
+        modulo, CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS = FUNC.get_info(paquete)
+        
+        if not modulo or modulo == None:
+            self.emit('objeto', False)
+            self.emit('info', "%s %s" % (modulo, paquete))
+            
+            return False
+            
         self.objetos = {}
         self.objeto = None
+        
         self.modelo.clear()
         
         for archivo in os.listdir(DATOS):
@@ -323,16 +388,9 @@ class Api(Gtk.TreeView):
         pixbufconst = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
         icono = os.path.join(JAMediaObjectsPath, "Iconos", "otros.png")
         pixbufotros = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-            
+        
         iter = self.modelo.get_iter_first()
         
-        modulo, CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS = FUNC.get_info(paquete)
-        
-        if not modulo or not CLASES:
-            self.emit('objeto', None)
-            self.emit('info', "El Objeto %s no se ha Podido Localizar."  % (paquete))
-            return
-            
         iteractual = self.modelo.append(iter,[ pixbufver, paquete, str(modulo), ""])
         iterclass = self.modelo.append(iteractual,[ pixbufclase, 'Clases', str(modulo), ""])
         iterfunc = self.modelo.append(iteractual,[ pixbuffunc, 'Funciones', str(modulo), ""])
@@ -355,9 +413,9 @@ class Api(Gtk.TreeView):
             self.modelo.append(iterotros,[ pixbufotros, otros, str(modulo), ""])
             self.objetos[otros[0]] = otros[1]
         
-        self.emit('info', "El Objeto %s se ha Cargado Correctamente."  % (paquete))
+        self.emit('info', "%s" % (modulo))
         
-    def construir_columnas(self):
+    def __construir_columnas(self):
         
         celda_de_imagen = Gtk.CellRendererPixbuf()
         columna = Gtk.TreeViewColumn(None, celda_de_imagen, pixbuf=0)
@@ -387,28 +445,15 @@ class Api(Gtk.TreeView):
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         self.append_column (columna)
         
-class TreeStoreModelAPI(Gtk.TreeStore):
-    
-    def __init__(self):
-        
-        Gtk.TreeStore.__init__(
-            self, GdkPixbuf.Pixbuf,
-            GObject.TYPE_STRING,
-            GObject.TYPE_STRING,
-            GObject.TYPE_STRING)
-        
-class TreeStoreModel(Gtk.TreeStore):
-    
-    def __init__(self):
-        
-        Gtk.TreeStore.__init__(
-            self, GObject.TYPE_STRING)
-        
 class Lista(Gtk.TreeView):
+    """
+    Lista de paquetes:
+        Gtk, GdK, GOBject, etc . . .
+    """
     
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self):
         
@@ -421,24 +466,24 @@ class Lista(Gtk.TreeView):
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
 
-        self.valor_select = None
+        self.valor_select = False
         
-        self.modelo = TreeStoreModel()
+        self.modelo = Gtk.TreeStore(GObject.TYPE_STRING)
         
-        self.setear_columnas()
+        self.__setear_columnas()
         
         self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(self.selecciones, self.modelo)
+        self.treeselection.set_select_function(self.__selecciones, self.modelo)
         
         self.set_model(self.modelo)
         
         self.show_all()
         
-    def setear_columnas(self):
+    def __setear_columnas(self):
         
-        self.append_column(self.construir_columa('Modulos', 0, True))
+        self.append_column(self.__construir_columa('Modulos', 0, True))
         
-    def construir_columa(self, text, index, visible):
+    def __construir_columa(self, text, index, visible):
         
         render = Gtk.CellRendererText()
         columna = Gtk.TreeViewColumn(text, render, text = index)
@@ -450,12 +495,14 @@ class Lista(Gtk.TreeView):
         
         return columna
     
-    def selecciones(self, treeselection, model, path, is_selected, listore):
-        """Cuando se selecciona un item en la lista."""
+    def __selecciones(self, treeselection, model, path, is_selected, listore):
+        """
+        Cuando se selecciona un item en la lista.
+        """
         
         # model y listore son ==
         iter = model.get_iter(path)
-        valor =  model.get_value(iter, 0)
+        valor = model.get_value(iter, 0)
         
         if not is_selected and self.valor_select != valor:
             self.valor_select = valor

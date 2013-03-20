@@ -98,13 +98,18 @@ class Ventana(Gtk.Window):
         self.socket_gstreamer.hide()
         self.toolbar_salir.hide()
         
-        self.connect("destroy", self.salir)
+        self.connect("destroy", self.__salir)
     
-        self.toolbar.connect('salir', self.confirmar_salir)
-        self.toolbar.connect('view', self.switch)
-        self.toolbar_salir.connect('salir', self.salir)
+        self.toolbar.connect('salir', self.__confirmar_salir)
+        self.toolbar.connect('view', self.__switch)
         
-    def switch(self, widget, nombre):
+        self.toolbar_salir.connect('salir', self.__salir)
+        
+    def __switch(self, widget, nombre):
+        """
+        Cambia la vista entre PygiHack
+        JAMediaGstreamer y CristianEdit.
+        """
         
         self.toolbar_salir.hide()
         
@@ -119,15 +124,24 @@ class Ventana(Gtk.Window):
         elif nombre == 'cristianedit':
             pass
             
-    def confirmar_salir(self, widget = None, senial = None):
+    def __confirmar_salir(self, widget = None, senial = None):
+        """
+        Pide confirmación para salir.
+        """
         
         self.toolbar_salir.run("JAMediaPygiHack")
         
-    def salir(self, widget = None, senial = None):
+    def __salir(self, widget = None, senial = None):
+        """
+        Cierra la aplicación.
+        """
         
         sys.exit(0)
     
 class Toolbar(Gtk.Toolbar):
+    """
+    Toolbar principal de JAMediaPygiHack.
+    """
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
@@ -147,7 +161,7 @@ class Toolbar(Gtk.Toolbar):
         self.boton_pygi = Gtk.RadioButton.new_with_label(
                 None, 'Pygi')
         self.boton_pygi.set_tooltip_text("JAMedia PygiHack")
-        self.boton_pygi.connect("toggled", self.switch)
+        self.boton_pygi.connect("toggled", self.__switch)
         item.add(self.boton_pygi)
         self.insert(item, -1)
         
@@ -156,7 +170,7 @@ class Toolbar(Gtk.Toolbar):
         self.boton_gstreamer = Gtk.RadioButton.new_with_label(
                 None, 'Gstreamer')
         self.boton_gstreamer.set_tooltip_text("JAMedia Gstreamer")
-        self.boton_gstreamer.connect("toggled", self.switch)
+        self.boton_gstreamer.connect("toggled", self.__switch)
         item.add(self.boton_gstreamer)
         self.insert(item, -1)
         '''
@@ -222,7 +236,7 @@ class Toolbar(Gtk.Toolbar):
         boton = G.get_boton(archivo, flip = False,
             pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir")
-        boton.connect("clicked", self.salir)
+        boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
@@ -232,7 +246,7 @@ class Toolbar(Gtk.Toolbar):
         
         self.boton_pygi.set_active(True)
         
-    def switch(self, widget):
+    def __switch(self, widget):
         
         nombre = None
         
@@ -247,7 +261,7 @@ class Toolbar(Gtk.Toolbar):
         
         self.emit('view', nombre)
         
-    def salir(self, widget):
+    def __salir(self, widget):
         
         self.emit('salir')
         

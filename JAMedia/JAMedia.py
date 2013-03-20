@@ -80,6 +80,7 @@ css_provider = Gtk.CssProvider()
 style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
+
 context.add_provider_for_screen(
     screen,
     css_provider,
@@ -804,8 +805,8 @@ class JAMediaPlayer(Gtk.Plug):
             
         self.toolbar_list.boton_agregar.hide()
         
-        self.lista_de_reproduccion.limpiar()
-        self.player.stop()
+        #self.player.stop()
+        #self.lista_de_reproduccion.limpiar()
         
         if indice == 0:
             archivo = os.path.join(G.DIRECTORIO_DATOS, 'JAMediaRadio.JAMedia')
@@ -863,6 +864,10 @@ class JAMediaPlayer(Gtk.Plug):
         de reproduccion con ellos."""
         
         if not archivos: return
+    
+        self.player.stop()
+        self.lista_de_reproduccion.limpiar()
+        
         items = []
         
         for archivo in archivos:
@@ -882,6 +887,10 @@ class JAMediaPlayer(Gtk.Plug):
         Esto es solo para las listas standar de JAMedia no embebido."""
         
         archivos = sorted(os.listdir(directorio))
+        
+        self.player.stop()
+        self.lista_de_reproduccion.limpiar()
+        
         lista = []
         
         for texto in archivos:
@@ -902,6 +911,9 @@ class JAMediaPlayer(Gtk.Plug):
         Esto es solo para las listas standar de JAMedia no embebido."""
         
         items = G.get_streamings(archivo)
+        
+        self.player.stop()
+        self.lista_de_reproduccion.limpiar()
         
         self.lista_de_reproduccion.agregar_items(items)
         self.toolbar_list.label.set_text(titulo)
