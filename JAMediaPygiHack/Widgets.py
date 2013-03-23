@@ -97,7 +97,6 @@ class Navegador(Gtk.Paned):
         self.api = None
         self.webview = None
         self.lista_modulos = None
-        self.notebook = None
         
         self.pack1(
             self.__area_izquierda_del_panel(),

@@ -137,6 +137,7 @@ def get_separador(draw = False, ancho = 0, expand = False):
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
+    
     return separador
 
 def get_boton(archivo, flip = False,
@@ -149,12 +150,16 @@ def get_boton(archivo, flip = False,
     boton = Gtk.ToolButton()
     imagen = Gtk.Image()
     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixels, pixels)
+    
     if flip: pixbuf = pixbuf.flip(True)
     if rotacion: pixbuf = pixbuf.rotate_simple(rotacion)
+    
     imagen.set_from_pixbuf(pixbuf)
     boton.set_icon_widget(imagen)
+    
     imagen.show()
     boton.show()
+    
     return boton
 
 def get_togle_boton(archivo, flip = False,
@@ -167,11 +172,15 @@ def get_togle_boton(archivo, flip = False,
     boton = Gtk.ToggleToolButton()
     imagen = Gtk.Image()
     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixels, pixels)
+    
     if flip: pixbuf = pixbuf.flip(True)
+    
     imagen.set_from_pixbuf(pixbuf)
     boton.set_icon_widget(imagen)
+    
     imagen.show()
     boton.show()
+    
     return boton
 
 
@@ -224,8 +233,10 @@ def guarda_lista_de_streamings(path, items):
     en el archivo."""
     
     archivo = shelve.open(path)
+    
     for item in items:
         archivo[item[0]] = item[1]
+        
     archivo.close()
     
 def get_streamings(path):
@@ -399,6 +410,7 @@ def stream_en_archivo(streaming, path):
             return True
         
     archivo.close()
+    
     return False
 # <<< JAMedia
 

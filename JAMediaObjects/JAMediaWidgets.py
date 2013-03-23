@@ -1480,6 +1480,8 @@ class JAMediaTerminal(Gtk.Box):
                 path = os.environ["HOME"],
                 interprete = self.python_path)
         
+        self.terminal.child_focus(True)
+        
     def __accion_terminal(self, widget, accion):
         """
         Soporte para clipboard.
@@ -1492,6 +1494,8 @@ class JAMediaTerminal(Gtk.Box):
         elif accion == 'pegar':
             self.terminal.paste_clipboard()
             
+        self.terminal.child_focus(True)
+        
     def set_interprete(self, path = os.environ["HOME"],
         interprete = "/bin/bash"):
         """
@@ -1501,7 +1505,6 @@ class JAMediaTerminal(Gtk.Box):
         self.terminal.set_interprete(
             path = path, interprete = interprete)
         
-    
 class Terminal(Vte.Terminal):
     """
     Terminal Configurable en distintos intérpretes

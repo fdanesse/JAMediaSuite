@@ -30,6 +30,8 @@
 # http://www.roojs.org/seed/gir-1.1-gtk-2.0/
 PaquetesObjetos1 = [
     'Atk',
+    'Unity',
+    'Gedit',
     'Atspi',
     'Avahi',
     'Clutter',
