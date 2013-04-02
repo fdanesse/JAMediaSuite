@@ -104,12 +104,12 @@ class TopView(Gtk.TreeView):
             if not pid in self.pids:
                 self.pids.append(pid)
                 
-                #if 'running' in JAMSS.get_process_status(pid)[1]:
-                iteractual = model.append(iter, dato)
-                self.__add_threads(pid, iteractual)
-                
-                path = model.get_path(iteractual)
-                self.expand_to_path(path)
+                if 'running' in JAMSS.get_process_status(pid)[1]:
+                    iteractual = model.append(iter, dato)
+                    self.__add_threads(pid, iteractual)
+                    
+                    path = model.get_path(iteractual)
+                    self.expand_to_path(path)
         
     def __add_threads(self, pid, iteractual):
         """
@@ -128,7 +128,13 @@ class TopView(Gtk.TreeView):
                 self.pids.append(thread)
                 
                 nombre = JAMSS.get_process_name(thread)
-                comandos = str(JAMSS.get_process_cmdline(thread))
+                com = JAMSS.get_process_cmdline(pid)
+            
+                comandos = ''
+                for c in com:
+                    comandos += "%s " % c
+                    
+                comandos = comandos.strip()
                 
                 model.append(iteractual, [thread, nombre, comandos])
                 

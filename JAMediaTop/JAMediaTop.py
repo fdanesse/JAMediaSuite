@@ -75,8 +75,14 @@ class JAMediaTop(Gtk.Plug):
         
         for pid in pids_procesos:
             nombre = JAMSS.get_process_name(pid)
-            comandos = str(JAMSS.get_process_cmdline(pid))
+            com = JAMSS.get_process_cmdline(pid)
             
+            comandos = ''
+            for c in com:
+                comandos += "%s " % c
+                
+            comandos = comandos.strip()
+                
             #hijos = JAMSS.get_process_threads(pid)
             
             lista.append( [pid, nombre, comandos] )

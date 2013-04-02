@@ -147,6 +147,9 @@ class Navegador(Gtk.Paned):
                 
         except:
             self.webview.open('')
+            
+        while Gtk.events_pending():
+            Gtk.main_iteration()
         
     def __area_izquierda_del_panel(self):
         """

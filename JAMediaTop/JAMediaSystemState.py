@@ -10,6 +10,8 @@
 # https://github.com/elventear/psutil
 
 # http://linux.die.net/man/2/ioprio_get
+# http://docs.python.org/2.7/library/pkgutil.html?highlight=__file__
+# http://docs.python.org/2.7/library/os.html?highlight=os#os
 
 import os
 

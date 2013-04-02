@@ -1,3 +1,6 @@
+/*http://wiki.xfce.org/howto/gtk_theme*/
+/*https://developer.gnome.org/gtk3/3.0/GtkCssProvider.html*/
+
 /* Contenedores */
 GtkWindow {
     background-color: #ffffff;
