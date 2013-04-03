@@ -40,8 +40,10 @@ import JAMediaGlobales as G
 JAMediaWidgetsBASE = os.path.dirname(__file__)
 
 class JAMediaToolButton(Gtk.ToolButton):
-    """Toolbutton con drawingarea donde se
-    dibuja una imagen con cairo."""
+    """
+    Toolbutton con drawingarea donde se
+    dibuja una imagen con cairo.
+    """
     
     def __init__(self, pixels = 0):
         
@@ -71,7 +73,9 @@ class JAMediaToolButton(Gtk.ToolButton):
         self.imagen.set_imagen(pixbuf)
 
 class Imagen_Button(Gtk.DrawingArea):
-    """DrawingArea de JAMediaToolButton."""
+    """
+    DrawingArea de JAMediaToolButton.
+    """
     
     def __init__(self):
         
@@ -108,7 +112,9 @@ class Imagen_Button(Gtk.DrawingArea):
         self.queue_draw()
         
 class JAMediaButton(Gtk.EventBox):
-    """Un Boton a medida."""
+    """
+    Un Boton a medida.
+    """
     
     __gsignals__ = {
     "clicked":(GObject.SIGNAL_RUN_FIRST,
@@ -175,7 +181,9 @@ class JAMediaButton(Gtk.EventBox):
             self.des_seleccionar()
             
     def seleccionar(self):
-        """Marca como seleccionado"""
+        """
+        Marca como seleccionado
+        """
         
         self.estado_select = True
         self.colornormal = self.cc
@@ -185,7 +193,9 @@ class JAMediaButton(Gtk.EventBox):
         self.modify_bg(0, self.colornormal)
         
     def des_seleccionar(self):
-        """Desmarca como seleccionado"""
+        """
+        Desmarca como seleccionado
+        """
         
         self.estado_select = False
         
@@ -239,8 +249,10 @@ class JAMediaButton(Gtk.EventBox):
         self.set_size_request(w, h)
         
 class Visor(Gtk.DrawingArea):
-    """Visor generico para utilizar como area de
-    reproduccion de videos o dibujar."""
+    """
+    Visor generico para utilizar como area de
+    reproduccion de videos o dibujar.
+    """
     
     __gtype_name__ = 'Visor'
     
@@ -265,7 +277,9 @@ class Visor(Gtk.DrawingArea):
         self.show_all()
         
     def do_motion_notify_event(self, event):
-        """Cuando se mueve el mouse sobre el visor."""
+        """
+        Cuando se mueve el mouse sobre el visor.
+        """
         
         x, y = (int(event.x), int(event.y))
         rect = self.get_allocation()
@@ -282,7 +296,9 @@ class Visor(Gtk.DrawingArea):
         
 # >> -------------------- LISTA GENERICA --------------------- #
 class Lista(Gtk.TreeView):
-    """Lista generica."""
+    """
+    Lista generica.
+    """
     
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
@@ -335,7 +351,9 @@ class Lista(Gtk.TreeView):
         return False'''
     
     def selecciones(self, treeselection, model, path, is_selected, listore):
-        """Cuando se selecciona un item en la lista."""
+        """
+        Cuando se selecciona un item en la lista.
+        """
         
         # model y listore son ==
         iter = model.get_iter(path)
@@ -377,13 +395,17 @@ class Lista(Gtk.TreeView):
         self.modelo.clear()
         
     def agregar_items(self, elementos):
-        """ Recibe lista de: [texto para mostrar, path oculto] y
-        Comienza secuencia de agregado a la lista."""
+        """
+        Recibe lista de: [texto para mostrar, path oculto] y
+        Comienza secuencia de agregado a la lista.
+        """
         
         GObject.idle_add(self.ejecutar_agregar_elemento, elementos)
         
     def ejecutar_agregar_elemento(self, elementos):
-        """Agrega los items a la lista, uno a uno, actualizando."""
+        """
+        Agrega los items a la lista, uno a uno, actualizando.
+        """
         
         if not elementos:
             self.seleccionar_primero()
@@ -468,7 +490,9 @@ class Lista(Gtk.TreeView):
 
 # >> -------------------- Controles de Reproducción ---------- #
 class ToolbarReproduccion(Gtk.Box):
-    """Controles de reproduccion: play/pausa, stop, siguiente, atras."""
+    """
+    Controles de reproduccion: play/pausa, stop, siguiente, atras.
+    """
     
     __gsignals__ = {
     "activar":(GObject.SIGNAL_RUN_FIRST,
@@ -555,7 +579,9 @@ class ToolbarReproduccion(Gtk.Box):
 
 # >> -------------------- Barra de Progreso ------------------ #
 class BarraProgreso(Gtk.EventBox):
-    """Barra de progreso para mostrar estado de reproduccion."""
+    """
+    Barra de progreso para mostrar estado de reproduccion.
+    """
     
     __gsignals__ = {
     "user-set-value":(GObject.SIGNAL_RUN_FIRST,
@@ -577,7 +603,9 @@ class BarraProgreso(Gtk.EventBox):
         self.set_size_request(-1, G.get_pixels(1.2))
         
     def set_progress(self, valor = 0):
-        """El reproductor modifica la escala."""
+        """
+        El reproductor modifica la escala.
+        """
         
         if self.escala.presed: return
         if self.valor != valor:
@@ -586,14 +614,18 @@ class BarraProgreso(Gtk.EventBox):
             self.escala.queue_draw()
         
     def emit_valor(self, widget, valor):
-        """El usuario modifica la escala."""
+        """
+        El usuario modifica la escala.
+        """
         
         if self.valor != valor:
             self.valor = valor
             self.emit("user-set-value", valor)
         
 class ProgressBar(Gtk.Scale):
-    """Escala de BarraProgreso."""
+    """
+    Escala de BarraProgreso.
+    """
     
     __gsignals__ = {
     "user-set-value":(GObject.SIGNAL_RUN_FIRST,
@@ -627,7 +659,9 @@ class ProgressBar(Gtk.Scale):
         self.presed = False
         
     def do_motion_notify_event(self, event):
-        """Cuando el usuario se desplaza por la barra de progreso."""
+        """
+        Cuando el usuario se desplaza por la barra de progreso.
+        """
         
         if event.state == Gdk.ModifierType.MOD2_MASK | Gdk.ModifierType.BUTTON1_MASK:
             rect = self.get_allocation()
@@ -642,7 +676,9 @@ class ProgressBar(Gtk.Scale):
                 self.emit("user-set-value", valor)
                     
     def do_draw(self, contexto):
-        """Dibuja el estado de la barra de progreso."""
+        """
+        Dibuja el estado de la barra de progreso.
+        """
         
         rect = self.get_allocation()
         w, h = (rect.width, rect.height)
@@ -682,8 +718,10 @@ class ProgressBar(Gtk.Scale):
 # << -------------------- Barra de Progreso ------------------ #
 
 class ControlVolumen(Gtk.VolumeButton):
-    """Botón con escala para controlar el volúmen
-    de reproducción en los reproductores."""
+    """
+    Botón con escala para controlar el volúmen
+    de reproducción en los reproductores.
+    """
     
     __gsignals__ = {
     "volumen":(GObject.SIGNAL_RUN_FIRST,
@@ -696,16 +734,20 @@ class ControlVolumen(Gtk.VolumeButton):
         self.show_all()
         
     def do_value_changed(self, valor):
-        """Cuando el usuario desplaza la escala
-        emite el valor en float de 0.0 a 1.0."""
+        """
+        Cuando el usuario desplaza la escala
+        emite el valor en float de 0.0 a 1.0.
+        """
         
         self.emit('volumen', valor)
         
 class ToolbarAccion(Gtk.Toolbar):
-    """Toolbar para que el usuario confirme las
+    """
+    Toolbar para que el usuario confirme las
     acciones que se realizan sobre items que se
     seleccionan en la lista de reproduccion.
-    (Borrar, mover, copiar, quitar)."""
+    (Borrar, mover, copiar, quitar).
+    """
     
     __gsignals__ = {
     "Grabar":(GObject.SIGNAL_RUN_FIRST,
@@ -754,8 +796,10 @@ class ToolbarAccion(Gtk.Toolbar):
         self.show_all()
         
     def realizar_accion(self, widget):
-        """Ejecuta una accion sobre un archivo o streaming
-        en la lista de reprucción cuando el usuario confirma."""
+        """
+        Ejecuta una accion sobre un archivo o streaming
+        en la lista de reprucción cuando el usuario confirma.
+        """
         
         uri = self.lista.modelo.get_value(self.iter, 2)
         
@@ -801,9 +845,11 @@ class ToolbarAccion(Gtk.Toolbar):
         self.hide()
         
     def set_accion(self, lista, accion, iter):
-        """Configura una accion sobre un archivo o
+        """
+        Configura una accion sobre un archivo o
         streaming y muestra toolbaraccion para que
-        el usuario confirme o cancele dicha accion."""
+        el usuario confirme o cancele dicha accion.
+        """
         
         self.lista = lista
         self.accion = accion
@@ -822,9 +868,11 @@ class ToolbarAccion(Gtk.Toolbar):
             self.show_all()
 
     def cancelar(self, widget= None):
-        """Cancela la accion configurada sobre
+        """
+        Cancela la accion configurada sobre
         un archivo o streaming en la lista de
-        reproduccion."""
+        reproduccion.
+        """
         
         self.label.set_text("")
         self.lista = None
@@ -833,8 +881,10 @@ class ToolbarAccion(Gtk.Toolbar):
         self.hide()
         
 class ToolbarBalanceConfig(Gtk.Table):
-    """ Toolbar de Configuración de Balance
-    en Video. (Utilizado por JAMediaVideo). """
+    """
+    Toolbar de Configuración de Balance
+    en Video. (Utilizado por JAMediaVideo).
+    """
     
     __gsignals__ = {
     'valor':(GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
@@ -865,15 +915,19 @@ class ToolbarBalanceConfig(Gtk.Table):
         self.gamma.connect('valor', self.emit_senial, 'gamma')
         
     def emit_senial(self, widget, valor, tipo):
-        """Emite valor, que representa un valor
+        """
+        Emite valor, que representa un valor
         en % float y un valor tipo para:
-            brillo - contraste - saturacion - hue - gamma"""
-            
+            brillo - contraste - saturacion - hue - gamma
+        """
+        
         self.emit('valor', valor, tipo)
         
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None, gamma = None):
-        """Setea las barras segun valores."""
+        """
+        Setea las barras segun valores.
+        """
         
         if saturacion != None: self.saturacion.set_progress(saturacion)
         if contraste != None: self.contraste.set_progress(contraste)
@@ -882,9 +936,11 @@ class ToolbarBalanceConfig(Gtk.Table):
         if gamma != None: self.gamma.set_progress(gamma)
         
 class ToolbarcontrolValores(Gtk.Toolbar):
-    """Toolbar con escala para modificar
+    """
+    Toolbar con escala para modificar
     valores de balance en video, utilizada
-    por ToolbarBalanceConfig."""
+    por ToolbarBalanceConfig.
+    """
     
     __gsignals__ = {
     'valor':(GObject.SIGNAL_RUN_FIRST,
@@ -914,20 +970,26 @@ class ToolbarcontrolValores(Gtk.Toolbar):
         self.escala.connect("user-set-value", self.user_set_value)
         
     def user_set_value(self, widget= None, valor= None):
-        """Recibe la posicion en la barra de
-        progreso (en % float), y re emite los valores."""
+        """
+        Recibe la posicion en la barra de
+        progreso (en % float), y re emite los valores.
+        """
         
         self.emit('valor', valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
         
     def set_progress(self, valor):
-        """Establece valores en la escala."""
+        """
+        Establece valores en la escala.
+        """
         
         self.escala.set_progress(valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
         
 class SlicerBalance(Gtk.EventBox):
-    """Barra deslizable para cambiar valores de Balance en Video."""
+    """
+    Barra deslizable para cambiar valores de Balance en Video.
+    """
     
     __gsignals__ = {
     "user-set-value":(GObject.SIGNAL_RUN_FIRST,
@@ -946,19 +1008,25 @@ class SlicerBalance(Gtk.EventBox):
         self.escala.connect('user-set-value', self.emit_valor)
         
     def set_progress(self, valor = 0.0):
-        """El reproductor modifica la escala."""
+        """
+        El reproductor modifica la escala.
+        """
         
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
         
     def emit_valor(self, widget, valor):
-        """El usuario modifica la escala.
-        Y se emite la señal con el valor (% float)."""
+        """
+        El usuario modifica la escala.
+        Y se emite la señal con el valor (% float).
+        """
         
         self.emit("user-set-value", valor)
         
 class BalanceBar(Gtk.Scale):
-    """Escala de SlicerBalance."""
+    """
+    Escala de SlicerBalance.
+    """
     
     __gsignals__ = {
     "user-set-value":(GObject.SIGNAL_RUN_FIRST,
@@ -983,8 +1051,10 @@ class BalanceBar(Gtk.Scale):
         self.show_all()
         
     def do_motion_notify_event(self, event):
-        """Cuando el usuario se desplaza por la barra de progreso.
-        Se emite el valor en % (float)."""
+        """
+        Cuando el usuario se desplaza por la barra de progreso.
+        Se emite el valor en % (float).
+        """
         
         if event.state == Gdk.ModifierType.MOD2_MASK | \
             Gdk.ModifierType.BUTTON1_MASK:
@@ -997,7 +1067,9 @@ class BalanceBar(Gtk.Scale):
                 self.emit("user-set-value", valor)
             
     def do_draw(self, contexto):
-        """Dibuja el estado de la barra de progreso."""
+        """
+        Dibuja el estado de la barra de progreso.
+        """
         
         rect = self.get_allocation()
         w, h = (rect.width, rect.height)
@@ -1055,12 +1127,16 @@ class ItemSwitch(Gtk.Frame):
         self.show_all()
         
     def emit_switch(self, widget, senial):
-        """ Emite la señal switch con el valor correspondiente. """
+        """
+        Emite la señal switch con el valor correspondiente.
+        """
         
         self.emit("switch", not widget.get_active())
         
 class ToolbarSalir(Gtk.Toolbar):
-    """Toolbar para confirmar salir de la aplicación."""
+    """
+    Toolbar para confirmar salir de la aplicación.
+    """
     
     __gsignals__ = {
     "salir":(GObject.SIGNAL_RUN_FIRST,
@@ -1107,28 +1183,36 @@ class ToolbarSalir(Gtk.Toolbar):
         self.show_all()
         
     def run(self, nombre_aplicacion):
-        """La toolbar se muestra y espera confirmación
-        del usuario."""
+        """
+        La toolbar se muestra y espera confirmación
+        del usuario.
+        """
         
         self.label.set_text("Salir de %s ?" % (nombre_aplicacion))
         self.show()
         
     def emit_salir(self, widget):
-        """Confirma Salir de la aplicación."""
+        """
+        Confirma Salir de la aplicación.
+        """
         
         self.hide()
         self.emit('salir')
 
     def cancelar(self, widget= None):
-        """Cancela salir de la aplicación."""
+        """
+        Cancela salir de la aplicación.
+        """
         
         self.label.set_text("")
         self.hide()
 
 # >>> JAMediaVideo
 class WidgetsGstreamerEfectos(Gtk.Frame):
-    """Frame exterior de Contenedor de widgets que
-    representan efectos de video para gstreamer."""
+    """
+    Frame exterior de Contenedor de widgets que
+    representan efectos de video para gstreamer.
+    """
     
     __gsignals__ = {
     "click_efecto":(GObject.SIGNAL_RUN_FIRST,
@@ -1160,7 +1244,9 @@ class WidgetsGstreamerEfectos(Gtk.Frame):
         self.emit('click_efecto', nombre_efecto)
         
     def cargar_efectos(self, elementos):
-        """Agrega los widgets de efectos."""
+        """
+        Agrega los widgets de efectos.
+        """
         
         self.gstreamer_efectos.cargar_efectos(elementos)
         
@@ -1173,8 +1259,10 @@ class WidgetsGstreamerEfectos(Gtk.Frame):
         self.gstreamer_efectos.seleccionar_efecto(nombre)
         
 class GstreamerVideoEfectos(Gtk.Box):
-    """Contenedor de widgets que representan
-    efectos de video para gstreamer."""
+    """
+    Contenedor de widgets que representan
+    efectos de video para gstreamer.
+    """
     
     __gsignals__ = {
     'agregar_efecto':(
@@ -1191,7 +1279,9 @@ class GstreamerVideoEfectos(Gtk.Box):
         self.show_all()
         
     def cargar_efectos(self, elementos):
-        """Agrega los items a la lista, uno a uno, actualizando."""
+        """
+        Agrega los items a la lista, uno a uno, actualizando.
+        """
         
         if not elementos:
             return False
@@ -1217,8 +1307,10 @@ class GstreamerVideoEfectos(Gtk.Box):
         self.emit('configurar_efecto', efecto, propiedad, valor)
         
     def agregar_efecto(self, widget, nombre_efecto):
-        """Cuando se hace click en el botón del efecto
-        se envía la señal 'agregar-efecto'."""
+        """
+        Cuando se hace click en el botón del efecto
+        se envía la señal 'agregar-efecto'.
+        """
         
         self.emit('agregar_efecto', nombre_efecto)
         
@@ -1248,8 +1340,10 @@ class GstreamerVideoEfectos(Gtk.Box):
                 return
 
 class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
-    """Frame exterior de Contenedor de widgets que
-    representan visualizadores de audio para gstreamer."""
+    """
+    Frame exterior de Contenedor de widgets que
+    representan visualizadores de audio para gstreamer.
+    """
     
     __gsignals__ = {
     "click_efecto":(GObject.SIGNAL_RUN_FIRST,
@@ -1288,7 +1382,9 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
         self.emit('click_efecto', nombre_efecto)
         
     def cargar_efectos(self, elementos):
-        """Agrega los widgets de efectos."""
+        """
+        Agrega los widgets de efectos.
+        """
         
         self.gstreamer_efectos.cargar_efectos(elementos)
         
@@ -1301,8 +1397,10 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
         self.gstreamer_efectos.seleccionar_efecto(nombre)
         
 class GstreamerAudioVisualizador(GstreamerVideoEfectos):
-    """Contenedor de widgets que representan
-    visualizadores de audio para gstreamer."""
+    """
+    Contenedor de widgets que representan
+    visualizadores de audio para gstreamer.
+    """
 
     def __init__(self):
         
@@ -1312,7 +1410,9 @@ class GstreamerAudioVisualizador(GstreamerVideoEfectos):
         self.show_all()
         
     def cargar_efectos(self, elementos):
-        """Agrega los items a la lista, uno a uno, actualizando."""
+        """
+        Agrega los items a la lista, uno a uno, actualizando.
+        """
         
         if not elementos:
             return False
@@ -1334,8 +1434,10 @@ class GstreamerAudioVisualizador(GstreamerVideoEfectos):
         GObject.idle_add(self.cargar_efectos, elementos)
 
 class Efecto_widget_Config(Gtk.Box):
-    """Contiene el botón para el efecto y los
-    controles de configuración del mismo."""
+    """
+    Contiene el botón para el efecto y los
+    controles de configuración del mismo.
+    """
     
     __gsignals__ = {
     'agregar_efecto':(
@@ -1394,8 +1496,10 @@ class Efecto_widget_Config(Gtk.Box):
         self.emit('configurar_efecto', self.botonefecto.get_tooltip_text(), propiedad, valor)
         
     def efecto_click(self, widget, void):
-        """Cuando se hace click en el botón del efecto
-        se envía la señal 'agregar-efecto'."""
+        """
+        Cuando se hace click en el botón del efecto
+        se envía la señal 'agregar-efecto'.
+        """
         
         self.emit('agregar_efecto', widget.get_tooltip_text())
         
@@ -1405,13 +1509,17 @@ class Efecto_widget_Config(Gtk.Box):
         pass
     
     def seleccionar(self):
-        """Marca como seleccionado"""
+        """
+        Marca como seleccionado
+        """
         
         self.botonefecto.seleccionar()
         # y mostrar configuracion
         
     def des_seleccionar(self):
-        """Desmarca como seleccionado"""
+        """
+        Desmarca como seleccionado
+        """
         
         self.botonefecto.des_seleccionar()
         #y ocultar configuracion

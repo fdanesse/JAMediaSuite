@@ -27,8 +27,11 @@ class Ventana(Gtk.Window):
         super(Ventana, self).__init__()
         
         self.set_title("JAMedia")
-        self.set_icon_from_file(os.path.join(JAMediaObjectsPath,
+        
+        self.set_icon_from_file(
+            os.path.join(JAMediaObjectsPath,
             "Iconos", "JAMedia.png"))
+            
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)
@@ -38,8 +41,10 @@ class Ventana(Gtk.Window):
         
         self.socket = Gtk.Socket()
         self.add(self.socket)
+        
         self.jamediaplayer = JAMediaPlayer()
         self.socket.add_id(self.jamediaplayer.get_id())
+        
         self.show_all()
         self.realize()
         
