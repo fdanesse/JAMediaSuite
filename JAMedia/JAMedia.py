@@ -153,10 +153,12 @@ class JAMediaPlayer(Gtk.Plug):
         self.toolbaraddstream = None    # agregar un stream
         self.toolbar_salir = None       # confirmar salir
         
+        self.derecha_vbox = None                # Contiene todos los widgets de la derecha
         self.hbox_efectos_en_pipe = None        # informa sobre efectos que se aplican
         self.vbox_config = None                 # contiene balance y efectos
         self.scroll_config = None               # contiene self.vbox_config
-        self.evnt_box_lista_reproduccion = None # contiene self.scroll_list
+        # FIXME: Quitarlo, solo mantiene el gris de fondo para los botones en controles de reproducción.
+        self.evnt_box_lista_reproduccion = None # contiene self.vbox_lista_reproduccion
         self.scroll_list = None                 # contiene self.lista_de_reproduccion
         
         self.controles_dinamicos = None # controles que se ocultan o muestran segun config
@@ -194,90 +196,81 @@ class JAMediaPlayer(Gtk.Plug):
         
         basebox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         hpanel = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
+        
         basebox.pack_start(self.toolbar, False, False, 0)
         basebox.pack_start(self.toolbar_salir, False, False, 0)
         basebox.pack_start(self.toolbar_accion, False, False, 0)
         basebox.pack_start(self.toolbaraddstream, False, False, 0)
+        
         basebox.pack_start(hpanel, True, True, 0)
         
-        # Area Izquierda del Panel
-        eventbox = Gtk.EventBox()
-        eventbox.modify_bg(0, G.NEGRO)
+        ### Area Izquierda del Panel
         
+        ### Efectos que están aplicacndo.
+        eventbox = Gtk.EventBox() # Mantiene el fondo negro en miniefectos que se aplican
+        eventbox.modify_bg(0, G.NEGRO)
         self.hbox_efectos_en_pipe = Gtk.Box(
             orientation = Gtk.Orientation.HORIZONTAL)
-            
         self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
-        
+        eventbox.add(self.hbox_efectos_en_pipe)
         scroll = Gtk.ScrolledWindow()
-        
         scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.NEVER)
-            
         scroll.add_with_viewport(eventbox)
         
-        eventbox.add(self.hbox_efectos_en_pipe)
-        
-        vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        vbox.pack_start(self.toolbar_grabar, False, False, 0)
-        vbox.pack_start(self.pantalla, True, True, 0)
-        
-        vbox.pack_start(scroll, False, False, 0)
-        
-        vbox.pack_start(self.toolbar_info, False, False, 0)
+        ### Barra de Progreso + Volúmen
         ev_box = Gtk.EventBox() # Para poder pintar el fondo de volumen
         ev_box.modify_bg(0, G.BLANCO)
-        vbox.pack_start(ev_box, False, True, 0)
-        
         hbox_barra_progreso = Gtk.Box(
             orientation = Gtk.Orientation.HORIZONTAL)
-            
         hbox_barra_progreso.pack_start(self.barradeprogreso, True, True, 0)
         hbox_barra_progreso.pack_start(self.volumen, False, False, 0)
         ev_box.add(hbox_barra_progreso)
+        
+        ### Todo
+        vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        vbox.pack_start(self.toolbar_grabar, False, False, 0)
+        vbox.pack_start(self.pantalla, True, True, 0)
+        vbox.pack_start(scroll, False, False, 0)
+        vbox.pack_start(self.toolbar_info, False, False, 0)
+        vbox.pack_start(ev_box, False, True, 0)
+        
         hpanel.pack1(vbox, resize = True, shrink = True)
         
-        # Area Derecha del Panel
-        vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        ### Area Derecha del Panel
+        self.derecha_vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         
+        ### Configuración de balanace y efectos
         self.vbox_config = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        
         self.scroll_config = Gtk.ScrolledWindow()
-        
         self.scroll_config.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
-            
         self.scroll_config.add_with_viewport (self.vbox_config)
-        
         self.vbox_config.pack_start(self.toolbar_config, False, False, 0)
         #self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
         
-        vbox.pack_start(self.scroll_config, True, True, 0)
-        
-        # Lista de Reproduccion
-        self.evnt_box_lista_reproduccion = Gtk.EventBox() # Para poder pintarlo
-        vbox.pack_start(self.evnt_box_lista_reproduccion, True, True, 0)
-        
+        ### Lista de Reproducción
+        self.evnt_box_lista_reproduccion = Gtk.EventBox() # Para poder pintar el fondo
         self.vbox_lista_reproduccion = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        
         self.scroll_list = Gtk.ScrolledWindow()
-        
         self.scroll_list.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
-            
         self.scroll_list.add_with_viewport(self.lista_de_reproduccion)
-        
-        self.pack_vbox_lista_reproduccion()
-        
+        self.pack_vbox_lista_reproduccion() # Lista + Controles de Reproducción
         self.evnt_box_lista_reproduccion.add(self.vbox_lista_reproduccion)
-        hpanel.pack2(vbox, resize = False, shrink = True)
+        
+        ### Configuración + Lista de Reproducción.
+        self.derecha_vbox.pack_start(self.scroll_config, True, True, 0)
+        self.derecha_vbox.pack_start(self.evnt_box_lista_reproduccion, True, True, 0)
+        
+        hpanel.pack2(self.derecha_vbox, resize = False, shrink = True)
         
         self.controles_dinamicos = [
             hbox_barra_progreso,
-            self.evnt_box_lista_reproduccion,
+            self.derecha_vbox,
             self.toolbar,
             self.toolbar_info,
             self.hbox_efectos_en_pipe]
