@@ -115,6 +115,23 @@ class Navegador(Gtk.Paned):
         self.api.connect('objeto', self.__ver_objeto)
         self.api.connect('info', self.__re_emit_info)
     
+        self.set_default_api()
+        
+    def set_default_api(self):
+        """
+        Establece Gtk como el api seleccionada por defecto.
+        """
+        
+        model = self.lista_modulos.get_model()
+        iter = model.get_iter_first()
+        
+        while iter:
+            if model.get_value(iter, 0) == "Gtk":
+                self.lista_modulos.treeselection.select_iter(iter)
+                return
+            
+            iter = model.iter_next(iter)
+            
     def __re_emit_info(self, widget, info):
         """
         Emite información para la barra de estado.

@@ -636,7 +636,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         if zona and ocultar:
             map(self.ocultar, [
-                self.scroll_config,
+                #self.scroll_config,
                 self.toolbar_accion,
                 self.toolbaraddstream,
                 self.toolbar_salir])
@@ -647,7 +647,7 @@ class JAMediaPlayer(Gtk.Plug):
             pass
         
         elif not zona and ocultar:
-            self.scroll_config.hide()
+            #self.scroll_config.hide()
             map(self.mostrar, self.controles_dinamicos)
             
         elif not zona and not ocultar:
@@ -692,6 +692,9 @@ class JAMediaPlayer(Gtk.Plug):
         elif senial == "pausa-play":
             self.player.pause_play()
         
+        while Gtk.events_pending():
+            Gtk.main_iteration()
+
     def endfile(self, widget = None, senial = None):
         """
         Recibe la señal de fin de archivo desde el reproductor
@@ -835,7 +838,7 @@ class JAMediaPlayer(Gtk.Plug):
         """
         
         map(self.ocultar, [self.toolbaraddstream])
-            
+        
         self.toolbar_salir.run("JAMedia")
         
     def emit_salir(self, widget):
@@ -847,9 +850,13 @@ class JAMediaPlayer(Gtk.Plug):
         
         if self.grabador != None:
             self.grabador.stop()
-        self.lista_de_reproduccion.limpiar()
-        self.player.stop()
         
+        self.player.stop()
+        #self.lista_de_reproduccion.limpiar()
+        
+        while Gtk.events_pending():
+            Gtk.main_iteration()
+            
         self.emit('salir')
         
     def cargar_lista(self, widget, indice):

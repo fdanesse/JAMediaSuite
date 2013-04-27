@@ -663,7 +663,9 @@ class ProgressBar(Gtk.Scale):
         Cuando el usuario se desplaza por la barra de progreso.
         """
         
-        if event.state == Gdk.ModifierType.MOD2_MASK | Gdk.ModifierType.BUTTON1_MASK:
+        if event.state == Gdk.ModifierType.MOD2_MASK | \
+            Gdk.ModifierType.BUTTON1_MASK:
+                
             rect = self.get_allocation()
             x, y = (self.borde, self.borde)
             w, h = (rect.width-(self.borde*2), rect.height-(self.borde*2))
@@ -674,7 +676,7 @@ class ProgressBar(Gtk.Scale):
                 self.get_adjustment().set_value(valor)
                 self.queue_draw()
                 self.emit("user-set-value", valor)
-                    
+                
     def do_draw(self, contexto):
         """
         Dibuja el estado de la barra de progreso.
@@ -1058,7 +1060,7 @@ class BalanceBar(Gtk.Scale):
         
         if event.state == Gdk.ModifierType.MOD2_MASK | \
             Gdk.ModifierType.BUTTON1_MASK:
-                
+            
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
             if valor >= 0.0 and valor <= 100.0:

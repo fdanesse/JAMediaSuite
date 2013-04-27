@@ -37,8 +37,10 @@ import JAMediaObjects.JAMediaGlobales as G
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
    
 class ToolbarGrabar(Gtk.Toolbar):
-    """ Informa al usuario cuando se está grabando
-    desde un streaming. """
+    """
+    Informa al usuario cuando se está grabando
+    desde un streaming.
+    """
     
     __gsignals__ = {
     "stop":(GObject.SIGNAL_RUN_FIRST,
@@ -77,14 +79,18 @@ class ToolbarGrabar(Gtk.Toolbar):
         boton.connect("clicked", self.emit_stop)
 
     def emit_stop(self, widget= None, event= None):
-        """Cuando el usuario hace click en el boton stop
-        para detener la grabacion en proceso."""
+        """
+        Cuando el usuario hace click en el boton stop
+        para detener la grabacion en proceso.
+        """
         
         self.stop()
         self.emit("stop")
     
     def stop(self):
-        """ Setea la toolbar a "no grabando"."""
+        """
+        Setea la toolbar a "no grabando".
+        """
         
         self.color = self.colors[0]
         self.label.modify_fg(0, self.color)
@@ -92,14 +98,18 @@ class ToolbarGrabar(Gtk.Toolbar):
         if self.get_visible(): self.hide()
         
     def set_info(self, datos):
-        """Muestra información sobre el proceso de grabación."""
+        """
+        Muestra información sobre el proceso de grabación.
+        """
         
         self.label.set_text(datos)
         self.update()
         
     def update(self):
-        """Cambia los colores de la toolbar
-        mientras se esta grabando desde un streaming."""
+        """
+        Cambia los colores de la toolbar
+        mientras se esta grabando desde un streaming.
+        """
         
         if self.color == self.colors[0]:
             self.color = self.colors[1]
@@ -111,9 +121,11 @@ class ToolbarGrabar(Gtk.Toolbar):
         if not self.get_visible(): self.show()
     
 class ToolbarLista(Gtk.Toolbar):
-    """Toolbar de la lista de reproduccion, que contiene
+    """
+    Toolbar de la lista de reproduccion, que contiene
     un menu con las listas standar de JAMedia:
-    Radios, Tv, etc . . ."""
+    Radios, Tv, etc . . .
+    """
     
     __gsignals__ = {
     "cargar_lista":(GObject.SIGNAL_RUN_FIRST,
@@ -156,7 +168,9 @@ class ToolbarLista(Gtk.Toolbar):
         self.show_all()
     
     def get_menu(self, widget):
-        """El menu con las listas standar de JAMedia."""
+        """
+        El menu con las listas standar de JAMedia.
+        """
         
         menu = Gtk.Menu()
         
@@ -210,7 +224,9 @@ class ToolbarLista(Gtk.Toolbar):
         self.emit("add_stream")
         
 class Toolbar(Gtk.Toolbar):
-    """Toolbar principal de JAMedia."""
+    """
+    Toolbar principal de JAMedia.
+    """
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
@@ -318,20 +334,26 @@ class Toolbar(Gtk.Toolbar):
     #    self.emit('capturar')
         
     def emit_config(self, widget):
-        """Cuando se hace click en el boton configurar
-        de la toolbar principal de JAMedia."""
+        """
+        Cuando se hace click en el boton configurar
+        de la toolbar principal de JAMedia.
+        """
         
         self.emit('config')
         
     def salir(self, widget):
-        """Cuando se hace click en el boton salir
-        de la toolbar principal de JAMedia."""
+        """
+        Cuando se hace click en el boton salir
+        de la toolbar principal de JAMedia.
+        """
         
         self.emit('salir')
         
 class Selector_de_Archivos (Gtk.FileChooserDialog):
-    """Selector de Archivos para poder cargar archivos
-    desde cualquier dispositivo o directorio."""
+    """
+    Selector de Archivos para poder cargar archivos
+    desde cualquier dispositivo o directorio.
+    """
     
     __gsignals__ = {
     'archivos-seleccionados':(GObject.SIGNAL_RUN_FIRST,
@@ -384,8 +406,10 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
         self.select_all()
         
     def abrir_directorio(self, widget):
-        """Manda una señal con la lista de archivos
-        seleccionados para cargarse en el reproductor."""
+        """
+        Manda una señal con la lista de archivos
+        seleccionados para cargarse en el reproductor.
+        """
         
         self.emit('archivos-seleccionados', self.get_filenames())
         self.salir(None)
@@ -394,9 +418,11 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
         self.destroy()
         
 class MenuList(Gtk.Menu):
-    """Menu con opciones para operar sobre el archivo o
+    """
+    Menu con opciones para operar sobre el archivo o
     el streaming seleccionado en la lista de reproduccion
-    al hacer click derecho sobre él."""
+    al hacer click derecho sobre él.
+    """
     
     __gsignals__ = {
     'accion':(GObject.SIGNAL_RUN_FIRST,
@@ -476,23 +502,27 @@ class MenuList(Gtk.Menu):
         pass
     
     def set_accion(self, widget, path, accion):
-        """Responde a la seleccion del usuario sobre el menu
+        """
+        Responde a la seleccion del usuario sobre el menu
         que se despliega al hacer click derecho sobre un elemento
         en la lista de reproduccion.
         
         Recibe la lista de reproduccion, una accion a realizar
         sobre el elemento seleccionado en ella y el elemento
         seleccionado y pasa todo a toolbar_accion para pedir
-        confirmacion al usuario sobre la accion a realizar."""
+        confirmacion al usuario sobre la accion a realizar.
+        """
         
         iter = widget.modelo.get_iter(path)
         self.emit('accion', widget, accion, iter)
         
 class ToolbarInfo(Gtk.Toolbar):
-    """ Informa al usuario sobre el reproductor
+    """
+    Informa al usuario sobre el reproductor
     que se esta utilizando.
     Permite Rotar el Video.
-    Permite configurar ocultar controles automáticamente."""
+    Permite configurar ocultar controles automáticamente.
+    """
     
     __gsignals__ = {
     'rotar':(GObject.SIGNAL_RUN_FIRST,
@@ -582,13 +612,17 @@ class ToolbarInfo(Gtk.Toolbar):
         switch.connect('button-press-event', self.set_controles_view)
         
     def emit_actualizar_streamings(self, widget):
-        """Emite señal para actualizar los
-        streamings desde la web de jamedia."""
+        """
+        Emite señal para actualizar los
+        streamings desde la web de jamedia.
+        """
         
         self.emit('actualizar_streamings')
         
     def set_reproductor(self, reproductor):
-        """Muestra el Reproductor Activo."""
+        """
+        Muestra el Reproductor Activo.
+        """
         
         if reproductor == "MplayerReproductor":
             self.mplayer.show()
@@ -599,7 +633,9 @@ class ToolbarInfo(Gtk.Toolbar):
             self.mplayer.hide()
             
     def emit_rotar(self, widget):
-        """ Emite la señal rotar con su valor Izquierda o Derecha. """
+        """
+        Emite la señal rotar con su valor Izquierda o Derecha.
+        """
         
         if widget == self.boton_derecha:
             self.emit('rotar', "Derecha")
@@ -608,13 +644,17 @@ class ToolbarInfo(Gtk.Toolbar):
             self.emit('rotar', "Izquierda")
             
     def set_controles_view(self, widget, senial):
-        """Almacena el estado de "ocultar_controles"."""
+        """
+        Almacena el estado de "ocultar_controles".
+        """
         
         self.ocultar_controles = not widget.get_active()
         
 class ToolbarConfig(Gtk.Table):
-    """ Toolbar para intercambiar reproductores (mplayer gst) y
-    modificar valores de balance en video. """
+    """
+    Toolbar para intercambiar reproductores (mplayer gst) y
+    modificar valores de balance en video.
+    """
     
     __gsignals__ = {
     "reproductor":(GObject.SIGNAL_RUN_FIRST,
@@ -683,15 +723,19 @@ class ToolbarConfig(Gtk.Table):
         self.gamma.connect('valor', self.emit_senial, 'gamma')
         
     def emit_senial(self, widget, valor, tipo):
-        """Emite valor, que representa un valor
+        """
+        Emite valor, que representa un valor
         en % float y un valor tipo para:
-            brillo - contraste - saturacion - hue - gamma"""
+            brillo - contraste - saturacion - hue - gamma
+        """
             
         self.emit('valor', valor, tipo)
         
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None, gamma = None):
-        """Setea las barras segun valores."""
+        """
+        Setea las barras segun valores.
+        """
         
         if saturacion != None: self.saturacion.set_progress(saturacion)
         if contraste != None: self.contraste.set_progress(contraste)
@@ -700,8 +744,10 @@ class ToolbarConfig(Gtk.Table):
         if gamma != None: self.gamma.set_progress(gamma)
         
     def emit_reproductor(self, widget, nombre):
-        """Emite la señal que cambia de reproductor
-        entre mplayer y jamediareproductor (Gst 1.0)"""
+        """
+        Emite la señal que cambia de reproductor
+        entre mplayer y jamediareproductor (Gst 1.0)
+        """
         
         if widget.get_active():
             self.emit("reproductor", nombre)
@@ -717,7 +763,9 @@ class ToolbarConfig(Gtk.Table):
                 widget.set_active(True)
         
 class ToolbarAddStream(Gtk.Toolbar):
-    """Toolbar para agregar streamings."""
+    """
+    Toolbar para agregar streamings.
+    """
     
     __gsignals__ = {
     "add-stream":(GObject.SIGNAL_RUN_FIRST,
@@ -783,7 +831,9 @@ class ToolbarAddStream(Gtk.Toolbar):
         self.show_all()
         
     def emit_add_stream(self, widget):
-        """Emite la señal para agregar el streaming."""
+        """
+        Emite la señal para agregar el streaming.
+        """
         
         nombre, url = (self.nombre.get_text(), self.url.get_text())
         
@@ -797,16 +847,20 @@ class ToolbarAddStream(Gtk.Toolbar):
         self.hide()
         
     def set_accion(self, tipo):
-        """Recibe Tv o Radio para luego enviar
+        """
+        Recibe Tv o Radio para luego enviar
         este dato en la señal add-stream, de modo que
-        JAMedia sepa donde agregar el streaming."""
+        JAMedia sepa donde agregar el streaming.
+        """
         
         self.nombre.set_text("")
         self.url.set_text("")
         self.tipo = tipo
         
     def cancelar(self, widget= None):
-        """Cancela la accion."""
+        """
+        Cancela la accion.
+        """
         
         self.tipo = None
         self.nombre.set_text("")
@@ -815,10 +869,12 @@ class ToolbarAddStream(Gtk.Toolbar):
         self.hide()
         
 class WidgetEfecto_en_Pipe(JAMediaButton):
-    """Representa un efecto agregado al pipe de JAMediaVideo.
+    """
+    Representa un efecto agregado al pipe de JAMediaVideo.
     Es simplemente un objeto gráfico que se agrega debajo del
     visor de video, para que el usuario tenga una referencia de
-    los efectos que ha agregado y en que orden se encuentran."""
+    los efectos que ha agregado y en que orden se encuentran.
+    """
     
     def __init__(self):
         
