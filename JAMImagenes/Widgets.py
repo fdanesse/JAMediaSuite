@@ -105,7 +105,7 @@ class VisorImagenes(Visor):
         self.angulo = -90
         self.rotar(1)
         
-        self.set_zoom(self.zoom + 0.2)
+        self.__set_zoom(self.zoom + 0.2)
 
     def alejar(self):
         
@@ -114,7 +114,7 @@ class VisorImagenes(Visor):
         self.angulo = -90
         self.rotar(1)
         
-        self.set_zoom(self.zoom - 0.2)
+        self.__set_zoom(self.zoom - 0.2)
     
     def original(self):
         
@@ -123,9 +123,9 @@ class VisorImagenes(Visor):
         self.angulo = -90
         self.rotar(1)
         
-        self.set_zoom(1.0)
+        self.__set_zoom(1.0)
         
-    def set_zoom(self, zoom):
+    def __set_zoom(self, zoom):
         
         if not self.imagen_original: return
     
@@ -233,7 +233,7 @@ class Toolbar(Gtk.Toolbar):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Original.")
-        boton.connect("clicked", self.original)
+        boton.connect("clicked", self.__original)
         self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
@@ -241,7 +241,7 @@ class Toolbar(Gtk.Toolbar):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Alejar.")
-        boton.connect("clicked", self.alejar)
+        boton.connect("clicked", self.__alejar)
         self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
@@ -249,7 +249,7 @@ class Toolbar(Gtk.Toolbar):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Acercar.")
-        boton.connect("clicked", self.acercar)
+        boton.connect("clicked", self.__acercar)
         self.insert(boton, -1)
 
         self.insert(G.get_separador(draw = True,
@@ -260,7 +260,7 @@ class Toolbar(Gtk.Toolbar):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Izquierda.")
-        boton.connect("clicked", self.rotar_izquierda)
+        boton.connect("clicked", self.__rotar_izquierda)
         self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
@@ -268,7 +268,7 @@ class Toolbar(Gtk.Toolbar):
         boton = G.get_boton(archivo, flip = True,
             rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Derecha.")
-        boton.connect("clicked", self.rotar_derecha)
+        boton.connect("clicked", self.__rotar_derecha)
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = True,
@@ -279,7 +279,7 @@ class Toolbar(Gtk.Toolbar):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Configurar.")
-        boton.connect("clicked", self.configurar)
+        boton.connect("clicked", self.__configurar)
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = True,
@@ -292,7 +292,7 @@ class Toolbar(Gtk.Toolbar):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(1))
         boton.set_tooltip_text("Salir.")
-        boton.connect("clicked", self.salir)
+        boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
         
         self.insert(G.get_separador(draw = False,
@@ -300,31 +300,31 @@ class Toolbar(Gtk.Toolbar):
         
         self.show_all()
 
-    def acercar(self, widget):
+    def __acercar(self, widget):
         
         self.emit("acercar")
 
-    def alejar(self, widget):
+    def __alejar(self, widget):
         
         self.emit("alejar")
         
-    def original(self, widget):
+    def __original(self, widget):
         
         self.emit("original")
         
-    def rotar_izquierda(self, widget):
+    def __rotar_izquierda(self, widget):
         
         self.emit("rotar_izquierda")
         
-    def rotar_derecha(self, widget):
+    def __rotar_derecha(self, widget):
         
         self.emit("rotar_derecha")
 
-    def configurar(self, widget):
+    def __configurar(self, widget):
         
         self.emit("configurar")
         
-    def salir(self, widget):
+    def __salir(self, widget):
         
         self.emit("salir")
         
@@ -354,7 +354,7 @@ class ToolbarConfig(Gtk.Box):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Cancelar.")
-        boton.connect("clicked", self.cancelar)
+        boton.connect("clicked", self.__cancelar)
         toolbar1.insert(boton, -1)
         
         toolbar1.insert(G.get_separador(draw = False,
@@ -365,7 +365,7 @@ class ToolbarConfig(Gtk.Box):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Restar.")
-        boton.connect("clicked", self.menos_intervalo)
+        boton.connect("clicked", self.__menos_intervalo)
         toolbar1.insert(boton, -1)
         
         toolbar1.insert(G.get_separador(draw = False,
@@ -386,7 +386,7 @@ class ToolbarConfig(Gtk.Box):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Sumar.")
-        boton.connect("clicked", self.mas_intervalo)
+        boton.connect("clicked", self.__mas_intervalo)
         toolbar1.insert(boton, -1)
         
         toolbar1.insert(G.get_separador(draw = False,
@@ -397,7 +397,7 @@ class ToolbarConfig(Gtk.Box):
         boton = G.get_boton(archivo, flip = False,
             rotacion = None, pixels = G.get_pixels(0.8))
         boton.set_tooltip_text("Aceptar.")
-        boton.connect("clicked", self.run_presentacion)
+        boton.connect("clicked", self.__run_presentacion)
         toolbar1.insert(boton, -1)
         
         toolbar1.insert(G.get_separador(draw = False,
@@ -429,32 +429,34 @@ class ToolbarConfig(Gtk.Box):
         
         self.show_all()
         
-        switch.connect('button-press-event', self.set_controles_view)
+        switch.connect('button-press-event', self.__set_controles_view)
         
-    def set_controles_view(self, widget, senial):
-        """Almacena el estado de "ocultar_controles"."""
+    def __set_controles_view(self, widget, senial):
+        """
+        Almacena el estado de "ocultar_controles".
+        """
         
         self.ocultar_controles = not widget.get_active()
         
-    def mas_intervalo(self, widget= None):
+    def __mas_intervalo(self, widget= None):
         
         self.intervalo += 0.1
         self.label.set_text(
             "Cambiar Imagen cada: %s Segundos" %(self.intervalo))
 
-    def menos_intervalo(self, widget= None):
+    def __menos_intervalo(self, widget= None):
         
         if self.intervalo > 0.3:
             self.intervalo -= 0.1
             self.label.set_text(
                 "Cambiar Imagen cada: %s Segundos" %(self.intervalo))
 
-    def run_presentacion(self, widget= None):
+    def __run_presentacion(self, widget= None):
         
         self.emit("run", int(self.intervalo*1000))
         self.hide()
 
-    def cancelar(self, widget= None):
+    def __cancelar(self, widget= None):
         
         self.hide()
         
@@ -479,7 +481,7 @@ class MenuList(Gtk.Menu):
         
         quitar = Gtk.MenuItem("Quitar de la Lista")
         self.append(quitar)
-        quitar.connect_object("activate", self.set_accion,
+        quitar.connect_object("activate", self.__set_accion,
             widget, path, "Quitar")
         
         if JAMF.describe_acceso_uri(uri):
@@ -488,16 +490,16 @@ class MenuList(Gtk.Menu):
             if escritura:
                 borrar = Gtk.MenuItem("Borrar el Archivo")
                 self.append(borrar)
-                borrar.connect_object("activate", self.set_accion,
+                borrar.connect_object("activate", self.__set_accion,
                     widget, path, "Borrar")
                     
         self.show_all()
-        self.attach_to_widget(widget, self.null)
+        self.attach_to_widget(widget, self.__null)
         
-    def null(self):
+    def __null(self):
         pass
     
-    def set_accion(self, widget, path, accion):
+    def __set_accion(self, widget, path, accion):
         """Responde a la seleccion del usuario sobre el menu
         que se despliega al hacer click derecho sobre un elemento
         en la lista de reproduccion.
