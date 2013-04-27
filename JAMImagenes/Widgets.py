@@ -35,7 +35,9 @@ import JAMediaObjects.JAMFileSystem as JAMF
 import JAMediaObjects.JAMediaGlobales as G
     
 class VisorImagenes(Visor):
-    """DrawingArea - Visor de Imágenes."""
+    """
+    DrawingArea - Visor de Imágenes.
+    """
     
     __gtype_name__ = 'VisorImagenes'
     
@@ -54,6 +56,7 @@ class VisorImagenes(Visor):
         self.show_all()
         
     def rotar(self, angulo):
+        
         if not self.imagen_original: return
 
         if angulo > 0: self.angulo += 90
@@ -98,30 +101,40 @@ class VisorImagenes(Visor):
     def acercar(self):
         
         if not self.imagen_original: return
+    
         self.angulo = -90
         self.rotar(1)
+        
         self.set_zoom(self.zoom + 0.2)
 
     def alejar(self):
         
         if not self.imagen_original: return
+    
         self.angulo = -90
         self.rotar(1)
+        
         self.set_zoom(self.zoom - 0.2)
     
     def original(self):
         
         if not self.imagen_original: return
+    
         self.angulo = -90
         self.rotar(1)
+        
         self.set_zoom(1.0)
         
     def set_zoom(self, zoom):
         
         if not self.imagen_original: return
+    
         self.zoom = zoom
+        
         if self.zoom <= 0.2: self.zoom = 0.2
-        self.tamanio = (int(self.imagen_original.get_width() * self.zoom),
+        
+        self.tamanio = (
+            int(self.imagen_original.get_width() * self.zoom),
             int(self.imagen_original.get_height() * self.zoom))
             
         self.get_property('window').invalidate_rect(self.get_allocation(), True)
@@ -136,8 +149,11 @@ class VisorImagenes(Visor):
         
         if archivo and os.path.exists(archivo):
             self.imagen_original = GdkPixbuf.Pixbuf.new_from_file(archivo)
-            self.tamanio = (self.imagen_original.get_width(),
+            
+            self.tamanio = (
+                self.imagen_original.get_width(),
                 self.imagen_original.get_height())
+                
         else:
             self.imagen_original = None
             self.imagen = None
@@ -157,26 +173,34 @@ class VisorImagenes(Visor):
         self.set_size_request(width, height)
         self.imagen = self.imagen_original.copy()
         
-        if self.presentacion: return self.draw_presentacion(contexto)
+        if self.presentacion: return self.__draw_presentacion(contexto)
     
         if self.rotacion:
             self.imagen = self.imagen.rotate_simple(self.rotacion)
             
-        self.imagen = self.imagen.scale_simple(width, height,
+        self.imagen = self.imagen.scale_simple(
+            width, height,
             GdkPixbuf.InterpType.TILES)
+            
         rect = self.get_allocation()
         x = int((rect.width - width) / 2)
         y = int((rect.height - height) / 2)
+        
         Gdk.cairo_set_source_pixbuf(contexto, self.imagen, x, y)
+        
         contexto.paint()
         
-    def draw_presentacion(self, contexto):
+    def __draw_presentacion(self, contexto):
         
         rect = self.get_allocation()
         width, height = (rect.width, rect.height)
-        self.imagen = self.imagen.scale_simple(width, height,
+        
+        self.imagen = self.imagen.scale_simple(
+            width, height,
             GdkPixbuf.InterpType.TILES)
+            
         Gdk.cairo_set_source_pixbuf(contexto, self.imagen, 0, 0)
+        
         contexto.paint()
 
 class Toolbar(Gtk.Toolbar):
@@ -277,31 +301,39 @@ class Toolbar(Gtk.Toolbar):
         self.show_all()
 
     def acercar(self, widget):
+        
         self.emit("acercar")
 
     def alejar(self, widget):
+        
         self.emit("alejar")
         
     def original(self, widget):
+        
         self.emit("original")
         
     def rotar_izquierda(self, widget):
+        
         self.emit("rotar_izquierda")
         
     def rotar_derecha(self, widget):
+        
         self.emit("rotar_derecha")
 
     def configurar(self, widget):
+        
         self.emit("configurar")
         
     def salir(self, widget):
+        
         self.emit("salir")
         
 class ToolbarConfig(Gtk.Box):
     """Toolbar con opciones de configuracion para
     modo presentacion de diapositivas."""
     
-    __gsignals__ = {"run":(GObject.SIGNAL_RUN_FIRST,
+    __gsignals__ = {
+    "run":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_INT, ))}
     
     def __init__(self):
@@ -340,7 +372,8 @@ class ToolbarConfig(Gtk.Box):
             ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
-        self.label = Gtk.Label("Cambiar Imagen cada: %s Segundos" %(self.intervalo))
+        self.label = Gtk.Label(
+            "Cambiar Imagen cada: %s Segundos" %(self.intervalo))
         self.label.show()
         item.add(self.label)
         toolbar1.insert(item, -1)
@@ -406,13 +439,15 @@ class ToolbarConfig(Gtk.Box):
     def mas_intervalo(self, widget= None):
         
         self.intervalo += 0.1
-        self.label.set_text("Cambiar Imagen cada: %s Segundos" %(self.intervalo))
+        self.label.set_text(
+            "Cambiar Imagen cada: %s Segundos" %(self.intervalo))
 
     def menos_intervalo(self, widget= None):
         
         if self.intervalo > 0.3:
             self.intervalo -= 0.1
-            self.label.set_text("Cambiar Imagen cada: %s Segundos" %(self.intervalo))
+            self.label.set_text(
+                "Cambiar Imagen cada: %s Segundos" %(self.intervalo))
 
     def run_presentacion(self, widget= None):
         
@@ -424,9 +459,11 @@ class ToolbarConfig(Gtk.Box):
         self.hide()
         
 class MenuList(Gtk.Menu):
-    """Menu con opciones para operar sobre el archivo o
+    """
+    Menu con opciones para operar sobre el archivo o
     el streaming seleccionado en la lista de reproduccion
-    al hacer click derecho sobre él."""
+    al hacer click derecho sobre él.
+    """
     
     __gsignals__ = {
     'accion':(GObject.SIGNAL_RUN_FIRST,

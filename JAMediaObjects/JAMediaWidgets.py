@@ -319,10 +319,10 @@ class Lista(Gtk.TreeView):
             GObject.TYPE_STRING,
             GObject.TYPE_STRING)
             
-        self.setear_columnas()
+        self.__setear_columnas()
         
         self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(self.selecciones, self.modelo)
+        self.treeselection.set_select_function(self.__selecciones, self.modelo)
         
         self.set_model(self.modelo)
         self.show_all()
@@ -350,7 +350,7 @@ class Lista(Gtk.TreeView):
             pass
         return False'''
     
-    def selecciones(self, treeselection, model, path, is_selected, listore):
+    def __selecciones(self, treeselection, model, path, is_selected, listore):
         """
         Cuando se selecciona un item en la lista.
         """
@@ -365,29 +365,33 @@ class Lista(Gtk.TreeView):
             
         return True
     
-    def setear_columnas(self):
+    def __setear_columnas(self):
         
-        self.append_column(self.construir_columa_icono('', 0, True))
-        self.append_column(self.construir_columa('Nombre', 1, True))
-        self.append_column(self.construir_columa('', 2, False))
+        self.append_column(self.__construir_columa_icono('', 0, True))
+        self.append_column(self.__construir_columa('Nombre', 1, True))
+        self.append_column(self.__construir_columa('', 2, False))
         
-    def construir_columa(self, text, index, visible):
+    def __construir_columa(self, text, index, visible):
         
         render = Gtk.CellRendererText()
+        
         columna = Gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        
         return columna
     
-    def construir_columa_icono(self, text, index, visible):
+    def __construir_columa_icono(self, text, index, visible):
         
         render = Gtk.CellRendererPixbuf()
+        
         columna = Gtk.TreeViewColumn(text, render,pixbuf=index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        
         return columna
     
     def limpiar(self):
@@ -400,9 +404,9 @@ class Lista(Gtk.TreeView):
         Comienza secuencia de agregado a la lista.
         """
         
-        GObject.idle_add(self.ejecutar_agregar_elemento, elementos)
+        GObject.idle_add(self.__ejecutar_agregar_elemento, elementos)
         
-    def ejecutar_agregar_elemento(self, elementos):
+    def __ejecutar_agregar_elemento(self, elementos):
         """
         Agrega los items a la lista, uno a uno, actualizando.
         """
@@ -457,7 +461,8 @@ class Lista(Gtk.TreeView):
             pass
             
         elementos.remove(elementos[0])
-        GObject.idle_add(self.ejecutar_agregar_elemento, elementos)
+        
+        GObject.idle_add(self.__ejecutar_agregar_elemento, elementos)
         
     def seleccionar_siguiente(self, widget = None):
         
@@ -547,6 +552,7 @@ class ToolbarReproduccion(Gtk.Box):
     def set_paused(self):
         
         archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "play.png")
+        
         self.botonplay.set_imagen(
             archivo = archivo,
             flip = False,
@@ -555,6 +561,7 @@ class ToolbarReproduccion(Gtk.Box):
     def set_playing(self):
         
         archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "pausa.png")
+        
         self.botonplay.set_imagen(
             archivo = archivo,
             flip = False,

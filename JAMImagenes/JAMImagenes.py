@@ -52,13 +52,15 @@ css_provider = Gtk.CssProvider()
 style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
+
 context.add_provider_for_screen(
     screen,
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
     
 class JAMImagenes(Gtk.Plug):
-    """JAMImagenes:
+    """
+    JAMImagenes:
         Visor de Imagenes.
             
         Implementado sobre:
@@ -86,14 +88,17 @@ class JAMImagenes(Gtk.Plug):
             self.jamediaimagenes.setup_init()
             
     NOTA: Tambien se puede ejecutar JAMImagenes directamente
-    mediante python JAMImagenes.py"""
+    mediante python JAMImagenes.py
+    """
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
     
     def __init__(self):
-        """JAMediaImagenes: Gtk.Plug para embeber en otra aplicacion."""
+        """
+        JAMediaImagenes: Gtk.Plug para embeber en otra aplicacion.
+        """
         
         Gtk.Plug.__init__(self, 0L)
         
@@ -111,9 +116,9 @@ class JAMImagenes(Gtk.Plug):
         
         panel = Gtk.HPaned()
         
-        scroll1 = self.get_scroll()
+        scroll1 = self.__get_scroll()
         scroll1.add_with_viewport (self.visor)
-        scroll2 = self.get_scroll()
+        scroll2 = self.__get_scroll()
         scroll2.add_with_viewport (self.lista)
         
         self.vbox2 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -136,31 +141,33 @@ class JAMImagenes(Gtk.Plug):
         
         self.add(vbox)
         
-        self.lista.connect('nueva-seleccion', self.cargar_imagen)
+        self.lista.connect('nueva-seleccion', self.__cargar_imagen)
         
-        self.toolbar.connect('acercar', self.acercar)
-        self.toolbar.connect('alejar', self.alejar)
-        self.toolbar.connect('original', self.original)
-        self.toolbar.connect('rotar-izquierda', self.rotar_izquierda)
-        self.toolbar.connect('rotar-derecha', self.rotar_derecha)
-        self.toolbar.connect('configurar', self.configurar)
+        self.toolbar.connect('acercar', self.__acercar)
+        self.toolbar.connect('alejar', self.__alejar)
+        self.toolbar.connect('original', self.__original)
+        self.toolbar.connect('rotar-izquierda', self.__rotar_izquierda)
+        self.toolbar.connect('rotar-derecha', self.__rotar_derecha)
+        self.toolbar.connect('configurar', self.__configurar)
         
-        self.toolbar.connect('salir', self.confirmar_salir)
-        self.toolbar_salir.connect('salir', self.emit_salir)
+        self.toolbar.connect('salir', self.__confirmar_salir)
+        self.toolbar_salir.connect('salir', self.__emit_salir)
         
-        self.toolbar_reproduccion.connect('activar', self.activar)
-        self.lista.connect("button-press-event", self.click_derecho_en_lista)
-        self.toolbar_config.connect('run', self.set_presentacion)
-        self.visor.connect('ocultar_controles', self.ocultar_controles)
-        self.visor.connect("button_press_event", self.clicks_en_pantalla)
+        self.toolbar_reproduccion.connect('activar', self.__activar)
+        self.lista.connect("button-press-event", self.__click_derecho_en_lista)
+        self.toolbar_config.connect('run', self.__set_presentacion)
+        self.visor.connect('ocultar_controles', self.__ocultar_controles)
+        self.visor.connect("button_press_event", self.__clicks_en_pantalla)
         
-        GObject.idle_add(self.setup_init)
+        GObject.idle_add(self.__setup_init)
         
-    def click_derecho_en_lista(self, widget, event):
-        """Esto es para abrir un menu de opciones cuando
+    def __click_derecho_en_lista(self, widget, event):
+        """
+        Esto es para abrir un menu de opciones cuando
         el usuario hace click derecho sobre un elemento en
         la lista de reproduccion, borrar el archivo o
-        simplemente quitarlo de la lista."""
+        simplemente quitarlo de la lista.
+        """
         
         if self.actualizador:
             GObject.source_remove(self.actualizador)
@@ -187,28 +194,32 @@ class JAMImagenes(Gtk.Plug):
         
         elif boton == 3:
             menu = MenuList(widget, boton, pos, tiempo, path, widget.modelo)
-            menu.connect('accion', self.set_accion)
+            menu.connect('accion', self.__set_accion)
             menu.popup(None, None, None, None, boton, tiempo)
             
         elif boton == 2:
             return
         
-    def set_accion(self, widget, lista, accion, iter):
-        """Responde a la seleccion del usuario sobre el menu
+    def __set_accion(self, widget, lista, accion, iter):
+        """
+        Responde a la seleccion del usuario sobre el menu
         que se despliega al hacer click derecho sobre un elemento
         en la lista de reproduccion.
         
         Recibe la lista de reproduccion, una accion a realizar
         sobre el elemento seleccionado en ella y el elemento
         seleccionado y pasa todo a toolbar_accion para pedir
-        confirmacion al usuario sobre la accion a realizar."""
+        confirmacion al usuario sobre la accion a realizar.
+        """
         
         self.toolbar_accion.set_accion(lista, accion, iter)
         
-    def clicks_en_pantalla(self, widget, event):
-        """Hace fullscreen y unfullscreen sobre la
+    def __clicks_en_pantalla(self, widget, event):
+        """
+        Hace fullscreen y unfullscreen sobre la
         ventana principal cuando el usuario hace
-        doble click en el visor."""
+        doble click en el visor.
+        """
         
         if event.type.value_name == "GDK_2BUTTON_PRESS":
             ventana = self.get_toplevel()
@@ -222,44 +233,52 @@ class JAMImagenes(Gtk.Plug):
             else:
                 ventana.fullscreen()
                 
-    def ocultar_controles(self, widget, valor):
-        """Oculta o muestra los controles."""
+    def __ocultar_controles(self, widget, valor):
+        """
+        Oculta o muestra los controles.
+        """
         
         if valor and self.toolbar_config.ocultar_controles:
-            map(self.ocultar, self.controles_dinamicos)
-            map(self.ocultar, [
+            
+            map(self.__ocultar, self.controles_dinamicos)
+            
+            map(self.__ocultar, [
                 self.toolbar_config,
                 self.toolbar_accion,
                 self.toolbar_salir])
                 
         elif not valor:
-            map(self.mostrar, self.controles_dinamicos)
+            map(self.__mostrar, self.controles_dinamicos)
             
-    def ocultar(self, objeto):
-        """Esta funcion es llamada desde self.ocultar_controles()"""
+    def __ocultar(self, objeto):
+        """
+        Esta funcion es llamada desde self.ocultar_controles()
+        """
         
         if objeto.get_visible(): objeto.hide()
         
-    def mostrar(self, objeto):
-        """Esta funcion es llamada desde self.ocultar_controles()"""
+    def __mostrar(self, objeto):
+        """
+        Esta funcion es llamada desde self.ocultar_controles()
+        """
         
         if not objeto.get_visible(): objeto.show()
         
-    def activar(self, widget, senial):
-        """Cuando se hace click en siguiente,
-        anterior, pausa-play o stop."""
+    def __activar(self, widget, senial):
+        """
+        Cuando se hace click en siguiente,
+        anterior, pausa-play o stop.
+        """
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
         if senial == 'siguiente':
             self.lista.seleccionar_siguiente()
-            self.toolbar_reproduccion.set_playing()
             
         elif senial == 'atras':
             self.lista.seleccionar_anterior()
-            self.toolbar_reproduccion.set_playing()
             
         elif senial == 'stop':
             if self.actualizador:
@@ -277,18 +296,20 @@ class JAMImagenes(Gtk.Plug):
                     
                 self.visor.presentacion = False
                 self.toolbar_reproduccion.set_paused()
-            else:
-                self.set_presentacion()
-                self.toolbar_reproduccion.set_playing()
                 
-    def configurar(self, widget):
-        """Muestra la toolbar de configuraciones."""
+            else:
+                self.__set_presentacion()
+                
+    def __configurar(self, widget):
+        """
+        Muestra la toolbar de configuraciones.
+        """
         
         if self.actualizador:
             GObject.source_remove(self.actualizador)
             self.actualizador = None
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_accion,
             self.toolbar_salir])
             
@@ -297,9 +318,13 @@ class JAMImagenes(Gtk.Plug):
             
         else:
             self.toolbar_config.show_all()
+            
+        self.toolbar_reproduccion.set_paused()
         
-    def set_presentacion(self, widget = None, intervalo = None):
-        """Lanza el modo diapositivas."""
+    def __set_presentacion(self, widget = None, intervalo = None):
+        """
+        Lanza el modo diapositivas.
+        """
         
         if intervalo and intervalo != None: self.intervalo = intervalo
         
@@ -308,55 +333,73 @@ class JAMImagenes(Gtk.Plug):
             self.actualizador = None
             
         self.visor.presentacion = True
-        self.actualizador = GObject.timeout_add(self.intervalo, self.handlepresentacion)
+        self.toolbar_reproduccion.set_playing()
+        self.actualizador = GObject.timeout_add(self.intervalo, self.__handle_presentacion)
     
-    def handlepresentacion(self):
-        """Cuando está en moodo Diapositivas."""
+    def __handle_presentacion(self):
+        """
+        Cuando está en modo Diapositivas.
+        """
         
         self.lista.seleccionar_siguiente()
+        
         return True
     
-    def setup_init(self):
+    def __setup_init(self):
         
         print "JAMImagenes => OK"
         self.show_all()
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion,
             self.toolbar_salir])
             
-    def get_scroll(self):
+    def __get_scroll(self):
+        """
+        Devuelve un scroll.
+        """
         
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC,
         Gtk.PolicyType.AUTOMATIC)
+        
         return scroll
         
-    def cargar_imagen(self, widget, path):
-        """Carga la imagen activa."""
+    def __cargar_imagen(self, widget, path):
+        """
+        Carga la imagen activa.
+        """
         
-        map(self.ocultar, [
+        # FIXME: Cuando se selecciona una imagen en la lista
+        # y está corriendo modo presentacion, la misma se detiene
+        # y la toolbar reproduccion no actualiza el icono play.
+        
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
         self.visor.set_imagen(path)
         
-    def limpiar(self):
-        """Limpia la lista de imagenes."""
+    def __limpiar(self):
+        """
+        Limpia la lista de imagenes.
+        """
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
         self.lista.limpiar()
         # y agregar no pintar imagen
         
-    def set_item(self, item):
-        """Agrega una imagen a la lista."""
+    def __set_item(self, item):
+        """
+        Agrega una imagen a la lista.
+        """
         
         # item = [texto para mostrar, path oculto]
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
@@ -365,10 +408,12 @@ class JAMImagenes(Gtk.Plug):
         self.lista.seleccionar_primero()
         
     def set_lista(self, items):
-        """Setea toda la lista de imagenes."""
+        """
+        Setea toda la lista de imagenes según items.
+        """
         
         # items = [ [texto para mostrar, path oculto], . . . ]
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
@@ -376,58 +421,84 @@ class JAMImagenes(Gtk.Plug):
         self.lista.agregar_items( items )
         self.lista.seleccionar_primero()
         
-    def acercar(self, widget):
+    def __acercar(self, widget):
+        """
+        Zoom in.
+        """
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
         self.visor.presentacion = False
+        
         self.visor.acercar()
         
-    def alejar(self, widget):
+    def __alejar(self, widget):
+        """
+        Zoom out.
+        """
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
         self.visor.presentacion = False
+        
         self.visor.alejar()
         
-    def original(self, widget):
+    def __original(self, widget):
+        """
+        Vuelve al tamaño original de la imagen.
+        """
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
         self.visor.presentacion = False
+        
         self.visor.original()
         
-    def rotar_izquierda(self, widget):
+    def __rotar_izquierda(self, widget):
+        """
+        Rota la imagen a la izquierda.
+        """
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
         self.visor.presentacion = False
+        
         self.visor.rotar(-1)
         
-    def rotar_derecha(self, widget):
+    def __rotar_derecha(self, widget):
+        """
+        Rota la imagen a la derecha.
+        """
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
         self.visor.presentacion = False
+        
         self.visor.rotar(1)
         
-    def confirmar_salir(self, widget = None, senial = None):
-        """Recibe salir y lo pasa a la toolbar de confirmación."""
+    def __confirmar_salir(self, widget = None, senial = None):
+        """
+        Recibe salir y lo pasa a la toolbar de confirmación.
+        """
         
-        map(self.ocultar, [self.toolbar_config])
+        map(self.__ocultar, [self.toolbar_config])
+        
         self.toolbar_salir.run("JAMImagenes")
         
-    def emit_salir(self, widget):
+    def __emit_salir(self, widget):
+        """
+        Emite Salir.
+        """
         
         if self.actualizador:
             GObject.source_remove(self.actualizador)
@@ -435,10 +506,11 @@ class JAMImagenes(Gtk.Plug):
             
         self.visor.presentacion = False
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_config,
             self.toolbar_accion])
             
         self.toolbar_reproduccion.set_paused()
+        
         self.emit('salir')
         

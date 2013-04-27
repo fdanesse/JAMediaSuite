@@ -116,16 +116,18 @@ def get_pixels(centimetros):
     
     ancho = int (float(res_w) / float(mm_w) * 10.0 * centimetros)
     alto = int (float(res_h) / float(mm_h) * 10.0 * centimetros)
-    print ">>>>", centimetros, int(min([ancho, alto]))
+    if centimetros == 5.0: print ">>>>", centimetros, int(min([ancho, alto]))
     return int(min([ancho, alto]))'''
     
     res = {
         1.0:37,
         1.2:45,
+        0.5:18,
         0.2:7,
         0.5:18,
         0.6:22,
         0.8:30,
+        5.0:189,
         }
         
     return res[centimetros]

@@ -69,11 +69,10 @@ class Ventana(Gtk.Window):
         
     def salir(self, widget = None, senial = None):
         
-        import commands
         commands.getoutput('killall mplayer')
+        
         sys.exit(0)
         
-
 def get_item_list(path):
     
     if os.path.exists(path):
