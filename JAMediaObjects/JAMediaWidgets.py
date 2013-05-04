@@ -148,10 +148,10 @@ class JAMediaButton(Gtk.EventBox):
             Gdk.EventMask.ENTER_NOTIFY_MASK |
             Gdk.EventMask.LEAVE_NOTIFY_MASK)
             
-        self.connect("button_press_event", self.button_press)
-        self.connect("button_release_event", self.button_release)
-        self.connect("enter-notify-event", self.enter_notify_event)
-        self.connect("leave-notify-event", self.leave_notify_event)
+        self.connect("button_press_event", self.__button_press)
+        self.connect("button_release_event", self.__button_release)
+        self.connect("enter-notify-event", self.__enter_notify_event)
+        self.connect("leave-notify-event", self.__leave_notify_event)
         
         self.imagen = Gtk.Image()
         self.add(self.imagen)
@@ -205,19 +205,19 @@ class JAMediaButton(Gtk.EventBox):
         
         self.modify_bg(0, self.colornormal)
         
-    def button_release(self, widget, event):
+    def __button_release(self, widget, event):
         
         self.modify_bg(0, self.colorselect)
         
-    def leave_notify_event(self, widget, event):
+    def __leave_notify_event(self, widget, event):
         
         self.modify_bg(0, self.colornormal)
         
-    def enter_notify_event(self, widget, event):
+    def __enter_notify_event(self, widget, event):
         
         self.modify_bg(0, self.colorselect)
         
-    def button_press(self, widget, event):
+    def __button_press(self, widget, event):
         
         self.seleccionar()
         
@@ -276,6 +276,8 @@ class Visor(Gtk.DrawingArea):
         
         self.show_all()
         
+        self.connect("touch-event", self.__touch)
+        
     def do_motion_notify_event(self, event):
         """
         Cuando se mueve el mouse sobre el visor.
@@ -293,6 +295,10 @@ class Visor(Gtk.DrawingArea):
         else:
             self.emit("ocultar_controles", True)
             return
+        
+    def __touch(self, widget, uno=None, dos=None, tres=None):
+        
+        print uno, dos, tres
         
 # >> -------------------- LISTA GENERICA --------------------- #
 class Lista(Gtk.TreeView):

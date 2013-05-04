@@ -381,7 +381,7 @@ class JAMImagenes(Gtk.Plug):
             
         self.visor.set_imagen(path)
         
-    def __limpiar(self):
+    def limpiar(self):
         """
         Limpia la lista de imagenes.
         """
