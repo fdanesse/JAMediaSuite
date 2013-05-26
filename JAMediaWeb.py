@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# -inurl:(htm|html|php) intitle:"index of" +"last modified" +"parent directory" +description +size +(wma|mp3) "BANDA/CANCIÓN"
+# http://alt1040.com/2008/11/convirtiendo-a-google-en-un-servicio-de-descarga-de-mp3
+
 import os
 import sys
 import commands

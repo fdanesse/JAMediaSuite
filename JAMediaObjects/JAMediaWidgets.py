@@ -1773,49 +1773,99 @@ class ToolbarTerminal(Gtk.Toolbar):
         
         self.emit('accion', 'pegar')
         
-'''
 # En base a código de Agustin Zubiaga <aguz@sugarlabs.org>
-
-import os
-import gi
-from gi.repository import GObject
-
 # http://wiki.laptop.org/go/Accelerometer
-ACELEROMETRO = '/sys/devices/platform/lis3lv02d/position'
-
 class Acelerometro(GObject.GObject):
-
+    """
+    Acelerómetro.
+    Provee la funcionalidad para rotar la pantalla
+    a través de la señal "angulo", como se explica en
+    el código a continuación.
+    
+    Provee la funcionalidad de profundidad a través de
+    la señal "profundidad", según se explica en el código.
+    Profundidad mide la inclinación hacia atrás y hacia
+    adelante de la pantalla, lo cual puede utilizarse
+    por ejemplo, para hacer zoom.
+    """
+    
+    __gsignals__ = {
+        "angulo":(GObject.SIGNAL_RUN_FIRST,
+            GObject.TYPE_NONE, (GObject.TYPE_INT,)),
+        "profundidad":(GObject.SIGNAL_RUN_FIRST,
+            GObject.TYPE_NONE, (GObject.TYPE_INT,))}
+        
     def __init__(self):
         
         GObject.GObject.__init__(self)
+        
+        ACELEROMETRO = '/sys/devices/platform/lis3lv02d/position'
+        
+        self.angulo = 0
+        self.profundidad = 0
         
         self.acelerometro = None
         
         if os.path.exists(ACELEROMETRO):
             self.acelerometro = open(ACELEROMETRO, 'r')
-            self.actualizador = GObject.timeout_add(1000, self.read)
+            self.actualizador = GObject.timeout_add(500, self.read)
+            
         else:
             print "El Acelerometro no está Presente."
             
     def read(self):
+        
         if self.acelerometro != None:
             self.acelerometro.seek(0)
-            print self.acelerometro.read()
-            
-        """
-        x, y, z = self._accelerometer.read()
+        
+        valor = self.acelerometro.read()
+        valor = valor.replace("(", "")
+        valor = valor.replace(")", "")
+        x, y, z = map(int, valor.split(","))
+        
+        ### Derecha o Izquierda
+        angulo = 0
+        #import commands
+        
         if x <= -700:
-            self.set_angle(270, False)
+            angulo = 270
+            #commands.getoutput('xrandr --output lvds --rotate right')
+            
         elif x >= 700:
-            self.set_angle(90, False)
+            angulo = 90
+            #commands.getoutput('xrandr --output lvds --rotate left')
+            
         elif y <= -700:
-            self.set_angle(180, False)
+            angulo = 180
+            #commands.getoutput('xrandr --output lvds --rotate inverted')
+            
         else:
-            self.set_angle(0, False)"""
+            angulo = 0
+            #commands.getoutput('xrandr --output lvds --rotate normal')
+            
+        if self.angulo != angulo:
+            self.angulo = angulo
+            self.emit("angulo", self.angulo)
+            
+        proofundidad = 0
+
+        if z <= -700:
+            profundidad = 270 # Alejar, pantalla hacia atras
+            
+        elif z >= 700:
+            profundidad = 90 # Acercar, pantalla hacia delante
+            
+        else:
+            profundidad = 0
+        
+        if self.profundidad != profundidad:
+            self.profundidad = profundidad
+            self.emit("profundidad", self.profundidad)
             
         return True
     
     def close(self):
+        
         if self.acelerometro != None:
-            self.acelerometro.close()'''
+            self.acelerometro.close()
             
