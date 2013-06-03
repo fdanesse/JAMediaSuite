@@ -38,7 +38,6 @@ from gi.repository import WebKit
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import JAMediaTerminal
-from JAMediaObjects.JAMediaWidgets import ToolbarTerminal
 
 import JAMediaObjects.JAMediaGlobales as G
 import JAMediaObjects.JAMFileSystem as JAMF
