@@ -21,8 +21,6 @@
 
 import os
 import sys
-import time
-import datetime
 
 import gi
 from gi.repository import Gtk
@@ -206,8 +204,8 @@ class JAMediaPlayer(Gtk.Plug):
         
         ### Area Izquierda del Panel
         
-        ### Efectos que están aplicacndo.
-        eventbox = Gtk.EventBox() # Mantiene el fondo negro en miniefectos que se aplican
+        ### Efectos que se están aplicando.
+        eventbox = Gtk.EventBox() # FIXME: Mantiene el fondo negro en miniefectos que se aplican
         eventbox.modify_bg(0, G.NEGRO)
         self.hbox_efectos_en_pipe = Gtk.Box(
             orientation = Gtk.Orientation.HORIZONTAL)
@@ -220,7 +218,7 @@ class JAMediaPlayer(Gtk.Plug):
         scroll.add_with_viewport(eventbox)
         
         ### Barra de Progreso + Volúmen
-        ev_box = Gtk.EventBox() # Para poder pintar el fondo de volumen
+        ev_box = Gtk.EventBox() # FIXME: Para poder pintar el fondo de volumen
         ev_box.modify_bg(0, G.BLANCO)
         hbox_barra_progreso = Gtk.Box(
             orientation = Gtk.Orientation.HORIZONTAL)
@@ -252,13 +250,13 @@ class JAMediaPlayer(Gtk.Plug):
         #self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
         
         ### Lista de Reproducción
-        self.evnt_box_lista_reproduccion = Gtk.EventBox() # Para poder pintar el fondo
+        self.evnt_box_lista_reproduccion = Gtk.EventBox() # FIXME: Para poder pintar el fondo
         self.vbox_lista_reproduccion = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.scroll_list = Gtk.ScrolledWindow()
         self.scroll_list.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
-        self.scroll_list.add_with_viewport(self.lista_de_reproduccion)
+        self.scroll_list.add(self.lista_de_reproduccion)
         self.pack_vbox_lista_reproduccion() # Lista + Controles de Reproducción
         self.evnt_box_lista_reproduccion.add(self.vbox_lista_reproduccion)
         
@@ -352,9 +350,12 @@ class JAMediaPlayer(Gtk.Plug):
             Gdk.Display.get_default(), pixbuf, 0, 0)
         self.get_parent_window().set_cursor(jamedia_cursor)
         
+    # FIXME: La idea es utilizar gdkpixbufsink en el pipe.
     #def fotografiar(self, widget):
-    #    """Captura una imagen desde el video en reproduccion."""
-        
+    #    """
+    #    Captura una imagen desde el video en reproduccion.
+    #    """
+    
     #    self.player.fotografiar()
         
     def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
@@ -627,6 +628,39 @@ class JAMediaPlayer(Gtk.Plug):
         
         print "JAMediaPlayer => OK"
         
+    '''
+    # FIXME: Nueva metodología Según JAMediaLector, esto reemplaza
+    # self.pantalla.connect("ocultar_controles", self.ocultar_controles)
+    def do_motion_notify_event(self, event):
+        """
+        Cuando se mueve el mouse sobre la ventana.
+        """
+        
+        if self.toolbar_info.ocultar_controles:
+            x, y = (int(event.x), int(event.y))
+            rect = self.get_allocation()
+            xx, yy, ww, hh = (rect.x, rect.y, rect.width, rect.height)
+            
+            arriba = range(0, self.toolbar.get_allocation().height)
+            abajo = range(hh - self.controlesrepro.get_allocation().height, hh)
+            derecha = range(ww - self.derecha_vbox.get_allocation().width, ww)
+            
+            ###Arriba    ###Derecha     ###Abajo
+            if y in arriba or x in derecha or y in abajo:
+                map(self.mostrar, self.controles_dinamicos)
+                
+            else:
+                map(self.ocultar, [
+                    #self.scroll_config,
+                    self.toolbar_accion,
+                    self.toolbaraddstream,
+                    self.toolbar_salir])
+                    
+                map(self.ocultar, self.controles_dinamicos)
+                
+        else:
+            map(self.mostrar, self.controles_dinamicos)'''
+
     def ocultar_controles(self, widget, valor):
         """
         Oculta o muestra los controles.
@@ -1086,6 +1120,9 @@ class JAMediaPlayer(Gtk.Plug):
         else:
             extension = ".mp3"
             
+        import time
+        import datetime
+        
         hora = time.strftime("%H-%M-%S")
         fecha = str(datetime.date.today())
         
@@ -1137,6 +1174,8 @@ class JAMediaPlayer(Gtk.Plug):
         Si hay video o no en la fuente . . .
         """
         
-        print "Video en la Fuente:", valor
+        pass
+        # FIXME: La idea es iniciar visualizador de audio.
+        #print "Video en la Fuente:", valor
         #if not valor: self.player.link_visualizador()
         

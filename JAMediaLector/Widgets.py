@@ -174,8 +174,10 @@ class ToolbarTry(Gtk.Toolbar):
         self.show_all()
         
 class ToolbarLector(Gtk.Toolbar):
-    """Toolbar con funcionalidades para
-    el lector pdf."""
+    """
+    Toolbar con funcionalidades para
+    el lector pdf.
+    """
     
     __gsignals__ = {
     'acercar': (GObject.SIGNAL_RUN_FIRST,
@@ -428,7 +430,9 @@ class Preview(JAMediaButton):
         pass
         
 class DrawingLector(Visor):
-    """Donde se dibujan las paginas del documento"""
+    """
+    Donde se dibujan las paginas del documento
+    """
     
     __gtype_name__ = 'DrawingLector'
     
@@ -441,7 +445,9 @@ class DrawingLector(Visor):
         self.show_all()
         
     def set_pagina(self, pagina):
-        """Setea la pagina activa para dibujarla"""
+        """
+        Setea la pagina activa para dibujarla
+        """
         
         if pagina:
             self.pagina = pagina
@@ -554,7 +560,9 @@ class TextView(Gtk.TextView):
         self.set_buffer(Gtk.TextBuffer())
         
 class ToolbarConfig(Gtk.Toolbar):
-    """Toolbar para que el usuario configure JAMedia."""
+    """
+    Toolbar para que el usuario configure JAMedia.
+    """
     
     def __init__(self):
         
@@ -585,10 +593,12 @@ class ToolbarConfig(Gtk.Toolbar):
         
         self.show_all()
         
-        switch.connect('button-press-event', self.set_controles_view)
+        switch.connect('button-press-event', self.__set_controles_view)
         
-    def set_controles_view(self, widget, senial):
-        """Almacena el estado de "ocultar_controles"."""
+    def __set_controles_view(self, widget, senial):
+        """
+        Almacena el estado de "ocultar_controles".
+        """
         
         self.ocultar_controles = not widget.get_active()
         

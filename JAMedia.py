@@ -3,11 +3,9 @@
 
 import os
 import sys
-import commands
 
 import gi
 from gi.repository import Gtk
-from gi.repository import Gdk
 from gi.repository import GObject
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
@@ -68,6 +66,8 @@ class Ventana(Gtk.Window):
         self.jamediaplayer.pack_efectos()
         
     def salir(self, widget = None, senial = None):
+        
+        import commands
         
         commands.getoutput('killall mplayer')
         

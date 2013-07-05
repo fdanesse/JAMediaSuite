@@ -21,17 +21,13 @@
 
 import os
 import sys
-import commands
-import cairo
 
 import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GdkX11
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import Vte
-from gi.repository import Pango
 
 import JAMFileSystem as JAMF
 
@@ -94,6 +90,8 @@ class Imagen_Button(Gtk.DrawingArea):
             
             scaledPixbuf = self.pixbuf.scale_simple(
                 w, h, GdkPixbuf.InterpType.BILINEAR)
+            
+            import cairo
             
             surface = cairo.ImageSurface(
                 cairo.FORMAT_ARGB32,
@@ -247,7 +245,7 @@ class JAMediaButton(Gtk.EventBox):
     def set_tamanio(self, w, h):
         
         self.set_size_request(w, h)
-        
+
 class Visor(Gtk.DrawingArea):
     """
     Visor generico para utilizar como area de
@@ -276,8 +274,8 @@ class Visor(Gtk.DrawingArea):
         
         self.show_all()
         
-        self.connect("touch-event", self.__touch)
-        
+        #self.connect("touch-event", self.__touch)
+    
     def do_motion_notify_event(self, event):
         """
         Cuando se mueve el mouse sobre el visor.
@@ -295,10 +293,6 @@ class Visor(Gtk.DrawingArea):
         else:
             self.emit("ocultar_controles", True)
             return
-        
-    def __touch(self, widget, uno=None, dos=None, tres=None):
-        
-        print uno, dos, tres
         
 # >> -------------------- LISTA GENERICA --------------------- #
 class Lista(Gtk.TreeView):
@@ -366,6 +360,7 @@ class Lista(Gtk.TreeView):
         valor =  model.get_value(iter, 2)
         
         if not is_selected and self.valor_select != valor:
+            self.scroll_to_cell(model.get_path(iter))
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
             
@@ -1303,6 +1298,7 @@ class GstreamerVideoEfectos(Gtk.Box):
         
         nombre = elementos[0]
         # Los efectos se definen en globales pero hay que ver si están instalados.
+        import commands
         datos = commands.getoutput('gst-inspect-1.0 %s' % (nombre))
         
         #if 'gst-plugins-good' in datos and \
@@ -1434,6 +1430,7 @@ class GstreamerAudioVisualizador(GstreamerVideoEfectos):
         
         nombre = elementos[0]
         # Los efectos se definen en globales pero hay que ver si están instalados.
+        import commands
         datos = commands.getoutput('gst-inspect-1.0 %s' % (nombre))
         
         #if 'gst-plugins-good' in datos and 'Visualization' in datos:
@@ -1644,6 +1641,9 @@ class Terminal(Vte.Terminal):
         
         self.set_encoding('utf-8')
         font = 'Monospace ' + str(10)
+        
+        from gi.repository import Pango
+        
         self.set_font(Pango.FontDescription(font))
         self.set_colors(
             Gdk.color_parse('#ffffff'),

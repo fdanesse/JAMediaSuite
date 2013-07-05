@@ -329,8 +329,10 @@ class Toolbar(Gtk.Toolbar):
         self.show_all()
     
     #def emit_capturar(self, widget):
-    #    """Emite Capturar para obtener la imagen del video."""
-        
+    #    """
+    #    Emite Capturar para obtener la imagen del video.
+    #    """
+    
     #    self.emit('capturar')
         
     def emit_config(self, widget):
@@ -400,6 +402,16 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
         
         self.show_all()
         self.resize( 640, 480 )
+        
+        self.connect("file-activated", self.__file_activated)
+        
+    def __file_activated(self, widget):
+        """
+        Cuando se hace doble click sobre un archivo.
+        """
+        
+        self.emit('archivos-seleccionados', self.get_filenames())
+        self.salir(None)
         
     def seleccionar_todos_los_archivos(self, widget):
         

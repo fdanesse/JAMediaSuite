@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import commands
 import urllib
 import shelve
 
@@ -99,12 +98,14 @@ VERDE = Gdk.Color(0, 65000, 0)
 AZUL = Gdk.Color(0, 0, 65000)
 
 def get_pixels(centimetros):
-    """ Recibe un tamaño en centimetros y
+    """
+    Recibe un tamaño en centimetros y
     devuelve el tamaño en pixels que le corresponde,
     según tamaño del monitor que se está utilizando.
     
     # 1 px = 0.026458333 cm #int(centimetros/0.026458333)
-    # 1 Pixel = 0.03 Centimetros = 0.01 Pulgadas. """
+    # 1 Pixel = 0.03 Centimetros = 0.01 Pulgadas.
+    """
     '''
     screen = GdkX11.X11Screen()
     
@@ -133,7 +134,9 @@ def get_pixels(centimetros):
     return res[centimetros]
 
 def get_separador(draw = False, ancho = 0, expand = False):
-    """ Devuelve un separador generico."""
+    """
+    Devuelve un separador generico.
+    """
     
     separador = Gtk.SeparatorToolItem()
     separador.props.draw = draw
@@ -144,7 +147,9 @@ def get_separador(draw = False, ancho = 0, expand = False):
 
 def get_boton(archivo, flip = False,
     color = Gdk.Color(65000, 65000, 65000), rotacion = None, pixels = 0):
-    """ Devuelve un toolbutton generico."""
+    """
+    Devuelve un toolbutton generico.
+    """
     
     if not pixels:
         pixels = get_pixels(1)
@@ -166,7 +171,9 @@ def get_boton(archivo, flip = False,
 
 def get_togle_boton(archivo, flip = False,
     color = Gdk.Color(65000, 65000, 65000), pixels = 0):
-    """ Devuelve un toggletoolbutton generico."""
+    """
+    Devuelve un toggletoolbutton generico.
+    """
     
     if not pixels:
         pixels = get_pixels(1.5)
@@ -191,10 +198,14 @@ canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/cana
 radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/radios'
 
 def descarga_lista_de_streamings(url):
-    """Recibe la web donde se publican los streamings
+    """
+    Recibe la web donde se publican los streamings
     de radio o televisión de JAMedia y devuelve la lista
-    de streamings. Un streaming se representa por una lista:
-    [nombre, url]"""
+    de streamings.
+    
+    Un streaming se representa por una lista:
+        [nombre, url]
+    """
     
     try:
         streamings = []
@@ -204,6 +215,7 @@ def descarga_lista_de_streamings(url):
         web.close()
         
         for linea in lineas:
+            
             if 'table' in linea:
                 l = linea.split('table')
                 
@@ -223,27 +235,33 @@ def descarga_lista_de_streamings(url):
         return []
     
 def clear_lista_de_streamings(path):
-    """Limpia la lista de streamings en un archivo."""
+    """
+    Limpia la lista de streamings en un archivo.
+    """
     
     archivo = shelve.open(path)
     archivo.clear()
     archivo.close()
     
 def guarda_lista_de_streamings(path, items):
-    """Recibe el path a un archivo de lista de streamings
+    """
+    Recibe el path a un archivo de lista de streamings
     de JAMedia y una lista de items [nombre, url] y los almacena
-    en el archivo."""
+    en el archivo.
+    """
     
     archivo = shelve.open(path)
     
     for item in items:
-        archivo[item[0]] = item[1]
+        archivo[item[0].strip()] = item[1].strip()
         
     archivo.close()
     
 def get_streamings(path):
-    """Recibe el path a un archivo de streamings
-    y devuelve la lista de streamings que contiene."""
+    """
+    Recibe el path a un archivo de streamings
+    y devuelve la lista de streamings que contiene.
+    """
     
     archivo = shelve.open(path)
     items = archivo.items()
@@ -252,8 +270,10 @@ def get_streamings(path):
     return items
 
 def set_listas_default():
-    """ Crea las listas para JAMedia si es que no existen y
-    llena las default en caso de estar vacías."""
+    """
+    Crea las listas para JAMedia si es que no existen y
+    llena las default en caso de estar vacías.
+    """
 
     listas = [
         os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"),
@@ -317,8 +337,10 @@ def set_listas_default():
             print "Error al descargar Streamings de Radios."
     
 def get_streaming_default():
-    """ Descarga los streaming desde la web de JAMedia
-    cuando el usuario lo solicita."""
+    """
+    Descarga los streaming desde la web de JAMedia
+    cuando el usuario lo solicita.
+    """
     
     try:
         # Streamings JAMediatv
@@ -355,9 +377,11 @@ def get_streaming_default():
         
     except:
         print "Error al descargar Streamings de Radios."
-        
+
 def add_stream(tipo, item):
-    """Agrega un streaming a la lista correspondiente de jamedia."""
+    """
+    Agrega un streaming a la lista correspondiente de jamedia.
+    """
     
     if "TV" in tipo or "Tv" in tipo:
         path = os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
@@ -369,11 +393,13 @@ def add_stream(tipo, item):
         return
     
     archivo = shelve.open(path)
-    archivo[item[0]] = item[1]
+    archivo[item[0].strip()] = item[1].strip()
     archivo.close()
 
 def eliminar_streaming(url, lista):
-    """Elimina un Streaming de una lista de jamedia."""
+    """
+    Elimina un Streaming de una lista de jamedia.
+    """
     
     if lista == "Radios":
         path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
@@ -400,8 +426,10 @@ def eliminar_streaming(url, lista):
     archivo.close()
 
 def stream_en_archivo(streaming, path):
-    """Verifica si un streaming está en
-    un archivo de lista de jamedia determinado."""
+    """
+    Verifica si un streaming está en
+    un archivo de lista de jamedia determinado.
+    """
     
     archivo = shelve.open(path)
     items = archivo.values()
@@ -418,10 +446,12 @@ def stream_en_archivo(streaming, path):
 
 # >>> JAMediaTube
 def set_shelve_lista(archivo, videos):
-    """Recibe un nombre de archivo para almacenar datos
+    """
+    Recibe un nombre de archivo para almacenar datos
     de videos de JAMediaTube.
     
-    datos es una lista de diccionarios que representan videos."""
+    datos es una lista de diccionarios que representan videos.
+    """
     
     archivo = "%s.tube" % archivo
     archivo = os.path.join(DIRECTORIO_DATOS, archivo)
@@ -434,8 +464,10 @@ def set_shelve_lista(archivo, videos):
     lista.close()
     
 def get_shelve_lista(archivo):
-    """Recibe un nombre de archivo shelve que contiene
-    videos de JAMediaTube y los devuelve."""
+    """
+    Recibe un nombre de archivo shelve que contiene
+    videos de JAMediaTube y los devuelve.
+    """
     
     lista = shelve.open(archivo)
     
@@ -687,8 +719,10 @@ AUDIOVISUALIZADORES = [
     ]
     
 def get_widget_config_efecto(nombre):
-    """Devulve el widget de configuración de un
-    determinado efecto de video o visualizador de audio."""
+    """
+    Devulve el widget de configuración de un
+    determinado efecto de video o visualizador de audio.
+    """
     
     if nombre == 'radioactv':
         import JAMediaGstreamer

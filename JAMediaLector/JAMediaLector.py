@@ -28,7 +28,6 @@
 
 import os
 import sys
-#import threading
 
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -57,13 +56,15 @@ css_provider = Gtk.CssProvider()
 style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
+
 context.add_provider_for_screen(
     screen,
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
     
 class JAMediaLector(Gtk.Plug):
-    """JAMediaLector:
+    """
+    JAMediaLector:
         Lector pdf y de archivos de texto.
             
         Implementado sobre:
@@ -101,9 +102,13 @@ class JAMediaLector(Gtk.Plug):
         GObject.TYPE_NONE, [])}
     
     def __init__(self):
-        """JAMediaLector: Gtk.Plug para embeber en otra aplicación."""
+        """
+        JAMediaLector: Gtk.Plug para embeber en otra aplicación.
+        """
         
         Gtk.Plug.__init__(self, 0L)
+        
+        self.toolbar_box = None
         
         self.toolbar = None
         self.toolbar_config = None
@@ -129,65 +134,94 @@ class JAMediaLector(Gtk.Plug):
         self.connect("embedded", self.embed_event)
         
     def setup_init(self):
-        """Se crea la interfaz grafica, se setea todo y
-        se empaqueta todo."""
+        """
+        Se crea la interfaz grafica, se setea todo y
+        se empaqueta todo.
+        """
         
+        ### Contenedor secundario para toda la interfaz.
         basebox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        
+        ### Contenedor para todas las toolbars.
+        self.toolbar_box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        
+        ### Panel para lector y barra de navegación de páginas.
         hpanel = Gtk.HPaned()
+        
         self.toolbar = Toolbar()
         self.toolbar_salir = ToolbarSalir()
         self.toolbar_config = ToolbarConfig()
+        
         self.toolbarlector = ToolbarLector()
         self.toolbartry = ToolbarTry()
+        
+        ### Empaquetado de las tres toolbars superiores de la aplicacion.
+        self.toolbar_box.pack_start(self.toolbar, False, False, 0)
+        self.toolbar_box.pack_start(self.toolbar_salir, False, False, 0)
+        self.toolbar_box.pack_start(self.toolbar_config, False, False, 0)
+        
         self.visor = DrawingLector()
+        
         self.previewcontainer = PreviewContainer()
         self.toolbarpaginas = ToolbarPaginas()
+        
         self.textview = TextView()
         
         # Izquierda
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        scroll.add_with_viewport (self.visor)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+            
+        scroll.add_with_viewport(self.visor)
+        
         vbox.pack_start(self.toolbarlector, False, False, 0)
         vbox.pack_start(scroll, True, True, 0)
         
         self.controlespdf = [self.toolbarlector, scroll]
         
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        scroll.add_with_viewport (self.textview)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+            
+        scroll.add_with_viewport(self.textview)
+        
         vbox.pack_start(scroll, True, True, 0)
         
         self.controlestexto = [scroll]
         
         hpanel.pack1(vbox, resize = True, shrink = True)
         
-        # Derecha
-        ev_box = Gtk.EventBox() # Para poder pintarlo
-        ev_box.modify_bg(0, Gdk.Color(65000, 65000, 65000))
-        vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        ### Derecha
+        self.derecha_vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        scroll.add_with_viewport (self.previewcontainer)
-        vbox.pack_start(self.toolbarpaginas, False, False, 0)
-        vbox.pack_start(scroll, True, True, 0)
-        ev_box.add(vbox)
         
-        self.controlespdf.append(ev_box)
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+            
+        scroll.add_with_viewport(self.previewcontainer)
         
-        hpanel.pack2(ev_box, resize = False, shrink = False)
+        self.derecha_vbox.pack_start(self.toolbarpaginas, False, False, 0)
+        self.derecha_vbox.pack_start(scroll, True, True, 0)
         
-        basebox.pack_start(self.toolbar, False, False, 0)
-        basebox.pack_start(self.toolbar_salir, False, False, 0)
-        basebox.pack_start(self.toolbar_config, False, False, 0)
+        self.controlespdf.append(self.derecha_vbox)
+        
+        hpanel.pack2(self.derecha_vbox, resize = False, shrink = False)
+        
+        basebox.pack_start(self.toolbar_box, False, False, 0)
         basebox.pack_start(hpanel, True, True, 0)
         basebox.pack_start(self.toolbartry, False, False, 0)
         
         self.controles_dinamicos = [
-            self.toolbar,
-            self.toolbarlector,
-            ev_box,
+            self.toolbar_box,
+            self.derecha_vbox,
             self.toolbartry]
         
         self.add(basebox)
@@ -207,7 +241,6 @@ class JAMediaLector(Gtk.Plug):
         
         self.previewcontainer.connect('nueva_seleccion', self.nueva_pagina)
         
-        self.visor.connect("ocultar_controles", self.ocultar_controles)
         self.visor.connect("button_press_event", self.clicks_en_pantalla)
         
         self.toolbar.connect('abrir', self.show_filechooser)
@@ -219,13 +252,17 @@ class JAMediaLector(Gtk.Plug):
         map(self.ocultar, self.controlespdf)
         
     def pack_standar(self):
-        """Para empaquetar el botón abrir."""
+        """
+        Para empaquetar el botón abrir.
+        """
         
         self.toolbar.abrir.show()
         
     def mostrar_config(self, widget):
-        """Muestra u oculta las opciones de
-        configuracion (toolbar_config)."""
+        """
+        Muestra u oculta las opciones de
+        configuracion (toolbar_config).
+        """
         
         map(self.ocultar, [self.toolbar_salir])
         
@@ -236,9 +273,11 @@ class JAMediaLector(Gtk.Plug):
             self.toolbar_config.show_all()
             
     def clicks_en_pantalla(self, widget, event):
-        """Hace fullscreen y unfullscreen sobre la
+        """
+        Hace fullscreen y unfullscreen sobre la
         ventana principal cuando el usuario hace
-        doble click en el visor."""
+        doble click en el visor.
+        """
         
         if event.type.value_name == "GDK_2BUTTON_PRESS":
             ventana = self.get_toplevel()
@@ -252,23 +291,40 @@ class JAMediaLector(Gtk.Plug):
             else:
                 ventana.fullscreen()
                 
-    def ocultar_controles(self, widget, valor):
-        """Oculta o muestra los controles."""
+    def do_motion_notify_event(self, event):
+        """
+        Cuando se mueve el mouse sobre la ventana.
+        """
         
-        if valor and self.toolbar_config.ocultar_controles:
-            map(self.ocultar, self.controles_dinamicos)
-            map(self.ocultar, [self.toolbar_config, self.toolbar_salir])
+        if self.toolbar_config.ocultar_controles:
+            x, y = (int(event.x), int(event.y))
+            rect = self.get_allocation()
+            xx, yy, ww, hh = (rect.x, rect.y, rect.width, rect.height)
             
-        elif not valor:
+            arriba = range(0, self.toolbar_box.get_allocation().height)
+            derecha = range(ww - self.derecha_vbox.get_allocation().width, ww)
+            
+            if y in arriba or x in derecha:
+                map(self.mostrar, self.controles_dinamicos)
+                
+            else:
+                map(self.ocultar, self.controles_dinamicos)
+                #map(self.ocultar, [self.toolbar_config, self.toolbar_salir])
+                
+        else:
             map(self.mostrar, self.controles_dinamicos)
             
     def ocultar(self, objeto):
-        """Esta funcion es llamada desde self.ocultar_controles()"""
+        """
+        Esta funcion es llamada desde self.ocultar_controles()
+        """
         
         if objeto.get_visible(): objeto.hide()
         
     def mostrar(self, objeto):
-        """Esta funcion es llamada desde self.ocultar_controles()"""
+        """
+        Esta funcion es llamada desde self.ocultar_controles()
+        """
         
         if not objeto.get_visible(): objeto.show()
         
@@ -278,8 +334,10 @@ class JAMediaLector(Gtk.Plug):
         selector.connect('archivos-seleccionados', self.cargar_archivo)
 
     def cargar_archivo(self, widget, archivo):
-        """Recibe un archivo desde el filechooser
-        para abrir en el lector."""
+        """
+        Recibe un archivo desde el filechooser
+        para abrir en el lector.
+        """
         
         self.abrir( archivo)
     
@@ -294,7 +352,9 @@ class JAMediaLector(Gtk.Plug):
         map(self.ocultar, self.controlespdf)
         
     def abrir(self, archivo):
-        """Abre un Archivo."""
+        """
+        Abre un Archivo.
+        """
         
         descripcion = JAMF.describe_uri(archivo)
         if descripcion:
@@ -342,12 +402,16 @@ class JAMediaLector(Gtk.Plug):
     #    self.previewcontainer.llenar(self.documento)
 
     def nueva_pagina(self, widget, indice):
-        """Cuando se selecciona una nueva pagina"""
+        """
+        Cuando se selecciona una nueva pagina
+        """
         
         self.load_pagina(indice)
         
     def load_pagina(self, indice):
-        """Carga una página del Archivo pdf abierto actualmente."""
+        """
+        Carga una página del Archivo pdf abierto actualmente.
+        """
         
         if indice != None:
             self.indexpaginaactiva = indice
@@ -362,7 +426,9 @@ class JAMediaLector(Gtk.Plug):
             self.toolbarpaginas.set_pagina(None, None)
     
     def activar(self, widget, senial):
-        """Cuando se pasa de pagina."""
+        """
+        Cuando se pasa de pagina.
+        """
         
         if senial == 'atras':
             if self.indexpaginaactiva > 0:
@@ -379,20 +445,26 @@ class JAMediaLector(Gtk.Plug):
                 self.previewcontainer.seleccionar(0)
     
     def embed_event(self, widget):
-        """No hace nada por ahora."""
+        """
+        No hace nada por ahora.
+        """
         
         print "JAMediaLector => OK"
     
     def confirmar_salir(self, widget = None, senial = None):
-        """Recibe salir y lo pasa a la toolbar de confirmación."""
+        """
+        Recibe salir y lo pasa a la toolbar de confirmación.
+        """
         
         map(self.ocultar, [self.toolbar_config])
         self.toolbar_salir.run("JAMediaLector")
         
     def emit_salir(self, widget = None, senial = None):
-        """Emite salir para que cuando esta embebida, la
+        """
+        Emite salir para que cuando esta embebida, la
         aplicacion decida que hacer, si salir, o cerrar solo
-        JAMediaLector."""
+        JAMediaLector.
+        """
         
         self.emit('salir')
         
