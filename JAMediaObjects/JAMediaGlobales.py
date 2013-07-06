@@ -145,16 +145,15 @@ def get_separador(draw = False, ancho = 0, expand = False):
     
     return separador
 
-def get_boton(archivo, flip = False,
-    color = Gdk.Color(65000, 65000, 65000), rotacion = None, pixels = 0):
+def get_boton(archivo, flip = False, rotacion = None, pixels = 0, tooltip_text = None):
     """
     Devuelve un toolbutton generico.
     """
     
-    if not pixels:
-        pixels = get_pixels(1)
-        
+    if not pixels: pixels = get_pixels(1)
+    
     boton = Gtk.ToolButton()
+    
     imagen = Gtk.Image()
     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixels, pixels)
     
@@ -166,6 +165,8 @@ def get_boton(archivo, flip = False,
     
     imagen.show()
     boton.show()
+    
+    if tooltip_text: boton.set_tooltip_text(tooltip_text)
     
     return boton
 

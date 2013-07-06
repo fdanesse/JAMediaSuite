@@ -31,28 +31,11 @@ from gi.repository import Pango
 
 BASEPATH = os.path.dirname(__file__)
 
-def get_boton(stock, tooltip):
-    """
-    Devuelve un botón generico.
-    """
+from JAMediaGlobales import get_separador
+from JAMediaGlobales import get_boton
+from JAMediaGlobales import get_pixels
 
-    boton = Gtk.ToolButton.new_from_stock(stock)
-    boton.set_tooltip_text(tooltip)
-    boton.TOOLTIP = tooltip
-    
-    return boton
-
-def get_separador(draw = False, ancho = 0, expand = False):
-    """
-    Devuelve un separador generico.
-    """
-    
-    separador = Gtk.SeparatorToolItem()
-    separador.props.draw = draw
-    separador.set_size_request(ancho, -1)
-    separador.set_expand(expand)
-    
-    return separador
+Width_Button = 0.5
 
 class JAMediaTerminal(Gtk.Box):
     """
@@ -172,12 +155,12 @@ class NoteBookTerminal(Gtk.Notebook):
         ### Label.
         hbox = Gtk.HBox()
         
-        imagen = Gtk.Image.new_from_stock(Gtk.STOCK_CLOSE, Gtk.IconSize.MENU)
-        
-        boton = Gtk.Button()
-        boton.set_relief(Gtk.ReliefStyle.NONE)
-        boton.set_size_request(12, 12)
-        boton.set_image(imagen)
+        archivo = os.path.join(
+            BASEPATH,
+            "Iconos", "button-cancel.svg")
+            
+        boton = get_boton(archivo,
+            pixels = get_pixels(Width_Button), tooltip_text = "Cerrar")
         
         text = "bash"
         
@@ -203,8 +186,6 @@ class NoteBookTerminal(Gtk.Notebook):
         self.append_page(terminal, hbox)
 
         label.show()
-        boton.show()
-        imagen.show()
         
         self.show_all()
         
@@ -387,11 +368,11 @@ class Terminal(Vte.Terminal):
             pty_flags = Vte.PtyFlags(0)
             
             self.fork_command_full(
-                    pty_flags,
-                    path,
-                    (interprete,archivo),
-                    "", 0, None, None)
-                    
+                pty_flags,
+                path,
+                (interprete,archivo),
+                "", 0, None, None)
+                
         else:
             interprete = self.interprete
             path = self.path
@@ -399,10 +380,10 @@ class Terminal(Vte.Terminal):
             pty_flags = Vte.PtyFlags(0)
             
             self.fork_command_full(
-                    pty_flags,
-                    path,
-                    (interprete,),
-                    "", 0, None, None)
+                pty_flags,
+                path,
+                (interprete,),
+                "", 0, None, None)
         
         self.child_focus(True)
 
@@ -444,11 +425,23 @@ class ToolbarTerminal(Gtk.Toolbar):
                 python_path = os.path.join(path, 'ipython')
         
         ### Construcción.
-        boton = get_boton(Gtk.STOCK_COPY, "Copiar")
+        archivo = os.path.join(
+            BASEPATH,
+            "Iconos", "edit-copy.svg")
+            
+        boton = get_boton(archivo,
+            pixels = get_pixels(Width_Button), tooltip_text = "Copiar")
+        
         boton.connect("clicked", self.__emit_accion, "copiar")
         self.insert(boton, -1)
         
-        boton = get_boton(Gtk.STOCK_PASTE, "Pegar")
+        archivo = os.path.join(
+            BASEPATH,
+            "Iconos", "editpaste.svg")
+            
+        boton = get_boton(archivo,
+            pixels = get_pixels(Width_Button), tooltip_text = "Pegar")
+        
         boton.connect("clicked", self.__emit_accion, "pegar")
         self.insert(boton, -1)
         
@@ -458,17 +451,11 @@ class ToolbarTerminal(Gtk.Toolbar):
         ### Botón Agregar.
         archivo = os.path.join(
             BASEPATH,
-            "Iconos", "acercar.png")
+            "Iconos", "tab-new.svg")
             
-        boton = Gtk.ToolButton()
-        imagen = Gtk.Image()
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, 24, 24)
-        imagen.set_from_pixbuf(pixbuf)
-        boton.set_icon_widget(imagen)
-        imagen.show()
-        boton.show()
-
-        boton.set_tooltip_text("Agregar")
+        boton = get_boton(archivo,
+            pixels = get_pixels(Width_Button), tooltip_text = "Nueva Terminal")
+        
         boton.connect("clicked", self.__emit_accion, "agregar")
         self.insert(boton, -1)
         
@@ -480,15 +467,9 @@ class ToolbarTerminal(Gtk.Toolbar):
             BASEPATH,
             "Iconos", "bash.png")
             
-        boton = Gtk.ToolButton()
-        imagen = Gtk.Image()
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, 24, 24)
-        imagen.set_from_pixbuf(pixbuf)
-        boton.set_icon_widget(imagen)
-        imagen.show()
-        boton.show()
-
-        boton.set_tooltip_text("Bash")
+        boton = get_boton(archivo,
+            pixels = get_pixels(Width_Button), tooltip_text = "bash")
+        
         boton.connect("clicked", self.__emit_reset, bash_path)
         self.insert(boton, -1)
         
@@ -497,15 +478,9 @@ class ToolbarTerminal(Gtk.Toolbar):
             BASEPATH,
             "Iconos", "python.png")
             
-        boton = Gtk.ToolButton()
-        imagen = Gtk.Image()
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, 24, 24)
-        imagen.set_from_pixbuf(pixbuf)
-        boton.set_icon_widget(imagen)
-        imagen.show()
-        boton.show()
-
-        boton.set_tooltip_text("python")
+        boton = get_boton(archivo,
+            pixels = get_pixels(Width_Button), tooltip_text = "python")
+        
         boton.connect("clicked", self.__emit_reset, python_path)
         self.insert(boton, -1)
         
