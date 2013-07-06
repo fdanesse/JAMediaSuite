@@ -20,9 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import time
-import commands
-import urllib
 
 import gi
 from gi.repository import Gtk
@@ -43,7 +40,9 @@ import JAMediaObjects.JAMediaGlobales as G
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 class Tube_Player(JAMediaPlayer):
-    """JAMedia con pequeñas adaptaciones."""
+    """
+    JAMedia con pequeñas adaptaciones.
+    """
     
     def __init__(self):
         
@@ -52,7 +51,9 @@ class Tube_Player(JAMediaPlayer):
         self.show_all()
         
     def confirmar_salir(self, widget = None, senial = None):
-        """Recibe salir y lo pasa a la toolbar de confirmación."""
+        """
+        Recibe salir y lo pasa a la toolbar de confirmación.
+        """
         
         map(self.ocultar, [
             self.toolbar_config,
@@ -66,7 +67,9 @@ class Tube_Player(JAMediaPlayer):
         self.emit('salir')
         
 class Toolbar(Gtk.Toolbar):
-    """Toolbar principal de JAMediaTube."""
+    """
+    Toolbar principal de JAMediaTube.
+    """
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
@@ -159,17 +162,23 @@ class Toolbar(Gtk.Toolbar):
         self.show_all()
         
     def emit_switch(self, widget):
-        """Cambia de JAMediaTube a JAMedia."""
+        """
+        Cambia de JAMediaTube a JAMedia.
+        """
         
         self.emit('switch')
         
     def salir(self, widget):
-        """Cuando se hace click en el boton salir."""
+        """
+        Cuando se hace click en el boton salir.
+        """
         
         self.emit('salir')
         
 class Toolbar_Videos_Izquierda(Gtk.Toolbar):
-    """toolbar inferior izquierda para videos encontrados."""
+    """
+    toolbar inferior izquierda para videos encontrados.
+    """
     
     __gsignals__ = {
     "borrar":(GObject.SIGNAL_RUN_FIRST,
@@ -203,18 +212,24 @@ class Toolbar_Videos_Izquierda(Gtk.Toolbar):
         self.show_all()
         
     def emit_adescargas(self, widget):
-        """Para pasar los videos encontrados a la
-        lista de descargas."""
+        """
+        Para pasar los videos encontrados a la
+        lista de descargas.
+        """
         
         self.emit('mover_videos')
         
     def emit_borrar(self, widget):
-        """Para borrar todos los videos de la lista."""
+        """
+        Para borrar todos los videos de la lista.
+        """
         
         self.emit('borrar')
         
 class Toolbar_Videos_Derecha(Gtk.Toolbar):
-    """toolbar inferior derecha para videos en descarga."""
+    """
+    toolbar inferior derecha para videos en descarga.
+    """
     
     __gsignals__ = {
     "borrar":(GObject.SIGNAL_RUN_FIRST,
@@ -259,24 +274,32 @@ class Toolbar_Videos_Derecha(Gtk.Toolbar):
         self.show_all()
         
     def emit_comenzar_descarga(self, widget):
-        """Emite la señal para comenzar a descargar
-        los videos en la lista de descargas."""
+        """
+        Emite la señal para comenzar a descargar
+        los videos en la lista de descargas.
+        """
         
         self.emit('comenzar_descarga')
     
     def emit_aencontrados(self, widget):
-        """Para pasar los videos en descarga a la
-        lista de encontrados."""
+        """
+        Para pasar los videos en descarga a la
+        lista de encontrados.
+        """
         
         self.emit('mover_videos')
         
     def emit_borrar(self, widget):
-        """Para borrar todos los videos de la lista."""
+        """
+        Para borrar todos los videos de la lista.
+        """
         
         self.emit('borrar')
         
 class Mini_Toolbar(Gtk.Toolbar):
-    """Mini toolbars izquierda y derecha."""
+    """
+    Mini toolbars izquierda y derecha.
+    """
     
     __gsignals__ = {
     "guardar":(GObject.SIGNAL_RUN_FIRST,
@@ -321,20 +344,26 @@ class Mini_Toolbar(Gtk.Toolbar):
         self.show_all()
         
     def emit_guardar(self, widget):
-        """Emite guardar, para que se guarden todos
-        los videos en un archivo shelve."""
+        """
+        Emite guardar, para que se guarden todos
+        los videos en un archivo shelve.
+        """
         
         self.emit('guardar')
         
     def emit_abrir(self, archivo):
-        """Emite abrir, para que se carguen todos
-        los videos desde un archivo shelve."""
+        """
+        Emite abrir, para que se carguen todos
+        los videos desde un archivo shelve.
+        """
         
         self.emit('abrir', archivo)
         
     def get_menu(self, widget):
-        """El menu con las listas de videos
-        almacenadas en archivos shelve."""
+        """
+        El menu con las listas de videos
+        almacenadas en archivos shelve.
+        """
         
         menu = Gtk.Menu()
         
@@ -358,7 +387,9 @@ class Mini_Toolbar(Gtk.Toolbar):
         pass
         
     def set_info(self, valor):
-        """Recibe un entero y actualiza la información."""
+        """
+        Recibe un entero y actualiza la información.
+        """
         
         if valor != self.numero:
             self.numero = valor
@@ -366,7 +397,9 @@ class Mini_Toolbar(Gtk.Toolbar):
             self.label.set_text(text)
         
 class Toolbar_Busqueda(Gtk.Toolbar):
-    """Toolbar con widgets de busqueda."""
+    """
+    Toolbar con widgets de busqueda.
+    """
     
     __gsignals__ = {
     "comenzar_busqueda":(GObject.SIGNAL_RUN_FIRST,
@@ -424,12 +457,16 @@ class Toolbar_Busqueda(Gtk.Toolbar):
         self.entrytext.set_text("")
         
     def activate_entrytext(self, widget):
-        """Cuando se da enter en el entrytext."""
+        """
+        Cuando se da enter en el entrytext.
+        """
         
         self.emit_buscar()
         
 class Alerta_Busqueda(Gtk.Toolbar):
-    """Para informa que se está buscando con JAMediaTube."""
+    """
+    Para informa que se está buscando con JAMediaTube.
+    """
     
     def __init__(self):
         
@@ -502,11 +539,14 @@ class WidgetVideoItem(JAMediaButton):
         if "previews" in keys:
             imagen = Gtk.Image()
             url = self.videodict["previews"][0][0]
+            import time
             archivo = "/tmp/preview%d" % time.time()
+            import urllib
             fileimage, headers = urllib.urlretrieve(url, archivo)
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(fileimage, 200, 200)
             imagen.set_from_pixbuf(pixbuf)
             hbox.pack_start(imagen, False, False, 3)
+            import commands
             commands.getoutput('rm %s' % (archivo))
             
         vbox.pack_start(Gtk.Label("%s: %s" % ("id",
@@ -542,8 +582,10 @@ class WidgetVideoItem(JAMediaButton):
         self.add(hbox)
         
 class ToolbarAccionListasVideos(Gtk.Toolbar):
-    """Toolbar para que el usuario confirme "borrar"
-    lista de video de JAMediaTube."""
+    """
+    Toolbar para que el usuario confirme "borrar"
+    lista de video de JAMediaTube.
+    """
     
     __gsignals__ = {
     "ok":(GObject.SIGNAL_RUN_FIRST,
@@ -596,7 +638,9 @@ class ToolbarAccionListasVideos(Gtk.Toolbar):
         self.show_all()
     
     def realizar_accion(self, widget):
-        """Confirma borrar."""
+        """
+        Confirma borrar.
+        """
         
         self.emit('ok', self.objetos)
         self.objetos = None
@@ -604,14 +648,18 @@ class ToolbarAccionListasVideos(Gtk.Toolbar):
         self.hide()
         
     def set_accion(self, objetos):
-        """Configura borrar."""
+        """
+        Configura borrar.
+        """
         
         self.objetos = objetos
         self.label.set_text("¿Eliminar?")
         self.show_all()
         
     def cancelar(self, widget = None):
-        """Cancela borrar."""
+        """
+        Cancela borrar.
+        """
         
         self.objetos = None
         self.label.set_text("")
@@ -699,7 +747,9 @@ class Toolbar_Descarga(Gtk.Box):
         self.pack_start(self.barra_progreso, False, False, 0)
         
     def download(self, video_item):
-        """Comienza a descargar un video-item."""
+        """
+        Comienza a descargar un video-item.
+        """
         
         self.estado = True
         self.progress = 0.0
@@ -726,7 +776,9 @@ class Toolbar_Descarga(Gtk.Box):
         self.show_all()
         
     def handle(self):
-        """Verifica que se esté descargando el archivo."""
+        """
+        Verifica que se esté descargando el archivo.
+        """
         
         if self.ultimosdatos != self.datostemporales:
             self.ultimosdatos = self.datostemporales
@@ -744,7 +796,9 @@ class Toolbar_Descarga(Gtk.Box):
         return True
     
     def progress_download(self, widget, progress):
-        """Muestra el progreso de la descarga."""
+        """
+        Muestra el progreso de la descarga.
+        """
         
         self.datostemporales = progress
         datos = progress.split(" ")
@@ -789,7 +843,9 @@ class Toolbar_Descarga(Gtk.Box):
         return True
     
     def cancel_download(self, button = None, event = None):
-        """Cancela la descarga actual."""
+        """
+        Cancela la descarga actual.
+        """
         
         # No funciona correctamente, la descarga continúa.
         if self.actualizador:
@@ -812,7 +868,9 @@ class Toolbar_Descarga(Gtk.Box):
         return False
     
 class Progreso_Descarga(Gtk.EventBox):
-    """Barra de progreso para mostrar estado de descarga."""
+    """
+    Barra de progreso para mostrar estado de descarga.
+    """
     
     def __init__(self):
         
@@ -830,7 +888,9 @@ class Progreso_Descarga(Gtk.EventBox):
         self.set_progress(0)
         
     def set_progress(self, valor = 0):
-        """El reproductor modifica la escala."""
+        """
+        El reproductor modifica la escala.
+        """
         
         if self.valor != valor:
             self.valor = valor
@@ -838,7 +898,9 @@ class Progreso_Descarga(Gtk.EventBox):
             self.escala.queue_draw()
             
 class ProgressBar(Gtk.Scale):
-    """Escala de Progreso_Descarga."""
+    """
+    Escala de Progreso_Descarga.
+    """
     
     def __init__(self, ajuste):
         
@@ -853,7 +915,9 @@ class ProgressBar(Gtk.Scale):
         self.show_all()
         
     def do_draw(self, contexto):
-        """Dibuja el estado de la barra de progreso."""
+        """
+        Dibuja el estado de la barra de progreso.
+        """
         
         rect = self.get_allocation()
         w, h = (rect.width, rect.height)
@@ -885,7 +949,9 @@ class ProgressBar(Gtk.Scale):
         return True
 
 class Toolbar_Guardar(Gtk.Toolbar):
-    """Toolbar con widgets para guardar una lista de videos."""
+    """
+    Toolbar con widgets para guardar una lista de videos.
+    """
     
     __gsignals__ = {
     "ok":(GObject.SIGNAL_RUN_FIRST,
@@ -939,7 +1005,9 @@ class Toolbar_Guardar(Gtk.Toolbar):
         self.cancel()
         
     def activate_entrytext(self, widget):
-        """Cuando se da enter en el entrytext."""
+        """
+        Cuando se da enter en el entrytext.
+        """
         
         self.emit_ok()
     

@@ -24,7 +24,6 @@ import os
 import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
@@ -44,7 +43,9 @@ TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
 
 class PanelTube(Gtk.Paned):
-    """Panel de JAMediaTube."""
+    """
+    Panel de JAMediaTube.
+    """
     
     __gsignals__ = {
     'download':(GObject.SIGNAL_RUN_FIRST,
@@ -72,7 +73,9 @@ class PanelTube(Gtk.Paned):
         self.setup_init()
         
     def setup_init(self):
-        """Crea y Empaqueta todo."""
+        """
+        Crea y Empaqueta todo.
+        """
         
         self.toolbar_encontrados = Mini_Toolbar("Videos Encontrados")
         self.toolbar_guardar_encontrados = Toolbar_Guardar()
@@ -128,8 +131,10 @@ class PanelTube(Gtk.Paned):
         GObject.timeout_add(300, self.update)
         
     def abrir_lista_shelve(self, widget, archivo):
-        """Agrega a la lista, todos los videos almacenados en
-        un archivo shelve."""
+        """
+        Agrega a la lista, todos los videos almacenados en
+        un archivo shelve.
+        """
         
         archivo = os.path.join(G.DIRECTORIO_DATOS, archivo)
         videos = G.get_shelve_lista(archivo)
@@ -137,8 +142,10 @@ class PanelTube(Gtk.Paned):
         self.emit('open_shelve_list', videos, widget)
         
     def show_toolbar_guardar(self, widget):
-        """Muestra la toolbar para escribir nombre de archivo
-        donde se guardarán los videos de la lista correspondiente."""
+        """
+        Muestra la toolbar para escribir nombre de archivo
+        donde se guardarán los videos de la lista correspondiente.
+        """
         
         if widget == self.toolbar_encontrados:
             self.toolbar_guardar_encontrados.show()
@@ -147,7 +154,9 @@ class PanelTube(Gtk.Paned):
             self.toolbar_guardar_descargar.show()
     
     def guardar_lista_shelve(self, widget, texto):
-        """Guarda todos los videos de la lista en un archivo shelve."""
+        """
+        Guarda todos los videos de la lista en un archivo shelve.
+        """
         
         origen = False
         
@@ -168,14 +177,18 @@ class PanelTube(Gtk.Paned):
         if videos: G.set_shelve_lista(texto, videos)
         
     def comenzar_descarga(self, widget):
-        """Envia la señal descargar para comenzar la
+        """
+        Envia la señal descargar para comenzar la
         descarga de un video en la lista, cuando el
-        usuario hace click en el boton descargar."""
+        usuario hace click en el boton descargar.
+        """
         
         self.emit('download')
         
     def mover_videos(self, widget):
-        """Pasa todos los videos de una lista a otra."""
+        """
+        Pasa todos los videos de una lista a otra.
+        """
         
         self.toolbar_accion_izquierda.cancelar()
         self.toolbar_accion_derecha.cancelar()
@@ -200,7 +213,9 @@ class PanelTube(Gtk.Paned):
             elementos)
     
     def ejecutar_mover_videos(self, origen, destino, text, elementos):
-        """Ejecuta secuencia que pasa videos desde una lista a otra."""
+        """
+        Ejecuta secuencia que pasa videos desde una lista a otra.
+        """
         
         if not elementos: return False
     
@@ -220,19 +235,24 @@ class PanelTube(Gtk.Paned):
                 elementos)
             
     def set_vista_inicial(self):
-        """Las toolbar accion deben estar ocultas inicialmente."""
+        """
+        Las toolbar accion deben estar ocultas inicialmente.
+        """
         
         self.toolbar_accion_izquierda.cancelar()
         self.toolbar_accion_derecha.cancelar()
         
     def ejecutar_borrar(self, widget, objetos):
-        """Elimina una lista de videos."""
+        """
+        Elimina una lista de videos.
+        """
         
         for objeto in objetos:
             objeto.destroy()
         
     def set_borrar(self, widget, objetos = None):
-        """Llama a toolbar accion para pedir confirmacion
+        """
+        Llama a toolbar accion para pedir confirmacion
         sobre borrar un video o una lista de videos de la lista.
         
         Esta funcion se puede utilizar para borrar un solo video
@@ -240,7 +260,8 @@ class PanelTube(Gtk.Paned):
         a causa de la señal de la toolbar correspondiente, pero
         en este caso debe pasarse como parámetro widget,
         la toolbar que corresponde a la lista en que se
-        encuentra el o los videos a borrar."""
+        encuentra el o los videos a borrar.
+        """
         
         if widget == self.toolbar_videos_izquierda:
             if not objetos or objetos == None:
@@ -260,8 +281,10 @@ class PanelTube(Gtk.Paned):
             print "Caso imprevisto en run_accion de PanelTube."
         
     def update(self):
-        """Actualiza información en toolbars de
-        videos encontrados y en descaga."""
+        """
+        Actualiza información en toolbars de
+        videos encontrados y en descaga.
+        """
         
         encontrados = len(self.encontrados.get_children())
         endescargas = len(self.descargar.get_children())
