@@ -46,7 +46,9 @@ class JAMediaTerminal(Gtk.Box):
     "ejecucion":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
     "reset":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_PYOBJECT, GObject.TYPE_INT,
+        GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
         
     def __init__(self):
         
@@ -67,12 +69,17 @@ class JAMediaTerminal(Gtk.Box):
         self.notebook.agregar_terminal()
         self.notebook.connect("reset", self.__re_emit_reset)
         
-    def __re_emit_reset(self, widget):
+    def __re_emit_reset(self, notebook, terminal, pag_indice, boton, label):
         """
-        Cuando se resetea una terminal.
+        Cuando se resetea una terminal, se emite la señal reset con:
+            Notebook contenedor de terminales.
+            Terminal reseteada.
+            Indice de la página que le corresponde en el notebook.
+            Botón cerrar de la lengueta específica.
+            Etiqueta de la lengüeta específica.
         """
         
-        self.emit("reset")
+        self.emit("reset", notebook, terminal, pag_indice, boton, label)
         
     def __reset_terminal(self, widget, interprete):
         """
@@ -134,7 +141,9 @@ class NoteBookTerminal(Gtk.Notebook):
     
     __gsignals__ = {
     "reset":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_INT, GObject.TYPE_PYOBJECT,
+        GObject.TYPE_PYOBJECT))}
         
     def __init__(self):
         
@@ -196,12 +205,21 @@ class NoteBookTerminal(Gtk.Notebook):
         
         return terminal
     
-    def __re_emit_reset(self, widget):
+    def __re_emit_reset(self, terminal):
         """
         Cuando se resetea una terminal.
         """
         
-        self.emit("reset")
+        paginas = self.get_n_pages()
+        
+        for pag_indice in range(paginas):
+            if terminal == self.get_nth_page(pag_indice):
+                boton = self.get_tab_label(self.get_children()[pag_indice]).get_children()[1]
+                label = self.get_tab_label(self.get_children()[pag_indice]).get_children()[0]
+                self.remove_page(pag_indice)
+                break
+            
+        self.emit("reset", terminal, pag_indice, boton, label)
         
     def __switch_page(self, widget, widget_child, indice):
         """
@@ -273,8 +291,7 @@ class NoteBookTerminal(Gtk.Notebook):
         Cerrar la terminal a través de su botón cerrar.
         """
         
-        notebook = widget.get_parent().get_parent()
-        paginas = notebook.get_n_pages()
+        paginas = self.get_n_pages()
         
         for indice in range(paginas):
             boton = self.get_tab_label(self.get_children()[indice]).get_children()[1]
@@ -361,7 +378,8 @@ class Terminal(Vte.Terminal):
                         interprete = os.path.join("/usr/local", interprete)
                         
             except:
-                return self.set_interprete() ### Cuando se ejecuta un archivo no ejecutable
+                ### Cuando se intenta ejecutar un archivo no ejecutable.
+                return self.set_interprete()
                 
             path = os.path.dirname(archivo)
             
@@ -497,8 +515,10 @@ class ToolbarTerminal(Gtk.Toolbar):
 if __name__=="__main__":
     import sys
     ventana = Gtk.Window()
-    ventana.add(JAMediaTerminal())
+    t = JAMediaTerminal()
+    ventana.add(t)
     ventana.show_all()
     ventana.connect("destroy", sys.exit)
+    t.ejecutar("/home/flavio/Documentos/JAMediaSuite/JAMedia.py")
     Gtk.main()
     
