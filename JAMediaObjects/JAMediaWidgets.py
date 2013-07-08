@@ -20,9 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import sys
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
@@ -30,6 +28,10 @@ from gi.repository import GObject
 from gi.repository import Vte
 
 import JAMFileSystem as JAMF
+
+from JAMediaGlobales import get_pixels
+from JAMediaGlobales import get_separador
+from JAMediaGlobales import get_boton
 
 import JAMediaGlobales as G
 
@@ -45,7 +47,7 @@ class JAMediaToolButton(Gtk.ToolButton):
         
         Gtk.ToolButton.__init__(self)
         
-        if not pixels: pixels = G.get_pixels(1)
+        if not pixels: pixels = get_pixels(1)
         
         self.imagen = Imagen_Button()
         self.set_icon_widget(self.imagen)
@@ -455,7 +457,7 @@ class Lista(Gtk.TreeView):
             
         try:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-                G.get_pixels(0.8), -1)
+                get_pixels(0.8), -1)
             self.modelo.append([ pixbuf, texto, path])
             
         except:
@@ -508,7 +510,7 @@ class ToolbarReproduccion(Gtk.Box):
         
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
         
-        self.botonatras = JAMediaToolButton(pixels = G.get_pixels(0.8))
+        self.botonatras = JAMediaToolButton(pixels = get_pixels(0.8))
         archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "siguiente.png")
         self.botonatras.set_imagen(
             archivo = archivo,
@@ -518,7 +520,7 @@ class ToolbarReproduccion(Gtk.Box):
         self.botonatras.connect("clicked", self.clickenatras)
         self.pack_start(self.botonatras, False, True, 0)
         
-        self.botonplay = JAMediaToolButton(pixels = G.get_pixels(0.8))
+        self.botonplay = JAMediaToolButton(pixels = get_pixels(0.8))
         archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "play.png")
         self.botonplay.set_imagen(
             archivo = archivo,
@@ -528,7 +530,7 @@ class ToolbarReproduccion(Gtk.Box):
         self.botonplay.connect("clicked", self.clickenplay_pausa)
         self.pack_start(self.botonplay, False, True, 0)
         
-        self.botonsiguiente = JAMediaToolButton(pixels = G.get_pixels(0.8))
+        self.botonsiguiente = JAMediaToolButton(pixels = get_pixels(0.8))
         archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "siguiente.png")
         self.botonsiguiente.set_imagen(
             archivo = archivo,
@@ -538,7 +540,7 @@ class ToolbarReproduccion(Gtk.Box):
         self.botonsiguiente.connect("clicked", self.clickensiguiente)
         self.pack_start(self.botonsiguiente, False, True, 0)
         
-        self.botonstop = JAMediaToolButton(pixels = G.get_pixels(0.8))
+        self.botonstop = JAMediaToolButton(pixels = get_pixels(0.8))
         archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", "stop.png")
         self.botonstop.set_imagen(
             archivo = archivo,
@@ -608,7 +610,7 @@ class BarraProgreso(Gtk.EventBox):
         self.show_all()
         
         self.escala.connect('user-set-value', self.emit_valor)
-        self.set_size_request(-1, G.get_pixels(1.2))
+        self.set_size_request(-1, get_pixels(1.2))
         
     def set_progress(self, valor = 0):
         """
@@ -648,12 +650,12 @@ class ProgressBar(Gtk.Scale):
         self.set_draw_value(False)
         
         self.presed = False
-        self.borde = G.get_pixels(0.5)
+        self.borde = get_pixels(0.5)
         
         icono = os.path.join(JAMediaWidgetsBASE,
             "Iconos", "iconplay.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            G.get_pixels(0.8), G.get_pixels(0.8))
+            get_pixels(0.8), get_pixels(0.8))
         self.pixbuf = pixbuf.rotate_simple(GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE)
         
         self.show_all()
@@ -774,13 +776,13 @@ class ToolbarAccion(Gtk.Toolbar):
         self.accion = None
         self.iter = None
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         archivo = os.path.join(JAMediaWidgetsBASE,
             "Iconos", "alejar.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(0.8))
+        boton = get_boton(archivo, flip = False,
+            pixels = get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
@@ -794,13 +796,13 @@ class ToolbarAccion(Gtk.Toolbar):
         
         archivo = os.path.join(JAMediaWidgetsBASE,
             "Iconos", "acercar.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(0.8))
+        boton = get_boton(archivo, flip = False,
+            pixels = get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.realizar_accion)
         self.insert(boton, -1)
 
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         self.show_all()
@@ -1050,12 +1052,12 @@ class BalanceBar(Gtk.Scale):
         self.set_digits(0)
         self.set_draw_value(False)
         
-        self.borde = G.get_pixels(0.2)
+        self.borde = get_pixels(0.2)
         
         icono = os.path.join(JAMediaWidgetsBASE,
             "Iconos", "iconplay.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            G.get_pixels(0.6), G.get_pixels(0.6))
+            get_pixels(0.6), get_pixels(0.6))
         self.pixbuf = pixbuf.rotate_simple(GdkPixbuf.PixbufRotation.CLOCKWISE)
         
         self.show_all()
@@ -1156,18 +1158,18 @@ class ToolbarSalir(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         archivo = os.path.join(JAMediaWidgetsBASE,
             "Iconos", "alejar.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(0.8))
+        boton = get_boton(archivo, flip = False,
+            pixels = get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
@@ -1176,18 +1178,18 @@ class ToolbarSalir(Gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaWidgetsBASE,
             "Iconos", "acercar.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(0.8))
+        boton = get_boton(archivo, flip = False,
+            pixels = get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.emit_salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         self.show_all()
@@ -1467,7 +1469,7 @@ class Efecto_widget_Config(Gtk.Box):
         self.botonefecto.connect('clicked', self.efecto_click)
         self.botonefecto.connect('click_derecho', self.efecto_click_derecho)
         self.botonefecto.set_tooltip(nombre)
-        lado = G.get_pixels(1.0)
+        lado = get_pixels(1.0)
         self.botonefecto.set_tamanio(lado, lado)
         
         archivo = os.path.join(JAMediaWidgetsBASE, "Iconos", '%s.png' %(nombre))
@@ -1710,34 +1712,34 @@ class ToolbarTerminal(Gtk.Toolbar):
             JAMediaWidgetsBASE,
             "Iconos", "play.png")
             
-        boton = G.get_boton(
+        boton = get_boton(
             archivo, flip = False,
-            pixels = G.get_pixels(0.8),
+            pixels = get_pixels(0.8),
             rotacion = GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE)
 
         boton.set_tooltip_text("Copiar")
         boton.connect("clicked", self.__emit_copiar)
         self.insert(boton, -1)
         
-        boton = G.get_boton(
+        boton = get_boton(
             archivo, flip = False,
-            pixels = G.get_pixels(0.8),
+            pixels = get_pixels(0.8),
             rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE)
 
         boton.set_tooltip_text("Pegar")
         boton.connect("clicked", self.__emit_pegar)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
             
         archivo = os.path.join(
             JAMediaWidgetsBASE,
             "Iconos", "bash.png")
             
-        boton = G.get_boton(
+        boton = get_boton(
             archivo, flip = False,
-            pixels = G.get_pixels(0.8))
+            pixels = get_pixels(0.8))
 
         boton.set_tooltip_text("Bash")
         boton.connect("clicked", self.__emit_reset_bash)
@@ -1747,9 +1749,9 @@ class ToolbarTerminal(Gtk.Toolbar):
             JAMediaWidgetsBASE,
             "Iconos", "python.png")
             
-        boton = G.get_boton(
+        boton = get_boton(
             archivo, flip = False,
-            pixels = G.get_pixels(0.8))
+            pixels = get_pixels(0.8))
 
         boton.set_tooltip_text("python")
         boton.connect("clicked", self.__emit_reset_python)
@@ -1808,12 +1810,12 @@ class Acelerometro(GObject.GObject):
         
         if os.path.exists(ACELEROMETRO):
             self.acelerometro = open(ACELEROMETRO, 'r')
-            self.actualizador = GObject.timeout_add(500, self.read)
+            self.actualizador = GObject.timeout_add(500, self.__read)
             
         else:
             print "El Acelerometro no está Presente."
             
-    def read(self):
+    def __read(self):
         
         if self.acelerometro != None:
             self.acelerometro.seek(0)

@@ -1,0 +1,22 @@
+/*http://wiki.xfce.org/howto/gtk_theme*/
+/*https://developer.gnome.org/gtk3/3.0/GtkCssProvider.html*/
+/*background: url{../images/imagen.png} no-repeat;*/
+
+/* Contenedores */
+GtkWindow {
+    background-color: #edf5ff;
+    color: #000000;
+}
+
+GtkToolbar {
+    background-color: #edf5ff;
+    color: #000000;
+}
+
+JAMediaManTree {
+    background-color: #edf5ff;
+}
+
+NoteBookTerminal{
+    background-color: #edf5ff;
+}

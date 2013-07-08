@@ -21,7 +21,6 @@
 
 import os
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
@@ -43,6 +42,8 @@ class JAMediaTerminal(Gtk.Box):
     """
     Terminal (NoteBook + Vtes) + Toolbar.
     """
+    
+    __gtype_name__ = 'JAMediaTerminal'
     
     __gsignals__ = {
     "ejecucion":(GObject.SIGNAL_RUN_FIRST,
@@ -166,6 +167,8 @@ class NoteBookTerminal(Gtk.Notebook):
     """
     Notebook Contenedor de Terminales.
     """
+    
+    __gtype_name__ = 'NoteBookTerminal'
     
     __gsignals__ = {
     "reset":(GObject.SIGNAL_RUN_FIRST,
@@ -348,6 +351,8 @@ class Terminal(Vte.Terminal):
     """
     Terminal Configurable en distintos intérpretes.
     """
+    
+    __gtype_name__ = 'Terminal'
     
     __gsignals__ = {
     "reset":(GObject.SIGNAL_RUN_FIRST,
@@ -585,6 +590,8 @@ class DialogoFormato(Gtk.Dialog):
     Selector de fuente y tamaño.
     """
     
+    __gtype_name__ = 'DialogoFormato'
+    
     def __init__(self, parent_window = None, fuente = "Monospace", tamanio = 10):
 
         Gtk.Dialog.__init__(self,
@@ -683,6 +690,8 @@ class DialogoFormato(Gtk.Dialog):
     
 class TreeViewFonts(Gtk.TreeView):
     
+    __gtype_name__ = 'TreeViewFonts'
+    
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
@@ -719,7 +728,7 @@ class TreeViewFonts(Gtk.TreeView):
         columna = Gtk.TreeViewColumn("Nombre", Gtk.CellRendererText(), text=1)
         columna.set_sort_column_id(1)
         columna.set_property('visible', False)
-        columna.set_property('resizable', False)
+        #columna.set_property('resizable', False)
         #columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         
         self.append_column(columna)
@@ -769,6 +778,8 @@ class TreeViewFonts(Gtk.TreeView):
         return True
         
 class TreeViewTamanio(Gtk.TreeView):
+    
+    __gtype_name__ = 'TreeViewTamanio'
     
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,

@@ -22,9 +22,6 @@
 import os
 
 from gi.repository import Gtk
-#from gi.repository import Gdk
-#from gi.repository import GdkPixbuf
-#from gi.repository import GObject
 
 from Widgets import TreeView
 from Widgets import SourceView
@@ -110,7 +107,7 @@ def ConstruyeMan():
         
     archivo.close()
     
-class JAMediaManTree(Gtk.Window):
+class Ventana(Gtk.Window):
     
     __gtype_name__ = 'WindowManTree'
     
@@ -122,20 +119,9 @@ class JAMediaManTree(Gtk.Window):
         
         basebox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         
-        ### Abrir man.
-        import shelve
-        path = os.path.join(BASEPATH, "man.slv")
-        archivo = shelve.open(path)
+        jamediamantree = JAMediaManTree()
         
-        dict = {}
-        for key in archivo.keys():
-            dict[key] = archivo[key]
-            
-        archivo.close()
-        
-        self.panel = Panel(dict)
-        
-        basebox.pack_start(self.panel, True, True, 0)
+        basebox.pack_start(jamediamantree, True, True, 0)
         
         self.add(basebox)
         
@@ -144,16 +130,26 @@ class JAMediaManTree(Gtk.Window):
         import sys
         self.connect("destroy", sys.exit)
         
-class Panel(Gtk.Paned):
+class JAMediaManTree(Gtk.Paned):
     
-    __gtype_name__ = 'PanelManTree'
+    __gtype_name__ = 'JAMediaManTree'
     
-    def __init__(self, dict):
+    def __init__(self):
         
         Gtk.Paned.__init__(self,
             orientation=Gtk.Orientation.HORIZONTAL)
             
-        self.dict = dict
+        ### Abrir man.
+        import shelve
+        path = os.path.join(BASEPATH, "man.slv")
+        archivo = shelve.open(path)
+        
+        self.dict = {}
+        for key in archivo.keys():
+            self.dict[key] = archivo[key]
+            
+        archivo.close()
+        
         self.treeview = TreeView(self.dict)
         self.sourceview = SourceView()
         
@@ -195,6 +191,6 @@ class Panel(Gtk.Paned):
         
 if __name__=="__main__":
     #ConstruyeMan()
-    JAMediaManTree()
+    Ventana()
     Gtk.main()
     
