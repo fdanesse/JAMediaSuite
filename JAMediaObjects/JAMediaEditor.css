@@ -1,0 +1,70 @@
+/*http://wiki.xfce.org/howto/gtk_theme*/
+/*https://developer.gnome.org/gtk3/3.0/GtkCssProvider.html*/
+/*background: url{../images/imagen.png} no-repeat;*/
+
+/* Contenedores */
+GtkWindow {
+    background-color: #edf5ff;
+    color: #000000;
+}
+
+DialogoProyecto {
+    background-color: #edf5ff;
+    color: #000000;
+    background-image: -gtk-gradient(linear,
+        left top, left bottom,
+        from(shade(#edf5ff, 0.50)),
+        to(shade(#edf5ff, 1.00)));
+}
+
+GtkToolbar {
+    background-color: #edf5ff;
+    color: #000000;
+}
+
+BasePanel {
+    background-color: #edf5ff;
+}
+
+WorkPanel {
+    background-color: #edf5ff;
+}
+
+/* Widgets */
+
+Menu {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+ToolbarArchivo {
+    background-color: #ffffff;
+    background-image: -gtk-gradient(linear,
+        left top, left bottom,
+        from(shade(#edf5ff, 0.50)),
+        to(shade(#edf5ff, 1.00)));
+}
+
+ToolbarProyecto {
+    background-color: #ffffff;
+    background-image: -gtk-gradient(linear,
+        left top, left bottom,
+        from(shade(#edf5ff, 0.50)),
+        to(shade(#edf5ff, 1.00)));
+}
+
+ToolbarTerminal {
+    background-color: #ffffff;
+    background-image: -gtk-gradient(linear,
+        left top, left bottom,
+        from(shade(#edf5ff, 1.00)),
+        to(shade(#edf5ff, 0.50)));
+}
+
+ToolbarBusquedas {
+    background-color: #ffffff;
+    background-image: -gtk-gradient(linear,
+        left top, left bottom,
+        from(shade(#edf5ff, 1.00)),
+        to(shade(#edf5ff, 0.50)));
+}
