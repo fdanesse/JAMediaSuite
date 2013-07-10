@@ -64,7 +64,7 @@ class Ventana(Gtk.Window):
         
         self.set_icon_from_file(
             os.path.join(JAMediaObjectsPath,
-            "Iconos", "bash.png"))
+            "Iconos", "jamediaterminal-ico.png"))
             
         self.set_resizable(True)
         self.set_size_request(640, 480)
@@ -137,10 +137,13 @@ class Toolbar(Gtk.Toolbar):
             ancho = 3, expand = False), -1)
         
         imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia.png")
+        icono = os.path.join(
+            JAMediaObjectsPath,
+            "Iconos",
+            "JAMediaTerminal.svg")
+            
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
+            -1, get_pixels(0.6))
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
         item = Gtk.ToolItem()
@@ -150,60 +153,30 @@ class Toolbar(Gtk.Toolbar):
         self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("fdanesse@gmail.com")
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-        
-        self.insert(get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-        
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "ayuda.svg")
-        boton = get_boton(archivo, flip = False,
-            pixels = get_pixels(1))
+        ### Ayuda.
+        archivo = os.path.join(
+            JAMediaObjectsPath,
+            "Iconos",
+            "activity-help.svg")
+            
+        boton = get_boton(archivo,
+            flip = False,
+            pixels = get_pixels(0.8))
+            
         boton.set_tooltip_text("Ayuda")
         boton.connect("clicked", self.__emit_help)
         self.insert(boton, -1)
         
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos","salir.png")
-        boton = get_boton(archivo, flip = False,
-            pixels = get_pixels(1))
+        ### Salir.
+        archivo = os.path.join(
+            JAMediaObjectsPath,
+            "Iconos",
+            "button-cancel.svg")
+            
+        boton = get_boton(archivo,
+            flip = False,
+            pixels = get_pixels(0.8))
+            
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.__emit_salir)
         self.insert(boton, -1)

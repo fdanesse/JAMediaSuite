@@ -7,16 +7,60 @@ GtkWindow {
     background-color: #edf5ff;
     color: #000000;
 }
+GtkLabel {
+    background-color: #edf5ff;
+    color: #000000;
+}
+GtkButton {
+    background-color: #edf5ff;
+    color: #000000;
+}
+GtkButton:prelight {
+    background-color: #ffffff;
+    color: #000000;
+}
+/*fondo*/
+.scrollbar.trough {
+    background-color: #d3d3d3;
+}
+/*deslizable inactivo*/
+.scrollbar.slider {
+    background-color: #ffffff;
+}
+/*deslizable activo*/
+.scrollbar.slider:active {
+    background-color: #ffffff;
+}
 
 GtkToolbar {
     background-color: #edf5ff;
     color: #000000;
 }
 
-JAMediaManTree {
-    background-color: #edf5ff;
+ToolbarJAMediaTerminal {
+    background-color: #ffffff;
+    color: #000000;
+    background-image: -gtk-gradient(linear,
+        left top, left bottom,
+        from(shade(#edf5ff, 0.50)),
+        to(shade(#edf5ff, 1.00)));
 }
 
-NoteBookTerminal{
+TreeViewManTree {
     background-color: #edf5ff;
+    color: #000000;
+}
+TreeViewManTree row:selected {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+JAMediaManTree {
+    background-color: #edf5ff;
+    color: #000000;
+}
+
+NoteBookTerminal {
+    background-color: #edf5ff;
+    color: #000000;
 }

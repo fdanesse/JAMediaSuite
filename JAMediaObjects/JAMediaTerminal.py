@@ -552,7 +552,7 @@ class ToolbarTerminal(Gtk.Toolbar):
         ### Botón bash.
         archivo = os.path.join(
             BASEPATH,
-            "Iconos", "bash.png")
+            "Iconos", "bash.svg")
             
         boton = get_boton(archivo,
             pixels = get_pixels(Width_Button), tooltip_text = "Terminal bash")
@@ -563,7 +563,7 @@ class ToolbarTerminal(Gtk.Toolbar):
         ### Botón python.
         archivo = os.path.join(
             BASEPATH,
-            "Iconos", "python.png")
+            "Iconos", "python.svg")
             
         boton = get_boton(archivo,
             pixels = get_pixels(Width_Button), tooltip_text = "Terminal python")
