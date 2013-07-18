@@ -30,6 +30,7 @@ from gi.repository import GObject
 from gi.repository import GtkSource
 from gi.repository import Pango
 from gi.repository import Gdk
+from gi.repository import GLib
 
 from Widgets import My_FileChooser
 from Widgets import DialogoFormato
@@ -207,7 +208,7 @@ class WorkPanel(Gtk.Paned):
                     
         if archivo: self.terminal.ejecutar(archivo)
         
-    def detener_ejecucion(self, widget = None):
+    def detener_ejecucion(self, widget, notebook, terminal, pag_indice, boton, label):
         """
         Detiene la ejecución en proceso.
         """
@@ -283,7 +284,7 @@ class Notebook_SourceView(Gtk.Notebook):
 
         self.connect('switch_page', self.__switch_page)
         
-        GObject.idle_add(self.abrir_archivo, None)
+        GLib.idle_add(self.abrir_archivo, None)
         
     def set_linea(self, texto):
         """
@@ -566,7 +567,7 @@ class SourceView(GtkSource.View):
                 
                 self.get_buffer().set_modified(False)
                 
-                GObject.idle_add(self.__set_label, nombre)
+                GLib.idle_add(self.__set_label, nombre)
 
     def __set_label(self, nombre):
         """
@@ -1076,7 +1077,7 @@ class SourceView(GtkSource.View):
                     notebook.remove_page(indice)
                     break
                 
-        GObject.idle_add(self.destroy)
+        GLib.idle_add(self.destroy)
 
     def _marcar_error(self, linea):
         """

@@ -21,11 +21,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import json
 
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaEditor
 from JAMediaEditor.Widgets import Menu
@@ -139,7 +139,7 @@ class JAMediaEditor(Gtk.Window):
         
         import sys
         sys.exit(0)
-        
+    
     def __new_handler(self, widget, sourceview, reset):
         """
         Elimina o reinicia la funcion que
@@ -147,13 +147,13 @@ class JAMediaEditor(Gtk.Window):
         """
         
         if self.updater and self.updater != None:
-            GObject.source_remove(self.updater)
+            GLib.source_remove(self.updater)
             self.updater = False
             self.sourceview = False
             
         if reset:
             self.sourceview = sourceview
-            self.updater = GObject.timeout_add(500, self.__update)
+            self.updater = GLib.timeout_add(500, self.__update)
 
     def __update(self):
         """

@@ -25,6 +25,7 @@ import os
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource
+from gi.repository import GLib
 
 from Widgets import My_FileChooser
 
@@ -729,10 +730,10 @@ class DialogoInstall(Gtk.Dialog):
         self.terminal.connect("reset", self.__end_make)
         
         if tipo == "gnome":
-            GObject.idle_add(self.__run_gnome_install)
+            GLib.idle_add(self.__run_gnome_install)
             
         elif tipo == "sugar":
-            GObject.idle_add(self.__run_sugar_install)
+            GLib.idle_add(self.__run_sugar_install)
         
     def __end_make(self, widget):
         """

@@ -27,6 +27,7 @@ from gi.repository import GObject
 from gi.repository import GdkPixbuf
 from gi.repository import Vte
 from gi.repository import Pango
+from gi.repository import GLib
 
 BASEPATH = os.path.dirname(__file__)
 
@@ -711,7 +712,7 @@ class TreeViewFonts(Gtk.TreeView):
         
         self.show_all()
         
-        GObject.idle_add(self.__init)
+        GLib.idle_add(self.__init)
         
     def __setear_columnas(self):
         
@@ -800,7 +801,7 @@ class TreeViewTamanio(Gtk.TreeView):
         
         self.show_all()
         
-        GObject.idle_add(self.__init)
+        GLib.idle_add(self.__init)
         
     def __setear_columnas(self):
         

@@ -30,6 +30,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import Pango
+from gi.repository import GLib
 
 #BASEPATH = os.path.dirname(__file__)
 FUENTES_GLOBAL = Gtk.Window().get_pango_context().list_families()
@@ -678,7 +679,7 @@ class DialogoBuscar(Gtk.Dialog):
             self.entrada.set_text(texto)
             seleccion = self.view.get_buffer().get_selection_bounds()
             self.seleccion = True
-            GObject.idle_add(self.__update, texto, seleccion)
+            GLib.idle_add(self.__update, texto, seleccion)
 
     def __update(self, texto, selection):
         buffer = self.view.get_buffer()
@@ -692,8 +693,9 @@ class DialogoBuscar(Gtk.Dialog):
             self.__seleccionar_texto(texto, inicio, 'Adelante')
 
         else:
-            inicio, fin = selection
-            buffer.select_range(inicio, fin)
+            if selection:
+                inicio, fin = selection
+                buffer.select_range(inicio, fin)
         
     def __changed(self, widget):
         """
@@ -839,9 +841,9 @@ class DialogoReemplazar(Gtk.Dialog):
             self.buscar_entry.set_text(texto)
             seleccion = self.view.get_buffer().get_selection_bounds()
             self.seleccion = True
-            GObject.idle_add(self.__update, texto, seleccion)
+            GLib.idle_add(self.__update, texto, seleccion)
 
-        GObject.idle_add(self.__changed)
+        GLib.idle_add(self.__changed)
         
     def __update(self, texto, selection):
         buffer = self.view.get_buffer()
@@ -2019,7 +2021,7 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
         
     def agregar_items(self, elementos):
         
-        GObject.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
         
     def __ejecutar_agregar_elemento(self, elementos):
         """
@@ -2034,7 +2036,7 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
         
         elementos.remove(elementos[0])
         
-        GObject.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
         
     def seleccionar_primero(self, widget = None):
         

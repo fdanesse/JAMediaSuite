@@ -26,6 +26,7 @@ import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GLib
 
 from Widgets import Estructura_Menu
 from Widgets import get_boton
@@ -631,7 +632,7 @@ class Estructura_Proyecto(Gtk.TreeView):
         estructura = []
         estructura.append((path, None))
         
-        GObject.idle_add(self.__load_estructura, estructura)
+        GLib.idle_add(self.__load_estructura, estructura)
 
     def __set_columnas(self):
         """
