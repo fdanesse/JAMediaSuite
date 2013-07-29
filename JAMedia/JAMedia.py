@@ -566,9 +566,9 @@ class JAMediaPlayer(Gtk.Plug):
             rect = self.evnt_box_lista_reproduccion.get_allocation()
             self.scroll_config.set_size_request(rect.width, -1)
             self.evnt_box_lista_reproduccion.hide()
-            self.scroll_config.show()
+            self.scroll_config.show_all()
             GObject.idle_add(self.update_balance_toolbars)
-            
+        
     def switch_reproductor(self, widget, nombre):
         """
         Recibe la señal "reproductor" desde toolbar_config y

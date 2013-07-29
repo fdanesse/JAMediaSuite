@@ -242,6 +242,7 @@ class Ventana(Gtk.Window):
             try:
                 videoitem.get_parent().remove(videoitem)
                 destino.pack_start(videoitem, False, False, 1)
+                
             except:
                 return
             

@@ -49,16 +49,14 @@ class Tube_Player(JAMediaPlayer):
         JAMediaPlayer.__init__(self)
         
         self.show_all()
-        
+    
     def confirmar_salir(self, widget = None, senial = None):
         """
         Recibe salir y lo pasa a la toolbar de confirmación.
         """
         
-        map(self.ocultar, [
-            self.toolbar_config,
-            self.toolbaraddstream])
-            
+        map(self.ocultar, [self.toolbaraddstream])
+        
         # Salteandose confirmación para salir
         # y maneteniendose activa la reproducción y
         # grabación de JAMedia.
@@ -298,7 +296,7 @@ class Toolbar_Videos_Derecha(Gtk.Toolbar):
         
 class Mini_Toolbar(Gtk.Toolbar):
     """
-    Mini toolbars izquierda y derecha.
+    Mini toolbars Superior izquierda y derecha.
     """
     
     __gsignals__ = {
@@ -351,13 +349,13 @@ class Mini_Toolbar(Gtk.Toolbar):
         
         self.emit('guardar')
         
-    def emit_abrir(self, archivo):
+    def emit_abrir(self, key):
         """
         Emite abrir, para que se carguen todos
         los videos desde un archivo shelve.
         """
         
-        self.emit('abrir', archivo)
+        self.emit('abrir', key)
         
     def get_menu(self, widget):
         """
@@ -365,23 +363,28 @@ class Mini_Toolbar(Gtk.Toolbar):
         almacenadas en archivos shelve.
         """
         
-        menu = Gtk.Menu()
+        from JAMediaObjects.JAMediaGlobales import DIRECTORIO_DATOS
+        import shelve
         
-        archivos = os.listdir(G.DIRECTORIO_DATOS)
-        
-        for archivo in archivos:
+        dict_tube = shelve.open(
+            os.path.join(DIRECTORIO_DATOS,
+            "List.tube"))
             
-            if archivo[-5:] != ".tube":
-                archivos.remove(archivo)
-                
-            else:
-                item = Gtk.MenuItem(archivo)
-                menu.append(item)
-                item.connect_object("activate", self.emit_abrir, archivo)
+        keys = dict_tube.keys()
         
-        menu.show_all()
-        menu.attach_to_widget(widget, self.null)
-        menu.popup(None, None, None, None, 1, 0)
+        dict_tube.close()
+        
+        if keys:
+            menu = Gtk.Menu()
+            
+            for key in keys:
+                item = Gtk.MenuItem(key)
+                menu.append(item)
+                item.connect_object("activate", self.emit_abrir, key)
+                
+            menu.show_all()
+            menu.attach_to_widget(widget, self.null)
+            menu.popup(None, None, None, None, 1, 0)
         
     def null(self):
         pass
@@ -981,7 +984,7 @@ class Toolbar_Guardar(Gtk.Toolbar):
         self.entrytext.set_max_length(10)
         self.entrytext.set_tooltip_text("Nombre de Archivo.")
         self.entrytext.show()
-        self.entrytext.connect('activate', self.activate_entrytext)
+        self.entrytext.connect('activate', self.emit_ok)
         item.add(self.entrytext)
         self.insert(item, -1)
         
@@ -1003,13 +1006,6 @@ class Toolbar_Guardar(Gtk.Toolbar):
         texto = self.entrytext.get_text()
         if texto: self.emit("ok", texto)
         self.cancel()
-        
-    def activate_entrytext(self, widget):
-        """
-        Cuando se da enter en el entrytext.
-        """
-        
-        self.emit_ok()
     
     def cancel(self, widget=None):
         

@@ -129,18 +129,30 @@ class PanelTube(Gtk.Paned):
             self.comenzar_descarga)
         
         GObject.timeout_add(300, self.update)
-        
-    def abrir_lista_shelve(self, widget, archivo):
+    
+    def abrir_lista_shelve(self, widget, key):
         """
         Agrega a la lista, todos los videos almacenados en
         un archivo shelve.
         """
         
-        archivo = os.path.join(G.DIRECTORIO_DATOS, archivo)
-        videos = G.get_shelve_lista(archivo)
+        from JAMediaObjects.JAMediaGlobales import DIRECTORIO_DATOS
+        import shelve
+        
+        dict_tube = shelve.open(
+            os.path.join(DIRECTORIO_DATOS,
+            "List.tube"))
+        
+        dict = dict_tube.get(key, [])
+        
+        dict_tube.close()
+        
+        videos = []
+        for item in dict.keys():
+            videos.append(dict[item])
         
         self.emit('open_shelve_list', videos, widget)
-        
+    
     def show_toolbar_guardar(self, widget):
         """
         Muestra la toolbar para escribir nombre de archivo
@@ -153,9 +165,9 @@ class PanelTube(Gtk.Paned):
         elif widget == self.toolbar_descargar:
             self.toolbar_guardar_descargar.show()
     
-    def guardar_lista_shelve(self, widget, texto):
+    def guardar_lista_shelve(self, widget, key_name):
         """
-        Guarda todos los videos de la lista en un archivo shelve.
+        Guarda todos los videos de la lista bajo la key según key_name.
         """
         
         origen = False
@@ -174,7 +186,21 @@ class PanelTube(Gtk.Paned):
                 for video in video_items:
                     videos.append(video.videodict)
         
-        if videos: G.set_shelve_lista(texto, videos)
+        if videos:
+            from JAMediaObjects.JAMediaGlobales import DIRECTORIO_DATOS
+            import shelve
+            
+            dict_tube = shelve.open(
+                os.path.join(DIRECTORIO_DATOS,
+                "List.tube"))
+            
+            dict = {}
+            for elemento in videos:
+                dict[elemento["id"]] = elemento
+                
+            dict_tube[key_name] = dict
+            
+            dict_tube.close()
         
     def comenzar_descarga(self, widget):
         """

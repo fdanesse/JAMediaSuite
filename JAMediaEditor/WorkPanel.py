@@ -154,7 +154,7 @@ class WorkPanel(Gtk.Paned):
             pagina = self.notebook_sourceview.get_current_page()
             
             # FIXME: Cuando se hace ejecutar y no hay archivos abiertos.
-            # No debiera estar activo el botón ejecutar ene ste caso.
+            # No debiera estar activo el botón ejecutar en este caso.
             if not pagina > -1: return
         
             view = self.notebook_sourceview.get_children()[pagina].get_children()[0]
@@ -208,7 +208,8 @@ class WorkPanel(Gtk.Paned):
                     
         if archivo: self.terminal.ejecutar(archivo)
         
-    def detener_ejecucion(self, widget, notebook, terminal, pag_indice, boton, label):
+    def detener_ejecucion(self, widget=None, notebook=None,
+        terminal=None, pag_indice=None, boton=None, label=None):
         """
         Detiene la ejecución en proceso.
         """
