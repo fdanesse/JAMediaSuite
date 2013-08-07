@@ -50,7 +50,7 @@ class ToolbarGrabar(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.colors = [G.BLANCO, G.NARANJA]
+        self.colors = [G.get_color("BLANCO"), G.get_color("NARANJA")]
         self.color = self.colors[0]
         
         self.insert(G.get_separador(draw = False,

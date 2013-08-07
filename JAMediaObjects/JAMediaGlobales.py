@@ -19,83 +19,139 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
-import urllib
-import shelve
+canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/canales'
+radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/radios'
 
-import gi
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GdkPixbuf
-from gi.repository import GdkX11
+def make_base_directory():
+    """
+    Crea toda la estructura de Directorios de JAMedia.
+    """
+    
+    import os
+    
+    if not os.path.exists(os.path.join(os.environ["HOME"], "JAMediaDatos")):
+        os.mkdir(os.path.join(os.environ["HOME"], "JAMediaDatos"))
+        os.chmod(os.path.join(os.environ["HOME"], "JAMediaDatos"), 0755)
+        
+    
+    ### unificar directorios de JAMedia, JAMediaVideo y JAMediaImagenes
+    directorio_viejo = os.path.join(os.environ["HOME"], ".JAMediaDatos")
+    directorio_nuevo = os.path.join(os.environ["HOME"], "JAMediaDatos")
+    if os.path.exists(directorio_viejo):
+        for elemento in os.listdir(directorio_viejo):
+            commands.getoutput('mv %s %s' % (os.path.join(directorio_viejo,
+                elemento), directorio_nuevo))
+        commands.getoutput('rm -r %s' % (directorio_viejo))
 
-if not os.path.exists(os.path.join(os.environ["HOME"], "JAMediaDatos")):
-    os.mkdir(os.path.join(os.environ["HOME"], "JAMediaDatos"))
-    os.chmod(os.path.join(os.environ["HOME"], "JAMediaDatos"), 0755)
-    
-'''
-# unificar directorios de JAMedia, JAMediaVideo y JAMediaImagenes
-directorio_viejo = os.path.join(os.environ["HOME"], ".JAMediaDatos")
-directorio_nuevo = os.path.join(os.environ["HOME"], "JAMediaDatos")
-if os.path.exists(directorio_viejo):
-    for elemento in os.listdir(directorio_viejo):
-        commands.getoutput('mv %s %s' % (os.path.join(directorio_viejo,
-            elemento), directorio_nuevo))
-    commands.getoutput('rm -r %s' % (directorio_viejo))'''
+    # Directorios JAMedia
+    DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "MisArchivos")
+        
+    DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Datos")
+        
+    if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
+        os.mkdir(DIRECTORIO_MIS_ARCHIVOS)
+        os.chmod(DIRECTORIO_MIS_ARCHIVOS, 0755)
+        
+    if not os.path.exists(DIRECTORIO_DATOS):
+        os.mkdir(DIRECTORIO_DATOS)
+        os.chmod(DIRECTORIO_DATOS, 0755)
 
-# Directorios JAMedia
-DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
-    "JAMediaDatos", "MisArchivos")
-    
-DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
-    "JAMediaDatos", "Datos")
-    
-if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
-    os.mkdir(DIRECTORIO_MIS_ARCHIVOS)
-    os.chmod(DIRECTORIO_MIS_ARCHIVOS, 0755)
-    
-if not os.path.exists(DIRECTORIO_DATOS):
-    os.mkdir(DIRECTORIO_DATOS)
-    os.chmod(DIRECTORIO_DATOS, 0755)
+    # Directorio JAMediaTube
+    DIRECTORIO_YOUTUBE = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "YoutubeVideos")
+        
+    if not os.path.exists(DIRECTORIO_YOUTUBE):
+        os.mkdir(DIRECTORIO_YOUTUBE)
+        os.chmod(DIRECTORIO_YOUTUBE, 0755)
 
-# Directorio JAMediaTube
-DIRECTORIO_YOUTUBE = os.path.join(os.environ["HOME"],
-    "JAMediaDatos", "YoutubeVideos")
+    # Directorios JAMediaVideo
+    AUDIO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Audio")
+        
+    if not os.path.exists(AUDIO_JAMEDIA_VIDEO):
+        os.mkdir(AUDIO_JAMEDIA_VIDEO)
+        os.chmod(AUDIO_JAMEDIA_VIDEO, 0755)
+        
+    VIDEO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Videos")
+        
+    if not os.path.exists(VIDEO_JAMEDIA_VIDEO):
+        os.mkdir(VIDEO_JAMEDIA_VIDEO)
+        os.chmod(VIDEO_JAMEDIA_VIDEO, 0755)
+        
+    IMAGENES_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Fotos")
+        
+    if not os.path.exists(IMAGENES_JAMEDIA_VIDEO):
+        os.mkdir(IMAGENES_JAMEDIA_VIDEO)
+        os.chmod(IMAGENES_JAMEDIA_VIDEO, 0755)
     
-if not os.path.exists(DIRECTORIO_YOUTUBE):
-    os.mkdir(DIRECTORIO_YOUTUBE)
-    os.chmod(DIRECTORIO_YOUTUBE, 0755)
+def get_tube_directory():
+    """
+    Devuelve el Directorio de Videos de JAMediaTube.
+    """
+    
+    import os
+    
+    DIRECTORIO_YOUTUBE = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "YoutubeVideos")
+        
+    if not os.path.exists(DIRECTORIO_YOUTUBE):
+        make_base_directory()
+        
+    return DIRECTORIO_YOUTUBE
 
-# Directorios JAMediaVideo
-AUDIO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
-    "JAMediaDatos", "Audio")
+def get_data_directory():
+    """
+    Devuelve el Directorio de Datos de JAMedia y JAMediaTube.
+    """
     
-if not os.path.exists(AUDIO_JAMEDIA_VIDEO):
-    os.mkdir(AUDIO_JAMEDIA_VIDEO)
-    os.chmod(AUDIO_JAMEDIA_VIDEO, 0755)
+    import os
     
-VIDEO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
-    "JAMediaDatos", "Videos")
-    
-if not os.path.exists(VIDEO_JAMEDIA_VIDEO):
-    os.mkdir(VIDEO_JAMEDIA_VIDEO)
-    os.chmod(VIDEO_JAMEDIA_VIDEO, 0755)
-    
-IMAGENES_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
-    "JAMediaDatos", "Fotos")
-    
-if not os.path.exists(IMAGENES_JAMEDIA_VIDEO):
-    os.mkdir(IMAGENES_JAMEDIA_VIDEO)
-    os.chmod(IMAGENES_JAMEDIA_VIDEO, 0755)
+    DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Datos")
+        
+    if not os.path.exists(DIRECTORIO_DATOS):
+        make_base_directory()
+        
+    return DIRECTORIO_DATOS
 
-GRIS = Gdk.Color(60156, 60156, 60156)
-AMARILLO = Gdk.Color(65000,65000,40275)
-NARANJA = Gdk.Color(65000,26000,0)
-BLANCO = Gdk.Color(65535, 65535, 65535)
-NEGRO = Gdk.Color(0, 0, 0)
-ROJO = Gdk.Color(65000, 0, 0)
-VERDE = Gdk.Color(0, 65000, 0)
-AZUL = Gdk.Color(0, 0, 65000)
+def get_my_files_directory():
+    """
+    Devuelve el Directorio de Archivos del usuario en JAMedia.
+    """
+    
+    import os
+    
+    DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "MisArchivos")
+        
+    if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
+        make_base_directory()
+        
+    return DIRECTORIO_MIS_ARCHIVOS
+
+def get_color(color):
+    """
+    Devuelve Colores predefinidos.
+    """
+    
+    from gi.repository import Gdk
+    
+    colors = {
+        "GRIS": Gdk.Color(60156, 60156, 60156),
+        "AMARILLO": Gdk.Color(65000,65000,40275),
+        "NARANJA": Gdk.Color(65000,26000,0),
+        "BLANCO": Gdk.Color(65535, 65535, 65535),
+        "NEGRO": Gdk.Color(0, 0, 0),
+        "ROJO": Gdk.Color(65000, 0, 0),
+        "VERDE": Gdk.Color(0, 65000, 0),
+        "AZUL": Gdk.Color(0, 0, 65000),
+        }
+
+    return colors.get(color, None)
 
 def get_pixels(centimetros):
     """
@@ -107,6 +163,8 @@ def get_pixels(centimetros):
     # 1 Pixel = 0.03 Centimetros = 0.01 Pulgadas.
     """
     '''
+    from gi.repository import GdkX11
+    
     screen = GdkX11.X11Screen()
     
     res_w = screen.width()
@@ -138,6 +196,8 @@ def get_separador(draw = False, ancho = 0, expand = False):
     Devuelve un separador generico.
     """
     
+    from gi.repository import Gtk
+    
     separador = Gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
@@ -149,6 +209,9 @@ def get_boton(archivo, flip = False, rotacion = None, pixels = 0, tooltip_text =
     """
     Devuelve un toolbutton generico.
     """
+    
+    from gi.repository import Gtk
+    from gi.repository import GdkPixbuf
     
     if not pixels: pixels = get_pixels(1)
     
@@ -171,10 +234,14 @@ def get_boton(archivo, flip = False, rotacion = None, pixels = 0, tooltip_text =
     return boton
 
 def get_togle_boton(archivo, flip = False,
-    color = Gdk.Color(65000, 65000, 65000), pixels = 0):
+    color = get_color("GRIS"), pixels = 0):
+    # Gdk.Color(65000, 65000, 65000)
     """
     Devuelve un toggletoolbutton generico.
     """
+    
+    from gi.repository import Gtk
+    from gi.repository import GdkPixbuf
     
     if not pixels:
         pixels = get_pixels(1.5)
@@ -195,9 +262,6 @@ def get_togle_boton(archivo, flip = False,
 
 
 # >>> JAMedia
-canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/canales'
-radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/radios'
-
 def descarga_lista_de_streamings(url):
     """
     Recibe la web donde se publican los streamings
@@ -209,6 +273,8 @@ def descarga_lista_de_streamings(url):
     """
     
     try:
+        import urllib
+        
         streamings = []
         
         web = urllib.urlopen(url)
@@ -240,6 +306,8 @@ def clear_lista_de_streamings(path):
     Limpia la lista de streamings en un archivo.
     """
     
+    import shelve
+    
     archivo = shelve.open(path)
     archivo.clear()
     archivo.close()
@@ -250,6 +318,8 @@ def guarda_lista_de_streamings(path, items):
     de JAMedia y una lista de items [nombre, url] y los almacena
     en el archivo.
     """
+    
+    import shelve
     
     archivo = shelve.open(path)
     
@@ -264,6 +334,8 @@ def get_streamings(path):
     y devuelve la lista de streamings que contiene.
     """
     
+    import shelve
+    
     archivo = shelve.open(path)
     items = archivo.items()
     archivo.close()
@@ -276,6 +348,11 @@ def set_listas_default():
     llena las default en caso de estar vacías.
     """
 
+    import os
+    import shelve
+    
+    DIRECTORIO_DATOS = get_data_directory()
+    
     listas = [
         os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"),
         os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"),
@@ -343,6 +420,10 @@ def get_streaming_default():
     cuando el usuario lo solicita.
     """
     
+    import os
+    
+    DIRECTORIO_DATOS = get_data_directory()
+    
     try:
         # Streamings JAMediatv
         lista_canales = descarga_lista_de_streamings(canales)
@@ -384,6 +465,10 @@ def add_stream(tipo, item):
     Agrega un streaming a la lista correspondiente de jamedia.
     """
     
+    import os
+    
+    DIRECTORIO_DATOS = get_data_directory()
+    
     if "TV" in tipo or "Tv" in tipo:
         path = os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
         
@@ -393,6 +478,8 @@ def add_stream(tipo, item):
     else:
         return
     
+    import shelve
+    
     archivo = shelve.open(path)
     archivo[item[0].strip()] = item[1].strip()
     archivo.close()
@@ -401,6 +488,10 @@ def eliminar_streaming(url, lista):
     """
     Elimina un Streaming de una lista de jamedia.
     """
+    
+    import os
+    
+    DIRECTORIO_DATOS = get_data_directory()
     
     if lista == "Radios":
         path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
@@ -417,6 +508,8 @@ def eliminar_streaming(url, lista):
     else:
         return
     
+    import shelve
+    
     archivo = shelve.open(path)
     items = archivo.items()
     
@@ -431,6 +524,8 @@ def stream_en_archivo(streaming, path):
     Verifica si un streaming está en
     un archivo de lista de jamedia determinado.
     """
+    
+    import shelve
     
     archivo = shelve.open(path)
     items = archivo.values()

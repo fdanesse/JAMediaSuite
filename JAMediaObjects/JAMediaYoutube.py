@@ -22,18 +22,9 @@
 # https://developers.google.com/youtube/1.0/developers_guide_python?hl=es#RetrievingVideos
 
 import os
-import sys
-import time
-import subprocess
 
-import gi
 from gi.repository import Gtk
 from gi.repository import GObject
-
-import JAMediaGlobales as G
-
-import gdata.youtube
-import gdata.youtube.service
 
 YOUTUBE = "gdata.youtube.com"
 
@@ -41,9 +32,14 @@ STDERR = "/dev/null"
 youtubedl = os.path.join(os.path.dirname(__file__), "youtube-dl")
 
 def Buscar(palabras):
-    """ Recibe una cadena de texto, separa las palabras,
+    """
+    Recibe una cadena de texto, separa las palabras,
     busca videos que coincidan con ellas y devuelve
-    un feed no mayor a 50 videos."""
+    un feed no mayor a 50 videos.
+    """
+    
+    import gdata.youtube
+    import gdata.youtube.service
     
     yt_service = gdata.youtube.service.YouTubeService()
     query = gdata.youtube.service.YouTubeVideoQuery()
@@ -51,27 +47,38 @@ def Buscar(palabras):
     query.max_results = 50
     query.orderby = 'viewCount'
     query.racy = 'include'
+    
     for palabra in palabras.split(" "):
         query.categories.append('/%s' % palabra.lower())
+        
     feed = yt_service.YouTubeQuery(query)
+    
     return DetalleFeed(feed)
 
 def DetalleFeed(feed):
-    """Recibe un feed de videos y devuelve una
-    lista con diccionarios por video."""
+    """
+    Recibe un feed de videos y devuelve una
+    lista con diccionarios por video.
+    """
     
     videos = []
+    
     for entry in feed.entry:
         videos.append(DetalleVideo(entry))
+        
     return videos
 
 def DetalleVideo(entry):
-    """Recibe un video en un feed y devuelve
-    un diccionario con su información."""
+    """
+    Recibe un video en un feed y devuelve
+    un diccionario con su información.
+    """
     
     metadata = entry.media.__dict__
     entrada = entry.__dict__
+    
     video = {}
+    
     video["id"] = entrada['_GDataEntry__id'].text
     video["titulo"] = metadata['title'].text
     video["descripcion"] = metadata['description'].text
@@ -96,7 +103,9 @@ def DetalleVideo(entry):
     return video
 
 class JAMediaYoutube(Gtk.Widget):
-    """Widget para descarga de videos a través de youtube_dl."""
+    """
+    Widget para descarga de videos a través de youtube_dl.
+    """
     
     __gsignals__ = {
     'progress_download':(GObject.SIGNAL_RUN_FIRST,
@@ -128,7 +137,14 @@ class JAMediaYoutube(Gtk.Widget):
         return str(texto)
     
     def download(self, url, titulo):
-        """Inicia la descarga de un archivo."""
+        """
+        Inicia la descarga de un archivo.
+        """
+        
+        import time
+        import subprocess
+        
+        from JAMediaGlobales import get_tube_directory
         
         self.estado = True
         # http://youtu.be/XWDZMMMbvhA => codigo compartir
@@ -140,7 +156,7 @@ class JAMediaYoutube(Gtk.Widget):
         self.STDOUT = "/tmp/jamediatube%d" % time.time()
         
         archivo = "%s%s%s" % ("\"", self.titulo, "\"")
-        destino = os.path.join(G.DIRECTORIO_YOUTUBE, archivo)
+        destino = os.path.join(get_tube_directory(), archivo)
         #estructura = "%s %s -i -R %s -f %s -w --no-part -o %s" % (youtubedl, self.url, 1, 34, destino)
         estructura = "%s %s -i -R %s -f %s --no-part -o %s" % (youtubedl, self.url, 1, 34, destino)
         self.youtubedl = subprocess.Popen(estructura, shell = True, stdout = open(self.STDOUT,"w+b"),
@@ -153,7 +169,9 @@ class JAMediaYoutube(Gtk.Widget):
         self.actualizador = GObject.timeout_add(500, self.get_progress)
         
     def get_progress(self):
-        """Actualiza el Progreso de la descarga."""
+        """
+        Actualiza el Progreso de la descarga.
+        """
         
         continuar = True
         line = self.salida.readline()
@@ -162,6 +180,7 @@ class JAMediaYoutube(Gtk.Widget):
             if "100.0%" in line.split(): continuar = False
             
         if line: self.emit_progress(line)
+        
         return continuar
     
         # mensajes en los que cuelga:
@@ -185,6 +204,8 @@ class JAMediaYoutube(Gtk.Widget):
         self.estado = False
         
 if __name__=="__main__":
+    
+    import sys
     
     entrada = sys.argv[1:]
     palabras = ""

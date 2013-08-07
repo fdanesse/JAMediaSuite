@@ -205,7 +205,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         ### Efectos que se están aplicando.
         eventbox = Gtk.EventBox() # FIXME: Mantiene el fondo negro en miniefectos que se aplican
-        eventbox.modify_bg(0, G.NEGRO)
+        eventbox.modify_bg(0, G.get_color("NEGRO"))
         self.hbox_efectos_en_pipe = Gtk.Box(
             orientation = Gtk.Orientation.HORIZONTAL)
         self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
@@ -218,7 +218,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         ### Barra de Progreso + Volúmen
         ev_box = Gtk.EventBox() # FIXME: Para poder pintar el fondo de volumen
-        ev_box.modify_bg(0, G.BLANCO)
+        ev_box.modify_bg(0, G.get_color("BLANCO"))
         hbox_barra_progreso = Gtk.Box(
             orientation = Gtk.Orientation.HORIZONTAL)
         hbox_barra_progreso.pack_start(self.barradeprogreso, True, True, 0)

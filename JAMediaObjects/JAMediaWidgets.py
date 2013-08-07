@@ -27,13 +27,10 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import Vte
 
-import JAMFileSystem as JAMF
-
 from JAMediaGlobales import get_pixels
 from JAMediaGlobales import get_separador
 from JAMediaGlobales import get_boton
-
-import JAMediaGlobales as G
+from JAMediaGlobales import get_color
 
 JAMediaWidgetsBASE = os.path.dirname(__file__)
 
@@ -126,10 +123,10 @@ class JAMediaButton(Gtk.EventBox):
         
         Gtk.EventBox.__init__(self)
         
-        self.cn = G.BLANCO
-        self.cs = G.AMARILLO
-        self.cc = G.NARANJA
-        self.text_color = G.NEGRO
+        self.cn = get_color("BLANCO")
+        self.cs = get_color("AMARILLO")
+        self.cc = get_color("NARANJA")
+        self.text_color = get_color("NEGRO")
         self.colornormal = self.cn
         self.colorselect = self.cs
         self.colorclicked = self.cc
@@ -419,13 +416,17 @@ class Lista(Gtk.TreeView):
             return False
         
         texto, path = elementos[0]
-        descripcion = JAMF.describe_uri(path)
+        
+        from JAMFileSystem import describe_uri
+        from JAMFileSystem import describe_archivo
+        
+        descripcion = describe_uri(path)
         
         icono = None
         if descripcion:
             if descripcion[2]:
                 # Es un Archivo
-                tipo = JAMF.describe_archivo(path)
+                tipo = describe_archivo(path)
                 
                 if 'video' in tipo:
                     icono = os.path.join(JAMediaWidgetsBASE,
@@ -601,7 +602,7 @@ class BarraProgreso(Gtk.EventBox):
         
         Gtk.EventBox.__init__(self)
         
-        self.modify_bg(0, G.BLANCO)
+        self.modify_bg(0, get_color("BLANCO"))
         self.escala = ProgressBar(Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
         
         self.valor = 0
@@ -702,14 +703,14 @@ class ProgressBar(Gtk.Scale):
         # Relleno de la barra
         ww = w - self.borde*2
         hh = h - self.borde*2
-        Gdk.cairo_set_source_color(contexto, G.NEGRO)
+        Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
         rect = Gdk.Rectangle()
         rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde, ww, hh)
         Gdk.cairo_rectangle(contexto, rect)
         contexto.fill()
         
         # Relleno de la barra segun progreso
-        Gdk.cairo_set_source_color(contexto, G.NARANJA)
+        Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
         rect = Gdk.Rectangle()
         
         ximage = int(self.get_adjustment().get_value() * ww / 100)
@@ -813,24 +814,32 @@ class ToolbarAccion(Gtk.Toolbar):
         en la lista de reprucción cuando el usuario confirma.
         """
         
+        from JAMediaGlobales import get_my_files_directory
+        
+        from JAMFileSystem import describe_acceso_uri
+        from JAMFileSystem import copiar
+        from JAMFileSystem import borrar
+        from JAMFileSystem import borrar
+        from JAMFileSystem import mover
+        
         uri = self.lista.modelo.get_value(self.iter, 2)
         
-        if JAMF.describe_acceso_uri(uri):
+        if describe_acceso_uri(uri):
             if self.accion == "Quitar":
                 self.lista.modelo.remove(self.iter)
                 
             elif self.accion == "Copiar":
                 if os.path.isfile(uri):
-                    JAMF.copiar(uri, G.DIRECTORIO_MIS_ARCHIVOS)
+                    copiar(uri, get_my_files_directory())
                     
             elif self.accion == "Borrar":
                 if os.path.isfile(uri):
-                    if JAMF.borrar(uri):
+                    if borrar(uri):
                         self.lista.modelo.remove(self.iter)
                         
             elif self.accion == "Mover":
                 if os.path.isfile(uri):
-                    if JAMF.mover(uri, G.DIRECTORIO_MIS_ARCHIVOS):
+                    if mover(uri, get_my_files_directory()):
                         self.lista.modelo.remove(self.iter)
         else:
             if self.accion == "Quitar":
@@ -1087,14 +1096,14 @@ class BalanceBar(Gtk.Scale):
         w, h = (rect.width, rect.height)
         
         # Fondo
-        Gdk.cairo_set_source_color(contexto, G.BLANCO)
+        Gdk.cairo_set_source_color(contexto, get_color("BLANCO"))
         contexto.paint()
         
         # Relleno de la barra
         ww = w - self.borde * 2
         hh = h/5
         
-        Gdk.cairo_set_source_color(contexto, G.NEGRO)
+        Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
         rect = Gdk.Rectangle()
         
         rect.x, rect.y, rect.width, rect.height = (self.borde, h/5*2, ww, hh)
@@ -1102,7 +1111,7 @@ class BalanceBar(Gtk.Scale):
         contexto.fill()
         
         # Relleno de la barra segun progreso
-        Gdk.cairo_set_source_color(contexto, G.NARANJA)
+        Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
         rect = Gdk.Rectangle()
         
         ximage = int(self.ajuste.get_value() * ww / 100)
@@ -1487,7 +1496,10 @@ class Efecto_widget_Config(Gtk.Box):
         
         self.pack_start(frame, False, False, 1)
         
-        self.widget_config = G.get_widget_config_efecto(nombre)
+        from JAMediaGlobales import get_widget_config_efecto
+        
+        self.widget_config = get_widget_config_efecto(nombre)
+        
         if self.widget_config:
             self.widget_config.connect('propiedad', self.set_efecto)
             frame = Gtk.Frame()
@@ -1496,8 +1508,8 @@ class Efecto_widget_Config(Gtk.Box):
             frame.add(self.widget_config)
             
             box = Gtk.EventBox()
-            box.modify_bg(0, G.NEGRO)
-            box.modify_fg(0, G.BLANCO)
+            box.modify_bg(0, get_color("NEGRO"))
+            box.modify_fg(0, get_color("BLANCO"))
             box.add(frame)
             
             self.pack_start(box, False, False, 1)

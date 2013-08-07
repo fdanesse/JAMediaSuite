@@ -25,15 +25,13 @@
 # http://docs.python.org/library/archiving.html?highlight=zipfile
 
 import os
-import commands
-import shutil
 
 from gi.repository import GObject
-from gi.repository import Gio
-from gi.repository import Gtk
 
 def describe_uri(uri):
-    """ Explica de que se trata el uri, si existe."""
+    """
+    Explica de que se trata el uri, si existe.
+    """
     
     existe = False
     
@@ -54,7 +52,9 @@ def describe_uri(uri):
         return False
 
 def describe_acceso_uri(uri):
-    """ Devuelve los permisos de acceso sobre una uri."""
+    """
+    Devuelve los permisos de acceso sobre una uri.
+    """
     
     existe = False
     
@@ -74,8 +74,12 @@ def describe_acceso_uri(uri):
         return False
     
 def describe_archivo(archivo):
-    """ Devuelve el tipo de un archivo (imagen, video, texto).
-    -z, --uncompress para ver dentro de los zip."""
+    """
+    Devuelve el tipo de un archivo (imagen, video, texto).
+    -z, --uncompress para ver dentro de los zip.
+    """
+    
+    import commands
     
     datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
     retorno = ""
@@ -86,18 +90,24 @@ def describe_archivo(archivo):
     return retorno
 
 def get_path_link(link):
-    """Devuelve el path al que apunta un link."""
+    """
+    Devuelve el path al que apunta un link.
+    """
     
     return os.readlink(link)
 
 def get_tamanio(path):
-    """Devuelve tamaño en bytes."""
+    """
+    Devuelve tamaño en bytes.
+    """
     
     return os.path.getsize(path)
 
 def borrar (origen):
     
     try:
+        import shutil
+        
         if os.path.isdir(origen):
             shutil.rmtree("%s" % (os.path.join(origen)) )
             
@@ -157,8 +167,10 @@ def crear_directorio (origen, directorionuevo):
         return False
     
 def get_programa(programa):
-    """ Devuelve true si programa se encuentra
-    instaldo y false si no lo está."""
+    """
+    Devuelve true si programa se encuentra
+    instaldo y false si no lo está.
+    """
     
     paths = os.environ['PATH'].split(":")
     presente = False
@@ -191,14 +203,16 @@ def verificar_Gstreamer():
     return presente
 
 class DeviceManager(GObject.GObject):
-    """Demonio para unidades de montaje.
-        
-        Importa la clase e instánciala.
-        
-        Seguidamente, para obtener las unidades montadas
-        en ese momento, llama a get_unidades.
-        
-        Para monitorear los cambios posteriormente, conectate a las señales."""
+    """
+    Demonio para unidades de montaje.
+    
+    Importa la clase e instánciala.
+    
+    Seguidamente, para obtener las unidades montadas
+    en ese momento, llama a get_unidades.
+    
+    Para monitorear los cambios posteriormente, conectate a las señales.
+    """
     
     __gsignals__ = {
     'nueva_unidad_conectada': (GObject.SignalFlags.RUN_FIRST,
@@ -210,6 +224,8 @@ class DeviceManager(GObject.GObject):
         
         GObject.GObject.__init__(self)
         
+        from gi.repository import Gio
+        
         self.unidades = {}
         self.demonio_unidades = Gio.VolumeMonitor.get()
         
@@ -217,8 +233,10 @@ class DeviceManager(GObject.GObject):
         self.demonio_unidades.connect('mount-removed', self.emit_unidad_desconectada)
         
     def get_unidades(self):
-        """Devuelve una lista de diccionarios que representa
-        las unidades montadas actualmente."""
+        """
+        Devuelve una lista de diccionarios que representa
+        las unidades montadas actualmente.
+        """
         
         unidades = []
         
@@ -229,7 +247,9 @@ class DeviceManager(GObject.GObject):
         return unidades
             
     def get_propiedades(self, punto_montaje):
-        """Devuelve las propiedades de una unidad montada."""
+        """
+        Devuelve las propiedades de una unidad montada.
+        """
         
         propiedades = {}
         propiedades['label'] = punto_montaje.get_name()
@@ -237,14 +257,18 @@ class DeviceManager(GObject.GObject):
         return propiedades
     
     def emit_unidad_conectada(self, demonio_unidades, unidad):
-        """Cuando se conecta una unidad usb."""
+        """
+        Cuando se conecta una unidad usb.
+        """
         
         propiedades = self.get_propiedades(unidad)
         self.unidades[unidad] = propiedades
         self.emit('nueva_unidad_conectada', self.unidades[unidad])
 
     def emit_unidad_desconectada(self, demonio_unidades, unidad):
-        """Cuando se desconecta una unidad usb."""
+        """
+        Cuando se desconecta una unidad usb.
+        """
         
         self.emit('nueva_unidad_desconectada', self.unidades[unidad])
         del self.unidades[unidad]
@@ -257,7 +281,11 @@ def unidad_desconectada(widget = None, senial = None):
     print widget, senial, widget.get_unidades()
     
 if __name__=="__main__":
-    """Demonio para unidades de montaje."""
+    """
+    Demonio para unidades de montaje.
+    """
+    
+    from gi.repository import Gtk
     
     manager = DeviceManager()
     manager.connect('nueva_unidad_conectada', unidad_conectada)

@@ -21,23 +21,9 @@
 
 import os
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
-
-import JAMediaObjects
-
-#import JAMediaObjects.JAMFileSystem as JAMF
-import JAMediaObjects.JAMediaGlobales as G
-
-#JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
-from Widgets import Mini_Toolbar
-from Widgets import ToolbarAccionListasVideos
-from Widgets import Toolbar_Videos_Izquierda
-from Widgets import Toolbar_Videos_Derecha
-from Widgets import Toolbar_Guardar
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
@@ -70,12 +56,18 @@ class PanelTube(Gtk.Paned):
         self.toolbar_videos_derecha = None
         self.toolbar_accion_derecha = None
         
-        self.setup_init()
+        self.__setup_init()
         
-    def setup_init(self):
+    def __setup_init(self):
         """
         Crea y Empaqueta todo.
         """
+        
+        from Widgets import Mini_Toolbar
+        from Widgets import ToolbarAccionListasVideos
+        from Widgets import Toolbar_Videos_Izquierda
+        from Widgets import Toolbar_Videos_Derecha
+        from Widgets import Toolbar_Guardar
         
         self.toolbar_encontrados = Mini_Toolbar("Videos Encontrados")
         self.toolbar_guardar_encontrados = Toolbar_Guardar()
@@ -90,7 +82,7 @@ class PanelTube(Gtk.Paned):
         self.toolbar_videos_derecha = Toolbar_Videos_Derecha()
         
         # Izquierda
-        scroll = self.get_scroll()
+        scroll = self.__get_scroll()
         scroll.add_with_viewport (self.encontrados)
         box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         box.pack_start(self.toolbar_encontrados, False, False, 0)
@@ -101,7 +93,7 @@ class PanelTube(Gtk.Paned):
         self.pack1(box, resize = False, shrink = False)
         
         # Derecha
-        scroll = self.get_scroll()
+        scroll = self.__get_scroll()
         scroll.add_with_viewport (self.descargar)
         box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         box.pack_start(self.toolbar_descargar, False, False, 0)
@@ -113,34 +105,34 @@ class PanelTube(Gtk.Paned):
         
         self.show_all()
         
-        self.toolbar_videos_izquierda.connect('mover_videos', self.mover_videos)
-        self.toolbar_videos_derecha.connect('mover_videos', self.mover_videos)
-        self.toolbar_videos_izquierda.connect('borrar', self.set_borrar)
-        self.toolbar_videos_derecha.connect('borrar', self.set_borrar)
-        self.toolbar_accion_izquierda.connect('ok', self.ejecutar_borrar)
-        self.toolbar_accion_derecha.connect('ok', self.ejecutar_borrar)
-        self.toolbar_encontrados.connect('abrir', self.abrir_lista_shelve)
-        self.toolbar_encontrados.connect('guardar', self.show_toolbar_guardar)
-        self.toolbar_guardar_encontrados.connect('ok', self.guardar_lista_shelve)
-        self.toolbar_descargar.connect('abrir', self.abrir_lista_shelve)
-        self.toolbar_descargar.connect('guardar', self.show_toolbar_guardar)
-        self.toolbar_guardar_descargar.connect('ok', self.guardar_lista_shelve)
+        self.toolbar_videos_izquierda.connect('mover_videos', self.__mover_videos)
+        self.toolbar_videos_derecha.connect('mover_videos', self.__mover_videos)
+        self.toolbar_videos_izquierda.connect('borrar', self.__set_borrar)
+        self.toolbar_videos_derecha.connect('borrar', self.__set_borrar)
+        self.toolbar_accion_izquierda.connect('ok', self.__ejecutar_borrar)
+        self.toolbar_accion_derecha.connect('ok', self.__ejecutar_borrar)
+        self.toolbar_encontrados.connect('abrir', self.__abrir_lista_shelve)
+        self.toolbar_encontrados.connect('guardar', self.__show_toolbar_guardar)
+        self.toolbar_guardar_encontrados.connect('ok', self.__guardar_lista_shelve)
+        self.toolbar_descargar.connect('abrir', self.__abrir_lista_shelve)
+        self.toolbar_descargar.connect('guardar', self.__show_toolbar_guardar)
+        self.toolbar_guardar_descargar.connect('ok', self.__guardar_lista_shelve)
         self.toolbar_videos_derecha.connect("comenzar_descarga",
-            self.comenzar_descarga)
+            self.__comenzar_descarga)
         
-        GObject.timeout_add(300, self.update)
+        GObject.timeout_add(300, self.__update)
     
-    def abrir_lista_shelve(self, widget, key):
+    def __abrir_lista_shelve(self, widget, key):
         """
         Agrega a la lista, todos los videos almacenados en
         un archivo shelve.
         """
         
-        from JAMediaObjects.JAMediaGlobales import DIRECTORIO_DATOS
+        from JAMediaObjects.JAMediaGlobales import get_data_directory
         import shelve
         
         dict_tube = shelve.open(
-            os.path.join(DIRECTORIO_DATOS,
+            os.path.join(get_data_directory(),
             "List.tube"))
         
         dict = dict_tube.get(key, [])
@@ -153,7 +145,7 @@ class PanelTube(Gtk.Paned):
         
         self.emit('open_shelve_list', videos, widget)
     
-    def show_toolbar_guardar(self, widget):
+    def __show_toolbar_guardar(self, widget):
         """
         Muestra la toolbar para escribir nombre de archivo
         donde se guardarán los videos de la lista correspondiente.
@@ -165,7 +157,7 @@ class PanelTube(Gtk.Paned):
         elif widget == self.toolbar_descargar:
             self.toolbar_guardar_descargar.show()
     
-    def guardar_lista_shelve(self, widget, key_name):
+    def __guardar_lista_shelve(self, widget, key_name):
         """
         Guarda todos los videos de la lista bajo la key según key_name.
         """
@@ -187,11 +179,11 @@ class PanelTube(Gtk.Paned):
                     videos.append(video.videodict)
         
         if videos:
-            from JAMediaObjects.JAMediaGlobales import DIRECTORIO_DATOS
+            from JAMediaObjects.JAMediaGlobales import get_data_directory
             import shelve
             
             dict_tube = shelve.open(
-                os.path.join(DIRECTORIO_DATOS,
+                os.path.join(get_data_directory(),
                 "List.tube"))
             
             dict = {}
@@ -202,7 +194,7 @@ class PanelTube(Gtk.Paned):
             
             dict_tube.close()
         
-    def comenzar_descarga(self, widget):
+    def __comenzar_descarga(self, widget):
         """
         Envia la señal descargar para comenzar la
         descarga de un video en la lista, cuando el
@@ -211,7 +203,7 @@ class PanelTube(Gtk.Paned):
         
         self.emit('download')
         
-    def mover_videos(self, widget):
+    def __mover_videos(self, widget):
         """
         Pasa todos los videos de una lista a otra.
         """
@@ -238,7 +230,7 @@ class PanelTube(Gtk.Paned):
             text,
             elementos)
     
-    def ejecutar_mover_videos(self, origen, destino, text, elementos):
+    def __ejecutar_mover_videos(self, origen, destino, text, elementos):
         """
         Ejecuta secuencia que pasa videos desde una lista a otra.
         """
@@ -268,7 +260,7 @@ class PanelTube(Gtk.Paned):
         self.toolbar_accion_izquierda.cancelar()
         self.toolbar_accion_derecha.cancelar()
         
-    def ejecutar_borrar(self, widget, objetos):
+    def __ejecutar_borrar(self, widget, objetos):
         """
         Elimina una lista de videos.
         """
@@ -276,7 +268,7 @@ class PanelTube(Gtk.Paned):
         for objeto in objetos:
             objeto.destroy()
         
-    def set_borrar(self, widget, objetos = None):
+    def __set_borrar(self, widget, objetos = None):
         """
         Llama a toolbar accion para pedir confirmacion
         sobre borrar un video o una lista de videos de la lista.
@@ -306,7 +298,7 @@ class PanelTube(Gtk.Paned):
         else:
             print "Caso imprevisto en run_accion de PanelTube."
         
-    def update(self):
+    def __update(self):
         """
         Actualiza información en toolbars de
         videos encontrados y en descaga.
@@ -319,8 +311,12 @@ class PanelTube(Gtk.Paned):
         
         return True
     
-    def get_scroll(self):
+    def __get_scroll(self):
         
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+            
         return scroll

@@ -20,45 +20,14 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import sys
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 
 import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
-#base_path = os.path.dirname(__file__)
-#commands.getoutput('PATH=%s:$PATH' % (base_path))
-
-import JAMediaObjects.JAMediaYoutube as YT
-import JAMediaObjects.JAMediaGlobales as G
-import JAMediaObjects.JAMFileSystem as JAMF
-
-import JAMediaTube
-from JAMediaTube.Widgets import Toolbar
-from JAMediaTube.Widgets import Toolbar_Busqueda
-from JAMediaTube.Widgets import Toolbar_Descarga
-from JAMediaTube.Widgets import Alerta_Busqueda
-from JAMediaTube.Widgets import WidgetVideoItem
-from JAMediaTube.Widgets import Tube_Player
-
-from JAMediaTube.PanelTube import PanelTube
-
-'''
-screen = Gdk.Screen.get_default()
-css_provider = Gtk.CssProvider()
-style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
-css_provider.load_from_path(style_path)
-context = Gtk.StyleContext()
-context.add_provider_for_screen(
-    screen,
-    css_provider,
-    Gtk.STYLE_PROVIDER_PRIORITY_USER)'''
     
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
@@ -99,12 +68,21 @@ class Ventana(Gtk.Window):
         
         self.videos_temp = []
         
-        self.setup_init()
+        self.__setup_init()
         
-    def setup_init(self):
+    def __setup_init(self):
         """
         Crea y Empaqueta todo.
         """
+        
+        from JAMediaTube.Widgets import Toolbar
+        from JAMediaTube.Widgets import Toolbar_Busqueda
+        from JAMediaTube.Widgets import Toolbar_Descarga
+        from JAMediaTube.Widgets import Alerta_Busqueda
+        
+        from JAMediaTube.PanelTube import PanelTube
+        
+        from JAMediaObjects.JAMediaWidgets import ToolbarSalir
         
         boxbase = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.box_tube = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
@@ -129,6 +107,8 @@ class Ventana(Gtk.Window):
         
         self.add(boxbase)
         
+        from JAMediaTube.Widgets import Tube_Player
+        
         self.jamedia = Tube_Player()
         self.socketjamedia.add_id(self.jamedia.get_id())
         
@@ -137,9 +117,9 @@ class Ventana(Gtk.Window):
         
         self.paneltube.set_vista_inicial() # oculta las toolbarsaccion
         
-        GObject.idle_add(self.setup_init2)
+        GObject.idle_add(self.__setup_init2)
     
-    def setup_init2(self):
+    def __setup_init2(self):
         """
         Inicializa la aplicación a su estado fundamental.
         """
@@ -148,7 +128,7 @@ class Ventana(Gtk.Window):
         self.jamedia.pack_standar()
         self.jamedia.switch_reproductor(None, "JAMediaReproductor")
         
-        map(self.ocultar,[
+        map(self.__ocultar,[
             self.toolbar_descarga,
             self.toolbar_salir,
             self.alerta_busqueda,
@@ -157,17 +137,17 @@ class Ventana(Gtk.Window):
         
         if self.pistas:
             self.jamedia.set_nueva_lista(self.pistas)
-            self.switch(None, 'jamedia')
+            self.__switch(None, 'jamedia')
             
         else:
-            self.switch(None, 'jamediatube')
+            self.__switch(None, 'jamediatube')
         
         self.paneltube.encontrados.drag_dest_set(
             Gtk.DestDefaults.ALL,
             target,
             Gdk.DragAction.MOVE)
             
-        self.paneltube.encontrados.connect("drag-drop", self.drag_drop)
+        self.paneltube.encontrados.connect("drag-drop", self.__drag_drop)
         self.paneltube.encontrados.drag_dest_add_uri_targets()
         
         self.paneltube.descargar.drag_dest_set(
@@ -175,20 +155,20 @@ class Ventana(Gtk.Window):
             target,
             Gdk.DragAction.MOVE)
             
-        self.paneltube.descargar.connect("drag-drop", self.drag_drop)
+        self.paneltube.descargar.connect("drag-drop", self.__drag_drop)
         self.paneltube.descargar.drag_dest_add_uri_targets()
         
-        self.connect("destroy", self.salir)
-        self.toolbar.connect('salir', self.confirmar_salir)
-        self.toolbar_salir.connect('salir', self.salir)
-        self.toolbar.connect('switch', self.switch, 'jamedia')
-        self.jamedia.connect('salir', self.switch, 'jamediatube')
-        self.toolbar_busqueda.connect("comenzar_busqueda", self.comenzar_busqueda)
-        self.paneltube.connect('download', self.run_download)
-        self.paneltube.connect('open_shelve_list', self.open_shelve_list)
-        self.toolbar_descarga.connect('end', self.run_download)
+        self.connect("destroy", self.__salir)
+        self.toolbar.connect('salir', self.__confirmar_salir)
+        self.toolbar_salir.connect('salir', self.__salir)
+        self.toolbar.connect('switch', self.__switch, 'jamedia')
+        self.jamedia.connect('salir', self.__switch, 'jamediatube')
+        self.toolbar_busqueda.connect("comenzar_busqueda", self.__comenzar_busqueda)
+        self.paneltube.connect('download', self.__run_download)
+        self.paneltube.connect('open_shelve_list', self.__open_shelve_list)
+        self.toolbar_descarga.connect('end', self.__run_download)
         
-    def open_shelve_list(self, widget, shelve_list, toolbarwidget):
+    def __open_shelve_list(self, widget, shelve_list, toolbarwidget):
         """
         Carga una lista de videos almacenada en un
         archivo shelve en el area del panel correspondiente
@@ -207,9 +187,9 @@ class Ventana(Gtk.Window):
         for video in shelve_list:
             videos.append(video)
         
-        GObject.idle_add(self.add_videos, videos, destino)
+        GObject.idle_add(self.__add_videos, videos, destino)
         
-    def run_download(self, widget):
+    def __run_download(self, widget):
         """
         Comienza descarga de un video.
         """
@@ -222,10 +202,11 @@ class Ventana(Gtk.Window):
         if videos:
             videos[0].get_parent().remove(videos[0])
             self.toolbar_descarga.download(videos[0])
+            
         else:
             self.toolbar_descarga.hide()
             
-    def drag_drop(self, destino, drag_context, x, y, n):
+    def __drag_drop(self, destino, drag_context, x, y, n):
         """
         Ejecuta drop sobre un destino.
         """
@@ -254,30 +235,33 @@ class Ventana(Gtk.Window):
                 
             videoitem.set_tooltip_text(text)
         
-    def comenzar_busqueda(self, widget, palabras):
+    def __comenzar_busqueda(self, widget, palabras):
         """
         Muestra la alerta de busqueda y lanza
         secuencia de busqueda y agregado de videos al panel.
         """
         
-        map(self.mostrar,[self.alerta_busqueda])
+        map(self.__mostrar,[self.alerta_busqueda])
         self.alerta_busqueda.label.set_text("Buscando: %s" % (palabras))
         
-        GObject.timeout_add(300, self.lanzar_busqueda, palabras)
+        GObject.timeout_add(300, self.__lanzar_busqueda, palabras)
         
-    def lanzar_busqueda(self, palabras):
+    def __lanzar_busqueda(self, palabras):
         """
         Lanza la Búsqueda y comienza secuencia
         que agrega los videos al panel.
         """
         
+        import JAMediaObjects.JAMediaYoutube as YT
+        
         for video in YT.Buscar(palabras):
             self.videos_temp.append(video)
         
-        GObject.idle_add(self.add_videos, self.videos_temp, self.paneltube.encontrados)
+        GObject.idle_add(self.__add_videos, self.videos_temp, self.paneltube.encontrados)
+        
         return False
     
-    def add_videos(self, videos, destino):
+    def __add_videos(self, videos, destino):
         """
         Se crean los video_widgets de videos y
         se agregan al panel, segun destino.
@@ -287,10 +271,12 @@ class Ventana(Gtk.Window):
             # self.videos_temp contiene solo los videos
             # encontrados en las búsquedas, no los que se cargan
             # desde un archivo.
-            map(self.ocultar,[self.alerta_busqueda])
+            map(self.__ocultar,[self.alerta_busqueda])
         
         if videos:
             video = videos[0]
+            
+            from JAMediaTube.Widgets import WidgetVideoItem
             
             videowidget = WidgetVideoItem(video)
             text = TipEncontrados
@@ -323,7 +309,7 @@ class Ventana(Gtk.Window):
             self.get_property('window').invalidate_rect(self.get_allocation(), True)
             self.get_property('window').process_updates(True)
             
-            GObject.idle_add(self.add_videos, videos, destino)
+            GObject.idle_add(self.__add_videos, videos, destino)
         
     def set_pistas(self, pistas):
         """
@@ -332,39 +318,41 @@ class Ventana(Gtk.Window):
         
         self.pistas = pistas
         
-    def switch(self, widget, valor):
+    def __switch(self, widget, valor):
         """
         Cambia entre la vista de descargas y
         la de reproduccion.
         """
         
         if valor == 'jamediatube':
-            map(self.ocultar,[self.socketjamedia])
-            map(self.mostrar, [self.box_tube])
+            map(self.__ocultar,[self.socketjamedia])
+            map(self.__mostrar, [self.box_tube])
             
         elif valor == 'jamedia':
-            map(self.ocultar,[self.box_tube])
-            map(self.mostrar, [self.socketjamedia])
+            map(self.__ocultar,[self.box_tube])
+            map(self.__mostrar, [self.socketjamedia])
         
-    def ocultar(self, objeto):
+    def __ocultar(self, objeto):
         
         if objeto.get_visible(): objeto.hide()
         
-    def mostrar(self, objeto):
+    def __mostrar(self, objeto):
         
         if not objeto.get_visible(): objeto.show()
         
-    def confirmar_salir(self, widget = None, senial = None):
+    def __confirmar_salir(self, widget = None, senial = None):
         """
         Recibe salir y lo pasa a la toolbar de confirmación.
         """
         
         self.toolbar_salir.run("JAMediaTube")
         
-    def salir(self, widget = None, senial = None):
+    def __salir(self, widget = None, senial = None):
         
         # FIXME: Hay que Mejorar esta forma de salir.
         import commands
+        import sys
+        
         commands.getoutput('killall mplayer')
         sys.exit(0)
 
@@ -376,13 +364,17 @@ def get_item_list(path):
         if os.path.isfile(path):
             archivo = os.path.basename(path)
             
-            if 'audio' in JAMF.describe_archivo(path) or \
-                'video' in JAMF.describe_archivo(path):
+            from JAMediaObjects.JAMFileSystem import describe_archivo
+            
+            if 'audio' in describe_archivo(path) or \
+                'video' in describe_archivo(path):
                     return [archivo, path]
         
     return False
 
 if __name__ == "__main__":
+    
+    import sys
     
     items = []
     
