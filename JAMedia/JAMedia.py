@@ -299,7 +299,7 @@ class JAMediaPlayer(Gtk.Plug):
         else:
             self.jamediareproductor = JAMediaReproductor(self.pantalla)
             
-        self.__switch_reproductor(None, "JAMediaReproductor") # default Gst.
+        self.switch_reproductor(None, "JAMediaReproductor") # default Gst.
         
         self.mplayerreproductor.connect("endfile", self.__endfile)
         self.mplayerreproductor.connect("estado", self.__cambioestadoreproductor)
@@ -322,12 +322,12 @@ class JAMediaPlayer(Gtk.Plug):
         self.pantalla.connect("button_press_event", self.__clicks_en_pantalla)
         #self.pantalla.connect('expose-event', self.paint_pantalla)
         
-        self.toolbar.connect('salir', self.__confirmar_salir)
+        self.toolbar.connect('salir', self.confirmar_salir)
         #self.toolbar.connect('capturar', self.fotografiar)
         self.toolbar.connect('config', self.__mostrar_config)
         
         self.toolbar_salir.connect('salir', self.__emit_salir)
-        self.toolbar_config.connect('reproductor', self.__switch_reproductor)
+        self.toolbar_config.connect('reproductor', self.switch_reproductor)
         self.toolbar_config.connect('valor', self.__set_balance)
         self.toolbar_info.connect('rotar', self.__set_rotacion)
         self.toolbar_info.connect('actualizar_streamings', self.__actualizar_streamings)
@@ -576,7 +576,7 @@ class JAMediaPlayer(Gtk.Plug):
             self.scroll_config.show_all()
             GObject.idle_add(self.__update_balance_toolbars)
         
-    def __switch_reproductor(self, widget, nombre):
+    def switch_reproductor(self, widget, nombre):
         """
         Recibe la señal "reproductor" desde toolbar_config y
         cambia el reproductor que se utiliza, entre mplayer y
@@ -879,9 +879,11 @@ class JAMediaPlayer(Gtk.Plug):
         
         if visible: self.scroll_config.show()
         
-    def __confirmar_salir(self, widget = None, senial = None):
+    def confirmar_salir(self, widget = None, senial = None):
         """
         Recibe salir y lo pasa a la toolbar de confirmación.
+        
+        Es pública para sobre escritura.
         """
         
         map(self.__ocultar, [self.toolbaraddstream])
@@ -971,7 +973,7 @@ class JAMediaPlayer(Gtk.Plug):
         elif indice == 3:
             # HACK: Tv no funciona con JAMediaReproductor.
             if self.player == self.jamediareproductor:
-                self.__switch_reproductor(None, "MplayerReproductor")
+                self.switch_reproductor(None, "MplayerReproductor")
                 
             archivo = os.path.join(
                 get_data_directory(),

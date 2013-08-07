@@ -51,17 +51,18 @@ class Tube_Player(JAMediaPlayer):
     
     def confirmar_salir(self, widget = None, senial = None):
         """
-        Recibe salir y lo pasa a la toolbar de confirmación.
+        Salteandose confirmación para salir
+        y maneteniendose activa la reproducción y
+        grabación de JAMedia.
         """
         
-        map(self.ocultar, [self.toolbaraddstream])
-        
-        # Salteandose confirmación para salir
-        # y maneteniendose activa la reproducción y
-        # grabación de JAMedia.
-        # self.toolbar_salir.run("JAMedia")
+        map(self.__ocultar, [self.toolbaraddstream])
         
         self.emit('salir')
+        
+    def __ocultar(self, objeto):
+        
+        if objeto.get_visible(): objeto.hide()
         
 class Toolbar(Gtk.Toolbar):
     """
