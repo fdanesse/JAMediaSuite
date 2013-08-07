@@ -518,7 +518,7 @@ class ToolbarReproduccion(Gtk.Box):
             flip = True,
             rotacion = False)
         self.botonatras.set_tooltip_text("Anterior")
-        self.botonatras.connect("clicked", self.clickenatras)
+        self.botonatras.connect("clicked", self.__clickenatras)
         self.pack_start(self.botonatras, False, True, 0)
         
         self.botonplay = JAMediaToolButton(pixels = get_pixels(0.8))
@@ -528,7 +528,7 @@ class ToolbarReproduccion(Gtk.Box):
             flip = False,
             rotacion = False)
         self.botonplay.set_tooltip_text("Reproducir")
-        self.botonplay.connect("clicked", self.clickenplay_pausa)
+        self.botonplay.connect("clicked", self.__clickenplay_pausa)
         self.pack_start(self.botonplay, False, True, 0)
         
         self.botonsiguiente = JAMediaToolButton(pixels = get_pixels(0.8))
@@ -538,7 +538,7 @@ class ToolbarReproduccion(Gtk.Box):
             flip = False,
             rotacion = False)
         self.botonsiguiente.set_tooltip_text("Siguiente")
-        self.botonsiguiente.connect("clicked", self.clickensiguiente)
+        self.botonsiguiente.connect("clicked", self.__clickensiguiente)
         self.pack_start(self.botonsiguiente, False, True, 0)
         
         self.botonstop = JAMediaToolButton(pixels = get_pixels(0.8))
@@ -548,7 +548,7 @@ class ToolbarReproduccion(Gtk.Box):
             flip = False,
             rotacion = False)
         self.botonstop.set_tooltip_text("Detener Reproducción")
-        self.botonstop.connect("clicked", self.clickenstop)
+        self.botonstop.connect("clicked", self.__clickenstop)
         self.pack_start(self.botonstop, False, True, 0)
         
         self.show_all()
@@ -571,19 +571,19 @@ class ToolbarReproduccion(Gtk.Box):
             flip = False,
             rotacion = False)
         
-    def clickenstop(self, widget = None, event = None):
+    def __clickenstop(self, widget = None, event = None):
         
         self.emit("activar", "stop")
         
-    def clickenplay_pausa(self, widget = None, event = None):
+    def __clickenplay_pausa(self, widget = None, event = None):
         
         self.emit("activar", "pausa-play")
         
-    def clickenatras(self, widget= None, event= None):
+    def __clickenatras(self, widget= None, event= None):
         
         self.emit("activar", "atras")
         
-    def clickensiguiente(self, widget= None, event= None):
+    def __clickensiguiente(self, widget= None, event= None):
         
         self.emit("activar", "siguiente")
 # << -------------------- Controles de Reproducción ---------- #
@@ -610,7 +610,7 @@ class BarraProgreso(Gtk.EventBox):
         self.add(self.escala)
         self.show_all()
         
-        self.escala.connect('user-set-value', self.emit_valor)
+        self.escala.connect('user-set-value', self.__emit_valor)
         self.set_size_request(-1, get_pixels(1.2))
         
     def set_progress(self, valor = 0):
@@ -624,7 +624,7 @@ class BarraProgreso(Gtk.EventBox):
             self.escala.get_adjustment().set_value(valor)
             self.escala.queue_draw()
         
-    def emit_valor(self, widget, valor):
+    def __emit_valor(self, widget, valor):
         """
         El usuario modifica la escala.
         """
@@ -785,7 +785,7 @@ class ToolbarAccion(Gtk.Toolbar):
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.cancelar)
+        boton.connect("clicked", self.__cancelar)
         self.insert(boton, -1)
         
         item = Gtk.ToolItem()
@@ -800,7 +800,7 @@ class ToolbarAccion(Gtk.Toolbar):
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
-        boton.connect("clicked", self.realizar_accion)
+        boton.connect("clicked", self.__realizar_accion)
         self.insert(boton, -1)
 
         self.insert(get_separador(draw = False,
@@ -808,7 +808,7 @@ class ToolbarAccion(Gtk.Toolbar):
         
         self.show_all()
         
-    def realizar_accion(self, widget):
+    def __realizar_accion(self, widget):
         """
         Ejecuta una accion sobre un archivo o streaming
         en la lista de reprucción cuando el usuario confirma.
@@ -888,7 +888,7 @@ class ToolbarAccion(Gtk.Toolbar):
             self.label.set_text("¿%s?: %s" % (accion, texto))
             self.show_all()
 
-    def cancelar(self, widget= None):
+    def __cancelar(self, widget= None):
         """
         Cancela la accion configurada sobre
         un archivo o streaming en la lista de
@@ -929,13 +929,13 @@ class ToolbarBalanceConfig(Gtk.Table):
         
         self.show_all()
         
-        self.brillo.connect('valor', self.emit_senial, 'brillo')
-        self.contraste.connect('valor', self.emit_senial, 'contraste')
-        self.saturacion.connect('valor', self.emit_senial, 'saturacion')
-        self.hue.connect('valor', self.emit_senial, 'hue')
-        self.gamma.connect('valor', self.emit_senial, 'gamma')
+        self.brillo.connect('valor', self.__emit_senial, 'brillo')
+        self.contraste.connect('valor', self.__emit_senial, 'contraste')
+        self.saturacion.connect('valor', self.__emit_senial, 'saturacion')
+        self.hue.connect('valor', self.__emit_senial, 'hue')
+        self.gamma.connect('valor', self.__emit_senial, 'gamma')
         
-    def emit_senial(self, widget, valor, tipo):
+    def __emit_senial(self, widget, valor, tipo):
         """
         Emite valor, que representa un valor
         en % float y un valor tipo para:
@@ -988,9 +988,9 @@ class ToolbarcontrolValores(Gtk.Toolbar):
         
         self.show_all()
         
-        self.escala.connect("user-set-value", self.user_set_value)
+        self.escala.connect("user-set-value", self.__user_set_value)
         
-    def user_set_value(self, widget= None, valor= None):
+    def __user_set_value(self, widget= None, valor= None):
         """
         Recibe la posicion en la barra de
         progreso (en % float), y re emite los valores.
@@ -1026,7 +1026,7 @@ class SlicerBalance(Gtk.EventBox):
         self.add(self.escala)
         self.show_all()
         
-        self.escala.connect('user-set-value', self.emit_valor)
+        self.escala.connect('user-set-value', self.__emit_valor)
         
     def set_progress(self, valor = 0.0):
         """
@@ -1036,7 +1036,7 @@ class SlicerBalance(Gtk.EventBox):
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
         
-    def emit_valor(self, widget, valor):
+    def __emit_valor(self, widget, valor):
         """
         El usuario modifica la escala.
         Y se emite la señal con el valor (% float).
@@ -1142,12 +1142,12 @@ class ItemSwitch(Gtk.Frame):
         self.set_label_align(0.5, 1.0)
         
         self.switch = Gtk.Switch()
-        self.switch.connect('button-press-event', self.emit_switch)
+        self.switch.connect('button-press-event', self.__emit_switch)
         
         self.add(self.switch)
         self.show_all()
         
-    def emit_switch(self, widget, senial):
+    def __emit_switch(self, widget, senial):
         """
         Emite la señal switch con el valor correspondiente.
         """
@@ -1175,7 +1175,7 @@ class ToolbarSalir(Gtk.Toolbar):
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.cancelar)
+        boton.connect("clicked", self.__cancelar)
         self.insert(boton, -1)
         
         self.insert(get_separador(draw = False,
@@ -1195,7 +1195,7 @@ class ToolbarSalir(Gtk.Toolbar):
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
-        boton.connect("clicked", self.emit_salir)
+        boton.connect("clicked", self.__emit_salir)
         self.insert(boton, -1)
         
         self.insert(get_separador(draw = False,
@@ -1212,7 +1212,7 @@ class ToolbarSalir(Gtk.Toolbar):
         self.label.set_text("Salir de %s ?" % (nombre_aplicacion))
         self.show()
         
-    def emit_salir(self, widget):
+    def __emit_salir(self, widget):
         """
         Confirma Salir de la aplicación.
         """
@@ -1220,7 +1220,7 @@ class ToolbarSalir(Gtk.Toolbar):
         self.hide()
         self.emit('salir')
 
-    def cancelar(self, widget= None):
+    def __cancelar(self, widget= None):
         """
         Cancela salir de la aplicación.
         """
@@ -1250,17 +1250,17 @@ class WidgetsGstreamerEfectos(Gtk.Frame):
         self.set_label(" Efectos: ")
         self.set_label_align(0.0, 0.5)
         self.gstreamer_efectos = GstreamerVideoEfectos()
-        self.gstreamer_efectos.connect('agregar_efecto', self.emit_click_efecto)
-        self.gstreamer_efectos.connect('configurar_efecto', self.configurar_efecto)
+        self.gstreamer_efectos.connect('agregar_efecto', self.__emit_click_efecto)
+        self.gstreamer_efectos.connect('configurar_efecto', self.__configurar_efecto)
         self.add(self.gstreamer_efectos)
         
         self.show_all()
         
-    def configurar_efecto(self, widget, efecto, propiedad, valor):
+    def __configurar_efecto(self, widget, efecto, propiedad, valor):
         
         self.emit('configurar_efecto', efecto, propiedad, valor)
         
-    def emit_click_efecto(self, widget, nombre_efecto):
+    def __emit_click_efecto(self, widget, nombre_efecto):
         
         self.emit('click_efecto', nombre_efecto)
         
@@ -1316,19 +1316,19 @@ class GstreamerVideoEfectos(Gtk.Box):
         #    ('Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos):
         if 'Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos:
             botonefecto = Efecto_widget_Config(nombre)
-            botonefecto.connect('agregar_efecto', self.agregar_efecto)
-            botonefecto.connect('configurar_efecto', self.configurar_efecto)
+            botonefecto.connect('agregar_efecto', self.__agregar_efecto)
+            botonefecto.connect('configurar_efecto', self.__configurar_efecto)
             self.pack_start(botonefecto, False, False, 10)
             
         self.show_all()
         elementos.remove(elementos[0])
         GObject.idle_add(self.cargar_efectos, elementos)
         
-    def configurar_efecto(self, widget, efecto, propiedad, valor):
+    def __configurar_efecto(self, widget, efecto, propiedad, valor):
         
         self.emit('configurar_efecto', efecto, propiedad, valor)
         
-    def agregar_efecto(self, widget, nombre_efecto):
+    def __agregar_efecto(self, widget, nombre_efecto):
         """
         Cuando se hace click en el botón del efecto
         se envía la señal 'agregar-efecto'.
@@ -1336,10 +1336,11 @@ class GstreamerVideoEfectos(Gtk.Box):
         
         self.emit('agregar_efecto', nombre_efecto)
         
+    '''
     def efecto_click_derecho(self, widget, void):
         
         #print "Click", widget.get_tooltip_text(), "Select", widget.estado_select
-        pass
+        pass'''
 
     def des_seleccionar_efecto(self, nombre):
         
@@ -1381,17 +1382,17 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
         self.set_label(" Visualizadores: ")
         self.set_label_align(0.0, 0.5)
         self.gstreamer_efectos = GstreamerAudioVisualizador()
-        self.gstreamer_efectos.connect('agregar_efecto', self.emit_click_efecto)
-        self.gstreamer_efectos.connect('configurar_efecto', self.configurar_efecto)
+        self.gstreamer_efectos.connect('agregar_efecto', self.__emit_click_efecto)
+        self.gstreamer_efectos.connect('configurar_efecto', self.__configurar_efecto)
         self.add(self.gstreamer_efectos)
         
         self.show_all()
         
-    def configurar_efecto(self, widget, efecto, propiedad, valor):
+    def __configurar_efecto(self, widget, efecto, propiedad, valor):
         
         self.emit('configurar_efecto', efecto, propiedad, valor)
         
-    def emit_click_efecto(self, widget, nombre_efecto):
+    def __emit_click_efecto(self, widget, nombre_efecto):
         
         # HACK: Deselecciona todos los demás visualizadores
         # ya que solo se puede aplicar uno a la vez a diferencia
@@ -1418,6 +1419,7 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
         
         self.gstreamer_efectos.seleccionar_efecto(nombre)
         
+'''
 class GstreamerAudioVisualizador(GstreamerVideoEfectos):
     """
     Contenedor de widgets que representan
@@ -1447,14 +1449,14 @@ class GstreamerAudioVisualizador(GstreamerVideoEfectos):
         #if 'gst-plugins-good' in datos and 'Visualization' in datos:
         if 'Visualization' in datos:
             botonefecto = Efecto_widget_Config(nombre)
-            botonefecto.connect('agregar_efecto', self.agregar_efecto)
+            botonefecto.connect('agregar_efecto', self.__agregar_efecto)
             # FIXME: Agregar configuracion para visualizador
             #botonefecto.connect('configurar_efecto', self.configurar_efecto)
             self.pack_start(botonefecto, False, False, 1)
             
         self.show_all()
         elementos.remove(elementos[0])
-        GObject.idle_add(self.cargar_efectos, elementos)
+        GObject.idle_add(self.cargar_efectos, elementos)'''
 
 class Efecto_widget_Config(Gtk.Box):
     """
@@ -1475,8 +1477,8 @@ class Efecto_widget_Config(Gtk.Box):
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
         
         self.botonefecto = JAMediaButton()
-        self.botonefecto.connect('clicked', self.efecto_click)
-        self.botonefecto.connect('click_derecho', self.efecto_click_derecho)
+        self.botonefecto.connect('clicked', self.__efecto_click)
+        #self.botonefecto.connect('click_derecho', self.__efecto_click_derecho)
         self.botonefecto.set_tooltip(nombre)
         lado = get_pixels(1.0)
         self.botonefecto.set_tamanio(lado, lado)
@@ -1501,7 +1503,7 @@ class Efecto_widget_Config(Gtk.Box):
         self.widget_config = get_widget_config_efecto(nombre)
         
         if self.widget_config:
-            self.widget_config.connect('propiedad', self.set_efecto)
+            self.widget_config.connect('propiedad', self.__set_efecto)
             frame = Gtk.Frame()
             frame.set_label("Configuración")
             frame.set_label_align(0.5, 1.0)
@@ -1517,11 +1519,11 @@ class Efecto_widget_Config(Gtk.Box):
         self.show_all()
         # y ocultar configuraciones.
         
-    def set_efecto(self, widget, propiedad, valor):
+    def __set_efecto(self, widget, propiedad, valor):
         
         self.emit('configurar_efecto', self.botonefecto.get_tooltip_text(), propiedad, valor)
         
-    def efecto_click(self, widget, void):
+    def __efecto_click(self, widget, void):
         """
         Cuando se hace click en el botón del efecto
         se envía la señal 'agregar-efecto'.
@@ -1529,10 +1531,11 @@ class Efecto_widget_Config(Gtk.Box):
         
         self.emit('agregar_efecto', widget.get_tooltip_text())
         
+    '''
     def efecto_click_derecho(self, widget, void):
         
         #print "Click", widget.get_tooltip_text(), "Select", widget.estado_select
-        pass
+        pass'''
     
     def seleccionar(self):
         """
@@ -1551,7 +1554,7 @@ class Efecto_widget_Config(Gtk.Box):
         #y ocultar configuracion
         
 # <<< JAMediaVideo
-
+'''
 class JAMediaTerminal(Gtk.Box):
     """
     Terminal Vte.
@@ -1786,7 +1789,7 @@ class ToolbarTerminal(Gtk.Toolbar):
     def __emit_pegar(self, widget):
         
         self.emit('accion', 'pegar')
-        
+'''
 # En base a código de Agustin Zubiaga <aguz@sugarlabs.org>
 # http://wiki.laptop.org/go/Accelerometer
 class Acelerometro(GObject.GObject):

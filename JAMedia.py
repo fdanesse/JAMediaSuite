@@ -1,21 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
+#   JAMedia.py por:
+#   Flavio Danesse <fdanesse@gmail.com>
+#   CeibalJAM! - Uruguay
 
-import gi
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+import os
+
 from gi.repository import Gtk
 from gi.repository import GObject
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
 import JAMediaObjects
-import JAMediaObjects.JAMFileSystem as JAMF
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-import JAMedia
 from JAMedia.JAMedia import JAMediaPlayer
     
 class Ventana(Gtk.Window):
@@ -46,16 +60,19 @@ class Ventana(Gtk.Window):
         self.show_all()
         self.realize()
         
-        self.connect("destroy", self.salir)
-        self.jamediaplayer.connect('salir', self.salir)
+        self.connect("destroy", self.__salir)
+        self.jamediaplayer.connect('salir', self.__salir)
         
-        GObject.idle_add(self.setup_init)
+        GObject.idle_add(self.__setup_init)
         
     def set_pistas(self, pistas):
+        """
+        Cuando se abre con una lista de archivos.
+        """
         
         self.pistas = pistas
         
-    def setup_init(self):
+    def __setup_init(self):
         
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
@@ -65,12 +82,12 @@ class Ventana(Gtk.Window):
         
         self.jamediaplayer.pack_efectos()
         
-    def salir(self, widget = None, senial = None):
+    def __salir(self, widget = None, senial = None):
         
+        import sys
         import commands
         
         commands.getoutput('killall mplayer')
-        
         sys.exit(0)
         
 def get_item_list(path):
@@ -79,13 +96,17 @@ def get_item_list(path):
         if os.path.isfile(path):
             archivo = os.path.basename(path)
             
-            if 'audio' in JAMF.describe_archivo(path) or \
-                'video' in JAMF.describe_archivo(path):
+            from JAMediaObjects.JAMFileSystem import describe_archivo
+            
+            if 'audio' in describe_archivo(path) or \
+                'video' in describe_archivo(path):
                     return [archivo, path]
         
     return False
 
 if __name__ == "__main__":
+    
+    import sys
     
     items = []
     

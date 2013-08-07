@@ -21,27 +21,20 @@
 
 import os
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GdkX11
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import Visor
-from JAMediaObjects.JAMediaWidgets import Lista
-from JAMediaObjects.JAMediaWidgets import ToolbarReproduccion
-from JAMediaObjects.JAMediaWidgets import BarraProgreso
-from JAMediaObjects.JAMediaWidgets import ControlVolumen
-from JAMediaObjects.JAMediaWidgets import ToolbarAccion
-from JAMediaObjects.JAMediaWidgets import ToolbarSalir
-from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerEfectos
 
-import JAMediaObjects.JAMFileSystem as JAMF
+JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+from JAMediaObjects.JAMFileSystem import get_programa
+from JAMediaObjects.JAMFileSystem import verificar_Gstreamer
 
 # HACK: La aplicación nunca debe explotar :P
-if JAMF.get_programa("mplayer"):
+if get_programa("mplayer"):
     from JAMediaObjects.MplayerReproductor import MplayerReproductor
     from JAMediaObjects.MplayerReproductor import MplayerGrabador
     
@@ -50,7 +43,7 @@ else:
     from JAMediaObjects.PlayerNull import MplayerGrabador
     
 # HACK: La aplicación nunca debe explotar :P
-if JAMF.verificar_Gstreamer():
+if verificar_Gstreamer():
     from JAMediaObjects.JAMediaReproductor import JAMediaReproductor
     from JAMediaObjects.JAMediaReproductor import JAMediaGrabador
     
@@ -58,23 +51,12 @@ else:
     from JAMediaObjects.PlayerNull import JAMediaReproductor
     from JAMediaObjects.PlayerNull import JAMediaGrabador
     
-import JAMediaObjects.JAMediaGlobales as G
-
-from Widgets import ToolbarLista
-from Widgets import Toolbar
-from Widgets import MenuList
-from Widgets import ToolbarConfig
-from Widgets import ToolbarGrabar
-from Widgets import Selector_de_Archivos
-from Widgets import ToolbarInfo
-from Widgets import ToolbarAddStream
-from Widgets import WidgetEfecto_en_Pipe
-
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
+from JAMediaObjects.JAMediaGlobales import get_color
+from JAMediaObjects.JAMediaGlobales import get_pixels
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
-style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+style_path = os.path.join(JAMediaObjectsPath, "JAMedia.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
 
@@ -169,13 +151,28 @@ class JAMediaPlayer(Gtk.Plug):
         
         self.show_all()
         
-        self.connect("embedded", self.embed_event)
+        self.connect("embedded", self.__embed_event)
         
     def setup_init(self):
         """
         Se crea la interfaz grafica,
         se setea y se empaqueta todo.
         """
+        
+        from JAMediaObjects.JAMediaWidgets import Visor
+        from JAMediaObjects.JAMediaWidgets import BarraProgreso
+        from JAMediaObjects.JAMediaWidgets import ControlVolumen
+        from JAMediaObjects.JAMediaWidgets import Lista
+        from JAMediaObjects.JAMediaWidgets import ToolbarReproduccion
+        from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerEfectos
+        from JAMediaObjects.JAMediaWidgets import ToolbarAccion
+        from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+        
+        from Widgets import Toolbar
+        from Widgets import ToolbarConfig
+        from Widgets import ToolbarGrabar
+        from Widgets import ToolbarInfo
+        from Widgets import ToolbarAddStream
         
         self.pantalla = Visor()
         self.barradeprogreso = BarraProgreso()
@@ -205,10 +202,10 @@ class JAMediaPlayer(Gtk.Plug):
         
         ### Efectos que se están aplicando.
         eventbox = Gtk.EventBox() # FIXME: Mantiene el fondo negro en miniefectos que se aplican
-        eventbox.modify_bg(0, G.get_color("NEGRO"))
+        eventbox.modify_bg(0, get_color("NEGRO"))
         self.hbox_efectos_en_pipe = Gtk.Box(
             orientation = Gtk.Orientation.HORIZONTAL)
-        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
+        self.hbox_efectos_en_pipe.set_size_request(-1, get_pixels(0.5))
         eventbox.add(self.hbox_efectos_en_pipe)
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(
@@ -218,7 +215,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         ### Barra de Progreso + Volúmen
         ev_box = Gtk.EventBox() # FIXME: Para poder pintar el fondo de volumen
-        ev_box.modify_bg(0, G.get_color("BLANCO"))
+        ev_box.modify_bg(0, get_color("BLANCO"))
         hbox_barra_progreso = Gtk.Box(
             orientation = Gtk.Orientation.HORIZONTAL)
         hbox_barra_progreso.pack_start(self.barradeprogreso, True, True, 0)
@@ -256,7 +253,7 @@ class JAMediaPlayer(Gtk.Plug):
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
         self.scroll_list.add(self.lista_de_reproduccion)
-        self.pack_vbox_lista_reproduccion() # Lista + Controles de Reproducción
+        self.__pack_vbox_lista_reproduccion() # Lista + Controles de Reproducción
         self.evnt_box_lista_reproduccion.add(self.vbox_lista_reproduccion)
         
         ### Configuración + Lista de Reproducción.
@@ -274,7 +271,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         basebox.show_all()
         
-        map(self.ocultar,
+        map(self.__ocultar,
             [self.toolbar_salir,
             self.scroll_config,
             self.toolbar_accion,
@@ -284,67 +281,69 @@ class JAMediaPlayer(Gtk.Plug):
             
         self.add(basebox)
         
+        from gi.repository import GdkX11
+        
         xid = self.pantalla.get_property('window').get_xid()
         
         # HACK: La aplicación nunca debe explotar :P
-        if JAMF.get_programa("mplayer"):
+        if get_programa("mplayer"):
             self.mplayerreproductor = MplayerReproductor(xid)
             
         else:
             self.mplayerreproductor = MplayerReproductor(self.pantalla)
             
         # HACK: La aplicación nunca debe explotar :P
-        if JAMF.verificar_Gstreamer():
+        if verificar_Gstreamer():
             self.jamediareproductor = JAMediaReproductor(xid)
             
         else:
             self.jamediareproductor = JAMediaReproductor(self.pantalla)
             
-        self.switch_reproductor(None, "JAMediaReproductor") # default Gst.
+        self.__switch_reproductor(None, "JAMediaReproductor") # default Gst.
         
-        self.mplayerreproductor.connect("endfile", self.endfile)
-        self.mplayerreproductor.connect("estado", self.cambioestadoreproductor)
-        self.mplayerreproductor.connect("newposicion", self.update_progress)
-        self.mplayerreproductor.connect("volumen", self.get_volumen)
-        self.mplayerreproductor.connect("video", self.set_video)
+        self.mplayerreproductor.connect("endfile", self.__endfile)
+        self.mplayerreproductor.connect("estado", self.__cambioestadoreproductor)
+        self.mplayerreproductor.connect("newposicion", self.__update_progress)
+        self.mplayerreproductor.connect("volumen", self.__get_volumen)
+        self.mplayerreproductor.connect("video", self.__set_video)
         
-        self.jamediareproductor.connect("endfile", self.endfile)
-        self.jamediareproductor.connect("estado", self.cambioestadoreproductor)
-        self.jamediareproductor.connect("newposicion", self.update_progress)
-        self.jamediareproductor.connect("volumen", self.get_volumen)
-        self.jamediareproductor.connect("video", self.set_video)
+        self.jamediareproductor.connect("endfile", self.__endfile)
+        self.jamediareproductor.connect("estado", self.__cambioestadoreproductor)
+        self.jamediareproductor.connect("newposicion", self.__update_progress)
+        self.jamediareproductor.connect("volumen", self.__get_volumen)
+        self.jamediareproductor.connect("video", self.__set_video)
         
-        self.lista_de_reproduccion.connect("nueva-seleccion", self.cargar_reproducir)
-        self.lista_de_reproduccion.connect("button-press-event", self.click_derecho_en_lista)
+        self.lista_de_reproduccion.connect("nueva-seleccion", self.__cargar_reproducir)
+        self.lista_de_reproduccion.connect("button-press-event", self.__click_derecho_en_lista)
         
-        self.controlesrepro.connect("activar", self.activar)
-        self.barradeprogreso.connect("user-set-value", self.user_set_value)
-        self.pantalla.connect("ocultar_controles", self.ocultar_controles)
-        self.pantalla.connect("button_press_event", self.clicks_en_pantalla)
+        self.controlesrepro.connect("activar", self.__activar)
+        self.barradeprogreso.connect("user-set-value", self.__user_set_value)
+        self.pantalla.connect("ocultar_controles", self.__ocultar_controles)
+        self.pantalla.connect("button_press_event", self.__clicks_en_pantalla)
         #self.pantalla.connect('expose-event', self.paint_pantalla)
         
-        self.toolbar.connect('salir', self.confirmar_salir)
+        self.toolbar.connect('salir', self.__confirmar_salir)
         #self.toolbar.connect('capturar', self.fotografiar)
-        self.toolbar.connect('config', self.mostrar_config)
+        self.toolbar.connect('config', self.__mostrar_config)
         
-        self.toolbar_salir.connect('salir', self.emit_salir)
-        self.toolbar_config.connect('reproductor', self.switch_reproductor)
-        self.toolbar_config.connect('valor', self.set_balance)
-        self.toolbar_info.connect('rotar', self.set_rotacion)
-        self.toolbar_info.connect('actualizar_streamings', self.actualizar_streamings)
-        self.toolbar_accion.connect("Grabar", self.grabar_streaming)
-        self.toolbar_accion.connect("accion-stream", self.accion_stream)
-        self.toolbar_grabar.connect("stop", self.detener_grabacion)
-        self.volumen.connect("volumen", self.set_volumen)
-        self.toolbaraddstream.connect("add-stream", self.ejecutar_add_stream)
+        self.toolbar_salir.connect('salir', self.__emit_salir)
+        self.toolbar_config.connect('reproductor', self.__switch_reproductor)
+        self.toolbar_config.connect('valor', self.__set_balance)
+        self.toolbar_info.connect('rotar', self.__set_rotacion)
+        self.toolbar_info.connect('actualizar_streamings', self.__actualizar_streamings)
+        self.toolbar_accion.connect("Grabar", self.__grabar_streaming)
+        self.toolbar_accion.connect("accion-stream", self.__accion_stream)
+        self.toolbar_grabar.connect("stop", self.__detener_grabacion)
+        self.volumen.connect("volumen", self.__set_volumen)
+        self.toolbaraddstream.connect("add-stream", self.__ejecutar_add_stream)
         
-        self.widget_efectos.connect("click_efecto", self.click_efecto)
-        self.widget_efectos.connect('configurar_efecto', self.configurar_efecto)
+        self.widget_efectos.connect("click_efecto", self.__click_efecto)
+        self.widget_efectos.connect('configurar_efecto', self.__configurar_efecto)
         
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos", "jamedia_cursor.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
+            -1, get_pixels(0.8))
         jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
             Gdk.Display.get_default(), pixbuf, 0, 0)
         self.get_parent_window().set_cursor(jamedia_cursor)
@@ -357,7 +356,7 @@ class JAMediaPlayer(Gtk.Plug):
     
     #    self.player.fotografiar()
         
-    def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
+    def __configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
         """
         Configura un efecto en el pipe, si no está en eĺ, lo agrega.
         """
@@ -365,17 +364,17 @@ class JAMediaPlayer(Gtk.Plug):
         # Si el efecto no está agregado al pipe, lo agrega
         if self.player.efectos:
             if not nombre_efecto in self.player.efectos:
-                self.click_efecto(None, nombre_efecto)
+                self.__click_efecto(None, nombre_efecto)
                 self.widget_efectos.seleccionar_efecto(nombre_efecto)
                 
         else:
-            self.click_efecto(None, nombre_efecto)
+            self.__click_efecto(None, nombre_efecto)
             self.widget_efectos.seleccionar_efecto(nombre_efecto)
 
         # Setea el efecto
         self.player.configurar_efecto(nombre_efecto, propiedad, valor)
         
-    def click_efecto(self, widget, nombre_efecto):
+    def __click_efecto(self, widget, nombre_efecto):
         """
         Recibe el nombre del efecto sobre el que
         se ha hecho click y decide si debe agregarse
@@ -394,11 +393,13 @@ class JAMediaPlayer(Gtk.Plug):
         if agregar:
             self.player.agregar_efecto( nombre_efecto )
             
+            from Widgets import WidgetEfecto_en_Pipe
+            
             # Agrega un widget a self.hbox_efectos_en_pipe
             botonefecto = WidgetEfecto_en_Pipe()
             botonefecto.set_tooltip(nombre_efecto)
-            botonefecto.connect('clicked', self.clicked_mini_efecto)
-            lado = G.get_pixels(0.5)
+            botonefecto.connect('clicked', self.__clicked_mini_efecto)
+            lado = get_pixels(0.5)
             botonefecto.set_tamanio(lado, lado)
             
             archivo = os.path.join(JAMediaObjectsPath, "Iconos", 'configurar.png')
@@ -419,7 +420,7 @@ class JAMediaPlayer(Gtk.Plug):
                     efecto.destroy()
                     break
         
-    def clicked_mini_efecto(self, widget, void = None):
+    def __clicked_mini_efecto(self, widget, void = None):
         """
         Cuando se hace click en el mini objeto en pantalla
         para efecto agregado, este se quita del pipe de la cámara.
@@ -430,22 +431,24 @@ class JAMediaPlayer(Gtk.Plug):
         self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
         widget.destroy()
         
-    def cargar_efectos(self, efectos):
+    def __cargar_efectos(self, efectos):
         """
         Agrega los widgets con efectos a la paleta de configuración.
         """
         
         self.widget_efectos.cargar_efectos(efectos)
         
-    def actualizar_streamings(self, widget):
+    def __actualizar_streamings(self, widget):
         """
         Actualiza los streamings de jamedia,
         descargandolos desde su web.
         """
         
-        G.get_streaming_default()
+        from JAMediaObjects.JAMediaGlobales import get_streaming_default
         
-    def accion_stream(self, widget, accion, url):
+        get_streaming_default()
+        
+    def __accion_stream(self, widget, accion, url):
         """
         Ejecuta una acción sobre un streaming.
         borrar de la lista, eliminar streaming,
@@ -454,34 +457,38 @@ class JAMediaPlayer(Gtk.Plug):
         
         lista = self.toolbar_list.label.get_text()
         
+        from JAMediaObjects.JAMediaGlobales import eliminar_streaming
+        from JAMediaObjects.JAMediaGlobales import add_stream
+        
         if accion == "Borrar":
-            G.eliminar_streaming(url, lista)
+            eliminar_streaming(url, lista)
             
         elif accion == "Copiar":
             modelo, iter = self.lista_de_reproduccion.treeselection.get_selected()
             nombre = modelo.get_value(iter, 1)
             url = modelo.get_value(iter, 2)
             tipo = self.toolbar_list.label.get_text()
-            G.add_stream(tipo, [nombre, url])
+            add_stream(tipo, [nombre, url])
             
         elif accion == "Mover":
             modelo, iter = self.lista_de_reproduccion.treeselection.get_selected()
             nombre = modelo.get_value(iter, 1)
             url = modelo.get_value(iter, 2)
             tipo = self.toolbar_list.label.get_text()
-            G.add_stream(tipo, [nombre, url])
-            G.eliminar_streaming(url, lista)
+            add_stream(tipo, [nombre, url])
+            eliminar_streaming(url, lista)
             
         else:
             print "accion_stream desconocido:", accion
             
-    def ejecutar_add_stream(self, widget, tipo, nombre, url):
+    def __ejecutar_add_stream(self, widget, tipo, nombre, url):
         """
         Ejecuta agregar stream, de acuerdo a los datos
         que pasa toolbaraddstream en add-stream.
         """
         
-        G.add_stream(tipo, [nombre, url])
+        from JAMediaObjects.JAMediaGlobales import add_stream
+        add_stream(tipo, [nombre, url])
         
         if "Tv" in tipo or "TV" in tipo:
             indice = 3
@@ -494,7 +501,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         self.cargar_lista(None, indice)
         
-    def set_rotacion(self, widget, valor):
+    def __set_rotacion(self, widget, valor):
         """
         Recibe la señal de rotacion de la toolbar y
         envia la rotacion al Reproductor.
@@ -502,7 +509,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         self.player.rotar(valor)
         
-    def set_balance(self, widget, valor, tipo):
+    def __set_balance(self, widget, valor, tipo):
         """
         Setea valores en Balance de Video, pasando
         los valores que recibe de la toolbar (% float).
@@ -514,7 +521,7 @@ class JAMediaPlayer(Gtk.Plug):
         if tipo == "hue": self.player.set_balance(hue = valor)
         if tipo == "gamma": self.player.set_balance(gamma = valor)
         
-    def pack_vbox_lista_reproduccion(self):
+    def __pack_vbox_lista_reproduccion(self):
         """
         Empaqueta la lista de reproduccion.
         Se hace a parte porque la toolbar de la lista no debe
@@ -526,7 +533,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.vbox_lista_reproduccion.pack_end(self.controlesrepro,
             False, True, 0)
             
-    def clicks_en_pantalla(self, widget, event):
+    def __clicks_en_pantalla(self, widget, event):
         """
         Hace fullscreen y unfullscreen sobre la
         ventana principal donde JAMedia está embebida
@@ -547,13 +554,13 @@ class JAMediaPlayer(Gtk.Plug):
                 ventana.fullscreen()
                 ventana.set_border_width(0)
                 
-    def mostrar_config(self, widget):
+    def __mostrar_config(self, widget):
         """
         Muestra u oculta las opciones de
         configuracion (toolbar_config y widget_efectos).
         """
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_accion,
             self.toolbaraddstream,
             self.toolbar_salir])
@@ -567,9 +574,9 @@ class JAMediaPlayer(Gtk.Plug):
             self.scroll_config.set_size_request(rect.width, -1)
             self.evnt_box_lista_reproduccion.hide()
             self.scroll_config.show_all()
-            GObject.idle_add(self.update_balance_toolbars)
+            GObject.idle_add(self.__update_balance_toolbars)
         
-    def switch_reproductor(self, widget, nombre):
+    def __switch_reproductor(self, widget, nombre):
         """
         Recibe la señal "reproductor" desde toolbar_config y
         cambia el reproductor que se utiliza, entre mplayer y
@@ -587,7 +594,7 @@ class JAMediaPlayer(Gtk.Plug):
                 return
             
         if nombre == "MplayerReproductor":
-            if JAMF.get_programa('mplayer'):
+            if get_programa('mplayer'):
                 reproductor = self.mplayerreproductor
                 self.toolbar_info.set_reproductor("MplayerReproductor")
                 self.toolbar_config.mplayer_boton.set_active(True)
@@ -620,7 +627,7 @@ class JAMediaPlayer(Gtk.Plug):
             except:
                 pass
 
-    def embed_event(self, widget):
+    def __embed_event(self, widget):
         """
         No hace nada por ahora.
         """
@@ -660,7 +667,7 @@ class JAMediaPlayer(Gtk.Plug):
         else:
             map(self.mostrar, self.controles_dinamicos)'''
 
-    def ocultar_controles(self, widget, valor):
+    def __ocultar_controles(self, widget, valor):
         """
         Oculta o muestra los controles.
         """
@@ -668,39 +675,39 @@ class JAMediaPlayer(Gtk.Plug):
         zona, ocultar = (valor, self.toolbar_info.ocultar_controles)
         
         if zona and ocultar:
-            map(self.ocultar, [
+            map(self.__ocultar, [
                 #self.scroll_config,
                 self.toolbar_accion,
                 self.toolbaraddstream,
                 self.toolbar_salir])
                 
-            map(self.ocultar, self.controles_dinamicos)
+            map(self.__ocultar, self.controles_dinamicos)
             
         elif zona and not ocultar:
             pass
         
         elif not zona and ocultar:
             #self.scroll_config.hide()
-            map(self.mostrar, self.controles_dinamicos)
+            map(self.__mostrar, self.controles_dinamicos)
             
         elif not zona and not ocultar:
             pass
         
-    def ocultar(self, objeto):
+    def __ocultar(self, objeto):
         """
         Esta funcion es llamada desde self.ocultar_controles()
         """
         
         if objeto.get_visible(): objeto.hide()
         
-    def mostrar(self, objeto):
+    def __mostrar(self, objeto):
         """
         Esta funcion es llamada desde self.ocultar_controles()
         """
         
         if not objeto.get_visible(): objeto.show()
         
-    def activar(self, widget= None, senial= None):
+    def __activar(self, widget= None, senial= None):
         """
         Recibe:
             "atras", "siguiente", "stop" o "pause-play"
@@ -728,7 +735,7 @@ class JAMediaPlayer(Gtk.Plug):
         while Gtk.events_pending():
             Gtk.main_iteration()
 
-    def endfile(self, widget = None, senial = None):
+    def __endfile(self, widget = None, senial = None):
         """
         Recibe la señal de fin de archivo desde el reproductor
         y llama a seleccionar_siguiente en la lista de reproduccion.
@@ -737,7 +744,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.controlesrepro.set_paused()
         GObject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
         
-    def cambioestadoreproductor(self, widget = None, valor = None):
+    def __cambioestadoreproductor(self, widget = None, valor = None):
         """
         Recibe los cambios de estado del reproductor (paused y playing)
         y actualiza la imagen del boton play en la toolbar de reproduccion.
@@ -752,9 +759,9 @@ class JAMediaPlayer(Gtk.Plug):
         else:
             print "Estado del Reproductor desconocido:", valor
             
-        GObject.idle_add(self.update_balance_toolbars)
+        GObject.idle_add(self.__update_balance_toolbars)
         
-    def update_balance_toolbars(self):
+    def __update_balance_toolbars(self):
         """
         Actualiza las toolbars de balance en video.
         """
@@ -768,7 +775,7 @@ class JAMediaPlayer(Gtk.Plug):
             hue = config['hue'],
             gamma = config['gamma'])
             
-    def update_progress(self, objetoemisor, valor):
+    def __update_progress(self, objetoemisor, valor):
         """
         Recibe el progreso de la reproduccion desde el reproductor
         y actualiza la barra de progreso.
@@ -776,7 +783,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         self.barradeprogreso.set_progress(float(valor))
     
-    def user_set_value(self, widget= None, valor= None):
+    def __user_set_value(self, widget= None, valor= None):
         """
         Recibe la posicion en la barra de progreso cuando
         el usuario la desplaza y hace "seek" sobre el reproductor.
@@ -790,11 +797,15 @@ class JAMediaPlayer(Gtk.Plug):
         Cuando JAMedia no está embebido, tiene su toolbar_list
         """
         
-        G.set_listas_default()
+        from JAMediaObjects.JAMediaGlobales import set_listas_default
+        
+        set_listas_default()
+        
+        from Widgets import ToolbarLista
         
         self.toolbar_list = ToolbarLista()
-        self.toolbar_list.connect("cargar_lista", self.cargar_lista)
-        self.toolbar_list.connect("add_stream", self.add_stream)
+        self.toolbar_list.connect("cargar_lista", self.__cargar_lista)
+        self.toolbar_list.connect("add_stream", self.__add_stream)
         self.toolbar_list.show_all()
         self.toolbar_list.boton_agregar.hide()
         self.toolbar_info.descarga.show()
@@ -804,7 +815,7 @@ class JAMediaPlayer(Gtk.Plug):
             
         self.vbox_lista_reproduccion.pack_start(self.toolbar_list,
             False, False, 0)
-        self.pack_vbox_lista_reproduccion()
+        self.__pack_vbox_lista_reproduccion()
         
     def pack_efectos(self):
         """
@@ -812,15 +823,18 @@ class JAMediaPlayer(Gtk.Plug):
         """
         
         self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
-        GObject.idle_add(self.cargar_efectos, list(G.JAMedia_VIDEOEFECTOS))
         
-    def add_stream(self, widget):
+        from JAMediaObjects.JAMediaGlobales import get_jamedia_video_efectos
+        
+        GObject.idle_add(self.__cargar_efectos, list(get_jamedia_video_efectos()))
+        
+    def __add_stream(self, widget):
         """
         Recibe la señal add_stream desde toolbarlist
         y abre la toolbar que permite agregar un stream.
         """
         
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.scroll_config,
             self.toolbar_accion])
             
@@ -845,7 +859,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.lista_de_reproduccion.agregar_items(lista)
         if self.toolbar_list: self.toolbar_list.label.set_text("")
 
-    def cargar_reproducir(self, widget, path):
+    def __cargar_reproducir(self, widget, path):
         """
         Recibe lo que se selecciona en la lista de
         reproduccion y lo manda al reproductor.
@@ -865,16 +879,16 @@ class JAMediaPlayer(Gtk.Plug):
         
         if visible: self.scroll_config.show()
         
-    def confirmar_salir(self, widget = None, senial = None):
+    def __confirmar_salir(self, widget = None, senial = None):
         """
         Recibe salir y lo pasa a la toolbar de confirmación.
         """
         
-        map(self.ocultar, [self.toolbaraddstream])
+        map(self.__ocultar, [self.toolbaraddstream])
         
         self.toolbar_salir.run("JAMedia")
         
-    def emit_salir(self, widget):
+    def __emit_salir(self, widget):
         """
         Emite salir para que cuando esta embebida, la
         aplicacion decida que hacer, si salir, o cerrar solo
@@ -892,7 +906,7 @@ class JAMediaPlayer(Gtk.Plug):
             
         self.emit('salir')
         
-    def cargar_lista(self, widget, indice):
+    def __cargar_lista(self, widget, indice):
         """
         Recibe el indice seleccionado en el menu de toolbarlist y
         carga la lista correspondiente.
@@ -908,24 +922,32 @@ class JAMediaPlayer(Gtk.Plug):
             valor = model.get_value(iter, 2)
             
             if valor:
-                descripcion = JAMF.describe_uri(valor)
+                from JAMediaObjects.JAMFileSystem import describe_uri
+                
+                descripcion = describe_uri(valor)
                 
                 if descripcion:
                     if descripcion[2]:
                         ultimopath = valor
                 
-        map(self.ocultar, [
+        map(self.__ocultar, [
             self.toolbar_accion,
             self.toolbaraddstream])
             
         self.toolbar_list.boton_agregar.hide()
         
+        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        from JAMediaObjects.JAMediaGlobales import get_my_files_directory
+        from JAMediaObjects.JAMediaGlobales import get_tube_directory
+        from JAMediaObjects.JAMediaGlobales import get_audio_directory
+        from JAMediaObjects.JAMediaGlobales import get_video_directory
+        
         if indice == 0:
             archivo = os.path.join(
-                G.DIRECTORIO_DATOS,
+                get_data_directory(),
                 'JAMediaRadio.JAMedia')
                 
-            self.seleccionar_lista_de_stream(archivo, "JAM-Radio")
+            self.__seleccionar_lista_de_stream(archivo, "JAM-Radio")
             
         elif indice == 1:
             # HACK: Tv no funciona con JAMediaReproductor.
@@ -933,61 +955,63 @@ class JAMediaPlayer(Gtk.Plug):
                 self.switch_reproductor(None, "MplayerReproductor")
                 
             archivo = os.path.join(
-                G.DIRECTORIO_DATOS,
+                get_data_directory(),
                 'JAMediaTV.JAMedia')
                 
-            self.seleccionar_lista_de_stream(archivo, "JAM-TV")
+            self.__seleccionar_lista_de_stream(archivo, "JAM-TV")
             
         elif indice == 2:
             archivo = os.path.join(
-                G.DIRECTORIO_DATOS,
+                get_data_directory(),
                 'MisRadios.JAMedia')
                 
-            self.seleccionar_lista_de_stream(archivo, "Radios")
+            self.__seleccionar_lista_de_stream(archivo, "Radios")
             self.toolbar_list.boton_agregar.show()
             
         elif indice == 3:
             # HACK: Tv no funciona con JAMediaReproductor.
             if self.player == self.jamediareproductor:
-                self.switch_reproductor(None, "MplayerReproductor")
+                self.__switch_reproductor(None, "MplayerReproductor")
                 
             archivo = os.path.join(
-                G.DIRECTORIO_DATOS,
+                get_data_directory(),
                 'MisTvs.JAMedia')
                 
-            self.seleccionar_lista_de_stream(archivo, "TVs")
+            self.__seleccionar_lista_de_stream(archivo, "TVs")
             self.toolbar_list.boton_agregar.show()
             
         elif indice == 4:
-            self.seleccionar_lista_de_archivos(
-                G.DIRECTORIO_MIS_ARCHIVOS,
+            self.__seleccionar_lista_de_archivos(
+                get_my_files_directory(),
                 "Archivos")
                 
         elif indice == 5:
-            self.seleccionar_lista_de_archivos(
-                G.DIRECTORIO_YOUTUBE,
+            self.__seleccionar_lista_de_archivos(
+                get_tube_directory(),
                 "JAM-Tube")
                 
         elif indice == 6:
-            self.seleccionar_lista_de_archivos(
-                G.AUDIO_JAMEDIA_VIDEO,
+            self.__seleccionar_lista_de_archivos(
+                get_audio_directory(),
                 "JAM-Audio")
                 
         elif indice == 7:
-            self.seleccionar_lista_de_archivos(
-                G.VIDEO_JAMEDIA_VIDEO,
+            self.__seleccionar_lista_de_archivos(
+                get_video_directory(),
                 "JAM-Video")
                 
         elif indice == 8:
+            from Widgets import Selector_de_Archivos
+            
             selector = Selector_de_Archivos(self)
             
             if ultimopath:
                 directorio = "file://%s" % os.path.dirname(ultimopath)
                 selector.set_current_folder_uri(directorio)
                 
-            selector.connect('archivos-seleccionados', self.cargar_directorio)
+            selector.connect('archivos-seleccionados', self.__cargar_directorio)
             
-    def cargar_directorio(self, widget, archivos):
+    def __cargar_directorio(self, widget, archivos):
         """
         Recibe una lista de archivos y setea la lista
         de reproduccion con ellos.
@@ -1007,7 +1031,7 @@ class JAMediaPlayer(Gtk.Plug):
             
         self.set_nueva_lista(items)
         
-    def seleccionar_lista_de_archivos(self, directorio, titulo):
+    def __seleccionar_lista_de_archivos(self, directorio, titulo):
         """
         Responde a la seleccion en el menu de la toolbarlist.
         
@@ -1033,7 +1057,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.lista_de_reproduccion.agregar_items(lista)
         self.toolbar_list.label.set_text(titulo)
 
-    def seleccionar_lista_de_stream(self, archivo, titulo):
+    def __seleccionar_lista_de_stream(self, archivo, titulo):
         """
         Responde a la seleccion en el menu de la toolbarlist.
         
@@ -1044,7 +1068,9 @@ class JAMediaPlayer(Gtk.Plug):
         Esto es solo para las listas standar de JAMedia no embebido.
         """
         
-        items = G.get_streamings(archivo)
+        from JAMediaObjects.JAMediaGlobales import get_streamings
+        
+        items = get_streamings(archivo)
         
         self.player.stop()
         self.lista_de_reproduccion.limpiar()
@@ -1052,7 +1078,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.lista_de_reproduccion.agregar_items(items)
         self.toolbar_list.label.set_text(titulo)
         
-    def click_derecho_en_lista(self, widget, event):
+    def __click_derecho_en_lista(self, widget, event):
         """
         Esto es para abrir un menu de opciones cuando
         el usuario hace click derecho sobre un elemento en
@@ -1060,6 +1086,8 @@ class JAMediaPlayer(Gtk.Plug):
         borrar el archivo o streaming o simplemente quitarlo
         de la lista.
         """
+        
+        # FIXME: Desactivar __cargar_reproducir
         
         boton = event.button
         pos = (event.x, event.y)
@@ -1082,14 +1110,16 @@ class JAMediaPlayer(Gtk.Plug):
             return
         
         elif boton == 3:
+            from Widgets import MenuList
+            
             menu = MenuList(widget, boton, pos, tiempo, path, widget.modelo)
-            menu.connect('accion', self.set_accion)
+            menu.connect('accion', self.__set_accion)
             menu.popup(None, None, None, None, boton, tiempo)
             
         elif boton == 2:
             return
         
-    def set_accion(self, widget, lista, accion, iter):
+    def __set_accion(self, widget, lista, accion, iter):
         """
         Responde a la seleccion del usuario sobre el menu
         que se despliega al hacer click derecho sobre un elemento
@@ -1103,13 +1133,13 @@ class JAMediaPlayer(Gtk.Plug):
         
         self.toolbar_accion.set_accion(lista, accion, iter)
         
-    def grabar_streaming(self, widget, uri):
+    def __grabar_streaming(self, widget, uri):
         """
         Se ha confirmado grabar desde un streaming en
         la toolbar_accion.
         """
         
-        self.detener_grabacion()
+        self.__detener_grabacion()
         
         extension = ""
         if "TV" in self.toolbar_list.label.get_text() or \
@@ -1125,8 +1155,10 @@ class JAMediaPlayer(Gtk.Plug):
         hora = time.strftime("%H-%M-%S")
         fecha = str(datetime.date.today())
         
+        from JAMediaObjects.JAMediaGlobales import get_my_files_directory
+        
         archivo = "%s-%s-%s" % (fecha, hora, extension)
-        archivo = os.path.join(G.DIRECTORIO_MIS_ARCHIVOS, archivo)
+        archivo = os.path.join(get_my_files_directory(), archivo)
         
         if self.player == self.jamediareproductor:
             self.grabador = JAMediaGrabador(uri, archivo)
@@ -1134,16 +1166,16 @@ class JAMediaPlayer(Gtk.Plug):
         elif self.player == self.mplayerreproductor:
             self.grabador = MplayerGrabador(uri, archivo)
             
-        self.grabador.connect('update', self.update_grabador)
+        self.grabador.connect('update', self.__update_grabador)
     
-    def update_grabador(self, widget, datos):
+    def __update_grabador(self, widget, datos):
         """
         Actualiza informacion de Grabacion en proceso.
         """
         
         self.toolbar_grabar.set_info(datos)
     
-    def detener_grabacion(self, widget= None):
+    def __detener_grabacion(self, widget= None):
         """
         Detiene la Grabación en Proceso.
         """
@@ -1153,7 +1185,7 @@ class JAMediaPlayer(Gtk.Plug):
             
         self.toolbar_grabar.stop()
         
-    def set_volumen(self, widget, valor):
+    def __set_volumen(self, widget, valor):
         """
         Cuando el usuario cambia el volumen.
         """
@@ -1161,14 +1193,14 @@ class JAMediaPlayer(Gtk.Plug):
         valor = valor * 100
         self.player.set_volumen(valor)
         
-    def get_volumen(self, widget, valor):
+    def __get_volumen(self, widget, valor):
         """
         El volumen con el que se reproduce actualmente.
         """
         
         self.volumen.set_value(valor)
         
-    def set_video(self, widget, valor):
+    def __set_video(self, widget, valor):
         """
         Si hay video o no en la fuente . . .
         """
