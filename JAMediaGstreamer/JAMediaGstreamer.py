@@ -20,8 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import sys
-import commands
 
 import gi
 gi.require_version('Gst', '1.0')
@@ -30,14 +28,12 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import Gst
-from gi.repository import Vte
 
 from Widgets import TextView
 from Widgets import Lista
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
-from JAMediaObjects.JAMediaWidgets import JAMediaTerminal
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
     
@@ -50,8 +46,11 @@ registry = Gst.Registry.get()
 plugins = registry.get_plugin_list()
 
 def get_inspect(elemento):
-    """Devuelve inspect de elemento."""
+    """
+    Devuelve inspect de elemento.
+    """
     
+    import commands
     return commands.getoutput('gst-inspect-1.0 %s' % (elemento))
 
 class JAMediaGstreamer(Gtk.Plug):
@@ -94,12 +93,6 @@ class JAMediaGstreamer(Gtk.Plug):
             shrink = False)
         
         # Derecha
-        panel = Gtk.Paned(orientation = Gtk.Orientation.VERTICAL)
-        panel_base.pack2(
-            panel,
-            resize = True,
-            shrink = True)
-        
         self.textview = TextView()
         scroll = Gtk.ScrolledWindow()
         
@@ -107,22 +100,13 @@ class JAMediaGstreamer(Gtk.Plug):
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
         
-        # Derecha - Arriba
         scroll.add_with_viewport(self.textview)
-        panel.pack1(
+        
+        panel_base.pack2(
             scroll,
             resize = True,
             shrink = True)
-        
-        # Derecha - Abajo
-        terminal = JAMediaTerminal()
-        terminal.set_size_request(-1, 150)
-        
-        panel.pack2(
-            terminal,
-            resize = False,
-            shrink = False)
-        
+            
         vbox.pack_start(panel_base, True, True, 0)
         
         self.add(vbox)

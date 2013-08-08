@@ -21,16 +21,9 @@
 
 import os
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GdkPixbuf
 from gi.repository import GObject
-
-import JAMediaObjects
-import JAMediaObjects.JAMediaGlobales as G
-
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 class TextView(Gtk.TextView):
     
@@ -140,7 +133,9 @@ class Lista(Gtk.TreeView):
         return columna
     
     def selecciones(self, treeselection, model, path, is_selected, listore):
-        """Cuando se selecciona un item en la lista."""
+        """
+        Cuando se selecciona un item en la lista.
+        """
         
         # model y listore son ==
         iter = model.get_iter(path)

@@ -37,7 +37,7 @@ from gi.repository import GObject
 from gi.repository import WebKit
 
 import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import JAMediaTerminal
+#from JAMediaObjects.JAMediaWidgets import JAMediaTerminal
 
 import JAMediaObjects.JAMediaGlobales as G
 import JAMediaObjects.JAMFileSystem as JAMF
@@ -236,7 +236,7 @@ class Navegador(Gtk.Paned):
             scrolled_window,
             resize = True,
             shrink = True)
-        
+        '''
         # Derecha - Abajo
         terminal = JAMediaTerminal()
         terminal.set_size_request(-1, 150)
@@ -244,7 +244,7 @@ class Navegador(Gtk.Paned):
         panel.pack2(
             terminal,
             resize = False,
-            shrink = False)
+            shrink = False)'''
         
         return panel
     
