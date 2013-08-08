@@ -1,31 +1,40 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#   JAMediaVideoEfectos.py por:
+#   Flavio Danesse <fdanesse@gmail.com>
+#   CeibalJAM - Uruguay
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 """
     Para probar los efectos gráficos de gstreamer y sus diferentes
     configuraciones.
 """
 
 import os
-import sys
-import commands
 
 import gi
 gi.require_version('Gst', '1.0')
 
 from gi.repository import Gtk
-from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import Gst
 from gi.repository import GstVideo
 
-# plugins Good
-from WidgetsEfectosGood import Radioactv
-from WidgetsEfectosGood import Agingtv
-
 import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import Visor
-import JAMediaObjects.JAMediaGlobales as G
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
@@ -48,6 +57,12 @@ class Ventana(Gtk.Window):
         
         hpanel = Gtk.HPaned()
         
+        from JAMediaObjects.JAMediaWidgets import Visor
+        
+        # plugins Good
+        from WidgetsEfectosGood import Radioactv
+        from WidgetsEfectosGood import Agingtv
+        
         pantalla = Visor()
         self.widget_efecto = Radioactv()
         #self.widget_efecto = Agingtv()
@@ -60,6 +75,8 @@ class Ventana(Gtk.Window):
         self.show_all()
         self.realize()
         
+        from gi.repository import GdkX11
+        
         xid = pantalla.get_property('window').get_xid()
         self.efecto = EfectoBin('radioactv', xid)
         #self.efecto = EfectoBin('agingtv', xid)
@@ -70,23 +87,30 @@ class Ventana(Gtk.Window):
         GObject.idle_add(self.efecto.play)
         
     def set_efecto(self, widget, propiedad, valor):
-        """Setea propieades en el efecto, según las señales
-        que envía widget_efecto."""
+        """
+        Setea propieades en el efecto, según las señales
+        que envía widget_efecto.
+        """
         
         self.efecto.set_efecto(propiedad, valor)
         
     def salir(self, widget = None, senial = None):
         
+        import sys
         sys.exit(0)
         
     
 class EfectoBin(GObject.GObject):
-    """Pipeline genérico para efecto de video,
-    para explorar configuraciones."""
+    """
+    Pipeline genérico para efecto de video,
+    para explorar configuraciones.
+    """
     
     def __init__(self, nombre, ventana_id):
-        """Recibe el nombre del efecto y el id del widget
-        donde debe dibujar gstreamer."""
+        """
+        Recibe el nombre del efecto y el id del widget
+        donde debe dibujar gstreamer.
+        """
         
         GObject.GObject.__init__(self)
         
@@ -124,7 +148,9 @@ class EfectoBin(GObject.GObject):
         print propiedad, valor
         
     def sync_message(self, bus, mensaje):
-        """Captura los mensajes en el bus del pipe Gst."""
+        """
+        Captura los mensajes en el bus del pipe Gst.
+        """
         
         try:
             if mensaje.get_structure().get_name() == 'prepare-window-handle':
@@ -135,7 +161,9 @@ class EfectoBin(GObject.GObject):
             pass
     
     def on_mensaje(self, bus, mensaje):
-        """Captura los mensajes en el bus del pipe Gst."""
+        """
+        Captura los mensajes en el bus del pipe Gst.
+        """
         
         if mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
@@ -155,7 +183,6 @@ class EfectoBin(GObject.GObject):
         
         self.pipeline.set_state(Gst.State.PAUSED)
         self.pipeline.set_state(Gst.State.NULL)
-        
         
 if __name__ == "__main__":
     
