@@ -27,20 +27,15 @@
 # https://github.com/roojs/gir-1.2-gtk-3.4
 
 import os
-import pydoc
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
-from gi.repository import WebKit
 
 import JAMediaObjects
-#from JAMediaObjects.JAMediaWidgets import JAMediaTerminal
 
-import JAMediaObjects.JAMediaGlobales as G
-import JAMediaObjects.JAMFileSystem as JAMF
+from JAMediaObjects.JAMediaGlobales import get_separador
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
@@ -61,7 +56,7 @@ class ToolbarTry(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
             
         item = Gtk.ToolItem()
@@ -70,7 +65,7 @@ class ToolbarTry(Gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         self.show_all()
@@ -153,6 +148,8 @@ class Navegador(Gtk.Paned):
             if objeto:
                 archivo = os.path.join(DATOS, '%s.html' % (objeto.__name__))
                 
+                import pydoc
+                
                 pydoc.writedoc(objeto)
                 self.webview.open(archivo)
                 # http://nullege.com/codes/show/src@g@n@gnome-bubbles-HEAD@bubble.py/67/webkit.WebView.open
@@ -216,37 +213,23 @@ class Navegador(Gtk.Paned):
 
     def __area_derecha_del_panel(self):
         """
-        Empaqueta el visor webkit y la terminal
-        de la izquierda.
+        Empaqueta el visor webkit.
         """
-        
-        panel = Gtk.Paned(orientation = Gtk.Orientation.VERTICAL)
 
-        scrolled_window = Gtk.ScrolledWindow()
+        from gi.repository import WebKit
         
-        scrolled_window.set_policy(
+        scroll = Gtk.ScrolledWindow()
+        
+        scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
             
         self.webview = WebKit.WebView()
         self.webview.set_settings(WebKit.WebSettings())
-        scrolled_window.add_with_viewport(self.webview)
         
-        panel.pack1(
-            scrolled_window,
-            resize = True,
-            shrink = True)
-        '''
-        # Derecha - Abajo
-        terminal = JAMediaTerminal()
-        terminal.set_size_request(-1, 150)
+        scroll.add_with_viewport(self.webview)
         
-        panel.pack2(
-            terminal,
-            resize = False,
-            shrink = False)'''
-        
-        return panel
+        return scroll
     
     def __set_api(self, widget, valor):
         """
@@ -393,8 +376,10 @@ class Api(Gtk.TreeView):
         
         self.modelo.clear()
         
+        from JAMediaObjects.JAMFileSystem import borrar
+        
         for archivo in os.listdir(DATOS):
-            JAMF.borrar(os.path.join(DATOS, archivo))
+            borrar(os.path.join(DATOS, archivo))
         
         icono = os.path.join(JAMediaObjectsPath, "Iconos", "ver.png")
         pixbufver = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)

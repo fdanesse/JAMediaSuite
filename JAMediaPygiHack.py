@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import sys
 
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -30,21 +29,21 @@ from gi.repository import GdkPixbuf
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 
-import JAMediaObjects.JAMediaGlobales as G
+from JAMediaObjects.JAMediaGlobales import get_separador
+from JAMediaObjects.JAMediaGlobales import get_pixels
+from JAMediaObjects.JAMediaGlobales import get_boton
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-import JAMediaPygiHack
 from JAMediaPygiHack.JAMediaPygiHack import JAMediaPygiHack
 
-import JAMediaGstreamer
 from JAMediaGstreamer.JAMediaGstreamer import JAMediaGstreamer
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
 
 style_path = os.path.join(
-    JAMediaObjectsPath, "JAMediaPygiHackEstilo.css")
+    JAMediaObjectsPath, "JAMediaPygiHack.css")
     
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
@@ -108,7 +107,7 @@ class Ventana(Gtk.Window):
     def __switch(self, widget, nombre):
         """
         Cambia la vista entre PygiHack
-        JAMediaGstreamer y CristianEdit.
+        JAMediaGstreamer.
         """
         
         self.toolbar_salir.hide()
@@ -120,9 +119,6 @@ class Ventana(Gtk.Window):
         elif nombre == 'gstreamer':
             self.socket_pygihack.hide()
             self.socket_gstreamer.show()
-            
-        elif nombre == 'cristianedit':
-            pass
             
     def __confirmar_salir(self, widget = None, senial = None):
         """
@@ -136,6 +132,7 @@ class Ventana(Gtk.Window):
         Cierra la aplicación.
         """
         
+        import sys
         sys.exit(0)
     
 class Toolbar(Gtk.Toolbar):
@@ -153,7 +150,7 @@ class Toolbar(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
             
         item = Gtk.ToolItem()
@@ -173,27 +170,17 @@ class Toolbar(Gtk.Toolbar):
         self.boton_gstreamer.connect("toggled", self.__switch)
         item.add(self.boton_gstreamer)
         self.insert(item, -1)
-        '''
-        item = Gtk.ToolItem()
-        item.set_expand(False)
-        self.boton_edit = Gtk.RadioButton.new_with_label(
-                None, 'CristianEdit')
-        self.boton_edit.set_tooltip_text("Cristian Edit")
-        self.boton_edit.connect("toggled", self.switch)
-        item.add(self.boton_edit)
-        self.insert(item, -1)'''
         
         self.boton_gstreamer.join_group(self.boton_pygi)
-        #self.boton_edit.join_group(self.boton_pygi)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
             
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","ceibaljam.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
+            -1, get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
         item = Gtk.ToolItem()
@@ -204,7 +191,7 @@ class Toolbar(Gtk.Toolbar):
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","uruguay.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
+            -1, get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
         item = Gtk.ToolItem()
@@ -215,7 +202,7 @@ class Toolbar(Gtk.Toolbar):
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos","licencia.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, G.get_pixels(0.8))
+            -1, get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
         item = Gtk.ToolItem()
@@ -228,18 +215,18 @@ class Toolbar(Gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos","salir.png")
-        boton = G.get_boton(archivo, flip = False,
-            pixels = G.get_pixels(1))
+        boton = get_boton(archivo, flip = False,
+            pixels = get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         self.show_all()
@@ -255,9 +242,6 @@ class Toolbar(Gtk.Toolbar):
             
         elif self.boton_gstreamer.get_active():
             nombre = 'gstreamer'
-            
-        elif self.boton_edit.get_active():
-            nombre = 'cristianedit'
         
         self.emit('view', nombre)
         

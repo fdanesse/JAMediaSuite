@@ -28,10 +28,7 @@ from gi.repository import GObject
 from Widgets import ToolbarTry
 from Widgets import Navegador
 
-import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
-
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
     
 GObject.threads_init()
 Gdk.threads_init()
@@ -69,7 +66,6 @@ class JAMediaPygiHack(Gtk.Plug):
         self.connect("embedded", self.__embed_event)
         
     def __embed_event(self, widget):
-        """No hace nada por ahora."""
         
         print "JAMediaPygiHack => OK"
     
