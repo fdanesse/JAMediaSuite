@@ -1315,7 +1315,7 @@ class GstreamerVideoEfectos(Gtk.Box):
         #    ('Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos):
         if 'Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos:
             botonefecto = Efecto_widget_Config(nombre)
-            botonefecto.connect('agregar_efecto', self.__agregar_efecto)
+            botonefecto.connect('agregar_efecto', self.agregar_efecto)
             botonefecto.connect('configurar_efecto', self.__configurar_efecto)
             self.pack_start(botonefecto, False, False, 10)
             
@@ -1327,7 +1327,7 @@ class GstreamerVideoEfectos(Gtk.Box):
         
         self.emit('configurar_efecto', efecto, propiedad, valor)
         
-    def __agregar_efecto(self, widget, nombre_efecto):
+    def agregar_efecto(self, widget, nombre_efecto):
         """
         Cuando se hace click en el botón del efecto
         se envía la señal 'agregar-efecto'.
@@ -1418,7 +1418,6 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
         
         self.gstreamer_efectos.seleccionar_efecto(nombre)
         
-'''
 class GstreamerAudioVisualizador(GstreamerVideoEfectos):
     """
     Contenedor de widgets que representan
@@ -1448,14 +1447,14 @@ class GstreamerAudioVisualizador(GstreamerVideoEfectos):
         #if 'gst-plugins-good' in datos and 'Visualization' in datos:
         if 'Visualization' in datos:
             botonefecto = Efecto_widget_Config(nombre)
-            botonefecto.connect('agregar_efecto', self.__agregar_efecto)
+            botonefecto.connect('agregar_efecto', self.agregar_efecto)
             # FIXME: Agregar configuracion para visualizador
             #botonefecto.connect('configurar_efecto', self.configurar_efecto)
             self.pack_start(botonefecto, False, False, 1)
             
         self.show_all()
         elementos.remove(elementos[0])
-        GObject.idle_add(self.cargar_efectos, elementos)'''
+        GObject.idle_add(self.cargar_efectos, elementos)
 
 class Efecto_widget_Config(Gtk.Box):
     """

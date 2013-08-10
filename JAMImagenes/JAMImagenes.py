@@ -27,7 +27,6 @@
 #   self.socket.add_id(self.visor.get_id())
 
 import os
-import sys
 
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -35,21 +34,12 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import Lista
-from JAMediaObjects.JAMediaWidgets import ToolbarReproduccion
-from JAMediaObjects.JAMediaWidgets import ToolbarAccion
-from JAMediaObjects.JAMediaWidgets import ToolbarSalir
-
-from Widgets import VisorImagenes
-from Widgets import Toolbar
-from Widgets import ToolbarConfig
-from Widgets import MenuList
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
-style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+style_path = os.path.join(JAMediaObjectsPath, "JAMedia.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
 
@@ -105,6 +95,16 @@ class JAMImagenes(Gtk.Plug):
         self.intervalo = 1000
         self.actualizador = None
         
+        from JAMediaObjects.JAMediaWidgets import Lista
+        from JAMediaObjects.JAMediaWidgets import ToolbarReproduccion
+        from JAMediaObjects.JAMediaWidgets import ToolbarAccion
+        from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+
+        from Widgets import VisorImagenes
+        from Widgets import Toolbar
+        from Widgets import ToolbarConfig
+        from Widgets import MenuList
+
         self.toolbar = Toolbar()
         self.toolbar_salir = ToolbarSalir()
         self.toolbar_config = ToolbarConfig()

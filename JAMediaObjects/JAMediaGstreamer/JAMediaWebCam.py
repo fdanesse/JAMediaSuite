@@ -20,8 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import time
-import datetime
 
 import gi
 gi.require_version('Gst', '1.0')
@@ -31,8 +29,8 @@ from gi.repository import Gst
 from gi.repository import GstVideo
 from gi.repository import GdkPixbuf
 
-import JAMediaObjects
-import JAMediaObjects.JAMediaGlobales as G
+from JAMediaObjects.JAMediaGlobales import get_imagenes_directory
+from JAMediaObjects.JAMediaGlobales import get_video_directory
 
 from JAMediaBins import Efectos_Video_bin
 from JAMediaBins import Foto_bin
@@ -51,7 +49,6 @@ CONFIG_DEFAULT = {
     'hue': 0,
     'gamma': 1.0,
     }
-
 
 class JAMediaWebCam(GObject.GObject):
     """
@@ -80,8 +77,10 @@ class JAMediaWebCam(GObject.GObject):
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
     
     def __init__(self, ventana_id):
-        """ Recibe el id de un DrawingArea
-        para mostrar el video. """
+        """
+        Recibe el id de un DrawingArea
+        para mostrar el video.
+        """
         
         GObject.GObject.__init__(self)
         
@@ -108,11 +107,13 @@ class JAMediaWebCam(GObject.GObject):
         
         self.control_rafaga = False
         
-        self.setup_init()
+        self.__setup_init()
         
-    def setup_init(self):
-        """Crea todos los elementos permanentes del pipe y
-        llama a set_base_pipe para linkear elementos bases."""
+    def __setup_init(self):
+        """
+        Crea todos los elementos permanentes del pipe y
+        llama a set_base_pipe para linkear elementos bases.
+        """
         
         if self.pipeline:
             del(self.pipeline)
@@ -129,17 +130,19 @@ class JAMediaWebCam(GObject.GObject):
         self.videoflip = Gst.ElementFactory.make(
             'videoflip', "videoflip")
         
-        self.set_base_pipe()
+        self.__set_base_pipe()
         
         self.bus = self.pipeline.get_bus()
         self.bus.add_signal_watch()
-        self.bus.connect('message', self.on_mensaje)
+        self.bus.connect('message', self.__on_mensaje)
         
         self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message', self.sync_message)
+        self.bus.connect('sync-message', self.__sync_message)
         
-    def set_base_pipe(self):
-        """Linkea los elementos base."""
+    def __set_base_pipe(self):
+        """
+        Linkea los elementos base.
+        """
         
         #self.camara
         
@@ -182,8 +185,10 @@ class JAMediaWebCam(GObject.GObject):
         multi_out_tee.link(fotobin)
         
     def reset(self):
-        """Re establece la cámara y el pipe a sus estados
-        originales (pipe = sólo camara a pantalla, sin efectos)."""
+        """
+        Re establece la cámara y el pipe a sus estados
+        originales (pipe = sólo camara a pantalla, sin efectos).
+        """
         
         self.config['device'] = CONFIG_DEFAULT['device']
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
@@ -203,15 +208,17 @@ class JAMediaWebCam(GObject.GObject):
         
         self.stop()
         
-        map(self.remover, self.pipeline.children)
+        map(self.__remover, self.pipeline.children)
         
-        self.setup_init()
+        self.__setup_init()
         
         self.play()
         
-    def set_estado(self, valor):
-        """Autoseteo e informe de estado del pipe, según
-        esté corriendo o no y segun los elementos en el pipe."""
+    def __set_estado(self, valor):
+        """
+        Autoseteo e informe de estado del pipe, según
+        esté corriendo o no y segun los elementos en el pipe.
+        """
         
         estado = valor
         
@@ -236,10 +243,12 @@ class JAMediaWebCam(GObject.GObject):
     def play(self, widget = None, event = None):
         
         self.pipeline.set_state(Gst.State.PLAYING)
-        self.set_estado("playing")
+        self.__set_estado("playing")
         
     def stop(self, widget= None, event= None):
-        """Detiene y limpia el pipe."""
+        """
+        Detiene y limpia el pipe.
+        """
         
         self.pipeline.set_state(Gst.State.NULL)
         
@@ -250,10 +259,12 @@ class JAMediaWebCam(GObject.GObject):
         except:
             pass
         
-        self.set_estado("stoped")
+        self.__set_estado("stoped")
         
     def rotar(self, valor):
-        """ Rota el Video. """
+        """
+        Rota el Video.
+        """
         
         rot = self.videoflip.get_property('method')
         
@@ -275,8 +286,10 @@ class JAMediaWebCam(GObject.GObject):
         
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None, gamma = None):
-        """Seteos de balance en la fuente de video.
-        Recibe % en float."""
+        """
+        Seteos de balance en la fuente de video.
+        Recibe % en float.
+        """
         
         # Rangos: int. -2147483648 2147483647
         min	= 2147483648
@@ -313,8 +326,10 @@ class JAMediaWebCam(GObject.GObject):
             self.gamma.set_property('gamma', self.config['gamma'])
             
     def get_balance(self):
-        """Retorna los valores actuales de
-        balance en %."""
+        """
+        Retorna los valores actuales de
+        balance en %.
+        """
         
         # Rangos: int. -2147483648 2147483647
         min	= 2147483648
@@ -340,7 +355,9 @@ class JAMediaWebCam(GObject.GObject):
         return config
     
     def fotografiar(self, widget = None, event = None):
-        """Toma una fotografia."""
+        """
+        Toma una fotografia.
+        """
         
         foto_bin = self.pipeline.get_by_name("foto_bin")
         gdkpixbufsink = self.pipeline.get_by_name("gdkpixbufsink")
@@ -349,11 +366,13 @@ class JAMediaWebCam(GObject.GObject):
             pixbuf = gdkpixbufsink.get_property('last-pixbuf')
             
             if pixbuf and pixbuf != None:
+                import time
+                import datetime
                 
                 fecha = datetime.date.today()
                 hora = time.strftime("%H-%M-%S")
                 archivo = os.path.join(
-                    G.IMAGENES_JAMEDIA_VIDEO,
+                    get_imagenes_directory(),
                     "%s-%s.png" % (fecha, hora))
                 
                 self.patharchivo = archivo
@@ -361,28 +380,34 @@ class JAMediaWebCam(GObject.GObject):
                 pixbuf.savev(self.patharchivo, "png", [], [])
         
     def set_rafaga(self, segundos):
-        """Comienza secuencia de fotografías en ráfaga."""
+        """
+        Comienza secuencia de fotografías en ráfaga.
+        """
         
         if self.control_rafaga:
             GObject.source_remove(self.control_rafaga)
             self.control_rafaga = False
             
-        self.set_estado("Fotografiando")
+        self.__set_estado("Fotografiando")
         
         self.control_rafaga = GObject.timeout_add(
-            int(segundos*1000), self.rafaga)
+            int(segundos*1000), self.__rafaga)
         
     def stop_rafagas(self):
-        """Detiene el proceso de fotografías en ráfagas."""
+        """
+        Detiene el proceso de fotografías en ráfagas.
+        """
         
-        self.set_estado("playing")
+        self.__set_estado("playing")
         
         if self.control_rafaga:
             GObject.source_remove(self.control_rafaga)
             self.control_rafaga = False
         
-    def rafaga(self):
-        """Toma una fotografía cuando se ha seteado ráfagas."""
+    def __rafaga(self):
+        """
+        Toma una fotografía cuando se ha seteado ráfagas.
+        """
         
         if not self.estado == "Fotografiando":
             return False
@@ -392,7 +417,12 @@ class JAMediaWebCam(GObject.GObject):
             return True
         
     def grabar(self, widget= None, event= None):
-        """ Graba Audio y Video desde la webcam. """
+        """
+        Graba Audio y Video desde la webcam.
+        """
+        
+        import time
+        import datetime
         
         self.stop()
         
@@ -407,8 +437,7 @@ class JAMediaWebCam(GObject.GObject):
         
         fecha = datetime.date.today()
         hora = time.strftime("%H-%M-%S")
-        archivo = os.path.join(
-            G.VIDEO_JAMEDIA_VIDEO,"%s-%s.ogg" % (fecha, hora))
+        archivo = os.path.join(get_video_directory(),"%s-%s.ogg" % (fecha, hora))
         self.patharchivo = archivo
         filesink.set_property("location", archivo)
         
@@ -425,7 +454,9 @@ class JAMediaWebCam(GObject.GObject):
         self.play()
         
     def stop_grabar(self):
-        """Detiene la grabación en progreso."""
+        """
+        Detiene la grabación en progreso.
+        """
 
         self.stop()
         
@@ -449,13 +480,17 @@ class JAMediaWebCam(GObject.GObject):
         
         self.play()
     
-    def remover(self, objeto):
-        """Para remover objetos en el pipe."""
+    def __remover(self, objeto):
+        """
+        Para remover objetos en el pipe.
+        """
         
         if objeto in self.pipeline.children: self.pipeline.remove(objeto)
         
-    def sync_message(self, bus, mensaje):
-        """Captura los mensajes en el bus del pipe Gst."""
+    def __sync_message(self, bus, mensaje):
+        """
+        Captura los mensajes en el bus del pipe Gst.
+        """
         
         try:
             if mensaje.get_structure().get_name() == 'prepare-window-handle':
@@ -465,15 +500,19 @@ class JAMediaWebCam(GObject.GObject):
         except:
             pass
     
-    def on_mensaje(self, bus, mensaje):
-        """Captura los mensajes en el bus del pipe Gst."""
+    def __on_mensaje(self, bus, mensaje):
+        """
+        Captura los mensajes en el bus del pipe Gst.
+        """
         
         if mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
             print "###", err, debug
             
     def agregar_efecto(self, nombre_efecto):
-        """Agrega un efecto según su nombre."""
+        """
+        Agrega un efecto según su nombre.
+        """
         
         self.efectos.append( nombre_efecto )
         self.config_efectos[nombre_efecto] = {}
@@ -497,8 +536,10 @@ class JAMediaWebCam(GObject.GObject):
         self.play()
         
     def quitar_efecto(self, indice_efecto):
-        """Quita el efecto correspondiente al indice o
-        al nombre que recibe."""
+        """
+        Quita el efecto correspondiente al indice o
+        al nombre que recibe.
+        """
 
         if type(indice_efecto) == int:
             self.efectos.remove(self.efectos[indice_efecto])
@@ -532,7 +573,9 @@ class JAMediaWebCam(GObject.GObject):
         self.play()
         
     def configurar_efecto(self, nombre_efecto, propiedad, valor):
-        """Configura un efecto en el pipe."""
+        """
+        Configura un efecto en el pipe.
+        """
         
         efectos_bin = self.pipeline.get_by_name('efectos_bin')
         bin_efecto = efectos_bin.get_by_name(nombre_efecto)
@@ -541,6 +584,7 @@ class JAMediaWebCam(GObject.GObject):
         efectos_bin.config_efectos[nombre_efecto][propiedad] = valor
         
 def salir(widget):
+    
     import sys
     sys.exit()
     
@@ -558,6 +602,8 @@ if __name__=="__main__":
     
     ventana.show_all()
     ventana.realize()
+    
+    from gi.repository import GdkX11
     
     xid = pantalla.get_property('window').get_xid()
     jamediawebcam = JAMediaWebCam(xid)

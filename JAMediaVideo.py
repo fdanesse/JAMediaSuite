@@ -20,43 +20,27 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import sys
-import time
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
-from gi.repository import GdkX11
 
 import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import Visor
-from JAMediaObjects.JAMediaWidgets import ToolbarSalir
-from JAMediaObjects.JAMediaGstreamer.JAMediaWebCam import JAMediaWebCam
 
-import JAMediaObjects.JAMediaGlobales as G
-import JAMediaObjects.JAMFileSystem as JAMF
+from JAMediaObjects.JAMediaGlobales import get_audio_directory
+from JAMediaObjects.JAMediaGlobales import get_imagenes_directory
+from JAMediaObjects.JAMediaGlobales import get_video_directory
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-import JAMediaVideo
-from JAMediaVideo.Widgets import Toolbar
-from JAMediaVideo.Widgets import ToolbarPrincipal
-from JAMediaVideo.JAMediaVideoAplicaciones import JAMediaVideoWidget
-from JAMediaVideo.JAMediaVideoAplicaciones import JAMediaFotografiaWidget
-from JAMediaVideo.JAMediaVideoAplicaciones import JAMediaAudioWidget
-
-import JAMedia
-from JAMedia.JAMedia import JAMediaPlayer
-
-import JAMImagenes
 from JAMImagenes.JAMImagenes import JAMImagenes
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
-style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+style_path = os.path.join(JAMediaObjectsPath, "JAMedia.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
+
 context.add_provider_for_screen(
     screen,
     css_provider,
@@ -104,10 +88,23 @@ class JAMediaVideo(Gtk.Window):
         
         self.pistas = []
         
-        self.setup_init()
+        self.__setup_init()
         
-    def setup_init(self):
-        """Genera y empaqueta toda la interfaz."""
+    def __setup_init(self):
+        """
+        Genera y empaqueta toda la interfaz.
+        """
+        
+        from JAMediaObjects.JAMediaWidgets import Visor
+        from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+        
+        from JAMediaVideo.Widgets import Toolbar
+        from JAMediaVideo.Widgets import ToolbarPrincipal
+        from JAMediaVideo.JAMediaVideoAplicaciones import JAMediaVideoWidget
+        from JAMediaVideo.JAMediaVideoAplicaciones import JAMediaFotografiaWidget
+        from JAMediaVideo.JAMediaVideoAplicaciones import JAMediaAudioWidget
+        
+        from JAMedia.JAMedia import JAMediaPlayer
         
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.add(vbox)
@@ -155,10 +152,14 @@ class JAMediaVideo(Gtk.Window):
         self.show_all()
         self.realize()
         
-        GObject.idle_add(self.setup_init2)
+        GObject.idle_add(self.__setup_init2)
         
-    def setup_init2(self):
-        """Inicializa la aplicación a su estado fundamental."""
+    def __setup_init2(self):
+        """
+        Inicializa la aplicación a su estado fundamental.
+        """
+        
+        from JAMediaObjects.JAMediaGstreamer.JAMediaWebCam import JAMediaWebCam
         
         self.jamediaplayer.setup_init()
         self.jamediaplayer.switch_reproductor(None, "JAMediaReproductor")
@@ -177,48 +178,56 @@ class JAMediaVideo(Gtk.Window):
             self.socketjamedia,
             self.socketjamimagenes]
             
-        map(self.ocultar, self.controlesdinamicos)
-        map(self.mostrar, [self.toolbar, self.toolbarprincipal])
+        map(self.__ocultar, self.controlesdinamicos)
+        map(self.__mostrar, [self.toolbar, self.toolbarprincipal])
+        
+        from gi.repository import GdkX11
         
         xid = self.pantalla.get_property('window').get_xid()
         self.jamediawebcam = JAMediaWebCam(xid)
         
-        self.toolbar.connect('salir', self.confirmar_salir)
-        self.toolbar_salir.connect('salir', self.salir)
+        self.toolbar.connect('salir', self.__confirmar_salir)
+        self.toolbar_salir.connect('salir', self.__salir)
         
-        self.toolbarprincipal.connect("menu", self.get_menu)
+        self.toolbarprincipal.connect("menu", self.__get_menu)
         
-        self.jamediavideo.connect('salir', self.get_menu_base)
-        self.jamediafotografia.connect('salir', self.get_menu_base)
-        self.jamediaaudio.connect('salir', self.get_menu_base)
-        self.jamediaplayer.connect('salir', self.get_menu_base)
-        self.jamimagenes.connect('salir', self.get_menu_base)
+        self.jamediavideo.connect('salir', self.__get_menu_base)
+        self.jamediafotografia.connect('salir', self.__get_menu_base)
+        self.jamediaaudio.connect('salir', self.__get_menu_base)
+        self.jamediaplayer.connect('salir', self.__get_menu_base)
+        self.jamimagenes.connect('salir', self.__get_menu_base)
         
-        self.pantalla.connect("button_press_event", self.clicks_en_pantalla)
+        self.pantalla.connect("button_press_event", self.__clicks_en_pantalla)
         
-        self.connect("destroy", self.salir)
+        self.connect("destroy", self.__salir)
         
         self.fullscreen()
         
-        self.jamediavideo.cargar_efectos(list(G.VIDEOEFECTOS))
-        self.jamediafotografia.cargar_efectos(list(G.VIDEOEFECTOS))
-        self.jamediaaudio.cargar_efectos(list(G.VIDEOEFECTOS))
-        self.jamediaaudio.cargar_visualizadores(list(G.AUDIOVISUALIZADORES))
+        from JAMediaObjects.JAMediaGlobales import get_video_efectos
+        from JAMediaObjects.JAMediaGlobales import get_visualizadores
+        
+        self.jamediavideo.cargar_efectos(list(get_video_efectos()))
+        self.jamediafotografia.cargar_efectos(list(get_video_efectos()))
+        self.jamediaaudio.cargar_efectos(list(get_video_efectos()))
+        self.jamediaaudio.cargar_visualizadores(list(get_visualizadores()))
+        
         GObject.idle_add(self.jamediawebcam.reset)
         
         if self.pistas:
             # FIXME: Agregar reconocer tipo de archivo para cargar
             # la lista en jamedia o jamediaimagenes.
-            map(self.ocultar, self.controlesdinamicos)
+            map(self.__ocultar, self.controlesdinamicos)
             self.jamediawebcam.stop()
-            map(self.ocultar, [self.pantalla])
-            map(self.mostrar, [self.socketjamedia])
+            map(self.__ocultar, [self.pantalla])
+            map(self.__mostrar, [self.socketjamedia])
             self.jamediaplayer.set_nueva_lista(self.pistas)
             
-    def clicks_en_pantalla(self, widget, event):
-        """Hace fullscreen y unfullscreen sobre la
+    def __clicks_en_pantalla(self, widget, event):
+        """
+        Hace fullscreen y unfullscreen sobre la
         ventana principal cuando el usuario hace
-        doble click en el visor."""
+        doble click en el visor.
+        """
         
         if event.type.value_name == "GDK_2BUTTON_PRESS":
             ventana = self.get_toplevel()
@@ -232,76 +241,84 @@ class JAMediaVideo(Gtk.Window):
             else:
                 ventana.fullscreen()
     
-    def get_menu_base(self, widget):
-        """Cuando se sale de un menú particular,
-        se vuelve al menú principal."""
+    def __get_menu_base(self, widget):
+        """
+        Cuando se sale de un menú particular,
+        se vuelve al menú principal.
+        """
         
-        map(self.ocultar, self.controlesdinamicos)
-        map(self.mostrar, [self.toolbar,
+        map(self.__ocultar, self.controlesdinamicos)
+        map(self.__mostrar, [self.toolbar,
             self.toolbarprincipal, self.pantalla])
             
         GObject.idle_add(self.jamediawebcam.reset)
         
-    def get_menu(self, widget, menu):
-        """Cuando se hace click en algún botón de
+    def __get_menu(self, widget, menu):
+        """
+        Cuando se hace click en algún botón de
         la toolbar principal, se entra en el menú
-        correspondiente o se ejecuta determinada acción."""
+        correspondiente o se ejecuta determinada acción.
+        """
         
-        map(self.ocultar, self.controlesdinamicos)
+        map(self.__ocultar, self.controlesdinamicos)
         
         if menu == "Filmar":
             self.jamediawebcam.stop()
-            map(self.ocultar, [self.pantalla])
-            map(self.mostrar, [self.socketjamediavideo])
+            map(self.__ocultar, [self.pantalla])
+            map(self.__mostrar, [self.socketjamediavideo])
             self.jamediavideo.play()
         
         elif menu == "Fotografiar":
             self.jamediawebcam.stop()
-            map(self.ocultar, [self.pantalla])
-            map(self.mostrar, [self.socketjamediafotografia])
+            map(self.__ocultar, [self.pantalla])
+            map(self.__mostrar, [self.socketjamediafotografia])
             self.jamediafotografia.play()
         
         elif menu == "Grabar":
             self.jamediawebcam.stop()
-            map(self.ocultar, [self.pantalla])
-            map(self.mostrar, [self.socketjamediaaudio])
+            map(self.__ocultar, [self.pantalla])
+            map(self.__mostrar, [self.socketjamediaaudio])
             self.jamediaaudio.play()
         
         elif menu == "Reproducir":
             self.jamediawebcam.stop()
-            map(self.ocultar, [self.pantalla])
-            map(self.mostrar, [self.socketjamedia])
+            map(self.__ocultar, [self.pantalla])
+            map(self.__mostrar, [self.socketjamedia])
             archivos = []
             
-            for arch in os.listdir(G.AUDIO_JAMEDIA_VIDEO):
-                ar = os.path.join(G.AUDIO_JAMEDIA_VIDEO, arch)
+            for arch in os.listdir(get_audio_directory()):
+                ar = os.path.join(get_audio_directory(), arch)
                 archivos.append([arch, ar])
                 
-            for arch in os.listdir(G.VIDEO_JAMEDIA_VIDEO):
-                ar = os.path.join(G.VIDEO_JAMEDIA_VIDEO, arch)
+            for arch in os.listdir(get_video_directory()):
+                ar = os.path.join(get_video_directory(), arch)
                 archivos.append([arch, ar])
                 
             GObject.idle_add(self.jamediaplayer.set_nueva_lista, archivos)
             
         elif menu == "Ver":
             self.jamediawebcam.stop()
-            map(self.ocultar, [self.pantalla])
-            map(self.mostrar, [self.socketjamimagenes])
+            map(self.__ocultar, [self.pantalla])
+            map(self.__mostrar, [self.socketjamimagenes])
             archivos = []
             
-            for arch in os.listdir(G.IMAGENES_JAMEDIA_VIDEO):
-                ar = os.path.join(G.IMAGENES_JAMEDIA_VIDEO, arch)
+            for arch in os.listdir(get_imagenes_directory()):
+                ar = os.path.join(get_imagenes_directory(), arch)
                 archivos.append([arch, ar])
                 
             GObject.idle_add(self.jamimagenes.set_lista, archivos)
         
-    def ocultar(self, objeto):
-        """Esta funcion es llamada desde self.get_menu()"""
+    def __ocultar(self, objeto):
+        """
+        Esta funcion es llamada desde self.get_menu()
+        """
         
         if objeto.get_visible(): objeto.hide()
         
-    def mostrar(self, objeto):
-        """Esta funcion es llamada desde self.get_menu()"""
+    def __mostrar(self, objeto):
+        """
+        Esta funcion es llamada desde self.get_menu()
+        """
         
         if not objeto.get_visible(): objeto.show()
         
@@ -309,27 +326,35 @@ class JAMediaVideo(Gtk.Window):
         
         self.pistas = pistas
         
-    def confirmar_salir(self, widget = None, senial = None):
-        """Recibe salir y lo pasa a la toolbar de confirmación."""
+    def __confirmar_salir(self, widget = None, senial = None):
+        """
+        Recibe salir y lo pasa a la toolbar de confirmación.
+        """
         
         self.toolbar_salir.run("JAMediaVideo")
         
-    def salir(self, widget = None, senial = None):
-        """Reconfigurar la cámara y salir."""
+    def __salir(self, widget = None, senial = None):
+        """
+        Reconfigurar la cámara y salir.
+        """
         
         self.jamediawebcam.reset()
         self.jamediawebcam.stop()
+        
+        import sys
         sys.exit(0)
-
 
 def get_item_list(path):
     
     if os.path.exists(path):
         if os.path.isfile(path):
+            
+            from JAMediaObjects.JAMFileSystem import describe_archivo
+            
             archivo = os.path.basename(path)
             
-            if 'audio' in JAMF.describe_archivo(path) or \
-                'video' in JAMF.describe_archivo(path):
+            if 'audio' in describe_archivo(path) or \
+                'video' in describe_archivo(path):
                     return [archivo, path]
         
     return False
@@ -337,6 +362,8 @@ def get_item_list(path):
 if __name__ == "__main__":
     
     items = []
+    
+    import sys
     
     if len(sys.argv) > 1:
         

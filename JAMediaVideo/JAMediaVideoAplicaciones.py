@@ -20,32 +20,23 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import sys
-import time
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
+
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 from JAMediaObjects.JAMediaWidgets import Visor
 from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerEfectos
-from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerAudioVisualizador
 from JAMediaObjects.JAMediaWidgets import ToolbarBalanceConfig
 
 from JAMediaObjects.JAMediaGstreamer.JAMediaWebCam import JAMediaWebCam
-from JAMediaObjects.JAMediaGstreamer.JAMediaAudio import JAMediaAudio
 
-from Widgets import ToolbarVideo
-from Widgets import ToolbarFotografia
-from Widgets import ToolbarGrabarAudio
-from Widgets import WidgetEfecto_en_Pipe
-from Widgets import ToolbarRafagas
-
-import JAMediaObjects.JAMediaGlobales as G
+from JAMediaObjects.JAMediaGlobales import get_pixels
+from JAMediaObjects.JAMediaGlobales import get_color
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
@@ -53,14 +44,18 @@ GObject.threads_init()
 Gdk.threads_init()
 
 class JAMediaVideoWidget(Gtk.Plug):
-    """Plug - Interfaz para Webcam con grabación de audio y video."""
+    """
+    Plug - Interfaz para Webcam con grabación de audio y video.
+    """
     
     __gsignals__ = {
     "salir":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
     
     def __init__(self):
-        """JAMediaVideoWidget: Gtk.Plug para embeber en otra aplicacion."""
+        """
+        JAMediaVideoWidget: Gtk.Plug para embeber en otra aplicacion.
+        """
         
         Gtk.Plug.__init__(self, 0L)
         
@@ -77,9 +72,13 @@ class JAMediaVideoWidget(Gtk.Plug):
         self.show_all()
         
     def setup_init(self):
-        """Se crea la interfaz grafica,
-        se setea y se empaqueta todo."""
+        """
+        Se crea la interfaz grafica,
+        se setea y se empaqueta todo.
+        """
         
+        from Widgets import ToolbarVideo
+
         # Widgets Base: - vbox - toolbars - panel
         basebox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         
@@ -97,13 +96,17 @@ class JAMediaVideoWidget(Gtk.Plug):
         vbox_izq_panel = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.pantalla = Visor()
         eventbox = Gtk.EventBox()
-        eventbox.modify_bg(0, G.NEGRO)
+        eventbox.modify_bg(0, get_color("NEGRO"))
         
         self.hbox_efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
+        self.hbox_efectos_en_pipe.set_size_request(-1, get_pixels(0.5))
         
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.NEVER)
+            
         scroll.add_with_viewport(eventbox)
         
         eventbox.add(self.hbox_efectos_en_pipe)
@@ -115,12 +118,17 @@ class JAMediaVideoWidget(Gtk.Plug):
         
         # Panel lado Derecho: eventbox - vbox - scroll - balance_widget - widget_efectos
         self.box_config = Gtk.EventBox()
-        self.box_config.set_size_request(G.get_pixels(5.0), -1)
+        self.box_config.set_size_request(get_pixels(5.0), -1)
         
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.balance_widget = ToolbarBalanceConfig()
+        
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC)
+        
         scroll.add_with_viewport(vbox)
         
         self.box_config.add(scroll)
@@ -134,6 +142,8 @@ class JAMediaVideoWidget(Gtk.Plug):
         
         self.show_all()
         self.realize()
+        
+        from gi.repository import GdkX11
         
         xid = self.pantalla.get_property('window').get_xid()
         self.jamediawebcam = JAMediaWebCam(xid)
@@ -161,8 +171,10 @@ class JAMediaVideoWidget(Gtk.Plug):
         self.toolbar_salir.connect('salir', self.emit_salir)
         
     def reset(self):
-        """Resetea la cámara quitando los efectos y
-        actualiza los widgets correspondientes."""
+        """
+        Resetea la cámara quitando los efectos y
+        actualiza los widgets correspondientes.
+        """
         
         for efecto in self.hbox_efectos_en_pipe.get_children():
             efecto.destroy()
@@ -200,12 +212,16 @@ class JAMediaVideoWidget(Gtk.Plug):
             print "### Estado:", valor
         
     def cargar_efectos(self, efectos):
-        """Agrega los widgets con efectos a la paleta de configuración."""
+        """
+        Agrega los widgets con efectos a la paleta de configuración.
+        """
         
         self.widget_efectos.cargar_efectos(efectos)
     
     def configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
-        """Configura un efecto en el pipe, si no está en eĺ, lo agrega."""
+        """
+        Configura un efecto en el pipe, si no está en eĺ, lo agrega.
+        """
 
         # Si el efecto no está agregado al pipe, lo agrega
         if self.jamediawebcam.efectos:
@@ -232,9 +248,11 @@ class JAMediaVideoWidget(Gtk.Plug):
         self.jamediawebcam.configurar_efecto(nombre_efecto, propiedad, valor)
         
     def click_efecto(self, widget, nombre_efecto):
-        """Recibe el nombre del efecto sobre el que
+        """
+        Recibe el nombre del efecto sobre el que
         se ha hecho click y decide si debe agregarse
-        al pipe de JAMediaWebcam."""
+        al pipe de JAMediaWebcam.
+        """
         
         # HACK: si se agregan o quitan efectos mientras se graba, las grabaciones se reinician.
         if self.jamediawebcam.estado == "GrabandoAudioVideo" or \
@@ -263,13 +281,15 @@ class JAMediaVideoWidget(Gtk.Plug):
                 # self.jamediawebcam.re_init()
             #    pass
             
+            from Widgets import WidgetEfecto_en_Pipe
+            
             self.jamediawebcam.agregar_efecto( nombre_efecto )
             
             # Agrega un widget a self.hbox_efectos_en_pipe
             botonefecto = WidgetEfecto_en_Pipe()
             botonefecto.set_tooltip(nombre_efecto)
             botonefecto.connect('clicked', self.clicked_mini_efecto)
-            lado = G.get_pixels(0.5)
+            lado = get_pixels(0.5)
             botonefecto.set_tamanio(lado, lado)
             
             archivo = os.path.join(JAMediaObjectsPath, "Iconos", 'configurar.png')
@@ -298,8 +318,10 @@ class JAMediaVideoWidget(Gtk.Plug):
                     break
         
     def clicked_mini_efecto(self, widget, void = None):
-        """Cuando se hace click en el mini objeto en pantalla
-        para efecto agregado, este se quita del pipe de la cámara."""
+        """
+        Cuando se hace click en el mini objeto en pantalla
+        para efecto agregado, este se quita del pipe de la cámara.
+        """
         
         # HACK: si se agregan o quitan efectos mientras se graba, las grabaciones se reinician.
         if self.jamediawebcam.estado == "GrabandoAudioVideo" or \
@@ -312,7 +334,9 @@ class JAMediaVideoWidget(Gtk.Plug):
         widget.destroy()
         
     def update_balance_toolbars(self):
-        """Actualiza las toolbars de balance en video."""
+        """
+        Actualiza las toolbars de balance en video.
+        """
         
         config = self.jamediawebcam.get_balance()
         
@@ -324,8 +348,10 @@ class JAMediaVideoWidget(Gtk.Plug):
             gamma = config['gamma'])
             
     def set_balance(self, widget, valor, tipo):
-        """ Setea valores en Balance de Video.
-        valor es % float"""
+        """
+        Setea valores en Balance de Video.
+        valor es % float
+        """
         
         if tipo == "saturacion":
             self.jamediawebcam.set_balance(saturacion = valor)
@@ -343,13 +369,17 @@ class JAMediaVideoWidget(Gtk.Plug):
             self.jamediawebcam.set_balance(gamma = valor)
             
     def set_rotacion(self, widget, valor):
-        """Recibe rotación y la pasa a la webcam."""
+        """
+        Recibe rotación y la pasa a la webcam.
+        """
         
         self.jamediawebcam.rotar(valor)
         
     def set_accion(self, widget, senial):
-        """Cuando se hace click en filmar o
-        en configurar filmacion."""
+        """
+        Cuando se hace click en filmar o
+        en configurar filmacion.
+        """
         
         if senial == 'filmar':
             if self.jamediawebcam.estado != "GrabandoAudioVideo":
@@ -370,7 +400,9 @@ class JAMediaVideoWidget(Gtk.Plug):
             self.reset()
             
     def play(self):
-        """ Comienza a correr la aplicación."""
+        """
+        Comienza a correr la aplicación.
+        """
         
         GObject.idle_add(self.jamediawebcam.reset)
         
@@ -383,9 +415,11 @@ class JAMediaVideoWidget(Gtk.Plug):
         if not objeto.get_visible(): objeto.show()
         
     def clicks_en_pantalla(self, widget, event):
-        """Hace fullscreen y unfullscreen sobre la
+        """
+        Hace fullscreen y unfullscreen sobre la
         ventana principal cuando el usuario hace
-        doble click en el visor."""
+        doble click en el visor.
+        """
         
         if event.type.value_name == "GDK_2BUTTON_PRESS":
             ventana = self.get_toplevel()
@@ -400,14 +434,18 @@ class JAMediaVideoWidget(Gtk.Plug):
                 ventana.fullscreen()
                 
     def confirmar_salir(self, widget = None, senial = None):
-        """Recibe salir y lo pasa a la toolbar de confirmación."""
+        """
+        Recibe salir y lo pasa a la toolbar de confirmación.
+        """
         
         self.toolbar_salir.run("Menú Video.")
         
     def emit_salir(self, widget):
-        """Emite salir para que cuando esta embebida, la
+        """
+        Emite salir para que cuando esta embebida, la
         aplicacion decida que hacer, si salir, o cerrar solo
-        la aplicacion embebida."""
+        la aplicacion embebida.
+        """
         
         self.reset()
         self.jamediawebcam.stop()
@@ -417,15 +455,22 @@ class JAMediaVideoWidget(Gtk.Plug):
         GObject.idle_add(self.emit, 'salir') # self.emit('salir')
     
 class JAMediaFotografiaWidget(JAMediaVideoWidget):
-    """Plug - Interfaz para Webcam con cámara fotográfica."""
+    """
+    Plug - Interfaz para Webcam con cámara fotográfica.
+    """
     
     def __init__(self):
         
         JAMediaVideoWidget.__init__(self)
         
     def setup_init(self):
-        """Se crea la interfaz grafica,
-        se setea y se empaqueta todo."""
+        """
+        Se crea la interfaz grafica,
+        se setea y se empaqueta todo.
+        """
+        
+        from Widgets import ToolbarFotografia
+        from Widgets import ToolbarRafagas
         
         # Widgets Base: - vbox - toolbars - panel
         basebox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
@@ -444,13 +489,17 @@ class JAMediaFotografiaWidget(JAMediaVideoWidget):
         vbox_izq_panel = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.pantalla = Visor()
         eventbox = Gtk.EventBox()
-        eventbox.modify_bg(0, G.NEGRO)
+        eventbox.modify_bg(0, get_color("NEGRO"))
         
         self.hbox_efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
+        self.hbox_efectos_en_pipe.set_size_request(-1, get_pixels(0.5))
         
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.NEVER)
+            
         scroll.add_with_viewport(eventbox)
         
         eventbox.add(self.hbox_efectos_en_pipe)
@@ -462,12 +511,17 @@ class JAMediaFotografiaWidget(JAMediaVideoWidget):
         
         # Panel lado Derecho: eventbox - vbox - scroll - balance_widget - widget_efectos
         self.box_config = Gtk.EventBox()
-        self.box_config.set_size_request(G.get_pixels(5.0), -1)
+        self.box_config.set_size_request(get_pixels(5.0), -1)
         
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.balance_widget = ToolbarBalanceConfig()
+        
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC)
+            
         scroll.add_with_viewport(vbox)
         
         self.box_config.add(scroll)
@@ -483,6 +537,8 @@ class JAMediaFotografiaWidget(JAMediaVideoWidget):
         
         self.show_all()
         self.realize()
+        
+        from gi.repository import GdkX11
         
         xid = self.pantalla.get_property('window').get_xid()
         self.jamediawebcam = JAMediaWebCam(xid)
@@ -512,14 +568,18 @@ class JAMediaFotografiaWidget(JAMediaVideoWidget):
         self.toolbar_salir.connect('salir', self.emit_salir)
         
     def set_rafaga(self, widget, valor):
-        """Cuando se hace click en play de la toolbar
-        de ráfagas se setea y comienza a fotografiar."""
+        """
+        Cuando se hace click en play de la toolbar
+        de ráfagas se setea y comienza a fotografiar.
+        """
         
         self.jamediawebcam.set_rafaga(valor)
         
     def set_accion(self, widget, senial):
-        """Cuando se hace click en fotografiar o
-        en configurar filmacion."""
+        """
+        Cuando se hace click en fotografiar o
+        en configurar filmacion.
+        """
         
         if senial == 'fotografiar':
             if self.jamediawebcam.estado != "Fotografiando":
@@ -541,15 +601,21 @@ class JAMediaFotografiaWidget(JAMediaVideoWidget):
             self.reset()
             
     def confirmar_salir(self, widget = None, senial = None):
-        """Recibe salir y lo pasa a la toolbar de confirmación."""
+        """
+        Recibe salir y lo pasa a la toolbar de confirmación.
+        """
         
         self.toolbar_salir.run("Menú Fotografía.")
         
 class JAMediaAudioWidget(JAMediaVideoWidget):
-    """Plug - Interfaz para Webcam con grabación de audio."""
+    """
+    Plug - Interfaz para Webcam con grabación de audio.
+    """
     
     def __init__(self):
-        """JAMediaAudioWidget: Gtk.Plug para embeber en otra aplicacion."""
+        """
+        JAMediaAudioWidget: Gtk.Plug para embeber en otra aplicacion.
+        """
         
         JAMediaVideoWidget.__init__(self)
         
@@ -567,8 +633,15 @@ class JAMediaAudioWidget(JAMediaVideoWidget):
         self.show_all()
         
     def setup_init(self):
-        """Se crea la interfaz grafica,
-        se setea y se empaqueta todo."""
+        """
+        Se crea la interfaz grafica,
+        se setea y se empaqueta todo.
+        """
+        
+        from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerAudioVisualizador
+        from JAMediaObjects.JAMediaGstreamer.JAMediaAudio import JAMediaAudio
+        
+        from Widgets import ToolbarGrabarAudio
         
         # Widgets Base: - vbox - toolbars - panel
         basebox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
@@ -587,13 +660,17 @@ class JAMediaAudioWidget(JAMediaVideoWidget):
         vbox_izq_panel = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.pantalla = Visor()
         eventbox = Gtk.EventBox()
-        eventbox.modify_bg(0, G.NEGRO)
+        eventbox.modify_bg(0, get_color("NEGRO"))
         
         self.hbox_efectos_en_pipe = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        self.hbox_efectos_en_pipe.set_size_request(-1, G.get_pixels(0.5))
+        self.hbox_efectos_en_pipe.set_size_request(-1, get_pixels(0.5))
         
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.NEVER)
+            
         scroll.add_with_viewport(eventbox)
         
         eventbox.add(self.hbox_efectos_en_pipe)
@@ -605,13 +682,18 @@ class JAMediaAudioWidget(JAMediaVideoWidget):
         
         # Panel lado Derecho: eventbox - vbox - scroll - balance_widget - widget_efectos
         self.box_config = Gtk.EventBox()
-        self.box_config.set_size_request(G.get_pixels(5.0), -1)
+        self.box_config.set_size_request(get_pixels(5.0), -1)
         
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         
         self.widget_visualizadores_de_audio = WidgetsGstreamerAudioVisualizador()
+        
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.NEVER)
+            
         scroll.add_with_viewport(self.widget_visualizadores_de_audio)
         
         self.balance_widget = ToolbarBalanceConfig()
@@ -619,7 +701,11 @@ class JAMediaAudioWidget(JAMediaVideoWidget):
         vbox.pack_start(scroll, False, True, 0)
         
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        
+        scroll.set_policy(
+            Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC)
+            
         scroll.add_with_viewport(vbox)
         self.box_config.add(scroll)
         
@@ -631,6 +717,8 @@ class JAMediaAudioWidget(JAMediaVideoWidget):
         
         self.show_all()
         self.realize()
+        
+        from gi.repository import GdkX11
         
         xid = self.pantalla.get_property('window').get_xid()
         self.jamediawebcam = JAMediaAudio(xid)
@@ -660,8 +748,10 @@ class JAMediaAudioWidget(JAMediaVideoWidget):
         self.toolbar_salir.connect('salir', self.emit_salir)
     
     def set_accion(self, widget, senial):
-        """Cuando se hace click en grabar o
-        en configurar."""
+        """
+        Cuando se hace click en grabar o
+        en configurar.
+        """
         
         if senial == 'grabar':
             if self.jamediawebcam.estado != "GrabandoAudio":
@@ -682,7 +772,9 @@ class JAMediaAudioWidget(JAMediaVideoWidget):
             self.reset()
 
     def cargar_visualizadores(self, efectos):
-        """Agrega los widgets con efectos a la paleta de configuración."""
+        """
+        Agrega los widgets con efectos a la paleta de configuración.
+        """
         
         self.widget_visualizadores_de_audio.cargar_efectos(efectos)
         
@@ -698,7 +790,9 @@ class JAMediaAudioWidget(JAMediaVideoWidget):
         # FIXME: Agregar seleccionar visualizador actual
         
     def confirmar_salir(self, widget = None, senial = None):
-        """Recibe salir y lo pasa a la toolbar de confirmación."""
+        """
+        Recibe salir y lo pasa a la toolbar de confirmación.
+        """
         
         self.toolbar_salir.run("Menú Audio.")
         

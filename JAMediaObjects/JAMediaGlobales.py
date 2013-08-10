@@ -120,7 +120,7 @@ def get_data_directory():
 
 def get_audio_directory():
     """
-    Devuelve el Directorio de Datos de JAMedia y JAMediaTube.
+    Devuelve el Directorio de Audio de JAMedia y JAMediaTube.
     """
     
     import os
@@ -133,9 +133,24 @@ def get_audio_directory():
         
     return AUDIO_JAMEDIA_VIDEO
 
+def get_imagenes_directory():
+    """
+    Devuelve el Directorio de Imagenes de JAMediaVideo y JAMediaImagenes.
+    """
+    
+    import os
+    
+    IMAGENES_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Fotos")
+        
+    if not os.path.exists(IMAGENES_JAMEDIA_VIDEO):
+        make_base_directory()
+        
+    return IMAGENES_JAMEDIA_VIDEO
+
 def get_video_directory():
     """
-    Devuelve el Directorio de Datos de JAMedia y JAMediaTube.
+    Devuelve el Directorio de Video de JAMediaVideo.
     """
     
     import os

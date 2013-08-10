@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import cairo
+
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
@@ -31,9 +31,10 @@ from JAMediaObjects.JAMediaWidgets import Visor
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-import JAMediaObjects.JAMFileSystem as JAMF
-import JAMediaObjects.JAMediaGlobales as G
-    
+from JAMediaObjects.JAMediaGlobales import get_separador
+from JAMediaObjects.JAMediaGlobales import get_boton
+from JAMediaObjects.JAMediaGlobales import get_pixels
+
 class VisorImagenes(Visor):
     """
     DrawingArea - Visor de Imágenes.
@@ -166,7 +167,6 @@ class VisorImagenes(Visor):
     def do_draw(self, contexto):
         
         if not self.imagen_original:
-            #self.modify_bg(0, Gdk.Color(65000, 65000, 65000))
             return
         
         width, height = self.tamanio
@@ -225,77 +225,77 @@ class Toolbar(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "escalaoriginal.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(1))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(1))
         boton.set_tooltip_text("Original.")
         boton.connect("clicked", self.__original)
         self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "alejar.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(1))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(1))
         boton.set_tooltip_text("Alejar.")
         boton.connect("clicked", self.__alejar)
         self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "acercar.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(1))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(1))
         boton.set_tooltip_text("Acercar.")
         boton.connect("clicked", self.__acercar)
         self.insert(boton, -1)
 
-        self.insert(G.get_separador(draw = True,
+        self.insert(get_separador(draw = True,
             ancho = 0, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "rotar.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(1))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(1))
         boton.set_tooltip_text("Izquierda.")
         boton.connect("clicked", self.__rotar_izquierda)
         self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "rotar.png")
-        boton = G.get_boton(archivo, flip = True,
-            rotacion = None, pixels = G.get_pixels(1))
+        boton = get_boton(archivo, flip = True,
+            rotacion = None, pixels = get_pixels(1))
         boton.set_tooltip_text("Derecha.")
         boton.connect("clicked", self.__rotar_derecha)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = True,
+        self.insert(get_separador(draw = True,
             ancho = 0, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "configurar.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(1))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(1))
         boton.set_tooltip_text("Configurar.")
         boton.connect("clicked", self.__configurar)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = True,
+        self.insert(get_separador(draw = True,
             ancho = 0, expand = False), -1)
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "salir.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(1))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(1))
         boton.set_tooltip_text("Salir.")
         boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
         
-        self.insert(G.get_separador(draw = False,
+        self.insert(get_separador(draw = False,
             ancho = 2, expand = False), -1)
         
         self.show_all()
@@ -329,8 +329,10 @@ class Toolbar(Gtk.Toolbar):
         self.emit("salir")
         
 class ToolbarConfig(Gtk.Box):
-    """Toolbar con opciones de configuracion para
-    modo presentacion de diapositivas."""
+    """
+    Toolbar con opciones de configuracion para
+    modo presentacion de diapositivas.
+    """
     
     __gsignals__ = {
     "run":(GObject.SIGNAL_RUN_FIRST,
@@ -346,29 +348,29 @@ class ToolbarConfig(Gtk.Box):
         self.ocultar_controles = False
         self.intervalo = 1.0
         
-        toolbar1.insert(G.get_separador(draw = False,
+        toolbar1.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "salir.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(0.8))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(0.8))
         boton.set_tooltip_text("Cancelar.")
         boton.connect("clicked", self.__cancelar)
         toolbar1.insert(boton, -1)
         
-        toolbar1.insert(G.get_separador(draw = False,
+        toolbar1.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "alejar.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(0.8))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(0.8))
         boton.set_tooltip_text("Restar.")
         boton.connect("clicked", self.__menos_intervalo)
         toolbar1.insert(boton, -1)
         
-        toolbar1.insert(G.get_separador(draw = False,
+        toolbar1.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
@@ -378,32 +380,32 @@ class ToolbarConfig(Gtk.Box):
         item.add(self.label)
         toolbar1.insert(item, -1)
         
-        toolbar1.insert(G.get_separador(draw = False,
+        toolbar1.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "acercar.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(0.8))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(0.8))
         boton.set_tooltip_text("Sumar.")
         boton.connect("clicked", self.__mas_intervalo)
         toolbar1.insert(boton, -1)
         
-        toolbar1.insert(G.get_separador(draw = False,
+        toolbar1.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "play.png")
-        boton = G.get_boton(archivo, flip = False,
-            rotacion = None, pixels = G.get_pixels(0.8))
+        boton = get_boton(archivo, flip = False,
+            rotacion = None, pixels = get_pixels(0.8))
         boton.set_tooltip_text("Aceptar.")
         boton.connect("clicked", self.__run_presentacion)
         toolbar1.insert(boton, -1)
         
-        toolbar1.insert(G.get_separador(draw = False,
+        toolbar1.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
-        toolbar2.insert(G.get_separador(draw = False,
+        toolbar2.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         item = Gtk.ToolItem()
@@ -412,7 +414,7 @@ class ToolbarConfig(Gtk.Box):
         item.add(label)
         toolbar2.insert(item, -1)
         
-        toolbar2.insert(G.get_separador(draw = False,
+        toolbar2.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         switch = Gtk.Switch()
@@ -421,7 +423,7 @@ class ToolbarConfig(Gtk.Box):
         item.add(switch)
         toolbar2.insert(item, -1)
         
-        toolbar2.insert(G.get_separador(draw = False,
+        toolbar2.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         self.pack_start(toolbar1, True, True, 0)
@@ -484,8 +486,10 @@ class MenuList(Gtk.Menu):
         quitar.connect_object("activate", self.__set_accion,
             widget, path, "Quitar")
         
-        if JAMF.describe_acceso_uri(uri):
-            lectura, escritura, ejecucion = JAMF.describe_acceso_uri(uri)
+        from JAMediaObjects.JAMFileSystem import describe_acceso_uri
+        
+        if describe_acceso_uri(uri):
+            lectura, escritura, ejecucion = describe_acceso_uri(uri)
             
             if escritura:
                 borrar = Gtk.MenuItem("Borrar el Archivo")
@@ -500,14 +504,16 @@ class MenuList(Gtk.Menu):
         pass
     
     def __set_accion(self, widget, path, accion):
-        """Responde a la seleccion del usuario sobre el menu
+        """
+        Responde a la seleccion del usuario sobre el menu
         que se despliega al hacer click derecho sobre un elemento
         en la lista de reproduccion.
         
         Recibe la lista de reproduccion, una accion a realizar
         sobre el elemento seleccionado en ella y el elemento
         seleccionado y pasa todo a toolbar_accion para pedir
-        confirmacion al usuario sobre la accion a realizar."""
+        confirmacion al usuario sobre la accion a realizar.
+        """
         
         iter = widget.modelo.get_iter(path)
         self.emit('accion', widget, accion, iter)

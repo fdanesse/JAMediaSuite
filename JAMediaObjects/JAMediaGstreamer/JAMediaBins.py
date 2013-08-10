@@ -30,7 +30,9 @@ GObject.threads_init()
 Gst.init([])
 
 class JAMedia_Efecto_bin(Gst.Bin):
-    """Bin para efecto de video individual."""
+    """
+    Bin para efecto de video individual.
+    """
     
     def __init__(self, efecto):
         
@@ -52,8 +54,10 @@ class JAMedia_Efecto_bin(Gst.Bin):
         self.add_pad(Gst.GhostPad.new("src", efecto.get_static_pad("src")))
         
 class JAMedia_Camara_bin(Gst.Bin):
-    """Bin para cámara y sus configuraciones
-    particulares."""
+    """
+    Bin para cámara y sus configuraciones
+    particulares.
+    """
     
     def __init__(self):
         
@@ -75,8 +79,10 @@ class JAMedia_Camara_bin(Gst.Bin):
         self.add_pad(Gst.GhostPad.new("src", camerafilter.get_static_pad("src")))
         
 class Theoraenc_bin(Gst.Bin):
-    """Bin para elementos codificadores
-    de video a theoraenc."""
+    """
+    Bin para elementos codificadores
+    de video a theoraenc.
+    """
     
     def __init__(self):
         
@@ -109,8 +115,10 @@ class Theoraenc_bin(Gst.Bin):
         self.add_pad(Gst.GhostPad.new("src", pad))
         
 class Vorbisenc_bin(Gst.Bin):
-    """Bin para elementos codificadores
-    de audio a vorbisenc."""
+    """
+    Bin para elementos codificadores
+    de audio a vorbisenc.
+    """
     
     def __init__(self):
         
@@ -135,9 +143,10 @@ class Vorbisenc_bin(Gst.Bin):
         pad = vorbisenc.get_static_pad("src")
         self.add_pad(Gst.GhostPad.new("src", pad))
 
-
 class Foto_bin(Gst.Bin):
-    """Bin para tomar fotografías."""
+    """
+    Bin para tomar fotografías.
+    """
     
     def __init__(self):
         
@@ -167,9 +176,10 @@ class Foto_bin(Gst.Bin):
         pad = queue.get_static_pad ("sink")
         self.add_pad(Gst.GhostPad.new("sink", pad))
     
-    
 class Efectos_Video_bin(Gst.Bin):
-    """Bin para agregar efectos de video."""
+    """
+    Bin para agregar efectos de video.
+    """
     
     def __init__(self, efectos, config_efectos):
         
@@ -231,7 +241,9 @@ class Efectos_Video_bin(Gst.Bin):
         self.add_pad(Gst.GhostPad.new("src", videoconvert.get_static_pad("src")))
         
 class Audio_Visualizador_bin(Gst.Bin):
-    """Bin visualizador de audio."""
+    """
+    Bin visualizador de audio.
+    """
     
     def __init__(self, visualizador):
         
@@ -320,7 +332,9 @@ class Video_Balance_Bin (Gst.Bin):
         self.add_pad(Gst.GhostPad.new("src", pad))
         
     def reset(self):
-        """Devuelve balance y rotación al estado original."""
+        """
+        Devuelve balance y rotación al estado original.
+        """
         
         self.config['saturacion'] = self.config_default['saturacion']
         self.config['contraste'] = self.config_default['contraste']
@@ -338,8 +352,10 @@ class Video_Balance_Bin (Gst.Bin):
         
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None, gamma = None):
-        """Seteos de balance en la fuente de video.
-        Recibe % en float y convierte a los valores del filtro."""
+        """
+        Seteos de balance en la fuente de video.
+        Recibe % en float y convierte a los valores del filtro.
+        """
         
         if saturacion != None:
             # Double. Range: 0 - 2 Default: 1
@@ -379,7 +395,9 @@ class Video_Balance_Bin (Gst.Bin):
     #    }
         
     def rotar(self, valor):
-        """ Rota el Video. """
+        """
+        Rota el Video.
+        """
         
         rot = self.videoflip.get_property('method')
         
@@ -400,12 +418,16 @@ class Video_Balance_Bin (Gst.Bin):
         self.videoflip.set_property('method', rot)
         
     def get_rotacion(self):
-        """Devuelve el valor configurado para rotacion."""
+        """
+        Devuelve el valor configurado para rotacion.
+        """
         
         return self.videoflip.get_property('method')
         
     def set_rotacion(self, valor):
-        """Setea la rotacion directamente, recibe un entero."""
+        """
+        Setea la rotacion directamente, recibe un entero.
+        """
         
         return self.videoflip.set_property('method', valor)
     
@@ -440,7 +462,9 @@ class Pantalla_Bin (Gst.Bin):
                 self.multi_out_tee.get_static_pad ("sink")))
                 
 class JAMedia_Audio_Pipeline (Gst.Pipeline):
-    """Gestor de Audio de JAMedia."""
+    """
+    Gestor de Audio de JAMedia.
+    """
     
     def __init__(self):
         
@@ -498,7 +522,9 @@ class JAMedia_Audio_Pipeline (Gst.Pipeline):
             del(self.xvimagesink)
         
 class JAMedia_Video_Pipeline (Gst.Pipeline):
-    """Gestor de Video de JAMedia."""
+    """
+    Gestor de Video de JAMedia.
+    """
     
     def __init__(self):
         
@@ -535,33 +561,45 @@ class JAMedia_Video_Pipeline (Gst.Pipeline):
         
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None, gamma = None):
-        """Seteos de balance en video.
-        Recibe % en float y convierte a los valores del filtro."""
+        """
+        Seteos de balance en video.
+        Recibe % en float y convierte a los valores del filtro.
+        """
         
         self.video_balance_bin.set_balance(brillo, contraste, saturacion, hue, gamma)
         
     def get_balance(self):
-        """Retorna los valores actuales de balance en % float."""
+        """
+        Retorna los valores actuales de balance en % float.
+        """
         
         return self.video_balance_bin.get_balance()
     
     def rotar(self, valor):
-        """ Rota el Video. """
+        """
+        Rota el Video.
+        """
         
         self.video_balance_bin.rotar(valor)
         
     def set_rotacion(self, valor):
-        """Setea la rotacion directamente, recibe un entero."""
+        """
+        Setea la rotacion directamente, recibe un entero.
+        """
         
         return self.video_balance_bin.set_rotacion(valor)
     
     def get_rotacion(self):
-        """Devuelve el valor configurado para rotacion."""
+        """
+        Devuelve el valor configurado para rotacion.
+        """
         
         return self.video_balance_bin.get_rotacion()
         
     def agregar_efecto(self, nombre_efecto):
-        """Agrega un efecto según su nombre."""
+        """
+        Agrega un efecto según su nombre.
+        """
         
         self.efectos.append( nombre_efecto )
         self.config_efectos[nombre_efecto] = {}
@@ -569,8 +607,10 @@ class JAMedia_Video_Pipeline (Gst.Pipeline):
         self.reconstruir_efectos()
 
     def quitar_efecto(self, indice_efecto):
-        """Quita el efecto correspondiente al indice o
-        al nombre que recibe."""
+        """
+        Quita el efecto correspondiente al indice o
+        al nombre que recibe.
+        """
         
         if type(indice_efecto) == int:
             self.efectos.remove(self.efectos[indice_efecto])
@@ -604,7 +644,9 @@ class JAMedia_Video_Pipeline (Gst.Pipeline):
         self.ghost_pad.set_target(self.efectos_bin.get_static_pad ("sink"))
         
     def configurar_efecto(self, nombre_efecto, propiedad, valor):
-        """Configura un efecto en el pipe."""
+        """
+        Configura un efecto en el pipe.
+        """
         
         bin_efecto = self.efectos_bin.get_by_name(nombre_efecto)
         self.config_efectos[nombre_efecto][propiedad] = valor

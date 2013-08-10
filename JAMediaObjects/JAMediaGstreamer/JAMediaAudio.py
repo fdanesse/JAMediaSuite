@@ -20,8 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import time
-import datetime
 
 import gi
 gi.require_version('Gst', '1.0')
@@ -32,7 +30,6 @@ from gi.repository import GstVideo
 from gi.repository import GdkPixbuf
 
 import JAMediaObjects
-from JAMediaObjects import JAMediaGlobales as G
 
 from JAMediaBins import Efectos_Video_bin
 from JAMediaBins import Vorbisenc_bin
@@ -75,8 +72,10 @@ class JAMediaAudio(GObject.GObject):
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
         
     def __init__(self, ventana_id):
-        """ Recibe el id de un DrawingArea
-        para mostrar el video. """
+        """
+        Recibe el id de un DrawingArea
+        para mostrar el video.
+        """
         
         GObject.GObject.__init__(self)
         
@@ -106,8 +105,10 @@ class JAMediaAudio(GObject.GObject):
         self.setup_init()
         
     def setup_init(self):
-        """Crea todos los elementos a utilizar en el pipe.
-        Linkea solo desde fuente de video a la pantalla."""
+        """
+        Crea todos los elementos a utilizar en el pipe.
+        Linkea solo desde fuente de video a la pantalla.
+        """
         
         if self.pipeline:
             del(self.pipeline)
@@ -131,13 +132,15 @@ class JAMediaAudio(GObject.GObject):
         
         self.bus = self.pipeline.get_bus()
         self.bus.add_signal_watch()
-        self.bus.connect('message', self.on_mensaje)
+        self.bus.connect('message', self.__on_mensaje)
         
         self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message', self.sync_message)
+        self.bus.connect('sync-message', self.__sync_message)
     
     def set_base_pipe(self):
-        """Linkea los elementos base."""
+        """
+        Linkea los elementos base.
+        """
         
         #self.autoaudiosrc
         
@@ -179,7 +182,9 @@ class JAMediaAudio(GObject.GObject):
         queue_xvimagesink.link(pantalla)
         
     def reset(self):
-        """Re establece el pipe al estado original (sin efectos)."""
+        """
+        Re establece el pipe al estado original (sin efectos).
+        """
         
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
         self.config['contraste'] = CONFIG_DEFAULT['contraste']
@@ -204,8 +209,10 @@ class JAMediaAudio(GObject.GObject):
         self.play()
 
     def set_estado(self, valor):
-        """Autoseteo e informe de estado del pipe, según
-        esté corriendo o no y segun los elementos en el pipe."""
+        """
+        Autoseteo e informe de estado del pipe, según
+        esté corriendo o no y segun los elementos en el pipe.
+        """
         
         estado = valor
         
@@ -233,7 +240,9 @@ class JAMediaAudio(GObject.GObject):
         self.set_estado("playing")
         
     def stop(self, widget= None, event= None):
-        """Detiene y limpia el pipe."""
+        """
+        Detiene y limpia el pipe.
+        """
         
         self.pipeline.set_state(Gst.State.NULL)
         
@@ -247,7 +256,9 @@ class JAMediaAudio(GObject.GObject):
         self.set_estado("stoped")
         
     def rotar(self, valor):
-        """ Rota el Video. """
+        """
+        Rota el Video.
+        """
         
         rot = self.videoflip.get_property('method')
         
@@ -270,8 +281,10 @@ class JAMediaAudio(GObject.GObject):
         
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None, gamma = None):
-        """Seteos de balance en la fuente de video.
-        Recibe % en float y convierte a los valores del filtro."""
+        """
+        Seteos de balance en la fuente de video.
+        Recibe % en float y convierte a los valores del filtro.
+        """
         
         if saturacion != None:
             # Double. Range: 0 - 2 Default: 1
@@ -299,7 +312,9 @@ class JAMediaAudio(GObject.GObject):
             self.gamma.set_property('gamma', self.config['gamma'])
     
     def get_balance(self):
-        """Retorna los valores actuales de balance en % float."""
+        """
+        Retorna los valores actuales de balance en % float.
+        """
         
         return {
         'saturacion': self.config['saturacion'] * 100.0 / 2.0,
@@ -310,7 +325,14 @@ class JAMediaAudio(GObject.GObject):
         }
         
     def grabar(self, widget= None, event= None):
-        """ Graba Audio. """
+        """
+        Graba Audio.
+        """
+        
+        import time
+        import datetime
+        
+        from JAMediaObjects.JAMediaGlobales import get_audio_directory
         
         self.stop()
         
@@ -326,7 +348,7 @@ class JAMediaAudio(GObject.GObject):
         fecha = datetime.date.today()
         hora = time.strftime("%H-%M-%S")
         archivo = os.path.join(
-            G.AUDIO_JAMEDIA_VIDEO,"%s-%s.ogg" % (fecha, hora))
+            get_audio_directory(),"%s-%s.ogg" % (fecha, hora))
         self.patharchivo = archivo
         filesink.set_property("location", archivo)
         
@@ -343,7 +365,9 @@ class JAMediaAudio(GObject.GObject):
         self.play()
         
     def stop_grabar(self):
-        """Detiene la grabación en progreso."""
+        """
+        Detiene la grabación en progreso.
+        """
 
         self.stop()
         
@@ -368,12 +392,16 @@ class JAMediaAudio(GObject.GObject):
         self.play()
         
     def remover(self, objeto):
-        """Para remover objetos en el pipe."""
+        """
+        Para remover objetos en el pipe.
+        """
         
         if objeto in self.pipeline.children: self.pipeline.remove(objeto)
         
-    def sync_message(self, bus, mensaje):
-        """Captura los mensajes en el bus del pipe Gst."""
+    def __sync_message(self, bus, mensaje):
+        """
+        Captura los mensajes en el bus del pipe Gst.
+        """
         
         try:
             if mensaje.get_structure().get_name() == 'prepare-window-handle':
@@ -383,15 +411,19 @@ class JAMediaAudio(GObject.GObject):
         except:
             pass
     
-    def on_mensaje(self, bus, mensaje):
-        """Captura los mensajes en el bus del pipe Gst."""
+    def __on_mensaje(self, bus, mensaje):
+        """
+        Captura los mensajes en el bus del pipe Gst.
+        """
         
         if mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
             print err, debug
             
     def agregar_efecto(self, nombre_efecto):
-        """Agrega un efecto según su nombre."""
+        """
+        Agrega un efecto según su nombre.
+        """
         
         self.efectos.append( nombre_efecto )
         self.config_efectos[nombre_efecto] = {}
@@ -415,8 +447,10 @@ class JAMediaAudio(GObject.GObject):
         self.play()
         
     def quitar_efecto(self, indice_efecto):
-        """Quita el efecto correspondiente al indice o
-        al nombre que recibe."""
+        """
+        Quita el efecto correspondiente al indice o
+        al nombre que recibe.
+        """
 
         if type(indice_efecto) == int:
             self.efectos.remove(self.efectos[indice_efecto])
@@ -450,7 +484,9 @@ class JAMediaAudio(GObject.GObject):
         self.play()
         
     def configurar_efecto(self, nombre_efecto, propiedad, valor):
-        """Configura un efecto en el pipe."""
+        """
+        Configura un efecto en el pipe.
+        """
         
         efectos_bin = self.pipeline.get_by_name('efectos_bin')
         bin_efecto = efectos_bin.get_by_name(nombre_efecto)
@@ -459,7 +495,9 @@ class JAMediaAudio(GObject.GObject):
         efectos_bin.config_efectos[nombre_efecto][propiedad] = valor
         
     def set_visualizador(self, nombre):
-        """Setea el visualizador de audio."""
+        """
+        Setea el visualizador de audio.
+        """
         
         self.audio_visualizador = nombre
         
@@ -490,6 +528,7 @@ class JAMediaAudio(GObject.GObject):
         #self.pipeline.get_by_name(nombre_efecto).set_property(propiedad, valor)'''
         
 def salir(widget):
+    
     import sys
     sys.exit()
     
@@ -508,6 +547,8 @@ if __name__=="__main__":
     
     ventana.show_all()
     ventana.realize()
+    
+    from gi.repository import GdkX11
     
     xid = pantalla.get_property('window').get_xid()
     jamediaaudio = JAMediaAudio(xid)
