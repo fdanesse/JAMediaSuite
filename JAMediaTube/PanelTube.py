@@ -38,7 +38,9 @@ class PanelTube(Gtk.Paned):
         GObject.TYPE_NONE, []),
     'open_shelve_list':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_PYOBJECT))}
+        GObject.TYPE_PYOBJECT)),
+    'cancel_toolbar':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
         
@@ -55,6 +57,8 @@ class PanelTube(Gtk.Paned):
         self.toolbar_guardar_descargar = None
         self.toolbar_videos_derecha = None
         self.toolbar_accion_derecha = None
+        
+        self.toolbars_flotantes = None
         
         self.__setup_init()
         
@@ -83,7 +87,7 @@ class PanelTube(Gtk.Paned):
         
         # Izquierda
         scroll = self.__get_scroll()
-        scroll.add_with_viewport (self.encontrados)
+        scroll.add_with_viewport(self.encontrados)
         box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         box.pack_start(self.toolbar_encontrados, False, False, 0)
         box.pack_start(self.toolbar_guardar_encontrados, False, False, 0)
@@ -94,7 +98,7 @@ class PanelTube(Gtk.Paned):
         
         # Derecha
         scroll = self.__get_scroll()
-        scroll.add_with_viewport (self.descargar)
+        scroll.add_with_viewport(self.descargar)
         box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         box.pack_start(self.toolbar_descargar, False, False, 0)
         box.pack_start(self.toolbar_guardar_descargar, False, False, 0)
@@ -119,9 +123,21 @@ class PanelTube(Gtk.Paned):
         self.toolbar_guardar_descargar.connect('ok', self.__guardar_lista_shelve)
         self.toolbar_videos_derecha.connect("comenzar_descarga",
             self.__comenzar_descarga)
+        self.toolbar_descargar.connect("menu_activo", self.__ejecutar_cancel_toolbars)
+        self.toolbar_encontrados.connect("menu_activo", self.__ejecutar_cancel_toolbars)
         
+        self.toolbars_flotantes = [
+            self.toolbar_guardar_encontrados,
+            self.toolbar_guardar_descargar,
+            self.toolbar_accion_izquierda,
+            self.toolbar_accion_derecha]
+            
         GObject.timeout_add(300, self.__update)
     
+    def __ejecutar_cancel_toolbars(self, widget):
+        
+        map(self.__cancel_toolbars, self.toolbars_flotantes)
+        
     def __abrir_lista_shelve(self, widget, key):
         """
         Agrega a la lista, todos los videos almacenados en
@@ -150,6 +166,8 @@ class PanelTube(Gtk.Paned):
         Muestra la toolbar para escribir nombre de archivo
         donde se guardarán los videos de la lista correspondiente.
         """
+        
+        map(self.__cancel_toolbars, self.toolbars_flotantes)
         
         if widget == self.toolbar_encontrados:
             self.toolbar_guardar_encontrados.show()
@@ -201,6 +219,8 @@ class PanelTube(Gtk.Paned):
         usuario hace click en el boton descargar.
         """
         
+        map(self.__cancel_toolbars, self.toolbars_flotantes)
+        
         self.emit('download')
         
     def __mover_videos(self, widget):
@@ -208,8 +228,7 @@ class PanelTube(Gtk.Paned):
         Pasa todos los videos de una lista a otra.
         """
         
-        self.toolbar_accion_izquierda.cancelar()
-        self.toolbar_accion_derecha.cancelar()
+        map(self.__cancel_toolbars, self.toolbars_flotantes)
         
         if widget == self.toolbar_videos_izquierda:
             origen = self.encontrados
@@ -224,7 +243,7 @@ class PanelTube(Gtk.Paned):
         elementos = origen.get_children()
         
         GObject.idle_add(
-            self.ejecutar_mover_videos,
+            self.__ejecutar_mover_videos,
             origen,
             destino,
             text,
@@ -246,7 +265,7 @@ class PanelTube(Gtk.Paned):
         
         if elementos:
             GObject.idle_add(
-                self.ejecutar_mover_videos,
+                self.__ejecutar_mover_videos,
                 origen,
                 destino,
                 text,
@@ -257,13 +276,14 @@ class PanelTube(Gtk.Paned):
         Las toolbar accion deben estar ocultas inicialmente.
         """
         
-        self.toolbar_accion_izquierda.cancelar()
-        self.toolbar_accion_derecha.cancelar()
+        map(self.__cancel_toolbars, self.toolbars_flotantes)
         
     def __ejecutar_borrar(self, widget, objetos):
         """
         Elimina una lista de videos.
         """
+        
+        map(self.__cancel_toolbars, self.toolbars_flotantes)
         
         for objeto in objetos:
             objeto.destroy()
@@ -272,14 +292,9 @@ class PanelTube(Gtk.Paned):
         """
         Llama a toolbar accion para pedir confirmacion
         sobre borrar un video o una lista de videos de la lista.
-        
-        Esta funcion se puede utilizar para borrar un solo video
-        llamandola directamente. No es necesario que se ejecute
-        a causa de la señal de la toolbar correspondiente, pero
-        en este caso debe pasarse como parámetro widget,
-        la toolbar que corresponde a la lista en que se
-        encuentra el o los videos a borrar.
         """
+        
+        map(self.__cancel_toolbars, self.toolbars_flotantes)
         
         if widget == self.toolbar_videos_izquierda:
             if not objetos or objetos == None:
@@ -320,3 +335,25 @@ class PanelTube(Gtk.Paned):
             Gtk.PolicyType.AUTOMATIC)
             
         return scroll
+    
+    def __cancel_toolbars(self, widget):
+        """
+        Cuando se activa un menú o se muestra una toolbar
+        flotante, se ocultan todas las demás y se envía la señal
+        para ocultar otras toolbars flotantes en la raíz de la aplicación.
+        """
+        
+        self.emit("cancel_toolbar")
+        
+        widget.cancelar()
+        
+    def cancel_toolbars_flotantes(self):
+        """
+        Óculta las toolbars flotantes, se llama desde la
+        raíz de la aplicación cuando va a presentar una toolbar
+        flotante allí, de este modo nunca habrá más de una
+        toolbar flotante visible.
+        """
+        
+        for toolbar in self.toolbars_flotantes:
+            toolbar.cancelar()

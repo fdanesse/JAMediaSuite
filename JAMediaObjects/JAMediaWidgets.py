@@ -1174,7 +1174,7 @@ class ToolbarSalir(Gtk.Toolbar):
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.__cancelar)
+        boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
         self.insert(get_separador(draw = False,
@@ -1216,10 +1216,10 @@ class ToolbarSalir(Gtk.Toolbar):
         Confirma Salir de la aplicación.
         """
         
-        self.hide()
+        self.cancelar()
         self.emit('salir')
 
-    def __cancelar(self, widget= None):
+    def cancelar(self, widget = None):
         """
         Cancela salir de la aplicación.
         """

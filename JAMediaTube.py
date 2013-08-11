@@ -128,12 +128,12 @@ class Ventana(Gtk.Window):
         self.jamedia.pack_standar()
         self.jamedia.switch_reproductor(None, "JAMediaReproductor")
         
+        self.__cancel_toolbar()
+        self.paneltube.cancel_toolbars_flotantes()
+        
         map(self.__ocultar,[
             self.toolbar_descarga,
-            self.toolbar_salir,
-            self.alerta_busqueda,
-            self.paneltube.toolbar_guardar_encontrados,
-            self.paneltube.toolbar_guardar_descargar])
+            self.alerta_busqueda])
         
         if self.pistas:
             self.jamedia.set_nueva_lista(self.pistas)
@@ -167,6 +167,11 @@ class Ventana(Gtk.Window):
         self.paneltube.connect('download', self.__run_download)
         self.paneltube.connect('open_shelve_list', self.__open_shelve_list)
         self.toolbar_descarga.connect('end', self.__run_download)
+        self.paneltube.connect("cancel_toolbar", self.__cancel_toolbar)
+        
+    def __cancel_toolbar(self, widget = None):
+        
+        self.toolbar_salir.cancelar()
         
     def __open_shelve_list(self, widget, shelve_list, toolbarwidget):
         """
@@ -241,6 +246,8 @@ class Ventana(Gtk.Window):
         secuencia de busqueda y agregado de videos al panel.
         """
         
+        self.__cancel_toolbar()
+        self.paneltube.cancel_toolbars_flotantes()
         map(self.__mostrar,[self.alerta_busqueda])
         self.alerta_busqueda.label.set_text("Buscando: %s" % (palabras))
         
@@ -344,6 +351,8 @@ class Ventana(Gtk.Window):
         """
         Recibe salir y lo pasa a la toolbar de confirmación.
         """
+        
+        self.paneltube.cancel_toolbars_flotantes()
         
         self.toolbar_salir.run("JAMediaTube")
         

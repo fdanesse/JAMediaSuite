@@ -303,7 +303,9 @@ class Mini_Toolbar(Gtk.Toolbar):
     "guardar":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, []),
     "abrir":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "menu_activo":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
         
     def __init__(self, text):
         
@@ -375,6 +377,8 @@ class Mini_Toolbar(Gtk.Toolbar):
         dict_tube.close()
         
         if keys:
+            self.emit("menu_activo")
+            
             menu = Gtk.Menu()
             
             for key in keys:
@@ -962,7 +966,7 @@ class Toolbar_Guardar(Gtk.Toolbar):
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.__cancel)
+        boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
         item = Gtk.ToolItem()
@@ -998,9 +1002,9 @@ class Toolbar_Guardar(Gtk.Toolbar):
         
         texto = self.entrytext.get_text()
         if texto: self.emit("ok", texto)
-        self.__cancel()
+        self.cancelar()
     
-    def __cancel(self, widget=None):
+    def cancelar(self, widget=None):
         
         self.entrytext.set_text("")
         self.hide()

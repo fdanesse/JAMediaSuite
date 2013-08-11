@@ -393,7 +393,7 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
         self.add_shortcut_folder_uri("file:///media/")
         
         # Callbacks
-        boton_salir.connect("clicked", self.salir)
+        boton_salir.connect("clicked", self.__salir)
         boton_abrir_directorio.connect("clicked",
             self.__abrir_directorio)
         boton_seleccionar_todo.connect("clicked",
