@@ -350,7 +350,7 @@ class Toolbar(Gtk.Toolbar):
         
         self.emit('salir')
         
-class Selector_de_Archivos (Gtk.FileChooserDialog):
+class My_FileChooser(Gtk.FileChooserDialog):
     """
     Selector de Archivos para poder cargar archivos
     desde cualquier dispositivo o directorio.
@@ -360,47 +360,63 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
     'archivos-seleccionados':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
     
-    def __init__(self, jamedia):
+    def __init__(self, parent = None, action = None,
+        filter = [], title = None, path = None, mime = []):
         
         Gtk.FileChooserDialog.__init__(self,
-            title = "Abrir Archivos de Audio o Video",
-            parent = jamedia, action = Gtk.FileChooserAction.OPEN)
+            title = title,
+            parent = parent,
+            action = action,
+            flags = Gtk.DialogFlags.MODAL)
+        
+        if not path:
+            path = "file:///media"
             
-        self.set_default_size( 640, 480 )
-        self.set_current_folder_uri("file:///media")
+        self.set_current_folder_uri(path)
+        
         self.set_select_multiple(True)
         
-        # extras
         hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+        
         boton_abrir_directorio = Gtk.Button("Abrir")
         boton_seleccionar_todo = Gtk.Button("Seleccionar Todos")
         boton_salir = Gtk.Button("Salir")
-        hbox.pack_end(boton_salir, True, True, 5)
-        hbox.pack_end(boton_seleccionar_todo, True, True, 5)
-        hbox.pack_end(boton_abrir_directorio, True, True, 5)
-        self.set_extra_widget(hbox)
         
-        filter = Gtk.FileFilter()
-        filter.set_name("Música")
-        filter.add_mime_type("audio/*")
-        self.add_filter(filter)
-        
-        filter = Gtk.FileFilter()
-        filter.set_name("Videos")
-        filter.add_mime_type("video/*")
-        self.add_filter(filter)
-        
-        self.add_shortcut_folder_uri("file:///media/")
-        
-        # Callbacks
         boton_salir.connect("clicked", self.__salir)
         boton_abrir_directorio.connect("clicked",
             self.__abrir_directorio)
         boton_seleccionar_todo.connect("clicked",
             self.__seleccionar_todos_los_archivos)
+            
+        hbox.pack_end(boton_salir, True, True, 5)
+        hbox.pack_end(boton_seleccionar_todo, True, True, 5)
+        hbox.pack_end(boton_abrir_directorio, True, True, 5)
         
-        self.show_all()
-        self.resize( 640, 480 )
+        self.set_extra_widget(hbox)
+        
+        hbox.show_all()
+        
+        if filter:
+            filtro = Gtk.FileFilter()
+            filtro.set_name("Filtro")
+            
+            for fil in filter:
+                filtro.add_pattern(fil)
+                
+            self.add_filter(filtro)
+            
+        elif mime:
+            filtro = Gtk.FileFilter()
+            filtro.set_name("Filtro")
+            
+            for mi in mime:
+                filtro.add_mime_type(mi)
+                
+            self.add_filter(filtro)
+        
+        self.add_shortcut_folder_uri("file:///media/")
+        
+        self.resize( 400, 300 )
         
         self.connect("file-activated", self.__file_activated)
         
@@ -410,7 +426,8 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
         """
         
         self.emit('archivos-seleccionados', self.get_filenames())
-        self.salir(None)
+        
+        self.__salir(None)
         
     def __seleccionar_todos_los_archivos(self, widget):
         
@@ -426,6 +443,7 @@ class Selector_de_Archivos (Gtk.FileChooserDialog):
         self.__salir(None)
         
     def __salir(self, widget):
+        
         self.destroy()
         
 class MenuList(Gtk.Menu):

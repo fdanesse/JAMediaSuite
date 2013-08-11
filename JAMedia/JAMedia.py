@@ -1003,15 +1003,30 @@ class JAMediaPlayer(Gtk.Plug):
                 "JAM-Video")
                 
         elif indice == 8:
-            from Widgets import Selector_de_Archivos
+            from Widgets import My_FileChooser
             
-            selector = Selector_de_Archivos(self)
+            directorio = None
             
             if ultimopath:
                 directorio = "file://%s" % os.path.dirname(ultimopath)
-                selector.set_current_folder_uri(directorio)
                 
+            selector = My_FileChooser(
+                parent = self.get_toplevel(),
+                action = Gtk.FileChooserAction.OPEN,
+                mime = ["audio/*", "video/*"],
+                title = "Abrir Archivos.",
+                path = directorio,
+                filter = [])
+            
             selector.connect('archivos-seleccionados', self.__cargar_directorio)
+            
+            self.get_toplevel().set_sensitive(False)
+            
+            selector.run()
+            
+            self.get_toplevel().set_sensitive(True)
+            
+            selector.destroy()
             
     def __cargar_directorio(self, widget, archivos):
         """
