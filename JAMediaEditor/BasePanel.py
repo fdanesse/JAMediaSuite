@@ -262,7 +262,7 @@ class BasePanel(Gtk.Paned):
                 action_type = Gtk.FileChooserAction.OPEN,
                 title = "Abrir Archivo",
                 path = path,
-                mime_type = "text/*")
+                mime_type = ["text/*", "image/svg+xml"])
                 
             filechooser.connect('load', self.__abrir_archivo)
         
@@ -347,7 +347,7 @@ class BasePanel(Gtk.Paned):
             import commands
             datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
             
-            if "text" in datos or "x-empty" in datos:
+            if "text" in datos or "x-python" in datos or "x-empty" in datos or "svg+xml" in datos:
                 self.workpanel.abrir_archivo(archivo)
                 
         else:
@@ -412,7 +412,7 @@ class BasePanel(Gtk.Paned):
             filechooser = My_FileChooser(
                 parent_window = self.get_toplevel(),
                 action_type = Gtk.FileChooserAction.OPEN,
-                filter_type = "*.ide",
+                filter_type = ["*.ide"],
                 title = "Abrir proyecto",
                 path = BatovideWorkSpace)
                 

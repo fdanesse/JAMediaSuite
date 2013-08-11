@@ -471,6 +471,20 @@ class Sugar_Notebook(Gtk.Notebook):
         self.__escribir_archivo(infopath, activity)
         self.__escribir_archivo(setuppath, setup)
         
+        ### Borrar archivos innecesarios
+        nombre = self.proyecto["nombre"]
+        ejecutable = ("%s_run" % nombre).lower()
+        desinstalador = ("%s_uninstall" % nombre).lower()
+        desktop = "%s.desktop" % nombre
+        
+        borrar = [ejecutable, desinstalador, "MANIFEST", desktop, "setup.cfg"]
+        
+        for file in borrar:
+            path = os.path.join(activitydirpath, file)
+            
+            if os.path.exists(path):
+                os.remove(path)
+                
         ### Generar archivo de distribución "*.xo"
         import zipfile
         
@@ -612,13 +626,16 @@ class Widget_icon(Gtk.Frame):
         Abre un filechooser para seleccionar un ícono.
         """
         
+        mime = "image/*"
+        
+        if self.tipo == "sugar": mime = "image/svg+xml"
+        
         filechooser = My_FileChooser(
             parent_window = self.get_toplevel(),
             action_type = Gtk.FileChooserAction.OPEN,
-            #filter_type = "Todos los archivos",
             title = "Seleccionar Icono . . .",
             path = self.proyecto["path"],
-            mime_type = "image/*")
+            mime_type = [mime])
 
         filechooser.connect('load', self.__emit_icon_path)
     

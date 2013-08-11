@@ -740,7 +740,7 @@ class Estructura_Proyecto(Gtk.TreeView):
             import commands
             datos = commands.getoutput('file -ik %s%s%s' % ("\"", direccion, "\""))
             
-            if "text" in datos or "x-python" in datos:
+            if "text" in datos or "x-python" in datos or "x-empty" in datos or "svg+xml" in datos:
                 self.emit('open', direccion)
 
     def key_press_event(self, widget, event):

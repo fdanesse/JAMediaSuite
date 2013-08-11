@@ -967,8 +967,7 @@ class DialogoReemplazar(Gtk.Dialog):
                 inicio = buffer.get_end_iter()
 
             self.__seleccionar_texto(texto, inicio, direccion)
-
-
+            
 class My_FileChooser(Gtk.FileChooserDialog):
     """
     Selector de Archivos para poder cargar archivos
@@ -983,10 +982,10 @@ class My_FileChooser(Gtk.FileChooserDialog):
     def __init__(self,
         parent_window = None,
         action_type = None,
-        filter_type = None,
+        filter_type = [],
         title = None,
         path = None,
-        mime_type = None):
+        mime_type = []):
         
         Gtk.FileChooserDialog.__init__(self,
             parent = parent_window,
@@ -1003,16 +1002,22 @@ class My_FileChooser(Gtk.FileChooserDialog):
         else:
             self.set_current_folder_uri("file://%s" % path)
         
-        if filter_type != None:
-            filter = Gtk.FileFilter()
-            filter.set_name(filter_type)
-            filter.add_pattern(filter_type)
+        if filter_type:
+            filter = gtk.FileFilter()
+            filter.set_name("Filtro")
+            
+            for fil in filter_type:
+                filter.add_pattern(fil)
+                
             self.add_filter(filter)
             
-        if mime_type != None:
-            filter = Gtk.FileFilter()
-            filter.set_name("Archivos de texto")
-            filter.add_mime_type(mime_type)
+        elif mime_type:
+            filter = gtk.FileFilter()
+            filter.set_name("Filtro")
+            
+            for mime in mime_type:
+                filter.add_mime_type(mime)
+                
             self.add_filter(filter)
         
         hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
@@ -1102,8 +1107,14 @@ class WidgetAutores(Gtk.Box):
         remover = get_boton(Gtk.STOCK_REMOVE, "Eliminar")
         agregar = get_boton(Gtk.STOCK_ADD, "Agregar")
         
-        box.pack_start(entry1, False, False, 5)
-        box.pack_start(entry2, False, False, 0)
+        frame1 = gtk.Frame("Nombre")
+        frame2 = gtk.Frame("Mail")
+        
+        frame1.add(entry1)
+        frame2.add(entry2)
+        
+        box.pack_start(frame1, False, False, 5)
+        box.pack_start(frame2, False, False, 0)
         box.pack_start(remover, False, False, 0)
         box.pack_end(agregar, False, False, 0)
         
@@ -1120,8 +1131,8 @@ class WidgetAutores(Gtk.Box):
         """
         
         if len(self.get_children()) == 1:
-            widget.get_parent().get_children()[0].set_text("")
-            widget.get_parent().get_children()[1].set_text("")
+            widget.get_parent().get_children()[0].get_child().set_text("")
+            widget.get_parent().get_children()[1].get_child().set_text("")
             
         else:
             widget.get_parent().destroy()
@@ -1135,8 +1146,8 @@ class WidgetAutores(Gtk.Box):
         autores = []
         
         for autor in self.get_children():
-            nombre = autor.get_children()[0]
-            mail = autor.get_children()[1]
+            nombre = autor.get_children()[0].get_child()
+            mail = autor.get_children()[1].get_child()
             
             nombre = nombre.get_text()
             nombre = nombre.strip()
@@ -1160,8 +1171,8 @@ class WidgetAutores(Gtk.Box):
         for autor in autores:
             nombre, mail = autor
             linea = self.get_children()[autores.index(autor)]
-            linea.get_children()[0].set_text(nombre)
-            linea.get_children()[1].set_text(mail)
+            linea.get_children()[0].get_child().set_text(nombre)
+            linea.get_children()[1].get_child().set_text(mail)
 
 class ToolbarProyecto(Gtk.Toolbar):
     """
