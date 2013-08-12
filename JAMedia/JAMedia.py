@@ -104,7 +104,9 @@ class JAMediaPlayer(Gtk.Plug):
     NOTA: Tambien se puede ejecutar JAMedia directamente
     mediante python JAMedia.py
     """
-        
+    
+    __gtype_name__ = 'JAMediaPlayer'
+    
     __gsignals__ = {
     "salir":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
@@ -356,6 +358,22 @@ class JAMediaPlayer(Gtk.Plug):
     
     #    self.player.fotografiar()
         
+    def __cancel_toolbars_flotantes(self, widget = None):
+        """
+        Asegura un widget flotante a la ves.
+        """
+        
+        self.toolbaraddstream.cancelar()
+        self.__cancel_toolbar()
+        
+    def __cancel_toolbar(self, widget = None):
+        """
+        Asegura un widget flotante a la ves.
+        """
+        
+        self.toolbar_accion.cancelar()
+        self.toolbar_salir.cancelar()
+        
     def __configurar_efecto(self, widget, nombre_efecto, propiedad, valor):
         """
         Configura un efecto en el pipe, si no está en eĺ, lo agrega.
@@ -380,6 +398,8 @@ class JAMediaPlayer(Gtk.Plug):
         se ha hecho click y decide si debe agregarse
         al pipe de JAMedia.
         """
+        
+        self.__cancel_toolbars_flotantes()
         
         agregar = False
         
@@ -426,6 +446,8 @@ class JAMediaPlayer(Gtk.Plug):
         para efecto agregado, este se quita del pipe de la cámara.
         """
         
+        self.__cancel_toolbars_flotantes()
+        
         nombre_efecto = widget.get_tooltip_text()
         self.player.quitar_efecto(nombre_efecto)
         self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
@@ -443,6 +465,8 @@ class JAMediaPlayer(Gtk.Plug):
         Actualiza los streamings de jamedia,
         descargandolos desde su web.
         """
+        
+        self.__cancel_toolbars_flotantes()
         
         from JAMediaObjects.JAMediaGlobales import get_streaming_default
         
@@ -507,6 +531,8 @@ class JAMediaPlayer(Gtk.Plug):
         envia la rotacion al Reproductor.
         """
         
+        self.__cancel_toolbars_flotantes()
+        
         self.player.rotar(valor)
         
     def __set_balance(self, widget, valor, tipo):
@@ -514,6 +540,8 @@ class JAMediaPlayer(Gtk.Plug):
         Setea valores en Balance de Video, pasando
         los valores que recibe de la toolbar (% float).
         """
+        
+        self.__cancel_toolbars_flotantes()
         
         if tipo == "saturacion": self.player.set_balance(saturacion = valor)
         if tipo == "contraste": self.player.set_balance(contraste = valor)
@@ -539,6 +567,8 @@ class JAMediaPlayer(Gtk.Plug):
         ventana principal donde JAMedia está embebida
         cuando el usuario hace doble click en el visor.
         """
+        
+        self.__cancel_toolbars_flotantes()
         
         if event.type.value_name == "GDK_2BUTTON_PRESS":
             ventana = self.get_toplevel()
@@ -717,6 +747,8 @@ class JAMediaPlayer(Gtk.Plug):
             stop o pause-play sobre el reproductor.
         """
         
+        self.__cancel_toolbars_flotantes()
+        
         if not self.lista_de_reproduccion.modelo.get_iter_first():
             return
         
@@ -789,6 +821,8 @@ class JAMediaPlayer(Gtk.Plug):
         el usuario la desplaza y hace "seek" sobre el reproductor.
         """
         
+        self.__cancel_toolbars_flotantes()
+        
         self.player.set_position(valor)
         
     def pack_standar(self):
@@ -806,6 +840,7 @@ class JAMediaPlayer(Gtk.Plug):
         self.toolbar_list = ToolbarLista()
         self.toolbar_list.connect("cargar_lista", self.__cargar_lista)
         self.toolbar_list.connect("add_stream", self.__add_stream)
+        self.toolbar_list.connect("menu_activo", self.__cancel_toolbars_flotantes)
         self.toolbar_list.show_all()
         self.toolbar_list.boton_agregar.hide()
         self.toolbar_info.descarga.show()
@@ -833,6 +868,8 @@ class JAMediaPlayer(Gtk.Plug):
         Recibe la señal add_stream desde toolbarlist
         y abre la toolbar que permite agregar un stream.
         """
+        
+        self.__cancel_toolbar()
         
         map(self.__ocultar, [
             self.scroll_config,
@@ -886,7 +923,8 @@ class JAMediaPlayer(Gtk.Plug):
         Es pública para sobre escritura.
         """
         
-        map(self.__ocultar, [self.toolbaraddstream])
+        #map(self.__ocultar, [self.toolbaraddstream])
+        self.__cancel_toolbars_flotantes()
         
         self.toolbar_salir.run("JAMedia")
         
@@ -1085,6 +1123,8 @@ class JAMediaPlayer(Gtk.Plug):
         Esto es solo para las listas standar de JAMedia no embebido.
         """
         
+        self.__cancel_toolbars_flotantes()
+        
         from JAMediaObjects.JAMediaGlobales import get_streamings
         
         items = get_streamings(archivo)
@@ -1103,6 +1143,8 @@ class JAMediaPlayer(Gtk.Plug):
         borrar el archivo o streaming o simplemente quitarlo
         de la lista.
         """
+        
+        self.__cancel_toolbars_flotantes()
         
         # FIXME: Desactivar __cargar_reproducir
         

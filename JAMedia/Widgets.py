@@ -42,6 +42,8 @@ class ToolbarGrabar(Gtk.Toolbar):
     desde un streaming.
     """
     
+    __gtype_name__ = 'ToolbarGrabar'
+    
     __gsignals__ = {
     "stop":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
@@ -126,10 +128,14 @@ class ToolbarLista(Gtk.Toolbar):
     Radios, Tv, etc . . .
     """
     
+    __gtype_name__ = 'ToolbarLista'
+    
     __gsignals__ = {
     "cargar_lista":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_INT,)),
     "add_stream":(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
+    "menu_activo":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
     
     def __init__(self):
@@ -170,6 +176,8 @@ class ToolbarLista(Gtk.Toolbar):
         """
         El menu con las listas standar de JAMedia.
         """
+        
+        self.emit("menu_activo")
         
         menu = Gtk.Menu()
         
@@ -226,6 +234,8 @@ class Toolbar(Gtk.Toolbar):
     """
     Toolbar principal de JAMedia.
     """
+    
+    __gtype_name__ = 'Toolbar'
     
     __gsignals__ = {
     'salir':(GObject.SIGNAL_RUN_FIRST,
@@ -356,6 +366,8 @@ class My_FileChooser(Gtk.FileChooserDialog):
     desde cualquier dispositivo o directorio.
     """
     
+    __gtype_name__ = 'My_FileChooser'
+    
     __gsignals__ = {
     'archivos-seleccionados':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
@@ -452,6 +464,8 @@ class MenuList(Gtk.Menu):
     el streaming seleccionado en la lista de reproduccion
     al hacer click derecho sobre él.
     """
+    
+    __gtype_name__ = 'MenuList'
     
     __gsignals__ = {
     'accion':(GObject.SIGNAL_RUN_FIRST,
@@ -557,6 +571,8 @@ class ToolbarInfo(Gtk.Toolbar):
     Permite Rotar el Video.
     Permite configurar ocultar controles automáticamente.
     """
+    
+    __gtype_name__ = 'ToolbarInfo'
     
     __gsignals__ = {
     'rotar':(GObject.SIGNAL_RUN_FIRST,
@@ -690,6 +706,8 @@ class ToolbarConfig(Gtk.Table):
     modificar valores de balance en video.
     """
     
+    __gtype_name__ = 'ToolbarConfig'
+    
     __gsignals__ = {
     "reproductor":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
@@ -804,6 +822,8 @@ class ToolbarAddStream(Gtk.Toolbar):
     Toolbar para agregar streamings.
     """
     
+    __gtype_name__ = 'ToolbarAddStream'
+    
     __gsignals__ = {
     "add-stream":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
@@ -823,7 +843,7 @@ class ToolbarAddStream(Gtk.Toolbar):
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.__cancelar)
+        boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
         self.insert(get_separador(draw = False,
@@ -894,7 +914,7 @@ class ToolbarAddStream(Gtk.Toolbar):
         self.url.set_text("")
         self.tipo = tipo
         
-    def __cancelar(self, widget= None):
+    def cancelar(self, widget= None):
         """
         Cancela la accion.
         """
@@ -912,6 +932,8 @@ class WidgetEfecto_en_Pipe(JAMediaButton):
     visor de video, para que el usuario tenga una referencia de
     los efectos que ha agregado y en que orden se encuentran.
     """
+    
+    __gtype_name__ = 'WidgetEfecto_en_Pipe'
     
     def __init__(self):
         

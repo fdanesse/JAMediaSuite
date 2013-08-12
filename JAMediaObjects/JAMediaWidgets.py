@@ -784,7 +784,7 @@ class ToolbarAccion(Gtk.Toolbar):
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.__cancelar)
+        boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
         
         item = Gtk.ToolItem()
@@ -887,7 +887,7 @@ class ToolbarAccion(Gtk.Toolbar):
             self.label.set_text("¿%s?: %s" % (accion, texto))
             self.show_all()
 
-    def __cancelar(self, widget= None):
+    def cancelar(self, widget= None):
         """
         Cancela la accion configurada sobre
         un archivo o streaming en la lista de

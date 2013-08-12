@@ -34,6 +34,8 @@ from JAMedia.JAMedia import JAMediaPlayer
     
 class Ventana(Gtk.Window):
     
+    __gtype_name__ = 'Ventana'
+    
     def __init__(self):
         
         super(Ventana, self).__init__()
