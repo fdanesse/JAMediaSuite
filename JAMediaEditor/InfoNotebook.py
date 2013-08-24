@@ -204,7 +204,7 @@ class InfoNotebook(Gtk.Notebook):
                 
             elif os.path.isfile(filepath):
                 tipo = "Archivo"
-                text = "Directorio"
+                text = "Archivo"
                 
             if accion == "eliminar proyecto":
                 text = "Proyecto"

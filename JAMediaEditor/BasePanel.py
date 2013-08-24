@@ -221,23 +221,20 @@ class BasePanel(Gtk.Paned):
         
         self.workpanel.set_accion_codigo(accion)
         
-    def set_accion_ver(self, widget, accion):
+    def set_accion_ver(self, widget, accion, valor):
         """
         Cuando se hace click en una opción del menú ver.
         """
         
-        if accion == "Panel inferior":
-            self.workpanel.set_accion_ver(accion)
-            
-        elif accion == "Panel Lateral":
-            if self.infonotebook_box.get_visible():
+        if accion == "Panel lateral":
+            if not valor:
                 self.infonotebook_box.hide()
                 
             else:
                 self.infonotebook_box.show()
                 
-        elif accion == "Numeracion":
-            self.workpanel.set_accion_ver(accion)
+        elif accion == "Numeracion" or accion == "Panel inferior":
+            self.workpanel.set_accion_ver(accion, valor)
             
     def set_accion_archivo(self, widget, accion):
         """
@@ -316,13 +313,11 @@ class BasePanel(Gtk.Paned):
         ### Actualizar sourceview para actualizador de toolbars y menus.
         self.emit("update", view, True)
         
-        # FIXME: Causa un bug cuando se abre un proyecto teniendo
-        # archivos sin guardar de un proyecto anterior.
         ### Cuando se guarda un archivo.
-        #if estructura:
-        #    if self.proyecto:
-        #        if self.proyecto["path"] in archivo:
-        #            self.infonotebook.set_path_estructura(self.proyecto["path"])
+        if estructura:
+            if self.proyecto:
+                if self.proyecto["path"] in archivo:
+                    self.infonotebook.set_path_estructura(self.proyecto["path"])
         
     def __load(self, proyecto):
         """

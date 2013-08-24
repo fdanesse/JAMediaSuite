@@ -249,9 +249,14 @@ class Gnome_Notebook(Gtk.Notebook):
         cfg = "[install]\ninstall_lib=/usr/local/share/%s\ninstall_data=/usr/local/share/%s\ninstall_scripts=/usr/local/bin""" % (self.proyecto["nombre"], self.proyecto["nombre"])
         self.setupcfg.get_buffer().set_text(cfg)
         
-        iconpath = iconpath.split(self.proyecto["path"])[-1]
-        # FIXME: Analizar porque aqui no funciona os.path.join
-        iconpath = "/usr/local/share/" + self.proyecto["nombre"] + iconpath #os.path.join("/usr/local/share", self.proyecto["nombre"], iconpath)
+        if not self.proyecto["path"] in iconpath:
+            newpath = os.path.join(self.proyecto["path"], os.path.basename(iconpath))
+            import shutil
+            shutil.copyfile(iconpath, newpath)
+            iconpath = newpath
+            
+        iconname = os.path.basename(iconpath)
+        iconpath = os.path.join("/usr/local/share", self.proyecto["nombre"], iconname)
         
         lanzador = "%s_run" % (self.proyecto["nombre"].lower())
         desinstalador = "%s_uninstall" % (self.proyecto["nombre"].lower())
@@ -438,20 +443,12 @@ class Sugar_Notebook(Gtk.Notebook):
         activity = "[Activity]\nname = %s\nactivity_version = %s\nbundle_id = org.laptop.%s\nicon = %s\nexec = sugar-activity %s.%s -s\nmime_types =\nlicense = %s\nsummary = " % (self.proyecto["nombre"], self.proyecto["version"], self.proyecto["nombre"], newiconpath, main_name, main_name, self.proyecto["licencia"])
         setup = "#!/usr/bin/env python\n\nfrom sugar3.activity import bundlebuilder\nbundlebuilder.start()"
         
-        self.activity_sourceview.get_buffer().set_text(activity)
-        self.setup_sourceview.get_buffer().set_text(setup)
-        
-    def make(self):
-        """
-        Construye los archivos instaladores para su distribución.
-        """
-        
+        ### Comenzar a generar el temporal
         activitydirpath = os.path.join("/tmp", "%s.activity" % self.proyecto["nombre"])
         activityinfodirpath = os.path.join(activitydirpath, "activity")
         
-        import commands
-        
         ### Borrar anteriores
+        import commands
         if os.path.exists(activitydirpath):
             commands.getoutput("rm -r %s" % activitydirpath)
             
@@ -461,6 +458,23 @@ class Sugar_Notebook(Gtk.Notebook):
 
         ### Escribir archivos de instalación.
         if not os.path.exists(activityinfodirpath): os.mkdir(activityinfodirpath)
+        
+        newpath = os.path.join(activityinfodirpath, os.path.basename(iconpath))
+        import shutil
+        shutil.copyfile(iconpath, newpath)
+        
+        self.activity_sourceview.get_buffer().set_text(activity)
+        self.setup_sourceview.get_buffer().set_text(setup)
+        
+    def make(self):
+        """
+        Construye los archivos instaladores para su distribución.
+        """
+        
+        import commands
+        
+        activitydirpath = os.path.join("/tmp", "%s.activity" % self.proyecto["nombre"])
+        activityinfodirpath = os.path.join(activitydirpath, "activity")
         
         infopath = os.path.join(activityinfodirpath, "activity.info")
         setuppath = os.path.join(activitydirpath, "setup.py")
@@ -484,7 +498,7 @@ class Sugar_Notebook(Gtk.Notebook):
             
             if os.path.exists(path):
                 os.remove(path)
-                
+            
         ### Generar archivo de distribución "*.xo"
         import zipfile
         
@@ -646,70 +660,12 @@ class Widget_icon(Gtk.Frame):
         
         iconpath = str(iconpath).replace("//", "/")
         
-        if self.proyecto["path"] in iconpath:
-            
-            if self.tipo == "gnome":
-                from gi.repository import GdkPixbuf
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(iconpath, 50, 50)
-                self.image.set_from_pixbuf(pixbuf)
-                
-                self.aceptar.set_sensitive(True)
-                
-                self.emit("iconpath", iconpath)
-            
-            elif self.tipo == "sugar":
-                import commands
-                datos = commands.getoutput('file -ik %s%s%s' % ("\"", iconpath, "\""))
-                
-                if "svg+xml" in datos:
-                    from gi.repository import GdkPixbuf
-                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(iconpath, 50, 50)
-                    self.image.set_from_pixbuf(pixbuf)
-                    
-                    self.aceptar.set_sensitive(True)
-                    
-                    self.emit("iconpath", iconpath)
-                    
-                else:
-                    dialog = Gtk.Dialog(
-                        parent = self.get_toplevel(),
-                        flags = Gtk.DialogFlags.MODAL,
-                        buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
-                    
-                    dialog.set_size_request(380, 180)
-                    dialog.set_border_width(15)
-                    
-                    label = Gtk.Label("El Archivo Seleccionado debe Estar\n Formato svg.")
-                    label.show()
-                    
-                    dialog.vbox.pack_start(
-                        label,
-                        True, True, 0)
-                        
-                    dialog.run()
-                    
-                    dialog.destroy()
-                    
-        else:
-            dialog = Gtk.Dialog(
-                parent = self.get_toplevel(),
-                flags = Gtk.DialogFlags.MODAL,
-                buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
-            
-            dialog.set_size_request(380, 180)
-            dialog.set_border_width(15)
-            
-            label = Gtk.Label("El Archivo Seleccionado debe Estar Dentro de\n la Estructura del Proyecto.")
-            label.show()
-            
-            dialog.vbox.pack_start(
-                label,
-                True, True, 0)
-                
-            dialog.run()
-            
-            dialog.destroy()
-            
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(iconpath, 50, 50)
+        self.image.set_from_pixbuf(pixbuf)
+        
+        self.aceptar.set_sensitive(True)
+        self.emit("iconpath", iconpath)
+        
 class DialogoInstall(Gtk.Dialog):
     """
     Dialogo para mostrar proceso de construcción de Instaladores.

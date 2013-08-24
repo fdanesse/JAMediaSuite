@@ -360,7 +360,7 @@ class JAMediaPlayer(Gtk.Plug):
         
     def __cancel_toolbars_flotantes(self, widget = None):
         """
-        Asegura un widget flotante a la ves.
+        Asegura un widget flotante a la vez.
         """
         
         self.toolbaraddstream.cancelar()
@@ -368,7 +368,7 @@ class JAMediaPlayer(Gtk.Plug):
         
     def __cancel_toolbar(self, widget = None):
         """
-        Asegura un widget flotante a la ves.
+        Asegura un widget flotante a la vez.
         """
         
         self.toolbar_accion.cancelar()

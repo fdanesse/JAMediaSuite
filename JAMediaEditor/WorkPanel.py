@@ -234,20 +234,20 @@ class WorkPanel(Gtk.Paned):
         
         self.notebook_sourceview.set_accion(accion)
         
-    def set_accion_ver(self, accion):
+    def set_accion_ver(self, accion, valor):
         """
         Ejecuta acciones sobre el archivo seleccionado.
         """
         
         if accion == "Panel inferior":
-            if self.terminal.get_visible():
+            if not valor:
                 self.terminal.hide()
                 
             else:
                 self.terminal.show()
                 
         elif accion == "Numeracion":
-            self.notebook_sourceview.set_accion(accion)
+            self.notebook_sourceview.set_accion(accion, valor)
         
     def get_archivos_de_proyecto(self, proyecto_path):
         """
@@ -332,14 +332,13 @@ class Notebook_SourceView(Gtk.Notebook):
         for pagina in paginas:
             view = pagina.get_child()
             
-            # FIXME: Corregir, esto no funciona (No permitir dos veces el mismo archivo).
             if view.archivo != None and view.archivo == archivo:
                 return
         
         sourceview = SourceView()
         
         hbox = Gtk.HBox()
-        label = Gtk.Label("sin título")
+        label = Gtk.Label("Sin Título")
         imagen = Gtk.Image.new_from_stock(Gtk.STOCK_CLOSE, Gtk.IconSize.MENU)
         boton = Gtk.Button()
         boton.set_relief(Gtk.ReliefStyle.NONE)
@@ -396,7 +395,7 @@ class Notebook_SourceView(Gtk.Notebook):
             scrolled = paginas[self.get_current_page()]
             scrolled.get_children()[0].guardar_archivo_como()
         
-    def set_accion(self, accion):
+    def set_accion(self, accion, valor=True):
         """
         Ejecuta acciones sobre el archivo seleccionado.
         """
@@ -524,19 +523,20 @@ class SourceView(GtkSource.View):
         
         self.archivo = False
         self.lenguaje = False
+        self.tab = "    "
         
         self.lenguaje_manager = GtkSource.LanguageManager()
-        self.lenguajes = self.lenguaje_manager.get_language_ids()
-
-        self.lenguajes.sort()
-        self.lenguajes.remove(self.lenguajes[0])
-
-        self.lenguajes.insert(0, 'Texto Plano')
+        
+        self.lenguajes = {}
+        for id in self.lenguaje_manager.get_language_ids():
+            lang = self.lenguaje_manager.get_language(id)
+            self.lenguajes[id] = lang.get_mime_types()
 
         self.set_buffer(GtkSource.Buffer())
 
         self.set_insert_spaces_instead_of_tabs(True)
         self.set_tab_width(4)
+        self.set_auto_indent(True)
 
         self.modify_font(Pango.FontDescription('Monospace 10'))
 
@@ -544,6 +544,8 @@ class SourceView(GtkSource.View):
         completion.add_provider(AutoCompletado(self.get_buffer()))
 
         self.show_all()
+        
+        self.connect("key-press-event", self.__key_press_event)
 
     def set_archivo(self, archivo):
         """
@@ -551,24 +553,30 @@ class SourceView(GtkSource.View):
         """
         
         if archivo and archivo != None:
-            self.archivo = os.path.join(archivo.replace("//", "/"))
+            archivo = os.path.join(archivo.replace("//", "/"))
             
-            if os.path.exists(self.archivo):
+            if os.path.exists(archivo):
+                self.archivo = archivo
                 texto_file = open(self.archivo, 'r')
                 texto = texto_file.read()
                 texto_file.close()
                 
-                nombre = os.path.basename(self.archivo)
-
+                self.set_buffer(GtkSource.Buffer())
                 self.__set_lenguaje(archivo)
                 self.get_buffer().set_text(texto)
-
+                
                 self.get_buffer().begin_not_undoable_action()
                 self.get_buffer().end_not_undoable_action()
-                
                 self.get_buffer().set_modified(False)
                 
+                nombre = os.path.basename(self.archivo)
                 GLib.idle_add(self.__set_label, nombre)
+                
+        else:
+            self.set_buffer(GtkSource.Buffer())
+            self.get_buffer().begin_not_undoable_action()
+            self.get_buffer().end_not_undoable_action()
+            self.get_buffer().set_modified(False)
 
     def __set_label(self, nombre):
         """
@@ -584,42 +592,28 @@ class SourceView(GtkSource.View):
             page = notebook.get_children()[indice]
 
             if page == scroll:
-                label = notebook.get_tab_label(notebook.get_children()[indice]).get_children()[0]
+                pag = notebook.get_children()[indice]
+                label = notebook.get_tab_label(pag).get_children()[0]
                 label.set_text(nombre)
                 
     def __set_lenguaje(self, archivo):
         """
         Setea los colores del texto según tipo de archivo.
         """
-
-        encontrado = False
+        
+        self.lenguaje = False
+        self.get_buffer().set_highlight_syntax(False)
+        self.get_buffer().set_language(None)
+        
         tipo = mimetypes.guess_type(archivo)[0]
-
-        for id in self.lenguajes:
-            lenguaje = self.lenguaje_manager.get_language(id)
-
-            if lenguaje and len(lenguaje.get_mime_types()):
-                mime = lenguaje.get_mime_types()[0]
-
-                if tipo == mime:
+        
+        if tipo:
+            for key in self.lenguajes.keys():
+                if tipo in self.lenguajes[key]:
+                    self.lenguaje = self.lenguaje_manager.get_language(key)
+                    self.get_buffer().set_language(self.lenguaje)
                     self.get_buffer().set_highlight_syntax(True)
-                    self.get_buffer().set_language(lenguaje)
-
-                    if id == 'python':
-                        self.set_insert_spaces_instead_of_tabs(True)
-                        self.set_tab_width(4)
-
-                    else:
-                        self.set_insert_spaces_instead_of_tabs(False)
-                        self.set_tab_width(8)
-
-                    self.lenguaje = lenguaje
-                    encontrado = True
                     break
-
-        if not encontrado:
-            self.get_buffer().set_highlight_syntax(False)
-            self.get_buffer().set_language(None)
         
     def guardar_archivo_como(self):
         """
@@ -637,7 +631,6 @@ class SourceView(GtkSource.View):
         filechooser = My_FileChooser(
             parent_window = self.get_toplevel(),
             action_type = Gtk.FileChooserAction.SAVE,
-            #filter_type = "Todos los archivos",
             title = "Guardar Archivo Como . . .",
             path = defaultpath)
 
@@ -664,9 +657,7 @@ class SourceView(GtkSource.View):
                 buffer.set_modified(False)
                 
                 ### Forzando actualización de Introspección.
-                # FIXME: Causa un bug cuando se abre un proyecto teniendo
-                # archivos sin guardar de un proyecto anterior.
-                #self.get_parent().get_parent().emit('new_select', self, True)
+                self.get_parent().get_parent().emit('new_select', self, True)
             
             elif not os.path.exists(self.archivo):
                 return self.guardar_archivo_como()
@@ -704,9 +695,7 @@ class SourceView(GtkSource.View):
                     self.set_archivo(self.archivo)
                     
                     ### Forzando actualización de Introspección.
-                    # FIXME: Causa un bug cuando se abre un proyecto teniendo
-                    # archivos sin guardar de un proyecto anterior.
-                    #self.get_parent().get_parent().emit('new_select', self, True)
+                    self.get_parent().get_parent().emit('new_select', self, True)
                     
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
@@ -726,9 +715,7 @@ class SourceView(GtkSource.View):
                 self.set_archivo(self.archivo)
                 
                 ### Forzando actualización de Introspección.
-                # FIXME: Causa un bug cuando se abre un proyecto teniendo
-                # archivos sin guardar de un proyecto anterior.
-                #self.get_parent().get_parent().emit('new_select', self, True)
+                self.get_parent().get_parent().emit('new_select', self, True)
             
     def set_formato(self, fuente=None, tamanio=None, dialogo=False):
         """
@@ -750,12 +737,14 @@ class SourceView(GtkSource.View):
         
         if not fuente:
             fuente = "%s %s" % (nombre, size)
+            
         if not dialogo:
             self.modify_font(Pango.FontDescription("%s" % fuente))
+            
         else:
             self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
         
-    def set_accion(self, accion):
+    def set_accion(self, accion, valor = True):
         """
         Ejecuta acciones sobre el código.
         """
@@ -853,20 +842,20 @@ class SourceView(GtkSource.View):
                 self.__cerrar()
                 
         elif accion == "Numeracion":
-            if self.get_show_line_numbers():
-                self.set_show_line_numbers(False)
-                
-            else:
-                self.set_show_line_numbers(True)
+            self.set_show_line_numbers(valor)
 
         elif accion == "Identar":
-            self.__identar('    ')
+            self.__identar()
 
         elif accion == "Identar con Espacios":
-            self.__identar('    ')
+            # FIXME: convertir . . .
+            self.tab = '    '
+            #self.__identar()
 
         elif accion == "Identar con Tabulaciones":
-            self.__identar('\t')
+            # FIXME: convertir . . .
+            self.tab = '\t'
+            #self.__identar()
 
         elif accion == "De Identar":
             self.__de_identar()
@@ -983,81 +972,70 @@ class SourceView(GtkSource.View):
                 
                 dialogo.destroy()
                 
-    def __identar(self, identacion):
+    def __identar(self):
         """
-        Agrega la identación especificada
-        si hay texto seleccionado.
+        Agrega la identación especificada en el
+        texto seleccionado o en la linea en que el
+        usuario se encuentra parado.
         """
 
         buffer = self.get_buffer()
-
+        
         if buffer.get_selection_bounds():
-            inicio, fin = buffer.get_selection_bounds()
-
-            inicio1 = buffer.get_start_iter()
-            fin1 = buffer.get_selection_bounds()[0]
-
-            inicio2 = buffer.get_selection_bounds()[1]
-            fin2 = buffer.get_end_iter()
-
-            texto = buffer.get_text(inicio, fin, 0)
-            texto1 = buffer.get_text(inicio1, fin1, 0)
-            texto2 = buffer.get_text(inicio2, fin2, 0)
-
-            lista = texto.splitlines()
-            texto_final = ''
-
-            for x in lista:
-                x = identacion + x
-                texto_final += x
-
-            buffer.set_text(texto1 + texto_final + texto2)
+            start, end = buffer.get_selection_bounds()
+            texto = buffer.get_text(start, end, True)
+            
+            id_0 = start.get_line()
+            id_1 = end.get_line()
+            
+            for id in range(id_0, id_1 + 1):
+                iter = buffer.get_iter_at_line(id)
+                buffer.insert(iter, self.tab)
+            
+        else:
+            textmark = buffer.get_insert()
+            textiter = buffer.get_iter_at_mark(textmark)
+            id = textiter.get_line()
+            line_iter = buffer.get_iter_at_line(id)
+            buffer.insert(line_iter, self.tab)
 
     def __de_identar(self):
         """
-        Saca una tabulación a las líneas seleccionadas.
+        Saca una tabulación a las líneas seleccionadas o en
+        la linea donde se encuentra parado el usuario.
         """
 
         buffer = self.get_buffer()
-
+        
         if buffer.get_selection_bounds():
-            inicio, fin = buffer.get_selection_bounds()
+            start, end = buffer.get_selection_bounds()
+            
+            id_0 = start.get_line()
+            id_1 = end.get_line()
+            
+            for id in range(id_0, id_1 + 1):
+                line_iter = buffer.get_iter_at_line(id)
+                chars = line_iter.get_chars_in_line()
+                line_end_iter = buffer.get_iter_at_line_offset(id, chars-1)
+                
+                texto = buffer.get_text(line_iter, line_end_iter, True)
+                
+                if texto.startswith(self.tab):
+                    buffer.delete(line_iter, buffer.get_iter_at_line_offset(id, len(self.tab)))
+            
+        else:
+            textmark = buffer.get_insert()
+            textiter = buffer.get_iter_at_mark(textmark)
+            id = textiter.get_line()
 
-            inicio1 = buffer.get_start_iter()
-            fin1 = buffer.get_selection_bounds()[0]
-
-            inicio2 = buffer.get_selection_bounds()[1]
-            fin2 = buffer.get_end_iter()
-
-            texto = buffer.get_text(inicio, fin, 0)
-            texto1 = buffer.get_text(inicio1, fin1, 0)
-            texto2 = buffer.get_text(inicio2, fin2, 0)
-            texto_final = ''
-
-            linea = ''
-            lineas = []
-
-            for x in texto.splitlines():
-                if x != '' and x[0] == '\t':
-                    linea += x[1:]
-                    
-                else:
-                    linea = ''
-
-                    if len(x) >= 4:
-                        if (x[:4] == '    ') == True:
-                            linea += x[4:]
-
-                        else:
-                            linea = x
-
-                lineas.append(linea)
-                linea = ''
-
-            for x in lineas:
-                texto_final += x
-
-            buffer.set_text(texto1 + texto_final + texto2)
+            line_iter = buffer.get_iter_at_line(id)
+            chars = line_iter.get_chars_in_line()
+            line_end_iter = buffer.get_iter_at_line_offset(id, chars-1)
+            
+            texto = buffer.get_text(line_iter, line_end_iter, True)
+            
+            if texto.startswith(self.tab):
+                buffer.delete(line_iter, buffer.get_iter_at_line_offset(id, len(self.tab)))
 
     def __cerrar(self):
         """
@@ -1098,6 +1076,30 @@ class SourceView(GtkSource.View):
         buffer.select_range(linea_iter, linea_iter_next)
         self.scroll_to_iter(linea_iter_next, 0.1, 1, 1, 1)
 
+    def __key_press_event(self, widget, event):
+        """
+        Tabulador Inteligente.
+        """
+        
+        if event.keyval == 65421:
+            buffer = self.get_buffer()
+        
+            textmark = buffer.get_insert()
+            textiter = buffer.get_iter_at_mark(textmark)
+            id = textiter.get_line()
+
+            line_iter = buffer.get_iter_at_line(id)
+            chars = line_iter.get_chars_in_line()
+            
+            if chars > 2:
+                start_iter = buffer.get_iter_at_line_offset(id, chars-2)
+                end_iter = buffer.get_iter_at_line_offset(id, chars-1)
+                
+                texto = buffer.get_text(start_iter, end_iter, True)
+                
+                if texto == ":":
+                    GLib.idle_add(self.__identar)
+                    
 class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
     
     __gtype_name__ = 'AutoCompletado'

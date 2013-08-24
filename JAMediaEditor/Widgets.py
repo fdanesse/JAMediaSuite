@@ -85,7 +85,8 @@ class Menu(Gtk.MenuBar):
     'accion_archivo': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
     'accion_ver': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_BOOLEAN)),
     'accion_codigo': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
@@ -209,17 +210,39 @@ class Menu(Gtk.MenuBar):
         menu_edicion.append(item)
         
         ### Items del menú Ver
-        item = Gtk.MenuItem("Numeros de línea")
+        item = Gtk.MenuItem()
+        item.get_child().destroy()
+        hbox = Gtk.HBox()
+        hbox.pack_start(Gtk.CheckButton(), False, False, 0)
+        label = Gtk.Label("Numeros de línea")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
         item.connect("activate", self.__emit_accion_ver, "Numeracion")
         self.dict_archivo['Numeracion'] = item
         menu_ver.append(item)
         
-        item = Gtk.MenuItem("Panel inferior")
+        item = Gtk.MenuItem()
+        item.get_child().destroy()
+        hbox = Gtk.HBox()
+        button = Gtk.CheckButton()
+        button.set_active(True)
+        hbox.pack_start(button, False, False, 0)
+        label = Gtk.Label("Panel inferior")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
         item.connect("activate", self.__emit_accion_ver, "Panel inferior")
         menu_ver.append(item)
-
-        item = Gtk.MenuItem("Panel Lateral")
-        item.connect("activate", self.__emit_accion_ver, "Panel Lateral")
+        
+        item = Gtk.MenuItem()
+        item.get_child().destroy()
+        hbox = Gtk.HBox()
+        button = Gtk.CheckButton()
+        button.set_active(True)
+        hbox.pack_start(button, False, False, 0)
+        label = Gtk.Label("Panel lateral")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate", self.__emit_accion_ver, "Panel lateral")
         menu_ver.append(item)
         
         ### Items del Menú Código
@@ -310,7 +333,10 @@ class Menu(Gtk.MenuBar):
         
     def __emit_accion_ver(self, widget, accion):
         
-        self.emit('accion_ver', accion)
+        valor = not widget.get_children()[0].get_children()[0].get_active()
+        widget.get_children()[0].get_children()[0].set_active(valor)
+        
+        self.emit('accion_ver', accion, valor)
         
     def __emit_accion_archivo(self, widget, accion):
 
@@ -379,6 +405,8 @@ class DialogoProyecto(Gtk.Dialog):
                 "Guardar", Gtk.ResponseType.ACCEPT,
                 "Cancelar", Gtk.ResponseType.CANCEL])
         
+        self.sizes = [(600, 150), (600, 450)]
+        
         if accion == "nuevo":
             self.set_size_request(600, 150)
             
@@ -391,7 +419,10 @@ class DialogoProyecto(Gtk.Dialog):
         self.nombre = Gtk.Entry()
         self.main = Gtk.ComboBoxText()
         self.path = Gtk.Label()
+        
         self.version = Gtk.Entry()
+        self.version.connect("changed", self.__check_version)
+        self.version.set_text("0.0.1")
         
         self.descripcion = Gtk.TextView()
         self.descripcion.set_editable(True)
@@ -428,7 +459,7 @@ class DialogoProyecto(Gtk.Dialog):
         ### Autores
         self.autores = WidgetAutores()
         
-        boton = Gtk.Button("Ver más Opciones . . .")
+        boton = Gtk.Button("Ver más Opciones...")
         boton.connect("clicked", self.__show_options)
         
         self.internal_widgets = [
@@ -479,18 +510,52 @@ class DialogoProyecto(Gtk.Dialog):
                 button.set_sensitive(False)
                 break
         
-    def __show_options(self, widget):
+    def __show_options(self, button):
         
+        options = False
         for widget in self.internal_widgets[2:]:
             
             if widget.get_visible():
                 widget.hide()
-                self.set_size_request(600, 150)
-                self.queue_draw()
+                options = False
                 
             else:
-                self.set_size_request(600, 450)
                 widget.show()
+                options = True
+        
+        if options:
+            self.resize(self.sizes[1][0], self.sizes[1][1])
+            button.set_label("Ocultar Opciones...")
+            
+        else:
+            self.resize(self.sizes[0][0], self.sizes[0][1])
+            button.set_label("Ver más Opciones...")
+        
+    def __check_version(self, widget):
+        """
+        En el campo versión solo pueden haber numeros y puntos.
+        """
+        
+        text = widget.get_text()
+        items = text.split(".")
+        
+        valores = []
+        
+        for item in items:
+            item = item.strip()
+            
+            try:
+                valores.append(int(item))
+                
+            except:
+                valores.append(0)
+        
+        while len(valores) < 3:
+            valores.append(0)
+            
+        version = "%s.%s.%s" % (valores[0], valores[1], valores[2])
+        
+        self.version.set_text(version)
         
     def __check_nombre(self, widget, event):
         """
@@ -564,7 +629,6 @@ class DialogoProyecto(Gtk.Dialog):
         if path: path = path.strip()
         if buffer: buffer = buffer.strip()
         if version: version = version.strip()
-        if not version: version = "1"
         if licencia: licencia = licencia.strip()
         if url: url = url.strip()
         
@@ -1003,7 +1067,7 @@ class My_FileChooser(Gtk.FileChooserDialog):
             self.set_current_folder_uri("file://%s" % path)
         
         if filter_type:
-            filter = gtk.FileFilter()
+            filter = Gtk.FileFilter()
             filter.set_name("Filtro")
             
             for fil in filter_type:
@@ -1012,7 +1076,7 @@ class My_FileChooser(Gtk.FileChooserDialog):
             self.add_filter(filter)
             
         elif mime_type:
-            filter = gtk.FileFilter()
+            filter = Gtk.FileFilter()
             filter.set_name("Filtro")
             
             for mime in mime_type:
@@ -1063,7 +1127,7 @@ class My_FileChooser(Gtk.FileChooserDialog):
         
         direccion = str(self.get_filename()).replace("//", "/")
         
-        # FIXME: Para abrir solo archivos, de lo contrario el filechooser
+        # Para abrir solo archivos, de lo contrario el filechooser
         # se está utilizando para "guardar como".
         if os.path.exists(direccion) and not os.path.isfile(direccion):
             self.__salir(None)
@@ -1155,8 +1219,7 @@ class WidgetAutores(Gtk.Box):
             mail = mail.get_text()
             mail = mail.strip()
             
-            if nombre and mail:
-                autores.append( (nombre, mail) )
+            autores.append( (nombre, mail) )
 
         return autores
 

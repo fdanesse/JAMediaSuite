@@ -110,12 +110,12 @@ class JAMediaEditor(Gtk.Window):
         
         self.base_panel.set_accion_codigo(widget, accion)
         
-    def __ejecutar_accion_ver(self, widget, accion):
+    def __ejecutar_accion_ver(self, widget, accion, valor):
         """
         Cuando se hace click en una opción del menú ver.
         """
         
-        self.base_panel.set_accion_ver(widget, accion)
+        self.base_panel.set_accion_ver(widget, accion, valor)
         
     def __ejecutar_accion_archivo(self, widget, accion):
         """
