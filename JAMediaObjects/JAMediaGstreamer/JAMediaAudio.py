@@ -25,6 +25,7 @@ import gi
 gi.require_version('Gst', '1.0')
 
 from gi.repository import GObject
+from gi.repository import GLib
 from gi.repository import Gst
 from gi.repository import GstVideo
 from gi.repository import GdkPixbuf
@@ -62,9 +63,9 @@ class JAMediaAudio(GObject.GObject):
         
         xid = self.pantalla.get_property('window').get_xid()
         self.jamediaaudio = JAMediaAudio(xid)
-        GObject.idle_add(self.jamediaaudio.reset)
+        GLib.idle_add(self.jamediaaudio.reset)
         o
-        GObject.idle_add(self.jamediaaudio.play)
+        GLib.idle_add(self.jamediaaudio.play)
     """
     
     __gsignals__ = {
@@ -81,14 +82,14 @@ class JAMediaAudio(GObject.GObject):
         
         self.name = "JAMediaAudio"
         self.ventana_id = ventana_id
-        self.pipeline = None
-        self.estado = None
-        self.patharchivo = None
+        self.pipeline = False
+        self.estado = False
+        self.patharchivo = False
         
-        self.autoaudiosrc = None
-        self.videobalance = None
-        self.gamma = None
-        self.videoflip = None
+        self.autoaudiosrc = False
+        self.videobalance = False
+        self.gamma = False
+        self.videoflip = False
         
         self.config = {}
         self.config['saturacion'] = CONFIG_DEFAULT['saturacion']
@@ -234,12 +235,14 @@ class JAMediaAudio(GObject.GObject):
             self.estado = estado
             self.emit('estado', self.estado)
             
-    def play(self, widget = None, event = None):
+    def play(self, widget = False, event = False):
         
         self.pipeline.set_state(Gst.State.PLAYING)
         self.set_estado("playing")
         
-    def stop(self, widget= None, event= None):
+        return False
+    
+    def stop(self, widget = False, event = False):
         """
         Detiene y limpia el pipe.
         """
@@ -277,36 +280,36 @@ class JAMediaAudio(GObject.GObject):
                 rot = 3
                 
         self.videoflip.set_property('method', rot)
-        GObject.idle_add(self.play)
+        GLib.idle_add(self.play)
         
-    def set_balance(self, brillo = None, contraste = None,
-        saturacion = None, hue = None, gamma = None):
+    def set_balance(self, brillo = False, contraste = False,
+        saturacion = False, hue = False, gamma = False):
         """
         Seteos de balance en la fuente de video.
         Recibe % en float y convierte a los valores del filtro.
         """
         
-        if saturacion != None:
+        if saturacion:
             # Double. Range: 0 - 2 Default: 1
             self.config['saturacion'] = 2.0 * saturacion / 100.0
             self.videobalance.set_property('saturation', self.config['saturacion'])
             
-        if contraste != None:
+        if contraste:
             # Double. Range: 0 - 2 Default: 1
             self.config['contraste'] = 2.0 * contraste / 100.0
             self.videobalance.set_property('contrast', self.config['contraste'])
             
-        if brillo != None:
+        if brillo:
             # Double. Range: -1 - 1 Default: 0
             self.config['brillo'] = (2.0 * brillo / 100.0) - 1.0
             self.videobalance.set_property('brightness', self.config['brillo'])
             
-        if hue != None:
+        if hue:
             # Double. Range: -1 - 1 Default: 0
             self.config['hue'] = (2.0 * hue / 100.0) - 1.0
             self.videobalance.set_property('hue', self.config['hue'])
             
-        if gamma != None:
+        if gamma:
             # Double. Range: 0,01 - 10 Default: 1
             self.config['gamma'] = (10.0 * gamma / 100.0)
             self.gamma.set_property('gamma', self.config['gamma'])
@@ -324,7 +327,7 @@ class JAMediaAudio(GObject.GObject):
         'gamma': self.config['gamma'] * 100.0 / 10.0
         }
         
-    def grabar(self, widget= None, event= None):
+    def grabar(self, widget = False, event = False):
         """
         Graba Audio.
         """

@@ -28,16 +28,19 @@ gi.require_version('Gst', '1.0')
 
 from gi.repository import Gst
 from gi.repository import GObject
+from gi.repository import GLib
 
 wavpath = "/tmp/speak.wav"
 
 GObject.threads_init()
-Gst.init(None)
+Gst.init([])
 
 class JAMediaSpeak(GObject.GObject):
-    """ Wraper Sencillo para espeak.
+    """
+    Wraper Sencillo para espeak.
     En Base a código de Aleksey Lim.
-    Ver Speak.activity. """
+    Ver Speak.activity.
+    """
     
     __gsignals__ = {
         'new-buffer': (GObject.SIGNAL_RUN_FIRST,
@@ -47,11 +50,13 @@ class JAMediaSpeak(GObject.GObject):
         
         GObject.GObject.__init__(self)
         
-        self.pipeline = None
+        self.pipeline = False
         self._was_message = False
         
     def speak(self, text):
-        """ Habla text."""
+        """
+        Habla text.
+        """
         
         self.stop()
         
@@ -75,7 +80,9 @@ class JAMediaSpeak(GObject.GObject):
         self.pipeline.set_state(Gst.State.PLAYING)
         
     def setup_init(self):
-        """ Construye el pipe Gst. """
+        """
+        Construye el pipe Gst.
+        """
         
         if self.pipeline: del(self.pipeline)
         
@@ -130,7 +137,7 @@ class JAMediaSpeak(GObject.GObject):
                 return True
             
             self._was_message = False
-            GObject.timeout_add(500, self.emit_buffer, str(buffer))
+            GLib.timeout_add(500, self.emit_buffer, str(buffer))
             
         elif  message.type == Gst.MessageType.EOS:
             self.pipeline.set_state(Gst.State.NULL)
@@ -141,7 +148,7 @@ class JAMediaSpeak(GObject.GObject):
             self.stop()
             
     def on_buffer(self, element, buffer, pad):
-        GObject.timeout_add(100, self.emit_buffer, str(buffer))
+        GLib.timeout_add(100, self.emit_buffer, str(buffer))
         return True
     
     def emit_buffer(self, buf):

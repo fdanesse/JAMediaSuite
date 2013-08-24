@@ -25,6 +25,7 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import GLib
 
 YOUTUBE = "gdata.youtube.com"
 
@@ -115,14 +116,14 @@ class JAMediaYoutube(Gtk.Widget):
         
         Gtk.Widget.__init__(self)
         
-        self.url = None
-        self.titulo = None
+        self.url = False
+        self.titulo = False
         self.estado = False
         
-        self.youtubedl = None
-        self.salida = None
+        self.youtubedl = False
+        self.salida = False
         self.actualizador = False
-        self.STDOUT = None
+        self.STDOUT = False
         
     def get_titulo(self, titulo):
         
@@ -164,9 +165,10 @@ class JAMediaYoutube(Gtk.Widget):
         self.salida = open(self.STDOUT,"r")
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
+            self.actualizador = False
             
-        self.actualizador = GObject.timeout_add(500, self.get_progress)
+        self.actualizador = GLib.timeout_add(500, self.get_progress)
         
     def get_progress(self):
         """

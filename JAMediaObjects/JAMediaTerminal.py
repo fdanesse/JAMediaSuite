@@ -593,7 +593,7 @@ class DialogoFormato(Gtk.Dialog):
     
     __gtype_name__ = 'DialogoFormato'
     
-    def __init__(self, parent_window = None, fuente = "Monospace", tamanio = 10):
+    def __init__(self, parent_window = False, fuente = "Monospace", tamanio = 10):
 
         Gtk.Dialog.__init__(self,
             parent = parent_window,
@@ -759,10 +759,12 @@ class TreeViewFonts(Gtk.TreeView):
             if model.get_value(item, 1) == self.fuente:
                 self.get_selection().select_path(model.get_path(item))
                 self.scroll_to_cell(model.get_path(item))
-                return
+                return False
             
             item = model.iter_next(item)
         
+        return False
+    
     def __selecciones(self, treeselection, model, path, is_selected, listore):
         """
         Cuando se selecciona un item en la lista.
@@ -829,10 +831,12 @@ class TreeViewTamanio(Gtk.TreeView):
             if model.get_value(item, 0) == self.tamanio:
                 self.get_selection().select_path(model.get_path(item))
                 self.scroll_to_cell(model.get_path(item))
-                return
+                return False
             
             item = model.iter_next(item)
         
+        return False
+    
     def __selecciones(self, treeselection, model, path, is_selected, listore):
         """
         Cuando se selecciona un item en la lista.

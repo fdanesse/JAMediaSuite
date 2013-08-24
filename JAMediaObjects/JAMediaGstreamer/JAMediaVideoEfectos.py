@@ -31,6 +31,7 @@ gi.require_version('Gst', '1.0')
 
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import GLib
 from gi.repository import Gst
 from gi.repository import GstVideo
 
@@ -84,7 +85,7 @@ class Ventana(Gtk.Window):
         self.widget_efecto.connect('propiedad', self.set_efecto)
         self.connect("destroy", self.salir)
         
-        GObject.idle_add(self.efecto.play)
+        GLib.idle_add(self.efecto.play)
         
     def set_efecto(self, widget, propiedad, valor):
         """
@@ -94,11 +95,10 @@ class Ventana(Gtk.Window):
         
         self.efecto.set_efecto(propiedad, valor)
         
-    def salir(self, widget = None, senial = None):
+    def salir(self, widget = False, senial = False):
         
         import sys
         sys.exit(0)
-        
     
 class EfectoBin(GObject.GObject):
     """
@@ -171,15 +171,17 @@ class EfectoBin(GObject.GObject):
             print err, debug
             self.pipeline.set_state(Gst.State.READY)
             
-    def pause(self, widget = None, event = None):
+    def pause(self, widget = False, event = False):
         
         self.pipeline.set_state(Gst.State.PAUSED)
         
-    def play(self, widget = None, event = None):
+    def play(self, widget = False, event = False):
         
         self.pipeline.set_state(Gst.State.PLAYING)
         
-    def stop(self, widget= None, event= None):
+        return False
+    
+    def stop(self, widget = False, event = False):
         
         self.pipeline.set_state(Gst.State.PAUSED)
         self.pipeline.set_state(Gst.State.NULL)

@@ -350,34 +350,34 @@ class Video_Balance_Bin (Gst.Bin):
         
         self.videoflip.set_property('method', 0)
         
-    def set_balance(self, brillo = None, contraste = None,
-        saturacion = None, hue = None, gamma = None):
+    def set_balance(self, brillo = False, contraste = False,
+        saturacion = False, hue = False, gamma = False):
         """
         Seteos de balance en la fuente de video.
         Recibe % en float y convierte a los valores del filtro.
         """
         
-        if saturacion != None:
+        if saturacion:
             # Double. Range: 0 - 2 Default: 1
             self.config['saturacion'] = 2.0 * saturacion / 100.0
             self.videobalance.set_property('saturation', self.config['saturacion'])
             
-        if contraste != None:
+        if contraste:
             # Double. Range: 0 - 2 Default: 1
             self.config['contraste'] = 2.0 * contraste / 100.0
             self.videobalance.set_property('contrast', self.config['contraste'])
             
-        if brillo != None:
+        if brillo:
             # Double. Range: -1 - 1 Default: 0
             self.config['brillo'] = (2.0 * brillo / 100.0) - 1.0
             self.videobalance.set_property('brightness', self.config['brillo'])
             
-        if hue != None:
+        if hue:
             # Double. Range: -1 - 1 Default: 0
             self.config['hue'] = (2.0 * hue / 100.0) - 1.0
             self.videobalance.set_property('hue', self.config['hue'])
             
-        if gamma != None:
+        if gamma:
             # Double. Range: 0,01 - 10 Default: 1
             self.config['gamma'] = (10.0 * gamma / 100.0)
             self.gamma.set_property('gamma', self.config['gamma'])
@@ -493,8 +493,8 @@ class JAMedia_Audio_Pipeline (Gst.Pipeline):
                 "sink",
                 self.tee_audio.get_static_pad ("sink")))
                 
-        self.visualizador_bin = None
-        self.xvimagesink = None
+        self.visualizador_bin = False
+        self.xvimagesink = False
         
     def agregar_visualizador(self, visualizador):
         
@@ -559,8 +559,8 @@ class JAMedia_Video_Pipeline (Gst.Pipeline):
         
         self.video_balance_bin.reset()
         
-    def set_balance(self, brillo = None, contraste = None,
-        saturacion = None, hue = None, gamma = None):
+    def set_balance(self, brillo = False, contraste = False,
+        saturacion = False, hue = False, gamma = False):
         """
         Seteos de balance en video.
         Recibe % en float y convierte a los valores del filtro.

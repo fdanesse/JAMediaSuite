@@ -25,6 +25,7 @@ import gi
 gi.require_version('Gst', '1.0')
 
 from gi.repository import GObject
+from gi.repository import GLib
 from gi.repository import Gst
 from gi.repository import GstVideo
 from gi.repository import GdkPixbuf
@@ -67,9 +68,9 @@ class JAMediaWebCam(GObject.GObject):
         
         xid = self.pantalla.get_property('window').get_xid()
         self.jamediawebcam = JAMediaWebCam(xid)
-        GObject.idle_add(self.jamediawebcam.reset)
+        GLib.idle_add(self.jamediawebcam.reset)
         o
-        GObject.idle_add(self.jamediawebcam.play)
+        GLib.idle_add(self.jamediawebcam.play)
     """
     
     __gsignals__ = {
@@ -86,13 +87,13 @@ class JAMediaWebCam(GObject.GObject):
         
         self.name = "JAMediaWebCam"
         self.ventana_id = ventana_id
-        self.pipeline = None
+        self.pipeline = False
         self.estado = 'stoped'
-        self.patharchivo = None
+        self.patharchivo = False
         
-        self.camara = None
-        self.gamma = None
-        self.videoflip = None
+        self.camara = False
+        self.gamma = False
+        self.videoflip = False
         
         self.config = {}
         self.config['device'] = CONFIG_DEFAULT['device']
@@ -240,12 +241,12 @@ class JAMediaWebCam(GObject.GObject):
             self.estado = estado
             self.emit('estado', self.estado)
             
-    def play(self, widget = None, event = None):
+    def play(self, widget = False, event = False):
         
         self.pipeline.set_state(Gst.State.PLAYING)
         self.__set_estado("playing")
         
-    def stop(self, widget= None, event= None):
+    def stop(self, widget = False, event = False):
         """
         Detiene y limpia el pipe.
         """
@@ -284,8 +285,8 @@ class JAMediaWebCam(GObject.GObject):
                 
         self.videoflip.set_property('method', rot)
         
-    def set_balance(self, brillo = None, contraste = None,
-        saturacion = None, hue = None, gamma = None):
+    def set_balance(self, brillo = False, contraste = False,
+        saturacion = False, hue = False, gamma = False):
         """
         Seteos de balance en la fuente de video.
         Recibe % en float.
@@ -296,31 +297,31 @@ class JAMediaWebCam(GObject.GObject):
         #max = 2147483647
         total = 4294967295
         
-        if saturacion != None:
+        if saturacion:
             new_valor = int (total * int(saturacion) / 100)
             new_valor -= min
             self.config['saturacion'] = new_valor
             self.camara.camara.set_property('saturation', self.config['saturacion'])
             
-        if contraste != None:
+        if contraste:
             new_valor = int (total * int(contraste) / 100)
             new_valor -= min
             self.config['contraste'] = new_valor
             self.camara.camara.set_property('contrast', self.config['contraste'])
             
-        if brillo != None:
+        if brillo:
             new_valor = int (total * int(brillo) / 100)
             new_valor -= min
             self.config['brillo'] = new_valor
             self.camara.camara.set_property('brightness', self.config['brillo'])
             
-        if hue != None:
+        if hue:
             new_valor = int (total * int(hue) / 100)
             new_valor -= min
             self.config['hue'] = new_valor
             self.camara.camara.set_property('hue', self.config['hue'])
             
-        if gamma != None:
+        if gamma:
             # Double. Range: 0,01 - 10 Default: 1
             self.config['gamma'] = (10.0 * gamma / 100.0)
             self.gamma.set_property('gamma', self.config['gamma'])
@@ -354,7 +355,7 @@ class JAMediaWebCam(GObject.GObject):
         
         return config
     
-    def fotografiar(self, widget = None, event = None):
+    def fotografiar(self, widget = False, event = False):
         """
         Toma una fotografia.
         """
@@ -385,12 +386,12 @@ class JAMediaWebCam(GObject.GObject):
         """
         
         if self.control_rafaga:
-            GObject.source_remove(self.control_rafaga)
+            GLib.source_remove(self.control_rafaga)
             self.control_rafaga = False
             
         self.__set_estado("Fotografiando")
         
-        self.control_rafaga = GObject.timeout_add(
+        self.control_rafaga = GLib.timeout_add(
             int(segundos*1000), self.__rafaga)
         
     def stop_rafagas(self):
@@ -401,7 +402,7 @@ class JAMediaWebCam(GObject.GObject):
         self.__set_estado("playing")
         
         if self.control_rafaga:
-            GObject.source_remove(self.control_rafaga)
+            GLib.source_remove(self.control_rafaga)
             self.control_rafaga = False
         
     def __rafaga(self):
@@ -413,10 +414,10 @@ class JAMediaWebCam(GObject.GObject):
             return False
     
         else:
-            self.fotografiar(widget = None, event = None)
+            self.fotografiar(widget = False, event = False)
             return True
         
-    def grabar(self, widget= None, event= None):
+    def grabar(self, widget = False, event = False):
         """
         Graba Audio y Video desde la webcam.
         """

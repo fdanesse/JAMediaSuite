@@ -31,6 +31,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkX11
 from gi.repository import GObject
+from gi.repository import GLib
 from gi.repository import Gst
 from gi.repository import GstVideo
 
@@ -51,28 +52,28 @@ class JAMediaVideoEscritorio(GObject.GObject):
         
         self.name = "JAMediaVideoDesktop"
         
-        self.pipeline = None
-        self.bus = None
-        self.info = None
+        self.pipeline = False
+        self.bus = False
+        self.info = False
         #self.resolucion = "video/x-raw-yuv,width=640,height=480" # 800x600 no menor a 640x480
         self.audio_enabled = True
-        self.actualizador = None
-        self.file_path = None
+        self.actualizador = False
+        self.file_path = False
         
-        self.ximagesrc =  None
-        self.videoconvert = None
-        self.videoscale = None
-        self.video_capsfilter = None
-        self.theoraenc = None
-        self.gconfaudiosrc = None
-        self.audiorate = None
-        self.audio_capsfilter = None
-        self.audioconvert = None
-        self.vorbisenc = None
-        self.hilovideomuxor = None
-        self.hiloaudiomuxor = None
-        self.oggmux = None
-        self.filesink = None
+        self.ximagesrc =  False
+        self.videoconvert = False
+        self.videoscale = False
+        self.video_capsfilter = False
+        self.theoraenc = False
+        self.gconfaudiosrc = False
+        self.audiorate = False
+        self.audio_capsfilter = False
+        self.audioconvert = False
+        self.vorbisenc = False
+        self.hilovideomuxor = False
+        self.hiloaudiomuxor = False
+        self.oggmux = False
+        self.filesink = False
         
         self.screen = GdkX11.X11Screen()
         
@@ -82,7 +83,9 @@ class JAMediaVideoEscritorio(GObject.GObject):
         self.height = int(self.screen.height())
         
     def set_pipeline(self):
-        """Crea el pipe para grabar desde x y autoaudio."""
+        """
+        Crea el pipe para grabar desde x y autoaudio.
+        """
         
         if self.pipeline:
             del(self.pipeline)
@@ -217,7 +220,6 @@ class JAMediaVideoEscritorio(GObject.GObject):
         self.bus.connect("sync-message::element", self.on_sync_message)
         self.bus.connect("message", self.on_message)
         
-        
     '''
     def set_audio_enabled(self, valor):
         """Habilita y desabilita el audio en la grabación."""
@@ -233,7 +235,9 @@ class JAMediaVideoEscritorio(GObject.GObject):
         self.resolucion = "video/x-raw-yuv,width=%i,height=%i" % (w,h)'''
         
     def on_sync_message(self, bus, message):
-        """Captura mensajes en el bus."""
+        """
+        Captura mensajes en el bus.
+        """
         
         if message.get_structure() is None: return
     
@@ -246,7 +250,9 @@ class JAMediaVideoEscritorio(GObject.GObject):
             pass
         
     def on_message(self, bus, message):
-        """Captura mensajes en el bus."""
+        """
+        Captura mensajes en el bus.
+        """
         
         if message.type == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
@@ -254,7 +260,9 @@ class JAMediaVideoEscritorio(GObject.GObject):
             self.new_handle(False)
             
     def grabar(self, location_path):
-        """Comienza a Grabar."""
+        """
+        Comienza a Grabar.
+        """
         
         self.stop()
         
@@ -266,16 +274,16 @@ class JAMediaVideoEscritorio(GObject.GObject):
         
         self.play()
         
-    def play(self, widget = None, event = None):
+    def play(self, widget = False, event = False):
         
         self.pipeline.set_state(Gst.State.PLAYING)
         self.new_handle(True)
         
-    def stop(self, widget= None, event= None):
+    def stop(self, widget = False, event = False):
         
         self.new_handle(False)
         
-        if self.pipeline and self.pipeline != None:
+        if self.pipeline:
             self.pipeline.set_state(Gst.State.PAUSED)
             self.pipeline.set_state(Gst.State.NULL)
         
@@ -287,17 +295,21 @@ class JAMediaVideoEscritorio(GObject.GObject):
             pass
         
     def new_handle(self, reset):
-        """Reinicia o mata el actualizador."""
+        """
+        Reinicia o mata el actualizador.
+        """
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
-            self.actualizador = None
+            GLib.source_remove(self.actualizador)
+            self.actualizador = False
             
         if reset:
-            self.actualizador = GObject.timeout_add(300, self.handle)
+            self.actualizador = GLib.timeout_add(300, self.handle)
             
     def handle(self):
-        """Envía información periódicamente."""
+        """
+        Envía información periódicamente.
+        """
         
         if os.path.exists(self.file_path):
             tamanio = int(os.path.getsize(self.file_path)/1024)
@@ -309,7 +321,6 @@ class JAMediaVideoEscritorio(GObject.GObject):
                 print self.info
                 
         return True
-    
     
 if __name__=="__main__":
     
@@ -946,5 +957,3 @@ if __name__=="__main__":
         path = '/home/olpc'
     grabador.grabar(path)
     gtk.main()'''
-    
-    
