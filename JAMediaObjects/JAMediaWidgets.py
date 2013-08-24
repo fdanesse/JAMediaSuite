@@ -25,6 +25,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+from gi.repository import GLib
 
 from JAMediaGlobales import get_pixels
 from JAMediaGlobales import get_separador
@@ -403,7 +404,7 @@ class Lista(Gtk.TreeView):
         Comienza secuencia de agregado a la lista.
         """
         
-        GObject.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
         
     def __ejecutar_agregar_elemento(self, elementos):
         """
@@ -465,7 +466,7 @@ class Lista(Gtk.TreeView):
             
         elementos.remove(elementos[0])
         
-        GObject.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
         
     def seleccionar_siguiente(self, widget = None):
         
@@ -476,6 +477,8 @@ class Lista(Gtk.TreeView):
             
         except:
             self.seleccionar_primero()
+            
+        return False
     
     def seleccionar_anterior(self, widget = None):
         
@@ -487,6 +490,8 @@ class Lista(Gtk.TreeView):
         except:
             #self.seleccionar_ultimo()
             pass
+    
+        return False
     
     def seleccionar_primero(self, widget = None):
         
@@ -1321,7 +1326,7 @@ class GstreamerVideoEfectos(Gtk.Box):
             
         self.show_all()
         elementos.remove(elementos[0])
-        GObject.idle_add(self.cargar_efectos, elementos)
+        GLib.idle_add(self.cargar_efectos, elementos)
         
     def __configurar_efecto(self, widget, efecto, propiedad, valor):
         
@@ -1410,6 +1415,8 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
         
         self.gstreamer_efectos.cargar_efectos(elementos)
         
+        return False
+    
     def des_seleccionar_efecto(self, nombre):
         
         self.gstreamer_efectos.des_seleccionar_efecto(nombre)
@@ -1454,7 +1461,7 @@ class GstreamerAudioVisualizador(GstreamerVideoEfectos):
             
         self.show_all()
         elementos.remove(elementos[0])
-        GObject.idle_add(self.cargar_efectos, elementos)
+        GLib.idle_add(self.cargar_efectos, elementos)
 
 class Efecto_widget_Config(Gtk.Box):
     """

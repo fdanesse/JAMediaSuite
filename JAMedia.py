@@ -22,7 +22,7 @@
 import os
 
 from gi.repository import Gtk
-from gi.repository import GObject
+from gi.repository import GLib
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
@@ -65,7 +65,7 @@ class Ventana(Gtk.Window):
         self.connect("destroy", self.__salir)
         self.jamediaplayer.connect('salir', self.__salir)
         
-        GObject.idle_add(self.__setup_init)
+        GLib.idle_add(self.__setup_init)
         
     def set_pistas(self, pistas):
         """
@@ -80,9 +80,11 @@ class Ventana(Gtk.Window):
         self.jamediaplayer.pack_standar()
         
         if self.pistas:
-            GObject.idle_add(self.jamediaplayer.set_nueva_lista, self.pistas)
+            GLib.idle_add(self.jamediaplayer.set_nueva_lista, self.pistas)
         
         self.jamediaplayer.pack_efectos()
+        
+        return False
         
     def __salir(self, widget = None, senial = None):
         

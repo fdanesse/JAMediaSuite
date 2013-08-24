@@ -25,6 +25,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaObjects
 
@@ -93,7 +94,7 @@ class JAMediaPlayer(Gtk.Plug):
         
     y luego proceder de la siguiente forma:
         
-    GObject.idle_add(self.setup_init)
+    GLib.idle_add(self.setup_init)
         
     def setup_init(self):
         self.jamediaplayer.setup_init()
@@ -460,6 +461,8 @@ class JAMediaPlayer(Gtk.Plug):
         
         self.widget_efectos.cargar_efectos(efectos)
         
+        return False
+    
     def __actualizar_streamings(self, widget):
         """
         Actualiza los streamings de jamedia,
@@ -604,7 +607,7 @@ class JAMediaPlayer(Gtk.Plug):
             self.scroll_config.set_size_request(rect.width, -1)
             self.evnt_box_lista_reproduccion.hide()
             self.scroll_config.show_all()
-            GObject.idle_add(self.__update_balance_toolbars)
+            GLib.idle_add(self.__update_balance_toolbars)
         
     def switch_reproductor(self, widget, nombre):
         """
@@ -774,7 +777,7 @@ class JAMediaPlayer(Gtk.Plug):
         """
         
         self.controlesrepro.set_paused()
-        GObject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
+        GLib.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
         
     def __cambioestadoreproductor(self, widget = None, valor = None):
         """
@@ -791,7 +794,7 @@ class JAMediaPlayer(Gtk.Plug):
         else:
             print "Estado del Reproductor desconocido:", valor
             
-        GObject.idle_add(self.__update_balance_toolbars)
+        GLib.idle_add(self.__update_balance_toolbars)
         
     def __update_balance_toolbars(self):
         """
@@ -807,6 +810,8 @@ class JAMediaPlayer(Gtk.Plug):
             hue = config['hue'],
             gamma = config['gamma'])
             
+        return False
+    
     def __update_progress(self, objetoemisor, valor):
         """
         Recibe el progreso de la reproduccion desde el reproductor
@@ -861,7 +866,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         from JAMediaObjects.JAMediaGlobales import get_jamedia_video_efectos
         
-        GObject.idle_add(self.__cargar_efectos, list(get_jamedia_video_efectos()))
+        GLib.idle_add(self.__cargar_efectos, list(get_jamedia_video_efectos()))
         
     def __add_stream(self, widget):
         """
@@ -895,6 +900,8 @@ class JAMediaPlayer(Gtk.Plug):
         self.lista_de_reproduccion.limpiar()
         self.lista_de_reproduccion.agregar_items(lista)
         if self.toolbar_list: self.toolbar_list.label.set_text("")
+        
+        return False
 
     def __cargar_reproducir(self, widget, path):
         """
