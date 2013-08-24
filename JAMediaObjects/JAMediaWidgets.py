@@ -1591,18 +1591,18 @@ class Acelerometro(GObject.GObject):
         self.angulo = 0
         self.profundidad = 0
         
-        self.acelerometro = None
+        self.acelerometro = False
         
         if os.path.exists(ACELEROMETRO):
             self.acelerometro = open(ACELEROMETRO, 'r')
-            self.actualizador = GObject.timeout_add(500, self.__read)
+            self.actualizador = GLib.timeout_add(500, self.__read)
             
         else:
             print "El Acelerometro no está Presente."
             
     def __read(self):
         
-        if self.acelerometro != None:
+        if self.acelerometro:
             self.acelerometro.seek(0)
         
         valor = self.acelerometro.read()
@@ -1653,6 +1653,6 @@ class Acelerometro(GObject.GObject):
     
     def close(self):
         
-        if self.acelerometro != None:
+        if self.acelerometro:
             self.acelerometro.close()
             
