@@ -25,6 +25,7 @@ import subprocess
 
 import gi
 from gi.repository import GObject
+from gi.repository import GLib
 
 STDOUT = "/tmp/mplayerout%d" % time.time()
 MPLAYER = "mplayer"
@@ -54,23 +55,25 @@ class MplayerReproductor(GObject.GObject):
     # Estados: playing, paused, None
     
     def __init__(self, ventana_id):
-        """ Recibe el id de un DrawingArea
-        para mostrar el video. """
+        """
+        Recibe el id de un DrawingArea
+        para mostrar el video.
+        """
         
         GObject.GObject.__init__(self)
         
         self.name = "MplayerReproductor"
         self.ventana_id = ventana_id
-        self.mplayer = None
-        self.salida = None
-        self.entrada = None
-        self.estado = None
+        self.mplayer = False
+        self.salida = False
+        self.entrada = False
+        self.estado = False
         self.duracion = 0
         self.posicion = 0
         self.volumen = 0
-        self.actualizador = None
-        self.uri = None
-        self.video_in_stream = None
+        self.actualizador = False
+        self.uri = False
+        self.video_in_stream = False
         
         self.config = {
             'saturacion': 0,
@@ -84,13 +87,15 @@ class MplayerReproductor(GObject.GObject):
         self.config_efectos = {}
         
     def stop(self):
-        """Detiene todo."""
+        """
+        Detiene todo.
+        """
         
         try:
             if self.entrada:
                 self.entrada.write('%s 0\n' % "quit")
                 self.entrada.flush()
-                self.new_handle(False)
+                self.__new_handle(False)
                 
         except Exception, e:
             #print "HA OCURRIDO UN ERROR EN QUIT DEL REPRODUCTOR", e
@@ -98,11 +103,13 @@ class MplayerReproductor(GObject.GObject):
         
         self.posicion = 0
         if os.path.exists(STDOUT): os.unlink(STDOUT)
-        self.estado = None
+        self.estado = False
         self.emit("estado", "None")
 
     def load(self, uri):
-        """Carga y Reproduce un archivo o streaming."""
+        """
+        Carga y Reproduce un archivo o streaming.
+        """
         
         self.stop()
         self.uri = uri
@@ -117,12 +124,14 @@ class MplayerReproductor(GObject.GObject):
         self.salida = open(STDOUT,"r")
         self.entrada.write("loadfile %s 0\n" % uri)
         self.entrada.flush()
-        self.video_in_stream = None
-        self.new_handle(True)
+        self.video_in_stream = False
+        self.__new_handle(True)
         
-    def handle(self):
-        """Consulta el estado y progreso del
-        la reproduccion actual."""
+    def __handle(self):
+        """
+        Consulta el estado y progreso del
+        la reproduccion actual.
+        """
         
         if not self.entrada.closed:
             # Control por tiempo
@@ -148,21 +157,21 @@ class MplayerReproductor(GObject.GObject):
                 if "ANS_percent_pos" in linea:
                     "Información sobre el porcentaje Reproducido hasta el momento. Ejemplo:"
                     "ANS_percent_pos=0"
-                    self.get_progress_in_mplayer(linea)
+                    self.__get_progress_in_mplayer(linea)
                     self.get_volumen()
                     
                 elif "Video: no video" in linea or "Audio only file format detected" in linea:
                     "Cuando no hay video en la fuente. Ejemplo"
                     "Audio only file format detected."
                     "Video: no video"
-                    if self.video_in_stream == True or self.video_in_stream == None:
+                    if self.video_in_stream:
                         self.video_in_stream = False
                         self.emit("video", False)
                 
                 elif "Movie-Aspect" in linea:
                     "Información sobre el aspecto del video. Ejemplo:"
                     "Movie-Aspect is 1.78:1 - prescaling to correct movie aspect."
-                    if self.video_in_stream == False or self.video_in_stream == None:
+                    if not self.video_in_stream:
                         self.video_in_stream = True
                         self.emit("video", True)
                     
@@ -261,10 +270,12 @@ class MplayerReproductor(GObject.GObject):
                 
         return True
     
-    def get_progress_in_mplayer(self, linea):
-        """Obtiene el progreso de la reproduccion y lo
+    def __get_progress_in_mplayer(self, linea):
+        """
+        Obtiene el progreso de la reproduccion y lo
         envia en una señal para actualizar la barra de
-        progreso."""
+        progreso.
+        """
         
         pos = 0
         try:
@@ -282,16 +293,18 @@ class MplayerReproductor(GObject.GObject):
             print "Error en Progreso de Reproducción: %s" % (e)
             
     def pause_play(self):
-        """Llama a play() o pause()
-        segun el estado actual del reproductor."""
+        """
+        Llama a play() o pause()
+        segun el estado actual del reproductor.
+        """
 
         try:
             if self.entrada:
                 if self.estado == "playing": # pausa
-                    self.pause()
+                    self.__pause()
                     
                 elif self.estado == "paused":
-                    self.pause(True)
+                    self.__pause(True)
                     self.estado = "playing"
                     self.emit("estado", "playing")
                     
@@ -302,36 +315,44 @@ class MplayerReproductor(GObject.GObject):
         except Exception, e:
             print "HA OCURRIDO UN ERROR EN PAUSE_PLAY DEL REPRODUCTOR", e
             
-    def pause(self, reset = False):
-        """Pone en pause o unpause a mplayer"""
+    def __pause(self, reset = False):
+        """
+        Pone en pause o unpause a mplayer
+        """
         
         self.entrada.write('pause 0\n')
         self.entrada.flush()
-        self.new_handle(reset)
+        self.__new_handle(reset)
         self.estado = "paused"
         self.emit("estado", "paused")
         
-    def play(self):
-        """No hace nada. mplayer utiliza:
-        pause, unpause y load en lugar de play."""
+    def __play(self):
+        """
+        No hace nada. mplayer utiliza:
+        pause, unpause y load en lugar de play.
+        """
         
         pass
         
-    def new_handle(self, reset):
-        """Elimina o reinicia la funcion que
+    def __new_handle(self, reset):
+        """
+        Elimina o reinicia la funcion que
         envia los datos de actualizacion para
-        la barra de progreso del reproductor."""
+        la barra de progreso del reproductor.
+        """
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
-            self.actualizador = None
+            GLib.source_remove(self.actualizador)
+            self.actualizador = False
             
         if reset:
-            self.actualizador = GObject.timeout_add(35, self.handle)
+            self.actualizador = GLib.timeout_add(35, self.__handle)
             
     def set_position(self, posicion):
-        """Permite desplazarse por
-        la pista que se esta reproduciendo."""
+        """
+        Permite desplazarse por
+        la pista que se esta reproduciendo.
+        """
         
         # FIXME: Actualmente no funciona bien
         posicion = int(posicion)
@@ -341,10 +362,12 @@ class MplayerReproductor(GObject.GObject):
             self.entrada.flush()
             
     def get_volumen(self):
-        """Obtiene el volumen de reproducción.
+        """
+        Obtiene el volumen de reproducción.
         Lo hace solo al reproducir el primer archivo
         o streaming y envía el dato para actualizar
-        el control de volúmen."""
+        el control de volúmen.
+        """
         
         if self.volumen != 0: return
     
@@ -361,7 +384,9 @@ class MplayerReproductor(GObject.GObject):
                     self.emit('volumen', valor)
                     
     def set_volumen(self, valor):
-        """Cambia el volúmen de Reproducción."""
+        """
+        Cambia el volúmen de Reproducción.
+        """
         
         if self.entrada:
             if valor != self.volumen:
@@ -371,8 +396,10 @@ class MplayerReproductor(GObject.GObject):
                 
     def set_balance(self, brillo = None, contraste = None,
         saturacion = None, hue = None, gamma = None):
-        """Seteos de balance en la fuente de video.
-        Recibe % en float y convierte a los valores del filtro."""
+        """
+        Seteos de balance en la fuente de video.
+        Recibe % en float y convierte a los valores del filtro.
+        """
         
         # FIXME: Actualmente no funciona.
         if saturacion != None:
@@ -421,7 +448,9 @@ class MplayerReproductor(GObject.GObject):
                 self.entrada.flush()
                 
     def get_balance(self):
-        """Retorna los valores actuales de balance en %."""
+        """
+        Retorna los valores actuales de balance en %.
+        """
         
         return {
         'saturacion': (self.config['saturacion']+100) * 100.0 / 200.0,
@@ -444,13 +473,15 @@ class MplayerReproductor(GObject.GObject):
         pass
     
     def rotar(self, valor):
-        """Mplayer no permite rotación de video."""
         
         pass
         
 REC = "/tmp/mplayerrec%d" % time.time()
+
 class MplayerGrabador(GObject.GObject):
-    """Graba desde un streaming de radio o tv."""
+    """
+    Graba desde un streaming de radio o tv.
+    """
     
     __gsignals__ = {
     "update":(GObject.SIGNAL_RUN_FIRST,
@@ -460,14 +491,19 @@ class MplayerGrabador(GObject.GObject):
         
         GObject.GObject.__init__(self)
         
-        self.actualizador = None
-        self.archivo = None
+        self.actualizador = False
+        self.archivo = False
         self.uri = ""
         self.info = ""
         
         estructura = "%s -slave -idle -nolirc -nomouseinput -noconsolecontrols -nojoystick -dumpstream -dumpfile %s" % (MPLAYER, archivo)
-        self.mplayer = subprocess.Popen(estructura, shell = True, stdin = subprocess.PIPE,
-            stdout = open(REC,"w+b"), stderr=open(REC,"r+b"), universal_newlines=True)
+        
+        self.mplayer = subprocess.Popen(
+            estructura, shell = True,
+            stdin = subprocess.PIPE,
+            stdout = open(REC,"w+b"),
+            stderr=open(REC,"r+b"),
+            universal_newlines=True)
             
         self.entrada = self.mplayer.stdin
         self.salida = open(REC,"r")
@@ -475,22 +511,26 @@ class MplayerGrabador(GObject.GObject):
         self.entrada.write("loadfile %s 0\n" % uri)
         self.entrada.flush()
         
-        self.new_handle(True)
+        self.__new_handle(True)
         
-    def new_handle(self, reset):
-        """Elimina o reinicia la funcion que
-        envia los datos de actualizacion."""
+    def __new_handle(self, reset):
+        """
+        Elimina o reinicia la funcion que
+        envia los datos de actualizacion.
+        """
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
-            self.actualizador = None
+            GLib.source_remove(self.actualizador)
+            self.actualizador = False
             
         if reset:
-            self.actualizador = GObject.timeout_add(35, self.handle)
+            self.actualizador = GLib.timeout_add(35, self.__handle)
             
-    def handle(self):
-        """Consulta el estado y progreso de
-        la grabacion."""
+    def __handle(self):
+        """
+        Consulta el estado y progreso de
+        la grabacion.
+        """
         
         if not self.entrada.closed:
             linea = self.salida.readline()
@@ -513,13 +553,15 @@ class MplayerGrabador(GObject.GObject):
         return True
         
     def stop(self):
-        """Detiene la Grabación actual."""
+        """
+        Detiene la Grabación actual.
+        """
         
         try:
             if self.entrada:
                 self.entrada.write('%s 0\n' % "quit")
                 self.entrada.flush()
-                self.new_handle(False)
+                self.__new_handle(False)
                 
         except Exception, e:
             print "HA OCURRIDO UN ERROR EN QUIT DEL GRABADOR", e

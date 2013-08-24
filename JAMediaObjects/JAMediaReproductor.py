@@ -25,6 +25,7 @@ import gi
 gi.require_version('Gst', '1.0')
 
 from gi.repository import GObject
+from gi.repository import GLib
 from gi.repository import Gst
 from gi.repository import GstVideo
 
@@ -162,6 +163,8 @@ class JAMediaReproductor(GObject.GObject):
             gamma = self.config['gamma'])
         self.emit('volumen', self.volumen)
         
+        return False
+    
     def __play(self):
         """
         Pone el pipe de Gst en Gst.State.PLAYING
@@ -242,11 +245,11 @@ class JAMediaReproductor(GObject.GObject):
         """
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
             
         if reset:
-            self.actualizador = GObject.timeout_add(500, self.__handle)
+            self.actualizador = GLib.timeout_add(500, self.__handle)
         
     def __handle(self):
         """
@@ -370,7 +373,7 @@ class JAMediaReproductor(GObject.GObject):
                     self.estado = new
                     self.emit("estado", "playing")
                     self.__new_handle(True)
-                    GObject.idle_add(self.__re_config)
+                    GLib.idle_add(self.__re_config)
                     return
                 
             elif old == Gst.State.READY and new == Gst.State.PAUSED:
@@ -615,11 +618,11 @@ class JAMediaGrabador(GObject.GObject):
         """
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
             
         if reset:
-            self.actualizador = GObject.timeout_add(500, self.__handle)
+            self.actualizador = GLib.timeout_add(500, self.__handle)
             
     def __handle(self):
         """
