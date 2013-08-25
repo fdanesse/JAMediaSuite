@@ -672,7 +672,7 @@ class Estructura_Proyecto(Gtk.TreeView):
         
         if not estructura:
             self.expand_all()
-            return
+            return False
     
         item = estructura[0]
         directorio, path = item

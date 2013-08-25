@@ -90,19 +90,10 @@ class Ventana(Gtk.Window):
         
         self.jamediamantree.hide()
         
-        toolbar.connect("salir", self.__salir)
+        import sys
         toolbar.connect("help", self.__help)
-        
-        import sys
+        toolbar.connect("salir", sys.exit)
         self.connect("destroy", sys.exit)
-        
-    def __salir(self, widget):
-        """
-        Sale de la aplicación.
-        """
-        
-        import sys
-        sys.exit()
     
     def __help(self, widget):
         """

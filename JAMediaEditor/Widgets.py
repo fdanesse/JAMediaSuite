@@ -287,15 +287,15 @@ class Menu(Gtk.MenuBar):
         self.dict_archivo['De Identar'] = item
         menu_codigo.append(item)
 
-        item = Gtk.MenuItem('Identar con Espacios')
-        item.connect("activate", self.__emit_accion_codigo, "Identar con Espacios")
-        self.dict_archivo['Identar con Espacios'] = item
-        menu_codigo.append(item)
+        #item = Gtk.MenuItem('Identar con Espacios')
+        #item.connect("activate", self.__emit_accion_codigo, "Identar con Espacios")
+        #self.dict_archivo['Identar con Espacios'] = item
+        #menu_codigo.append(item)
 
-        item = Gtk.MenuItem('Identar con Tabulaciones')
-        item.connect("activate", self.__emit_accion_codigo, "Identar con Tabulaciones")
-        self.dict_archivo['Identar con Tabulaciones'] = item
-        menu_codigo.append(item)
+        #item = Gtk.MenuItem('Identar con Tabulaciones')
+        #item.connect("activate", self.__emit_accion_codigo, "Identar con Tabulaciones")
+        #self.dict_archivo['Identar con Tabulaciones'] = item
+        #menu_codigo.append(item)
         
         item = Gtk.MenuItem('Buscar Texto . . .')
         item.connect("activate", self.__emit_accion_codigo, "Buscar Texto")
@@ -761,6 +761,8 @@ class DialogoBuscar(Gtk.Dialog):
                 inicio, fin = selection
                 buffer.select_range(inicio, fin)
         
+        return False
+    
     def __changed(self, widget):
         """
         Habilita y deshabilita los botones de busqueda y reemplazo.
@@ -2095,7 +2097,7 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
         
     def agregar_items(self, elementos):
         
-        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        self.__ejecutar_agregar_elemento(elementos)
         
     def __ejecutar_agregar_elemento(self, elementos):
         """
@@ -2112,6 +2114,8 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
         
         GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
         
+        return False
+    
     def seleccionar_primero(self, widget = None):
         
         self.treeselection.select_path(0)

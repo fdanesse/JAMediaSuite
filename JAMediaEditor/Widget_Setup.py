@@ -751,6 +751,8 @@ class DialogoInstall(Gtk.Dialog):
             os.path.join(self.dirpath, "setup.py"),
             "sdist")
             
+        return False
+    
     def __run_sugar_install(self):
         """
         Ejecuta: python setup.py sdist
@@ -777,6 +779,8 @@ class DialogoInstall(Gtk.Dialog):
             os.path.join(self.dirpath, "setup.py"),
             "sdist")'''
         self.__end_make(None)
+        
+        return False
         
 class DialogoInfoInstall(Gtk.Dialog):
     """

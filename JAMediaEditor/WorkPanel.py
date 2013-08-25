@@ -373,6 +373,8 @@ class Notebook_SourceView(Gtk.Notebook):
         
         self.set_current_page(-1)
         
+        return False
+    
     def guardar_archivo(self):
         """
         Guarda el archivo actual.
@@ -565,8 +567,9 @@ class SourceView(GtkSource.View):
                 self.__set_lenguaje(archivo)
                 self.get_buffer().set_text(texto)
                 
-                self.get_buffer().begin_not_undoable_action()
-                self.get_buffer().end_not_undoable_action()
+                # FIXME: bug oops
+                #self.get_buffer().begin_not_undoable_action()
+                #self.get_buffer().end_not_undoable_action()
                 self.get_buffer().set_modified(False)
                 
                 nombre = os.path.basename(self.archivo)
@@ -574,8 +577,9 @@ class SourceView(GtkSource.View):
                 
         else:
             self.set_buffer(GtkSource.Buffer())
-            self.get_buffer().begin_not_undoable_action()
-            self.get_buffer().end_not_undoable_action()
+            # FIXME: bug oops
+            #self.get_buffer().begin_not_undoable_action()
+            #self.get_buffer().end_not_undoable_action()
             self.get_buffer().set_modified(False)
 
     def __set_label(self, nombre):
@@ -596,6 +600,8 @@ class SourceView(GtkSource.View):
                 label = notebook.get_tab_label(pag).get_children()[0]
                 label.set_text(nombre)
                 
+        return False
+    
     def __set_lenguaje(self, archivo):
         """
         Setea los colores del texto según tipo de archivo.
@@ -750,12 +756,16 @@ class SourceView(GtkSource.View):
         """
         
         buffer = self.get_buffer()
-
+        
         if accion == "Deshacer":
-            if buffer.can_undo(): buffer.undo()
+            pass
+            # FIXME: bug oops
+            #if buffer.can_undo(): buffer.undo()
             
         elif accion == "Rehacer":
-            if buffer.can_redo(): buffer.redo()
+            pass
+            # FIXME: bug oops
+            #if buffer.can_redo(): buffer.redo()
             
         elif accion == "Seleccionar Todo":
             inicio, fin = buffer.get_bounds()
@@ -1083,23 +1093,56 @@ class SourceView(GtkSource.View):
         
         if event.keyval == 65421:
             buffer = self.get_buffer()
-        
+            
             textmark = buffer.get_insert()
             textiter = buffer.get_iter_at_mark(textmark)
+            
             id = textiter.get_line()
-
+            
             line_iter = buffer.get_iter_at_line(id)
             chars = line_iter.get_chars_in_line()
             
-            if chars > 2:
+            if chars > 3:
+                ### Ultimo caracter.
                 start_iter = buffer.get_iter_at_line_offset(id, chars-2)
                 end_iter = buffer.get_iter_at_line_offset(id, chars-1)
                 
                 texto = buffer.get_text(start_iter, end_iter, True)
                 
                 if texto == ":":
-                    GLib.idle_add(self.__identar)
+                    ### Tola la linea.
+                    line_end_iter = buffer.get_iter_at_line_offset(id, chars-1)
+                    texto = buffer.get_text(line_iter, line_end_iter, True)
                     
+                    tabs = 0
+                    if texto.startswith(self.tab):
+                        tabs = len(texto.split(self.tab))-1
+                        
+                    if texto.startswith("class") or texto.startswith("def"):
+                        print tabs
+                        
+                    print texto
+                    
+                    GLib.idle_add(self.__forzar_identacion, tabs+1)
+                    
+    def __forzar_identacion(self, tabs):
+        
+        buffer = self.get_buffer()
+
+        textmark = buffer.get_insert()
+        textiter = buffer.get_iter_at_mark(textmark)
+        id = textiter.get_line()
+        
+        line_iter = buffer.get_iter_at_line(id)
+        chars = line_iter.get_chars_in_line()
+        
+        buffer.delete(line_iter, buffer.get_iter_at_line_offset(id, chars-1))
+        
+        for tab in range(0, tabs):
+            self.__identar()
+            
+        return False
+    
 class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
     
     __gtype_name__ = 'AutoCompletado'
