@@ -28,7 +28,7 @@ import gi
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource
-from gi.repository import Pango
+#from gi.repository import Pango
 from gi.repository import Gdk
 from gi.repository import GLib
 
@@ -317,7 +317,15 @@ class Notebook_SourceView(Gtk.Notebook):
         el notebook, se emite la señal 'new_select'.
         """
         
+        ### Detener inspectores y activar solo el seleccionado
+        paginas = self.get_children()
+        
+        for pagina in paginas:
+            view = pagina.get_child()
+            view.new_handle(False)
+            
         view = widget_child.get_child()
+        view.new_handle(True)
         
         self.emit('new_select', view, False)
         
@@ -523,6 +531,8 @@ class SourceView(GtkSource.View):
 
         GtkSource.View.__init__(self)
         
+        self.actualizador = False
+        self.control = False
         self.archivo = False
         self.lenguaje = False
         self.tab = "    "
@@ -540,7 +550,7 @@ class SourceView(GtkSource.View):
         self.set_tab_width(4)
         self.set_auto_indent(True)
 
-        self.modify_font(Pango.FontDescription('Monospace 10'))
+        #self.modify_font(Pango.FontDescription('Monospace 10'))
 
         completion = self.get_completion()
         completion.add_provider(AutoCompletado(self.get_buffer()))
@@ -564,23 +574,23 @@ class SourceView(GtkSource.View):
                 texto_file.close()
                 
                 self.set_buffer(GtkSource.Buffer())
+                self.get_buffer().begin_not_undoable_action()
                 self.__set_lenguaje(archivo)
                 self.get_buffer().set_text(texto)
-                
-                # FIXME: bug oops
-                #self.get_buffer().begin_not_undoable_action()
-                #self.get_buffer().end_not_undoable_action()
-                self.get_buffer().set_modified(False)
                 
                 nombre = os.path.basename(self.archivo)
                 GLib.idle_add(self.__set_label, nombre)
                 
+                self.control = os.path.getmtime(self.archivo)
+                
         else:
             self.set_buffer(GtkSource.Buffer())
-            # FIXME: bug oops
-            #self.get_buffer().begin_not_undoable_action()
-            #self.get_buffer().end_not_undoable_action()
-            self.get_buffer().set_modified(False)
+            self.get_buffer().begin_not_undoable_action()
+            
+        self.get_buffer().end_not_undoable_action()
+        self.get_buffer().set_modified(False)
+        
+        self.new_handle(True)
 
     def __set_label(self, nombre):
         """
@@ -661,6 +671,7 @@ class SourceView(GtkSource.View):
                 archivo.close()
                 
                 buffer.set_modified(False)
+                self.control = os.path.getmtime(self.archivo)
                 
                 ### Forzando actualización de Introspección.
                 self.get_parent().get_parent().emit('new_select', self, True)
@@ -733,7 +744,7 @@ class SourceView(GtkSource.View):
         
         if not fuente and not tamanio: return
     
-        description =  self.get_pango_context().get_font_description()
+        #description =  self.get_pango_context().get_font_description()
         
         nombre = description.get_family()
         size = description.get_size()/1000
@@ -745,10 +756,12 @@ class SourceView(GtkSource.View):
             fuente = "%s %s" % (nombre, size)
             
         if not dialogo:
-            self.modify_font(Pango.FontDescription("%s" % fuente))
+            #self.modify_font(Pango.FontDescription("%s" % fuente))
+            pass
             
         else:
-            self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
+            #self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
+            pass
         
     def set_accion(self, accion, valor = True):
         """
@@ -758,14 +771,12 @@ class SourceView(GtkSource.View):
         buffer = self.get_buffer()
         
         if accion == "Deshacer":
-            pass
-            # FIXME: bug oops
-            #if buffer.can_undo(): buffer.undo()
-            
+            if buffer.can_undo():
+                buffer.undo()
+                
         elif accion == "Rehacer":
-            pass
-            # FIXME: bug oops
-            #if buffer.can_redo(): buffer.redo()
+            if buffer.can_redo():
+                buffer.redo()
             
         elif accion == "Seleccionar Todo":
             inicio, fin = buffer.get_bounds()
@@ -1065,8 +1076,6 @@ class SourceView(GtkSource.View):
                 if page == scroll:
                     notebook.remove_page(indice)
                     break
-                
-        GLib.idle_add(self.destroy)
 
     def _marcar_error(self, linea):
         """
@@ -1117,11 +1126,6 @@ class SourceView(GtkSource.View):
                     tabs = 0
                     if texto.startswith(self.tab):
                         tabs = len(texto.split(self.tab))-1
-                        
-                    if texto.startswith("class") or texto.startswith("def"):
-                        print tabs
-                        
-                    print texto
                     
                     GLib.idle_add(self.__forzar_identacion, tabs+1)
                     
@@ -1142,6 +1146,81 @@ class SourceView(GtkSource.View):
             self.__identar()
             
         return False
+    
+    def new_handle(self, reset):
+        
+        if self.actualizador:
+            GObject.source_remove(self.actualizador)
+            self.actualizador = False
+            
+        if reset:
+            self.actualizador = GObject.timeout_add(1000, self.__handle)
+            
+    def __handle(self):
+        """
+        Controla posibles modificaciones externas a este archivo.
+        """
+        
+        if self.archivo:
+            if os.path.exists(self.archivo):
+                if self.control:
+                    if self.control != os.path.getmtime(self.archivo):
+                        dialogo = Gtk.Dialog(
+                            parent = self.get_toplevel(),
+                            flags = Gtk.DialogFlags.MODAL,
+                            buttons = [
+                                "Recargar", Gtk.ResponseType.ACCEPT,
+                                "Continuar sin recargar", Gtk.ResponseType.CANCEL])
+                                
+                        dialogo.set_border_width(15)
+                        
+                        label = Gtk.Label("El archivo ha sido modificado por otra aplicación.")
+                        label.show()
+                        
+                        dialogo.vbox.pack_start(label, True, True, 0)
+                        
+                        response = dialogo.run()
+                        
+                        dialogo.destroy()
+                        
+                        if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
+                            self.set_archivo(self.archivo)
+                        
+                        elif Gtk.ResponseType(response) == Gtk.ResponseType.CANCEL:
+                            return False
+                        
+                else:
+                    self.control = os.path.getmtime(self.archivo)
+            
+            elif not os.path.exists(self.archivo):
+                dialogo = Gtk.Dialog(
+                    parent = self.get_toplevel(),
+                    flags = Gtk.DialogFlags.MODAL,
+                    buttons = [
+                        "Guardar", Gtk.ResponseType.ACCEPT,
+                        "Continuar sin guardar", Gtk.ResponseType.CANCEL])
+                        
+                dialogo.set_border_width(15)
+                
+                label = Gtk.Label("El archivo fue eliminado o\n movido de lugar por otra aplicación.")
+                label.show()
+                
+                dialogo.vbox.pack_start(label, True, True, 0)
+                
+                response = dialogo.run()
+                
+                dialogo.destroy()
+                
+                if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
+                    self.guardar()
+                
+                elif Gtk.ResponseType(response) == Gtk.ResponseType.CANCEL:
+                    return False
+                
+        else:
+            return False
+        
+        return True
     
 class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
     

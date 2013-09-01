@@ -20,11 +20,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# FIXME: Hay un bug en Pango:
-# GLib-GObject-CRITICAL **: g_object_get_qdata: assertion `G_IS_OBJECT (object)' failed
-# GtkSourceView-Message: gtksourceundomanagerdefault.c:1170: oops
-# (IdeMain.py:18722): GtkSourceView-CRITICAL **: gth_source_undo_manager_undo_imp: assertion `undo_action != NULL' failed
-
 import os
 
 from gi.repository import Gtk
@@ -78,12 +73,15 @@ class JAMediaEditor(Gtk.Window):
         self.set_border_width(5)
         self.set_position(Gtk.WindowPosition.CENTER)
         
+        accel_group = Gtk.AccelGroup()
+        self.add_accel_group(accel_group)
+        
         self.updater = False
         self.sourceview = False
         
         base_widget = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         
-        self.menu = Menu()
+        self.menu = Menu(accel_group)
         #toolbar = MainToolbar()
         self.base_panel = BasePanel()
         #trytoolbar = TryToolbar()
@@ -223,20 +221,19 @@ class JAMediaEditor(Gtk.Window):
             desactivar.append("Pegar")
             
         try:
-            # FIXME: bug oops
             ### Si se puede deshacer.
-            #if buffer.can_undo():
-            #    activar.append("Deshacer")
+            if buffer.can_undo():
+                activar.append("Deshacer")
                 
-            #else:
-            #    desactivar.append("Deshacer")
+            else:
+                desactivar.append("Deshacer")
                 
             ### Si se puede Rehacer.
-            #if buffer.can_redo():
-            #    activar.append("Rehacer")
+            if buffer.can_redo():
+                activar.append("Rehacer")
                 
-            #else:
-            #    desactivar.append("Rehacer")
+            else:
+                desactivar.append("Rehacer")
         
             ### Si hay texto seleccionado, se puede copiar y cortar.
             if buffer.get_selection_bounds():

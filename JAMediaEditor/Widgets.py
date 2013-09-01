@@ -29,11 +29,11 @@ import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
-from gi.repository import Pango
+#from gi.repository import Pango
 from gi.repository import GLib
 
 #BASEPATH = os.path.dirname(__file__)
-FUENTES_GLOBAL = Gtk.Window().get_pango_context().list_families()
+#FUENTES_GLOBAL = Gtk.Window().get_pango_context().list_families()
 
 def get_boton(stock, tooltip):
     """
@@ -90,7 +90,7 @@ class Menu(Gtk.MenuBar):
     'accion_codigo': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
-    def __init__(self):
+    def __init__(self, accel_group):
 
         Gtk.MenuBar.__init__(self)
 
@@ -102,53 +102,72 @@ class Menu(Gtk.MenuBar):
         item_edicion = Gtk.MenuItem('Edición')
         item_ver = Gtk.MenuItem('Ver')
         item_codigo = Gtk.MenuItem('Código')
-        #item_ayuda = Gtk.MenuItem('Ayuda')
+        item_ayuda = Gtk.MenuItem('Ayuda')
 
         menu_proyectos = Gtk.Menu()
         menu_archivos = Gtk.Menu()
         menu_edicion = Gtk.Menu()
         menu_ver = Gtk.Menu()
         menu_codigo = Gtk.Menu()
-        #menu_ayuda = Gtk.Menu()
+        menu_ayuda = Gtk.Menu()
 
         item_proyectos.set_submenu(menu_proyectos)
         item_archivos.set_submenu(menu_archivos)
         item_edicion.set_submenu(menu_edicion)
         item_ver.set_submenu(menu_ver)
         item_codigo.set_submenu(menu_codigo)
-        #item_ayuda.set_submenu(menu_ayuda)
+        item_ayuda.set_submenu(menu_ayuda)
 
         self.append(item_proyectos)
         self.append(item_archivos)
         self.append(item_edicion)
         self.append(item_ver)
         self.append(item_codigo)
-        #self.append(item_ayuda)
+        self.append(item_ayuda)
 
         ### Items del Menú Proyectos
         item = Gtk.MenuItem('Nuevo . . .')
         item.connect("activate", self.__emit_accion_proyecto, "Nuevo Proyecto")
         menu_proyectos.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('N'), Gdk.ModifierType.SHIFT_MASK |
+            Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Abrir . . .')
         item.connect("activate", self.__emit_accion_proyecto, "Abrir Proyecto")
         menu_proyectos.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('O'), Gdk.ModifierType.SHIFT_MASK |
+            Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Editar . . .')
         item.connect("activate", self.__emit_accion_proyecto, "Editar Proyecto")
         self.dict_proyecto["Editar Proyecto"] = item
         menu_proyectos.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('E'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Cerrar')
         item.connect("activate", self.__emit_accion_proyecto, "Cerrar Proyecto")
         self.dict_proyecto["Cerrar Proyecto"] = item
         menu_proyectos.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('W'), Gdk.ModifierType.SHIFT_MASK |
+            Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Guardar')
         item.connect("activate", self.__emit_accion_proyecto, "Guardar Proyecto")
         self.dict_proyecto["Guardar Proyecto"] = item
         menu_proyectos.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('S'), Gdk.ModifierType.SHIFT_MASK |
+            Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Construir')
         item.connect("activate", self.__emit_accion_proyecto, "Construir")
         self.dict_proyecto["Construir"] = item
@@ -158,21 +177,33 @@ class Menu(Gtk.MenuBar):
         item = Gtk.MenuItem('Nuevo')
         item.connect("activate", self.__emit_accion_archivo, "Nuevo Archivo")
         menu_archivos.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('N'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Abrir . . .')
         item.connect("activate", self.__emit_accion_archivo, "Abrir Archivo")
         menu_archivos.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('O'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Cerrar')
         item.connect("activate", self.__emit_accion_archivo, "Cerrar Archivo")
         self.dict_archivo['Cerrar'] = item
         menu_archivos.append(item)
-        
+        item.add_accelerator("activate", accel_group,
+            ord('W'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Guardar')
         item.connect("activate", self.__emit_accion_archivo, "Guardar Archivo")
         menu_archivos.append(item)
         self.dict_archivo['Guardar'] = item
-        
+        item.add_accelerator("activate", accel_group,
+            ord('S'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Guardar Como ...')
         item.connect("activate", self.__emit_accion_archivo, "Guardar Como")
         self.dict_archivo['Guardar Como'] = item
@@ -183,32 +214,51 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_accion_archivo, "Deshacer")
         menu_edicion.append(item)
         self.dict_archivo['Deshacer'] = item
-        
+        item.add_accelerator("activate", accel_group,
+            ord('Z'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Rehacer')
         item.connect("activate", self.__emit_accion_archivo, "Rehacer")
         menu_edicion.append(item)
         self.dict_archivo['Rehacer'] = item
-        
+        item.add_accelerator("activate", accel_group,
+            ord('Z'), Gdk.ModifierType.CONTROL_MASK |
+            Gdk.ModifierType.SHIFT_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Cortar')
         item.connect("activate", self.__emit_accion_archivo, "Cortar")
         menu_edicion.append(item)
         self.dict_archivo['Cortar'] = item
-        
+        item.add_accelerator("activate", accel_group,
+            ord('X'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Copiar')
         item.connect("activate", self.__emit_accion_archivo, "Copiar")
         menu_edicion.append(item)
         self.dict_archivo['Copiar'] = item
-        
+        item.add_accelerator("activate", accel_group,
+            ord('C'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Pegar')
         item.connect("activate", self.__emit_accion_archivo, "Pegar")
         self.dict_archivo['Pegar'] = item
         menu_edicion.append(item)
-        
+        item.add_accelerator("activate", accel_group,
+            ord('V'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Seleccionar Todo')
         item.connect("activate", self.__emit_accion_archivo, "Seleccionar Todo")
         self.dict_archivo['Seleccionar Todo'] = item
         menu_edicion.append(item)
-        
+        item.add_accelerator("activate", accel_group,
+            ord('A'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         ### Items del menú Ver
         item = Gtk.MenuItem()
         item.get_child().destroy()
@@ -250,17 +300,26 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_accion_codigo, "Aumentar")
         self.dict_archivo['Aumentar'] = item
         menu_codigo.append(item)
-        
+        item.add_accelerator("activate", accel_group,
+            ord("+"), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Disminuir')
         item.connect("activate", self.__emit_accion_codigo, "Disminuir")
         self.dict_archivo['Disminuir'] = item
         menu_codigo.append(item)
-        
+        item.add_accelerator("activate", accel_group,
+            ord('-'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Formato de Texto . . .')
         item.connect("activate", self.__emit_accion_codigo, "Formato")
         self.dict_archivo['Formato'] = item
         menu_codigo.append(item)
-       
+        item.add_accelerator("activate", accel_group,
+            ord('T'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         #item = Gtk.MenuItem('Ejecutar archivo')
         #item.connect("activate", self.__emit_accion, "Ejecutar archivo")
         #menu_codigo.append(item)
@@ -281,12 +340,19 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_accion_codigo, "Identar")
         self.dict_archivo['Identar'] = item
         menu_codigo.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('I'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('De Identar')
         item.connect("activate", self.__emit_accion_codigo, "De Identar")
         self.dict_archivo['De Identar'] = item
         menu_codigo.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('I'), Gdk.ModifierType.CONTROL_MASK |
+            Gdk.ModifierType.SHIFT_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         #item = Gtk.MenuItem('Identar con Espacios')
         #item.connect("activate", self.__emit_accion_codigo, "Identar con Espacios")
         #self.dict_archivo['Identar con Espacios'] = item
@@ -301,12 +367,18 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_accion_codigo, "Buscar Texto")
         self.dict_archivo['Buscar Texto'] = item
         menu_codigo.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('B'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Reemplazar Texto . . .')
         item.connect("activate", self.__emit_accion_codigo, "Reemplazar Texto")
         self.dict_archivo['Reemplazar Texto'] = item
         menu_codigo.append(item)
-
+        item.add_accelerator("activate", accel_group,
+            ord('R'), Gdk.ModifierType.CONTROL_MASK,
+            Gtk.AccelFlags.VISIBLE)
+            
         item = Gtk.MenuItem('Chequear la sintaxis')
         item.connect("activate", self.__emit_accion_codigo, "Chequear")
         self.dict_archivo['Chequear'] = item
@@ -318,15 +390,21 @@ class Menu(Gtk.MenuBar):
         menu_codigo.append(item)
 
         # Items del Menú Ayuda
-        #item = Gtk.MenuItem('Créditos')
-        #item.connect("activate", self.__emit_accion, "Créditos")
-        #menu_ayuda.append(item)
+        item = Gtk.MenuItem('Créditos')
+        item.connect("activate", self.__run_about)
+        menu_ayuda.append(item)
 
         self.show_all()
         
         for item in self.dict_archivo.keys():
             self.dict_archivo[item].set_sensitive(False)
             
+    def __run_about(self, widget):
+        
+        dialog = Credits(parent = self.get_toplevel())
+        response = dialog.run()
+        dialog.destroy()
+    
     def __emit_accion_codigo(self, widget, accion):
         
         self.emit('accion_codigo', accion)
@@ -1502,18 +1580,15 @@ class DialogoAlertaSinGuardar(Gtk.Dialog):
             parent = parent_window,
             flags = Gtk.DialogFlags.MODAL,
             buttons = [
-                "Guardar", Gtk.ResponseType.ACCEPT,
-                "Cerrar sin Guardar", Gtk.ResponseType.CLOSE,
+                "Guardar y Continuar", Gtk.ResponseType.ACCEPT,
+                "Continuar sin Guardar", Gtk.ResponseType.CLOSE,
                 "Cancelar", Gtk.ResponseType.CANCEL])
         
         self.set_size_request(400, 150)
         self.set_border_width(15)
 
-        label = Gtk.Label("""
-            ¿No se han Guardado los Últimos Cambios en
-            El Archivo, Desea Guardarlo Antes de Cerrar?
-            """)
-            
+        label = Gtk.Label("No se han guardado los ultimos cambios en el archivo.")
+        
         label.show()
         self.vbox.add(label)
         
@@ -1538,11 +1613,8 @@ class DialogoSobreEscritura(Gtk.Dialog):
         self.set_size_request(400, 150)
         self.set_border_width(15)
 
-        label = Gtk.Label("""
-            El Archivo ya Existe.
-            ¿Deseas Sobre Escribirlo?
-            """)
-            
+        label = Gtk.Label("El archivo ya axiste. ¿Deseas sobre escribirlo?")
+        
         label.show()
         self.vbox.add(label)
         
@@ -1660,8 +1732,8 @@ class DialogoFormato(Gtk.Dialog):
         """
 
         self.texto = Gtk.Label("Texto")
-        fuente = Pango.FontDescription("Monospace 10")
-        self.texto.modify_font(fuente)
+        #fuente = Pango.FontDescription("Monospace 10")
+        #self.texto.modify_font(fuente)
 
         box = Gtk.EventBox()
         box.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("white"))
@@ -1693,8 +1765,8 @@ class DialogoFormato(Gtk.Dialog):
         elif tipo == "Fuente":
             self.fuente = modelo.get_value(iter_sel, 1)
             
-        fuente = Pango.FontDescription("%s %s" % (self.fuente, self.tamano))
-        self.texto.modify_font(fuente)
+        #fuente = Pango.FontDescription("%s %s" % (self.fuente, self.tamano))
+        #self.texto.modify_font(fuente)
 
         return True
         
@@ -2119,3 +2191,38 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
     def seleccionar_primero(self, widget = None):
         
         self.treeselection.select_path(0)
+
+class Credits(Gtk.Dialog):
+    
+    __gtype_name__ = 'Credits'
+    
+    def __init__(self, parent = None):
+
+        Gtk.Dialog.__init__(self,
+            parent = parent,
+            flags = Gtk.DialogFlags.MODAL,
+            buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
+        
+        self.set_border_width(15)
+
+        tabla = Gtk.Table(rows=3, columns=2, homogeneous=True)
+        
+        tabla.attach_defaults(Gtk.Label("Desarrollado por: "), 0, 1, 0, 1)
+        tabla.attach_defaults(Gtk.Label("Para: "), 0, 1, 1, 2)
+        tabla.attach_defaults(Gtk.Label("y: "), 0, 1, 2, 3)
+        
+        ac = Gtk.Image()
+        bt = Gtk.Image()
+        ce = Gtk.Image()
+        
+        ac.set_from_file(os.path.join(BASEPATH, "Iconos", "activitycentral.png"))
+        bt.set_from_file(os.path.join(BASEPATH, "Iconos", "batovi.png"))
+        ce.set_from_file(os.path.join(BASEPATH, "Iconos", "planceibal.png"))
+        
+        tabla.attach_defaults(ac, 1, 2, 0, 1)
+        tabla.attach_defaults(bt, 1, 2, 1, 2)
+        tabla.attach_defaults(ce, 1, 2, 2, 3)
+        
+        tabla.show_all()
+        self.vbox.add(tabla)
+        

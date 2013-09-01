@@ -26,7 +26,7 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GdkPixbuf
 from gi.repository import Vte
-from gi.repository import Pango
+#from gi.repository import Pango
 from gi.repository import GLib
 
 BASEPATH = os.path.dirname(__file__)
@@ -37,7 +37,7 @@ from JAMediaGlobales import get_pixels
 
 Width_Button = 0.5
 
-FAMILIES = Gtk.Window().get_pango_context().list_families()
+#FAMILIES = Gtk.Window().get_pango_context().list_families()
 
 class JAMediaTerminal(Gtk.Box):
     """
@@ -80,14 +80,14 @@ class JAMediaTerminal(Gtk.Box):
         fuentes en las terminales según selección del usuario.
         """
         
-        string = self.notebook.fuente.to_string()
-        tamanio = int(string.split(" ")[-1])
-        fuente = string.replace("%s" % tamanio, "").strip()
+        #string = self.notebook.fuente.to_string()
+        #tamanio = int(string.split(" ")[-1])
+        #fuente = string.replace("%s" % tamanio, "").strip()
         
         dialogo = DialogoFormato(
-            parent_window = self.get_toplevel(),
-            fuente = fuente,
-            tamanio = tamanio)
+            parent_window = self.get_toplevel())#,
+            #fuente = fuente,
+            #tamanio = tamanio)
         
         respuesta = dialogo.run()
         
@@ -183,7 +183,7 @@ class NoteBookTerminal(Gtk.Notebook):
         
         self.set_scrollable(True)
         
-        self.fuente = Pango.FontDescription("Monospace %s" % 10)
+        #self.fuente = Pango.FontDescription("Monospace %s" % 10)
         
         self.show_all()
         
@@ -194,14 +194,14 @@ class NoteBookTerminal(Gtk.Notebook):
         Setea la fuente en las terminales.
         """
         
-        self.fuente = Pango.FontDescription(fuente)
+        #self.fuente = Pango.FontDescription(fuente)
         
         terminales = self.get_children()
         
         if not terminales: return
     
-        for terminal in terminales:
-            terminal.re_set_font(self.fuente)
+        #for terminal in terminales:
+        #    terminal.re_set_font(self.fuente)
         
     def agregar_terminal(self, path = os.environ["HOME"],
         interprete = "/bin/bash", ejecutar = None):
@@ -238,8 +238,8 @@ class NoteBookTerminal(Gtk.Notebook):
         terminal = Terminal(
             path=path,
             interprete=interprete,
-            archivo=ejecutar,
-            fuente=self.fuente)
+            archivo=ejecutar)#,
+            #fuente=self.fuente)
             
         self.append_page(terminal, hbox)
 
@@ -362,13 +362,13 @@ class Terminal(Vte.Terminal):
     def __init__(self,
         path = os.environ["HOME"],
         interprete = "/bin/bash",
-        archivo = None,
-        fuente = Pango.FontDescription("Monospace %s" % 10)):
+        archivo = None):#,
+        #fuente = Pango.FontDescription("Monospace %s" % 10)):
         
         Vte.Terminal.__init__(self)
         
         self.set_encoding('utf-8')
-        self.set_font(fuente)
+        #self.set_font(fuente)
         
         self.set_colors(
             Gdk.color_parse('#ffffff'),
@@ -637,8 +637,8 @@ class DialogoFormato(Gtk.Dialog):
         
         ### Preview.
         self.preview = Gtk.Label("Texto")
-        self.preview.modify_font(
-            Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
+        #self.preview.modify_font(
+        #    Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
 
         eventbox = Gtk.EventBox()
         eventbox.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("white"))
@@ -668,19 +668,19 @@ class DialogoFormato(Gtk.Dialog):
         """
         Cuando se cambia la fuente.
         """
-        
-        if self.fuente != fuente:
-            self.fuente = fuente
-            self.preview.modify_font(Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
+        pass
+        #if self.fuente != fuente:
+        #    self.fuente = fuente
+        #    self.preview.modify_font(Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
         
     def __set_tamanio(self, widget, tamanio):
         """
         Cuando se cambia el tamaño.
         """
-        
-        if self.tamanio != tamanio:
-            self.tamanio = tamanio
-            self.preview.modify_font(Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
+        pass
+        #if self.tamanio != tamanio:
+        #    self.tamanio = tamanio
+        #    self.preview.modify_font(Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
     
     def get_font(self):
         """
@@ -741,9 +741,9 @@ class TreeViewFonts(Gtk.TreeView):
         ### Cargar las fuentes.
         fuentes = []
         
-        for family in FAMILIES:
-            name = family.get_name()
-            fuentes.append(name)
+        #for family in FAMILIES:
+        #    name = family.get_name()
+        #    fuentes.append(name)
             
         fuentes.sort()
         
