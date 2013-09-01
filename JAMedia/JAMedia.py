@@ -152,6 +152,9 @@ class JAMediaPlayer(Gtk.Plug):
         self.player = None              # reproductor actual mplayer o Gstreamer 1.0
         self.grabador = None            # grabador actual mplayer o Gstreamer 1.0
         
+        self.cursor_root = None
+        self.jamedia_cursor = None
+        
         self.show_all()
         
         self.connect("embedded", self.__embed_event)
@@ -343,13 +346,26 @@ class JAMediaPlayer(Gtk.Plug):
         self.widget_efectos.connect("click_efecto", self.__click_efecto)
         self.widget_efectos.connect('configurar_efecto', self.__configurar_efecto)
         
+        ### Controlador del mouse.
         icono = os.path.join(JAMediaObjectsPath,
             "Iconos", "jamedia_cursor.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
             -1, get_pixels(0.8))
-        jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
+        self.jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
             Gdk.Display.get_default(), pixbuf, 0, 0)
-        self.get_parent_window().set_cursor(jamedia_cursor)
+        
+        self.cursor_root = self.get_parent_window().get_cursor()
+        
+        self.get_parent_window().set_cursor(self.jamedia_cursor)
+        
+        from JAMediaObjects.JAMediaWidgets import MouseSpeedDetector
+        
+        self.mouse_listener = MouseSpeedDetector(self)
+        self.mouse_listener.connect("estado", self.__set_mouse)
+        self.mouse_listener.new_handler(True)
+        
+        self.get_parent().connect("hide", self.__hide_show_parent)
+        self.get_parent().connect("show", self.__hide_show_parent)
         
     # FIXME: La idea es utilizar gdkpixbufsink en el pipe.
     #def fotografiar(self, widget):
@@ -358,7 +374,35 @@ class JAMediaPlayer(Gtk.Plug):
     #    """
     
     #    self.player.fotografiar()
+    
+    def __hide_show_parent(self, widget):
+        """
+        Controlador del mouse funcionará solo si
+        JAMedia es Visible.
+        """
         
+        self.mouse_listener.new_handler(widget.get_visible())
+        
+    def __set_mouse(self, widget, estado):
+        
+        if estado == "moviendose":
+            if self.get_parent_window().get_cursor() != self.jamedia_cursor:
+                self.get_parent_window().set_cursor(
+                    self.jamedia_cursor)
+                return
+                
+        elif estado == "detenido":
+            if self.get_parent_window().get_cursor() != Gdk.CursorType.BLANK_CURSOR:
+                self.get_parent_window().set_cursor(
+                    Gdk.Cursor(Gdk.CursorType.BLANK_CURSOR))
+                return
+            
+        elif estado == "fuera":
+            if self.get_parent_window().get_cursor() != self.cursor_root:
+                self.get_parent_window().set_cursor(
+                    self.cursor_root)
+                return
+            
     def __cancel_toolbars_flotantes(self, widget = None):
         """
         Asegura un widget flotante a la vez.

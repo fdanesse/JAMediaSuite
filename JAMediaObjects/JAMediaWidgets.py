@@ -1656,3 +1656,57 @@ class Acelerometro(GObject.GObject):
         if self.acelerometro:
             self.acelerometro.close()
             
+class MouseSpeedDetector(GObject.GObject):
+    """
+    Verifica posición y moviemiento del mouse.
+    estado puede ser:
+        fuera       (está fuera de la ventana según self.parent)
+        moviendose
+        detenido
+    """
+    
+    __gsignals__ = {
+        'estado': (GObject.SignalFlags.RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+
+    def __init__(self, parent):
+        
+        GObject.GObject.__init__(self)
+        
+        self.parent = parent
+        
+        self.actualizador = False
+        self.mouse_pos = (0, 0)
+
+    def __handler(self):
+        """
+        Emite la señal de estado cada 30 segundos.
+        """
+        
+        display, posx, posy = self.parent.get_display().get_window_at_pointer()
+        
+        if posx > 0 and posy > 0:
+            if posx != self.mouse_pos[0] or posy != self.mouse_pos[1]:
+                self.mouse_pos = (posx, posy)
+                self.emit("estado", "moviendose")
+                
+            else:
+                self.emit("estado", "detenido")
+            
+        else:
+            self.emit("estado", "fuera")
+        
+        return True
+
+    def new_handler(self, reset):
+        """
+        Resetea el controlador o lo termina según reset.
+        """
+        
+        if self.actualizador:
+            GLib.source_remove(self.actualizador)
+            self.actualizador = False
+            
+        if reset:
+            self.actualizador = GLib.timeout_add(500, self.__handler)
+    
