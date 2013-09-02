@@ -488,8 +488,7 @@ class Lista(Gtk.TreeView):
             self.treeselection.select_iter(modelo.iter_previous(iter))
             
         except:
-            #self.seleccionar_ultimo()
-            pass
+            self.seleccionar_ultimo()
     
         return False
     
@@ -498,7 +497,20 @@ class Lista(Gtk.TreeView):
         self.treeselection.select_path(0)
     
     def seleccionar_ultimo(self, widget = None):
-        pass
+
+        model = self.get_model()
+        item = model.get_iter_first()
+
+        iter = None
+
+        while item:
+            iter = item
+            item = model.iter_next(item)
+
+        if iter:
+            self.treeselection.select_iter(iter)
+            path = model.get_path(iter)
+            
 # << -------------------- LISTA GENERICA --------------------- #
 
 # >> -------------------- Controles de Reproducción ---------- #
