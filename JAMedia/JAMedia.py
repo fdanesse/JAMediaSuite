@@ -515,9 +515,10 @@ class JAMediaPlayer(Gtk.Plug):
         
         self.__cancel_toolbars_flotantes()
         
-        from JAMediaObjects.JAMediaGlobales import get_streaming_default
+        from Widgets import DialogoDescarga
         
-        get_streaming_default()
+        dialog = DialogoDescarga(parent = self.get_toplevel())
+        dialog.run()
         
     def __accion_stream(self, widget, accion, url):
         """

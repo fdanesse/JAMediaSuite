@@ -954,3 +954,34 @@ class WidgetEfecto_en_Pipe(JAMediaButton):
     def des_seleccionar(self):
         pass
     
+class DialogoDescarga(Gtk.Dialog):
+    
+    __gtype_name__ = 'DialogoDescarga'
+    
+    def __init__(self, parent = None):
+
+        Gtk.Dialog.__init__(self,
+            parent = parent,
+            flags = Gtk.DialogFlags.MODAL)
+        
+        self.set_border_width(15)
+        
+        label = Gtk.Label("*** Descargando Streamings de JAMedia ***")
+        label.show()
+        
+        self.vbox.pack_start(label, True, True, 5)
+        
+        self.connect("realize", self.__do_realize)
+        
+    def __do_realize(self, widget):
+        
+        from gi.repository import GLib
+        GLib.timeout_add(500, self.__descargar)
+        
+    def __descargar(self):
+        
+        from JAMediaObjects.JAMediaGlobales import get_streaming_default
+        get_streaming_default()
+        
+        self.destroy()
+        
