@@ -78,12 +78,11 @@ class Ventana(Gtk.Window):
         
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
+        self.jamediaplayer.pack_efectos()
         
         if self.pistas:
             GLib.idle_add(self.jamediaplayer.set_nueva_lista, self.pistas)
-        
-        self.jamediaplayer.pack_efectos()
-        
+            
         return False
         
     def __salir(self, widget = None, senial = None):

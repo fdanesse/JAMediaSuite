@@ -311,6 +311,7 @@ class Lista(Gtk.TreeView):
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
 
+        self.permitir_select = True
         self.valor_select = None
         
         self.modelo = Gtk.ListStore(
@@ -354,6 +355,8 @@ class Lista(Gtk.TreeView):
         Cuando se selecciona un item en la lista.
         """
         
+        if not self.permitir_select: return True
+    
         # model y listore son ==
         iter = model.get_iter(path)
         valor =  model.get_value(iter, 2)
@@ -396,7 +399,9 @@ class Lista(Gtk.TreeView):
     
     def limpiar(self):
         
+        self.permitir_select = False
         self.modelo.clear()
+        self.permitir_select = True
         
     def agregar_items(self, elementos):
         """
@@ -404,6 +409,7 @@ class Lista(Gtk.TreeView):
         Comienza secuencia de agregado a la lista.
         """
         
+        self.get_toplevel().set_sensitive(False)
         GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
         
     def __ejecutar_agregar_elemento(self, elementos):
@@ -413,6 +419,7 @@ class Lista(Gtk.TreeView):
         
         if not elementos:
             self.seleccionar_primero()
+            self.get_toplevel().set_sensitive(True)
             return False
         
         texto, path = elementos[0]
@@ -1692,7 +1699,7 @@ class MouseSpeedDetector(GObject.GObject):
 
     def __handler(self):
         """
-        Emite la señal de estado cada 30 segundos.
+        Emite la señal de estado cada 60 segundos.
         """
         
         display, posx, posy = self.parent.get_display().get_window_at_pointer()
@@ -1720,5 +1727,5 @@ class MouseSpeedDetector(GObject.GObject):
             self.actualizador = False
             
         if reset:
-            self.actualizador = GLib.timeout_add(500, self.__handler)
+            self.actualizador = GLib.timeout_add(1000, self.__handler)
     

@@ -44,7 +44,10 @@ GtkPaned {
     background-color: #ffffff;
 }
 
-
+DialogoDescarga {
+    background-color: #ffffff;
+    color: #000000;
+}
 
 /* Toolbars */
 GtkToolbar {

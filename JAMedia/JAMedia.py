@@ -941,10 +941,13 @@ class JAMediaPlayer(Gtk.Plug):
         """
         
         if not lista: return
+        
         self.player.stop()
-        self.lista_de_reproduccion.limpiar()
-        self.lista_de_reproduccion.agregar_items(lista)
+        
         if self.toolbar_list: self.toolbar_list.label.set_text("")
+        self.lista_de_reproduccion.limpiar()
+        
+        GLib.idle_add(self.lista_de_reproduccion.agregar_items, lista)
         
         return False
 
@@ -1110,14 +1113,10 @@ class JAMediaPlayer(Gtk.Plug):
             
             selector.connect('archivos-seleccionados', self.__cargar_directorio)
             
-            self.get_toplevel().set_sensitive(False)
-            
             selector.run()
             
-            self.get_toplevel().set_sensitive(True)
-            
-            selector.destroy()
-            
+            if selector: selector.destroy()
+        
     def __cargar_directorio(self, widget, archivos):
         """
         Recibe una lista de archivos y setea la lista
@@ -1125,9 +1124,6 @@ class JAMediaPlayer(Gtk.Plug):
         """
         
         if not archivos: return
-    
-        self.player.stop()
-        self.lista_de_reproduccion.limpiar()
         
         items = []
         
@@ -1149,10 +1145,9 @@ class JAMediaPlayer(Gtk.Plug):
         Esto es solo para las listas standar de JAMedia no embebido.
         """
         
-        archivos = sorted(os.listdir(directorio))
-        
         self.player.stop()
-        self.lista_de_reproduccion.limpiar()
+        
+        archivos = sorted(os.listdir(directorio))
         
         lista = []
         
@@ -1161,8 +1156,10 @@ class JAMediaPlayer(Gtk.Plug):
             elemento = [texto, url]
             lista.append(elemento)
             
-        self.lista_de_reproduccion.agregar_items(lista)
         self.toolbar_list.label.set_text(titulo)
+        self.lista_de_reproduccion.limpiar()
+        
+        GLib.idle_add(self.lista_de_reproduccion.agregar_items, lista)
 
     def __seleccionar_lista_de_stream(self, archivo, titulo):
         """
@@ -1175,17 +1172,18 @@ class JAMediaPlayer(Gtk.Plug):
         Esto es solo para las listas standar de JAMedia no embebido.
         """
         
+        self.player.stop()
+        
         self.__cancel_toolbars_flotantes()
         
         from JAMediaObjects.JAMediaGlobales import get_streamings
         
         items = get_streamings(archivo)
         
-        self.player.stop()
+        self.toolbar_list.label.set_text(titulo)
         self.lista_de_reproduccion.limpiar()
         
-        self.lista_de_reproduccion.agregar_items(items)
-        self.toolbar_list.label.set_text(titulo)
+        GLib.idle_add(self.lista_de_reproduccion.agregar_items, items)
         
     def __click_derecho_en_lista(self, widget, event):
         """
