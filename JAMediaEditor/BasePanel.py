@@ -93,7 +93,6 @@ class BasePanel(Gtk.Paned):
         self.infonotebook_box.set_size_request(280, -1)
         
         self.workpanel.connect('new_select', self.__set_introspeccion)
-        self.workpanel.connect('update_ejecucion', self.__update_ejecucion)
         self.toolbararchivo.connect('accion', self.set_accion_archivo)
         self.toolbarproyecto.connect('accion', self.set_accion_proyecto)
         toolbarbusquedas.connect("buscar", self.__buscar)
@@ -137,32 +136,6 @@ class BasePanel(Gtk.Paned):
         dialogo.destroy()
         
         sourceview.set_show_line_numbers(visible)
-        
-    def __update_ejecucion(self, widget, valor):
-        """
-        Actualiza las toolbars según ejecución.
-        """
-        
-        if self.proyecto:
-            if valor:
-                self.toolbarproyecto.dict_proyecto["Ejecutar Proyecto"].set_sensitive(False)
-                self.toolbarproyecto.dict_proyecto["Detener Ejecución"].set_sensitive(True)
-                
-            else:
-                self.toolbarproyecto.dict_proyecto["Ejecutar Proyecto"].set_sensitive(True)
-                self.toolbarproyecto.dict_proyecto["Detener Ejecución"].set_sensitive(False)
-                
-        else:
-            self.toolbarproyecto.dict_proyecto["Ejecutar Proyecto"].set_sensitive(False)
-            self.toolbarproyecto.dict_proyecto["Detener Ejecución"].set_sensitive(False)
-            
-        if valor:
-            self.toolbararchivo.dict_archivo["Ejecutar Archivo"].set_sensitive(False)
-            self.toolbararchivo.dict_archivo["Detener Ejecución"].set_sensitive(True)
-        
-        else:
-            self.toolbararchivo.dict_archivo["Ejecutar Archivo"].set_sensitive(True)
-            self.toolbararchivo.dict_archivo["Detener Ejecución"].set_sensitive(False)
         
     def __open_file(self, widget, filepath):
         """

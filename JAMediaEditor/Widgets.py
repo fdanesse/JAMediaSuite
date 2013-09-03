@@ -1380,7 +1380,7 @@ class ToolbarProyecto(Gtk.Toolbar):
         
         self.emit("accion", widget.TOOLTIP)
         
-    def activar(self, visibility):
+    def activar(self, visibility, ejecucion):
         """
         Activa o desactiva oopciones.
         """
@@ -1396,6 +1396,9 @@ class ToolbarProyecto(Gtk.Toolbar):
         else:
             map(self.__desactivar, submenus)
             
+        self.dict_proyecto["Ejecutar Proyecto"].set_sensitive(not ejecucion)
+        self.dict_proyecto["Detener Ejecución"].set_sensitive(ejecucion)
+        
     def __activar(self, option):
         
         if not option.get_sensitive(): option.set_sensitive(True)

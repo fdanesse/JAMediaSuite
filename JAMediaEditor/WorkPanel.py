@@ -62,9 +62,7 @@ class WorkPanel(Gtk.Paned):
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_BOOLEAN)),
-    'update_ejecucion': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
+        GObject.TYPE_BOOLEAN))}
 
     def __init__(self):
 
@@ -97,7 +95,6 @@ class WorkPanel(Gtk.Paned):
         
         self.ejecucion = terminal
         self.terminal.set_sensitive(False)
-        self.emit("update_ejecucion", True)
         
     def get_default_path(self):
         """
@@ -218,7 +215,6 @@ class WorkPanel(Gtk.Paned):
             self.ejecucion.set_interprete()
             self.ejecucion = False
             self.terminal.set_sensitive(True)
-            self.emit("update_ejecucion", False)
     
     def set_accion_codigo(self, accion):
         """
