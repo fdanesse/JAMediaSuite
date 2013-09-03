@@ -410,6 +410,8 @@ class Lista(Gtk.TreeView):
         """
         
         self.get_toplevel().set_sensitive(False)
+        self.permitir_select = False
+        
         GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
         
     def __ejecutar_agregar_elemento(self, elementos):
@@ -418,6 +420,7 @@ class Lista(Gtk.TreeView):
         """
         
         if not elementos:
+            self.permitir_select = True
             self.seleccionar_primero()
             self.get_toplevel().set_sensitive(True)
             return False
@@ -474,6 +477,8 @@ class Lista(Gtk.TreeView):
         elementos.remove(elementos[0])
         
         GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        
+        return False
         
     def seleccionar_siguiente(self, widget = None):
         

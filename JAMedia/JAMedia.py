@@ -165,6 +165,8 @@ class JAMediaPlayer(Gtk.Plug):
         se setea y se empaqueta todo.
         """
         
+        self.get_toplevel().set_sensitive(False)
+        
         from JAMediaObjects.JAMediaWidgets import Visor
         from JAMediaObjects.JAMediaWidgets import BarraProgreso
         from JAMediaObjects.JAMediaWidgets import ControlVolumen
@@ -367,6 +369,8 @@ class JAMediaPlayer(Gtk.Plug):
         self.get_parent().connect("hide", self.__hide_show_parent)
         self.get_parent().connect("show", self.__hide_show_parent)
         
+        self.get_toplevel().set_sensitive(True)
+        
     # FIXME: La idea es utilizar gdkpixbufsink en el pipe.
     #def fotografiar(self, widget):
     #    """
@@ -444,6 +448,8 @@ class JAMediaPlayer(Gtk.Plug):
         al pipe de JAMedia.
         """
         
+        self.get_toplevel().set_sensitive(False)
+        
         self.__cancel_toolbars_flotantes()
         
         agregar = False
@@ -484,6 +490,8 @@ class JAMediaPlayer(Gtk.Plug):
                 if efecto.get_tooltip_text() == nombre_efecto:
                     efecto.destroy()
                     break
+        
+        self.get_toplevel().set_sensitive(True)
         
     def __clicked_mini_efecto(self, widget, void = None):
         """
@@ -579,9 +587,13 @@ class JAMediaPlayer(Gtk.Plug):
         envia la rotacion al Reproductor.
         """
         
+        self.get_toplevel().set_sensitive(False)
+        
         self.__cancel_toolbars_flotantes()
         
         self.player.rotar(valor)
+        
+        self.get_toplevel().set_sensitive(True)
         
     def __set_balance(self, widget, valor, tipo):
         """
@@ -638,6 +650,8 @@ class JAMediaPlayer(Gtk.Plug):
         configuracion (toolbar_config y widget_efectos).
         """
         
+        self.get_toplevel().set_sensitive(False)
+        
         map(self.__ocultar, [
             self.toolbar_accion,
             self.toolbaraddstream,
@@ -654,12 +668,16 @@ class JAMediaPlayer(Gtk.Plug):
             self.scroll_config.show_all()
             GLib.idle_add(self.__update_balance_toolbars)
         
+        self.get_toplevel().set_sensitive(True)
+        
     def switch_reproductor(self, widget, nombre):
         """
         Recibe la señal "reproductor" desde toolbar_config y
         cambia el reproductor que se utiliza, entre mplayer y
         jamediareproductor (Gst 1.0).
         """
+        
+        self.get_toplevel().set_sensitive(False)
         
         reproductor = self.player
         
@@ -704,7 +722,9 @@ class JAMediaPlayer(Gtk.Plug):
                 
             except:
                 pass
-
+            
+        self.get_toplevel().set_sensitive(True)
+        
     def __embed_event(self, widget):
         """
         No hace nada por ahora.
@@ -750,6 +770,8 @@ class JAMediaPlayer(Gtk.Plug):
         Oculta o muestra los controles.
         """
         
+        self.get_toplevel().set_sensitive(False)
+        
         zona, ocultar = (valor, self.toolbar_info.ocultar_controles)
         
         if zona and ocultar:
@@ -770,6 +792,8 @@ class JAMediaPlayer(Gtk.Plug):
             
         elif not zona and not ocultar:
             pass
+        
+        self.get_toplevel().set_sensitive(True)
         
     def __ocultar(self, objeto):
         """
@@ -795,6 +819,8 @@ class JAMediaPlayer(Gtk.Plug):
             stop o pause-play sobre el reproductor.
         """
         
+        self.get_toplevel().set_sensitive(False)
+        
         self.__cancel_toolbars_flotantes()
         
         if not self.lista_de_reproduccion.modelo.get_iter_first():
@@ -814,6 +840,8 @@ class JAMediaPlayer(Gtk.Plug):
         
         while Gtk.events_pending():
             Gtk.main_iteration()
+            
+        self.get_toplevel().set_sensitive(True)
 
     def __endfile(self, widget = None, senial = None):
         """
@@ -881,6 +909,8 @@ class JAMediaPlayer(Gtk.Plug):
         Cuando JAMedia no está embebido, tiene su toolbar_list
         """
         
+        self.get_toplevel().set_sensitive(False)
+        
         from JAMediaObjects.JAMediaGlobales import set_listas_default
         
         set_listas_default()
@@ -902,16 +932,22 @@ class JAMediaPlayer(Gtk.Plug):
             False, False, 0)
         self.__pack_vbox_lista_reproduccion()
         
+        self.get_toplevel().set_sensitive(True)
+        
     def pack_efectos(self):
         """
         Empaqueta los widgets de efectos gstreamer.
         """
+        
+        self.get_toplevel().set_sensitive(False)
         
         self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
         
         from JAMediaObjects.JAMediaGlobales import get_jamedia_video_efectos
         
         GLib.idle_add(self.__cargar_efectos, list(get_jamedia_video_efectos()))
+        
+        self.get_toplevel().set_sensitive(True)
         
     def __add_stream(self, widget):
         """
@@ -964,12 +1000,16 @@ class JAMediaPlayer(Gtk.Plug):
         # valores en el momento en que cambia la pista
         # en el reproductor.
         
+        self.get_toplevel().set_sensitive(False)
+        
         visible = self.scroll_config.get_visible()
         if visible: self.scroll_config.hide()
         
         self.player.load(path)
         
         if visible: self.scroll_config.show()
+        
+        self.get_toplevel().set_sensitive(True)
         
     def confirmar_salir(self, widget = None, senial = None):
         """
@@ -1248,6 +1288,8 @@ class JAMediaPlayer(Gtk.Plug):
         la toolbar_accion.
         """
         
+        self.get_toplevel().set_sensitive(False)
+        
         self.__detener_grabacion()
         
         extension = ""
@@ -1276,7 +1318,9 @@ class JAMediaPlayer(Gtk.Plug):
             self.grabador = MplayerGrabador(uri, archivo)
             
         self.grabador.connect('update', self.__update_grabador)
-    
+        
+        self.get_toplevel().set_sensitive(True)
+        
     def __update_grabador(self, widget, datos):
         """
         Actualiza informacion de Grabacion en proceso.
