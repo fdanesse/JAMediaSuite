@@ -271,6 +271,14 @@ class Toolbar(Gtk.Toolbar):
         self.configurar.connect("clicked", self.__emit_config)
         self.insert(self.configurar, -1)
         
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","JAMedia-help.svg")
+        boton = get_boton(archivo, flip = False,
+            pixels = get_pixels(1))
+        boton.set_tooltip_text("Ayuda.")
+        boton.connect("clicked", self.__show_help)
+        self.insert(boton, -1)
+        
         #archivo = os.path.join(JAMediaObjectsPath,
         #    "Iconos", "foto.png")
         #boton = G.get_boton(archivo, flip = False,
@@ -278,48 +286,6 @@ class Toolbar(Gtk.Toolbar):
         #boton.set_tooltip_text("Captura.")
         #boton.connect("clicked", self.emit_capturar)
         #self.insert(boton, -1)
-        
-        self.insert(get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos","licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-        
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("fdanesse@gmail.com")
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
         
         self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
@@ -343,6 +309,12 @@ class Toolbar(Gtk.Toolbar):
     #    """
     
     #    self.emit('capturar')
+        
+    def __show_help(self, widget):
+        
+        dialog = Credits(parent = self.get_toplevel())
+        response = dialog.run()
+        dialog.destroy()
         
     def __emit_config(self, widget):
         """
@@ -984,4 +956,81 @@ class DialogoDescarga(Gtk.Dialog):
         get_streaming_default()
         
         self.destroy()
+        
+class Credits(Gtk.Dialog):
+    
+    __gtype_name__ = 'Credits'
+    
+    def __init__(self, parent = None):
+
+        Gtk.Dialog.__init__(self,
+            parent = parent,
+            flags = Gtk.DialogFlags.MODAL,
+            buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
+        
+        self.set_border_width(15)
+        
+        tabla1 = Gtk.Table(columns=5, rows=1, homogeneous=False)
+        
+        jamedia = Gtk.Image()
+        jamedia.set_from_file(
+            os.path.join(JAMediaObjectsPath,
+                "Iconos", "JAMedia.svg"))
+        tabla1.attach_defaults(jamedia, 0, 1, 0, 1)
+        
+        jam = Gtk.Image()
+        pix = GdkPixbuf.Pixbuf.new_from_file_at_size(
+            os.path.join(JAMediaObjectsPath,
+            "Iconos", "ceibaljam-o.png"),-1, 25)
+        jam.set_from_pixbuf(pix)
+        tabla1.attach_defaults(jam, 1, 2, 0, 1)
+
+        jam = Gtk.Image()
+        pix = GdkPixbuf.Pixbuf.new_from_file_at_size(
+            os.path.join(JAMediaObjectsPath,
+            "Iconos", "licencia.png"),-1, 25)
+        jam.set_from_pixbuf(pix)
+        tabla1.attach_defaults(jam, 2, 3, 0, 1)
+
+        jam = Gtk.Image()
+        pix = GdkPixbuf.Pixbuf.new_from_file_at_size(
+            os.path.join(JAMediaObjectsPath,
+            "Iconos", "uruguay-o.png"),-1, 25)
+        jam.set_from_pixbuf(pix)
+        tabla1.attach_defaults(jam, 3, 4, 0, 1)
+        
+        tabla2 = Gtk.Table(columns=3, rows=2, homogeneous=False)
+        
+        credits = Gtk.Image()
+        credits.set_from_file(
+            os.path.join(JAMediaObjectsPath,
+            "Iconos", "credits.png"))
+        tabla2.attach_defaults(credits, 0, 1, 0, 2)
+        
+        credits = Gtk.Image()
+        credits.set_from_file(
+            os.path.join(JAMediaObjectsPath,
+            "Iconos", "terron.png"))
+        tabla2.attach_defaults(credits, 2, 3, 0, 2)
+        
+        tabla2.set_col_spacing(1, 15)
+        
+        self.vbox.pack_start(tabla1, True, True, 0)
+        self.vbox.pack_start(tabla2, True, True, 0)
+        
+        from gi.repository import Pango
+        label = Gtk.Label("Flavio Danesse  -  fdanesse@gmail.com")
+        label.modify_font(Pango.FontDescription('Monospace 8'))
+        self.vbox.pack_start(
+            label,
+            True, True, 0)
+            
+        label = Gtk.Label(
+            "https://sites.google.com/site/sugaractivities/jamediaobjects/")
+        label.modify_font(Pango.FontDescription('Monospace 8'))
+        self.vbox.pack_start(
+            label,
+            True, True, 0)
+            
+        self.vbox.show_all()
         

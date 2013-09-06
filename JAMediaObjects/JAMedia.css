@@ -49,6 +49,11 @@ DialogoDescarga {
     color: #000000;
 }
 
+Credits {
+    background-color: #000000;
+    color: #ffffff;
+}
+
 /* Toolbars */
 GtkToolbar {
     background-color: #000000;
