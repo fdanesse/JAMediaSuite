@@ -394,7 +394,7 @@ class JAMediaPlayer(Gtk.Plug):
         según su posición.
         """
         
-        if self.mouse_in_visor:
+        if self.mouse_in_visor: ### Solo cuando el mouse está sobre el Visor.
             if estado == "moviendose":
                 if self.get_parent_window().get_cursor() != self.jamedia_cursor:
                     self.get_parent_window().set_cursor(
@@ -647,22 +647,27 @@ class JAMediaPlayer(Gtk.Plug):
         cuando el usuario hace doble click en el visor.
         """
         
-        self.__cancel_toolbars_flotantes()
-        
         if event.type.value_name == "GDK_2BUTTON_PRESS":
+            
+            self.get_toplevel().set_sensitive(False)
+            
             ventana = self.get_toplevel()
             screen = ventana.get_screen()
             w,h = ventana.get_size()
             ww, hh = (screen.get_width(), screen.get_height())
             
+            self.__cancel_toolbars_flotantes()
+            
             if ww == w and hh == h:
-                ventana.unfullscreen()
                 ventana.set_border_width(2)
+                GLib.idle_add(ventana.unfullscreen)
                 
             else:
-                ventana.fullscreen()
                 ventana.set_border_width(0)
+                GLib.idle_add(ventana.fullscreen)
                 
+            self.get_toplevel().set_sensitive(True)
+            
     def __mostrar_config(self, widget):
         """
         Muestra u oculta las opciones de
