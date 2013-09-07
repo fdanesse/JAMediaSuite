@@ -25,6 +25,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import JAMediaButton
@@ -317,11 +318,11 @@ class ToolbarVideo(Gtk.Toolbar):
         self.estado = estado
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
             
         if estado == "grabando":
-            self.actualizador = GObject.timeout_add(400, self.__handle)
+            self.actualizador = GLib.timeout_add(400, self.__handle)
             self.label.set_text("Grabando . . .")
             
         elif estado == "detenido":
@@ -466,11 +467,11 @@ class ToolbarFotografia(Gtk.Toolbar):
         self.estado = estado
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
             
         if estado == "grabando":
-            self.actualizador = GObject.timeout_add(400, self.__handle)
+            self.actualizador = GLib.timeout_add(400, self.__handle)
             self.label.set_text("Fotografiando . . .")
             
         elif estado == "detenido":
@@ -615,11 +616,11 @@ class ToolbarGrabarAudio(Gtk.Toolbar):
         self.estado = estado
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
             
         if estado == "grabando":
-            self.actualizador = GObject.timeout_add(400, self.__handle)
+            self.actualizador = GLib.timeout_add(400, self.__handle)
             self.label.set_text("Grabando . . .")
             
         elif estado == "detenido":

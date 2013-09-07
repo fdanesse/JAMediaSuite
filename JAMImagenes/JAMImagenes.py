@@ -32,6 +32,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaObjects
 
@@ -72,7 +73,7 @@ class JAMImagenes(Gtk.Plug):
         
     y luego proceder de la siguiente forma:
         
-            GObject.idle_add(self.setup_init)
+            GLib.idle_add(self.setup_init)
         
         def setup_init(self):
             self.jamediaimagenes.setup_init()
@@ -159,7 +160,7 @@ class JAMImagenes(Gtk.Plug):
         self.visor.connect('ocultar_controles', self.__ocultar_controles)
         self.visor.connect("button_press_event", self.__clicks_en_pantalla)
         
-        GObject.idle_add(self.__setup_init)
+        GLib.idle_add(self.__setup_init)
         
     def __click_derecho_en_lista(self, widget, event):
         """
@@ -170,7 +171,7 @@ class JAMImagenes(Gtk.Plug):
         """
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = None
         
         boton = event.button
@@ -282,7 +283,7 @@ class JAMImagenes(Gtk.Plug):
             
         elif senial == 'stop':
             if self.actualizador:
-                GObject.source_remove(self.actualizador)
+                GLib.source_remove(self.actualizador)
                 self.actualizador = None
                 
             self.visor.presentacion = False
@@ -291,7 +292,7 @@ class JAMImagenes(Gtk.Plug):
         elif senial == 'pausa-play':
             if self.actualizador:
                 if self.actualizador:
-                    GObject.source_remove(self.actualizador)
+                    GLib.source_remove(self.actualizador)
                     self.actualizador = None
                     
                 self.visor.presentacion = False
@@ -306,7 +307,7 @@ class JAMImagenes(Gtk.Plug):
         """
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = None
         
         map(self.__ocultar, [
@@ -329,12 +330,12 @@ class JAMImagenes(Gtk.Plug):
         if intervalo and intervalo != None: self.intervalo = intervalo
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = None
             
         self.visor.presentacion = True
         self.toolbar_reproduccion.set_playing()
-        self.actualizador = GObject.timeout_add(self.intervalo, self.__handle_presentacion)
+        self.actualizador = GLib.timeout_add(self.intervalo, self.__handle_presentacion)
     
     def __handle_presentacion(self):
         """
@@ -501,7 +502,7 @@ class JAMImagenes(Gtk.Plug):
         """
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = None
             
         self.visor.presentacion = False

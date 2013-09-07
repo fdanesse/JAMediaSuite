@@ -24,6 +24,7 @@ import os
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GLib
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
@@ -132,7 +133,7 @@ class PanelTube(Gtk.Paned):
             self.toolbar_accion_izquierda,
             self.toolbar_accion_derecha]
             
-        GObject.timeout_add(300, self.__update)
+        GLib.timeout_add(300, self.__update)
     
     def __ejecutar_cancel_toolbars(self, widget):
         
@@ -242,7 +243,7 @@ class PanelTube(Gtk.Paned):
             
         elementos = origen.get_children()
         
-        GObject.idle_add(
+        GLib.idle_add(
             self.__ejecutar_mover_videos,
             origen,
             destino,
@@ -264,7 +265,7 @@ class PanelTube(Gtk.Paned):
         elementos.remove(elementos[0])
         
         if elementos:
-            GObject.idle_add(
+            GLib.idle_add(
                 self.__ejecutar_mover_videos,
                 origen,
                 destino,

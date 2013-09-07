@@ -25,6 +25,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import JAMediaButton
@@ -729,9 +730,9 @@ class Toolbar_Descarga(Gtk.Box):
         self.jamediayoutube.download(self.url, self.titulo)
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             
-        self.actualizador = GObject.timeout_add(1000, self.__handle)
+        self.actualizador = GLib.timeout_add(1000, self.__handle)
         
         self.show_all()
         
@@ -809,7 +810,7 @@ class Toolbar_Descarga(Gtk.Box):
         
         # No funciona correctamente, la descarga continúa.
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
             
         try:

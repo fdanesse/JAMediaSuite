@@ -1146,11 +1146,11 @@ class SourceView(GtkSource.View):
     def new_handle(self, reset):
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
             
         if reset:
-            self.actualizador = GObject.timeout_add(1000, self.__handle)
+            self.actualizador = GLib.timeout_add(1000, self.__handle)
             
     def __handle(self):
         """

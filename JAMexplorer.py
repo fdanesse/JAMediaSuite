@@ -28,6 +28,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GdkPixbuf
+from gi.repository import GLib
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
@@ -145,7 +146,7 @@ class Ventana(Gtk.Window):
         self.jamediaplayer.connect('salir', self.get_explorador)
         self.jamedialector.connect('salir', self.get_explorador)
         
-        GObject.idle_add(self.setup_init)
+        GLib.idle_add(self.setup_init)
         
     def ejecutar_borrar(self, widget, direccion, modelo, iter):
         """Ejecuta borrar un archivo o directorio."""
@@ -190,8 +191,8 @@ class Ventana(Gtk.Window):
             
         self.queue_draw()
         
-        GObject.idle_add(self.jamimagenes.limpiar)
-        GObject.idle_add(self.jamedialector.limpiar)
+        GLib.idle_add(self.jamimagenes.limpiar)
+        GLib.idle_add(self.jamedialector.limpiar)
         
     def switch(self, widget, tipo):
         """Carga una aplicacion embebida de acuerdo
@@ -203,7 +204,7 @@ class Ventana(Gtk.Window):
             model, iter = self.navegador.directorios.treeselection.get_selected()
             valor = model.get_value(iter, 2)
             items = self.get_items(os.path.dirname(valor), 'image')
-            GObject.idle_add(self.jamimagenes.set_lista, items)
+            GLib.idle_add(self.jamimagenes.set_lista, items)
             # agregar seleccionar segun valor ?
             
         elif 'video' in tipo or 'audio' in tipo:
@@ -213,7 +214,7 @@ class Ventana(Gtk.Window):
             valor = model.get_value(iter, 2)
             items = self.get_items(os.path.dirname(valor), 'video')
             items.extend(self.get_items(os.path.dirname(valor), 'audio'))
-            GObject.idle_add(self.jamediaplayer.set_nueva_lista, items)
+            GLib.idle_add(self.jamediaplayer.set_nueva_lista, items)
             # agregar seleccionar segun valor ?
             
         elif 'pdf' in tipo or 'text' in tipo:
@@ -221,7 +222,7 @@ class Ventana(Gtk.Window):
             self.socketjamedialector.show()
             model, iter = self.navegador.directorios.treeselection.get_selected()
             valor = model.get_value(iter, 2)
-            GObject.idle_add(self.jamedialector.abrir, valor)
+            GLib.idle_add(self.jamedialector.abrir, valor)
             
         else:
             print tipo

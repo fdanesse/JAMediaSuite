@@ -17,6 +17,7 @@ import sys
 import gi
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import GLib
 
 CABECERA_FILEs_OPEN_by_PROCESS = [
     'COMMAND', 'PID', 'USER', 'FD',
@@ -58,11 +59,11 @@ class JAMediaTop(Gtk.Plug):
         """
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
             
         if reset:
-            self.actualizador = GObject.timeout_add(1000, self.__update_topview)
+            self.actualizador = GLib.timeout_add(1000, self.__update_topview)
             
     def __update_topview(self):
         """

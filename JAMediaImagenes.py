@@ -8,6 +8,7 @@ import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GLib
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
@@ -47,7 +48,7 @@ class Ventana(Gtk.Window):
         Carga una lista de Imágenes.
         """
         
-        GObject.idle_add(self.jamediaimagenes.set_lista, lista)
+        GLib.idle_add(self.jamediaimagenes.set_lista, lista)
         
     def __salir(self, widget = None, senial = None):
         """

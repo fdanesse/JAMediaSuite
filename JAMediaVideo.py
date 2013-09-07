@@ -24,6 +24,7 @@ import os
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaObjects
 
@@ -152,7 +153,7 @@ class JAMediaVideo(Gtk.Window):
         self.show_all()
         self.realize()
         
-        GObject.idle_add(self.__setup_init2)
+        GLib.idle_add(self.__setup_init2)
         
     def __setup_init2(self):
         """
@@ -211,7 +212,7 @@ class JAMediaVideo(Gtk.Window):
         self.jamediaaudio.cargar_efectos(list(get_video_efectos()))
         self.jamediaaudio.cargar_visualizadores(list(get_visualizadores()))
         
-        GObject.idle_add(self.jamediawebcam.reset)
+        GLib.idle_add(self.jamediawebcam.reset)
         
         if self.pistas:
             # FIXME: Agregar reconocer tipo de archivo para cargar
@@ -251,7 +252,7 @@ class JAMediaVideo(Gtk.Window):
         map(self.__mostrar, [self.toolbar,
             self.toolbarprincipal, self.pantalla])
             
-        GObject.idle_add(self.jamediawebcam.reset)
+        GLib.idle_add(self.jamediawebcam.reset)
         
     def __get_menu(self, widget, menu):
         """
@@ -294,7 +295,7 @@ class JAMediaVideo(Gtk.Window):
                 ar = os.path.join(get_video_directory(), arch)
                 archivos.append([arch, ar])
                 
-            GObject.idle_add(self.jamediaplayer.set_nueva_lista, archivos)
+            GLib.idle_add(self.jamediaplayer.set_nueva_lista, archivos)
             
         elif menu == "Ver":
             self.jamediawebcam.stop()
@@ -306,7 +307,7 @@ class JAMediaVideo(Gtk.Window):
                 ar = os.path.join(get_imagenes_directory(), arch)
                 archivos.append([arch, ar])
                 
-            GObject.idle_add(self.jamimagenes.set_lista, archivos)
+            GLib.idle_add(self.jamimagenes.set_lista, archivos)
         
     def __ocultar(self, objeto):
         """

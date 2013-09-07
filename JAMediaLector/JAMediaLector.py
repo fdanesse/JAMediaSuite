@@ -33,6 +33,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import Poppler
+from gi.repository import GLib
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import ToolbarSalir
@@ -86,7 +87,7 @@ class JAMediaLector(Gtk.Plug):
         
     y luego proceder de la siguiente forma:
         
-            GObject.idle_add(self.setup_init)
+            GLib.idle_add(self.setup_init)
         
         def setup_init(self):
             self.jamedialector.setup_init()

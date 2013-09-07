@@ -24,6 +24,7 @@ import os
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource
+from gi.repository import GLib
 
 class TreeView(Gtk.TreeView):
     
@@ -54,7 +55,7 @@ class TreeView(Gtk.TreeView):
         for grupo in dict.keys():
             items.append([grupo, dict[grupo].keys()])
             
-        GObject.idle_add(self.__load_estructura, items)
+        GLib.idle_add(self.__load_estructura, items)
 
     def __set_columnas(self):
         """

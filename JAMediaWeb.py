@@ -12,6 +12,7 @@ import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaObjects
 import JAMediaObjects.JAMediaGlobales as G
@@ -47,7 +48,7 @@ class Ventana(Gtk.Window):
         self.connect("destroy", self.salir)
         self.jamediaweb.connect('salir', self.salir)
         
-        GObject.idle_add(self.setup_init)
+        GLib.idle_add(self.setup_init)
         
     def setup_init(self):
         

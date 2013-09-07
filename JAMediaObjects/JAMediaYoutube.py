@@ -195,7 +195,7 @@ class JAMediaYoutube(Gtk.Widget):
     def end(self):
         
         if self.actualizador:
-            GObject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
             
         if self.salida: self.salida.close()

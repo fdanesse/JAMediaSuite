@@ -24,6 +24,7 @@ import os
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaObjects
 
@@ -117,7 +118,7 @@ class Ventana(Gtk.Window):
         
         self.paneltube.set_vista_inicial() # oculta las toolbarsaccion
         
-        GObject.idle_add(self.__setup_init2)
+        GLib.idle_add(self.__setup_init2)
     
     def __setup_init2(self):
         """
@@ -192,7 +193,7 @@ class Ventana(Gtk.Window):
         for video in shelve_list:
             videos.append(video)
         
-        GObject.idle_add(self.__add_videos, videos, destino)
+        GLib.idle_add(self.__add_videos, videos, destino)
         
     def __run_download(self, widget):
         """
@@ -251,7 +252,7 @@ class Ventana(Gtk.Window):
         map(self.__mostrar,[self.alerta_busqueda])
         self.alerta_busqueda.label.set_text("Buscando: %s" % (palabras))
         
-        GObject.timeout_add(300, self.__lanzar_busqueda, palabras)
+        GLib.timeout_add(300, self.__lanzar_busqueda, palabras)
         
     def __lanzar_busqueda(self, palabras):
         """
@@ -264,7 +265,7 @@ class Ventana(Gtk.Window):
         for video in YT.Buscar(palabras):
             self.videos_temp.append(video)
         
-        GObject.idle_add(self.__add_videos, self.videos_temp, self.paneltube.encontrados)
+        GLib.idle_add(self.__add_videos, self.videos_temp, self.paneltube.encontrados)
         
         return False
     
@@ -316,7 +317,7 @@ class Ventana(Gtk.Window):
             self.get_property('window').invalidate_rect(self.get_allocation(), True)
             self.get_property('window').process_updates(True)
             
-            GObject.idle_add(self.__add_videos, videos, destino)
+            GLib.idle_add(self.__add_videos, videos, destino)
         
     def set_pistas(self, pistas):
         """

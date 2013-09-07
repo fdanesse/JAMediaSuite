@@ -25,6 +25,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaObjects
 
@@ -188,25 +189,25 @@ class JAMediaVideoWidget(Gtk.Plug):
         
         if valor == 'playing':
             self.toolbar.set_estado("detenido")
-            GObject.idle_add(self.update_balance_toolbars)
+            GLib.idle_add(self.update_balance_toolbars)
         
         elif valor == 'stoped':
             self.toolbar.set_estado("detenido")
-            GObject.idle_add(self.update_balance_toolbars)
+            GLib.idle_add(self.update_balance_toolbars)
             
         elif valor == 'GrabandoAudioVideo':
             self.toolbar.set_estado("grabando")
-            GObject.idle_add(self.update_balance_toolbars)
+            GLib.idle_add(self.update_balance_toolbars)
             
         # FIXME: Solo por JAMediaAudio - JAMediaAudioWidget. por ahora
         elif valor == 'GrabandoAudio':
             self.toolbar.set_estado("grabando")
-            GObject.idle_add(self.update_balance_toolbars)
+            GLib.idle_add(self.update_balance_toolbars)
 
         # FIXME: Para JAMediaFotografiaWidget. Pero por ahora no se utiliza
         elif valor == 'Fotografiando':
             self.toolbar.set_estado("grabando")
-            GObject.idle_add(self.update_balance_toolbars)
+            GLib.idle_add(self.update_balance_toolbars)
             
         else:
             print "### Estado:", valor
@@ -394,7 +395,7 @@ class JAMediaVideoWidget(Gtk.Plug):
                 
             else:
                 self.box_config.show()
-                GObject.idle_add(self.update_balance_toolbars)
+                GLib.idle_add(self.update_balance_toolbars)
                 
         elif senial == 'Reset':
             self.reset()
@@ -404,7 +405,7 @@ class JAMediaVideoWidget(Gtk.Plug):
         Comienza a correr la aplicación.
         """
         
-        GObject.idle_add(self.jamediawebcam.reset)
+        GLib.idle_add(self.jamediawebcam.reset)
         
     def ocultar(self, objeto):
         
@@ -452,7 +453,7 @@ class JAMediaVideoWidget(Gtk.Plug):
         # FIXME: emitir la señal directamente se ve mejor,
         # pero aveces falla la cámara, la segunda opcion
         # evita esto, pero no se ve bien.
-        GObject.idle_add(self.emit, 'salir') # self.emit('salir')
+        GLib.idle_add(self.emit, 'salir') # self.emit('salir')
     
 class JAMediaFotografiaWidget(JAMediaVideoWidget):
     """
@@ -595,7 +596,7 @@ class JAMediaFotografiaWidget(JAMediaVideoWidget):
                 
             else:
                 self.box_config.show()
-                GObject.idle_add(self.update_balance_toolbars)
+                GLib.idle_add(self.update_balance_toolbars)
                 
         elif senial == 'Reset':
             self.reset()
@@ -766,7 +767,7 @@ class JAMediaAudioWidget(JAMediaVideoWidget):
                 
             else:
                 self.box_config.show()
-                GObject.idle_add(self.update_balance_toolbars)
+                GLib.idle_add(self.update_balance_toolbars)
                 
         elif senial == 'Reset':
             self.reset()

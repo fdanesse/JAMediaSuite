@@ -141,5 +141,5 @@ class TopView(Gtk.TreeView):
                 #iter_child = model.iter_children(iteractual)
                 #path = model.get_path(iter_child)
                 
-                #GObject.idle_add(self.expand_to_path, path)
+                #GLib.idle_add(self.expand_to_path, path)
             

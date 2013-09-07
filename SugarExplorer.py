@@ -28,6 +28,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GdkPixbuf
+from gi.repository import GLib
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
@@ -133,7 +134,7 @@ class JAMexplorer(activity.Activity):
         self.jamediaplayer.connect('salir', self.get_explorador)
         self.jamedialector.connect('salir', self.get_explorador)
         
-        GObject.idle_add(self.setup_init)
+        GLib.idle_add(self.setup_init)
         
     def confirmar_salir(self, widget = None, senial = None):
         """Recibe salir y lo pasa a la toolbar de confirmación."""
