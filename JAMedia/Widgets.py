@@ -252,16 +252,13 @@ class Toolbar(Gtk.Toolbar):
         self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","JAMedia.png")
+        boton = get_boton(archivo, flip = False,
+            pixels = get_pixels(1.2))
+        boton.set_tooltip_text("Ayuda.")
+        boton.connect("clicked", self.__show_credits)
+        self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "configurar.png")
@@ -276,7 +273,7 @@ class Toolbar(Gtk.Toolbar):
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(1))
         boton.set_tooltip_text("Ayuda.")
-        boton.connect("clicked", self.__show_help)
+        #boton.connect("clicked", self.__show_help)
         self.insert(boton, -1)
         
         #archivo = os.path.join(JAMediaObjectsPath,
@@ -310,7 +307,7 @@ class Toolbar(Gtk.Toolbar):
     
     #    self.emit('capturar')
         
-    def __show_help(self, widget):
+    def __show_credits(self, widget):
         
         dialog = Credits(parent = self.get_toplevel())
         response = dialog.run()
