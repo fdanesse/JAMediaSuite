@@ -152,8 +152,9 @@ class JAMediaPlayer(Gtk.Plug):
         self.player = None              # reproductor actual mplayer o Gstreamer 1.0
         self.grabador = None            # grabador actual mplayer o Gstreamer 1.0
         
-        self.cursor_root = None
-        self.jamedia_cursor = None
+        self.cursor_root = None         # cursor de aplicacion que embebe a jamedia.
+        self.jamedia_cursor = None      # cursor de jamedia
+        self.mouse_in_visor = False     # flag, el mouse se oculta sobre el visor
         
         self.show_all()
         
@@ -388,25 +389,43 @@ class JAMediaPlayer(Gtk.Plug):
         self.mouse_listener.new_handler(widget.get_visible())
         
     def __set_mouse(self, widget, estado):
+        """
+        Muestra u oculta el mouse de jamedia
+        según su posición.
+        """
         
-        if estado == "moviendose":
-            if self.get_parent_window().get_cursor() != self.jamedia_cursor:
-                self.get_parent_window().set_cursor(
-                    self.jamedia_cursor)
-                return
+        if self.mouse_in_visor:
+            if estado == "moviendose":
+                if self.get_parent_window().get_cursor() != self.jamedia_cursor:
+                    self.get_parent_window().set_cursor(
+                        self.jamedia_cursor)
+                    return
+                    
+            elif estado == "detenido":
+                if self.get_parent_window().get_cursor() != Gdk.CursorType.BLANK_CURSOR:
+                    self.get_parent_window().set_cursor(
+                        Gdk.Cursor(Gdk.CursorType.BLANK_CURSOR))
+                    return
                 
-        elif estado == "detenido":
-            if self.get_parent_window().get_cursor() != Gdk.CursorType.BLANK_CURSOR:
-                self.get_parent_window().set_cursor(
-                    Gdk.Cursor(Gdk.CursorType.BLANK_CURSOR))
-                return
+            elif estado == "fuera":
+                if self.get_parent_window().get_cursor() != self.cursor_root:
+                    self.get_parent_window().set_cursor(
+                        self.cursor_root)
+                    return
             
-        elif estado == "fuera":
-            if self.get_parent_window().get_cursor() != self.cursor_root:
-                self.get_parent_window().set_cursor(
-                    self.cursor_root)
-                return
-            
+        else:
+            if estado == "moviendose" or "detenido":
+                if self.get_parent_window().get_cursor() != self.jamedia_cursor:
+                        self.get_parent_window().set_cursor(
+                            self.jamedia_cursor)
+                        return
+                    
+            elif estado == "fuera":
+                if self.get_parent_window().get_cursor() != self.cursor_root:
+                    self.get_parent_window().set_cursor(
+                        self.cursor_root)
+                    return
+                
     def __cancel_toolbars_flotantes(self, widget = None):
         """
         Asegura un widget flotante a la vez.
@@ -769,6 +788,8 @@ class JAMediaPlayer(Gtk.Plug):
         """
         Oculta o muestra los controles.
         """
+        
+        self.mouse_in_visor = valor
         
         self.get_toplevel().set_sensitive(False)
         
