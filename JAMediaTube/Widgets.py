@@ -434,8 +434,8 @@ class Toolbar_Busqueda(Gtk.Toolbar):
     def __emit_buscar(self, widget = None):
         
         texto = self.entrytext.get_text()
-        if texto: self.emit("comenzar_busqueda", texto)
         self.entrytext.set_text("")
+        if texto: self.emit("comenzar_busqueda", texto)
         
     def __activate_entrytext(self, widget):
         """
@@ -446,7 +446,7 @@ class Toolbar_Busqueda(Gtk.Toolbar):
         
 class Alerta_Busqueda(Gtk.Toolbar):
     """
-    Para informa que se está buscando con JAMediaTube.
+    Para informar que se está buscando con JAMediaTube.
     """
     
     def __init__(self):
@@ -505,11 +505,16 @@ class WidgetVideoItem(JAMediaButton):
             import time
             archivo = "/tmp/preview%d" % time.time()
             
-            import urllib
-            fileimage, headers = urllib.urlretrieve(url, archivo)
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(fileimage, 200, 200)
-            imagen.set_from_pixbuf(pixbuf)
-            
+            try:
+                # FIXME: Porque Falla si no hay Conexión.
+                import urllib
+                fileimage, headers = urllib.urlretrieve(url, archivo)
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(fileimage, 200, 200)
+                imagen.set_from_pixbuf(pixbuf)
+                
+            except:
+                print "No hay Conexión a Internet."
+                
             hbox.pack_start(imagen, False, False, 3)
             
             import commands
@@ -616,10 +621,14 @@ class ToolbarAccionListasVideos(Gtk.Toolbar):
         Confirma borrar.
         """
         
-        self.emit('ok', self.objetos)
-        self.objetos = None
-        self.label.set_text("")
-        self.hide()
+        objetos = self.objetos
+        self.cancelar()
+        
+        GLib.idle_add(self.__emit_ok, objetos)
+        
+    def __emit_ok(self, objetos):
+        
+        self.emit('ok', objetos)
         
     def set_accion(self, objetos):
         """
@@ -969,8 +978,8 @@ class Toolbar_Guardar(Gtk.Toolbar):
     def __emit_ok(self, widget):
         
         texto = self.entrytext.get_text()
-        if texto: self.emit("ok", texto)
         self.cancelar()
+        if texto: self.emit("ok", texto)
     
     def cancelar(self, widget=None):
         

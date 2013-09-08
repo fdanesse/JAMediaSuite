@@ -52,9 +52,12 @@ def Buscar(palabras):
     for palabra in palabras.split(" "):
         query.categories.append('/%s' % palabra.lower())
         
-    feed = yt_service.YouTubeQuery(query)
+    try: # FIXME: Porque Falla si no hay Conexión.
+        feed = yt_service.YouTubeQuery(query)
+        return DetalleFeed(feed)
     
-    return DetalleFeed(feed)
+    except:
+        return []
 
 def DetalleFeed(feed):
     """

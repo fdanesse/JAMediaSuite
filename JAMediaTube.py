@@ -181,6 +181,9 @@ class Ventana(Gtk.Window):
         según que toolbarwidget haya lanzado la señal.
         """
         
+        self.paneltube.set_sensitive(False)
+        self.toolbar_busqueda.set_sensitive(False)
+        
         destino = False
         
         if toolbarwidget == self.paneltube.toolbar_encontrados:
@@ -247,6 +250,9 @@ class Ventana(Gtk.Window):
         secuencia de busqueda y agregado de videos al panel.
         """
         
+        self.paneltube.set_sensitive(False)
+        self.toolbar_busqueda.set_sensitive(False)
+        
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
         map(self.__mostrar,[self.alerta_busqueda])
@@ -281,43 +287,53 @@ class Ventana(Gtk.Window):
             # desde un archivo.
             map(self.__ocultar,[self.alerta_busqueda])
         
-        if videos:
-            video = videos[0]
-            
-            from JAMediaTube.Widgets import WidgetVideoItem
-            
-            videowidget = WidgetVideoItem(video)
+        if not videos:
+            self.paneltube.set_sensitive(True)
+            self.toolbar_busqueda.set_sensitive(True)
+            return False
+        
+        video = videos[0]
+        
+        from JAMediaTube.Widgets import WidgetVideoItem
+        
+        videowidget = WidgetVideoItem(video)
+        text = TipEncontrados
+        
+        if destino == self.paneltube.encontrados:
             text = TipEncontrados
             
-            if destino == self.paneltube.encontrados:
-                text = TipEncontrados
-                
-            elif destino == self.paneltube.descargar:
-                text = TipDescargas
-                
-            videowidget.set_tooltip_text(text)
-            videowidget.show_all()
+        elif destino == self.paneltube.descargar:
+            text = TipDescargas
             
-            videowidget.drag_source_set(
-                Gdk.ModifierType.BUTTON1_MASK,
-                target,
-                Gdk.DragAction.MOVE)
+        videowidget.set_tooltip_text(text)
+        videowidget.show_all()
+        
+        videowidget.drag_source_set(
+            Gdk.ModifierType.BUTTON1_MASK,
+            target,
+            Gdk.DragAction.MOVE)
+        
+        # FIXME: Enlentece la aplicación ya que exige procesamiento.
+        #archivo = "/tmp/preview%d" % time.time()
+        #fileimage, headers = urllib.urlretrieve(video["previews"][0][0], archivo)
+        #pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(fileimage,
+        #    50, 50)
+        #videowidget.drag_source_set_icon_pixbuf(pixbuf)
+        #commands.getoutput('rm %s' % (archivo))
+        
+        videos.remove(video)
+        destino.pack_start(videowidget, False, False, 1)
+
+        texto = "Encontrado: %s" % (video["titulo"])
+        if len(texto) > 50:
+            texto = str(texto[0:50]) + " . . . "
             
-            # FIXME: Enlentece la aplicación ya que exige procesamiento.
-            #archivo = "/tmp/preview%d" % time.time()
-            #fileimage, headers = urllib.urlretrieve(video["previews"][0][0], archivo)
-            #pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(fileimage,
-            #    50, 50)
-            #videowidget.drag_source_set_icon_pixbuf(pixbuf)
-            #commands.getoutput('rm %s' % (archivo))
-            
-            videos.remove(video)
-            destino.pack_start(videowidget, False, False, 1)
-            self.alerta_busqueda.label.set_text("Encontrado: %s" % (video["titulo"]))
-            self.get_property('window').invalidate_rect(self.get_allocation(), True)
-            self.get_property('window').process_updates(True)
-            
-            GLib.idle_add(self.__add_videos, videos, destino)
+        self.alerta_busqueda.label.set_text(texto)
+        #self.alerta_busqueda.label.set_text("Encontrado: %s" % (video["titulo"]))
+        #self.get_property('window').invalidate_rect(self.get_allocation(), True)
+        #self.get_property('window').process_updates(True)
+        
+        GLib.idle_add(self.__add_videos, videos, destino)
         
     def set_pistas(self, pistas):
         """
