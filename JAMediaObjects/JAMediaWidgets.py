@@ -145,7 +145,7 @@ class JAMediaButton(Gtk.EventBox):
             Gdk.EventMask.ENTER_NOTIFY_MASK |
             Gdk.EventMask.LEAVE_NOTIFY_MASK)
             
-        self.connect("button_press_event", self.__button_press)
+        self.connect("button_press_event", self.button_press)
         self.connect("button_release_event", self.__button_release)
         self.connect("enter-notify-event", self.__enter_notify_event)
         self.connect("leave-notify-event", self.__leave_notify_event)
@@ -214,7 +214,7 @@ class JAMediaButton(Gtk.EventBox):
         
         self.modify_bg(0, self.colorselect)
         
-    def __button_press(self, widget, event):
+    def button_press(self, widget, event):
         
         self.seleccionar()
         

@@ -287,8 +287,6 @@ class JAMediaEditor(Gtk.Window):
             #return False
             pass
         
-        import time
-        print time.time()
         return True
     
 if __name__=="__main__":

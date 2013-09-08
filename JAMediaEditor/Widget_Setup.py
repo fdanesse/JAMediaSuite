@@ -658,6 +658,8 @@ class Widget_icon(Gtk.Frame):
         Cuando el usuario selecciona un icono para la aplicación.
         """
         
+        from gi.repository import GdkPixbuf
+        
         iconpath = str(iconpath).replace("//", "/")
         
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(iconpath, 50, 50)

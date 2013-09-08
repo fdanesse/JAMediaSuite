@@ -99,6 +99,14 @@ class Toolbar(Gtk.Toolbar):
         self.jamedia.connect("clicked", self.__emit_switch)
         self.insert(self.jamedia, -1)
         
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos","JAMedia-help.svg")
+        boton = get_boton(archivo, flip = False,
+            pixels = get_pixels(1))
+        boton.set_tooltip_text("Ayuda.")
+        boton.connect("clicked", self.__show_help)
+        self.insert(boton, -1)
+        
         self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
@@ -118,6 +126,12 @@ class Toolbar(Gtk.Toolbar):
     def __show_credits(self, widget):
         
         dialog = Credits(parent = self.get_toplevel())
+        response = dialog.run()
+        dialog.destroy()
+        
+    def __show_help(self, widget):
+        
+        dialog = Help(parent = self.get_toplevel())
         response = dialog.run()
         dialog.destroy()
         
@@ -535,23 +549,15 @@ class WidgetVideoItem(JAMediaButton):
         
         self.show_all()
     
-    def __button_press(self, widget, event):
-        pass
-    
-    def __leave_notify_event(self, widget, event):
-        pass
-    
-    def __button_release(self, widget, event):
-        pass
-    
-    def __enter_notify_event(self, widget, event):
-        pass
+    def button_press(self, widget, event):
         
-    def set_imagen(self, archivo):
-        pass
-    
-    def set_tamanio(self, w, h):
-        pass
+        self.modify_bg(0, self.colorclicked)
+        
+        if event.button == 1:
+            self.emit("clicked", event)
+            
+        elif event.button == 3:
+            self.emit("click_derecho", event)
     
 class ToolbarAccionListasVideos(Gtk.Toolbar):
     """
@@ -1040,3 +1046,104 @@ class Credits(Gtk.Dialog):
             
         self.vbox.show_all()
         
+class Help(Gtk.Dialog):
+    
+    __gtype_name__ = 'TubeHelp'
+    
+    def __init__(self, parent = None):
+
+        Gtk.Dialog.__init__(self,
+            parent = parent,
+            flags = Gtk.DialogFlags.MODAL,
+            buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
+        
+        self.set_border_width(15)
+        
+        tabla1 = Gtk.Table(columns=5, rows=2, homogeneous=False)
+        
+        vbox = Gtk.HBox()
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "play.png")
+        self.anterior = get_boton(
+            archivo, flip = True,
+            pixels = get_pixels(0.8),
+            tooltip_text = "Anterior")
+        self.anterior.connect("clicked", self.__switch)
+        self.anterior.show()
+        vbox.pack_start(self.anterior, False, False, 0)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "play.png")
+        self.siguiente = get_boton(
+            archivo,
+            pixels = get_pixels(0.8),
+            tooltip_text = "Siguiente")
+        self.siguiente.connect("clicked", self.__switch)
+        self.siguiente.show()
+        vbox.pack_end(self.siguiente, False, False, 0)
+        
+        tabla1.attach_defaults(vbox, 0, 5, 0, 1)
+        
+        self.helps = []
+        
+        for x in range(1, 2):
+            help = Gtk.Image()
+            help.set_from_file(
+                os.path.join(JAMediaObjectsPath,
+                    "Iconos", "JAMediaTube-help%s.png" % x))
+            tabla1.attach_defaults(help, 0, 5, 1, 2)
+            
+            self.helps.append(help)
+        
+        self.vbox.pack_start(tabla1, True, True, 0)
+        self.vbox.show_all()
+        
+        self.__switch(None)
+        
+    def __ocultar(self, objeto):
+        
+        if objeto.get_visible():
+            objeto.hide()
+            
+    def __switch(self, widget):
+        
+        if not widget:
+            map(self.__ocultar, self.helps[1:])
+            self.anterior.hide()
+            self.helps[0].show()
+    
+        else:
+            index = self.__get_index_visible()
+            helps = list(self.helps)
+            new_index = index
+            
+            if widget == self.siguiente:
+                if index < len(self.helps)-1:
+                    new_index += 1
+                
+            elif widget == self.anterior:
+                if index > 0:
+                    new_index -= 1
+                    
+            helps.remove(helps[new_index])
+            map(self.__ocultar, helps)
+            self.helps[new_index].show()
+            
+            if new_index > 0:
+                self.anterior.show()
+                
+            else:
+                self.anterior.hide()
+                
+            if new_index < self.helps.index(self.helps[-1]):
+                self.siguiente.show()
+                
+            else:
+                self.siguiente.hide()
+            
+    def __get_index_visible(self):
+        
+        for help in self.helps:
+            if help.get_visible():
+                return self.helps.index(help)
+            
