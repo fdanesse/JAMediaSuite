@@ -522,7 +522,7 @@ class WidgetVideoItem(JAMediaButton):
             
         vbox.pack_start(Gtk.Label("%s: %s" % ("id",
             self.videodict["id"])), True, True, 0)
-            
+        
         vbox.pack_start(Gtk.Label("%s: %s" % ("Título",
             self.videodict["titulo"])), True, True, 0)
             
@@ -546,10 +546,9 @@ class WidgetVideoItem(JAMediaButton):
             self.videodict["url"])), True, True, 0)
         
         for label in vbox.get_children():
+            label.set_alignment(0.0, 0.5)
             
-            label.set_justify(Gtk.Justification.LEFT)
-            
-        hbox.pack_start(vbox, False, False, 0)
+        hbox.pack_start(vbox, False, False, 5)
         self.add(hbox)
         
         self.show_all()
