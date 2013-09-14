@@ -519,25 +519,42 @@ class WidgetVideoItem(JAMediaButton):
         
         if "previews" in keys:
             imagen = Gtk.Image()
-            url = self.videodict["previews"][0][0]
-            
-            import time
-            archivo = "/tmp/preview%d" % time.time()
-            
-            try:
-                # FIXME: Porque Falla si no hay Conexión.
-                import urllib
-                fileimage, headers = urllib.urlretrieve(url, archivo)
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(fileimage, 200, 200)
-                imagen.set_from_pixbuf(pixbuf)
-                
-            except:
-                print "No hay Conexión a Internet."
-                
             hbox.pack_start(imagen, False, False, 3)
             
-            import commands
-            commands.getoutput('rm %s' % (archivo))
+            if type(self.videodict["previews"]) == list:
+                url = self.videodict["previews"][0][0] # FIXME: siempre hay 4 previews.
+                import time
+                archivo = "/dev/shm/preview%d" % time.time()
+                
+                try:
+                    # FIXME: Porque Falla si no hay Conexión.
+                    import urllib
+                    fileimage, headers = urllib.urlretrieve(url, archivo)
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(fileimage, 200, 150)
+                    imagen.set_from_pixbuf(pixbuf)
+                    
+                    ### Convertir imagen a string por si se quiere guardar.
+                    import base64
+                    pixbuf_file = open(fileimage, 'rb')
+                    image_string = base64.b64encode(pixbuf_file.read())
+                    pixbuf_file.close()
+                    self.videodict["previews"] = image_string
+                    
+                except:
+                    print "No hay Conexión a Internet."
+                
+                os.remove(archivo)
+                
+            else:
+                import base64
+                loader = GdkPixbuf.PixbufLoader()
+                loader.set_size(200, 150)
+                image_string = base64.b64decode(self.videodict["previews"])
+                loader.write(image_string)
+                loader.close()
+                
+                pixbuf = loader.get_pixbuf()
+                imagen.set_from_pixbuf(pixbuf)
             
         vbox.pack_start(Gtk.Label("%s: %s" % ("id",
             self.videodict["id"])), True, True, 0)
