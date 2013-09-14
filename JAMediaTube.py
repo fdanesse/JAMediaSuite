@@ -192,6 +192,12 @@ class Ventana(Gtk.Window):
         elif toolbarwidget == self.paneltube.toolbar_descargar:
             destino = self.paneltube.descargar
         
+        objetos = destino.get_children()
+        
+        for objeto in objetos:
+            objeto.get_parent().remove(objeto)
+            objeto.destroy()
+            
         GLib.idle_add(self.__add_videos, shelve_list, destino)
         
     def __run_download(self, widget):
@@ -254,6 +260,12 @@ class Ventana(Gtk.Window):
         map(self.__mostrar,[self.alerta_busqueda])
         self.alerta_busqueda.label.set_text("Buscando: %s" % (palabras))
         
+        objetos = self.paneltube.encontrados.get_children()
+        
+        for objeto in objetos:
+            objeto.get_parent().remove(objeto)
+            objeto.destroy()
+            
         GLib.timeout_add(300, self.__lanzar_busqueda, palabras)
         
     def __lanzar_busqueda(self, palabras):
