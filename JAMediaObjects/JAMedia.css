@@ -53,6 +53,10 @@ Credits, TubeCredits, Help, TubeHelp{
     background-color: #000000;
     color: #ffffff;
 }
+TubeListDialog{
+    background-color: #ffffff;
+    color: #000000;
+}
 
 /* Toolbars */
 GtkToolbar {

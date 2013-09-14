@@ -304,7 +304,7 @@ class Mini_Toolbar(Gtk.Toolbar):
             "Iconos", "lista.png")
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(0.8))
-        boton.set_tooltip_text("Abrir Lista.")
+        boton.set_tooltip_text("Lista de Búsquedas.")
         boton.connect("clicked", self.__get_menu)
         self.insert(boton, -1)
         
@@ -357,14 +357,33 @@ class Mini_Toolbar(Gtk.Toolbar):
             
             menu = Gtk.Menu()
             
+            administrar = Gtk.MenuItem('Administrar')
+            administrar.connect_object("activate", self.__administrar, None)
+            cargar = Gtk.MenuItem('Cargar')
+            
+            menu.append(administrar)
+            menu.append(cargar)
+            
+            menu_listas = Gtk.Menu()
+            
+            cargar.set_submenu(menu_listas)
+            
             for key in keys:
                 item = Gtk.MenuItem(key)
-                menu.append(item)
+                menu_listas.append(item)
                 item.connect_object("activate", self.__emit_abrir, key)
                 
             menu.show_all()
             menu.attach_to_widget(widget, self.__null)
             menu.popup(None, None, None, None, 1, 0)
+            
+    def __administrar(self, widget):
+        
+        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        
+        dialogo = TubeListDialog(parent = self.get_toplevel())
+        dialogo.run()
+        dialogo.destroy()
         
     def __null(self):
         pass
@@ -1155,3 +1174,295 @@ class Help(Gtk.Dialog):
             if help.get_visible():
                 return self.helps.index(help)
             
+class TubeListDialog(Gtk.Dialog):
+    
+    __gtype_name__ = 'TubeListDialog'
+    
+    def __init__(self, parent = None):
+
+        Gtk.Dialog.__init__(self,
+            parent = parent,
+            flags = Gtk.DialogFlags.MODAL,
+            buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
+        
+        self.set_border_width(15)
+        rect = parent.get_allocation()
+        self.set_size_request(rect.width-15, rect.height-25)
+        
+        self.panel = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
+        
+        from JAMediaObjects.JAMediaWidgets import Lista
+        
+        self.listas = Lista()
+        self.videos = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        
+        scroll = self.__get_scroll()
+        scroll.set_policy(
+            Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC)
+        scroll.add_with_viewport(self.listas)
+        self.panel.pack1(scroll, resize = False, shrink = True)
+        
+        scroll = self.__get_scroll()
+        scroll.add_with_viewport(self.videos)
+        self.panel.pack2(scroll, resize = True, shrink = False)
+        
+        self.label = Gtk.Label("")
+        self.vbox.pack_start(self.label, False, False, 0)
+        self.vbox.pack_start(self.panel, True, True, 0)
+        self.vbox.show_all()
+        
+        self.listas.connect("nueva-seleccion", self.__select_list)
+        self.listas.connect("button-press-event", self.__click_derecho_en_lista)
+        self.connect("realize", self.__do_realize)
+        
+    def __click_derecho_en_lista(self, widget, event):
+        """
+        Esto es para abrir un menu de opciones cuando
+        el usuario hace click derecho sobre un elemento en
+        la lista.
+        """
+        
+        boton = event.button
+        pos = (event.x, event.y)
+        tiempo = event.time
+        path, columna, xdefondo, ydefondo = (None, None, None, None)
+        
+        try:
+            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(int(pos[0]), int(pos[1]))
+            
+        except:
+            return
+        
+        if boton == 1:
+            return
+        
+        elif boton == 3:
+            menu = Gtk.Menu()
+            borrar = Gtk.MenuItem("Eliminar")
+            menu.append(borrar)
+            
+            borrar.connect_object(
+                "activate", self.__eliminar,
+                widget, path)
+            
+            menu.show_all()
+            menu.attach_to_widget(widget, self.__null)
+            
+            menu.popup(None, None, None, None, boton, tiempo)
+            
+        elif boton == 2:
+            return
+        
+    def __null(self):
+        pass
+    
+    def __eliminar(self, widget, path):
+        """
+        Elimina una lista del archivo shelve.
+        """
+        
+        for child in self.videos.get_children():
+            self.videos.remove(child)
+            child.destroy()
+            
+        new_box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        new_box.show_all()
+        self.videos.pack_start(
+            new_box,
+            True, True, 0)
+            
+        iter = widget.get_model().get_iter(path)
+        key = widget.get_model().get_value(iter, 2)
+        
+        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        import shelve
+        
+        dict_tube = shelve.open(
+            os.path.join(get_data_directory(),
+            "List.tube"))
+            
+        del(dict_tube[key])
+        
+        keys = dict_tube.keys()
+        
+        dict_tube.close()
+        
+        widget.get_model().remove(iter)
+        
+        if not keys:
+            dialog = Gtk.Dialog(
+                parent = self.get_toplevel(),
+                flags = Gtk.DialogFlags.MODAL,
+                buttons = ["OK", Gtk.ResponseType.ACCEPT])
+            
+            dialog.set_border_width(15)
+            
+            label = Gtk.Label("Todas las Listas han sido Eliminadas.")
+            dialog.vbox.pack_start(label, True, True, 0)
+            dialog.vbox.show_all()
+            
+            dialog.run()
+            
+            dialog.destroy()
+            
+            self.destroy()
+        
+    def __select_list(self, widget, valor):
+        """
+        Cuando se selecciona una lista, se cargan
+        los videos que contiene en self.videos.
+        """
+        
+        self.panel.set_sensitive(False)
+        
+        for child in self.videos.get_children():
+            self.videos.remove(child)
+            child.destroy()
+            
+        new_box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        new_box.show_all()
+        self.videos.pack_start(
+            new_box,
+            True, True, 0)
+        
+        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        import shelve
+        
+        dict_tube = shelve.open(
+            os.path.join(get_data_directory(),
+            "List.tube"))
+        
+        videos = []
+        for item in dict_tube[valor].keys():
+            videos.append(dict_tube[valor][item])
+            
+        dict_tube.close()
+        
+        GLib.idle_add(self.__add_videos, videos)
+        
+    def __add_videos(self, videos):
+        """
+        Se crean los video_widgets de videos y
+        se agregan al panel, segun destino.
+        """
+        
+        if not videos:
+            self.label.set_text("%s Videos Listados." % len(self.videos.get_children()[0].get_children()))
+            self.panel.set_sensitive(True)
+            return False
+        
+        self.label.set_text("Listando Videos . . .  Quedan %s" % len(videos))
+        
+        video = videos[0]
+        
+        videowidget = WidgetVideoItem(video)
+        videowidget.connect("click_derecho", self.__clicked_videowidget)
+        '''
+        text = TipEncontrados
+        
+        if destino == self.paneltube.encontrados:
+            text = TipEncontrados
+            
+        elif destino == self.paneltube.descargar:
+            text = TipDescargas
+            
+        videowidget.set_tooltip_text(text)'''
+        videowidget.show_all()
+        '''
+        videowidget.drag_source_set(
+            Gdk.ModifierType.BUTTON1_MASK,
+            target,
+            Gdk.DragAction.MOVE)'''
+        
+        videos.remove(video)
+        
+        try:
+            self.videos.get_children()[0].pack_start(videowidget, False, False, 1)
+            
+        except:
+            return False
+        
+        GLib.idle_add(self.__add_videos, videos)
+        
+    def __clicked_videowidget(self, widget, event):
+        """
+        Cuando se hace click derecho sobre un video item.
+        """
+        
+        boton = event.button
+        pos = (event.x, event.y)
+        tiempo = event.time
+        
+        menu = Gtk.Menu()
+        borrar = Gtk.MenuItem("Eliminar")
+        menu.append(borrar)
+        
+        borrar.connect_object(
+            "activate", self.__eliminar_video,
+            widget)
+        
+        menu.show_all()
+        menu.attach_to_widget(widget, self.__null)
+        
+        menu.popup(None, None, None, None, boton, tiempo)
+        
+    def __eliminar_video(self, widget):
+        
+        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        import shelve
+        
+        dict_tube = shelve.open(
+            os.path.join(get_data_directory(),
+            "List.tube"))
+            
+        if len(dict_tube[self.listas.valor_select].keys()) == 1:
+            modelo, iter = self.listas.treeselection.get_selected()
+            path = modelo.get_path(iter)
+            self.__eliminar(self.listas, path)
+            
+        else:
+            videos = {}
+            for id in dict_tube[self.listas.valor_select].keys():
+                if id != widget.videodict["id"]:
+                    videos[id] = dict_tube[self.listas.valor_select][id]
+                    
+            dict_tube[self.listas.valor_select]=videos
+            
+            widget.destroy()
+            self.label.set_text("%s Videos Listados." % len(self.videos.get_children()[0].get_children()))
+            
+        dict_tube.close()
+        
+    def __do_realize(self, widget):
+        """
+        Carga la lista de Albums de Descargas en self.listas.
+        """
+        
+        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        import shelve
+        
+        dict_tube = shelve.open(
+            os.path.join(get_data_directory(),
+            "List.tube"))
+            
+        keys = dict_tube.keys()
+        
+        dict_tube.close()
+        
+        lista = []
+        for key in keys:
+            lista.append( [key, key] )
+            
+        self.listas.agregar_items(lista)
+        
+    def __get_scroll(self):
+        
+        scroll = Gtk.ScrolledWindow()
+        
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+            
+        return scroll
+    

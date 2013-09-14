@@ -62,7 +62,7 @@ class Ventana(Gtk.Window):
         self.show_all()
         self.realize()
         
-        self.connect("destroy", self.__salir)
+        self.connect("delete-event", self.__salir)
         self.jamediaplayer.connect('salir', self.__salir)
         
         GLib.idle_add(self.__setup_init)

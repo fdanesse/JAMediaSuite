@@ -159,7 +159,7 @@ class Ventana(Gtk.Window):
         self.paneltube.descargar.connect("drag-drop", self.__drag_drop)
         self.paneltube.descargar.drag_dest_add_uri_targets()
         
-        self.connect("destroy", self.__salir)
+        self.connect("delete-event", self.__salir)
         self.toolbar.connect('salir', self.__confirmar_salir)
         self.toolbar_salir.connect('salir', self.__salir)
         self.toolbar.connect('switch', self.__switch, 'jamedia')
@@ -191,12 +191,8 @@ class Ventana(Gtk.Window):
             
         elif toolbarwidget == self.paneltube.toolbar_descargar:
             destino = self.paneltube.descargar
-            
-        videos = []
-        for video in shelve_list:
-            videos.append(video)
         
-        GLib.idle_add(self.__add_videos, videos, destino)
+        GLib.idle_add(self.__add_videos, shelve_list, destino)
         
     def __run_download(self, widget):
         """

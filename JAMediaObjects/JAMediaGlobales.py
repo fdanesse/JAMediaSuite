@@ -317,6 +317,12 @@ def descarga_lista_de_streamings(url):
         [nombre, url]
     """
     
+    print "Conectandose a:", url
+    print "\tDescargando Streamings . . ."
+    
+    cont = 0
+    urls = []
+    
     try:
         import urllib
         
@@ -339,8 +345,17 @@ def descarga_lista_de_streamings(url):
                             if "," in z:
                                 s = z.split('</div>')[0]
                                 stream = s.split(",")
+                                
                                 streamings.append(stream)
                                 
+                                temp_url = stream[1]
+                                if temp_url in urls:
+                                    print "\tURL Repetida:", temp_url
+                                    
+                                urls.append(stream[1])
+                                cont += 1
+                                
+        print "\tSe han Descargado:", cont, "Estreamings.\n"
         return streamings
     
     except:

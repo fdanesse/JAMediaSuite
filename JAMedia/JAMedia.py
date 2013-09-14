@@ -561,6 +561,7 @@ class JAMediaPlayer(Gtk.Plug):
         
         if accion == "Borrar":
             eliminar_streaming(url, lista)
+            print "Streaming Eliminado:", url
             
         elif accion == "Copiar":
             modelo, iter = self.lista_de_reproduccion.treeselection.get_selected()

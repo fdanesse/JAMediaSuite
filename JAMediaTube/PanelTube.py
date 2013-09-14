@@ -172,10 +172,12 @@ class PanelTube(Gtk.Paned):
         
         if widget == self.toolbar_encontrados:
             self.toolbar_guardar_encontrados.show()
+            self.toolbar_guardar_encontrados.entrytext.child_focus(True)
             
         elif widget == self.toolbar_descargar:
             self.toolbar_guardar_descargar.show()
-    
+            self.toolbar_guardar_descargar.entrytext.child_focus(True)
+            
     def __guardar_lista_shelve(self, widget, key_name):
         """
         Guarda todos los videos de la lista bajo la key según key_name.
