@@ -211,10 +211,33 @@ class PanelTube(Gtk.Paned):
             for elemento in videos:
                 dict[elemento["id"]] = elemento
                 
+            ### Alerta de Sobre Escritura.
+            if key_name in dict_tube.keys():
+                dialog = Gtk.Dialog(
+                parent = self.get_toplevel(),
+                flags = Gtk.DialogFlags.MODAL,
+                buttons = [
+                    "Suplantar", Gtk.ResponseType.ACCEPT,
+                    "Cancelar", Gtk.ResponseType.CANCEL])
+            
+                dialog.set_border_width(15)
+                
+                label = Gtk.Label("Ya Existe un Album de Búsquedas con Este Nombre.\n¿Deseas Suplantarlo?")
+                dialog.vbox.pack_start(label, True, True, 0)
+                dialog.vbox.show_all()
+                
+                response = dialog.run()
+                
+                dialog.destroy()
+                
+                if response == Gtk.ResponseType.CANCEL:
+                    dict_tube.close()
+                    return
+                
             dict_tube[key_name] = dict
             
             dict_tube.close()
-        
+            
             dialog = Gtk.Dialog(
                 parent = self.get_toplevel(),
                 flags = Gtk.DialogFlags.MODAL,
