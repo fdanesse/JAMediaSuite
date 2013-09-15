@@ -498,6 +498,7 @@ class DialogoProyecto(Gtk.Dialog):
         self.main = Gtk.ComboBoxText()
         self.path = Gtk.Label()
         self.mimetypes = Gtk.Entry()
+        self.categories = Gtk.Entry()
         
         self.version = Gtk.Entry()
         self.version.connect("changed", self.__check_version)
@@ -554,6 +555,8 @@ class DialogoProyecto(Gtk.Dialog):
                 self.path] ),
             self.__get_pack_box(
                 [self.__get_label('MimeTypes:'), self.mimetypes] ),
+            self.__get_pack_box(
+                [self.__get_label('Categoría:'), self.categories] ),
             self.__get_pack_box(
                 [self.__get_label('Versión:'), self.version] ),
             self.__get_pack_box(
@@ -697,6 +700,7 @@ class DialogoProyecto(Gtk.Dialog):
         main = self.main.get_active_text()
         path = self.path.get_text()
         mimetypes = self.mimetypes.get_text()
+        categories = self.categories.get_text()
         
         buffer = buffer.get_text(
             buffer.get_start_iter(),
@@ -710,6 +714,7 @@ class DialogoProyecto(Gtk.Dialog):
         if main: main = main.strip()
         if path: path = path.strip()
         if mimetypes: mimetypes = mimetypes.strip()
+        if categories: categories = categories.strip()
         if buffer: buffer = buffer.strip()
         if version: version = version.strip()
         if licencia: licencia = licencia.strip()
@@ -721,6 +726,7 @@ class DialogoProyecto(Gtk.Dialog):
             "path": path,
             "descripcion": buffer,
             "mimetypes": mimetypes,
+            "categoria": categories,
             "version": version,
             "licencia": licencia,
             "url": url,
@@ -738,6 +744,7 @@ class DialogoProyecto(Gtk.Dialog):
         self.path.set_text(diccionario["path"])
         self.version.set_text(diccionario["version"])
         self.mimetypes.set_text(diccionario["mimetypes"])
+        self.categories.set_text(diccionario["categoria"])
         self.descripcion.get_buffer().set_text(diccionario["descripcion"])
         self.licencia.set_active(LICENCIAS.index(diccionario["licencia"]))
         self.url.set_text(diccionario["url"])

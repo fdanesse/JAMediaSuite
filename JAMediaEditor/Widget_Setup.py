@@ -342,7 +342,7 @@ class Gnome_Notebook(Gtk.Notebook):
         desinstalador = "%s_uninstall" % (self.proyecto["nombre"].lower())
         
         ### desktop
-        desktop = "[Desktop Entry]\nEncoding=UTF-8\nName=%s\nGenericName=%s\nComment=%s\nExec=%s\nTerminal=false\nType=Application\nIcon=%s\nCategories=GTK;GNOME;AudioVideo;Player;Video;\nStartupNotify=true\nMimeType=%s" % (self.proyecto["nombre"], self.proyecto["nombre"], self.proyecto["descripcion"], os.path.join("/usr/local/bin", lanzador), iconpath, self.proyecto["mimetypes"])
+        desktop = "[Desktop Entry]\nEncoding=UTF-8\nName=%s\nGenericName=%s\nComment=%s\nExec=%s\nTerminal=false\nType=Application\nIcon=%s\nCategories=%s\nStartupNotify=true\nMimeType=%s" % (self.proyecto["nombre"], self.proyecto["nombre"], self.proyecto["descripcion"], os.path.join("/usr/local/bin", lanzador), iconpath, self.proyecto["categoria"], self.proyecto["mimetypes"])
         self.setupdesktop.get_buffer().set_text(desktop)
         
         ### MANIFEST
@@ -920,6 +920,8 @@ class Ceibal_Notebook(Gtk.Notebook):
         
         text = text.replace('mainfile', self.proyecto["main"])
         text = text.replace('iconfile', iconpath)
+        text = text.replace('GnomeCat', self.proyecto["categoria"])
+        text = text.replace('GnomeMimeTypes', self.proyecto["mimetypes"])
         
         self.install.get_buffer().set_text(text)
         
