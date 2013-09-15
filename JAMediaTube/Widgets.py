@@ -1130,7 +1130,7 @@ class Help(Gtk.Dialog):
         
         self.helps = []
         
-        for x in range(1, 2):
+        for x in range(1, 3):
             help = Gtk.Image()
             help.set_from_file(
                 os.path.join(JAMediaObjectsPath,
