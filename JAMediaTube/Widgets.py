@@ -1206,6 +1206,8 @@ class TubeListDialog(Gtk.Dialog):
         rect = parent.get_allocation()
         self.set_size_request(rect.width-15, rect.height-25)
         
+        self.actualizando = False
+        
         self.panel = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
         
         from JAMediaObjects.JAMediaWidgets import Lista
@@ -1279,6 +1281,8 @@ class TubeListDialog(Gtk.Dialog):
         Elimina una lista del archivo shelve.
         """
         
+        if self.actualizando: return
+    
         for child in self.videos.get_children():
             self.videos.remove(child)
             child.destroy()
@@ -1331,6 +1335,8 @@ class TubeListDialog(Gtk.Dialog):
         los videos que contiene en self.videos.
         """
         
+        self.actualizando = True
+        
         self.panel.set_sensitive(False)
         
         for child in self.videos.get_children():
@@ -1367,6 +1373,7 @@ class TubeListDialog(Gtk.Dialog):
         if not videos:
             self.label.set_text("%s Videos Listados." % len(self.videos.get_children()[0].get_children()))
             self.panel.set_sensitive(True)
+            self.actualizando = False
             return False
         
         self.label.set_text("Listando Videos . . .  Quedan %s" % len(videos))
