@@ -254,9 +254,9 @@ class Gnome_Notebook(Gtk.Notebook):
             import shutil
             shutil.copyfile(iconpath, newpath)
             iconpath = newpath
-            
-        iconname = os.path.basename(iconpath)
-        iconpath = os.path.join("/usr/local/share", self.proyecto["nombre"], iconname)
+        
+        newpath = iconpath.split("%s/" % self.proyecto["path"])[1]
+        iconpath = os.path.join("/usr/local/share", self.proyecto["nombre"], newpath)
         
         lanzador = "%s_run" % (self.proyecto["nombre"].lower())
         desinstalador = "%s_uninstall" % (self.proyecto["nombre"].lower())
@@ -710,12 +710,12 @@ class DialogoInstall(Gtk.Dialog):
         elif tipo == "sugar":
             GLib.idle_add(self.__run_sugar_install)
         
-    def __end_make(self, widget):
+    def __end_make(self, jamediaterminal, notebookterminal, terminal, id, toolbutton, label):
         """
         Cuando Finaliza el proceso de construcción del
         instalador, se informa al usuario.
         """
-        
+
         dialog = DialogoInfoInstall(
             parent_window = self.get_toplevel(),
             distpath = os.path.join(self.dirpath, "dist"))

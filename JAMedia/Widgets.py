@@ -257,7 +257,7 @@ class Toolbar(Gtk.Toolbar):
             "Iconos","JAMedia.png")
         boton = get_boton(archivo, flip = False,
             pixels = get_pixels(1.2))
-        boton.set_tooltip_text("Ayuda.")
+        boton.set_tooltip_text("Autor.")
         boton.connect("clicked", self.__show_credits)
         self.insert(boton, -1)
         
