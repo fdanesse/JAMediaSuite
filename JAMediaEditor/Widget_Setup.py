@@ -21,6 +21,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import commands
+import shutil
+import shelve
 
 from gi.repository import Gtk
 from gi.repository import GObject
@@ -31,6 +34,8 @@ from Widgets import My_FileChooser
 
 import JAMediaObjects
 from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
+
+BASEPATH = os.path.dirname(__file__)
 
 def get_boton(stock, tooltip):
     """
@@ -95,6 +100,7 @@ class Notebook_Setup(Gtk.Notebook):
         self.proyecto = proyecto
         
         self.gnome_notebook = Gnome_Notebook(proyecto)
+        self.ceibal_notebook = Ceibal_Notebook(proyecto)
         self.sugar_notebook = Sugar_Notebook(proyecto)
         
         box = Gtk.VBox()
@@ -104,7 +110,16 @@ class Notebook_Setup(Gtk.Notebook):
         box.pack_start(gnome_widget_icon, False, False, 0)
         box.pack_start(self.gnome_notebook, True, True, 0)
         
-        self.append_page(box, Gtk.Label("Proyecto gnome"))
+        self.append_page(box, Gtk.Label("Proyecto Gnome"))
+        
+        box = Gtk.VBox()
+        
+        ceibal_widget_icon = Widget_icon(tipo = "ceibal", proyecto = proyecto)
+        
+        box.pack_start(ceibal_widget_icon, False, False, 0)
+        box.pack_start(self.ceibal_notebook, True, True, 0)
+        
+        self.append_page(box, Gtk.Label("Proyecto Gnome Ceibal"))
         
         box = Gtk.VBox()
         
@@ -118,11 +133,28 @@ class Notebook_Setup(Gtk.Notebook):
         self.show_all()
         
         gnome_widget_icon.connect("iconpath", self.__set_icon, "gnome")
+        ceibal_widget_icon.connect("iconpath", self.__set_icon, "ceibal")
         sugar_widget_icon.connect("iconpath", self.__set_icon, "sugar")
         
         gnome_widget_icon.connect("make", self.__make, "gnome")
+        ceibal_widget_icon.connect("make", self.__make, "ceibal")
         sugar_widget_icon.connect("make", self.__make, "sugar")
-
+        
+        self.connect('switch_page', self.__switch_page)
+        
+    def __switch_page(self, widget, widget_child, indice):
+        """
+        Cuando el usuario selecciona una lengüeta,
+        Reconstruye el instalador.
+        """
+        
+        ### Detener inspectores y activar solo el seleccionado
+        paginas = self.get_children()
+        
+        notebook = widget_child.get_children()[1]
+        if notebook.iconpath:
+            notebook.setup_install(notebook.iconpath)
+            
     def __make(self, widget, tipo):
         """
         Construye los instaladores.
@@ -141,7 +173,6 @@ class Notebook_Setup(Gtk.Notebook):
             dialog.destroy()
             
             ### Mover Instalador
-            import commands
             dist_path = os.path.join(self.gnome_notebook.activitydirpath, "dist")
             destino = os.path.join(self.proyecto["path"], "dist")
             
@@ -163,6 +194,17 @@ class Notebook_Setup(Gtk.Notebook):
             respuesta = dialog.run()
             
             dialog.destroy()
+            
+        elif tipo == "ceibal":
+            self.ceibal_notebook.make()
+            
+            dialog = DialogoInfoInstall(
+                parent_window = self.get_toplevel(),
+                distpath = os.path.join(self.proyecto["path"], "dist"))
+        
+            respuesta = dialog.run()
+            
+            dialog.destroy()
         
     def __set_icon(self, widget, iconpath, valor):
         """
@@ -174,6 +216,9 @@ class Notebook_Setup(Gtk.Notebook):
 
         elif valor == "sugar":
             self.sugar_notebook.setup_install(iconpath)
+            
+        elif valor == "ceibal":
+            self.ceibal_notebook.setup_install(iconpath)
         
 class Gnome_Notebook(Gtk.Notebook):
     """
@@ -189,6 +234,7 @@ class Gnome_Notebook(Gtk.Notebook):
         self.set_scrollable(True)
         
         self.proyecto = proyecto
+        self.iconpath = False
         
         self.setupcfg = Setup_SourceView()
         self.setupcfg.get_buffer().set_text("")
@@ -236,11 +282,9 @@ class Gnome_Notebook(Gtk.Notebook):
         self.activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
         
         ### Borrar anteriores
-        import commands
         if os.path.exists(self.activitydirpath):
             commands.getoutput("rm -r %s" % self.activitydirpath)
             
-        import shutil
         ### Copiar contenido del proyecto.
         shutil.copytree(self.proyecto["path"], self.activitydirpath, symlinks=False, ignore=None)
         
@@ -275,13 +319,10 @@ class Gnome_Notebook(Gtk.Notebook):
         posibles correcciones.
         """
         
-        ### setup.cfg
-        cfg = "[install]\ninstall_lib=/usr/local/share/%s\ninstall_data=/usr/local/share/%s\ninstall_scripts=/usr/local/bin""" % (self.proyecto["nombre"], self.proyecto["nombre"])
-        self.setupcfg.get_buffer().set_text(cfg)
+        self.iconpath = iconpath
         
         if not self.proyecto["path"] in iconpath:
             newpath = os.path.join(self.activitydirpath, os.path.basename(iconpath))
-            import shutil
             shutil.copyfile(iconpath, newpath)
             iconpath = newpath
         
@@ -292,11 +333,16 @@ class Gnome_Notebook(Gtk.Notebook):
         newpath = iconpath.split("%s/" % self.activitydirpath)[1]
         iconpath = os.path.join("/usr/local/share", self.proyecto["nombre"], newpath)
         
+        ### setup.cfg
+        cfg = "[install]\ninstall_lib=/usr/local/share/%s\ninstall_data=/usr/local/share/%s\ninstall_scripts=/usr/local/bin""" % (self.proyecto["nombre"], self.proyecto["nombre"])
+        self.setupcfg.get_buffer().set_text(cfg)
+        
+        ### lanzador
         lanzador = "%s_run" % (self.proyecto["nombre"].lower())
         desinstalador = "%s_uninstall" % (self.proyecto["nombre"].lower())
         
         ### desktop
-        desktop = "[Desktop Entry]\nEncoding=UTF-8\nName=%s\nGenericName=%s\nComment=%s\nExec=%s\nTerminal=false\nType=Application\nIcon=%s\nCategories=GTK;GNOME;AudioVideo;Player;Video;\nStartupNotify=true\nMimeType=" % (self.proyecto["nombre"], self.proyecto["nombre"], self.proyecto["descripcion"], os.path.join("/usr/local/bin", lanzador), iconpath)
+        desktop = "[Desktop Entry]\nEncoding=UTF-8\nName=%s\nGenericName=%s\nComment=%s\nExec=%s\nTerminal=false\nType=Application\nIcon=%s\nCategories=GTK;GNOME;AudioVideo;Player;Video;\nStartupNotify=true\nMimeType=%s" % (self.proyecto["nombre"], self.proyecto["nombre"], self.proyecto["descripcion"], os.path.join("/usr/local/bin", lanzador), iconpath, self.proyecto["mimetypes"])
         self.setupdesktop.get_buffer().set_text(desktop)
         
         ### MANIFEST
@@ -434,6 +480,7 @@ class Sugar_Notebook(Gtk.Notebook):
         self.set_scrollable(True)
         
         self.proyecto = proyecto
+        self.iconpath = False
         
         self.activity_sourceview = Setup_SourceView()
         self.setup_sourceview = Setup_SourceView()
@@ -467,6 +514,8 @@ class Sugar_Notebook(Gtk.Notebook):
         posibles correcciones.
         """
         
+        self.iconpath = iconpath
+        
         main_path = os.path.join(self.proyecto["path"], self.proyecto["main"])
         extension = os.path.splitext(os.path.split(main_path)[1])[1]
         main_name = self.proyecto["main"].split(extension)[0]
@@ -474,7 +523,7 @@ class Sugar_Notebook(Gtk.Notebook):
         extension = os.path.splitext(os.path.split(iconpath)[1])[1]
         newiconpath = os.path.basename(iconpath).split(extension)[0]
         
-        activity = "[Activity]\nname = %s\nactivity_version = %s\nbundle_id = org.laptop.%s\nicon = %s\nexec = sugar-activity %s.%s -s\nmime_types =\nlicense = %s\nsummary = " % (self.proyecto["nombre"], self.proyecto["version"], self.proyecto["nombre"], newiconpath, main_name, main_name, self.proyecto["licencia"])
+        activity = "[Activity]\nname = %s\nactivity_version = %s\nbundle_id = org.laptop.%s\nicon = %s\nexec = sugar-activity %s.%s -s\nmime_types =%s\nlicense = %s\nsummary = " % (self.proyecto["nombre"], self.proyecto["version"], self.proyecto["nombre"], newiconpath, main_name, main_name, self.proyecto["mimetypes"], self.proyecto["licencia"])
         setup = "#!/usr/bin/env python\n\nfrom sugar3.activity import bundlebuilder\nbundlebuilder.start()"
         
         ### Comenzar a generar el temporal
@@ -482,19 +531,16 @@ class Sugar_Notebook(Gtk.Notebook):
         activityinfodirpath = os.path.join(activitydirpath, "activity")
         
         ### Borrar anteriores
-        import commands
         if os.path.exists(activitydirpath):
             commands.getoutput("rm -r %s" % activitydirpath)
             
         ### Copiar contenido del proyecto.
-        import shutil
         shutil.copytree(self.proyecto["path"], activitydirpath, symlinks=False, ignore=None)
 
         ### Escribir archivos de instalación.
         if not os.path.exists(activityinfodirpath): os.mkdir(activityinfodirpath)
         
         newpath = os.path.join(activityinfodirpath, os.path.basename(iconpath))
-        import shutil
         shutil.copyfile(iconpath, newpath)
         
         self.activity_sourceview.get_buffer().set_text(activity)
@@ -504,8 +550,6 @@ class Sugar_Notebook(Gtk.Notebook):
         """
         Construye los archivos instaladores para su distribución.
         """
-        
-        import commands
         
         activitydirpath = os.path.join("/tmp", "%s.activity" % self.proyecto["nombre"])
         activityinfodirpath = os.path.join(activitydirpath, "activity")
@@ -757,9 +801,6 @@ class DialogoInstall(Gtk.Dialog):
         respuesta = dialog.run()
         
         dialog.destroy()
-
-        if respuesta == Gtk.ResponseType.ACCEPT:
-            pass
         
     def __run_gnome_install(self):
         """
@@ -794,29 +835,8 @@ class DialogoInstall(Gtk.Dialog):
         Ejecuta: python setup.py sdist
         Construyendo el instalador gnome.
         """
-        '''
-        python_path = "/usr/bin/python"
         
-        if os.path.exists(os.path.join("/bin", "python")):
-            python_path = os.path.join("/bin", "python")
-            
-        elif os.path.exists(os.path.join("/usr/bin", "python")):
-            python_path = os.path.join("/usr/bin", "python")
-            
-        elif os.path.exists(os.path.join("/sbin", "python")):
-            python_path = os.path.join("/sbin", "python")
-            
-        elif os.path.exists(os.path.join("/usr/local", "python")):
-            python_path = os.path.join("/usr/local", "python")
-            
-        self.terminal.ejecute_script(
-            self.dirpath,
-            python_path,
-            os.path.join(self.dirpath, "setup.py"),
-            "sdist")'''
-        self.__end_make(None)
-        
-        return False
+        self.__end_make(None, None, None, None, None, None)
         
 class DialogoInfoInstall(Gtk.Dialog):
     """
@@ -842,3 +862,156 @@ class DialogoInfoInstall(Gtk.Dialog):
         label.show()
         
         self.vbox.pack_start(label, True, True, 0)
+        
+class Ceibal_Notebook(Gtk.Notebook):
+    """
+    Contenedor de información de instalador gnome ceibal.
+    """
+    
+    __gtype_name__ = 'Ceibal_Notebook'
+    
+    def __init__(self, proyecto):
+
+        Gtk.Notebook.__init__(self)
+        
+        self.set_scrollable(True)
+        
+        self.proyecto = proyecto
+        self.iconpath = False
+        
+        self.install = Setup_SourceView()
+        self.install.get_buffer().set_text("")
+        
+        self.append_page(
+            self.get_scroll(self.install),
+            Gtk.Label("install.py"))
+        
+        self.show_all()
+        
+    def setup_install(self, iconpath):
+        """
+        Recolecta la información necesaria para generar los
+        archivos de instalación y los presenta al usuario para
+        posibles correcciones.
+        """
+        
+        self.iconpath = iconpath
+        
+        ### Comenzar a generar el temporal
+        activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
+        
+        ### Borrar anteriores
+        if os.path.exists(activitydirpath):
+            commands.getoutput("rm -r %s" % activitydirpath)
+            
+        ### Copiar contenido del proyecto.
+        shutil.copytree(self.proyecto["path"], activitydirpath, symlinks=False, ignore=None)
+        
+        if not self.proyecto["path"] in iconpath:
+            newpath = os.path.join(activitydirpath, os.path.basename(iconpath))
+            shutil.copyfile(iconpath, newpath)
+            iconpath = newpath
+        
+        archivo = shelve.open(os.path.join(BASEPATH, "plantilla"))
+        text = u"%s" % archivo.get('install', "")
+        archivo.close()
+        
+        iconpath = iconpath.split(self.proyecto["path"])[-1]
+        
+        text = text.replace('mainfile', self.proyecto["main"])
+        text = text.replace('iconfile', iconpath)
+        
+        self.install.get_buffer().set_text(text)
+        
+    def make(self):
+        """
+        Construye los archivos instaladores para su distribución.
+        """
+        
+        import zipfile
+        
+        activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
+        
+        ### Escribir instalador.
+        archivo_install = "%s/install.py" % (activitydirpath)
+        install = self.__get_text(self.install.get_buffer())
+        self.__escribir_archivo(archivo_install, install)
+
+        ### Generar archivo de distribución "*.zip"
+        zippath = "%s.zip" % (activitydirpath)
+        
+        ### Eliminar anterior.
+        if os.path.exists(zippath):
+            commands.getoutput("rm %s" % zippath)
+            
+        zipped = zipfile.ZipFile(zippath, "w")
+        
+        RECHAZAExtension = [".pyc", ".pyo", ".bak"]
+        RECHAZAFiles = ["proyecto.ide", ".gitignore", "plantilla"]
+        RECHAZADirs = [".git", "build", "dist"]
+        
+        ### Forzar eliminacion de dist
+        for dir in os.listdir(activitydirpath):
+            d = os.path.join(activitydirpath, dir)
+            
+            if os.path.isdir(d):
+                if d.split("/")[-1] in RECHAZADirs:
+                    commands.getoutput("rm -r %s" % d)
+            
+        for (archiveDirPath, dirNames, fileNames) in os.walk(activitydirpath):
+            
+            if not archiveDirPath.split("/")[-1] in RECHAZADirs:
+                for fileName in fileNames:
+                    if not fileName in RECHAZAFiles:
+                        filePath = os.path.join(archiveDirPath, fileName)
+                        extension = os.path.splitext(os.path.split(filePath)[1])[1]
+                        
+                        if not extension in RECHAZAExtension:
+                            zipped.write(filePath, filePath.split(activitydirpath)[1])
+        
+        zipped.close()
+        
+        distpath = os.path.join(self.proyecto["path"], "dist")
+        
+        if not os.path.exists(distpath):
+            os.mkdir(distpath)
+            
+        ### Copiar el *.zip a la estructura del proyecto.
+        commands.getoutput("cp %s %s" % (zippath, distpath))
+        os.chmod(os.path.join(distpath, os.path.basename(zippath)), 0755)
+        
+        if os.path.exists(zippath):
+            os.remove(zippath)
+            commands.getoutput("rm -r %s" % activitydirpath)
+    
+    def __get_text(self, buffer):
+        """
+        Devuelve el contenido de un text buffer.
+        """
+        
+        inicio, fin = buffer.get_bounds()
+        texto = buffer.get_text(inicio, fin, 0)
+        
+        return texto
+    
+    def __escribir_archivo(self, archivo, contenido):
+        """
+        Escribe los archivos de instalación.
+        """
+        
+        arch = open(archivo, "w")
+        arch.write(contenido)
+        arch.close()
+        
+    def get_scroll(self, sourceview):
+        
+        scroll = Gtk.ScrolledWindow()
+
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+
+        scroll.add(sourceview)
+        
+        return scroll
+    
