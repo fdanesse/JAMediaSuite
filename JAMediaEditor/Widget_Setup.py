@@ -131,20 +131,38 @@ class Notebook_Setup(Gtk.Notebook):
         if tipo == "gnome":
             self.gnome_notebook.make()
             
+            dialog = DialogoInstall(
+                parent_window = self.get_toplevel(),
+                dirpath = self.gnome_notebook.activitydirpath,
+                tipo = tipo)
+        
+            respuesta = dialog.run()
+            
+            dialog.destroy()
+            
+            ### Mover Instalador
+            import commands
+            dist_path = os.path.join(self.gnome_notebook.activitydirpath, "dist")
+            destino = os.path.join(self.proyecto["path"], "dist")
+            
+            if not os.path.exists(destino):
+                os.mkdir(destino)
+                
+            for archivo in os.listdir(dist_path):
+                path = os.path.join(dist_path, archivo)
+                commands.getoutput("cp %s %s" % (path, destino))
+            
         elif tipo == "sugar":
             self.sugar_notebook.make()
             
-        dialog = DialogoInstall(
-            parent_window = self.get_toplevel(),
-            dirpath = self.proyecto["path"],
-            tipo = tipo)
-    
-        respuesta = dialog.run()
+            dialog = DialogoInstall(
+                parent_window = self.get_toplevel(),
+                dirpath = self.proyecto["path"],
+                tipo = tipo)
         
-        dialog.destroy()
-
-        if respuesta == Gtk.ResponseType.ACCEPT:
-            pass
+            respuesta = dialog.run()
+            
+            dialog.destroy()
         
     def __set_icon(self, widget, iconpath, valor):
         """
@@ -213,14 +231,26 @@ class Gnome_Notebook(Gtk.Notebook):
         self.append_page(
             self.get_scroll(self.desinstalador),
             Gtk.Label("desinstalador"))
+        
+        ### Comenzar a generar el temporal
+        self.activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
+        
+        ### Borrar anteriores
+        import commands
+        if os.path.exists(self.activitydirpath):
+            commands.getoutput("rm -r %s" % self.activitydirpath)
             
+        import shutil
+        ### Copiar contenido del proyecto.
+        shutil.copytree(self.proyecto["path"], self.activitydirpath, symlinks=False, ignore=None)
+        
         ### Generar Archivos Necesarios para Construir Instalador.
-        self.archivo_lanzador = "%s/%s_run" % (self.proyecto["path"], self.proyecto["nombre"].lower())
-        self.archivo_desinstalador = "%s/%s_uninstall" % (self.proyecto["path"], self.proyecto["nombre"].lower())
-        self.archivo_setup_py = "%s/setup.py" % (self.proyecto["path"])
-        self.archivo_setup_cfg = "%s/setup.cfg" % (self.proyecto["path"])
-        self.archivo_manifest = "%s/MANIFEST" % (self.proyecto["path"])
-        self.archivo_desktop = "%s/%s.desktop" % (self.proyecto["path"], self.proyecto["nombre"])
+        self.archivo_lanzador = "%s/%s_run" % (self.activitydirpath, self.proyecto["nombre"].lower())
+        self.archivo_desinstalador = "%s/%s_uninstall" % (self.activitydirpath, self.proyecto["nombre"].lower())
+        self.archivo_setup_py = "%s/setup.py" % (self.activitydirpath)
+        self.archivo_setup_cfg = "%s/setup.cfg" % (self.activitydirpath)
+        self.archivo_manifest = "%s/MANIFEST" % (self.activitydirpath)
+        self.archivo_desktop = "%s/%s.desktop" % (self.activitydirpath, self.proyecto["nombre"])
         
         lista = [
             self.archivo_lanzador,
@@ -250,12 +280,16 @@ class Gnome_Notebook(Gtk.Notebook):
         self.setupcfg.get_buffer().set_text(cfg)
         
         if not self.proyecto["path"] in iconpath:
-            newpath = os.path.join(self.proyecto["path"], os.path.basename(iconpath))
+            newpath = os.path.join(self.activitydirpath, os.path.basename(iconpath))
             import shutil
             shutil.copyfile(iconpath, newpath)
             iconpath = newpath
         
-        newpath = iconpath.split("%s/" % self.proyecto["path"])[1]
+        else:
+            newpath = iconpath.split("%s/" % self.proyecto["path"])[1]
+            iconpath = os.path.join(self.activitydirpath, newpath)
+            
+        newpath = iconpath.split("%s/" % self.activitydirpath)[1]
         iconpath = os.path.join("/usr/local/share", self.proyecto["nombre"], newpath)
         
         lanzador = "%s_run" % (self.proyecto["nombre"].lower())
@@ -268,7 +302,7 @@ class Gnome_Notebook(Gtk.Notebook):
         ### MANIFEST
         import ApiProyecto
         
-        manifest_list, data_files = ApiProyecto.get_installers_data(self.proyecto["path"])
+        manifest_list, data_files = ApiProyecto.get_installers_data(self.activitydirpath)
         
         manifest = ""
         
