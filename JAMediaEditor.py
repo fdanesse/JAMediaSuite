@@ -104,8 +104,12 @@ class JAMediaEditor(Gtk.Window):
         
         self.base_panel.connect("update", self.__new_handler)
         
+        self.connect("delete-event", self.__exit)
+        
+    def __exit(self, widget, event):
+        
         import sys
-        self.connect("destroy", sys.exit)
+        sys.exit(0)
         
     def __ejecutar_accion_codigo(self, widget, accion):
         """
@@ -156,15 +160,18 @@ class JAMediaEditor(Gtk.Window):
         Actualiza las toolbars y menus.
         """
         
+        activar = []
+        desactivar = []
+        
         try:
-            activar = []
-            desactivar = []
-            
             ### Si hay un archivo seleccionado.
             if self.sourceview:
                 buffer = self.sourceview.get_buffer()
                 
-                activar.extend(["Guardar Como", "Cerrar", "Numeracion", "Aumentar", "Disminuir", "Formato"])
+                activar.extend([
+                    "Guardar Como", "Cerrar",
+                    "Numeracion", "Aumentar",
+                    "Disminuir", "Formato"])
                 
                 ### Si hay texto en el archivo seleccionado.
                 inicio, fin = buffer.get_bounds()
@@ -206,7 +213,7 @@ class JAMediaEditor(Gtk.Window):
                     desactivar.extend(["Cortar", "Copiar"])
                     
                 ### Si hay texto en el clipboard, se puede pegar
-                clipboard = gtk.clipboard_get(selection="CLIPBOARD")
+                clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
                 texto = clipboard.wait_for_text()
                 
                 if texto:
@@ -283,9 +290,7 @@ class JAMediaEditor(Gtk.Window):
                 self.base_panel.toolbararchivo.dict_archivo["Detener Ejecución"].set_sensitive(False)
                 
         except:
-            #self.sourceview = False
-            #return False
-            pass
+            self.sourceview = False
         
         return True
     
