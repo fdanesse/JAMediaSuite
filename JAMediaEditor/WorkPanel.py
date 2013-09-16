@@ -540,16 +540,11 @@ class SourceView(GtkSource.View):
             lang = self.lenguaje_manager.get_language(id)
             self.lenguajes[id] = lang.get_mime_types()
 
-        self.set_buffer(GtkSource.Buffer())
-
         self.set_insert_spaces_instead_of_tabs(True)
         self.set_tab_width(4)
         self.set_auto_indent(True)
 
         #self.modify_font(Pango.FontDescription('Monospace 10'))
-
-        completion = self.get_completion()
-        completion.add_provider(AutoCompletado(self.get_buffer()))
 
         self.show_all()
         
@@ -585,6 +580,19 @@ class SourceView(GtkSource.View):
             
         self.get_buffer().end_not_undoable_action()
         self.get_buffer().set_modified(False)
+        
+        completion = self.get_completion()
+        
+        prov_words = GtkSource.CompletionWords.new(None, None)
+        prov_words.register(self.get_buffer())
+        
+        autocompletado = AutoCompletado(self.get_buffer())
+        completion.add_provider(autocompletado)
+        
+        completion.set_property("remember-info-visibility", True)
+        completion.set_property("select-on-show", True)
+        completion.set_property("show-headers", True)
+        completion.set_property("show-icons", True)
         
         self.new_handle(True)
 
@@ -1227,7 +1235,119 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         GObject.Object.__init__(self)
         
         self.buffer = buffer
+        self.opciones = []
+        self.priority = 1
+        
+    ''' GtkSource.CompletionProvider
+    activate_proposal(*args, **kwargs)
+    get_activation(*args, **kwargs)
+    get_icon(*args, **kwargs)
+    get_info_widget(*args, **kwargs)
+    get_interactive_delay(*args, **kwargs)
+    get_name(*args, **kwargs)
+    get_priority(*args, **kwargs)
+    get_start_iter(*args, **kwargs)
+    match(*args, **kwargs)
+    populate(*args, **kwargs)
+    update_info(*args, **kwargs)'''
+    
+    def do_get_name(self):
+        return "AutoCompletado"
+    '''
+    def do_match(self, context):
+        
+        return True'''
+        
+    '''
+    def do_activate_proposal(self, dato1, dato2):
+        """
+        Cuando se selecciona y clickea
+        una posible solución.
+        """
+        
+        print dato1, dato2'''
+    
+    def do_populate(self, context):
+        """
+        Cuando se producen cambios en el buffer.
+        
+        Metodología para autocompletado:
+            * Importar todos los paquetes y módulos que se están
+                importando en el archivo sobre el cual estamos auto completando.
+            * Hacer el auto completado propiamente dicho, trabajando sobre
+                la línea de código que se está editando.
+        """
+        
+        textiter = context.get_iter()                                   ### Iterador de texto sobre el código actual.
+        indice_de_linea_activa = textiter.get_line()                    ### indice de linea activa.
+        texto_de_linea_en_edicion = textiter.get_slice(
+            self.buffer.get_iter_at_line(indice_de_linea_activa))       ### Texto de la linea activa.
+        
+        ### Auto completado se hace sobre "."
+        if texto_de_linea_en_edicion.endswith("."):
+            palabras = texto_de_linea_en_edicion.split()
+            
+            if palabras:
+                ### Importar paquetes y modulos previos
+                inicio = self.buffer.get_start_iter()
+                texto = self.buffer.get_text(inicio, textiter, True)
+                lineas = texto.splitlines()
+                
+                imports = []
+                
+                for linea in lineas:
+                    # FIXME: Analizar mejor los casos como 3 comillas.
+                    if "import " in linea and not linea.startswith("#") and \
+                        not linea.startswith("\"") and not linea.startswith("'"):
+                            imports.append(linea)
 
+                ### ['import os', 'import sys', 'from os import path']
+                ### Esto es [] si auto completado se hace antes de los imports
+                
+                ### Auto completado se hace sobre la última palabra
+                palabra = palabras[-1]
+                palabra = palabra.split("(")[-1] # Caso:  class Ventana(gtk.
+                
+                pals = palabra.split(".")[:-1]
+                imports.append(pals) # ['import os', 'import sys', 'from os import path', ['gtk', 'gdk', '']]
+                
+                ### Guardar en un archivo.
+                self.__set_imports(imports)
+                
+                ### Obtener lista para autocompletado.
+                lista = self.__get_auto_completado()
+                
+                #FIXME: HACK para agregar opciones de "self." Debe mejorarse.
+                #if texto_de_linea_en_edicion.endswith("self."):
+                #    for l in self.__get_auto_completado_for_self():
+                #        lista.append(l)
+                
+                opciones = []
+                self.opciones = []
+                
+                for item in lista:
+                    self.opciones.append(item)
+                    opciones.append(GtkSource.CompletionItem.new(item,
+                        item, None, None))
+                    
+                context.add_proposals(self, opciones, True)
+                
+        else:
+            ### Actualizando Autocompletado cuando está Visible.
+            text = texto_de_linea_en_edicion.split(".")[-1]
+            
+            new_opciones = []
+            opciones = []
+            
+            for opcion in self.opciones:
+                if opcion.startswith(text): # http://docs.python.org/release/2.5.2/lib/string-methods.html
+                    new_opciones.append(opcion)
+                    opciones.append(GtkSource.CompletionItem.new(opcion,
+                        opcion, None, None))
+                        
+            self.opciones = new_opciones
+            context.add_proposals(self, opciones, True)
+        
     def __set_imports(self, imports):
         """
         Guarda los datos para importaciones previas,
@@ -1236,7 +1356,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         
         import shelve
 
-        pathin = os.path.join("/tmp", "shelvein")
+        pathin = os.path.join("/dev/shm", "shelvein")
 
         archivo = shelve.open(pathin)
         archivo["Lista"] = imports
@@ -1250,7 +1370,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         
         import commands
 
-        pathin = os.path.join("/tmp", "shelvein")
+        pathin = os.path.join("/dev/shm", "shelvein")
         
         pathout = os.path.join(commands.getoutput(
             'python %s %s' % (
@@ -1269,7 +1389,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             archivo.close()
             
         return lista
-        
+    
     def __get_auto_completado_for_self(self):
         """
         Devuelve la lista de opciones posibles
@@ -1314,106 +1434,5 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
                     lista.append(objeto)
                     
         return lista
-    
-    def do_activate_proposal(self, dato1, dato2):
-        """
-        Cuando se selecciona y clickea
-        una posible solución.
-        """
         
-        pass
-    
-    def do_get_name(self, coso=None, coso2=None):
-        """
-        Devuelve el nombre del último
-        módulo al que se auto completó.
-        """
-        
-        pass
-
-    def do_populate(self, context):
-        """
-        Cuando se producen cambios en el buffer.
-        
-        Metodología para autocompletado:
-            * Importar todos los paquetes y módulos que se están
-                importando en el archivo sobre el cual estamos auto completando.
-            * Hacer el auto completado propiamente dicho, trabajando sobre
-                la línea de código que se está editando.
-        """
-        
-        ### Iterador de texto sobre el código actual.
-        textiter = self.buffer.get_iter_at_mark(self.buffer.get_insert())# Gtk.TextIter
-        
-        ### indice de linea activa.
-        indice_de_linea_activa = textiter.get_line()
-        
-        ### Texto de la linea activa.
-        texto_de_linea_en_edicion = textiter.get_slice(
-            self.buffer.get_iter_at_line(indice_de_linea_activa))
-        
-        ### Si hay un punto en la línea.
-        if "." in texto_de_linea_en_edicion:
-        
-            ### Si el punto está en la última palabra.
-            if "." in texto_de_linea_en_edicion.split()[-1]:
-                
-                ### Auto completado se hace sobre "."
-                if texto_de_linea_en_edicion.endswith("."):
-                    
-                    palabras = texto_de_linea_en_edicion.split()
-                    
-                    if palabras:
-                        ### Importar paquetes y modulos previos
-                        inicio = self.buffer.get_start_iter()
-                        texto = self.buffer.get_text(inicio, textiter, True)
-                        lineas = texto.splitlines()
-                        
-                        imports = []
-                        
-                        for linea in lineas:
-                            # FIXME: Analizar mejor los casos como ''', """, etc.
-                            if "import " in linea and not linea.startswith("#") and \
-                                not linea.startswith("\"") and not linea.startswith("'"):
-                                    imports.append(linea)
-
-                        ### ['import os', 'import sys', 'from os import path']
-                        ### Esto es [] si auto completado se hace antes de los imports
-                        
-                        ### Auto completado se hace sobre la última palabra
-                        palabra = palabras[-1]
-                        palabra = palabra.split("(")[-1] # Caso:  class Ventana(gtk.
-                        
-                        pals = palabra.split(".")[:-1]
-                        imports.append(pals) # ['import os', 'import sys', 'from os import path', ['gtk', 'gdk', '']]
-                        
-                        ### Guardar en un archivo.
-                        self.__set_imports(imports)
-                        
-                        ### Obtener lista para autocompletado.
-                        lista = self.__get_auto_completado()
-                        
-                        #FIXME: HACK para agregar opciones de "self." Debe mejorarse.
-                        if texto_de_linea_en_edicion.endswith("self."):
-                            for l in self.__get_auto_completado_for_self():
-                                lista.append(l)
-                            
-                        opciones = []
-                        
-                        for item in lista:
-                            opciones.append(GtkSource.CompletionItem.new(item,
-                                item, None, None))
-                            
-                        context.add_proposals(self, opciones, True)
-                        
-                else:
-                    # FIXME: Se está autocompletando.
-                    # Esto debe actualizar la lista de opciones disponibles,
-                    # Filtrando en la lista según el texto escrito por el usuario.
-                    text = texto_de_linea_en_edicion.split(".")[-1]
-                    
-            else:
-                context.add_proposals(self, [], True)
-            
-        else:
-            context.add_proposals(self, [], True)
+GObject.type_register(AutoCompletado)

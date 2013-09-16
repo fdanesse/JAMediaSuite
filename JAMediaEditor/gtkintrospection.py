@@ -48,7 +48,7 @@ def append_modulo(name):
             modulos[name] = __import__(name)
             
     except:
-        arch = open("/tmp/log", "w")
+        arch = open("/dev/shm/log", "w")
         arch.write(name)
         arch.close()
     
@@ -166,7 +166,7 @@ for key in modulos.keys():
     print key, modulos[key]'''
 
 ### Guardar la lista para autocompletar.
-path = os.path.join("/tmp", "shelveout")
+path = os.path.join("/dev/shm", "shelveout")
 
 archivo = shelve.open(path)
 archivo["Lista"] = lista
