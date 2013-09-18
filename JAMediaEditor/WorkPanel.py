@@ -23,6 +23,8 @@
 import os
 import mimetypes
 import pyobjects
+import commands
+import shelve
 
 import gi
 from gi.repository import Gtk
@@ -586,7 +588,7 @@ class SourceView(GtkSource.View):
         prov_words = GtkSource.CompletionWords.new(None, None)
         prov_words.register(self.get_buffer())
         
-        autocompletado = AutoCompletado(self.get_buffer())
+        autocompletado = AutoCompletado(self.get_buffer(), self.archivo)
         completion.add_provider(autocompletado)
         
         completion.set_property("remember-info-visibility", True)
@@ -1230,10 +1232,11 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
     
     __gtype_name__ = 'AutoCompletado'
 
-    def __init__(self, buffer):
+    def __init__(self, buffer, archivo):
         
         GObject.Object.__init__(self)
         
+        self.archivo = archivo
         self.buffer = buffer
         self.opciones = []
         self.priority = 1
@@ -1288,33 +1291,8 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             palabras = texto_de_linea_en_edicion.split()
             
             if palabras:
-                ### Importar paquetes y modulos previos
-                inicio = self.buffer.get_start_iter()
-                texto = self.buffer.get_text(inicio, textiter, True)
-                lineas = texto.splitlines()
-                
-                imports = []
-                
-                for linea in lineas:
-                    # FIXME: Analizar mejor los casos como 3 comillas.
-                    if "import " in linea and not linea.startswith("#") and \
-                        not linea.startswith("\"") and not linea.startswith("'"):
-                            imports.append(linea)
-
-                ### ['import os', 'import sys', 'from os import path']
-                ### Esto es [] si auto completado se hace antes de los imports
-                
-                ### Auto completado se hace sobre la última palabra
-                palabra = palabras[-1]
-                palabra = palabra.split("(")[-1] # Caso:  class Ventana(gtk.
-                
-                pals = palabra.split(".")[:-1]
-                imports.append(pals) # ['import os', 'import sys', 'from os import path', ['gtk', 'gdk', '']]
-                
-                ### Guardar en un archivo.
+                imports = self.__get_imports(palabras)
                 self.__set_imports(imports)
-                
-                ### Obtener lista para autocompletado.
                 lista = self.__get_auto_completado()
                 
                 #FIXME: HACK para agregar opciones de "self." Debe mejorarse.
@@ -1327,8 +1305,9 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
                 
                 for item in lista:
                     self.opciones.append(item)
-                    opciones.append(GtkSource.CompletionItem.new(item,
-                        item, None, None))
+                    opciones.append(
+                        GtkSource.CompletionItem.new(
+                            item, item, None, None))
                     
                 context.add_proposals(self, opciones, True)
                 
@@ -1342,11 +1321,50 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             for opcion in self.opciones:
                 if opcion.startswith(text): # http://docs.python.org/release/2.5.2/lib/string-methods.html
                     new_opciones.append(opcion)
-                    opciones.append(GtkSource.CompletionItem.new(opcion,
-                        opcion, None, None))
+                    opciones.append(GtkSource.CompletionItem.new(
+                        opcion, opcion, None, None))
                         
             self.opciones = new_opciones
             context.add_proposals(self, opciones, True)
+        
+    def __get_imports(self, palabras):
+        """
+        Devuelve las líneas dónde se hace import.
+        """
+        
+        inicio = self.buffer.get_start_iter()
+        end = self.buffer.get_end_iter()
+        
+        texto = self.buffer.get_text(inicio, end, True) # O hasta linea activa (textiter) ?
+        lineas = texto.splitlines()
+        
+        imports = []
+        for linea in lineas:
+            # FIXME: Analizar mejor los casos como 3 comillas.
+            if "import " in linea and not linea.startswith("#") and \
+                not linea.startswith("\"") and not linea.startswith("'"):
+                
+                text = str(linea).strip()
+                
+                if not text in imports:
+                    imports.append(text)
+        
+        palabra = palabras[-1]                  # Auto completado se hace sobre la última palabra
+        palabra = palabra.split("(")[-1]        # Caso:  class Ventana(gtk.
+        ultima = palabra.split(".")[:-1]        # Necesario para el caso en que se esté escribiendo algo como: from JAMedia.JAMedia import JAMediaPlayer
+        if ultima: imports.append(ultima)       # ['import os', 'from os import path', ['gtk', 'gdk', '']]
+        
+        """
+        Detalle de Casos:
+            import os
+            import os, sys, commands
+            from gi.repository import Gtk
+            from JAMedia.JAMedia import JAMediaPlayer
+            from JAMediaObjects.JAMFileSystem import describe_archivo
+            import JAMediaObjects.JAMediaGlobales as G
+        """
+        
+        return imports
         
     def __set_imports(self, imports):
         """
@@ -1354,8 +1372,6 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         para calculos de autocompletado.
         """
         
-        import shelve
-
         pathin = os.path.join("/dev/shm", "shelvein")
 
         archivo = shelve.open(pathin)
@@ -1368,27 +1384,33 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         para auto completar.
         """
         
-        import commands
-
         pathin = os.path.join("/dev/shm", "shelvein")
         
-        pathout = os.path.join(commands.getoutput(
-            'python %s %s' % (
-                os.path.join(PATH, "gtkintrospection.py"),
-                pathin)))
+        chdir = "_"
+        if self.archivo:
+            if os.path.exists(self.archivo):
+                chdir = os.path.dirname(self.archivo)
         
-        lista = []
-        
-        if os.path.exists(pathout):
-            ### Obtener lista para autocompletado.
-            
-            import shelve
-            
-            archivo = shelve.open(pathout)
-            lista = archivo["Lista"]
-            archivo.close()
-            
-        return lista
+        if chdir:
+            if os.path.exists(chdir):
+                temp = os.path.join(PATH, "gtkintrospection.py")
+                commands.getoutput('cp %s %s' % (temp, chdir))
+                temp = os.path.join(chdir, "gtkintrospection.py")
+                
+                pathout = os.path.join(commands.getoutput(
+                    'python %s %s %s' % (temp, pathin, chdir)))
+                
+                lista = []
+                if os.path.exists(pathout):
+                    ### Obtener lista para autocompletado.
+                    
+                    archivo = shelve.open(pathout)
+                    lista = archivo["Lista"]
+                    archivo.close()
+                    
+                os.remove(temp)
+                
+                return lista
     
     def __get_auto_completado_for_self(self):
         """
