@@ -93,13 +93,21 @@ def evaluar_import(im):
             return 0
         
         elif "." in im and not " as " in im and not "*" in im:
-            # from JAMediaObjects.JAMediaGstreamer import uno, dos
-            # from JAMedia.JAMedia import JAMediaPlayer
+            # from JAMedia.JAMedia import JAMediaPlayer, otros . . .
             return 1
         
+        elif not "." in im and not " as " in im and not "*" in im:
+            # from JAMedia import JAMediaPlayer, otros . . .
+            return 2
+        
     else:
-        pass
+        if not "." in im and not " as " in im and not "*" in im:
+            # import os, sys, commands
+            return 3
+        
         """
+        FIXME: recordar caso: import gi.repository - import gi.repository.Gtk
+        
         elif "." in im and " as " in im and not "*" in im:
             # import JAMediaObjects.JAMediaGstreamer as G
             return 2
@@ -107,14 +115,6 @@ def evaluar_import(im):
         elif "." in im and not " as " in im and "*" in im:
             # import JAMediaObjects.JAMediaGstreamer import uno, dos
             return 3
-        
-        else:
-            return 2
-            # import os
-            # import os, sys, commands
-            # from os import path
-            # import JAMediaObjects
-            # from JAMedia import JAMediaPlayer
         """
 
 """
@@ -172,13 +172,13 @@ for im in imports:
             except:
                 arch.write("\t\t0- No se pudo Cargar: %s\n" % str(mod))
                 
-    if valor == 1:
+    elif valor == 1:
         #arch.write("1- Intentando importar: %s\n" % str(im))
         
         temp_list = im.split()
         prev = temp_list[1]
         temp_list = temp_list[3:]
-        
+    
         for item in temp_list:
             name = item.replace(",", "").strip()
             modulos[name] = []
@@ -202,7 +202,50 @@ for im in imports:
                         pass
                 
             except:
+                # FIXME: caso: JAMediaObjects.JAMediaGstreamer.JAMediaBins JAMedia_Efecto_bin
+                # La solucion parece ser copiar el instrospector a ese directorio y hacer el import allí.
+                # Esto además cambiará el caso de importacion actual, ya que sería: from JAMediaBins JAMedia_Efecto_bin
                 arch.write("\t\t1- No se pudo importar: %s %s\n" % (str(prev), str(name)))
+                
+    elif valor == 2:
+        #arch.write("2- Intentando importar: %s\n" % str(im))
+        
+        temp_list = im.split()
+        prev = temp_list[1]
+        temp_list = temp_list[3:]
+    
+        for item in temp_list:
+            name = item.replace(",", "").strip()
+            modulos[name] = []
+            
+            try:
+                mod = __import__("%s.%s" % (prev, name))
+                modulos[name] = dir(mod)
+                
+            except:
+                # FIXME: caso: JAMediaObjects.JAMediaGstreamer.JAMediaBins JAMedia_Efecto_bin
+                # La solucion parece ser copiar el instrospector a ese directorio y hacer el import allí.
+                # Esto además cambiará el caso de importacion actual, ya que sería: from JAMediaBins JAMedia_Efecto_bin
+                arch.write("\t\t2- No se pudo importar: %s %s\n" % (str(prev), str(name)))
+                
+    elif valor == 3:
+        #arch.write("3- Intentando importar: %s\n" % str(im))
+        
+        temp_list = im.split()
+        #prev = temp_list[1]
+        mod_temp_list = temp_list[1:]
+        
+        for name in mod_temp_list:
+            name = name.replace(",", "").strip()
+            
+            try:
+                mod = __import__("%s" % name)
+                modulos[name] = dir(mod)
+                
+                arch.write("\t3- Se importó: %s\n" % str(mod))
+                
+            except:
+                arch.write("\t\t3- No se pudo importar: %s\n" % str(name))
                 
 '''
     if not "from " in im and not " *" in im and not " as" in im:

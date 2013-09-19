@@ -281,6 +281,15 @@ class Gnome_Notebook(Gtk.Notebook):
         ### Comenzar a generar el temporal
         self.activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
         
+        self.show_all()
+        
+    def setup_install(self, iconpath):
+        """
+        Recolecta la información necesaria para generar los
+        archivos de instalación y los presenta al usuario para
+        posibles correcciones.
+        """
+        
         ### Borrar anteriores
         if os.path.exists(self.activitydirpath):
             commands.getoutput("rm -r %s" % self.activitydirpath)
@@ -309,15 +318,6 @@ class Gnome_Notebook(Gtk.Notebook):
                 arch = open(archivo, "w")
                 arch.write("")
                 arch.close()
-        
-        self.show_all()
-        
-    def setup_install(self, iconpath):
-        """
-        Recolecta la información necesaria para generar los
-        archivos de instalación y los presenta al usuario para
-        posibles correcciones.
-        """
         
         self.iconpath = iconpath
         

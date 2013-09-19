@@ -333,7 +333,7 @@ class BasePanel(Gtk.Paned):
         if accion == "Nuevo Proyecto":
             dialog = DialogoProyecto(
                 parent_window = self.get_toplevel(),
-                title = "Crear Proyecto Nuevo")
+                title = "Crear Nuevo Proyecto")
             
             response = dialog.run()
             

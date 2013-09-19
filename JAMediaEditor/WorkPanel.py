@@ -588,7 +588,7 @@ class SourceView(GtkSource.View):
         prov_words = GtkSource.CompletionWords.new(None, None)
         prov_words.register(self.get_buffer())
         
-        autocompletado = AutoCompletado(self.get_buffer(), self.archivo)
+        autocompletado = AutoCompletado(self.get_buffer(), self.archivo, self)
         completion.add_provider(autocompletado)
         
         completion.set_property("remember-info-visibility", True)
@@ -1232,10 +1232,11 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
     
     __gtype_name__ = 'AutoCompletado'
 
-    def __init__(self, buffer, archivo):
+    def __init__(self, buffer, archivo, parent):
         
         GObject.Object.__init__(self)
         
+        self.parent = parent
         self.archivo = archivo
         self.buffer = buffer
         self.opciones = []
@@ -1288,12 +1289,14 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         
         ### Auto completado se hace sobre "."
         if texto_de_linea_en_edicion.endswith("."):
-            palabras = texto_de_linea_en_edicion.split()
+            expresion = str(texto_de_linea_en_edicion.split()[-1][:-1]).strip()
             
-            if palabras:
-                imports = self.__get_imports(palabras)
-                self.__set_imports(imports)
-                lista = self.__get_auto_completado()
+            if expresion:
+                if "(" in expresion: # Para el caso en que el usuario se encuentra escribiendo class V(Gtk.
+                    expresion = expresion.split("(")[-1].strip()
+                    
+                imports = self.__get_imports()
+                lista = self.__get_list(imports, expresion)
                 
                 #FIXME: HACK para agregar opciones de "self." Debe mejorarse.
                 #if texto_de_linea_en_edicion.endswith("self."):
@@ -1308,7 +1311,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
                     opciones.append(
                         GtkSource.CompletionItem.new(
                             item, item, None, None))
-                    
+                
                 context.add_proposals(self, opciones, True)
                 
         else:
@@ -1327,7 +1330,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             self.opciones = new_opciones
             context.add_proposals(self, opciones, True)
         
-    def __get_imports(self, palabras):
+    def __get_imports(self):
         """
         Devuelve las líneas dónde se hace import.
         """
@@ -1349,35 +1352,45 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
                 if not text in imports:
                     imports.append(text)
         
-        palabra = palabras[-1]                  # Auto completado se hace sobre la última palabra
-        palabra = palabra.split("(")[-1]        # Caso:  class Ventana(gtk.
-        ultima = palabra.split(".")[:-1]        # Necesario para el caso en que se esté escribiendo algo como: from JAMedia.JAMedia import JAMediaPlayer
-        if ultima: imports.append(ultima)       # ['import os', 'from os import path', ['gtk', 'gdk', '']]
-        
-        """
-        Detalle de Casos:
-            import os
-            import os, sys, commands
-            from gi.repository import Gtk
-            from JAMedia.JAMedia import JAMediaPlayer
-            from JAMediaObjects.JAMFileSystem import describe_archivo
-            import JAMediaObjects.JAMediaGlobales as G
-        """
-        
         return imports
         
-    def __set_imports(self, imports):
+    def __get_list(self, imports, expresion):
         """
-        Guarda los datos para importaciones previas,
-        para calculos de autocompletado.
+        Devuelve la lista de opciones para autocompletado.
         """
         
-        pathin = os.path.join("/dev/shm", "shelvein")
-
-        archivo = shelve.open(pathin)
-        archivo["Lista"] = imports
-        archivo.close()
+        if self.archivo:
+            workpath = os.path.dirname(self.archivo)
+            
+        elif self.parent.get_toplevel().base_panel.proyecto:
+            workpath = self.parent.get_toplevel().base_panel.proyecto["path"]
+            
+        else:
+            home = os.environ["HOME"]
+            workpath = os.path.join(
+                home, 'BatovideWorkSpace')
+        '''
+        print imports
+        for im in imports:
+            if not expresion in im:
+                imports.remove(im)
+        print imports'''
         
+        from SpyderHack.SpyderHack import Run
+        dict = Run(workpath, expresion, imports)
+        
+        #return dict.get(expresion, [])
+        dict = dict.get(expresion, [])
+        if dict:
+            print "Path:", dict.get("path", [])
+            print "Doc:", dict.get("doc", [])
+            
+            return dict.get("lista", [])
+        
+        else:
+            return []
+        
+    '''
     def __get_auto_completado(self):
         """
         Devuelve la lista de opciones posibles
@@ -1455,6 +1468,6 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
                 for objeto in objetos:
                     lista.append(objeto)
                     
-        return lista
+        return lista'''
         
 GObject.type_register(AutoCompletado)
