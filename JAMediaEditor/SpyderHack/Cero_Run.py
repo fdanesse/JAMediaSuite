@@ -27,6 +27,7 @@ mod_temp_list = temp_list[3:]
 
 for name in mod_temp_list:
     name = name.replace(",", "").strip()
+    arch.write("Intentando Importar: %s\n" % str(name))
     
     try:
         dict = {

@@ -14,7 +14,7 @@ import commands
 BASEPATH = os.path.dirname(__file__)
 
 arch = open("/tmp/JAMediaEditorLog.txt", "w") ### LOG
-
+'''
 def UnoRun(im, modulos):
     """
     Casos:
@@ -56,7 +56,7 @@ def UnoRun(im, modulos):
             # La solucion parece ser copiar el instrospector a ese directorio y hacer el import allí.
             # Esto además cambiará el caso de importacion actual, ya que sería: from JAMediaBins JAMedia_Efecto_bin
             #arch.write("\t\t1- No se pudo importar: %s %s\n" % (str(prev), str(name)))
-            pass
+            pass'''
             
 def evaluar_import(im):
     
@@ -87,7 +87,7 @@ def get_dir(im, valor, workpath):
         from JAMediaObjects.JAMediaGstreamer.JAMediaBins import JAMedia_Efecto_bin, JAMedia_Camara_bin
         
     Devuelve:
-        directorio, archivo o "" según corresponda.
+        directorio, archivo o None según corresponda.
         "dir", "file" o None según valor anterior.
         Lista de Módulos, clases o funciones a importar.
     """
@@ -96,25 +96,33 @@ def get_dir(im, valor, workpath):
         prevs = im.split()[1]       # JAMediaObjects.JAMediaGstreamer.JAMediaBins
         imports = im.split()[3:]    # JAMedia_Efecto_bin,JAMedia_Camara_bin # JAMedia_Efecto_bin, JAMedia_Camara_bin
         
-        dirs = prevs.split(".")     # [JAMediaObjects, JAMediaGstreamer, JAMediaBins]
+        temp_imports = []
+        for imp in imports:
+            
+            if "," in imp:
+                list = imp.split(",")
+                
+                for l in list:
+                    temp_imports.append(l)
+                    
+            else:
+                temp_imports.append(imp)
+        imports = temp_imports
         
-        #print "prevs:", prevs
-        #print "imports:", imports
-        #print "dirs:", dirs
-        #print "temp_path", temp_path, os.path.exists(temp_path)
+        dirs = prevs.split(".")
         
         temp_path = workpath
         for dir in dirs:
             temp_path = os.path.join(temp_path, dir)
             
+        if os.path.exists("%s.py" % temp_path):
+            return ("%s.py" % temp_path, "file", imports)
+        
         if os.path.exists(temp_path):
             return (temp_path, "dir", imports)
         
-        elif os.path.exists("%s.py" % temp_path):
-            return ("%s.py" % temp_path, "file", imports)
-        
         else:
-            return ("", None, imports)
+            return (None, None, imports)
     
 def Run(workpath, expresion, imports):
     """
@@ -140,7 +148,8 @@ def Run(workpath, expresion, imports):
         if valor == 0:
             ### Todo Gtk 3
             ejecutable = os.path.join(BASEPATH, "Cero_Run.py")
-            commands.getoutput('python %s %s %s' % (ejecutable, path, im))
+            imp = im.replace(",", " ")
+            commands.getoutput('python %s %s %s' % (ejecutable, path, imp))
             
             if not "from" in expresion and not "import" in expresion and "." in expresion:
                 ejecutable = os.path.join(BASEPATH, "Dynamic_Cero_Run.py")
@@ -155,8 +164,15 @@ def Run(workpath, expresion, imports):
                 #   Importa los módulos.
                 #   Guarda la información.
                 #   Retorna un valor.
-                pass
-            
+                
+                ejecutable = os.path.join(relative_path, "UnoDir_Run.py")
+                uno = os.path.join(BASEPATH, "UnoDir_Run.py")
+                commands.getoutput('cp %s %s' % (uno, relative_path))
+                commands.getoutput('python %s %s %s' % (ejecutable, path, lista_imports))
+                os.remove(ejecutable)
+                
+                #if not "from" in expresion and not "import" in expresion and "." in expresion:
+                
             elif tipo == "file":
                 # En este caso, lo que se importa es una lista de Clases o Funciones, por lo tanto:
                 #   Su espyder se mueve os.dirname(relative_path).

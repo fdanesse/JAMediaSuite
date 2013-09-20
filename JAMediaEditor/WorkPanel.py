@@ -1369,11 +1369,13 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             home = os.environ["HOME"]
             workpath = os.path.join(
                 home, 'BatovideWorkSpace')
+                
         '''
-        print imports
+        li = []
         for im in imports:
-            if not expresion in im:
-                imports.remove(im)
+            if expresion in im:
+                li.append(im)
+        imports = li
         print imports'''
         
         from SpyderHack.SpyderHack import Run
