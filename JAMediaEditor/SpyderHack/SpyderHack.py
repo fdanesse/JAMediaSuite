@@ -5,6 +5,12 @@
 #       Flavio Danesse <fdanesse@activitycentral.com>
 #       ActivityCentral
 
+"""
+    Cero_Run.py         Importaciones sobre python-gi
+    UnoDir_Run.py       Importaciones de módulos desde un path.
+    UnoDir2_Run.py      Importaciones de Clases en un módulo desde un path.
+"""
+
 import os
 import sys
 import shelve
@@ -62,19 +68,25 @@ def evaluar_import(im):
     
     if "from" in im:
         if "gi.repository" in im and not " as " in im and not "*" in im:
+            # Importaciones exclusivas de python-gi
             return 0
         
         elif "." in im and not " as " in im and not "*" in im:
-            # from JAMedia.JAMedia import JAMediaPlayer, otros . . .
+            # Se importan módulos o funciones desde un path o un archivo.
+            #   get_dir devuelve None
+            #   from JAMedia.JAMedia import JAMediaPlayer, otros . . .
             return 1
         
         elif not "." in im and not " as " in im and not "*" in im:
+            # Se importan Clases
             # from JAMedia import JAMediaPlayer, otros . . .
             return 2
         
     else:
         if not "." in im and not " as " in im and not "*" in im:
-            # import os, sys, commands
+            # Se importan múdolos.
+            #   get_dir devuelve None
+            #   import os, sys, commands
             return 3
         
         elif "." in im and " as " in im:
@@ -91,6 +103,8 @@ def get_dir(im, valor, workpath):
         "dir", "file" o None según valor anterior.
         Lista de Módulos, clases o funciones a importar.
     """
+    
+    print "*", valor, im
     
     if valor == 1:
         prevs = im.split()[1]       # JAMediaObjects.JAMediaGstreamer.JAMediaBins
@@ -126,9 +140,11 @@ def get_dir(im, valor, workpath):
     
 def Run(workpath, expresion, imports):
     """
-    path = Donde debe guardar el diccionario.
     workpath = Directorio base donde debe hurgar Spyder.
+    expresion = lo que el usuario está escribiendo.
+    todas las lineas donde se hace import en el archivo activo.
     """
+    
     '''
     print "*** Frase que llama a SpyderHack:", expresion
     print "*** workpath:", workpath
@@ -144,54 +160,63 @@ def Run(workpath, expresion, imports):
     for im in imports:
         
         valor = evaluar_import(im)
+        is_dir = get_dir(im, valor, workpath)
         
-        if valor == 0:
-            ### Todo Gtk 3
-            ejecutable = os.path.join(BASEPATH, "Cero_Run.py")
-            imp = im.replace(",", " ")
-            commands.getoutput('python %s %s %s' % (ejecutable, path, imp))
-            
-            if not "from" in expresion and not "import" in expresion and "." in expresion:
-                ejecutable = os.path.join(BASEPATH, "Dynamic_Cero_Run.py")
-                commands.getoutput('python %s %s %s' % (ejecutable, path, expresion))
-            
-        if valor == 1:
-            (relative_path, tipo, lista_imports) = get_dir(im, valor, workpath)
-            
-            if tipo == "dir":
-                # En este caso, lo que se importa es una lista de módulos, por lo tanto:
-                #   Su Spyder se mueve a relative_path.
-                #   Importa los módulos.
-                #   Guarda la información.
-                #   Retorna un valor.
+        if is_dir:
+            if valor == 0:
+                ### Todo Gtk 3
+                ejecutable = os.path.join(BASEPATH, "Cero_Run.py")
+                imp = im.replace(",", " ")
+                commands.getoutput('python %s %s %s' % (ejecutable, path, imp))
                 
-                ejecutable = os.path.join(relative_path, "UnoDir_Run.py")
-                uno = os.path.join(BASEPATH, "UnoDir_Run.py")
-                commands.getoutput('cp %s %s' % (uno, relative_path))
-                commands.getoutput('python %s %s %s' % (ejecutable, path, lista_imports))
-                os.remove(ejecutable)
+                if not "from" in expresion and not "import" in expresion and "." in expresion:
+                    ejecutable = os.path.join(BASEPATH, "Dynamic_Cero_Run.py")
+                    commands.getoutput('python %s %s %s' % (ejecutable, path, expresion))
                 
-                #if not "from" in expresion and not "import" in expresion and "." in expresion:
+            elif valor == 1:
+                (relative_path, tipo, lista_imports) = is_dir
                 
-            elif tipo == "file":
-                # En este caso, lo que se importa es una lista de Clases o Funciones, por lo tanto:
-                #   Su espyder se mueve os.dirname(relative_path).
-                #   Importa el módulo.
-                #   Importa las clases o funciones solicitadas.
-                #   Guarda la información.
-                #   Retorna un Valor.
-                pass
+                if tipo == "dir":
+                    # En este caso, lo que se importa es una lista de módulos, por lo tanto:
+                    #   Su Spyder se mueve a relative_path.
+                    #   Importa los módulos.
+                    #   Guarda la información.
+                    #   Retorna un valor.
+                    
+                    ejecutable = os.path.join(relative_path, "UnoDir_Run.py")
+                    uno = os.path.join(BASEPATH, "UnoDir_Run.py")
+                    commands.getoutput('cp %s %s' % (uno, relative_path))
+                    commands.getoutput('python %s %s %s' % (ejecutable, path, lista_imports))
+                    os.remove(ejecutable)
+                    
+                    #if not "from" in expresion and not "import" in expresion and "." in expresion:
+                    
+                elif tipo == "file":
+                    # En este caso, lo que se importa es una lista de Clases o Funciones, por lo tanto:
+                    #   Su espyder se mueve os.dirname(relative_path).
+                    #   Importa el módulo.
+                    #   Importa las clases o funciones solicitadas.
+                    #   Guarda la información.
+                    #   Retorna un Valor.
+                    
+                    relative_path = os.path.dirname(relative_path)
+                    modulo = im.split()[1].split(".")[-1].strip()
+                    
+                    ejecutable = os.path.join(relative_path, "UnoDir2_Run.py")
+                    dos = os.path.join(BASEPATH, "UnoDir2_Run.py")
+                    commands.getoutput('cp %s %s' % (dos, relative_path))
+                    commands.getoutput('python %s %s %s %s' % (ejecutable, path, modulo, lista_imports))
+                    os.remove(ejecutable)
+                    
+                    #if not "from" in expresion and not "import" in expresion and "." in expresion:
+                    
+                else:
+                    print "Este caso no debiera existir: Caso 1 - tipo = None", relative_path, tipo, lista_imports
+                    
+        else:
+            #print get_dir(im, valor, workpath), "***", im, valor
+            pass
             
-            else:
-                # En este caso:
-                #   Se ejecuta el Spyder sin moverlo de lugar.
-                #   Importa las clases, funciones o modulos solicitados.
-                #   Guarda la información.
-                #   Retorna un Valor.
-                pass
-            
-            #UnoRun(im, modulos)
-    
     modulos = {}
     archivo = shelve.open(path)
     

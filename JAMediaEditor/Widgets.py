@@ -1265,8 +1265,10 @@ class WidgetAutores(Gtk.Box):
         remover = get_boton(Gtk.STOCK_REMOVE, "Eliminar")
         agregar = get_boton(Gtk.STOCK_ADD, "Agregar")
         
-        frame1 = gtk.Frame("Nombre")
-        frame2 = gtk.Frame("Mail")
+        frame1 = Gtk.Frame()
+        frame1.set_label("Nombre")
+        frame2 = Gtk.Frame()
+        frame1.set_label("Mail")
         
         frame1.add(entry1)
         frame2.add(entry2)
