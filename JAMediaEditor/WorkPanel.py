@@ -45,6 +45,8 @@ from Widgets import DialogoErrores
 import JAMediaObjects
 from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
 
+from SpyderHack.SpyderHack import SpyderHack
+
 PATH = os.path.dirname(__file__)
 
 home = os.environ["HOME"]
@@ -1242,6 +1244,8 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         self.opciones = []
         self.priority = 1
         
+        self.spyder_hack = SpyderHack()
+        
     ''' GtkSource.CompletionProvider
     activate_proposal(*args, **kwargs)
     get_activation(*args, **kwargs)
@@ -1287,16 +1291,17 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         texto_de_linea_en_edicion = textiter.get_slice(
             self.buffer.get_iter_at_line(indice_de_linea_activa))       ### Texto de la linea activa.
         
+        expresion = ''
         ### Auto completado se hace sobre "."
         if texto_de_linea_en_edicion.endswith("."):
-            expresion = str(texto_de_linea_en_edicion.split()[-1][:-1]).strip()
             
+            expresion = str(texto_de_linea_en_edicion.split()[-1][:-1]).strip()
+         
             if expresion:
                 if "(" in expresion: # Para el caso en que el usuario se encuentra escribiendo class V(Gtk.
                     expresion = expresion.split("(")[-1].strip()
                     
-                imports = self.__get_imports()
-                lista = self.__get_list(imports, expresion)
+                lista = self.__get_list(expresion)
                 
                 #FIXME: HACK para agregar opciones de "self." Debe mejorarse.
                 #if texto_de_linea_en_edicion.endswith("self."):
@@ -1330,31 +1335,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             self.opciones = new_opciones
             context.add_proposals(self, opciones, True)
         
-    def __get_imports(self):
-        """
-        Devuelve las líneas dónde se hace import.
-        """
-        
-        inicio = self.buffer.get_start_iter()
-        end = self.buffer.get_end_iter()
-        
-        texto = self.buffer.get_text(inicio, end, True) # O hasta linea activa (textiter) ?
-        lineas = texto.splitlines()
-        
-        imports = []
-        for linea in lineas:
-            # FIXME: Analizar mejor los casos como 3 comillas.
-            if "import " in linea and not linea.startswith("#") and \
-                not linea.startswith("\"") and not linea.startswith("'"):
-                
-                text = str(linea).strip()
-                
-                if not text in imports:
-                    imports.append(text)
-        
-        return imports
-        
-    def __get_list(self, imports, expresion):
+    def __get_list(self, expresion):
         """
         Devuelve la lista de opciones para autocompletado.
         """
@@ -1370,55 +1351,9 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             workpath = os.path.join(
                 home, 'BatovideWorkSpace')
         
-        from SpyderHack.SpyderHack import Run
-        dict = Run(workpath, expresion, imports)
-        
-        #return dict.get(expresion, [])
-        dict = dict.get(expresion, [])
-        if dict:
-            print "Path:", dict.get("path", [])
-            print "Doc:", dict.get("doc", [])
-            
-            return dict.get("lista", [])
-        
-        else:
-            return []
+        return self.spyder_hack.Run(workpath, expresion, self.buffer)
         
     '''
-    def __get_auto_completado(self):
-        """
-        Devuelve la lista de opciones posibles
-        para auto completar.
-        """
-        
-        pathin = os.path.join("/dev/shm", "shelvein")
-        
-        chdir = "_"
-        if self.archivo:
-            if os.path.exists(self.archivo):
-                chdir = os.path.dirname(self.archivo)
-        
-        if chdir:
-            if os.path.exists(chdir):
-                temp = os.path.join(PATH, "gtkintrospection.py")
-                commands.getoutput('cp %s %s' % (temp, chdir))
-                temp = os.path.join(chdir, "gtkintrospection.py")
-                
-                pathout = os.path.join(commands.getoutput(
-                    'python %s %s %s' % (temp, pathin, chdir)))
-                
-                lista = []
-                if os.path.exists(pathout):
-                    ### Obtener lista para autocompletado.
-                    
-                    archivo = shelve.open(pathout)
-                    lista = archivo["Lista"]
-                    archivo.close()
-                    
-                os.remove(temp)
-                
-                return lista
-    
     def __get_auto_completado_for_self(self):
         """
         Devuelve la lista de opciones posibles
