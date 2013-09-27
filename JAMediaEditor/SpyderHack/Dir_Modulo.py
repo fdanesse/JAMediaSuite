@@ -6,23 +6,11 @@
 #       ActivityCentral
 
 """
-    ¡¡ Sólo para Importar módulos !!
+    ¡¡ Sólo para Importar módulos del "Sistema"!!
     
 Casos:
     import os, sys, commands
-    from JAMediaObjects.JAMediaGstreamer import JAMediaBins, otros . . .
     
-    FIXME:
-        No funciona en casos donde se importa algo que se encuentra
-        en un directorio superior, por ejemplo, si tenemos la estructura
-        de directorios:
-            
-            JAMediaObjetcs/
-                ...
-            JAMedia/
-                Widgets.py
-                
-        Si en Widgets.py dice: import JAMediaObjetcs, SpyderHack falla.
 """
 
 import os
@@ -32,13 +20,18 @@ import shelve
 MIPATH = os.path.dirname(__file__)
 
 path = os.path.join("/dev/shm", "shelvein")
-base_key = sys.argv[1]
-name = sys.argv[2]
+
+try:
+    base_key = sys.argv[1]
+    name = sys.argv[2]
+    
+except:
+    sys.exit(0)
 
 if MIPATH:
     if os.path.exists(MIPATH):
         os.chdir(os.path.join(MIPATH))
-
+        
 dict = {
     "lista": [],
     "doc": "",
@@ -49,6 +42,7 @@ try:
     mod = __import__("%s" % name)
     
     dict["lista"] = dir(mod)
+    
     '''
     if name == "pygame":
         dict["lista"] = dir(mod)
@@ -91,3 +85,4 @@ try:
     
 except:
     print "Dir_Modulo: No se pudo importar: %s\n" % name
+    sys.exit(0)

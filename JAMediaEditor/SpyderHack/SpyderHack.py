@@ -5,6 +5,42 @@
 #       Flavio Danesse <fdanesse@activitycentral.com>
 #       ActivityCentral
 
+"""
+Casos:
+    from gi import repository, importer
+    from gi.repository import Gtk, Gst
+    
+    from gi import repository as x
+    from gi.repository import Gtk as X
+    from gi.repository.Gtk import Window as W
+    
+    import gi, os, sys
+    import gi.repository, os.path, etc . . .
+    
+    import gi as Z
+    import gi.repository as D
+    import gi.repository.Gtk as Z
+
+    from gtk import gdk, Window, etc . . .
+    from gtk.gdk import Color, etc . . .
+    import os, gtk, sys
+    import gtk.gdk
+    from os import path as X
+    from gtk.gdk import Color as Z
+    import os as X
+    import os.path as X
+    from os import *                                        # No funcional - muy ineficiente.
+    from os.path import *                                   # No funcional - muy ineficiente.
+
+    from JAMedia import JAMediaPlayer
+    from JAMedia.JAMedia import JAMediaPlayer
+    import JAMediaObjects, JAMedia.JAMedia, JAMediaEditor
+    import JAMediaObjects
+    import JAMediaObjects.JAMediaGstreamer
+    import JAMedia
+    import JAMedia.JAMedia
+"""
+
 import os
 import sys
 import shelve
@@ -39,86 +75,32 @@ def Import_Module_gi_From(base_key, modulo, attrib):
     ejecutable = os.path.join(BASEPATH, "Dir_Attrib_gi.py")
     print commands.getoutput('python %s %s %s %s' % (ejecutable, base_key, modulo, attrib))
 
-'''
-def get_dir(im, valor, workpath):
-    """
-    Modelo:
-        from JAMediaObjects.JAMediaGstreamer.JAMediaBins import JAMedia_Efecto_bin, JAMedia_Camara_bin
-        
-    Devuelve:
-        directorio, archivo o None según corresponda.
-        "dir", "file" o None según valor anterior.
-        Lista de Módulos, clases o funciones a importar.
-    """
+### Modulos del Usuario.
+def Import_Module_True_Path(base_key, real_path, modulo):
     
-    if valor == 1:
-        
-        prevs = im.split()[1]       # JAMediaObjects.JAMediaGstreamer.JAMediaBins
-        imports = im.split()[3:]    # JAMedia_Efecto_bin,JAMedia_Camara_bin # JAMedia_Efecto_bin, JAMedia_Camara_bin
-        
-        temp_imports = []
-        for imp in imports:
-            
-            if "," in imp:
-                list = imp.split(",")
-                
-                for l in list:
-                    temp_imports.append(l)
-                    
-            else:
-                temp_imports.append(imp)
-        imports = temp_imports
-        
-        dirs = prevs.split(".")
-        
-        temp_path = workpath
-        for dir in dirs:
-            temp_path = os.path.join(temp_path, dir)
-            
-        if os.path.exists("%s.py" % temp_path):
-            return ("%s.py" % temp_path, "file", imports)
-        
-        elif os.path.exists(temp_path):
-            return (temp_path, "dir", imports)
-        
-        else:
-            return (None, None, imports)
-        
-    elif valor == 2 or valor == 3:
-        
-        if valor == 3: print "*", valor, im
-        
-        prevs = im.split()[1]       # JAMediaObjects.JAMediaGstreamer.JAMediaBins
-        imports = im.split()[3:]    # JAMedia_Efecto_bin,JAMedia_Camara_bin # JAMedia_Efecto_bin, JAMedia_Camara_bin
-        
-        temp_imports = []
-        for imp in imports:
-            
-            if "," in imp:
-                list = imp.split(",")
-                
-                for l in list:
-                    temp_imports.append(l)
-                    
-            else:
-                temp_imports.append(imp)
-        imports = temp_imports
-        
-        temp_path = os.path.join(workpath, prevs)
-        
-        if os.path.exists("%s.py" % temp_path):
-            return ("%s.py" % temp_path, "file", imports)
-        
-        elif os.path.exists(temp_path):
-            return (temp_path, "dir", imports)
-        
-        else:
-            return (None, None, imports)
-        
-    else:
-        #print "*", valor, im
-        pass
-'''
+    file = os.path.join(BASEPATH, "Dir_Modulo_True.py")
+    commands.getoutput('cp %s %s' % (file, real_path))
+    ejecutable = os.path.join(real_path, "Dir_Modulo_True.py")
+    print commands.getoutput('python %s %s %s' % (ejecutable, base_key, modulo))
+    os.remove(ejecutable)
+
+### Módulos y Clases del usuario desde un path o módulo.
+def Import_Module_True_Path_From(base_key, real_path, modulo, attrib):
+    
+    file = os.path.join(BASEPATH, "Dir_Attrib_True.py")
+    commands.getoutput('cp %s %s' % (file, real_path))
+    ejecutable = os.path.join(real_path, "Dir_Attrib_True.py")
+    print commands.getoutput('python %s %s %s %s' % (ejecutable, base_key, modulo, attrib))
+    os.remove(ejecutable)
+    
+### Paquetes del Usuario.
+def Import_Pakage_True_Path(base_key, real_path, modulo):
+    
+    file = os.path.join(BASEPATH, "Dir_Pakage_True.py")
+    commands.getoutput('cp %s %s' % (file, real_path))
+    ejecutable = os.path.join(real_path, "Dir_Pakage_True.py")
+    print commands.getoutput('python %s %s %s' % (ejecutable, base_key, modulo))
+    os.remove(ejecutable)
 
 def get_imports(buffer):
     """
@@ -166,17 +148,17 @@ def determine_path(real_path):
     un archivo o no existe.
     """
     
+    valor = []
     if os.path.exists(real_path):
         if os.path.isdir(real_path):
-            return "dir"
+            valor.append("dir")
         
-    elif not os.path.exists(real_path):
-        posible = "%s.py" % real_path
-        if os.path.exists(posible):
-            if os.path.isfile(posible):
-                return "file"
-            
-    return False
+    posible = "%s.py" % real_path
+    if os.path.exists(posible):
+        if os.path.isfile(posible):
+            valor.append("file")
+        
+    return valor
     
 def parse_modulos(imp):
     """
@@ -328,274 +310,399 @@ class SpyderHack():
         if not attrib in self.freeze:
             self.freeze.append(attrib)
             
-    def __Gestione_False_Path(self, imp, base_key):
+    def __gi_import_uno(self, base_key, imp):
         """
-        Cuando no se conoce el path desde donde se importa,
-        no es un paquete o modulo de usuario.
+        Todo lo que se importa es de python-gi
         """
+        ### Verificado.
         
-        if is_py_gi(imp):
-            if not " as " in imp and not " *" in imp:
-                if imp.startswith("from "):
-                    
-                    attribs = parse_modulos(imp.split()[3:])
-                    mods = parse_path_modulos(imp.split()[1])
-                    
-                    if len(mods) == 1:
-                        #   from gi import repository, importer
-                        # FIXME: Este caso no funciona.
-                        #for attrib in attribs:
-                        #    Import_Module_gi(base_key, attrib)
-                        #    self.__append_to_freze(attrib)
-                        pass
-                    
-                    elif len(mods) == 2:
-                        #   from gi.repository import Gtk, Gst
-                        for attrib in attribs:
-                            Import_Module_gi(base_key, attrib)
-                            self.__append_to_freze(attrib)
-                            
-                    else:
-                        print "Caso imposible en __Gestione_False_Path:", imp
-                        
-                elif imp.startswith("import "):
-                    
-                    modulos = parse_modulos(imp.split()[1:])
-                    
-                    for modulo in modulos:
-                        mods = parse_path_modulos(modulo)
-                        
-                        if len(mods) == 1:
-                            # import gi, os, sys
-                            Import_Module_False_Path(base_key, modulo)
-                            self.__append_to_freze(modulo)
-                        
-                        elif len(mods) == 2:
-                            # import gi.repository, os.path, etc . . .
-                            if modulo == "gi.repository":
-                                Import_Module_False_Path(base_key, modulo)
-                                self.__append_to_freze(modulo)
-                            
-                            else:
-                                Import_Module_False_Path_From(base_key, mods[0], mods[1])
-                                convert_alias(base_key, mods[1], "%s.%s" % (mods[0], mods[1]))
-                                self.__append_to_freze("%s.%s" % (mods[0], mods[1]))
-                        
-                        else:
-                            print "Caso imposible en __Gestione_False_Path:", imp
-                            
-                else:
-                    print "Caso no previsto en __Gestione_False_Path:", imp
-                    
-            elif " as " in imp and not " *" in imp:
-                if imp.startswith("from "):
-                    modulo = imp.split()[1]
-                    attrib = imp.split()[3]
-                    alias = imp.split()[-1]
-                    
-                    mods = parse_path_modulos(modulo)
-                    
-                    if len(mods) == 1:
-                        #   from gi import repository as x
-                        # FIXME: Este caso no funciona.
-                        pass
+        attribs = parse_modulos(imp.split()[3:])
+        mods = parse_path_modulos(imp.split()[1])
+        
+        if len(mods) == 1:
+            #   from gi import repository, importer
+            # FIXME: Este caso no funciona.
+            pass
+        
+        elif len(mods) == 2:
+            #   from gi.repository import Gtk, Gst
+            for attrib in attribs:
+                Import_Module_gi(base_key, attrib)
+                self.__append_to_freze(attrib)
                 
-                    elif len(mods) == 2:
-                        #   from gi.repository import Gtk as X
-                        Import_Module_gi(base_key, attrib)
-                        if not attrib in self.freeze:
-                            convert_alias(base_key, attrib, alias)
-                        else:
-                            make_alias(base_key, attrib, alias)
-                    
-                    elif len(mods) == 3:
-                        #   from gi.repository.Gtk import Window as W
-                        Import_Module_gi_From(base_key, mods[-1], attrib)
-                        if not attrib in self.freeze:
-                            convert_alias(base_key, attrib, alias)
-                        else:
-                            make_alias(base_key, attrib, alias)
-                            
-                    else:
-                        print "Caso imposible en __Gestione_False_Path:", imp
-                        
-                elif imp.startswith("import "):
-                    modulo = imp.split()[1]
-                    alias = imp.split()[-1]
-                    
-                    mods = parse_path_modulos(modulo)
-                    
-                    if len(mods) == 1:
-                        #   import gi as Z
-                        Import_Module_False_Path(base_key, modulo)
-                        if not modulo in self.freeze:
-                            convert_alias(base_key, modulo, alias)
-                        else:
-                            make_alias(base_key, modulo, alias)
-                    
-                    elif len(mods) == 2:
-                        #   import gi.repository as D
-                        Import_Module_False_Path(base_key, modulo)
-                        if not modulo in self.freeze:
-                            convert_alias(base_key, modulo, alias)
-                        else:
-                            make_alias(base_key, modulo, alias)
-                    
-                    elif len(mods) == 3:
-                        #   import gi.repository.Gtk as Z
-                        attrib = mods[2]
-                        Import_Module_gi(base_key, attrib)
-                        if not attrib in self.freeze:
-                            convert_alias(base_key, attrib, alias)
-                        else:
-                            make_alias(base_key, attrib, alias)
-                    
-                    else:
-                        print "Caso imposible en __Gestione_False_Path:", imp
-                        
-                else:
-                    print "Caso no previsto en __Gestione_False_Path:", imp
-                    
+        else:
+            print "Caso imposible en __gi_import_uno:", imp
+            
+    def __gi_import_dos(self, base_key, imp):
+        """
+        Se importan módulos o paquetes de python-gi y además,
+        módulos o paquete extras, algunos pueden ser
+        módulos o paquetes del usuario.
+        """
+        ### Verificado.
+        
+        modulos = parse_modulos(imp.split()[1:])
+        
+        for modulo in modulos:
+            real_path = traduce_path(self.workpath, modulo)
+            tipo = determine_path(real_path)
+            
+            if tipo:
+                self.__Gestione_True_Path_Uno(tipo, modulo, real_path, base_key, imp)
+            
             else:
-                print "Caso no previsto en __Gestione_False_Path:", imp
+                mods = parse_path_modulos(modulo)
+                
+                if len(mods) == 1:
+                    # import gi, os, sys
+                    Import_Module_False_Path(base_key, modulo)
+                    self.__append_to_freze(modulo)
+                
+                elif len(mods) == 2:
+                    # import gi.repository, os.path, etc . . .
+                    if modulo == "gi.repository":
+                        Import_Module_False_Path(base_key, modulo)
+                        self.__append_to_freze(modulo)
+                    
+                    else:
+                        Import_Module_False_Path_From(base_key, mods[0], mods[1])
+                        convert_alias(base_key, mods[1], "%s.%s" % (mods[0], mods[1]))
+                        self.__append_to_freze("%s.%s" % (mods[0], mods[1]))
+                
+                else:
+                    print "Caso imposible en __gi_import_dos:", imp
+                
+    def __gi_import_tres(self, base_key, imp):
+        """
+        Solo se importan modulos, paquetes o clases
+        de python-gi creando alias.
+        """
+        ### Verificado.
+        
+        modulo = imp.split()[1]
+        attrib = imp.split()[3]
+        alias = imp.split()[-1]
+        
+        mods = parse_path_modulos(modulo)
+        
+        if len(mods) == 1:
+            #   from gi import repository as x
+            # FIXME: Este caso no funciona.
+            pass
+    
+        elif len(mods) == 2:
+            #   from gi.repository import Gtk as X
+            Import_Module_gi(base_key, attrib)
+            if not attrib in self.freeze:
+                convert_alias(base_key, attrib, alias)
+            else:
+                make_alias(base_key, attrib, alias)
+        
+        elif len(mods) == 3:
+            #   from gi.repository.Gtk import Window as W
+            Import_Module_gi_From(base_key, mods[-1], attrib)
+            if not attrib in self.freeze:
+                convert_alias(base_key, attrib, alias)
+            else:
+                make_alias(base_key, attrib, alias)
+                
+        else:
+            print "Caso imposible en __gi_import_tres:", imp
+            
+    def __gi_import_cuatro(self, base_key, imp):
+        """
+        Solo se importan modulos o paquetes
+        de python-gi creando alias.
+        """
+        ### Verificado.
+        
+        modulo = imp.split()[1]
+        alias = imp.split()[-1]
+        
+        mods = parse_path_modulos(modulo)
+        
+        if len(mods) == 1:
+            #   import gi as Z
+            Import_Module_False_Path(base_key, modulo)
+            if not modulo in self.freeze:
+                convert_alias(base_key, modulo, alias)
+            else:
+                make_alias(base_key, modulo, alias)
+        
+        elif len(mods) == 2:
+            #   import gi.repository as D
+            Import_Module_False_Path(base_key, modulo)
+            if not modulo in self.freeze:
+                convert_alias(base_key, modulo, alias)
+            else:
+                make_alias(base_key, modulo, alias)
+        
+        elif len(mods) == 3:
+            #   import gi.repository.Gtk as Z
+            attrib = mods[2]
+            Import_Module_gi(base_key, attrib)
+            if not attrib in self.freeze:
+                convert_alias(base_key, attrib, alias)
+            else:
+                make_alias(base_key, attrib, alias)
         
         else:
-            if not " as " in imp and not " *" in imp:
-                if imp.startswith("from "):
-                    attribs = parse_modulos(imp.split()[3:])
-                    mods = parse_path_modulos(imp.split()[1])
-                    
-                    if len(mods) == 1:
-                        #   from gtk import gdk, Window, etc . . .
-                        for attrib in attribs:
-                            Import_Module_False_Path_From(base_key, mods[0], attrib)
-                            self.__append_to_freze(attrib)
-                            
-                    elif len(mods) == 2:
-                        #   from gtk.gdk import Color, etc . . .
-                        for attrib in attribs:
-                            Import_Module_False_Path_From_Recursive(base_key, mods[0], mods[1], attrib)
-                            convert_alias(base_key, "%s.%s.%s" % (mods[0], mods[1], attrib), attrib)
-                            self.__append_to_freze(attrib)
-                            
-                    else:
-                        print "Caso imposible en __Gestione_False_Path:", imp
-                    
-                elif imp.startswith("import "):
-                    modulos = parse_modulos(imp.split()[1:])
-                    
-                    for modulo in modulos:
-                        mods = parse_path_modulos(modulo)
-                        
-                        if len(mods) == 1:
-                            #   import os, gtk, sys
-                            Import_Module_False_Path(base_key, mods[0])
-                            self.__append_to_freze(mods[0])
-                            
-                        elif len(mods) == 2:
-                            #   import gtk.gdk
-                            Import_Module_False_Path_From(base_key, mods[0], mods[1])
-                            convert_alias(base_key, mods[1], "%s.%s" % (mods[0], mods[1]))
-                            self.__append_to_freze("%s.%s" % (mods[0], mods[1]))
-                            
-                        else:
-                            print "Caso imposible en __Gestione_False_Path, startswith('import'):", imp, len(mods)
-                            
-                else:
-                    print "1- Caso no previsto en __Gestione_False_Path:", imp
-                    
-            elif " as " in imp and not " *" in imp:
-                if imp.startswith("from "):
-                    attrib = imp.split()[3]
-                    modulo = imp.split()[1]
-                    alias = imp.split()[5]
-                    
-                    modulos = parse_path_modulos(modulo)
-                    
-                    if len(modulos) == 1:
-                        #   from os import path as X
-                        Import_Module_False_Path_From(base_key, modulo, attrib)
-                        if not attrib in self.freeze:
-                            convert_alias(base_key, attrib, alias)
-                        else:
-                            make_alias(base_key, attrib, alias)
-                        
-                    elif len(modulos) == 2:
-                        #   from gtk.gdk import Color as Z
-                        Import_Module_False_Path_From_Recursive(base_key, modulos[0], modulos[1], attrib) # gtk.gdk.Color
-                        convert_alias(base_key, "%s.%s.%s" % (modulos[0], modulos[1], attrib), alias) # Z = gtk.gdk.Color
-                        
-                    else:
-                        print "Caso imposible en __Gestione_False_Path:", imp
-                        
-                elif imp.startswith("import "):
-                    modulo = imp.split()[1]
-                    alias = imp.split()[-1]
-                    
-                    modulos = parse_path_modulos(modulo)
-                    
-                    if len(modulos) == 1:
-                        #   import os as X
-                        Import_Module_False_Path(base_key, modulo)
-                        if not modulo in self.freeze:
-                            convert_alias(base_key, modulo, alias)
-                        else:
-                            make_alias(base_key, modulo, alias)
-                        
-                    elif len(modulos) == 2:
-                        #   import os.path as X
-                        Import_Module_False_Path_From(base_key, modulos[0], modulos[1])
-                        if not modulos[1] in self.freeze:
-                            convert_alias(base_key, modulos[1], alias)
-                        else:
-                            make_alias(base_key, modulos[1], alias)
-                        
-                    else:
-                        print "Caso imposible en __Gestione_False_Path:", imp
-
-                else:
-                    print "2- Caso no previsto en __Gestione_False_Path:", imp
-                    
-            elif "from " in imp and " *" in imp:
-                ### Casos:
-                #   from os import *
-                #   from os.path import *
-                
-                pass
-                # FIXME: Extremadamente ineficiente.
-                """
-                modulo = imp.split()[1]
-                
-                modulos = parse_path_modulos(modulo)
-                
-                if len(modulos) == 1:
-                    Import_Module_False_Path(base_key, modulo)
-                    
-                    modulos = shelve.open(path)
-                    attribs = modulos[base_key].get(modulo, {}).get("lista", [])
-                    modulos.close()
-                    
-                    for attrib in attribs:
-                        Import_Module_False_Path_From(base_key, modulo, attrib)
-                        self.__append_to_freze(attrib)
-                        
-                    # FIXME: borrar el modulo del dict
-                    
-                elif len(modulos) == 2:
-                    pass
-                
-                else:
-                    print "Caso imposible en __Gestione_False_Path:", imp"""
-                    
-            else:
-                print "3- Caso no previsto en __Gestione_False_Path:", imp
+            print "Caso imposible en __gi_import_cuatro:", imp
             
-            # FIXME: Se puede Agregar Verificacion para casos Como el de JAMediaObjetcs.
-            
-    def __Gestione_True_Path(self, imp, base_key):
+    def __Gestione_gi(self, imp, base_key):
         
-        print "--- PATH:", self.workpath
-    
+        if_as = " as " in imp
+        if_asterisco = " *" in imp
+        is_from = imp.startswith("from ")
+        is_import = imp.startswith("import ")
+        
+        if not if_as and not if_asterisco:
+            if is_from:
+                self.__gi_import_uno(base_key, imp)
+                
+            elif is_import:
+                self.__gi_import_dos(base_key, imp)
+                
+            else:
+                print "Caso no previsto en __Gestione_gi:", imp
+                
+        elif if_as and not if_asterisco:
+            if is_from:
+                self.__gi_import_tres(base_key, imp)
+                
+            elif is_import:
+                self.__gi_import_cuatro(base_key, imp)
+                
+            else:
+                print "Caso no previsto en __Gestione_gi:", imp
+                
+        else:
+            print "Caso no previsto en __Gestione_gi:", imp
+        
+    def __false_path_uno(self, imp, base_key):
+        """
+        Se importa un módulo paquete o clase desde un path
+        """
+        ### Revisar.
+        
+        attribs = parse_modulos(imp.split()[3:])
+        mods = parse_path_modulos(imp.split()[1])
+        
+        if len(mods) == 1:
+            #   from gtk import gdk, Window, etc . . .
+            for attrib in attribs:
+                Import_Module_False_Path_From(base_key, mods[0], attrib)
+                self.__append_to_freze(attrib)
+                
+        elif len(mods) == 2:
+            #   from gtk.gdk import Color, etc . . .
+            for attrib in attribs:
+                Import_Module_False_Path_From_Recursive(base_key, mods[0], mods[1], attrib)
+                convert_alias(base_key, "%s.%s.%s" % (mods[0], mods[1], attrib), attrib)
+                self.__append_to_freze(attrib)
+                
+        else:
+            print "Caso imposible en __false_path_uno:", imp
+            
+    def __false_path_dos(self, imp, base_key):
+        """
+        Se importa un módulo o un paquete.
+        """
+        ### Verificado.
+        
+        modulos = parse_modulos(imp.split()[1:])
+        
+        for modulo in modulos:
+            real_path = traduce_path(self.workpath, modulo)
+            tipo = determine_path(real_path)
+            
+            if tipo:
+                self.__Gestione_True_Path_Uno(tipo, modulo, real_path, base_key, imp)
+            
+            else:
+                mods = parse_path_modulos(modulo)
+                
+                if len(mods) == 1:
+                    #   import os, gtk, sys
+                    Import_Module_False_Path(base_key, mods[0])
+                    self.__append_to_freze(mods[0])
+                    
+                elif len(mods) == 2:
+                    #   import gtk.gdk
+                    Import_Module_False_Path_From(base_key, mods[0], mods[1])
+                    if not mods[1] in self.freeze:
+                        convert_alias(base_key, mods[1], "%s.%s" % (mods[0], mods[1]))
+                    else:
+                        make_alias(base_key, mods[1], "%s.%s" % (mods[0], mods[1]))
+                    
+                else:
+                    print "Caso imposible en __false_path_dos:", imp, len(mods)
+                
+    def __false_path_tres(self, imp, base_key):
+        """
+        Se importa un módulo, paquete o clase creando un alias.
+        """
+        ### Revisar.
+        
+        attrib = imp.split()[3]
+        modulo = imp.split()[1]
+        alias = imp.split()[5]
+        
+        modulos = parse_path_modulos(modulo)
+        
+        if len(modulos) == 1:
+            #   from os import path as X
+            Import_Module_False_Path_From(base_key, modulo, attrib)
+            if not attrib in self.freeze:
+                convert_alias(base_key, attrib, alias)
+            else:
+                make_alias(base_key, attrib, alias)
+            
+        elif len(modulos) == 2:
+            #   from gtk.gdk import Color as Z
+            Import_Module_False_Path_From_Recursive(base_key, modulos[0], modulos[1], attrib)   # gtk.gdk.Color
+            convert_alias(base_key, "%s.%s.%s" % (modulos[0], modulos[1], attrib), alias)       # Z = gtk.gdk.Color
+            
+        else:
+            print "Caso imposible en __false_path_tres:", imp
+            
+    def __false_path_cuatro(self, imp, base_key):
+        """
+        Se importa un paquete o un módulo construyendo un alias.
+        """
+        ### Revisar.
+        
+        modulo = imp.split()[1]
+        alias = imp.split()[-1]
+        
+        modulos = parse_path_modulos(modulo)
+        
+        if len(modulos) == 1:
+            #   import os as X
+            Import_Module_False_Path(base_key, modulo)
+            if not modulo in self.freeze:
+                convert_alias(base_key, modulo, alias)
+            else:
+                make_alias(base_key, modulo, alias)
+            
+        elif len(modulos) == 2:
+            #   import os.path as X
+            Import_Module_False_Path_From(base_key, modulos[0], modulos[1])
+            if not modulos[1] in self.freeze:
+                convert_alias(base_key, modulos[1], alias)
+            else:
+                make_alias(base_key, modulos[1], alias)
+            
+        else:
+            print "Caso imposible en __false_path_cuatro:", imp
+            
+    def __false_path_cinco(self, imp, base_key):
+        pass
+        #   from os import *
+        #   from os.path import *
+        # FIXME: Extremadamente ineficiente.
+        """
+        modulo = imp.split()[1]
+        
+        modulos = parse_path_modulos(modulo)
+        
+        if len(modulos) == 1:
+            Import_Module_False_Path(base_key, modulo)
+            
+            modulos = shelve.open(path)
+            attribs = modulos[base_key].get(modulo, {}).get("lista", [])
+            modulos.close()
+            
+            for attrib in attribs:
+                Import_Module_False_Path_From(base_key, modulo, attrib)
+                self.__append_to_freze(attrib)
+                
+            # FIXME: borrar el modulo del dict
+            
+        elif len(modulos) == 2:
+            pass
+        
+        else:
+            print "Caso imposible en __false_path_cinco:", imp
+        """
+        
+    def __Gestione_False_Path(self, imp, base_key):
+        
+        if_as = " as " in imp
+        if_asterisco = " *" in imp
+        is_from = imp.startswith("from ")
+        is_import = imp.startswith("import ")
+        
+        if not if_as and not if_asterisco:
+            if is_from:
+                self.__false_path_uno(imp, base_key)
+                
+            elif is_import:
+                self.__false_path_dos(imp, base_key)
+                
+            else:
+                print "Caso no previsto en __Gestione_False_Path:", imp
+                
+        elif if_as and not if_asterisco:
+            if is_from:
+                self.__false_path_tres(imp, base_key)
+                
+            elif is_import:
+                self.__false_path_cuatro(imp, base_key)
+                
+            else:
+                print "Caso no previsto en __Gestione_False_Path:", imp
+                
+        elif is_from and if_asterisco:
+            self.__false_path_cinco(imp, base_key)
+
+        else:
+            print "Caso no previsto en __Gestione_False_Path:", imp
+            
+        
+    def __Gestione_True_Path_Uno(self, tipo, modulo, real_path, base_key, imp):
+        """
+        Se importa un paquete o módulo del Usuario.
+        """
+        
+        mods = parse_path_modulos(modulo)
+        
+        if "dir" in tipo and "file" in tipo:
+            # Directorio y Archivo con el mismo nombre en el mismo path.
+            # Siempre que esto ocurre, se importa el paquete.
+            Import_Pakage_True_Path(base_key, os.path.dirname(real_path), mods[0])
+            convert_alias(base_key, "import", mods[0])
+            self.__append_to_freze(mods[0])
+        
+        elif "dir" in tipo:
+            if len(mods) == 1:
+                #   import JAMediaObjects
+                Import_Pakage_True_Path(base_key, os.path.dirname(real_path), mods[0])
+                convert_alias(base_key, "import", mods[0])
+                self.__append_to_freze(mods[0])
+            
+            elif len(mods) == 2:
+                #   import JAMediaObjects.JAMediaGstreamer
+                Import_Pakage_True_Path(base_key, os.path.dirname(real_path), mods[1])
+                convert_alias(base_key, "import", "%s.%s" % (mods[0], mods[1]))
+                
+            else:
+                print "Caso imposible en __gi_import_dos:", imp
+        
+        elif "file" in tipo:
+            if len(mods) == 1:
+                #   import JAMedia
+                Import_Module_True_Path(base_key, os.path.dirname(real_path), mods[0])
+                self.__append_to_freze(mods[0])
+                
+            elif len(mods) == 2:
+                #   import JAMedia.JAMedia
+                Import_Module_True_Path_From(base_key, os.path.dirname(os.path.dirname(real_path)), modulo, mods[1])
+                convert_alias(base_key, "import", "%s.%s" % (mods[0], mods[1]))
+                
+            else:
+                print "Caso imposible en __gi_import_dos:", imp
+                
     def Run(self, workpath, expresion, buffer):
         """
         Recibe:
@@ -603,6 +710,12 @@ class SpyderHack():
             expresion = lo que el usuario está escribiendo.
             buffer = texto del archivo donde el usuario esta escribiendo.
         """
+        
+        # FIXME:
+        #   Las importaciones se renuevan cuando cambian en el archivo en edición.
+        #   Esto tiene el problema de que si se hacen cambios en un módulo que es
+        #   importado desde el archivo en edición, esos cambios no se reflejan en
+        #   las importaciones.
         
         #if os.path.exists(path): os.remove(path)
         
@@ -621,12 +734,10 @@ class SpyderHack():
             
             ### Crear información de nuevos imports
             for imp in self.imports:
-                real_path = traduce_path(workpath, imp.split()[1])
-                is_path = determine_path(real_path)
                 
-                if is_path:
-                    self.__Gestione_True_Path(imp, self.__id)
-                
+                if is_py_gi(imp):
+                    self.__Gestione_gi(imp, self.__id)
+                    
                 else:
                     self.__Gestione_False_Path(imp, self.__id)
         
@@ -648,78 +759,3 @@ class SpyderHack():
         
         return dict.get(self.__id, {}).get(expresion, {}).get("lista", [])
     
-    '''
-    for im in imports:
-        
-        valor = evaluar_import(im)
-        is_dir = get_dir(im, valor, workpath)
-
-            elif valor == 1:
-                (relative_path, tipo, lista_imports) = is_dir
-                
-                if tipo == "dir":
-                    # En este caso, lo que se importa es una lista de módulos, por lo tanto:
-                    #   Su Spyder se mueve a relative_path.
-                    #   Importa los módulos.
-                    #   Guarda la información.
-                    #   Retorna un valor.
-                    
-                    ejecutable = os.path.join(relative_path, "Dir_Modulo.py")
-                    uno = os.path.join(BASEPATH, "Dir_Modulo.py")
-                    commands.getoutput('cp %s %s' % (uno, relative_path))
-                    commands.getoutput('python %s %s %s' % (ejecutable, path, lista_imports))
-                    os.remove(ejecutable)
-                    
-                    #if not "from" in expresion and not "import" in expresion and "." in expresion:
-                    
-                elif tipo == "file":
-                    # En este caso, lo que se importa es una lista de Clases o Funciones, por lo tanto:
-                    #   Su spyder se mueve os.dirname(relative_path).
-                    #   Importa el módulo.
-                    #   Importa las clases o funciones solicitadas.
-                    #   Guarda la información.
-                    #   Retorna un Valor.
-                    
-                    relative_path = os.path.dirname(relative_path)
-                    modulo = im.split()[1].split(".")[-1].strip()
-                    
-                    ejecutable = os.path.join(relative_path, "Dir_Attrib.py")
-                    dos = os.path.join(BASEPATH, "Dir_Attrib.py")
-                    commands.getoutput('cp %s %s' % (dos, relative_path))
-                    commands.getoutput('python %s %s %s %s' % (ejecutable, path, modulo, lista_imports))
-                    os.remove(ejecutable)
-                    
-                    #if not "from" in expresion and not "import" in expresion and "." in expresion:
-                    
-                else:
-                    print "Este caso no debiera existir: Caso 1 - tipo = None", relative_path, tipo, lista_imports
-                    
-            elif valor == 2:
-                # En este caso, lo que se importa es una lista de módulos,
-                # Clases o Funciones desde el path actual, por lo tanto:
-                #   Su spyder no se mueve.
-                #   Importa el módulo.
-                #   Importa las clases o funciones solicitadas.
-                #   Guarda la información.
-                #   Retorna un Valor.
-                
-                (relative_path, tipo, lista_imports) = is_dir
-                
-                if tipo == "dir" and os.path.exists(relative_path):
-                    ejecutable = os.path.join(relative_path, "Dir_Modulo.py")
-                    dos = os.path.join(BASEPATH, "Dir_Modulo.py")
-                    commands.getoutput('cp %s %s' % (dos, relative_path))
-                    commands.getoutput('python %s %s %s' % (ejecutable, path, lista_imports))
-                    os.remove(ejecutable)
-                
-                    #if not "from" in expresion and not "import" in expresion and "." in expresion:
-            
-                elif tipo == None:
-                    modulo = im.split()[1]
-                    ejecutable = os.path.join(BASEPATH, "Dir_Attrib.py")
-                    commands.getoutput('python %s %s %s %s' % (ejecutable, path, modulo, lista_imports))
-                
-                    #if not "from" in expresion and not "import" in expresion and "." in expresion:
-                    
-                else:
-                    "Caso 2 no previsto:", im'''

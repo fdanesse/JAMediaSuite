@@ -51,11 +51,16 @@ import shelve
 MIPATH = os.path.dirname(__file__)
 
 path = os.path.join("/dev/shm", "shelvein")
-base_key = sys.argv[1]
-modulo1 = sys.argv[2] # gtk.gdk
-modulo2 = sys.argv[3] # gdk
-modulo3 = sys.argv[4] # Color
 
+try:
+    base_key = sys.argv[1]
+    modulo1 = sys.argv[2] # gtk.gdk
+    modulo2 = sys.argv[3] # gdk
+    modulo3 = sys.argv[4] # Color
+
+except:
+    sys.exit(0)
+    
 if MIPATH:
     if os.path.exists(MIPATH):
         os.chdir(os.path.join(MIPATH))
@@ -95,3 +100,5 @@ try:
     
 except:
     print "Recursive_Dir_Attrib: No se pudo importar: %s %s %s\n" % (modulo1, modulo2, modulo3)
+    sys.exit(0)
+    

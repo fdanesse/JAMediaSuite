@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   Dir_Attrib.py por:
+#   Dir_Modulo_True.py por:
 #       Flavio Danesse <fdanesse@activitycentral.com>
 #       ActivityCentral
 
 """
-    ¡¡ Sólo para Importar Clases !!
-    
-    mod = __import__("%s" % modulo)
-    attr_name = getattr(mod, name)
+    ¡¡ Sólo para Importar módulos del Usuario!!
     
 Casos:
-    from JAMedia.JAMedia import JAMediaPlayer, otros . . .
+    import JAMedia
+    from JAMediaObjects.JAMediaGstreamer import JAMediaBins, otros . . .
     
     FIXME:
         No funciona en casos donde se importa algo que se encuentra
@@ -37,54 +35,66 @@ path = os.path.join("/dev/shm", "shelvein")
 
 try:
     base_key = sys.argv[1]
-    modulo = sys.argv[2]
-    name = sys.argv[3]
+    name = sys.argv[2]
     
 except:
-    #print "sys.argv[3] no existe en Dir_Attrib"
     sys.exit(0)
 
 if MIPATH:
     if os.path.exists(MIPATH):
         os.chdir(os.path.join(MIPATH))
-    
+        
 dict = {
-"lista": [],
-"doc": "",
-"path": "",
-}
-
+    "lista": [],
+    "doc": "",
+    "path": "",
+    }
+    
 try:
-    mod = __import__("%s" % modulo)
-
-    attr_name = getattr(mod, name)
-
-    #for n in dir(attr_name):
-    #    if not n.endswith("__"):
-    #        dict["lista"].append(n)
-
-    dict["lista"] = dir(attr_name)
-
+    mod = __import__("%s" % name)
+    
+    #dict["lista"] = dir(mod)
+    
+    for n in dir(mod):
+        if not n.endswith("__"):
+            dict["lista"].append(n)
+            
+    '''
+    for func in dir(mod):
+        try:
+            attr_name = getattr(mod, func).__name__
+            dict["lista"].append(attr_name)
+            
+        except:
+            """
+            Quita:
+                __builtins__
+                __doc__
+                __file__
+                __name__
+                __package__
+            """
+            pass'''
+        
     try:
         dict["doc"] = mod.__doc__
         dict["path"] = mod.__file__
         
     except:
         pass
-
+    
     modulos = shelve.open(path)
     if not modulos.get(base_key, False):
         modulos[base_key] = {}
-
+    
     key_dict = {}
     for key in modulos[base_key].keys():
         key_dict[key] = modulos[base_key][key]
         
-    key_dict[name] = dict                       ### attrib
+    key_dict[name] = dict
     modulos[base_key] = key_dict
     modulos.close()
     
 except:
-    print "Dir_Attrib: No se pudo importar: %s\n" % name
+    print "Dir_Modulo_True: No se pudo importar: %s\n" % name
     sys.exit(0)
-    

@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   Dir_Attrib.py por:
+#   Dir_Attrib_True.py por:
 #       Flavio Danesse <fdanesse@activitycentral.com>
 #       ActivityCentral
 
 """
-    ¡¡ Sólo para Importar Clases !!
+    ¡¡ Sólo para Importar Modulos del Usuario desde un path
+    o Clases en um módulo del Usuario !!
     
     mod = __import__("%s" % modulo)
     attr_name = getattr(mod, name)
     
 Casos:
-    from JAMedia.JAMedia import JAMediaPlayer, otros . . .
+    import JAMedia.Widgets
+    from JAMedia.JAMedia import JAMediaPlayer
     
     FIXME:
         No funciona en casos donde se importa algo que se encuentra
@@ -59,12 +61,12 @@ try:
 
     attr_name = getattr(mod, name)
 
-    #for n in dir(attr_name):
-    #    if not n.endswith("__"):
-    #        dict["lista"].append(n)
+    for n in dir(attr_name):
+        if not n.endswith("__"):
+            dict["lista"].append(n)
 
-    dict["lista"] = dir(attr_name)
-
+    #dict["lista"] = dir(attr_name)
+    
     try:
         dict["doc"] = mod.__doc__
         dict["path"] = mod.__file__
@@ -80,11 +82,11 @@ try:
     for key in modulos[base_key].keys():
         key_dict[key] = modulos[base_key][key]
         
-    key_dict[name] = dict                       ### attrib
+    key_dict["import"] = dict
     modulos[base_key] = key_dict
     modulos.close()
     
 except:
-    print "Dir_Attrib: No se pudo importar: %s\n" % name
+    print "Dir_Attrib_True: No se pudo importar: %s\n" % name
     sys.exit(0)
     

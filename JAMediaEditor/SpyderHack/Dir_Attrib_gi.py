@@ -15,10 +15,10 @@ import sys
 import shelve
 
 path = os.path.join("/dev/shm", "shelvein")
-base_key = sys.argv[1]
-modulo = sys.argv[2]
 
 try:
+    base_key = sys.argv[1]
+    modulo = sys.argv[2]
     attrib = sys.argv[3]
     
 except:
@@ -59,4 +59,5 @@ try:
     
 except:
     print "Dir_Attrib_gi: No se pudo importar: %s\n" % attrib
+    sys.exit(0)
     
