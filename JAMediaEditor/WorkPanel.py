@@ -33,6 +33,8 @@ from gi.repository import Pango
 from gi.repository import Gdk
 from gi.repository import GLib
 
+import JAMediaObjects
+
 from Widgets import My_FileChooser
 from Widgets import DialogoFormato
 from Widgets import DialogoAlertaSinGuardar
@@ -41,9 +43,7 @@ from Widgets import DialogoBuscar
 from Widgets import DialogoReemplazar
 from Widgets import DialogoErrores
 
-import JAMediaObjects
-from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
-
+from JAMediaTerminal import JAMediaTerminal
 from SpyderHack.SpyderHack import SpyderHack
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]

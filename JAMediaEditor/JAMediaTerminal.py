@@ -31,13 +31,16 @@ from gi.repository import GLib
 
 BASEPATH = os.path.dirname(__file__)
 
-from JAMediaGlobales import get_separador
-from JAMediaGlobales import get_boton
-from JAMediaGlobales import get_pixels
+import JAMediaObjects
+JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+from JAMediaObjects.JAMediaGlobales import get_separador
+from JAMediaObjects.JAMediaGlobales import get_boton
+from JAMediaObjects.JAMediaGlobales import get_pixels
 
 Width_Button = 0.5
 
-FAMILIES = Gtk.Window().get_pango_context().list_families()
+#FAMILIES = Gtk.Window().get_pango_context().list_families()
 
 class JAMediaTerminal(Gtk.Box):
     """
@@ -213,7 +216,7 @@ class NoteBookTerminal(Gtk.Notebook):
         hbox = Gtk.HBox()
         
         archivo = os.path.join(
-            BASEPATH,
+            JAMediaObjectsPath,
             "Iconos", "button-cancel.svg")
             
         boton = get_boton(archivo,
@@ -512,7 +515,7 @@ class ToolbarTerminal(Gtk.Toolbar):
         
         ### Construcción.
         archivo = os.path.join(
-            BASEPATH,
+            JAMediaObjectsPath,
             "Iconos", "edit-copy.svg")
             
         boton = get_boton(archivo,
@@ -522,7 +525,7 @@ class ToolbarTerminal(Gtk.Toolbar):
         self.insert(boton, -1)
         
         archivo = os.path.join(
-            BASEPATH,
+            JAMediaObjectsPath,
             "Iconos", "editpaste.svg")
             
         boton = get_boton(archivo,
@@ -536,7 +539,7 @@ class ToolbarTerminal(Gtk.Toolbar):
         
         ### Botón Formato.
         archivo = os.path.join(
-            BASEPATH,
+            JAMediaObjectsPath,
             "Iconos", "font.svg")
             
         boton = get_boton(archivo,
@@ -547,7 +550,7 @@ class ToolbarTerminal(Gtk.Toolbar):
         
         ### Botón Agregar.
         archivo = os.path.join(
-            BASEPATH,
+            JAMediaObjectsPath,
             "Iconos", "tab-new.svg")
             
         boton = get_boton(archivo,
@@ -561,7 +564,7 @@ class ToolbarTerminal(Gtk.Toolbar):
             
         ### Botón bash.
         archivo = os.path.join(
-            BASEPATH,
+            JAMediaObjectsPath,
             "Iconos", "bash.svg")
             
         boton = get_boton(archivo,
@@ -572,7 +575,7 @@ class ToolbarTerminal(Gtk.Toolbar):
         
         ### Botón python.
         archivo = os.path.join(
-            BASEPATH,
+            JAMediaObjectsPath,
             "Iconos", "python.svg")
             
         boton = get_boton(archivo,
