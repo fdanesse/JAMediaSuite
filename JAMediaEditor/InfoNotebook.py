@@ -539,6 +539,8 @@ class Introspeccion(Gtk.TreeView):
         model = self.get_model()
         item = model.get_iter_first()
 
+        if not item: return
+    
         self.get_selection().select_iter(item)
         first_path = model.get_path(item)
         self.scroll_to_cell(first_path)

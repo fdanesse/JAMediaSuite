@@ -261,7 +261,10 @@ class Menu(Gtk.MenuBar):
             
         ### Items del menú Ver
         item = Gtk.MenuItem()
-        item.get_child().destroy()
+        try:
+            item.get_child().destroy()
+        except:
+            pass
         hbox = Gtk.HBox()
         hbox.pack_start(Gtk.CheckButton(), False, False, 0)
         label = Gtk.Label("Numeros de línea")
@@ -272,7 +275,10 @@ class Menu(Gtk.MenuBar):
         menu_ver.append(item)
         
         item = Gtk.MenuItem()
-        item.get_child().destroy()
+        try:
+            item.get_child().destroy()
+        except:
+            pass
         hbox = Gtk.HBox()
         button = Gtk.CheckButton()
         button.set_active(True)
@@ -284,7 +290,10 @@ class Menu(Gtk.MenuBar):
         menu_ver.append(item)
         
         item = Gtk.MenuItem()
-        item.get_child().destroy()
+        try:
+            item.get_child().destroy()
+        except:
+            pass
         hbox = Gtk.HBox()
         button = Gtk.CheckButton()
         button.set_active(True)
@@ -1550,9 +1559,9 @@ class ToolbarBusquedas(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        boton = get_boton(Gtk.STOCK_GO_BACK, "Anterior")
-        boton.connect("clicked", self.__emit_accion)
-        self.insert(boton, -1)
+        self.anterior = get_boton(Gtk.STOCK_GO_BACK, "Anterior")
+        self.anterior.connect("clicked", self.__emit_accion)
+        self.insert(self.anterior, -1)
         
         item = Gtk.ToolItem()
         item.set_expand(True)
@@ -1563,13 +1572,16 @@ class ToolbarBusquedas(Gtk.Toolbar):
         item.add(self.entry)
         self.insert(item, -1)
         
-        boton = get_boton(Gtk.STOCK_GO_FORWARD, "Siguiente")
-        boton.connect("clicked", self.__emit_accion)
-        self.insert(boton, -1)
+        self.siguiente = get_boton(Gtk.STOCK_GO_FORWARD, "Siguiente")
+        self.siguiente.connect("clicked", self.__emit_accion)
+        self.insert(self.siguiente, -1)
         
         self.entry.connect("changed", self.__emit_buscar)
         self.show_all()
         
+        self.anterior.set_sensitive(False)
+        self.siguiente.set_sensitive(False)
+
     def __emit_accion(self, widget):
         """
         Cuando se hace click en anterior y siguiente.
@@ -1582,6 +1594,14 @@ class ToolbarBusquedas(Gtk.Toolbar):
         Cuando cambia el texto a buscar.
         """
         
+        if widget.get_text():
+            self.anterior.set_sensitive(True)
+            self.siguiente.set_sensitive(True)
+            
+        else:
+            self.anterior.set_sensitive(False)
+            self.siguiente.set_sensitive(False)
+            
         self.emit("buscar", widget.get_text())
         
 class DialogoAlertaSinGuardar(Gtk.Dialog):

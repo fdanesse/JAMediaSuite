@@ -816,7 +816,13 @@ class SourceView(GtkSource.View):
         elif accion == "Pegar":
             clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
             texto = clipboard.wait_for_text()
+            
             if texto != None:
+                if buffer.get_selection_bounds():
+                    start, end = buffer.get_selection_bounds()
+                    texto_seleccion = buffer.get_text(start, end, 0) ### Texto selección
+                    buffer.delete(start, end)
+                
                 buffer.insert_at_cursor(texto)
         
         elif accion == "Cortar":
@@ -1340,7 +1346,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             workpath = os.path.dirname(self.archivo)
             
         elif self.parent.get_toplevel().base_panel.proyecto:
-            workpath = self.parent.get_toplevel().base_panel.proyecto["path"]
+            workpath = self.parent.get_toplevel().base_panel.proyecto.get("path", "")
             
         else:
             home = os.environ["HOME"]
