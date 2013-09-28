@@ -2300,24 +2300,12 @@ class Credits(Gtk.Dialog):
         
         self.set_border_width(15)
 
-        tabla = Gtk.Table(columns=2, rows=4, homogeneous=False)
+        imagen = Gtk.Image()
         
-        tabla.attach_defaults(Gtk.Label("Desarrollado por: "), 0, 2, 0, 1)
-        tabla.attach_defaults(Gtk.Label("Para: "), 0, 1, 2, 3)
-        tabla.attach_defaults(Gtk.Label("y: "), 0, 1, 3, 4)
+        imagen.set_from_file(
+            os.path.join(BASEPATH,
+            "Imagenes", "about.png"))
         
-        ac = Gtk.Image()
-        bt = Gtk.Image()
-        ce = Gtk.Image()
-        
-        ac.set_from_file(os.path.join(BASEPATH, "Imagenes", "activitycentral.png"))
-        bt.set_from_file(os.path.join(BASEPATH, "Imagenes", "batovi.png"))
-        ce.set_from_file(os.path.join(BASEPATH, "Imagenes", "planceibal.png"))
-        
-        tabla.attach_defaults(ac, 1, 2, 1, 2)
-        tabla.attach_defaults(bt, 1, 2, 2, 3)
-        tabla.attach_defaults(ce, 1, 2, 3, 4)
-        
-        tabla.show_all()
-        self.vbox.pack_start(tabla, False, False, 0)
+        self.vbox.pack_start(imagen, False, False, 0)
+        self.vbox.show_all()
         

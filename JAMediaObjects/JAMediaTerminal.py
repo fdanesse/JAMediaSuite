@@ -235,13 +235,22 @@ class NoteBookTerminal(Gtk.Notebook):
         hbox.pack_start(boton, False, False, 0)
         
         ### Area de Trabajo.
+        
+        scroll = Gtk.ScrolledWindow()
+        
+        scroll.set_policy(
+            Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC)
+            
         terminal = Terminal(
             path=path,
             interprete=interprete,
             archivo=ejecutar)#,
             #fuente=self.fuente)
             
-        self.append_page(terminal, hbox)
+        scroll.add(terminal)
+        
+        self.append_page(scroll, hbox)
 
         label.show()
         
@@ -299,7 +308,7 @@ class NoteBookTerminal(Gtk.Notebook):
         label = self.get_tab_label(self.get_children()[self.get_current_page()]).get_children()[0]
         label.set_text(text)
         
-        terminal = self.get_children()[self.get_current_page()]
+        terminal = self.get_children()[self.get_current_page()].get_child()
         terminal.set_interprete(path = path, interprete = interprete)
         
     def accion_terminal(self, accion):
@@ -308,7 +317,7 @@ class NoteBookTerminal(Gtk.Notebook):
         """
         
         if self.get_children():
-            terminal = self.get_children()[self.get_current_page()]
+            terminal = self.get_children()[self.get_current_page()].get_child()
             terminal.child_focus(True)
             
             if accion == 'copiar':
@@ -324,7 +333,7 @@ class NoteBookTerminal(Gtk.Notebook):
         else:
             self.agregar_terminal()
             
-            terminal = self.get_children()[self.get_current_page()]
+            terminal = self.get_children()[self.get_current_page()].get_child()
             terminal.child_focus(True)
             
             if accion == 'copiar':
