@@ -292,6 +292,11 @@ class JAMediaEditor(Gtk.Window):
         except:
             self.sourceview = False
         
+        codeviews = self.base_panel.workpanel.get_archivos_de_proyecto(self.base_panel.proyecto.get("path", ""))
+        if not codeviews:
+            self.base_panel.infonotebook.set_path_estructura(None)
+            self.base_panel.proyecto = {}
+        
         return True
     
 if __name__=="__main__":
