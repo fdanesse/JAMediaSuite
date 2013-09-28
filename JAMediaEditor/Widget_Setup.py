@@ -165,8 +165,7 @@ class Notebook_Setup(Gtk.Notebook):
             
             dialog = DialogoInstall(
                 parent_window = self.get_toplevel(),
-                dirpath = self.gnome_notebook.activitydirpath,
-                tipo = tipo)
+                dirpath = self.gnome_notebook.activitydirpath)
         
             respuesta = dialog.run()
             
@@ -186,13 +185,12 @@ class Notebook_Setup(Gtk.Notebook):
         elif tipo == "sugar":
             self.sugar_notebook.make()
             
-            dialog = DialogoInstall(
+            dialog = DialogoInfoInstall(
                 parent_window = self.get_toplevel(),
-                dirpath = self.proyecto["path"],
-                tipo = tipo)
-        
+                distpath = os.path.join(self.proyecto["path"], "dist"))
+    
             respuesta = dialog.run()
-            
+        
             dialog.destroy()
             
         elif tipo == "ceibal":
@@ -755,7 +753,7 @@ class DialogoInstall(Gtk.Dialog):
     
     def __init__(self,
         parent_window = None,
-        dirpath = None, tipo = "gnome"):
+        dirpath = None):
 
         Gtk.Dialog.__init__(self,
             #title = "Chequeo de sintáxis",
@@ -782,11 +780,7 @@ class DialogoInstall(Gtk.Dialog):
         
         self.terminal.connect("reset", self.__end_make)
         
-        if tipo == "gnome":
-            GLib.idle_add(self.__run_gnome_install)
-            
-        elif tipo == "sugar":
-            GLib.idle_add(self.__run_sugar_install)
+        GLib.idle_add(self.__run_gnome_install)
         
     def __end_make(self, jamediaterminal, notebookterminal, terminal, id, toolbutton, label):
         """
@@ -829,14 +823,6 @@ class DialogoInstall(Gtk.Dialog):
             "sdist")
             
         return False
-    
-    def __run_sugar_install(self):
-        """
-        Ejecuta: python setup.py sdist
-        Construyendo el instalador gnome.
-        """
-        
-        self.__end_make(None, None, None, None, None, None)
         
 class DialogoInfoInstall(Gtk.Dialog):
     """

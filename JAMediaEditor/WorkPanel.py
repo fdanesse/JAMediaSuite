@@ -29,7 +29,7 @@ import gi
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource
-#from gi.repository import Pango
+from gi.repository import Pango
 from gi.repository import Gdk
 from gi.repository import GLib
 
@@ -562,7 +562,7 @@ class SourceView(GtkSource.View):
         self.set_tab_width(4)
         self.set_auto_indent(True)
 
-        #self.modify_font(Pango.FontDescription('Monospace 10'))
+        self.modify_font(Pango.FontDescription('Monospace 10'))
 
         self.show_all()
         
@@ -766,7 +766,7 @@ class SourceView(GtkSource.View):
         
         if not fuente and not tamanio: return
     
-        #description =  self.get_pango_context().get_font_description()
+        description =  self.get_pango_context().get_font_description()
         
         nombre = description.get_family()
         size = description.get_size()/1000
@@ -778,12 +778,10 @@ class SourceView(GtkSource.View):
             fuente = "%s %s" % (nombre, size)
             
         if not dialogo:
-            #self.modify_font(Pango.FontDescription("%s" % fuente))
-            pass
+            self.modify_font(Pango.FontDescription("%s" % fuente))
             
         else:
-            #self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
-            pass
+            self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
         
     def set_accion(self, accion, valor = True):
         """
