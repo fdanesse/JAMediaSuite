@@ -60,7 +60,7 @@ try:
     mod = __import__("%s" % modulo)
 
     attr_name = getattr(mod, name)
-
+    
     for n in dir(attr_name):
         if not n.endswith("__"):
             dict["lista"].append(n)

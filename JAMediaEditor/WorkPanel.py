@@ -22,7 +22,6 @@
 
 import os
 import mimetypes
-import pyobjects
 import commands
 import shelve
 
@@ -1246,34 +1245,21 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         
         self.spyder_hack = SpyderHack()
         
-    ''' GtkSource.CompletionProvider
-    activate_proposal(*args, **kwargs)
-    get_activation(*args, **kwargs)
-    get_icon(*args, **kwargs)
-    get_info_widget(*args, **kwargs)
-    get_interactive_delay(*args, **kwargs)
-    get_name(*args, **kwargs)
-    get_priority(*args, **kwargs)
-    get_start_iter(*args, **kwargs)
-    match(*args, **kwargs)
-    populate(*args, **kwargs)
-    update_info(*args, **kwargs)'''
+        """ GtkSource.CompletionProvider
+        activate_proposal(*args, **kwargs)
+        get_activation(*args, **kwargs)
+        get_icon(*args, **kwargs)
+        get_info_widget(*args, **kwargs)
+        get_interactive_delay(*args, **kwargs)
+        get_name(*args, **kwargs)
+        get_priority(*args, **kwargs)
+        get_start_iter(*args, **kwargs)
+        match(*args, **kwargs)
+        populate(*args, **kwargs)
+        update_info(*args, **kwargs)"""
     
     def do_get_name(self):
         return "AutoCompletado"
-    '''
-    def do_match(self, context):
-        
-        return True'''
-        
-    '''
-    def do_activate_proposal(self, dato1, dato2):
-        """
-        Cuando se selecciona y clickea
-        una posible solución.
-        """
-        
-        print dato1, dato2'''
     
     def do_populate(self, context):
         """
@@ -1302,11 +1288,6 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
                     expresion = expresion.split("(")[-1].strip()
                     
                 lista = self.__get_list(expresion)
-                
-                #FIXME: HACK para agregar opciones de "self." Debe mejorarse.
-                #if texto_de_linea_en_edicion.endswith("self."):
-                #    for l in self.__get_auto_completado_for_self():
-                #        lista.append(l)
                 
                 opciones = []
                 self.opciones = []
@@ -1352,51 +1333,5 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
                 home, 'BatovideWorkSpace')
         
         return self.spyder_hack.Run(workpath, expresion, self.buffer)
-        
-    '''
-    def __get_auto_completado_for_self(self):
-        """
-        Devuelve la lista de opciones posibles
-        para auto completar en caso de "self.".
-        """
-        
-        lista = []
-        
-        inicio = self.buffer.get_iter_at_mark(self.buffer.get_insert())
-        end = self.buffer.get_end_iter()
-        
-        ini, fin = self.buffer.get_bounds()
-        texto = self.buffer.get_text(ini, fin, True)
-        
-        if inicio:
-            datos = inicio.backward_search("class ", 0, None)
-            
-            if datos:
-                iter = datos[0].get_line()
-                
-                linea = self.buffer.get_text(datos[0], end, True).splitlines()[0]
-                clase = linea.split("class")[1].split("(")[0].strip()
-                
-                posicion = texto.find(linea)
-                finclase = inicio.forward_search("class ", 0, None)
-                
-                if finclase:
-                    linea_iter = finclase[0].get_line()
-                    finclase = 0
-                    lineas = texto.splitlines()
-                    
-                    for linea in range(linea_iter + 1):
-                        finclase += len(lineas[linea])
-                        
-                else:
-                    finclase = len(texto) - 1
-
-                texto = texto[posicion:finclase]
-                objetos = pyobjects.obtener_datos(texto)
-                
-                for objeto in objetos:
-                    lista.append(objeto)
-                    
-        return lista'''
         
 GObject.type_register(AutoCompletado)

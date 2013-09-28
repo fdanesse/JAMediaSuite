@@ -874,6 +874,51 @@ class SpyderHack():
                 else:
                     print "4 - Caso imposible en __Gestione_True_Path_Dos:", imp
             
+    def __Gestione_self(self, base_key, buffer):
+        
+        ### Obtener la clase a la que corresponde self.
+        textiter = buffer.get_start_iter()
+        end_iter = buffer.get_iter_at_mark(buffer.get_insert())
+        
+        texto = buffer.get_text(textiter, end_iter, True)
+        
+        clases = []
+        for linea in texto.splitlines():
+            if linea.startswith("class "):
+                clases.append(linea)
+                
+        if not clases: return
+    
+        clase = str(clases[-1]).split("class")[1].split("(")[0].strip()
+        
+        ### Crear temporal
+        inicio, fin = buffer.get_bounds()
+        texto = buffer.get_text(inicio, fin, 0)
+        
+        text = ''
+        for linea in texto.splitlines():
+            
+            if linea.endswith("self."):
+                pass
+                
+            else:
+                text = "%s%s\n" % (text, linea)
+                
+        archivo = os.path.join(self.workpath, "temp.py")
+        
+        arch = open(archivo, "w")
+        arch.write(text)
+        arch.close()
+        
+        Import_Module_True_Path_From(base_key, self.workpath, "temp", clase)
+        convert_alias(base_key, "import", "self")
+        
+        try:
+            os.remove(archivo)
+            
+        except:
+            pass
+
     def Run(self, workpath, expresion, buffer):
         """
         Recibe:
@@ -911,6 +956,9 @@ class SpyderHack():
                     
                 else:
                     self.__Gestione_False_Path(imp, self.__id)
+        
+        if expresion == "self":
+            self.__Gestione_self(self.__id, buffer)
         
         ### Devolución:
         archivo = shelve.open(path)
