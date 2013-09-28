@@ -65,7 +65,9 @@ class WorkPanel(Gtk.Paned):
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_BOOLEAN))}
+        GObject.TYPE_BOOLEAN)),
+    'close_all_files': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
@@ -88,9 +90,14 @@ class WorkPanel(Gtk.Paned):
         self.terminal.set_size_request(-1, 170)
         
         self.notebook_sourceview.connect('new_select', self.__re_emit_new_select)
+        self.notebook_sourceview.connect('close_all_files', self.__close_all_files)
         self.terminal.connect("ejecucion", self.__set_ejecucion)
         self.terminal.connect("reset", self.detener_ejecucion)
 
+    def __close_all_files(self, widget):
+        
+        self.emit('close_all_files')
+        
     def __set_ejecucion(self, widget, terminal):
         """
         Cuando se ejecuta un archivo o un proyecto.
@@ -272,7 +279,9 @@ class Notebook_SourceView(Gtk.Notebook):
     __gsignals__ = {
      'new_select': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_BOOLEAN))}
+        GObject.TYPE_BOOLEAN)),
+    'close_all_files': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
@@ -285,6 +294,12 @@ class Notebook_SourceView(Gtk.Notebook):
         self.connect('switch_page', self.__switch_page)
         
         GLib.idle_add(self.abrir_archivo, None)
+        
+    def do_page_removed(self, uno, dos):
+        
+        paginas = self.get_children()
+        if not paginas:
+            self.emit("close_all_files")
         
     def set_linea(self, texto):
         """

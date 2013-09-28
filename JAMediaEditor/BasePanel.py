@@ -93,6 +93,7 @@ class BasePanel(Gtk.Paned):
         self.infonotebook_box.set_size_request(280, -1)
         
         self.workpanel.connect('new_select', self.__set_introspeccion)
+        self.workpanel.connect('close_all_files', self.__set_introspeccion)
         self.toolbararchivo.connect('accion', self.set_accion_archivo)
         self.toolbarproyecto.connect('accion', self.set_accion_proyecto)
         toolbarbusquedas.connect("buscar", self.__buscar)
@@ -264,24 +265,27 @@ class BasePanel(Gtk.Paned):
         
         self.workpanel.set_linea(texto)
 
-    def __set_introspeccion(self, widget, view, estructura):
+    def __set_introspeccion(self, widget, view=False, estructura=False):
         """
         Recibe nombre y contenido de archivo para
         realizar introspeccion sobre él.
         """
         
-        buffer = view.get_buffer()
-        archivo = view.archivo
-        nombre = False
+        nombre = "Introspección"
+        text = ''
         
-        if archivo:
-            nombre = os.path.basename(archivo)
-        
-        inicio, fin = buffer.get_bounds()
-        
+        if view:
+            buffer = view.get_buffer()
+            archivo = view.archivo
+            
+            if archivo:
+                nombre = os.path.basename(archivo)
+            
+            inicio, fin = buffer.get_bounds()
+            text = buffer.get_text(inicio, fin, 0)
+            
         ### Setear Introspeción.
-        self.infonotebook.set_introspeccion(nombre,
-            buffer.get_text(inicio, fin, 0))
+        self.infonotebook.set_introspeccion(nombre, text)
         
         ### Actualizar sourceview para actualizador de toolbars y menus.
         self.emit("update", view, True)
