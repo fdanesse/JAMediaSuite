@@ -274,7 +274,9 @@ def get_boton(archivo, flip = False, rotacion = None, pixels = 0, tooltip_text =
     imagen.show()
     boton.show()
     
-    if tooltip_text: boton.set_tooltip_text(tooltip_text)
+    if tooltip_text:
+        boton.set_tooltip_text(tooltip_text)
+        boton.TOOLTIP = tooltip_text
     
     return boton
 

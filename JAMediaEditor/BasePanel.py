@@ -90,7 +90,7 @@ class BasePanel(Gtk.Paned):
 
         self.show_all()
         
-        self.infonotebook_box.set_size_request(280, -1)
+        self.infonotebook_box.set_size_request(230, -1)
         
         self.workpanel.connect('new_select', self.__set_introspeccion)
         self.workpanel.connect('close_all_files', self.__set_introspeccion)

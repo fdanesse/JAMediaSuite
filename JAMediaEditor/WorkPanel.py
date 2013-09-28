@@ -46,6 +46,13 @@ from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
 
 from SpyderHack.SpyderHack import SpyderHack
 
+JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+icons = os.path.join(JAMediaObjectsPath, "Iconos")
+
+from JAMediaObjects.JAMediaGlobales import get_boton
+from JAMediaObjects.JAMediaGlobales import get_pixels
+
 PATH = os.path.dirname(__file__)
 
 home = os.environ["HOME"]
@@ -361,11 +368,11 @@ class Notebook_SourceView(Gtk.Notebook):
         
         hbox = Gtk.HBox()
         label = Gtk.Label("Sin Título")
-        imagen = Gtk.Image.new_from_stock(Gtk.STOCK_CLOSE, Gtk.IconSize.MENU)
-        boton = Gtk.Button()
-        boton.set_relief(Gtk.ReliefStyle.NONE)
-        boton.set_size_request(12, 12)
-        boton.set_image(imagen)
+        
+        boton = get_boton(
+            os.path.join(icons, "button-cancel.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Cerrar")
         
         hbox.pack_start(label, False, False, 0)
         hbox.pack_start(boton, False, False, 0)
@@ -388,7 +395,6 @@ class Notebook_SourceView(Gtk.Notebook):
 
         label.show()
         boton.show()
-        imagen.show()
         self.show_all()
         
         boton.connect("clicked", self.__cerrar)

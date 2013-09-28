@@ -29,7 +29,6 @@ from gi.repository import GObject
 from gi.repository import GLib
 
 from Widgets import Estructura_Menu
-from Widgets import get_boton
 from Widgets import DialogoEliminar
 from Widgets import BusquedaGrep
 from Widgets import DialogoBuscar

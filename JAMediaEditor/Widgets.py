@@ -29,46 +29,20 @@ import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
-#from gi.repository import Pango
+from gi.repository import Pango
 from gi.repository import GLib
 
+import JAMediaObjects
+JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+icons = os.path.join(JAMediaObjectsPath, "Iconos")
+
+from JAMediaObjects.JAMediaGlobales import get_boton
+from JAMediaObjects.JAMediaGlobales import get_separador
+from JAMediaObjects.JAMediaGlobales import get_pixels
+
 BASEPATH = os.path.dirname(__file__)
-#FUENTES_GLOBAL = Gtk.Window().get_pango_context().list_families()
-
-def get_boton(stock, tooltip):
-    """
-    Devuelve un botón generico.
-    """
-
-    boton = Gtk.ToolButton.new_from_stock(stock)
-    boton.set_tooltip_text(tooltip)
-    boton.TOOLTIP = tooltip
-    
-    return boton
-
-def get_boton_icon(icon, tooltip):
-    """
-    Devuelve un botón con un icono específico.
-    """
-    
-    boton = Gtk.ToolButton()
-    boton.set_tooltip_text(tooltip)
-    boton.TOOLTIP = tooltip
-    boton.set_icon_name(icon)
-    
-    return boton
-
-def get_separador(draw = False, ancho = 0, expand = False):
-    """
-    Devuelve un separador generico.
-    """
-    
-    separador = Gtk.SeparatorToolItem()
-    separador.props.draw = draw
-    separador.set_size_request(ancho, -1)
-    separador.set_expand(expand)
-    
-    return separador
+FUENTES_GLOBAL = Gtk.Window().get_pango_context().list_families()
 
 LICENCIAS = ['GPL2', 'GPL3', 'LGPL 2.1', 'LGPL 3', 'BSD', 'MIT X11']
 
@@ -1359,13 +1333,40 @@ class ToolbarProyecto(Gtk.Toolbar):
         
         self.dict_proyecto = {}
         
-        nuevo_proyecto = get_boton(Gtk.STOCK_NEW, "Nuevo Proyecto")
-        abrir_proyecto = get_boton(Gtk.STOCK_OPEN, "Abrir Proyecto")
-        cerrar_proyecto = get_boton(Gtk.STOCK_CLOSE, "Cerrar Proyecto")
-        editar_proyecto = get_boton(Gtk.STOCK_EDIT, "Editar Proyecto")
-        guardar_proyecto = get_boton(Gtk.STOCK_SAVE, "Guardar Proyecto")
-        ejecutar_proyecto = get_boton(Gtk.STOCK_MEDIA_PLAY, "Ejecutar Proyecto")
-        detener = get_boton(Gtk.STOCK_MEDIA_STOP, "Detener Ejecución")
+        nuevo_proyecto = get_boton(
+            os.path.join(icons, "document-new.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Nuevo Proyecto")
+            
+        abrir_proyecto = get_boton(
+            os.path.join(icons, "document-open.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Abrir Proyecto")
+        
+        cerrar_proyecto = get_boton(
+            os.path.join(icons, "button-cancel.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Cerrar Proyecto")
+        
+        editar_proyecto = get_boton(
+            os.path.join(icons, "gtk-edit.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Editar Proyecto")
+            
+        guardar_proyecto = get_boton(
+            os.path.join(icons, "document-save.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Guardar Proyecto")
+        
+        ejecutar_proyecto = get_boton(
+            os.path.join(icons, "media-playback-start.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Ejecutar Proyecto")
+            
+        detener = get_boton(
+            os.path.join(icons, "media-playback-stop.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Detener Ejecución")
 
         self.dict_proyecto["Cerrar Proyecto"] = cerrar_proyecto
         self.dict_proyecto["Editar Proyecto"] = editar_proyecto
@@ -1449,18 +1450,65 @@ class ToolbarArchivo(Gtk.Toolbar):
         
         self.dict_archivo = {}
         
-        nuevo_archivo = get_boton(Gtk.STOCK_NEW, "Nuevo Archivo")
-        abrir_archivo = get_boton(Gtk.STOCK_OPEN, "Abrir Archivo")
-        guardar_archivo = get_boton(Gtk.STOCK_SAVE, "Guardar Archivo")
-        guardar_como = get_boton(Gtk.STOCK_SAVE_AS, "Guardar Como")
-        ejecutar = get_boton(Gtk.STOCK_MEDIA_PLAY, "Ejecutar Archivo")
-        detener = get_boton(Gtk.STOCK_MEDIA_STOP, "Detener Ejecución")
-        deshacer = get_boton(Gtk.STOCK_UNDO, "Deshacer")
-        rehacer = get_boton(Gtk.STOCK_REDO, "Rehacer")
-        copiar = get_boton(Gtk.STOCK_COPY, "Copiar")
-        cortar = get_boton(Gtk.STOCK_CUT, "Cortar")
-        pegar = get_boton(Gtk.STOCK_PASTE, "Pegar")
-        seleccionar_todo = get_boton(Gtk.STOCK_SELECT_ALL, "Seleccionar Todo")
+        nuevo_archivo = get_boton(
+            os.path.join(icons, "document-new.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Nuevo Archivo")
+            
+        abrir_archivo = get_boton(
+            os.path.join(icons, "document-open.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Abrir Archivo")
+        
+        guardar_archivo = get_boton(
+            os.path.join(icons, "document-save.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Guardar Archivo")
+            
+        guardar_como = get_boton(
+            os.path.join(icons, "document-save-as.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Guardar Como")
+        
+        ejecutar = get_boton(
+            os.path.join(icons, "media-playback-start.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Ejecutar Archivo")
+            
+        detener = get_boton(
+            os.path.join(icons, "media-playback-stop.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Detener Ejecución")
+        
+        deshacer = get_boton(
+            os.path.join(icons, "edit-undo.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Deshacer")
+            
+        rehacer = get_boton(
+            os.path.join(icons, "edit-redo.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Rehacer")
+        
+        copiar = get_boton(
+            os.path.join(icons, "edit-copy.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Copiar")
+        
+        cortar = get_boton(
+            os.path.join(icons, "editcut.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Cortar")
+        
+        pegar = get_boton(
+            os.path.join(icons, "editpaste.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Pegar")
+            
+        seleccionar_todo = get_boton(
+            os.path.join(icons, "edit-select-all.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Seleccionar Todo")
 
         self.dict_archivo["Guardar"] = guardar_archivo
         self.dict_archivo["Guardar Como"] = guardar_como
@@ -1559,7 +1607,11 @@ class ToolbarBusquedas(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.anterior = get_boton(Gtk.STOCK_GO_BACK, "Anterior")
+        self.anterior = get_boton(
+            os.path.join(icons, "go-next-rtl.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Anterior")
+            
         self.anterior.connect("clicked", self.__emit_accion)
         self.insert(self.anterior, -1)
         
@@ -1572,7 +1624,11 @@ class ToolbarBusquedas(Gtk.Toolbar):
         item.add(self.entry)
         self.insert(item, -1)
         
-        self.siguiente = get_boton(Gtk.STOCK_GO_FORWARD, "Siguiente")
+        self.siguiente = get_boton(
+            os.path.join(icons, "go-next.svg"),
+            pixels = get_pixels(0.5),
+            tooltip_text = "Siguiente")
+            
         self.siguiente.connect("clicked", self.__emit_accion)
         self.insert(self.siguiente, -1)
         
@@ -1771,8 +1827,8 @@ class DialogoFormato(Gtk.Dialog):
         """
 
         self.texto = Gtk.Label("Texto")
-        #fuente = Pango.FontDescription("Monospace 10")
-        #self.texto.modify_font(fuente)
+        fuente = Pango.FontDescription("Monospace 10")
+        self.texto.modify_font(fuente)
 
         box = Gtk.EventBox()
         box.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("white"))
@@ -1804,8 +1860,8 @@ class DialogoFormato(Gtk.Dialog):
         elif tipo == "Fuente":
             self.fuente = modelo.get_value(iter_sel, 1)
             
-        #fuente = Pango.FontDescription("%s %s" % (self.fuente, self.tamano))
-        #self.texto.modify_font(fuente)
+        fuente = Pango.FontDescription("%s %s" % (self.fuente, self.tamano))
+        self.texto.modify_font(fuente)
 
         return True
         
