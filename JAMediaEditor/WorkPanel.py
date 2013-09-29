@@ -223,7 +223,7 @@ class WorkPanel(Gtk.Paned):
         if archivo: self.terminal.ejecutar(archivo)
         
     def detener_ejecucion(self, widget=None, notebook=None,
-        terminal=None, pag_indice=None, boton=None, label=None):
+        terminal=None, pag_indice=None):
         """
         Detiene la ejecución en proceso.
         """
@@ -441,7 +441,7 @@ class Notebook_SourceView(Gtk.Notebook):
         if accion == "Numeracion":
             for pagina in paginas:
                 view = pagina.get_child()
-                view.set_accion(accion)
+                view.set_accion(accion, valor)
         
         elif accion == "Aumentar":
             for pagina in paginas:

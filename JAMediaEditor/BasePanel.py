@@ -208,6 +208,7 @@ class BasePanel(Gtk.Paned):
                 self.infonotebook_box.show()
                 
         elif accion == "Numeracion" or accion == "Panel inferior":
+            
             self.workpanel.set_accion_ver(accion, valor)
             
     def set_accion_archivo(self, widget, accion):

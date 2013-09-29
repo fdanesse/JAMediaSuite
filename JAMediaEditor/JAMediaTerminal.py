@@ -54,8 +54,7 @@ class JAMediaTerminal(Gtk.Box):
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
     "reset":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_PYOBJECT, GObject.TYPE_INT,
-        GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
+        GObject.TYPE_PYOBJECT, GObject.TYPE_INT))}
         
     def __init__(self):
         
@@ -102,7 +101,7 @@ class JAMediaTerminal(Gtk.Box):
         
         if font: self.notebook.set_font(font)
         
-    def __re_emit_reset(self, notebook, terminal, pag_indice, boton, label):
+    def __re_emit_reset(self, notebook, terminal, pag_indice):
         """
         Cuando se resetea una terminal, se emite la señal reset con:
             1- Notebook contenedor de terminales.
@@ -112,7 +111,7 @@ class JAMediaTerminal(Gtk.Box):
             5- Etiqueta de la lengüeta específica.
         """
         
-        self.emit("reset", notebook, terminal, pag_indice, boton, label)
+        self.emit("reset", notebook, terminal, pag_indice)
         
     def __reset_terminal(self, widget, interprete):
         """
@@ -177,8 +176,7 @@ class NoteBookTerminal(Gtk.Notebook):
     __gsignals__ = {
     "reset":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_INT, GObject.TYPE_PYOBJECT,
-        GObject.TYPE_PYOBJECT))}
+        GObject.TYPE_INT))}
         
     def __init__(self):
         
@@ -275,11 +273,9 @@ class NoteBookTerminal(Gtk.Notebook):
         
         for pag_indice in range(paginas):
             if terminal == self.get_nth_page(pag_indice):
-                boton = self.get_tab_label(self.get_children()[pag_indice]).get_children()[1]
-                label = self.get_tab_label(self.get_children()[pag_indice]).get_children()[0]
                 break
             
-        self.emit("reset", terminal, pag_indice, boton, label)
+        self.emit("reset", terminal, pag_indice)
         
     def __switch_page(self, widget, widget_child, indice):
         """

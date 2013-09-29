@@ -1245,13 +1245,20 @@ class WidgetAutores(Gtk.Box):
         entry1 = Gtk.Entry()
         entry2 = Gtk.Entry()
         
-        remover = get_boton(Gtk.STOCK_REMOVE, "Eliminar")
-        agregar = get_boton(Gtk.STOCK_ADD, "Agregar")
+        remover = get_boton(
+            os.path.join(icons, "list-remove.svg"),
+            pixels = get_pixels(1.0),
+            tooltip_text = "Eliminar")
+            
+        agregar = get_boton(
+            os.path.join(icons, "gtk-add.svg"),
+            pixels = get_pixels(1.0),
+            tooltip_text = "Agregar")
         
         frame1 = Gtk.Frame()
         frame1.set_label("Nombre")
         frame2 = Gtk.Frame()
-        frame1.set_label("Mail")
+        frame2.set_label("Mail")
         
         frame1.add(entry1)
         frame2.add(entry2)
