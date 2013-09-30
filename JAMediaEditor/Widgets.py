@@ -1938,7 +1938,7 @@ class ErroresTreeview(Gtk.TreeView):
         texto = buffer.get_text(start, end, True)
         
         if tipo == "pep8":
-            errores = Pep8.run_check("", texto)
+            errores = Pep8.run_check("", texto.decode("utf-8"))
             items = []
             
             for linea in errores:

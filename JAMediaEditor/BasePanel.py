@@ -515,7 +515,7 @@ class BasePanel(Gtk.Paned):
         
         arch = open(autores_path, "w")
         for autor in self.proyecto["autores"]:
-            arch.write("%s %s \n" % (autor[0].encode("utf-8"), autor[1].encode("utf-8")))
+            arch.write("%s %s \n" % (autor[0], autor[1]))
 
         arch.close()
         
