@@ -22,8 +22,6 @@
 
 import os
 import commands
-import Pep8
-from pyflakes.scripts import pyflakes
 
 import gi
 from gi.repository import Gtk
@@ -362,14 +360,9 @@ class Menu(Gtk.MenuBar):
             ord('R'), Gdk.ModifierType.CONTROL_MASK,
             Gtk.AccelFlags.VISIBLE)
             
-        item = Gtk.MenuItem('Chequear la sintaxis')
+        item = Gtk.MenuItem('Chequear sintaxis')
         item.connect("activate", self.__emit_accion_codigo, "Chequear")
         self.dict_archivo['Chequear'] = item
-        menu_codigo.append(item)
-
-        item = Gtk.MenuItem('Valorar')
-        item.connect("activate", self.__emit_accion_codigo, "Valorar")
-        self.dict_archivo['Valorar'] = item
         menu_codigo.append(item)
 
         # Items del Menú Ayuda
@@ -1884,7 +1877,7 @@ class DialogoErrores(Gtk.Dialog):
     Diálogo para chequear errores
     """
 
-    def __init__(self, view, parent_window = None, tipo = "pep8"):
+    def __init__(self, view, parent_window = None):
 
         Gtk.Dialog.__init__(self,
             parent = parent_window,
@@ -1894,7 +1887,7 @@ class DialogoErrores(Gtk.Dialog):
         self.set_size_request(600, 250)
         self.set_border_width(15)
         
-        flakerrores = ErroresTreeview(view, tipo)
+        errores = ErroresTreeview(view)
 
         scroll = Gtk.ScrolledWindow()
         
@@ -1902,7 +1895,7 @@ class DialogoErrores(Gtk.Dialog):
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
 
-        scroll.add(flakerrores)
+        scroll.add(errores)
         
         label = Gtk.Label("Errores")
         
@@ -1914,7 +1907,7 @@ class DialogoErrores(Gtk.Dialog):
         
 class ErroresTreeview(Gtk.TreeView):
 
-    def __init__(self, view, tipo):
+    def __init__(self, view):
 
         Gtk.TreeView.__init__(self,
             Gtk.ListStore(GObject.TYPE_STRING,
@@ -1937,39 +1930,39 @@ class ErroresTreeview(Gtk.TreeView):
 
         texto = buffer.get_text(start, end, True)
         
-        if tipo == "pep8":
-            errores = Pep8.run_check("", texto.decode("utf-8"))
-            items = []
+        path = os.path.join("/dev/shm", "check_temp.py")
+        arch = open(path, "w")
+        arch.write(texto)
+        arch.close()
+        
+        check = os.path.join(BASEPATH, "Check1.py")
+        errores = commands.getoutput('python %s %s' % (check, path))
+        
+        for linea in errores.splitlines():
             
-            for linea in errores:
-                if ":" in str(linea):
-                    dat = str(linea).split(":")
-                    
-                    if len(dat) == 4:
-                        item = [dat[1].strip(), dat[3].strip()]
-                        
-                        if not item in items:
-                            items.append(item)
-                            
-                    else:
-                        newdat = items[-1]
-                        item = [newdat[0].strip(), dat[0].strip()]
-                        
-                        if not item in items:
-                            items.append(item)
-                            
-            for item in items:
+            item_str = linea.split("%s:" % path)[1]
+            
+            if not path in item_str:
+                numero = item_str.split(":")[0].strip()
+                comentario = item_str.replace(item_str.split()[0], "").strip()
+                
+                item = [numero, comentario]
                 self.get_model().append(item)
                 
-        elif tipo == "pyflakes":
-            errores = pyflakes.check(texto, "")
+        check = os.path.join(BASEPATH, "Check2.py")
+        errores = commands.getoutput('python %s %s' % (check, path))
 
-            if not type(errores) == int:
-            # FIXME: Casos como $%%&$% solo devuelve el Nº de linea.
-                for error in errores:
-                    dat = str(error).split(":")
-                    self.get_model().append([dat[1], dat[2]])
-        
+        for linea in errores.splitlines():
+            
+            item_str = linea.split("%s:" % path)[1]
+            
+            if not path in item_str:
+                numero = item_str.split(":")[0].strip()
+                comentario = item_str.replace(item_str.split()[0], "").strip()
+                
+                item = [numero, comentario]
+                self.get_model().append(item)
+                
     def __clicked(self, treeselection, model, path, is_selected, listore):
         
         iter_sel = model.get_iter(path)

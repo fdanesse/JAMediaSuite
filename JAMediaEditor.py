@@ -182,13 +182,13 @@ class JAMediaEditor(Gtk.Window):
                         "Seleccionar Todo", "Identar",
                         "De Identar", "Buscar Texto",
                         "Reemplazar Texto", "Chequear",
-                        "Valorar"])
+                        ])
                 else:
                     desactivar.extend([
                         "Seleccionar Todo", "Identar",
                         "De Identar", "Buscar Texto",
                         "Reemplazar Texto", "Chequear",
-                        "Valorar"])
+                        ])
                     
                 ### Si el contenido del archivo != al del buffer.
                 archivo = self.sourceview.archivo
@@ -250,7 +250,7 @@ class JAMediaEditor(Gtk.Window):
                     "Identar", "De Identar",
                     "Buscar Texto",
                     "Reemplazar Texto",
-                    "Chequear", "Valorar",
+                    "Chequear",
                     "Numeracion", "Aumentar",
                     "Disminuir", "Formato"])
             

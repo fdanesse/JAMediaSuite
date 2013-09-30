@@ -913,62 +913,6 @@ class SourceView(GtkSource.View):
         elif accion == "De Identar":
             self.__de_identar()
 
-        elif accion == "Valorar":
-            if self.lenguaje:
-                if self.lenguaje.get_name() == "Python":
-                    numeracion = self.get_show_line_numbers()
-                    self.set_show_line_numbers(True)
-                    
-                    # HACK: No se debe permitir usar la interfaz de la aplicación.
-                    self.get_toplevel().set_sensitive(False)
-                    
-                    dialogo = DialogoErrores(self,
-                        parent_window = self.get_toplevel(),
-                        tipo = "pep8")
-                        
-                    dialogo.run()
-                    
-                    dialogo.destroy()
-
-                    self.set_show_line_numbers(numeracion)
-                    
-                    # HACK: No se debe permitir usar la interfaz de la aplicación.
-                    self.get_toplevel().set_sensitive(True)
-                    
-                else:
-                    dialogo = Gtk.Dialog(parent = self.get_toplevel(),
-                        flags = Gtk.DialogFlags.MODAL,
-                        buttons = ["OK", Gtk.ResponseType.ACCEPT])
-                    
-                    dialogo.set_size_request(300, 100)
-                    dialogo.set_border_width(15)
-                    
-                    label = Gtk.Label("El Archivo no Contiene Código python.")
-                    label.show()
-                    
-                    dialogo.vbox.pack_start(label, True, True, 0)
-                    
-                    dialogo.run()
-                    
-                    dialogo.destroy()
-                    
-            else:
-                dialogo = Gtk.Dialog(parent = self.get_toplevel(),
-                    flags = Gtk.DialogFlags.MODAL,
-                    buttons = ["OK", Gtk.ResponseType.ACCEPT])
-                
-                dialogo.set_size_request(300, 100)
-                dialogo.set_border_width(15)
-                
-                label = Gtk.Label("El Archivo no Contiene Código python.")
-                label.show()
-                
-                dialogo.vbox.pack_start(label, True, True, 0)
-                
-                dialogo.run()
-                
-                dialogo.destroy()
-                
         elif accion == "Chequear":
             if self.lenguaje:
                 if self.lenguaje.get_name() == "Python":
@@ -979,52 +923,35 @@ class SourceView(GtkSource.View):
                     self.get_toplevel().set_sensitive(False)
                     
                     dialogo = DialogoErrores(self,
-                        parent_window = self.get_toplevel(),
-                        tipo = "pyflakes")
+                        parent_window = self.get_toplevel())
                         
                     dialogo.run()
                     
                     dialogo.destroy()
-                    
+
                     self.set_show_line_numbers(numeracion)
                     
                     # HACK: No se debe permitir usar la interfaz de la aplicación.
                     self.get_toplevel().set_sensitive(True)
                     
-                else:
-                    dialogo = Gtk.Dialog(parent = self.get_toplevel(),
-                        flags = Gtk.DialogFlags.MODAL,
-                        buttons = ["OK", Gtk.ResponseType.ACCEPT])
-                    
-                    dialogo.set_size_request(300, 100)
-                    dialogo.set_border_width(15)
-                    
-                    label = Gtk.Label("El Archivo no Contiene Código python.")
-                    label.show()
-                    
-                    dialogo.vbox.pack_start(label, True, True, 0)
-                    
-                    dialogo.run()
-                    
-                    dialogo.destroy()
-                    
-            else:
-                dialogo = Gtk.Dialog(parent = self.get_toplevel(),
-                    flags = Gtk.DialogFlags.MODAL,
-                    buttons = ["OK", Gtk.ResponseType.ACCEPT])
+                    return
                 
-                dialogo.set_size_request(300, 100)
-                dialogo.set_border_width(15)
-                
-                label = Gtk.Label("El Archivo no Contiene Código python.")
-                label.show()
-                
-                dialogo.vbox.pack_start(label, True, True, 0)
-                
-                dialogo.run()
-                
-                dialogo.destroy()
-                
+            dialogo = Gtk.Dialog(parent = self.get_toplevel(),
+                flags = Gtk.DialogFlags.MODAL,
+                buttons = ["OK", Gtk.ResponseType.ACCEPT])
+            
+            dialogo.set_size_request(300, 100)
+            dialogo.set_border_width(15)
+            
+            label = Gtk.Label("El Archivo no Contiene Código python\no Todavía no ha Sido Guardado.")
+            label.show()
+            
+            dialogo.vbox.pack_start(label, True, True, 0)
+            
+            dialogo.run()
+            
+            dialogo.destroy()
+            
     def __identar(self):
         """
         Agrega la identación especificada en el

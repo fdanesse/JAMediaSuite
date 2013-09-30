@@ -4,11 +4,10 @@ Implementation of the command-line I{pyflakes} tool.
 """
 
 import sys
-import compiler
 import os
+import _ast
 
 checker = __import__('pyflakes.checker').checker
-
 
 def check(codeString, filename):
     """
@@ -24,18 +23,10 @@ def check(codeString, filename):
     @return: The number of warnings emitted.
     @rtype: C{int}
     """
-    # Since compiler.parse does not reliably report syntax errors, use the
-    # built in compiler first to detect those.
+    # First, compile into an AST and handle syntax errors.
     try:
-        try:
-            compile(codeString, filename, "exec")
-        except MemoryError:
-            # Python 2.4 will raise MemoryError if the source can't be
-            # decoded.
-            if sys.version_info[:2] == (2, 4):
-                raise SyntaxError(None)
-            raise
-    except (SyntaxError, IndentationError) as value:
+        tree = compile(codeString, filename, "exec", _ast.PyCF_ONLY_AST)
+    except SyntaxError, value:
         msg = value.args[0]
 
         (lineno, offset, text) = value.lineno, value.offset, value.text
@@ -45,27 +36,30 @@ def check(codeString, filename):
             # Avoid using msg, since for the only known case, it contains a
             # bogus message that claims the encoding the file declared was
             # unknown.
-            pass
+            print >> sys.stderr, "%s: problem decoding source" % (filename, )
         else:
             line = text.splitlines()[-1]
 
             if offset is not None:
                 offset = offset - (len(text) - len(line))
 
-            if offset is not None:
-                pass
+            print >> sys.stderr, '%s:%d: %s' % (filename, lineno, msg)
+            print >> sys.stderr, line
 
-        return value.lineno
+            if offset is not None:
+                print >> sys.stderr, " " * offset, "^"
+
+        return 1
+    except UnicodeError, msg:
+        print >> sys.stderr, 'encoding error at %r: %s' % (filename, msg)
+        return 1
     else:
-        # Okay, it's syntactically valid.  Now parse it into an ast and check
-        # it.
-        tree = compiler.parse(codeString)
+        # Okay, it's syntactically valid.  Now check it.
         w = checker.Checker(tree, filename)
         w.messages.sort(lambda a, b: cmp(a.lineno, b.lineno))
-        warnings = []
         for warning in w.messages:
-            warnings.append(warning)
-        return warnings
+            print warning
+        return len(w.messages)
 
 
 def checkPath(filename):
@@ -75,25 +69,28 @@ def checkPath(filename):
     @return: the number of warnings printed
     """
     try:
-        return check(file(filename, 'U').read() + '\n', filename)
-    except IOError as msg:
+        fd = file(filename, 'U')
+        try:
+            return check(fd.read(), filename)
+        finally:
+            fd.close()
+    except IOError, msg:
+        print >> sys.stderr, "%s: %s" % (filename, msg.args[1])
         return 1
 
 
-def main():
+def main(args):
     warnings = 0
-    args = sys.argv[1:]
     if args:
         for arg in args:
             if os.path.isdir(arg):
                 for dirpath, dirnames, filenames in os.walk(arg):
                     for filename in filenames:
                         if filename.endswith('.py'):
-                            warnings += checkPath(
-                                os.path.join(dirpath, filename))
+                            warnings += checkPath(os.path.join(dirpath, filename))
             else:
                 warnings += checkPath(arg)
     else:
         warnings += check(sys.stdin.read(), '<stdin>')
 
-    raise SystemExit(warnings > 0)
+    return warnings
