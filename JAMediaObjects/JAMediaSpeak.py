@@ -30,7 +30,7 @@ from gi.repository import Gst
 from gi.repository import GObject
 from gi.repository import GLib
 
-wavpath = "/tmp/speak.wav"
+wavpath = "/dev/shm/speak.wav"
 
 GObject.threads_init()
 Gst.init([])
@@ -50,6 +50,11 @@ class JAMediaSpeak(GObject.GObject):
         
         GObject.GObject.__init__(self)
         
+        self.pitch = 50
+        self.speed = 170
+        self.word_gap = 0
+        self.voice = "es"
+        
         self.pipeline = False
         self._was_message = False
         
@@ -60,10 +65,12 @@ class JAMediaSpeak(GObject.GObject):
         
         self.stop()
         
-        subprocess.call(["espeak", "-w", wavpath,
-            "-ves", ".   %s   ." % text],
+        subprocess.call(["espeak", "-p%s" % self.pitch,
+            "-s%s" % self.speed, "-g%s" % self.word_gap,
+            "-w", wavpath, "-v%s" % self.voice,
+            ".   %s   ." % text],
             stdout=subprocess.PIPE)
-            
+        
         self.setup_init()
         
         self.play()
@@ -144,7 +151,7 @@ class JAMediaSpeak(GObject.GObject):
             
         elif message.type == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
-            print err, debug
+            #print err, debug
             self.stop()
             
     def on_buffer(self, element, buffer, pad):
