@@ -33,6 +33,8 @@ from JAMediaObjects.JAMediaGlobales import get_separador
 from JAMediaObjects.JAMediaGlobales import get_boton
 from JAMediaObjects.JAMediaGlobales import get_pixels
 
+from JAMediaObjects.JAMFileSystem import describe_archivo
+
 class ToolbarPreviews(Gtk.Toolbar):
     
     __gtype_name__ = 'JAMediaImagenesToolbarPreviews'
@@ -59,13 +61,13 @@ class ToolbarPreviews(Gtk.Toolbar):
         archivo = os.path.join(
             JAMediaObjectsPath,
             "Iconos", "play.png")
-        boton = get_boton(
+        atras = get_boton(
             archivo, flip = True,
             rotacion = None,
-            pixels = get_pixels(1))
-        boton.set_tooltip_text("Anterior")
-        boton.connect("clicked", self.__emit_switch)
-        self.insert(boton, -1)
+            pixels = get_pixels(1),
+            tooltip_text = "Anterior")
+        atras.connect("clicked", self.__emit_switch)
+        self.insert(atras, -1)
         
         self.insert(get_separador(draw = True,
             expand = False), -1)
@@ -76,21 +78,21 @@ class ToolbarPreviews(Gtk.Toolbar):
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
-            pixels = get_pixels(1))
-        boton.set_tooltip_text("Cámara")
+            pixels = get_pixels(1),
+            tooltip_text = "Cámara")
         boton.connect("clicked", self.__emit_camara)
         self.insert(boton, -1)
         
         archivo = os.path.join(
             JAMediaObjectsPath,
             "Iconos", "ver.png")
-        boton = get_boton(
+        ver = get_boton(
             archivo, flip = False,
             rotacion = None,
-            pixels = get_pixels(1))
-        boton.set_tooltip_text("Visor")
-        boton.connect("clicked", self.__emit_visor)
-        self.insert(boton, -1)
+            pixels = get_pixels(1),
+            tooltip_text = "Visor")
+        ver.connect("clicked", self.__emit_visor)
+        self.insert(ver, -1)
         
         self.insert(get_separador(draw = True,
             expand = False), -1)
@@ -100,17 +102,19 @@ class ToolbarPreviews(Gtk.Toolbar):
             
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos","JAMediaImagenes.png")
-        boton = get_boton(archivo, flip = False,
-            pixels = get_pixels(1.2))
-        boton.set_tooltip_text("Autor.")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1.2),
+            tooltip_text = "Autor.")
         boton.connect("clicked", self.__show_credits)
         self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos","JAMedia-help.svg")
-        boton = get_boton(archivo, flip = False,
-            pixels = get_pixels(1))
-        boton.set_tooltip_text("Ayuda.")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Ayuda.")
         boton.connect("clicked", self.__show_help)
         self.insert(boton, -1)
         
@@ -126,8 +130,8 @@ class ToolbarPreviews(Gtk.Toolbar):
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
-            pixels = get_pixels(1))
-        boton.set_tooltip_text("Salir")
+            pixels = get_pixels(1),
+            tooltip_text = "Salir")
         boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
         
@@ -136,13 +140,29 @@ class ToolbarPreviews(Gtk.Toolbar):
         
         self.show_all()
         
+        ### Activar botón atras solo si no se está en home del usuario.
+        if os.path.dirname(self.path) == os.path.dirname(os.environ["HOME"]):
+            atras.set_sensitive(False)
+            
+        ### Activar botón del visor solo si hay imagenes en el directorio
+        for arch in os.listdir(self.path):
+            path = os.path.join(self.path, arch)
+            
+            if os.path.isfile(path):
+                descripcion = describe_archivo(path)
+                
+                if 'image' in descripcion and not 'iso' in descripcion:
+                    return
+                
+        ver.set_sensitive(False)
+        
     def __emit_camara(self, widget):
         
         self.emit("camara")
         
     def __emit_visor(self, widget):
         
-        self.emit("ver", os.path.dirname(self.path))
+        self.emit("ver", self.path)
         
     def __show_credits(self, widget):
         
@@ -175,6 +195,8 @@ class ToolbarImagen(Gtk.Toolbar):
     'salir': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
     'switch_to': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "activar":(GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
         
     def __init__(self, path):
@@ -189,29 +211,130 @@ class ToolbarImagen(Gtk.Toolbar):
         archivo = os.path.join(
             JAMediaObjectsPath,
             "Iconos", "play.png")
-            
         boton = get_boton(
             archivo, flip = True,
             rotacion = None,
-            pixels = get_pixels(1))
-            
-        boton.set_tooltip_text("Anterior")
+            pixels = get_pixels(1),
+            tooltip_text = "Anterior")
         boton.connect("clicked", self.__emit_switch)
         self.insert(boton, -1)
         
+        self.insert(get_separador(draw = True,
+            ancho = 0, expand = False), -1)
+            
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "escalaoriginal.png")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Original")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "alejar.png")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Alejar")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "acercar.png")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Acercar")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        
+        self.insert(get_separador(draw = True,
+            ancho = 0, expand = False), -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Izquierda")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "rotar.png")
+        boton = get_boton(
+            archivo, flip = True,
+            pixels = get_pixels(1),
+            tooltip_text = "Derecha")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        
+        self.insert(get_separador(draw = True,
+            ancho = 0, expand = False), -1)
+            
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "configurar.png")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Configurar")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        
+        self.insert(get_separador(draw = True,
+            ancho = 0, expand = False), -1)
+            
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "siguiente.png")
+        boton = get_boton(
+            archivo, flip = True,
+            pixels = get_pixels(1),
+            tooltip_text = "Anterior")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "play.png")
+        self.botonplay = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Reproducir")
+        self.botonplay.connect("clicked", self.__activar)
+        self.insert(self.botonplay, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "siguiente.png")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Siguiente")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "stop.png")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Detener")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        
+        self.insert(get_separador(draw = True,
+            ancho = 3, expand = False), -1)
+            
         self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
         archivo = os.path.join(
             JAMediaObjectsPath,
             "Iconos", "salir.png")
-            
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
-            pixels = get_pixels(1))
-            
-        boton.set_tooltip_text("Salir")
+            pixels = get_pixels(1),
+            tooltip_text = "Salir")
         boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
         
@@ -220,13 +343,62 @@ class ToolbarImagen(Gtk.Toolbar):
         
         self.show_all()
         
+    def set_paused(self):
+        
+        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "play.png")
+        
+        self.botonplay.set_imagen(
+            archivo = archivo,
+            flip = False,
+            rotacion = False)
+        
+    def set_playing(self):
+        
+        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "pausa.png")
+        
+        self.botonplay.set_imagen(
+            archivo = archivo,
+            flip = False,
+            rotacion = False)
+        
+    def __activar(self, widget = None, event = None):
+        
+        self.emit("activar", widget.TOOLTIP)
+        
     def __emit_switch(self, widget):
         
-        self.emit("switch_to", os.path.dirname(self.path))
+        self.emit("switch_to", self.path)
         
     def __salir(self, widget):
         
         self.emit("salir")
+        
+class ToolbarTry(Gtk.Toolbar):
+    
+    __gtype_name__ = 'JAMediaImagenesToolbarTry'
+    
+    def __init__(self):
+        
+        Gtk.Toolbar.__init__(self)
+        
+        self.insert(get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+            
+        item = Gtk.ToolItem()
+        item.set_expand(False)
+        self.label = Gtk.Label("")
+        self.label.show()
+        item.add(self.label)
+        self.insert(item, -1)
+        
+        self.insert(get_separador(draw = False,
+            expand = True), -1)
+            
+        self.show_all()
+        
+    def set_info(self, path):
+        
+        self.label.set_text("Archivo: %s" % path)
         
 class Credits(Gtk.Dialog):
     

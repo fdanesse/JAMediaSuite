@@ -29,7 +29,6 @@ import JAMediaObjects
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-#from Widgets import Toolbar
 from Widgets import ToolbarImagen
 #from Widgets import ToolbarEditor
 
@@ -135,7 +134,7 @@ class JAMImagenes(Gtk.Plug):
             self.interface = Previews(path)
             
             self.basebox.pack_start(self.interface, True, True, 0)
-            self.show_all()
+            #self.show_all()
             self.interface.run()
             
             self.interface.connect('switch_to', self.switch_to)
@@ -144,23 +143,19 @@ class JAMImagenes(Gtk.Plug):
             self.interface.connect('salir', self.__salir)
             
         ### Abre Editor de imagen cuando path es un archivo.
+        '''
         elif os.path.isfile(path):
             
-            print "Switch al Editor"
+            self.interface = VisorImagenes(path)
             
-            '''
-            self.toolbar = ToolbarImagen(path)
-            self.visor = VisorImagenes(path)
+            self.basebox.pack_start(self.interface, True, True, 0)
+            self.show_all()
+            self.interface.run()
             
-            scroll = Gtk.ScrolledWindow()
-            
-            scroll.set_policy(
-                Gtk.PolicyType.NEVER,
-                Gtk.PolicyType.AUTOMATIC)
-                
-            scroll.add_with_viewport(self.visor)'''
-            
-        #self.show_all()
+            self.interface.connect('switch_to', self.switch_to)
+            #self.interface.connect('ver', self.__switch_to_visor)
+            #self.interface.connect('camara', self.__switch_to_camara)
+            self.interface.connect('salir', self.__salir)'''
         
     def __switch_to_camara(self, widget):
         
@@ -168,7 +163,27 @@ class JAMImagenes(Gtk.Plug):
         
     def __switch_to_visor(self, widget, path):
         
-        print "Ir al Visor de Imágenes", path
+        if not path: return
+        if path == None: return
+        if not os.path.exists(path): return
+        if not os.access(path, os.R_OK): return
+        if path == os.path.dirname(os.environ["HOME"]): return
+        
+        ### Quitar Interfaz Anterior.
+        for child in self.basebox.get_children():
+            self.basebox.remove(child)
+            child.destroy()
+    
+        self.interface = VisorImagenes(path)
+        
+        self.basebox.pack_start(self.interface, True, True, 0)
+        #self.show_all()
+        self.interface.run()
+        
+        self.interface.connect('switch_to', self.switch_to)
+        #self.interface.connect('ver', self.__switch_to_visor)
+        #self.interface.connect('camara', self.__switch_to_camara)
+        self.interface.connect('salir', self.__salir)
         
     '''
     def __do_motion_notify_event(self, widget, event):

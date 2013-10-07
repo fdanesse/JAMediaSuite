@@ -22,37 +22,114 @@
 import os
 import cairo
 
+from collections import OrderedDict
+
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import GdkX11
 
-class VisorImagenes(Gtk.DrawingArea):
+from Widgets import ToolbarImagen
+from Widgets import ToolbarTry
+
+import JAMediaObjects
+
+JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+from JAMediaObjects.JAMFileSystem import describe_archivo
+
+class VisorImagenes (Gtk.VBox):
+    
+    __gtype_name__ = 'JAMediaImagenesVisorImagenes'
+    
+    __gsignals__ = {
+    'salir': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, []),
+    'switch_to': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        
+    def __init__(self, path):
+        
+        Gtk.VBox.__init__(self)
+        
+        self.path = path
+        
+        self.imagenes = []
+        
+        self.toolbar = ToolbarImagen(path)
+        self.visor = Visor()
+        # toolbar - Controles de reproducción.
+        # toolbar [][][][] previews
+        self.toolbartry = ToolbarTry()
+        
+        self.pack_start(self.toolbar, False, False, 0)
+        self.pack_start(self.visor, True, True, 0)
+        self.pack_end(self.toolbartry, False, False, 0)
+        
+        self.show_all()
+    
+        self.toolbar.connect('switch_to', self.__emit_switch)
+        self.toolbar.connect('activar', self.__set_accion)
+        self.toolbar.connect('salir', self.__salir)
+        
+    def __set_accion(self, widget, accion):
+        
+        print accion
+        '''
+        Original
+        Alejar
+        Acercar
+        Izquierda
+        Derecha
+        Configurar
+        Anterior
+        Reproducir
+        Siguiente
+        Detener
+        '''
+        
+    def __emit_switch(self, widget, path):
+        
+        self.emit("switch_to", path)
+        
+    def __salir(self, widget):
+        
+        self.emit("salir")
+        
+    def run(self):
+        
+        self.imagenes = []
+        for arch in os.listdir(self.path):
+            path = os.path.join(self.path, arch)
+            
+            if os.path.isfile(path):
+                descripcion = describe_archivo(path)
+                
+                if 'image' in descripcion and not 'iso' in descripcion:
+                    self.imagenes.append(path)
+                    
+        self.visor.load(self.imagenes[0])
+        self.toolbartry.set_info(self.imagenes[0])
+        
+class Visor(Gtk.DrawingArea):
     """
     Visor de Imágenes.
     """
     
-    __gtype_name__ = 'VisorImagenes'
+    __gtype_name__ = 'JAMediaImagenesVisor'
     
-    __gsignals__ = {
-    'switch_to': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_STRING))}
-        
-    def __init__(self, path):
+    def __init__(self):
         
         Gtk.DrawingArea.__init__(self)
         
-        from collections import OrderedDict
-        
-        self.touch_events = OrderedDict()
+        #self.touch_events = OrderedDict()
         self.imagen_original = None
         self.image_path = None
         
         self.show_all()
         
-        self.add_events(Gdk.EventMask.TOUCH_MASK)
+        #self.add_events(Gdk.EventMask.TOUCH_MASK)
         
         self.connect("draw", self.__do_draw)
         #self.connect("touch-event", self.__touch_event)
@@ -113,15 +190,15 @@ class VisorImagenes(Gtk.DrawingArea):
             pass
         '''
     
-    def load_previews(self, basepath):
+    def load(self, path):
         """
         Carga una imagen.
         """
         
-        if basepath:
-            if os.path.exists(basepath):
-                self.image_path = basepath
-                self.imagen_original = GdkPixbuf.Pixbuf.new_from_file(basepath)
+        if path:
+            if os.path.exists(path):
+                self.image_path = path
+                self.imagen_original = GdkPixbuf.Pixbuf.new_from_file(path)
                 
     def __do_draw(self, widget, context):
         """
