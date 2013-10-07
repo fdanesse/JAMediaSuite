@@ -61,7 +61,7 @@ class Ventana(Gtk.Window):
         path = os.path.join(
             os.environ["HOME"],
             "JAMediaDatos", "Fotos")
-            
+        
         GLib.idle_add(
             self.jamediaimagenes.switch_to,
             None, path)

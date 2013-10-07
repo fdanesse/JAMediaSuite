@@ -29,11 +29,13 @@ import JAMediaObjects
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-from Widgets import Toolbar
+#from Widgets import Toolbar
 from Widgets import ToolbarImagen
+#from Widgets import ToolbarEditor
 
 from Previews import Previews
 from VisorImagenes import VisorImagenes
+#from EditorImagenes import EditorImagenes
 
 from JAMediaObjects.JAMediaWidgets import Acelerometro
 
@@ -78,19 +80,19 @@ class JAMImagenes(Gtk.Plug):
         self.basebox = Gtk.VBox(
             orientation=Gtk.Orientation.VERTICAL)
         
-        self.toolbar = False
-        self.visor = False
-        self.acelerometro = Acelerometro()
+        self.interface = False
+        #self.acelerometro = Acelerometro()
         
         self.add(self.basebox)
         
         self.show_all()
         self.realize()
         
-        self.acelerometro.connect("angulo", self.__rotar)
-        self.connect("motion-notify-event",
-            self.__do_motion_notify_event)
-    
+        #self.acelerometro.connect("angulo", self.__rotar)
+        #self.connect("motion-notify-event",
+        #    self.__do_motion_notify_event)
+        
+    '''
     def __rotar(self, widget, angulo):
         """
         Rota la pantalla según el ángulo
@@ -110,6 +112,7 @@ class JAMImagenes(Gtk.Plug):
             
         elif angulo == 0:
             commands.getoutput('xrandr --output lvds --rotate normal')
+    '''
         
     def switch_to(self, widget, path):
         """
@@ -129,23 +132,25 @@ class JAMImagenes(Gtk.Plug):
         
         ### Abre vista previews cuando path es un directorio.
         if os.path.isdir(path):
-            self.toolbar = Toolbar(path)
-            self.visor = Previews(path)
-            self.toolbar.connect('salir', self.__salir)
+            self.interface = Previews(path)
             
-            scroll = Gtk.ScrolledWindow()
+            self.basebox.pack_start(self.interface, True, True, 0)
+            self.show_all()
+            self.interface.run()
             
-            scroll.set_policy(
-                Gtk.PolicyType.NEVER,
-                Gtk.PolicyType.AUTOMATIC)
-                
-            scroll.add_with_viewport(self.visor)
+            self.interface.connect('switch_to', self.switch_to)
+            self.interface.connect('ver', self.__switch_to_visor)
+            self.interface.connect('camara', self.__switch_to_camara)
+            self.interface.connect('salir', self.__salir)
             
-        ### Abre vista imagen cuando path es un archivo.
+        ### Abre Editor de imagen cuando path es un archivo.
         elif os.path.isfile(path):
+            
+            print "Switch al Editor"
+            
+            '''
             self.toolbar = ToolbarImagen(path)
             self.visor = VisorImagenes(path)
-            self.toolbar.connect('salir', self.__salir)
             
             scroll = Gtk.ScrolledWindow()
             
@@ -153,20 +158,19 @@ class JAMImagenes(Gtk.Plug):
                 Gtk.PolicyType.NEVER,
                 Gtk.PolicyType.AUTOMATIC)
                 
-            scroll.add_with_viewport(self.visor)
+            scroll.add_with_viewport(self.visor)'''
             
-        ### Empaquetado.
-        self.basebox.pack_start(self.toolbar, False, False, 0)
-        self.basebox.pack_start(scroll, True, True, 0)
+        #self.show_all()
         
-        self.show_all()
+    def __switch_to_camara(self, widget):
         
-        self.visor.load_previews(path)
-        self.visor.connect('switch_to', self.switch_to)
-        self.toolbar.connect('switch_to', self.switch_to)
+        print "Ir al Visor de la Cámara"
         
-        self.get_toplevel().set_sensitive(True)
-    
+    def __switch_to_visor(self, widget, path):
+        
+        print "Ir al Visor de Imágenes", path
+        
+    '''
     def __do_motion_notify_event(self, widget, event):
         """
         Cuando se mueve el mouse sobre la ventana.
@@ -185,9 +189,10 @@ class JAMImagenes(Gtk.Plug):
         else:
             self.toolbar.hide()
             return
+        '''
         
     def __salir(self, widget):
         
-        self.__rotar(None, 0)
+        #self.__rotar(None, 0) Devuelve la pantalla a su estado original.
         self.emit("salir")
         

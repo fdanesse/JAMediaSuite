@@ -33,15 +33,19 @@ from JAMediaObjects.JAMediaGlobales import get_separador
 from JAMediaObjects.JAMediaGlobales import get_boton
 from JAMediaObjects.JAMediaGlobales import get_pixels
 
-class Toolbar(Gtk.Toolbar):
+class ToolbarPreviews(Gtk.Toolbar):
     
-    __gtype_name__ = 'JAMediaImagenesToolbar'
+    __gtype_name__ = 'JAMediaImagenesToolbarPreviews'
     
     __gsignals__ = {
-    'salir': (GObject.SIGNAL_RUN_FIRST,
+    'salir': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
-    'switch_to': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    'switch_to': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'ver': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'camara': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
         
     def __init__(self, path):
         
@@ -63,6 +67,34 @@ class Toolbar(Gtk.Toolbar):
         boton.connect("clicked", self.__emit_switch)
         self.insert(boton, -1)
         
+        self.insert(get_separador(draw = True,
+            expand = False), -1)
+            
+        archivo = os.path.join(
+            JAMediaObjectsPath,
+            "Iconos", "foto.png")
+        boton = get_boton(
+            archivo, flip = False,
+            rotacion = None,
+            pixels = get_pixels(1))
+        boton.set_tooltip_text("Cámara")
+        boton.connect("clicked", self.__emit_camara)
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(
+            JAMediaObjectsPath,
+            "Iconos", "ver.png")
+        boton = get_boton(
+            archivo, flip = False,
+            rotacion = None,
+            pixels = get_pixels(1))
+        boton.set_tooltip_text("Visor")
+        boton.connect("clicked", self.__emit_visor)
+        self.insert(boton, -1)
+        
+        self.insert(get_separador(draw = True,
+            expand = False), -1)
+            
         self.insert(get_separador(draw = False,
             ancho = 15, expand = False), -1)
             
@@ -82,6 +114,9 @@ class Toolbar(Gtk.Toolbar):
         boton.connect("clicked", self.__show_help)
         self.insert(boton, -1)
         
+        self.insert(get_separador(draw = True,
+            expand = False), -1)
+            
         self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
         
@@ -100,6 +135,14 @@ class Toolbar(Gtk.Toolbar):
             ancho = 5, expand = False), -1)
         
         self.show_all()
+        
+    def __emit_camara(self, widget):
+        
+        self.emit("camara")
+        
+    def __emit_visor(self, widget):
+        
+        self.emit("ver", os.path.dirname(self.path))
         
     def __show_credits(self, widget):
         
@@ -129,9 +172,9 @@ class ToolbarImagen(Gtk.Toolbar):
     __gtype_name__ = 'JAMediaImagenesToolbarImagen'
     
     __gsignals__ = {
-    'salir': (GObject.SIGNAL_RUN_FIRST,
+    'salir': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
-    'switch_to': (GObject.SIGNAL_RUN_FIRST,
+    'switch_to': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
         
     def __init__(self, path):

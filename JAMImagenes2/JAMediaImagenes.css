@@ -1,8 +1,8 @@
 /* Contenedores */
-JAMediaImagenesToolbar, JAMediaImagenesToolbarImagen{
+JAMediaImagenesToolbarPreviews, JAMediaImagenesToolbarImagen{
     background-color: #b0c4de;
 }
 
-WindowBase, PlugBase, Previews, VisorImagenes, JAMediaImagenesHelp, JAMediaImagenesCredits{
+WindowBase, PlugBase, JAMediaImagenesIconView, VisorImagenes, JAMediaImagenesHelp, JAMediaImagenesCredits{
     background-color: #778899;
 }

@@ -25,13 +25,81 @@ from gi.repository import Gtk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
+from Widgets import ToolbarPreviews
+
 import JAMediaObjects
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 from JAMediaObjects.JAMFileSystem import describe_archivo
 
-class Previews(Gtk.IconView):
+class Previews (Gtk.VBox):
+    
+    __gtype_name__ = 'JAMediaImagenesPreviews'
+    
+    __gsignals__ = {
+    'salir': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
+    'switch_to': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'ver': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'camara': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
+        
+    def __init__(self, path):
+        
+        Gtk.VBox.__init__(self)
+        
+        self.path = path # Directorio
+        
+        self.toolbar = ToolbarPreviews(path)
+        self.iconview = IconView(path)
+        
+        self.pack_start(self.toolbar, False, False, 0)
+        
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(
+            Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC)
+        scroll.add_with_viewport(self.iconview)
+        
+        self.pack_start(scroll, True, True, 0)
+        
+        self.show_all()
+        
+        self.iconview.connect('switch_to', self.__emit_switch)
+        
+        self.toolbar.connect('ver', self.__emit_ver)
+        self.toolbar.connect('camara', self.__emit_camara)
+        self.toolbar.connect('switch_to', self.__emit_switch)
+        self.toolbar.connect('salir', self.__salir)
+        
+    def __emit_camara(self, widget):
+        
+        self.emit("camara")
+        
+    def __emit_ver(self, widget, path):
+        
+        self.emit("ver", path)
+        
+    def __emit_visor(self, widget, path):
+        
+        self.emit("ver", path)
+        
+    def __emit_switch(self, widget, path):
+        
+        self.emit("switch_to", path)
+        
+    def __salir(self, widget):
+        
+        self.emit("salir")
+
+    def run(self):
+        
+        self.iconview.load_previews(self.path)
+    
+class IconView(Gtk.IconView):
     """
     http://python-gtk-3-tutorial.readthedocs.org/en/latest/iconview.html
     
@@ -39,10 +107,10 @@ class Previews(Gtk.IconView):
     con imágenes o conjunto de albumes.
     """
     
-    __gtype_name__ = 'Previews'
+    __gtype_name__ = 'JAMediaImagenesIconView'
     
     __gsignals__ = {
-    'switch_to': (GObject.SIGNAL_RUN_FIRST,
+    'switch_to': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
         
     def __init__(self, path):
@@ -140,10 +208,10 @@ class Previews(Gtk.IconView):
         valor =  self.get_model().get_value(iter, 1)
         
         self.emit("switch_to", valor)
-        
+    '''
     def do_motion_notify_event(self, event):
         """
         Cuando se mueve el mouse sobre la ventana.
         """
         
-        pass
+        pass'''

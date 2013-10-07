@@ -28,6 +28,12 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import GdkX11
 
+import JAMediaObjects
+#from JAMediaObjects.JAMediaImagenPlayer import JAMediaImagenPlayer
+from JAMediaObjects.JAMediaReproductor import JAMediaReproductor
+
+JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
 class VisorImagenes(Gtk.DrawingArea):
     """
     Visor de Imágenes.
@@ -54,10 +60,9 @@ class VisorImagenes(Gtk.DrawingArea):
         
         self.add_events(Gdk.EventMask.TOUCH_MASK)
         
-        self.connect("draw", self.__do_draw)
-        #self.connect("touch-event", self.__touch_event)
+        #self.connect("draw", self.__do_draw)
+        self.connect("touch-event", self.__touch_event)
         
-    '''
     def __touch_event(self, widget, event):
         """
         Gestiona Gdk.EventTouch
@@ -86,12 +91,11 @@ class VisorImagenes(Gtk.DrawingArea):
             
         if event.type == Gdk.EventType.TOUCH_END:
             del(self.touch_events[touch_event])
-        '''
-    '''
+            
     def __gestione_touch(self):
         #for touch in self.touch_events.keys():
         #    print self.touch_events[touch][0:2]
-        
+        """
         keys = self.touch_events.keys()
         
         if len(keys) == 2:
@@ -111,18 +115,32 @@ class VisorImagenes(Gtk.DrawingArea):
             
         elif len(keys) == 1:
             pass
-        '''
+        """
+        pass
     
     def load_previews(self, basepath):
         """
         Carga una imagen.
+        # gst-launch-1.0 filesrc location="linux3.jpg" ! decodebin ! imagefreeze ! autovideosink
+        # gst-launch-1.0 filesrc location="linux3.jpg" ! decodebin ! imagefreeze ! videoconvert ! frei0r-filter-cartoon ! videoconvert ! autovideosink
         """
         
         if basepath:
             if os.path.exists(basepath):
-                self.image_path = basepath
-                self.imagen_original = GdkPixbuf.Pixbuf.new_from_file(basepath)
+                xid = self.get_property('window').get_xid()
+                player = JAMediaReproductor(xid)
+                player.load(basepath)
+                player.agregar_efecto("frei0r-filter-cartoon")
+                player.pause_play()
+                self.get_parent().get_parent().get_parent().get_parent().toolbar.show()
                 
+        '''
+        if basepath:
+            if os.path.exists(basepath):
+                self.image_path = basepath
+                self.imagen_original = GdkPixbuf.Pixbuf.new_from_file(basepath)'''
+                
+    '''
     def __do_draw(self, widget, context):
         """
         Pinta la imagen lo más grande posible y
@@ -149,5 +167,5 @@ class VisorImagenes(Gtk.DrawingArea):
             dst.get_width(), dst.get_height())
             
         Gdk.cairo_set_source_pixbuf(context, dst, x, y)
-        context.paint()
+        context.paint()'''
         
