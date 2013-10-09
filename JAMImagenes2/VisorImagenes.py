@@ -89,6 +89,32 @@ class VisorImagenes (Gtk.EventBox):
         self.connect("motion-notify-event",
             self.__do_motion_notify_event)
             
+        self.visor.add_events(
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.BUTTON_RELEASE_MASK
+        )
+        
+        self.visor.connect("button_press_event", self.__clicks_en_pantalla)
+        
+    def __clicks_en_pantalla(self, widget, event):
+        
+        if event.type.value_name == "GDK_2BUTTON_PRESS":
+            
+            self.get_toplevel().set_sensitive(False)
+            
+            ventana = self.get_toplevel()
+            screen = ventana.get_screen()
+            w,h = ventana.get_size()
+            ww, hh = (screen.get_width(), screen.get_height())
+            
+            if ww == w and hh == h:
+                GLib.idle_add(ventana.unfullscreen)
+                
+            else:
+                GLib.idle_add(ventana.fullscreen)
+                
+            self.get_toplevel().set_sensitive(True)
+            
     def __do_motion_notify_event(self, widget, event):
         """
         Cuando se mueve el mouse sobre la ventana.
