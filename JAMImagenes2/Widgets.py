@@ -204,6 +204,9 @@ class ToolbarImagen(Gtk.Toolbar):
         Gtk.Toolbar.__init__(self)
         
         self.path = path
+        self.buttons_player = []
+        self.buttons_escala_rotacion = []
+        self.buttons_config = []
         
         self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
@@ -220,7 +223,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.insert(boton, -1)
         
         self.insert(get_separador(draw = True,
-            ancho = 0, expand = False), -1)
+            expand = False), -1)
             
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "escalaoriginal.png")
@@ -230,6 +233,7 @@ class ToolbarImagen(Gtk.Toolbar):
             tooltip_text = "Original")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
+        self.buttons_escala_rotacion.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "alejar.png")
@@ -239,6 +243,7 @@ class ToolbarImagen(Gtk.Toolbar):
             tooltip_text = "Alejar")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
+        self.buttons_escala_rotacion.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "acercar.png")
@@ -248,43 +253,53 @@ class ToolbarImagen(Gtk.Toolbar):
             tooltip_text = "Acercar")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
+        self.buttons_escala_rotacion.append(boton)
         
-        self.insert(get_separador(draw = True,
-            ancho = 0, expand = False), -1)
+        separador = get_separador(draw = True,
+            expand = False)
+        self.insert(separador, -1)
+        self.buttons_escala_rotacion.append(separador)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "rotar.png")
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
-            tooltip_text = "Izquierda")
+            tooltip_text = "Rotar Izquierda")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
+        self.buttons_escala_rotacion.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "rotar.png")
         boton = get_boton(
             archivo, flip = True,
             pixels = get_pixels(1),
-            tooltip_text = "Derecha")
+            tooltip_text = "Rotar Derecha")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
+        self.buttons_escala_rotacion.append(boton)
         
-        self.insert(get_separador(draw = True,
-            ancho = 0, expand = False), -1)
+        separador = get_separador(draw = True,
+            expand = False)
+        self.insert(separador, -1)
+        self.buttons_escala_rotacion.append(separador)
             
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "configurar.png")
-        boton = get_boton(
+        button = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
-            tooltip_text = "Configurar")
-        boton.connect("clicked", self.__activar)
-        self.insert(boton, -1)
+            tooltip_text = "Configurar Presentación")
+        button.connect("clicked", self.__activar)
+        self.insert(button, -1)
+        self.buttons_config.append(button)
         
-        self.insert(get_separador(draw = True,
-            ancho = 0, expand = False), -1)
-            
+        separador = get_separador(draw = True,
+            expand = False)
+        self.insert(separador, -1)
+        self.buttons_player.append(separador)
+        
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "siguiente.png")
         boton = get_boton(
@@ -293,6 +308,7 @@ class ToolbarImagen(Gtk.Toolbar):
             tooltip_text = "Anterior")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
+        self.buttons_player.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "play.png")
@@ -302,6 +318,7 @@ class ToolbarImagen(Gtk.Toolbar):
             tooltip_text = "Reproducir")
         self.botonplay.connect("clicked", self.__activar)
         self.insert(self.botonplay, -1)
+        self.buttons_player.append(self.botonplay)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "siguiente.png")
@@ -311,6 +328,7 @@ class ToolbarImagen(Gtk.Toolbar):
             tooltip_text = "Siguiente")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
+        self.buttons_player.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "stop.png")
@@ -320,12 +338,15 @@ class ToolbarImagen(Gtk.Toolbar):
             tooltip_text = "Detener")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
+        self.buttons_player.append(boton)
         
-        self.insert(get_separador(draw = True,
-            ancho = 3, expand = False), -1)
-            
+        separador = get_separador(draw = True,
+            expand = False)
+        self.insert(separador, -1)
+        self.buttons_config.append(separador)
+        
         self.insert(get_separador(draw = False,
-            ancho = 0, expand = True), -1)
+            expand = True), -1)
         
         archivo = os.path.join(
             JAMediaObjectsPath,
@@ -339,27 +360,48 @@ class ToolbarImagen(Gtk.Toolbar):
         self.insert(boton, -1)
         
         self.insert(get_separador(draw = False,
-            ancho = 5, expand = False), -1)
+            ancho = 3, expand = False), -1)
         
         self.show_all()
+        
+    def set_modo(self, modo):
+        
+        if modo == "edit":
+            map(self.__ocultar, self.buttons_player)
+            map(self.__mostrar, self.buttons_escala_rotacion)
+            
+        elif modo == "player":
+            map(self.__mostrar, self.buttons_player)
+            map(self.__ocultar, self.buttons_escala_rotacion)
+            
+        elif modo == "noconfig":
+            map(self.__ocultar, self.buttons_config)
+            
+    def __mostrar(self, objeto):
+        
+        if not objeto.get_visible(): objeto.show()
+        
+    def __ocultar(self, objeto):
+        
+        if objeto.get_visible(): objeto.hide()
         
     def set_paused(self):
         
         archivo = os.path.join(JAMediaObjectsPath, "Iconos", "play.png")
+        pixel = get_pixels(1)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixel, pixel)
+        img = self.botonplay.get_children()[0].get_children()[0].get_children()[0]
         
-        self.botonplay.set_imagen(
-            archivo = archivo,
-            flip = False,
-            rotacion = False)
+        img.set_from_pixbuf(pixbuf)
         
     def set_playing(self):
         
         archivo = os.path.join(JAMediaObjectsPath, "Iconos", "pausa.png")
+        pixel = get_pixels(1)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixel, pixel)
+        img = self.botonplay.get_children()[0].get_children()[0].get_children()[0]
         
-        self.botonplay.set_imagen(
-            archivo = archivo,
-            flip = False,
-            rotacion = False)
+        img.set_from_pixbuf(pixbuf)
         
     def __activar(self, widget = None, event = None):
         
@@ -399,6 +441,113 @@ class ToolbarTry(Gtk.Toolbar):
     def set_info(self, path, size):
         
         self.label.set_text("Archivo: %s    Tamaño: %s x %s pixeles." % (path, size[0], size[1]))
+        
+class ToolbarConfig(Gtk.Toolbar):
+    """
+    Toolbar con opciones de configuracion para
+    modo presentacion de diapositivas.
+    """
+    
+    __gtype_name__ = 'JAMediaImagenesToolbarConfig'
+    
+    __gsignals__ = {
+    "run":(GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_INT, ))}
+    
+    def __init__(self):
+        
+        Gtk.Toolbar.__init__(self)
+        
+        self.intervalo = 1.0
+        
+        self.insert(get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "alejar.png")
+        boton = get_boton(
+            archivo, flip = False,
+            rotacion = None,
+            pixels = get_pixels(0.8),
+            tooltip_text = "Disminuir")
+        boton.connect("clicked", self.__menos_intervalo)
+        self.insert(boton, -1)
+        
+        self.insert(get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+        
+        item = Gtk.ToolItem()
+        self.label = Gtk.Label(
+            "Cambiar Imagen cada: %s Segundos" % (self.intervalo))
+        self.label.show()
+        item.add(self.label)
+        self.insert(item, -1)
+        
+        self.insert(get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "acercar.png")
+        boton = get_boton(
+            archivo, flip = False,
+            rotacion = None,
+            pixels = get_pixels(0.8),
+            tooltip_text = "Aumentar")
+        boton.connect("clicked", self.__mas_intervalo)
+        self.insert(boton, -1)
+        
+        self.insert(get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "play.png")
+        boton = get_boton(
+            archivo, flip = False,
+            rotacion = None,
+            pixels = get_pixels(0.8),
+            tooltip_text = "Aceptar")
+        boton.connect("clicked", self.__run_presentacion)
+        self.insert(boton, -1)
+        
+        self.insert(get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "salir.png")
+        boton = get_boton(
+            archivo, flip = False,
+            rotacion = None,
+            pixels = get_pixels(0.8),
+            tooltip_text = "Cancelar")
+        boton.connect("clicked", self.__cancelar)
+        self.insert(boton, -1)
+        
+        self.insert(get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+            
+        self.show_all()
+        
+    def __mas_intervalo(self, widget= None):
+        
+        self.intervalo += 0.1
+        self.label.set_text(
+            "Cambiar Imagen cada: %s Segundos" % (self.intervalo))
+
+    def __menos_intervalo(self, widget= None):
+        
+        if self.intervalo > 0.3:
+            self.intervalo -= 0.1
+            self.label.set_text(
+                "Cambiar Imagen cada: %s Segundos" % (self.intervalo))
+
+    def __run_presentacion(self, widget= None):
+        
+        self.hide()
+        self.emit("run", int(self.intervalo*1000))
+        
+    def __cancelar(self, widget= None):
+        
+        self.hide()
         
 class Credits(Gtk.Dialog):
     

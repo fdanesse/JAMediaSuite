@@ -29,9 +29,11 @@ from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import GdkX11
+from gi.repository import GLib
 
 from Widgets import ToolbarImagen
 from Widgets import ToolbarTry
+from Widgets import ToolbarConfig
 
 import JAMediaObjects
 
@@ -56,14 +58,17 @@ class VisorImagenes (Gtk.VBox):
         self.path = path
         
         self.imagenes = []
+        self.active_index_imagen = 0
+        self.intervalo = False
+        self.actualizador = False
         
         self.toolbar = ToolbarImagen(path)
         self.visor = Visor()
-        # toolbar - Controles de reproducción.
-        # toolbar [][][][] previews
+        self.toolbar_config = ToolbarConfig()
         self.toolbartry = ToolbarTry()
         
         self.pack_start(self.toolbar, False, False, 0)
+        self.pack_start(self.toolbar_config, False, False, 0)
         self.pack_start(self.visor, True, True, 0)
         self.pack_end(self.toolbartry, False, False, 0)
         
@@ -72,29 +77,123 @@ class VisorImagenes (Gtk.VBox):
         self.toolbar.connect('switch_to', self.__emit_switch)
         self.toolbar.connect('activar', self.__set_accion)
         self.toolbar.connect('salir', self.__salir)
+        self.toolbar_config.connect('run', self.__set_presentacion)
         
+        self.toolbar_config.hide()
+        self.toolbar.set_modo("edit")
+        
+    def __set_presentacion(self, widget = None, intervalo = False):
+        """
+        Lanza el modo diapositivas.
+        """
+        
+        if intervalo:
+            self.intervalo = intervalo
+            self.toolbar.set_modo("player")
+        
+        if self.actualizador:
+            GLib.source_remove(self.actualizador)
+            self.actualizador = False
+            
+        self.toolbar.set_playing()
+        self.actualizador = GLib.timeout_add(
+            self.intervalo, self.__handle_presentacion)
+        
+    def __stop_presentacion(self):
+        
+        if self.actualizador:
+            GLib.source_remove(self.actualizador)
+            self.actualizador = False
+            
+        self.toolbar.set_paused()
+        
+    def __handle_presentacion(self):
+        """
+        Cuando está en modo Diapositivas.
+        """
+        
+        if self.active_index_imagen < len(self.imagenes)-1:
+            self.active_index_imagen += 1
+            
+        else:
+            self.active_index_imagen = 0
+            
+        self.__show_imagen(self.imagenes[self.active_index_imagen])
+        
+        return True
+    
     def __set_accion(self, widget, accion):
         
-        print accion
+        if accion == "Configurar Presentación":
+            
+            if self.actualizador:
+                self.__stop_presentacion()
+            
+            if self.toolbar_config.get_visible():
+                self.toolbar_config.hide()
+                
+            else:
+                self.toolbar_config.show()
+            
+        elif accion == "Reproducir":
+            if self.toolbar_config.get_visible():
+                self.toolbar_config.hide()
+                
+            if self.actualizador:
+                self.__stop_presentacion()
+                
+            else:
+                self.__set_presentacion()
+            
+        elif accion == "Anterior":
+            if self.toolbar_config.get_visible():
+                self.toolbar_config.hide()
+                
+            self.__stop_presentacion()
+            if self.active_index_imagen > 0:
+                self.active_index_imagen -= 1
+                
+            else:
+                self.active_index_imagen = self.imagenes.index(self.imagenes[-1])
+                
+            self.__show_imagen(self.imagenes[self.active_index_imagen])
+        
+        elif accion == "Siguiente":
+            if self.toolbar_config.get_visible():
+                self.toolbar_config.hide()
+                
+            self.__stop_presentacion()
+            if self.active_index_imagen < len(self.imagenes)-1:
+                self.active_index_imagen += 1
+                
+            else:
+                self.active_index_imagen = 0
+                
+            self.__show_imagen(self.imagenes[self.active_index_imagen])
+            
+        elif accion == "Detener":
+            if self.toolbar_config.get_visible():
+                self.toolbar_config.hide()
+                
+            self.__stop_presentacion()
+            self.toolbar.set_modo("edit")
+        
         '''
         Original
         Alejar
         Acercar
-        Izquierda
-        Derecha
-        Configurar
-        Anterior
-        Reproducir
-        Siguiente
-        Detener
+        Rotar Izquierda
+        Rotar Derecha
         '''
         
     def __emit_switch(self, widget, path):
         
+        self.__stop_presentacion()
         self.emit("switch_to", path)
         
     def __salir(self, widget):
         
+        self.__stop_presentacion()
         self.emit("salir")
         
     def run(self):
@@ -110,11 +209,23 @@ class VisorImagenes (Gtk.VBox):
                     self.imagenes.append(path)
                     
         if self.imagenes:
-            self.visor.load(self.imagenes[0])
-            self.toolbartry.set_info(
-                self.imagenes[0],
-                (self.visor.imagen_original.get_width(),
-                self.visor.imagen_original.get_height()))
+            self.__show_imagen(self.imagenes[0])
+            
+            if len(self.imagenes) == 1:
+                self.toolbar.set_modo("noconfig")
+            
+    def __show_imagen(self, imagen):
+        
+        self.visor.load(imagen)
+        self.toolbartry.set_info(
+            imagen,
+            (self.visor.imagen_original.get_width(),
+            self.visor.imagen_original.get_height()))
+        '''
+        while Gtk.events_pending():
+            Gtk.main_iteration()
+        '''
+        self.queue_draw()
         
 class Visor(Gtk.DrawingArea):
     """
