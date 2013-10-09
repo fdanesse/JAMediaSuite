@@ -396,9 +396,9 @@ class ToolbarTry(Gtk.Toolbar):
             
         self.show_all()
         
-    def set_info(self, path):
+    def set_info(self, path, size):
         
-        self.label.set_text("Archivo: %s" % path)
+        self.label.set_text("Archivo: %s    Tamaño: %s x %s pixeles." % (path, size[0], size[1]))
         
 class Credits(Gtk.Dialog):
     

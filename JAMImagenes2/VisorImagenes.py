@@ -109,8 +109,12 @@ class VisorImagenes (Gtk.VBox):
                 if 'image' in descripcion and not 'iso' in descripcion:
                     self.imagenes.append(path)
                     
-        self.visor.load(self.imagenes[0])
-        self.toolbartry.set_info(self.imagenes[0])
+        if self.imagenes:
+            self.visor.load(self.imagenes[0])
+            self.toolbartry.set_info(
+                self.imagenes[0],
+                (self.visor.imagen_original.get_width(),
+                self.visor.imagen_original.get_height()))
         
 class Visor(Gtk.DrawingArea):
     """
