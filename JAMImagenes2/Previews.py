@@ -22,6 +22,7 @@
 import os
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
@@ -33,7 +34,7 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 from JAMediaObjects.JAMFileSystem import describe_archivo
 
-class Previews (Gtk.VBox):
+class Previews (Gtk.EventBox):
     
     __gtype_name__ = 'JAMediaImagenesPreviews'
     
@@ -49,14 +50,16 @@ class Previews (Gtk.VBox):
         
     def __init__(self, path):
         
-        Gtk.VBox.__init__(self)
+        Gtk.EventBox.__init__(self)
         
         self.path = path # Directorio
+        
+        base_box = Gtk.VBox()
         
         self.toolbar = ToolbarPreviews(path)
         self.iconview = IconView(path)
         
-        self.pack_start(self.toolbar, False, False, 0)
+        base_box.pack_start(self.toolbar, False, False, 0)
         
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(
@@ -64,7 +67,9 @@ class Previews (Gtk.VBox):
             Gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(self.iconview)
         
-        self.pack_start(scroll, True, True, 0)
+        base_box.pack_start(scroll, True, True, 0)
+        
+        self.add(base_box)
         
         self.show_all()
         
@@ -81,6 +86,29 @@ class Previews (Gtk.VBox):
         if os.path.dirname(self.path) == os.path.dirname(os.environ["HOME"]):
             self.toolbar.set_modo("noback")
             
+        self.connect("motion-notify-event",
+            self.__do_motion_notify_event)
+        self.iconview.connect('motion',
+            self.__do_motion_notify_event)
+        
+    def __do_motion_notify_event(self, widget, event):
+        """
+        Cuando se mueve el mouse sobre la ventana.
+        """
+        
+        rect = self.toolbar.get_allocation()
+        arriba = range(0, rect.height)
+        
+        x, y = self.get_toplevel().get_pointer()
+        
+        if y in arriba:
+            self.toolbar.show()
+            return
+        
+        else:
+            self.toolbar.hide()
+            return
+        
     def __emit_camara(self, widget):
         
         self.emit("camara")
@@ -123,7 +151,9 @@ class IconView(Gtk.IconView):
     
     __gsignals__ = {
     'switch_to': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'motion': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
         
     def __init__(self, path):
         
@@ -150,6 +180,16 @@ class IconView(Gtk.IconView):
         self.set_selection_mode(Gtk.SelectionMode.SINGLE)
         
         self.show_all()
+        
+        self.connect("motion-notify-event",
+            self.__do_motion_notify_event)
+            
+    def __do_motion_notify_event(self, widget, event):
+        """
+        Cuando se mueve el mouse sobre la ventana.
+        """
+        
+        self.emit("motion", event)
         
     def load_previews(self, basepath):
         """

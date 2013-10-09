@@ -88,8 +88,6 @@ class JAMImagenes(Gtk.Plug):
         self.realize()
         
         #self.acelerometro.connect("angulo", self.__rotar)
-        #self.connect("motion-notify-event",
-        #    self.__do_motion_notify_event)
         
     '''
     def __rotar(self, widget, angulo):
@@ -184,27 +182,6 @@ class JAMImagenes(Gtk.Plug):
         #self.interface.connect('ver', self.__switch_to_visor)
         #self.interface.connect('camara', self.__switch_to_camara)
         self.interface.connect('salir', self.__salir)
-        
-    '''
-    def __do_motion_notify_event(self, widget, event):
-        """
-        Cuando se mueve el mouse sobre la ventana.
-        """
-        
-        x, y = self.get_toplevel().get_pointer()
-        
-        rect = self.toolbar.get_allocation()
-        
-        arriba = range(0, rect.height)
-        
-        if y in arriba:
-            self.toolbar.show()
-            return
-        
-        else:
-            self.toolbar.hide()
-            return
-        '''
         
     def __salir(self, widget):
         

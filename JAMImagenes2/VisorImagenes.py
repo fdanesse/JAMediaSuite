@@ -41,7 +41,7 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 from JAMediaObjects.JAMFileSystem import describe_archivo
 
-class VisorImagenes (Gtk.VBox):
+class VisorImagenes (Gtk.EventBox):
     
     __gtype_name__ = 'JAMediaImagenesVisorImagenes'
     
@@ -53,9 +53,11 @@ class VisorImagenes (Gtk.VBox):
         
     def __init__(self, path):
         
-        Gtk.VBox.__init__(self)
+        Gtk.EventBox.__init__(self)
         
         self.path = path # Directorio
+        
+        base_box = Gtk.VBox()
         
         self.imagenes = []
         self.active_index_imagen = 0
@@ -67,10 +69,12 @@ class VisorImagenes (Gtk.VBox):
         self.toolbar_config = ToolbarConfig()
         self.toolbartry = ToolbarTry()
         
-        self.pack_start(self.toolbar, False, False, 0)
-        self.pack_start(self.toolbar_config, False, False, 0)
-        self.pack_start(self.visor, True, True, 0)
-        self.pack_end(self.toolbartry, False, False, 0)
+        base_box.pack_start(self.toolbar, False, False, 0)
+        base_box.pack_start(self.toolbar_config, False, False, 0)
+        base_box.pack_start(self.visor, True, True, 0)
+        base_box.pack_end(self.toolbartry, False, False, 0)
+        
+        self.add(base_box)
         
         self.show_all()
     
@@ -81,6 +85,35 @@ class VisorImagenes (Gtk.VBox):
         
         self.toolbar_config.hide()
         self.toolbar.set_modo("edit")
+        
+        self.connect("motion-notify-event",
+            self.__do_motion_notify_event)
+            
+    def __do_motion_notify_event(self, widget, event):
+        """
+        Cuando se mueve el mouse sobre la ventana.
+        """
+        
+        if self.toolbar_config.get_visible():
+            return
+        
+        rect = self.toolbar.get_allocation()
+        arriba = range(0, rect.height)
+        
+        root_rect = self.get_toplevel().get_allocation()
+        rect = self.toolbartry.get_allocation()
+        abajo = range(root_rect.height - rect.height, root_rect.height)
+        x, y = self.get_toplevel().get_pointer()
+        
+        if y in arriba or y in abajo:
+            self.toolbar.show()
+            self.toolbartry.show()
+            return
+        
+        else:
+            self.toolbar.hide()
+            self.toolbartry.hide()
+            return
         
     def __set_presentacion(self, widget = None, intervalo = False):
         """

@@ -27,6 +27,8 @@
 # http://hg.python.org/cpython/file/2.7/Lib/pydoc.py
 # http://docs.python.org/library/imp.html
 
+# FIXME: Analizar la posibilidad de usar: self.__gdoc__
+
 # http://www.roojs.org/seed/gir-1.1-gtk-2.0/
 PaquetesObjetos1 = [
     'Atk',
