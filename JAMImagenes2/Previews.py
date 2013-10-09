@@ -75,6 +75,12 @@ class Previews (Gtk.VBox):
         self.toolbar.connect('switch_to', self.__emit_switch)
         self.toolbar.connect('salir', self.__salir)
         
+        self.toolbar.set_modo("novisor")
+        
+        ### Activar botón atras solo si no se está en home del usuario.
+        if os.path.dirname(self.path) == os.path.dirname(os.environ["HOME"]):
+            self.toolbar.set_modo("noback")
+            
     def __emit_camara(self, widget):
         
         self.emit("camara")
@@ -97,7 +103,13 @@ class Previews (Gtk.VBox):
 
     def run(self):
         
-        self.iconview.load_previews(self.path)
+        imagen_en_path = self.iconview.load_previews(self.path)
+        
+        if not imagen_en_path:
+            self.toolbar.set_modo("novisor")
+            
+        else:
+            self.toolbar.set_modo("visor")
     
 class IconView(Gtk.IconView):
     """
@@ -145,6 +157,8 @@ class IconView(Gtk.IconView):
         contenidos en basepath.
         """
         
+        imagen_en_path = False
+        
         self.get_toplevel().set_sensitive(False)
         
         self.path = basepath
@@ -183,6 +197,8 @@ class IconView(Gtk.IconView):
                         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, 200, -1)
                         self.previews.append([pixbuf, path])
                         
+                        imagen_en_path = True
+                        
                         while Gtk.events_pending():
                             Gtk.main_iteration()
                             
@@ -190,6 +206,7 @@ class IconView(Gtk.IconView):
                         pass
                 
         self.get_toplevel().set_sensitive(True)
+        return imagen_en_path
         
     def do_selection_changed(self):
         """

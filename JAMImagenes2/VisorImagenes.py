@@ -55,7 +55,7 @@ class VisorImagenes (Gtk.VBox):
         
         Gtk.VBox.__init__(self)
         
-        self.path = path
+        self.path = path # Directorio
         
         self.imagenes = []
         self.active_index_imagen = 0

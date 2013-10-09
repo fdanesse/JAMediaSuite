@@ -55,23 +55,29 @@ class ToolbarPreviews(Gtk.Toolbar):
         
         self.path = path
         
+        self.buttons_back = []
+        self.buttons_visor = []
+        
         self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
             
         archivo = os.path.join(
             JAMediaObjectsPath,
             "Iconos", "play.png")
-        atras = get_boton(
+        boton = get_boton(
             archivo, flip = True,
             rotacion = None,
             pixels = get_pixels(1),
             tooltip_text = "Anterior")
-        atras.connect("clicked", self.__emit_switch)
-        self.insert(atras, -1)
+        boton.connect("clicked", self.__emit_switch)
+        self.insert(boton, -1)
+        self.buttons_back.append(boton)
         
-        self.insert(get_separador(draw = True,
-            expand = False), -1)
-            
+        separador = get_separador(draw = True,
+            expand = False)
+        self.insert(separador, -1)
+        self.buttons_back.append(separador)
+        
         archivo = os.path.join(
             JAMediaObjectsPath,
             "Iconos", "foto.png")
@@ -86,13 +92,15 @@ class ToolbarPreviews(Gtk.Toolbar):
         archivo = os.path.join(
             JAMediaObjectsPath,
             "Iconos", "ver.png")
-        ver = get_boton(
+        boton = get_boton(
             archivo, flip = False,
             rotacion = None,
             pixels = get_pixels(1),
-            tooltip_text = "Visor")
-        ver.connect("clicked", self.__emit_visor)
-        self.insert(ver, -1)
+            tooltip_text = "Visor de Imágenes")
+        boton.connect("clicked", self.__emit_visor)
+        self.insert(boton, -1)
+        #boton.set_no_show_all(True)
+        self.buttons_visor.append(boton)
         
         self.insert(get_separador(draw = True,
             expand = False), -1)
@@ -140,21 +148,24 @@ class ToolbarPreviews(Gtk.Toolbar):
         
         self.show_all()
         
-        ### Activar botón atras solo si no se está en home del usuario.
-        if os.path.dirname(self.path) == os.path.dirname(os.environ["HOME"]):
-            atras.set_sensitive(False)
+    def set_modo(self, modo):
+        
+        if modo == "noback":
+            map(self.__ocultar, self.buttons_back)
             
-        ### Activar botón del visor solo si hay imagenes en el directorio
-        for arch in os.listdir(self.path):
-            path = os.path.join(self.path, arch)
+        elif modo == "novisor":
+            map(self.__ocultar, self.buttons_visor)
             
-            if os.path.isfile(path):
-                descripcion = describe_archivo(path)
-                
-                if 'image' in descripcion and not 'iso' in descripcion:
-                    return
-                
-        ver.set_sensitive(False)
+        elif modo == "visor":
+            map(self.__mostrar, self.buttons_visor)
+            
+    def __mostrar(self, objeto):
+        
+        if not objeto.get_visible(): objeto.show()
+        
+    def __ocultar(self, objeto):
+        
+        if objeto.get_visible(): objeto.hide()
         
     def __emit_camara(self, widget):
         
