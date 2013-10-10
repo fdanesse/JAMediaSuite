@@ -27,6 +27,7 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 from Widgets import ToolbarPreviews
+from Widgets import ToolbarTry
 
 import JAMediaObjects
 
@@ -58,6 +59,7 @@ class Previews (Gtk.EventBox):
         
         self.toolbar = ToolbarPreviews(path)
         self.iconview = IconView(path)
+        self.toolbartry = ToolbarTry()
         
         base_box.pack_start(self.toolbar, False, False, 0)
         
@@ -68,6 +70,7 @@ class Previews (Gtk.EventBox):
         scroll.add_with_viewport(self.iconview)
         
         base_box.pack_start(scroll, True, True, 0)
+        base_box.pack_end(self.toolbartry, False, False, 0)
         
         self.add(base_box)
         
@@ -99,14 +102,19 @@ class Previews (Gtk.EventBox):
         rect = self.toolbar.get_allocation()
         arriba = range(0, rect.height)
         
+        root_rect = self.get_toplevel().get_allocation()
+        rect = self.toolbartry.get_allocation()
+        abajo = range(root_rect.height - rect.height, root_rect.height)
         x, y = self.get_toplevel().get_pointer()
         
-        if y in arriba:
+        if y in arriba or y in abajo:
             self.toolbar.show()
+            self.toolbartry.show()
             return
         
         else:
             self.toolbar.hide()
+            self.toolbartry.hide()
             return
         
     def __emit_camara(self, widget):
@@ -138,7 +146,9 @@ class Previews (Gtk.EventBox):
             
         else:
             self.toolbar.set_modo("visor")
-    
+        
+        self.toolbartry.set_info("Directorio: %s" % self.path)
+        
 class IconView(Gtk.IconView):
     """
     http://python-gtk-3-tutorial.readthedocs.org/en/latest/iconview.html

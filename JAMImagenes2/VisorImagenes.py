@@ -277,14 +277,14 @@ class VisorImagenes (Gtk.EventBox):
         
         self.visor.load(imagen)
         self.toolbartry.set_info(
-            imagen,
-            (self.visor.imagen_original.get_width(),
+            "Archivo: %s   Tamaño: %s x %s Pixeles" % (imagen,
+            self.visor.imagen_original.get_width(),
             self.visor.imagen_original.get_height()))
         '''
         while Gtk.events_pending():
             Gtk.main_iteration()
         '''
-        self.queue_draw()
+        # self.queue_draw()
         
 class Visor(Gtk.DrawingArea):
     """
