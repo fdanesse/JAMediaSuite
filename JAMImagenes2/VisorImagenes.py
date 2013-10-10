@@ -284,7 +284,7 @@ class VisorImagenes (Gtk.EventBox):
         while Gtk.events_pending():
             Gtk.main_iteration()
         '''
-        # self.queue_draw()
+        self.queue_draw()
         
 class Visor(Gtk.DrawingArea):
     """
