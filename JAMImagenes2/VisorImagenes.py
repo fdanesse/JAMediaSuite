@@ -183,6 +183,8 @@ class VisorImagenes (Gtk.EventBox):
     
     def __set_accion(self, widget, accion):
         
+        self.get_toplevel().set_sensitive(False)
+        
         if accion == "Configurar Presentación":
             
             if self.actualizador:
@@ -237,13 +239,23 @@ class VisorImagenes (Gtk.EventBox):
             self.__stop_presentacion()
             self.toolbar.set_modo("edit")
         
+        elif accion == "Rotar Izquierda":
+            if self.toolbar_config.get_visible():
+                self.toolbar_config.hide()
+                
+            self.__stop_presentacion()
+            self.visor.rotar(-1)
+            
+        elif accion == "Rotar Derecha":
+            pass
+        
         '''
         Original
+        Llenar Pantalla
         Alejar
         Acercar
-        Rotar Izquierda
-        Rotar Derecha
         '''
+        self.get_toplevel().set_sensitive(True)
         
     def __emit_switch(self, widget, path):
         
@@ -300,6 +312,9 @@ class Visor(Gtk.DrawingArea):
         #self.touch_events = OrderedDict()
         self.imagen_original = None
         self.image_path = None
+        self.angulo = 0
+        self.rotacion = False
+        self.zoom = False
         
         self.show_all()
         
@@ -371,34 +386,125 @@ class Visor(Gtk.DrawingArea):
         
         if path:
             if os.path.exists(path):
+                self.angulo = 0
+                self.rotacion = False
+                self.zoom = False
                 self.image_path = path
                 self.imagen_original = GdkPixbuf.Pixbuf.new_from_file(path)
                 
     def __do_draw(self, widget, context):
-        """
-        Pinta la imagen lo más grande posible y
-        centrada en la pantalla.
-        """
         
         if not self.image_path: return
     
-        rect = self.get_allocation()
-        
-        src = self.imagen_original.copy()
-        dst = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            self.image_path, rect.width, rect.height)
-        
-        GdkPixbuf.Pixbuf.scale(
-            src, dst, 0, 0, 100, 100,
-            0, 0, 1.5, 1.5,
-            GdkPixbuf.InterpType.BILINEAR)
+        if not self.rotacion:
+            """
+            Pinta la imagen lo más grande posible y
+            centrada en la pantalla.
+            """
             
-        x = rect.width/2 - dst.get_width()/2
-        y = rect.height/2 - dst.get_height()/2
-        
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-            dst.get_width(), dst.get_height())
+            rect = self.get_allocation()
             
-        Gdk.cairo_set_source_pixbuf(context, dst, x, y)
-        context.paint()
+            src = self.imagen_original.copy()
+            
+            '''
+            src = self.imagen_original.copy().rotate_simple(self.rotacion)
+            
+            temp = "/tmp/img.png"
+            src.savev(temp, "png", [], [])
+            
+            dst = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                temp, rect.width, rect.height)
+            '''
+            
+            dst = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                self.image_path, rect.width, rect.height)
+            
+            GdkPixbuf.Pixbuf.scale(
+                src, dst, 0, 0, 100, 100,
+                0, 0, 1.5, 1.5,
+                GdkPixbuf.InterpType.BILINEAR)
+                
+            x = rect.width/2 - dst.get_width()/2
+            y = rect.height/2 - dst.get_height()/2
+            
+            surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                dst.get_width(), dst.get_height())
+                
+            Gdk.cairo_set_source_pixbuf(context, dst, x, y)
+            context.paint()
+        
+        else:
+            rect = self.get_allocation()
+            
+            src = self.imagen_original.copy().rotate_simple(self.rotacion)
+            
+            temp = "/tmp/img.png"
+            src.savev(temp, "png", [], [])
+            
+            dst = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                temp, rect.width, rect.height)
+            
+            GdkPixbuf.Pixbuf.scale(
+                src, dst, 0, 0, 100, 100,
+                0, 0, 1.5, 1.5,
+                GdkPixbuf.InterpType.BILINEAR)
+                
+            x = rect.width/2 - dst.get_width()/2
+            y = rect.height/2 - dst.get_height()/2
+            
+            surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                dst.get_width(), dst.get_height())
+                
+            Gdk.cairo_set_source_pixbuf(context, dst, x, y)
+            context.paint()
+            
+    def rotar(self, angulo):
+        
+        if not self.imagen_original: return
+
+        if angulo > 0: self.angulo += 90
+        if angulo < 0: self.angulo -= 90
+        
+        if self.angulo == 0:
+            self.rotacion = GdkPixbuf.PixbufRotation.NONE
+            
+        elif self.angulo == 90:
+            self.rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE
+            
+        elif self.angulo == 180:
+            self.rotacion = GdkPixbuf.PixbufRotation.UPSIDEDOWN
+            
+        elif self.angulo == 270:
+            self.rotacion = GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE
+            
+        elif self.angulo == 360:
+            self.rotacion = GdkPixbuf.PixbufRotation.NONE
+            
+        elif self.angulo == -90:
+            self.rotacion = GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE
+            
+        elif self.angulo == -180:
+            self.rotacion = GdkPixbuf.PixbufRotation.UPSIDEDOWN
+            
+        elif self.angulo == -270:
+            self.rotacion = GdkPixbuf.PixbufRotation.CLOCKWISE
+            
+        elif self.angulo == -360:
+            self.rotacion = GdkPixbuf.PixbufRotation.NONE
+        
+        if self.angulo >= 360 or self.angulo <= -360:
+            self.angulo = 0
+            self.rotacion = GdkPixbuf.PixbufRotation.NONE
+        '''
+        pixbuf = self.imagen_original.copy().rotate_simple(self.rotacion)
+        
+        if self.zoom:
+            self.tamanio = (int(pixbuf.get_width() * self.zoom),
+                int(pixbuf.get_height() * self.zoom))
+        
+        self.image_change = True
+        '''
+        self.queue_draw()
+        #self.get_property('window').invalidate_rect(self.get_allocation(), True)
+        #self.get_property('window').process_updates(True)
         
