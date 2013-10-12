@@ -241,7 +241,17 @@ class ToolbarImagen(Gtk.Toolbar):
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
-            tooltip_text = "Original")
+            tooltip_text = "Tamaño Original")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        self.buttons_escala_rotacion.append(boton)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "monitor.png")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Centrar en Pantalla")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
         self.buttons_escala_rotacion.append(boton)
