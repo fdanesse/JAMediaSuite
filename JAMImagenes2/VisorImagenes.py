@@ -152,13 +152,13 @@ class VisorImagenes (Gtk.EventBox):
         Lanza el modo diapositivas.
         """
         
-        if intervalo:
-            self.intervalo = intervalo
-            self.toolbar.set_modo("player")
-        
         if self.actualizador:
             GLib.source_remove(self.actualizador)
             self.actualizador = False
+            
+        if intervalo:
+            self.intervalo = intervalo
+            self.toolbar.set_modo("player")
             
         self.toolbar.set_playing()
         self.actualizador = GLib.timeout_add(
@@ -193,8 +193,7 @@ class VisorImagenes (Gtk.EventBox):
         
         if accion == "Configurar Presentación":
             
-            if self.actualizador:
-                self.__stop_presentacion()
+            self.__stop_presentacion()
             
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
@@ -216,8 +215,7 @@ class VisorImagenes (Gtk.EventBox):
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
-            if self.actualizador:
-                self.__stop_presentacion()
+            self.__stop_presentacion()
 
             if self.active_index_imagen > 0:
                 self.active_index_imagen -= 1
@@ -231,8 +229,7 @@ class VisorImagenes (Gtk.EventBox):
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
-            if self.actualizador:
-                self.__stop_presentacion()
+            self.__stop_presentacion()
 
             if self.active_index_imagen < len(self.imagenes)-1:
                 self.active_index_imagen += 1
@@ -246,8 +243,7 @@ class VisorImagenes (Gtk.EventBox):
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
-            if self.actualizador:
-                self.__stop_presentacion()
+            self.__stop_presentacion()
         
         elif accion == "Rotar Izquierda":
             if self.toolbar_config.get_visible():
@@ -283,8 +279,7 @@ class VisorImagenes (Gtk.EventBox):
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
             
-            if self.actualizador:
-                self.__stop_presentacion()
+            self.__stop_presentacion()
 
             if self.toolbar.modo == "player":
                 self.toolbar.set_modo("edit")
