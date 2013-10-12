@@ -218,6 +218,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_player = []
         self.buttons_escala_rotacion = []
         self.buttons_config = []
+        self.modo = "edit"
         
         self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
@@ -235,16 +236,6 @@ class ToolbarImagen(Gtk.Toolbar):
         
         self.insert(get_separador(draw = True,
             expand = False), -1)
-            
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "escalaoriginal.png")
-        boton = get_boton(
-            archivo, flip = False,
-            pixels = get_pixels(1),
-            tooltip_text = "Tamaño Original")
-        boton.connect("clicked", self.__activar)
-        self.insert(boton, -1)
-        self.buttons_escala_rotacion.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "monitor.png")
@@ -366,6 +357,21 @@ class ToolbarImagen(Gtk.Toolbar):
         self.insert(separador, -1)
         self.buttons_config.append(separador)
         
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "monitor.png")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Navegar Imágenes")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        self.buttons_config.append(boton)
+        
+        separador = get_separador(draw = True,
+            expand = False)
+        self.insert(separador, -1)
+        self.buttons_config.append(separador)
+        
         self.insert(get_separador(draw = False,
             expand = True), -1)
         
@@ -398,6 +404,8 @@ class ToolbarImagen(Gtk.Toolbar):
         elif modo == "noconfig":
             map(self.__ocultar, self.buttons_config)
             
+        self.modo = modo
+        
     def __mostrar(self, objeto):
         
         if not objeto.get_visible(): objeto.show()

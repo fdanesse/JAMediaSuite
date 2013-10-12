@@ -216,7 +216,9 @@ class VisorImagenes (Gtk.EventBox):
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
-            self.__stop_presentacion()
+            if self.actualizador:
+                self.__stop_presentacion()
+
             if self.active_index_imagen > 0:
                 self.active_index_imagen -= 1
                 
@@ -229,7 +231,9 @@ class VisorImagenes (Gtk.EventBox):
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
-            self.__stop_presentacion()
+            if self.actualizador:
+                self.__stop_presentacion()
+
             if self.active_index_imagen < len(self.imagenes)-1:
                 self.active_index_imagen += 1
                 
@@ -242,21 +246,19 @@ class VisorImagenes (Gtk.EventBox):
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
-            self.__stop_presentacion()
-            self.toolbar.set_modo("edit")
+            if self.actualizador:
+                self.__stop_presentacion()
         
         elif accion == "Rotar Izquierda":
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
-            self.__stop_presentacion()
             self.visor.rotar(-1)
             
         elif accion == "Rotar Derecha":
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
-            self.__stop_presentacion()
             self.visor.rotar(1)
             
         elif accion == "Acercar":
@@ -271,13 +273,24 @@ class VisorImagenes (Gtk.EventBox):
                 
             self.visor.zoom(-1)
             
-        '''
         elif accion == "Centrar en Pantalla":
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
-            self.visor.zoom(0)
-            self.visor.rotar(0)'''
+            self.visor.center_image()
+        
+        elif accion == "Navegar Imágenes":
+            if self.toolbar_config.get_visible():
+                self.toolbar_config.hide()
+            
+            if self.actualizador:
+                self.__stop_presentacion()
+
+            if self.toolbar.modo == "player":
+                self.toolbar.set_modo("edit")
+                
+            elif self.toolbar.modo == "edit":
+                self.toolbar.set_modo("player")
             
         self.get_toplevel().set_sensitive(True)
         
@@ -532,4 +545,9 @@ class Visor(Gtk.DrawingArea):
             
             self.set_size_request(width, height)
             self.rotar(0)
+        
+    def center_image(self):
+        
+        self.zoom_valor = 0
+        self.set_size_request(-1, -1)
         
