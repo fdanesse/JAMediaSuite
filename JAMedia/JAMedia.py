@@ -66,8 +66,8 @@ context.add_provider_for_screen(
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
     
-GObject.threads_init()
-Gdk.threads_init()
+#GObject.threads_init()
+#Gdk.threads_init()
 
 class JAMediaPlayer(Gtk.Plug):
     """

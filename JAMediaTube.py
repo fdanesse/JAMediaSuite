@@ -33,8 +33,8 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
 
-GObject.threads_init()
-Gdk.threads_init()
+#GObject.threads_init()
+#Gdk.threads_init()
 
 class Ventana(Gtk.Window):
     """

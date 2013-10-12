@@ -312,10 +312,10 @@ class VisorImagenes (Gtk.EventBox):
                     self.imagenes.append(path)
                     
         if self.imagenes:
-            self.__show_imagen(self.imagenes[0])
-            
             if len(self.imagenes) == 1:
                 self.toolbar.set_modo("noconfig")
+                
+            self.__show_imagen(self.imagenes[0])
             
     def __show_imagen(self, imagen):
         
