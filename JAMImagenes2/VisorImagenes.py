@@ -138,13 +138,13 @@ class VisorImagenes (Gtk.EventBox):
         x, y = self.get_toplevel().get_pointer()
         
         if y in arriba or y in abajo:
-            self.toolbar.show()
-            self.toolbartry.show()
+            if not self.toolbar.get_visible(): self.toolbar.show()
+            if not self.toolbartry.get_visible(): self.toolbartry.show()
             return
         
         else:
-            self.toolbar.hide()
-            self.toolbartry.hide()
+            if self.toolbar.get_visible(): self.toolbar.hide()
+            if self.toolbartry.get_visible(): self.toolbartry.hide()
             return
         
     def __set_presentacion(self, widget = None, intervalo = False):
@@ -347,6 +347,8 @@ class Visor(Gtk.DrawingArea):
         self.angulo = 0
         self.rotacion = GdkPixbuf.PixbufRotation.NONE
         self.zoom_valor = 0
+        self.imagen = False
+        self.temp_path = "/tmp/img.png"
         
         self.show_all()
         
@@ -423,6 +425,9 @@ class Visor(Gtk.DrawingArea):
                 self.zoom_valor = 0
                 self.image_path = path
                 self.imagen_original = GdkPixbuf.Pixbuf.new_from_file(path)
+                self.imagen = self.imagen_original.copy()
+                self.imagen.savev(self.temp_path, "png", [], [])
+                
                 self.set_size_request(-1, -1)
                 
     def __do_draw(self, widget, context):
@@ -431,18 +436,9 @@ class Visor(Gtk.DrawingArea):
         
         rect = self.get_allocation()
         
-        src = self.imagen_original.copy().rotate_simple(self.rotacion)
-        
-        temp = "/tmp/img.png"
-        src.savev(temp, "png", [], [])
-        
+        src = self.imagen
         dst = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            temp, rect.width, rect.height)
-        
-        # Sin Rotación (centrado en pantalla)
-        #src = self.imagen_original.copy()
-        #dst = GdkPixbuf.Pixbuf.new_from_file_at_size(
-        #    self.image_path, rect.width, rect.height)
+            self.temp_path, rect.width, rect.height)
         
         GdkPixbuf.Pixbuf.scale(
             src, dst, 0, 0, 100, 100,
@@ -496,6 +492,9 @@ class Visor(Gtk.DrawingArea):
             self.angulo = 0
             self.rotacion = GdkPixbuf.PixbufRotation.NONE
             
+        self.imagen = self.imagen_original.copy().rotate_simple(self.rotacion)
+        self.imagen.savev(self.temp_path, "png", [], [])
+        
         self.queue_draw()
         
     def zoom(self, zoom):

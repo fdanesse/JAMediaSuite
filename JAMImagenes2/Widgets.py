@@ -63,9 +63,9 @@ class ToolbarPreviews(Gtk.Toolbar):
             
         archivo = os.path.join(
             JAMediaObjectsPath,
-            "Iconos", "play.png")
+            "Iconos", "go-next-rtl.svg")
         boton = get_boton(
-            archivo, flip = True,
+            archivo, #flip = True,
             rotacion = None,
             pixels = get_pixels(1),
             tooltip_text = "Anterior")
@@ -80,7 +80,18 @@ class ToolbarPreviews(Gtk.Toolbar):
         
         archivo = os.path.join(
             JAMediaObjectsPath,
-            "Iconos", "foto.png")
+            "Iconos", "document-open.svg")
+        boton = get_boton(
+            archivo, flip = False,
+            rotacion = None,
+            pixels = get_pixels(1),
+            tooltip_text = "Abrir")
+        #boton.connect("clicked", self.__emit_open)
+        self.insert(boton, -1)
+        
+        archivo = os.path.join(
+            JAMediaObjectsPath,
+            "Iconos", "camera-photo.svg")
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
@@ -91,7 +102,7 @@ class ToolbarPreviews(Gtk.Toolbar):
         
         archivo = os.path.join(
             JAMediaObjectsPath,
-            "Iconos", "ver.png")
+            "Iconos", "edit-find.svg")
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
@@ -118,7 +129,7 @@ class ToolbarPreviews(Gtk.Toolbar):
         self.insert(boton, -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos","JAMedia-help.svg")
+            "Iconos","JAMedia-help1.svg")
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
@@ -134,7 +145,7 @@ class ToolbarPreviews(Gtk.Toolbar):
         
         archivo = os.path.join(
             JAMediaObjectsPath,
-            "Iconos", "salir.png")
+            "Iconos", "button-cancel.svg")
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
@@ -225,9 +236,9 @@ class ToolbarImagen(Gtk.Toolbar):
             
         archivo = os.path.join(
             JAMediaObjectsPath,
-            "Iconos", "play.png")
+            "Iconos", "go-next-rtl.svg")
         boton = get_boton(
-            archivo, flip = True,
+            archivo, #flip = True,
             rotacion = None,
             pixels = get_pixels(1),
             tooltip_text = "Anterior")
@@ -238,7 +249,7 @@ class ToolbarImagen(Gtk.Toolbar):
             expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "monitor.png")
+            "Iconos", "zoom-fit-best.svg")
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
@@ -248,7 +259,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_escala_rotacion.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "alejar.png")
+            "Iconos", "zoom-out.svg")
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
@@ -258,7 +269,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_escala_rotacion.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "acercar.png")
+            "Iconos", "zoom-in.svg")
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
@@ -273,9 +284,9 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_escala_rotacion.append(separador)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "rotar.png")
+            "Iconos", "object-rotate-left.svg")
         boton = get_boton(
-            archivo, flip = False,
+            archivo, #flip = False,
             pixels = get_pixels(1),
             tooltip_text = "Rotar Izquierda")
         boton.connect("clicked", self.__activar)
@@ -283,9 +294,9 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_escala_rotacion.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "rotar.png")
+            "Iconos", "object-rotate-right.svg")
         boton = get_boton(
-            archivo, flip = True,
+            archivo, #flip = True,
             pixels = get_pixels(1),
             tooltip_text = "Rotar Derecha")
         boton.connect("clicked", self.__activar)
@@ -298,7 +309,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_escala_rotacion.append(separador)
             
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "configurar.png")
+            "Iconos", "gtk-preferences.svg")
         button = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
@@ -313,9 +324,9 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_player.append(separador)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "siguiente.png")
+            "Iconos", "media-seek-backward.svg")
         boton = get_boton(
-            archivo, flip = True,
+            archivo, #flip = True,
             pixels = get_pixels(1),
             tooltip_text = "Anterior")
         boton.connect("clicked", self.__activar)
@@ -323,7 +334,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_player.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "play.png")
+            "Iconos", "media-playback-start.svg")
         self.botonplay = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
@@ -333,7 +344,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_player.append(self.botonplay)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "siguiente.png")
+            "Iconos", "media-seek-forward.svg")
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
@@ -343,7 +354,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_player.append(boton)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "stop.png")
+            "Iconos", "media-playback-stop.svg")
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
@@ -358,7 +369,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_config.append(separador)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "monitor.png")
+            "Iconos", "document-properties.svg")
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
@@ -377,7 +388,7 @@ class ToolbarImagen(Gtk.Toolbar):
         
         archivo = os.path.join(
             JAMediaObjectsPath,
-            "Iconos", "salir.png")
+            "Iconos", "button-cancel.svg")
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
@@ -416,7 +427,7 @@ class ToolbarImagen(Gtk.Toolbar):
         
     def set_paused(self):
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "play.png")
+        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "media-playback-start.svg")
         pixel = get_pixels(1)
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixel, pixel)
         img = self.botonplay.get_children()[0].get_children()[0].get_children()[0]
@@ -425,7 +436,7 @@ class ToolbarImagen(Gtk.Toolbar):
         
     def set_playing(self):
         
-        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "pausa.png")
+        archivo = os.path.join(JAMediaObjectsPath, "Iconos", "media-playback-pause.svg")
         pixel = get_pixels(1)
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixel, pixel)
         img = self.botonplay.get_children()[0].get_children()[0].get_children()[0]
@@ -493,7 +504,7 @@ class ToolbarConfig(Gtk.Toolbar):
             ancho = 0, expand = True), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "alejar.png")
+            "Iconos", "list-remove.svg")
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
@@ -516,7 +527,7 @@ class ToolbarConfig(Gtk.Toolbar):
             ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "acercar.png")
+            "Iconos", "gtk-add.svg")
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
@@ -529,7 +540,7 @@ class ToolbarConfig(Gtk.Toolbar):
             ancho = 3, expand = False), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "play.png")
+            "Iconos", "media-playback-start.svg")
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
@@ -542,7 +553,7 @@ class ToolbarConfig(Gtk.Toolbar):
             ancho = 0, expand = True), -1)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "salir.png")
+            "Iconos", "button-cancel.svg")
         boton = get_boton(
             archivo, flip = False,
             rotacion = None,
