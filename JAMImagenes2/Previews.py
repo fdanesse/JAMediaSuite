@@ -82,6 +82,7 @@ class Previews (Gtk.EventBox):
         self.toolbar.connect('camara', self.__emit_camara)
         self.toolbar.connect('switch_to', self.__emit_switch)
         self.toolbar.connect('salir', self.__salir)
+        self.toolbar.connect('open', self.__emit_switch)
         
         self.toolbar.set_modo("novisor")
         

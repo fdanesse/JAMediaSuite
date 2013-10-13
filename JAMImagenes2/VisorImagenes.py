@@ -348,7 +348,7 @@ class Visor(Gtk.DrawingArea):
         self.rotacion = GdkPixbuf.PixbufRotation.NONE
         self.zoom_valor = 0
         self.imagen = False
-        self.temp_path = "/tmp/img.png"
+        self.temp_path = "/dev/shm/img.png"
         
         self.show_all()
         

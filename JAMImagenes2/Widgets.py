@@ -47,7 +47,9 @@ class ToolbarPreviews(Gtk.Toolbar):
     'ver': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
     'camara': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, []),
+    'open': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
         
     def __init__(self, path):
         
@@ -86,7 +88,7 @@ class ToolbarPreviews(Gtk.Toolbar):
             rotacion = None,
             pixels = get_pixels(1),
             tooltip_text = "Abrir")
-        #boton.connect("clicked", self.__emit_open)
+        boton.connect("clicked", self.__emit_open)
         self.insert(boton, -1)
         
         archivo = os.path.join(
@@ -158,6 +160,31 @@ class ToolbarPreviews(Gtk.Toolbar):
             ancho = 5, expand = False), -1)
         
         self.show_all()
+        
+    def __emit_open(self, widget):
+        
+        dialog = Gtk.FileChooserDialog(
+            title = "Abrir Directorio",
+            parent = self.get_toplevel(),
+            flags = Gtk.DialogFlags.MODAL,
+            action = Gtk.FileChooserAction.SELECT_FOLDER,
+            buttons = [
+                "Aceptar", Gtk.ResponseType.ACCEPT,
+                "Cancelar", Gtk.ResponseType.CANCEL])
+        
+        dialog.set_size_request(400, 150)
+        dialog.set_border_width(15)
+        dialog.set_select_multiple(False)
+        
+        result = dialog.run()
+        
+        if result == Gtk.ResponseType.ACCEPT:
+            folder = dialog.get_filename()
+            dialog.destroy()
+            self.emit("open", folder)
+            return
+        
+        dialog.destroy()
         
     def set_modo(self, modo):
         
@@ -498,7 +525,7 @@ class ToolbarConfig(Gtk.Toolbar):
         
         Gtk.Toolbar.__init__(self)
         
-        self.intervalo = 1.0
+        self.intervalo = 3.0
         
         self.insert(get_separador(draw = False,
             ancho = 0, expand = True), -1)
@@ -575,7 +602,7 @@ class ToolbarConfig(Gtk.Toolbar):
 
     def __menos_intervalo(self, widget= None):
         
-        if self.intervalo > 0.3:
+        if self.intervalo > 3.0:
             self.intervalo -= 0.1
             self.label.set_text(
                 "Cambiar Imagen cada: %s Segundos" % (self.intervalo))
