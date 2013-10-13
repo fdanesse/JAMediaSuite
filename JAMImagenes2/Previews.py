@@ -194,7 +194,7 @@ class IconView(Gtk.IconView):
         
         self.connect("motion-notify-event",
             self.__do_motion_notify_event)
-            
+        
     def __do_motion_notify_event(self, widget, event):
         """
         Cuando se mueve el mouse sobre la ventana.
@@ -230,7 +230,7 @@ class IconView(Gtk.IconView):
                         if 'image' in descripcion and not 'iso' in descripcion:
                             try:
                                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(new_path, 200, -1)
-                                self.previews.append([pixbuf, path])
+                                self.previews.append([pixbuf, path.split("/")[-1]])
                                 
                                 while Gtk.events_pending():
                                     Gtk.main_iteration()
@@ -246,7 +246,7 @@ class IconView(Gtk.IconView):
                 if 'image' in descripcion and not 'iso' in descripcion:
                     try:
                         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, 200, -1)
-                        self.previews.append([pixbuf, path])
+                        self.previews.append([pixbuf, path.split("/")[-1]])
                         
                         imagen_en_path = True
                         
@@ -275,7 +275,7 @@ class IconView(Gtk.IconView):
         iter = self.get_model().get_iter(path)
         valor =  self.get_model().get_value(iter, 1)
         
-        self.emit("switch_to", valor)
+        self.emit("switch_to", os.path.join(self.path, valor))
     '''
     def do_motion_notify_event(self, event):
         """
