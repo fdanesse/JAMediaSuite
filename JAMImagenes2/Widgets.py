@@ -256,6 +256,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_player = []
         self.buttons_escala_rotacion = []
         self.buttons_config = []
+        self.buttons_guardar = []
         self.modo = "edit"
         
         self.insert(get_separador(draw = False,
@@ -275,6 +276,33 @@ class ToolbarImagen(Gtk.Toolbar):
         self.insert(get_separador(draw = True,
             expand = False), -1)
         
+        ### Vistas Configuración, Presentaciones y Navegador.
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "document-properties.svg")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Navegar Imágenes")
+        boton.connect("clicked", self.__activar)
+        self.insert(boton, -1)
+        self.buttons_config.append(boton)
+        
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "gtk-preferences.svg")
+        button = get_boton(
+            archivo, flip = False,
+            pixels = get_pixels(1),
+            tooltip_text = "Configurar Presentación")
+        button.connect("clicked", self.__activar)
+        self.insert(button, -1)
+        self.buttons_config.append(button)
+        
+        separador = get_separador(draw = True,
+            expand = False)
+        self.insert(separador, -1)
+        self.buttons_config.append(separador)
+        
+        ### Zoom
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "zoom-fit-best.svg")
         boton = get_boton(
@@ -310,6 +338,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.insert(separador, -1)
         self.buttons_escala_rotacion.append(separador)
         
+        ### Rotación
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "object-rotate-left.svg")
         boton = get_boton(
@@ -334,22 +363,8 @@ class ToolbarImagen(Gtk.Toolbar):
             expand = False)
         self.insert(separador, -1)
         self.buttons_escala_rotacion.append(separador)
-            
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "gtk-preferences.svg")
-        button = get_boton(
-            archivo, flip = False,
-            pixels = get_pixels(1),
-            tooltip_text = "Configurar Presentación")
-        button.connect("clicked", self.__activar)
-        self.insert(button, -1)
-        self.buttons_config.append(button)
         
-        separador = get_separador(draw = True,
-            expand = False)
-        self.insert(separador, -1)
-        self.buttons_player.append(separador)
-        
+        ### Presentacion y Navegador
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "media-seek-backward.svg")
         boton = get_boton(
@@ -393,23 +408,24 @@ class ToolbarImagen(Gtk.Toolbar):
         separador = get_separador(draw = True,
             expand = False)
         self.insert(separador, -1)
-        self.buttons_config.append(separador)
+        self.buttons_player.append(separador)
         
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "document-properties.svg")
+            "Iconos", "document-save.svg")
         boton = get_boton(
             archivo, flip = False,
             pixels = get_pixels(1),
-            tooltip_text = "Navegar Imágenes")
+            tooltip_text = "Guardar")
         boton.connect("clicked", self.__activar)
         self.insert(boton, -1)
-        self.buttons_config.append(boton)
+        self.buttons_guardar.append(boton)
         
         separador = get_separador(draw = True,
             expand = False)
         self.insert(separador, -1)
-        self.buttons_config.append(separador)
+        self.buttons_guardar.append(separador)
         
+        ### Salir
         self.insert(get_separador(draw = False,
             expand = True), -1)
         
@@ -441,6 +457,12 @@ class ToolbarImagen(Gtk.Toolbar):
             
         elif modo == "noconfig":
             map(self.__ocultar, self.buttons_config)
+            
+        elif modo == "changed":
+            map(self.__mostrar, self.buttons_guardar)
+            
+        elif modo == "nochanged":
+            map(self.__ocultar, self.buttons_guardar)
             
         self.modo = modo
         

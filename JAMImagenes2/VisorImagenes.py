@@ -88,8 +88,11 @@ class VisorImagenes (Gtk.EventBox):
         self.toolbar.connect('activar', self.__set_accion)
         self.toolbar.connect('salir', self.__salir)
         self.toolbar_config.connect('run', self.__set_presentacion)
+        self.visor.connect('changed', self.__set_change_image)
+        self.visor.connect('info', self.__set_info)
         
         self.toolbar_config.hide()
+        self.toolbar.set_modo("nochanged")
         self.toolbar.set_modo("edit")
         
         self.connect("motion-notify-event",
@@ -281,13 +284,27 @@ class VisorImagenes (Gtk.EventBox):
             
             self.__stop_presentacion()
 
-            if self.toolbar.modo == "player":
+            if self.toolbar.modo != "edit":
                 self.toolbar.set_modo("edit")
                 
             elif self.toolbar.modo == "edit":
                 self.toolbar.set_modo("player")
             
+        elif accion == "Guardar":
+            self.visor.guardar()
+            
         self.get_toplevel().set_sensitive(True)
+        
+    def __set_change_image(self, widget, valor):
+        """
+        Cuando el usuario rota la imagen, puede guardarla.
+        """
+        
+        if valor:
+            self.toolbar.set_modo("changed")
+            
+        else:
+            self.toolbar.set_modo("nochanged")
         
     def __emit_switch(self, widget, path):
         
@@ -320,15 +337,16 @@ class VisorImagenes (Gtk.EventBox):
     def __show_imagen(self, imagen):
         
         self.visor.load(imagen)
-        self.toolbartry.set_info(
-            "Archivo: %s   Tamaño: %s x %s Pixeles" % (imagen,
-            self.visor.imagen_original.get_width(),
-            self.visor.imagen_original.get_height()))
+
         '''
         while Gtk.events_pending():
             Gtk.main_iteration()
         '''
         self.queue_draw()
+        
+    def __set_info(self, widget, info):
+        
+        self.toolbartry.set_info(info)
         
 class Visor(Gtk.DrawingArea):
     """
@@ -337,6 +355,12 @@ class Visor(Gtk.DrawingArea):
     
     __gtype_name__ = 'JAMediaImagenesVisor'
     
+    __gsignals__ = {
+        'changed': (GObject.SIGNAL_RUN_LAST,
+            GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,)),
+        'info': (GObject.SIGNAL_RUN_LAST,
+            GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+
     def __init__(self):
         
         Gtk.DrawingArea.__init__(self)
@@ -429,7 +453,26 @@ class Visor(Gtk.DrawingArea):
                 self.imagen.savev(self.temp_path, "png", [], [])
                 
                 self.set_size_request(-1, -1)
+                self.emit("info",
+                    "Archivo: %s   Tamaño: %s x %s Pixeles" % (path,
+                        self.imagen_original.get_width(),
+                        self.imagen_original.get_height()))
+                        
+                self.emit("changed", False)
                 
+    def guardar(self):
+        
+        ext = self.image_path.split(".")[-1]
+        if ext.lower() != "png":
+            return
+    
+        try:
+            self.imagen.savev(self.image_path, ext, [], [])
+            self.load(self.image_path)
+            
+        except:
+            pass
+        
     def __do_draw(self, widget, context):
         
         if not self.image_path: return
@@ -495,6 +538,15 @@ class Visor(Gtk.DrawingArea):
         self.imagen = self.imagen_original.copy().rotate_simple(self.rotacion)
         self.imagen.savev(self.temp_path, "png", [], [])
         
+        # FIXME: Solo guardar cambios en imagenes png.
+        ext = self.image_path.split(".")[-1]
+        if ext.lower() == "png":
+            if self.rotacion != GdkPixbuf.PixbufRotation.NONE:
+                self.emit("changed", True)
+                
+            else:
+                self.emit("changed", False)
+            
         self.queue_draw()
         
     def zoom(self, zoom):
