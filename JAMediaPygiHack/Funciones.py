@@ -225,9 +225,35 @@ def get_info(modulo_name):
     
     for func in dir(modulo):
         if func.startswith("__") and func.endswith("__"):
+            """
+            Funciones de módulo:
+                __class__
+                __delattr__
+                __dict__
+                __dir__
+                __doc__
+                __format__
+                __getattr__
+                __getattribute__
+                __hash__
+                __init__
+                __module__
+                __name__
+                __new__
+                __path__
+                __reduce__
+                __reduce_ex__
+                __repr__
+                __setattr__
+                __sizeof__
+                __str__
+                __subclasshook__
+                __weakref__
+                """
             continue
         
         else:
+            ### Formar lista de "no atributos" del modulo
             try:
                 attr = getattr(modulo, func)
                 
@@ -235,31 +261,27 @@ def get_info(modulo_name):
                 DESCONOCIDOS.append(func)
                 continue
 
-            objeto = "%s.%s" % (modulo_name, func) # str
-            
-            try:
-                if isinstance(attr, int):
-                    CONSTANTES.append( (objeto, attr) ) # La Constante
-                    continue
-            except:
-                pass
-            
-            try:
-                if isinstance(attr, types.FunctionType):
-                    FUNCIONES.append( (objeto, attr) ) # La Función
-                    continue
-            
-            except:
-                pass
-            
+            ### Ejemplo: Gtk.Window
+            objeto = "%s.%s" % (modulo_name, func)
             try:
                 if isinstance(attr, type):
-                    CLASES.append( (objeto, attr) ) # La Clase
+                    mod = __import__("%s.%s" % ("gi.repository", modulo_name))
+                    new = mod.importer.modules.get(modulo_name)
+                    clase = getattr(new, func)
+                    CLASES.append( (objeto, attr, clase.__gdoc__) ) # La Clase
                     continue
                     
+                elif isinstance(attr, types.FunctionType):
+                    FUNCIONES.append( (objeto, attr) ) # La Función
+                    continue
+                
+                else:
+                    CONSTANTES.append( (objeto, attr) ) # La Constante
+                    continue
+                
             except:
                 pass
-            
+        
     return [modulo, CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS]
 
 def get_modulos():

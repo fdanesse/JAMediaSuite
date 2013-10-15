@@ -142,21 +142,30 @@ class Navegador(Gtk.Paned):
         Y genera el Doc correspondiente.
         """
         
+        obj = False
+        doc = False
+        
+        if isinstance(objeto, tuple):
+            obj = objeto[0]
+            doc = objeto[1]
+        
         os.chdir(DATOS)
         
         try:
-            if objeto:
-                archivo = os.path.join(DATOS, '%s.html' % (objeto.__name__))
+            if obj:
+                print type(obj)
+                archivo = os.path.join(DATOS, '%s.html' % (obj.__name__))
                 
                 import pydoc
                 
-                pydoc.writedoc(objeto)
+                pydoc.writedoc(obj)
                 self.webview.open(archivo)
                 # http://nullege.com/codes/show/src@g@n@gnome-bubbles-HEAD@bubble.py/67/webkit.WebView.open
                 # http://nullege.com/codes/show/src@t@u@Turpial-HEAD@turpial@ui@gtk@tweetslistwk.py/45/webkit.WebView.set_settings
                 
             else:
                 self.webview.open('')
+                print "Error", objeto
                 
         except:
             self.webview.open('')
@@ -164,6 +173,37 @@ class Navegador(Gtk.Paned):
         while Gtk.events_pending():
             Gtk.main_iteration()
         
+        if doc:
+            self.get_toplevel().set_sensitive(False)
+            dialog = Gtk.Dialog(
+                parent = self.get_toplevel(),
+                flags = Gtk.DialogFlags.MODAL,
+                buttons = [
+                    "Cerrar", Gtk.ResponseType.ACCEPT,
+                    ])
+        
+            ### Scroll
+            scroll = Gtk.ScrolledWindow()
+            
+            scroll.set_policy(
+                Gtk.PolicyType.AUTOMATIC,
+                Gtk.PolicyType.AUTOMATIC)
+            
+            text_view = Gtk.TextView()
+            text_view.set_editable(False)
+            text_view.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+            buffer = Gtk.TextBuffer()
+            buffer.set_text(doc)
+            text_view.set_buffer(buffer)
+            scroll.add_with_viewport(text_view)
+            dialog.vbox.pack_start(scroll, True, True, 0)
+            dialog.vbox.show_all()
+            
+            respuesta = dialog.run()
+            
+            dialog.destroy()
+            self.get_toplevel().set_sensitive(True)
+            
     def __area_izquierda_del_panel(self):
         """
         Empaqueta las listas de la izquierda.
@@ -402,7 +442,7 @@ class Api(Gtk.TreeView):
         
         for clase in CLASES:
             self.modelo.append(iterclass,[ pixbufclase, clase[0], str(modulo), ""])
-            self.objetos[clase[0]] = clase[1]
+            self.objetos[clase[0]] = (clase[1], clase[-1])
             
         for funcion in FUNCIONES:
             self.modelo.append(iterfunc,[ pixbuffunc, funcion[0], str(modulo), ""])

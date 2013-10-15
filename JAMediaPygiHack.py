@@ -66,7 +66,8 @@ class Ventana(Gtk.Window):
             "Iconos", "ver.png"))
             
         self.set_resizable(True)
-        self.set_size_request(640, 480)
+        #self.set_size_request(640, 480)
+        self.maximize()
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
         
