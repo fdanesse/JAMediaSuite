@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 #   Widgets.py por:
-#   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM - Uruguay
-#
+#       Flavio Danesse <fdanesse@gmail.com>, <fdanesse@activitycentral.com>
+#       CeibalJAM - Uruguay - Activity Central
+
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -19,537 +19,214 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# http://www.roojs.org/index.php/projects/gnome/introspection-docs.html
-# http://www.roojs.org/seed/gir-1.1-gtk-2.0/
-# http://www.roojs.com/seed/gir-1.2-gtk-3.0/seed/
-# https://github.com/roojs/gir-1.2-gtk-2.0
-# https://github.com/roojs/gir-1.2-gtk-3.0
-# https://github.com/roojs/gir-1.2-gtk-3.4
-
 import os
 
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
-
-from JAMediaObjects.JAMediaGlobales import get_separador
-
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-DATOS = os.path.join(os.environ["HOME"], "Datos-pygi-hack")
+BASEPATH = os.path.dirname(__file__)
 
-if not os.path.exists(DATOS):
-    os.mkdir(DATOS)
-    os.chmod(DATOS, 0755)
+from Globales import get_dict
+#from Globales import set_dict
+from JAMediaObjects.JAMediaGlobales import get_boton
+from JAMediaObjects.JAMediaGlobales import get_separador
 
-import Funciones as FUNC
-
-class ToolbarTry(Gtk.Toolbar):
-    """
-    Barra de estado.
-    """
+class Toolbar(Gtk.Toolbar):
+    
+    __gtype_name__ = 'PygiHackToolbar'
+    
+    __gsignals__ = {
+     'import': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING)),
+    'accion-menu': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING, GObject.TYPE_BOOLEAN))}
     
     def __init__(self):
         
         Gtk.Toolbar.__init__(self)
         
-        self.insert(get_separador(draw = False,
+        self.insert(
+            get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+        
+        archivo = os.path.join(
+            JAMediaObjectsPath,
+            "Iconos", "PygiHack.svg")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = 32)
+        boton.set_tooltip_text("Créditos")
+        #boton.connect("clicked", self.__show_credits)
+        self.insert(boton, -1)
+        
+        item = Gtk.ToolItem()
+        item.set_expand(True)
+        menu = Menu()
+        menu.connect("import", self.__emit_import)
+        menu.connect("accion-menu", self.__emit_accion_menu)
+        menu.show()
+        item.add(menu)
+        self.insert(item, -1)
+        
+        self.insert(
+            get_separador(draw = False,
+            ancho = 0, expand = True), -1)
+            
+        self.show_all()
+        
+    def __emit_accion_menu(self, widget, menu, wid_lab, valor):
+        
+        self.emit("accion-menu", menu, wid_lab, valor)
+        
+    def __emit_import(self, widget, paquete, modulo):
+        
+        self.emit("import", paquete, modulo)
+        
+class ToolbarTry(Gtk.Toolbar):
+    
+    __gtype_name__ = 'PygiHackToolbarTry'
+    
+    def __init__(self):
+        
+        Gtk.Toolbar.__init__(self)
+        
+        self.insert(
+            get_separador(draw = False,
             ancho = 3, expand = False), -1)
             
         item = Gtk.ToolItem()
-        self.label = Gtk.Label("")
+        item.set_expand(False)
+        self.label = Gtk.Label("Info:")
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
         
-        self.insert(get_separador(draw = False,
+        self.insert(
+            get_separador(draw = False,
             ancho = 0, expand = True), -1)
-        
+            
         self.show_all()
         
-class Navegador(Gtk.Paned):
+    def set_info(self, info):
+        
+        self.label.set_text("Info: %s" % info)
+        
+class Menu(Gtk.MenuBar):
     """
-    Panel con:
-        Lista de Paquetes.
-        Lista de Módulos en paquete Seleccionado.
-        Visor WebKit para el doc generado sobre el módulo seleccionado.
-        Terminal bash-python para pruebas.
+    Toolbar Principal.
     """
+    
+    __gtype_name__ = 'PygiHackMenu'
     
     __gsignals__ = {
-    "info":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+     'import': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING)),
+    'accion-menu': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING, GObject.TYPE_BOOLEAN))}
         
     def __init__(self):
-        
-        Gtk.Paned.__init__(
-            self, orientation = Gtk.Orientation.HORIZONTAL)
-        
-        self.api = None
-        self.webview = None
-        self.lista_modulos = None
-        
-        self.pack1(
-            self.__area_izquierda_del_panel(),
-            resize = False, shrink = True)
-            
-        self.pack2(
-            self.__area_derecha_del_panel(),
-            resize = True, shrink = True)
-        
-        self.show_all()
 
-        self.webview.set_zoom_level(0.8)
+        Gtk.MenuBar.__init__(self)
         
-        self.lista_modulos.connect('nueva-seleccion', self.__set_api)
+        dict = get_dict()
         
-        self.api.connect('objeto', self.__ver_objeto)
-        self.api.connect('info', self.__re_emit_info)
-    
-        self.set_default_api()
+        ### Items del Menú Abrir
+        item_abrir = Gtk.MenuItem('Importar')
+        menu_abrir = Gtk.Menu()
+        item_abrir.set_submenu(menu_abrir)
+        self.append(item_abrir)
         
-    def set_default_api(self):
-        """
-        Establece Gtk como el api seleccionada por defecto.
-        """
-        
-        model = self.lista_modulos.get_model()
-        iter = model.get_iter_first()
-        
-        while iter:
-            if model.get_value(iter, 0) == "Gtk":
-                self.lista_modulos.treeselection.select_iter(iter)
-                return
+        item = Gtk.MenuItem('python')
+        menu_abrir.append(item)
+        if dict.get('python', False):
+            m = Gtk.Menu()
+            item.set_submenu(m)
+            for key in dict.get('python', []):
+                i = Gtk.MenuItem(key)
+                i.connect("activate", self.__emit_import, 'python')
+                m.append(i)
             
-            iter = model.iter_next(iter)
-            
-    def __re_emit_info(self, widget, info):
-        """
-        Emite información para la barra de estado.
-        """
+        item = Gtk.MenuItem('python-gi')
+        menu_abrir.append(item)
+        if dict.get('python-gi', False):
+            m = Gtk.Menu()
+            item.set_submenu(m)
+            for key in dict.get('python-gi', []):
+                i = Gtk.MenuItem(key)
+                i.connect("activate", self.__emit_import, 'python-gi')
+                m.append(i)
         
-        self.emit('info', info)
+        item = Gtk.MenuItem('Otros')
+        menu_abrir.append(item)
+        if dict.get('Otros', False):
+            m = Gtk.Menu()
+            item.set_submenu(m)
+            for key in dict.get('Otros', []):
+                i = Gtk.MenuItem(key)
+                i.connect("activate", self.__emit_import, 'Otros')
+                m.append(i)
         
-    def __ver_objeto(self, widget, objeto):
-        """
-        Recibe la clase, funcion o constante a cargar,
-        del tipo:
-            <class 'gi.repository.Atk.Action'>
-            
-        Y genera el Doc correspondiente.
-        """
+        ### Items del Menú Agregar
+        item_agregar = Gtk.MenuItem('Agregar Opción de ...')
+        menu_agregar = Gtk.Menu()
+        item_agregar.set_submenu(menu_agregar)
+        self.append(item_agregar)
         
-        obj = False
-        doc = False
+        item = Gtk.MenuItem('python')
+        item.connect("activate", self.__set_add_menu)
+        menu_agregar.append(item)
+
+        item = Gtk.MenuItem('python-gi')
+        item.connect("activate", self.__set_add_menu)
+        menu_agregar.append(item)
         
-        if isinstance(objeto, tuple):
-            obj = objeto[0]
-            doc = objeto[1]
+        item = Gtk.MenuItem('Otros')
+        item.connect("activate", self.__set_add_menu)
+        menu_agregar.append(item)
         
-        os.chdir(DATOS)
+        ### Items del Menú Ver
+        item_ver = Gtk.MenuItem('Ver')
+        menu_ver = Gtk.Menu()
+        item_ver.set_submenu(menu_ver)
+        self.append(item_ver)
         
+        item = Gtk.MenuItem('Terminal')
         try:
-            if obj:
-                print type(obj)
-                archivo = os.path.join(DATOS, '%s.html' % (obj.__name__))
-                
-                import pydoc
-                
-                pydoc.writedoc(obj)
-                self.webview.open(archivo)
-                # http://nullege.com/codes/show/src@g@n@gnome-bubbles-HEAD@bubble.py/67/webkit.WebView.open
-                # http://nullege.com/codes/show/src@t@u@Turpial-HEAD@turpial@ui@gtk@tweetslistwk.py/45/webkit.WebView.set_settings
-                
-            else:
-                self.webview.open('')
-                print "Error", objeto
-                
-        except:
-            self.webview.open('')
-            
-        while Gtk.events_pending():
-            Gtk.main_iteration()
-        
-        if doc:
-            self.get_toplevel().set_sensitive(False)
-            dialog = Gtk.Dialog(
-                parent = self.get_toplevel(),
-                flags = Gtk.DialogFlags.MODAL,
-                buttons = [
-                    "Cerrar", Gtk.ResponseType.ACCEPT,
-                    ])
-        
-            ### Scroll
-            scroll = Gtk.ScrolledWindow()
-            
-            scroll.set_policy(
-                Gtk.PolicyType.AUTOMATIC,
-                Gtk.PolicyType.AUTOMATIC)
-            
-            text_view = Gtk.TextView()
-            text_view.set_editable(False)
-            text_view.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
-            buffer = Gtk.TextBuffer()
-            buffer.set_text(doc)
-            text_view.set_buffer(buffer)
-            scroll.add_with_viewport(text_view)
-            dialog.vbox.pack_start(scroll, True, True, 0)
-            dialog.vbox.show_all()
-            
-            respuesta = dialog.run()
-            
-            dialog.destroy()
-            self.get_toplevel().set_sensitive(True)
-            
-    def __area_izquierda_del_panel(self):
-        """
-        Empaqueta las listas de la izquierda.
-        """
-        
-        panel = Gtk.Paned(orientation = Gtk.Orientation.VERTICAL)
-        
-        scrolled_window = Gtk.ScrolledWindow()
-        
-        scrolled_window.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-        
-        scrolled_window.set_size_request(250, -1)
-        
-        self.lista_modulos = Lista()
-        
-        modulos = FUNC.get_modulos()
-        
-        iter = self.lista_modulos.modelo.get_iter_first()
-        
-        for elemento in modulos:
-            iteractual = self.lista_modulos.modelo.append(iter, [elemento])
-        
-        scrolled_window.add_with_viewport (self.lista_modulos)
-        
-        panel.pack1(
-            scrolled_window,
-            resize = False,
-            shrink = True)
-        
-        scrolled_window = Gtk.ScrolledWindow()
-        
-        scrolled_window.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-            
-        self.api = Api()
-        scrolled_window.add_with_viewport (self.api)
-        
-        panel.pack2(
-            scrolled_window,
-            resize = False,
-            shrink = True)
-        
-        return panel
-
-    def __area_derecha_del_panel(self):
-        """
-        Empaqueta el visor webkit.
-        """
-
-        from gi.repository import WebKit
-        
-        scroll = Gtk.ScrolledWindow()
-        
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-            
-        self.webview = WebKit.WebView()
-        self.webview.set_settings(WebKit.WebSettings())
-        
-        scroll.add_with_viewport(self.webview)
-        
-        return scroll
-    
-    def __set_api(self, widget, valor):
-        """
-        Setea la lista de clases, funciones y constantes
-        para el paquete cargado.
-        
-        Por ejemplo:
-            Para Gtk:
-                Listar:
-                    Window
-                    Widget
-                    etc . . .
-        """
-        
-        self.api.llenar(valor)
-        
-class Api(Gtk.TreeView):
-    """
-    TreeView para mostrar:
-        Clases, Funciones, Constantes y Otros items del modulo.
-    """
-    
-    __gsignals__ = {
-    "objeto":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
-    "info":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
-    
-    def __init__(self):
-        
-        Gtk.TreeView.__init__(self)
-        
-        self.set_property("enable-grid-lines", True)
-        self.set_property("rules-hint", True)
-        self.set_property("enable-tree-lines", True)
-        
-        self.objetos = {}
-        self.modulo = None
-        self.objeto = None
-        
-        self.modelo = Gtk.TreeStore(
-            GdkPixbuf.Pixbuf,
-            GObject.TYPE_STRING,
-            GObject.TYPE_STRING,
-            GObject.TYPE_STRING)
-            
-        self.__construir_columnas()
-        
-        self.connect("row-activated", self.__activar, None)
-        
-        self.add_events(
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.KEY_PRESS_MASK |
-            Gdk.EventMask.TOUCH_MASK)
-            
-        self.connect("key-press-event", self.__keypress)
-        
-        self.set_model(self.modelo)
-        
-        self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(self.__selecciones, self.modelo)
-        
-        self.show_all()
-    
-    def __keypress(self, widget, event):
-        """
-        Cuando se presiona una tecla.
-        """
-        
-        tecla = event.get_keycode()[1]
-        model, iter = self.treeselection.get_selected()
-        path = self.modelo.get_path(iter)
-        
-        if tecla == 22:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-                
-        elif tecla == 113:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-                
-        elif tecla == 114:
-            if not self.row_expanded(path):
-                self.expand_to_path(path)
-        
-        return False
-    
-    def __activar (self, treeview, path, view_column, user_param1):
-        """
-        Cuando se hace doble click en "Clases", "Funciones", etc . . .
-        """
-        
-        iter = treeview.modelo.get_iter(path)
-        valor = treeview.modelo.get_value(iter, 1)
-        
-        if treeview.row_expanded(path):
-            treeview.collapse_row(path)
-            
-        elif not treeview.row_expanded(path):
-            treeview.expand_to_path(path)
-
-    def __selecciones(self, treeselection, modelo, path, is_selected, treestore):
-        """
-        Cuando se selecciona una clase, funcion, etc . . .
-        """
-        
-        iter = modelo.get_iter(path)
-        modulo =  modelo.get_value(iter, 2)
-        valor = modelo.get_value(iter, 1)
-        objeto = None
-        
-        if not is_selected and modulo != self.modulo:
-            self.modulo = modulo
-            #self.emit('info', self.modulo)
-            
-        try:
-            objeto = self.objetos[valor]
-            
+            item.get_child().destroy()
         except:
             pass
-        
-        if objeto and objeto != self.objeto and not is_selected:
-            self.objeto = objeto
-            self.emit('objeto', self.objeto)
-            
-        return True
-    
-    def llenar(self, paquete):
-        """
-        Llena el treeview con los datos de un paquete.
-        (Clases, funciones, constantes y otros.)
-        """
-        
-        modulo, CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS = FUNC.get_info(paquete)
-        
-        if not modulo or modulo == None:
-            self.emit('objeto', False)
-            self.emit('info', "%s %s" % (modulo, paquete))
-            
-            return False
-            
-        self.objetos = {}
-        self.objeto = None
-        
-        self.modelo.clear()
-        
-        from JAMediaObjects.JAMFileSystem import borrar
-        
-        for archivo in os.listdir(DATOS):
-            borrar(os.path.join(DATOS, archivo))
-        
-        icono = os.path.join(JAMediaObjectsPath, "Iconos", "ver.png")
-        pixbufver = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-        icono = os.path.join(JAMediaObjectsPath, "Iconos", "clase.png")
-        pixbufclase = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-        icono = os.path.join(JAMediaObjectsPath, "Iconos", "funcion.png")
-        pixbuffunc = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-        icono = os.path.join(JAMediaObjectsPath, "Iconos", "constante.png")
-        pixbufconst = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-        icono = os.path.join(JAMediaObjectsPath, "Iconos", "otros.png")
-        pixbufotros = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-        
-        iter = self.modelo.get_iter_first()
-        
-        iteractual = self.modelo.append(iter,[ pixbufver, paquete, str(modulo), ""])
-        iterclass = self.modelo.append(iteractual,[ pixbufclase, 'Clases', str(modulo), ""])
-        iterfunc = self.modelo.append(iteractual,[ pixbuffunc, 'Funciones', str(modulo), ""])
-        iterconst = self.modelo.append(iteractual,[ pixbufconst, 'Constantes', str(modulo), ""])
-        iterotros = self.modelo.append(iteractual,[ pixbufotros, 'Otros', str(modulo), ""])
-        
-        for clase in CLASES:
-            self.modelo.append(iterclass,[ pixbufclase, clase[0], str(modulo), ""])
-            self.objetos[clase[0]] = (clase[1], clase[-1])
-            
-        for funcion in FUNCIONES:
-            self.modelo.append(iterfunc,[ pixbuffunc, funcion[0], str(modulo), ""])
-            self.objetos[funcion[0]] = funcion[1]
-            
-        for const in CONSTANTES:
-            self.modelo.append(iterconst,[ pixbufconst, const[0], str(modulo), ""])
-            self.objetos[const[0]] = const[1]
-            
-        for otros in DESCONOCIDOS:
-            self.modelo.append(iterotros,[ pixbufotros, otros, str(modulo), ""])
-            self.objetos[otros[0]] = otros[1]
-        
-        self.emit('info', "%s" % (modulo))
-        
-    def __construir_columnas(self):
-        
-        celda_de_imagen = Gtk.CellRendererPixbuf()
-        columna = Gtk.TreeViewColumn(None, celda_de_imagen, pixbuf=0)
-        columna.set_property('resizable', False)
-        columna.set_property('visible', True)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-        self.append_column (columna)
-        
-        celda_de_texto = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn('Objeto', celda_de_texto, text=1)
-        columna.set_property('resizable', False)
-        columna.set_property('visible', True)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-        self.append_column (columna)
-
-        celda_de_texto = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn('Modulo', celda_de_texto, text=2)
-        columna.set_property('resizable', True)
-        columna.set_property('visible', False)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-        self.append_column (columna)
-        
-        celda_de_texto = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn('Reserva2', celda_de_texto, text=3)
-        columna.set_property('resizable', True)
-        columna.set_property('visible', False)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-        self.append_column (columna)
-        
-class Lista(Gtk.TreeView):
-    """
-    Lista de paquetes:
-        Gtk, GdK, GOBject, etc . . .
-    """
-    
-    __gsignals__ = {
-    "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
-    
-    def __init__(self):
-        
-        Gtk.TreeView.__init__(self)
-        
-        self.set_property("rules-hint", True)
-        self.set_property("enable-grid-lines", True)
-        self.set_property("enable-tree-lines", True)
-        
-        self.set_headers_clickable(True)
-        self.set_headers_visible(True)
-
-        self.valor_select = False
-        
-        self.modelo = Gtk.TreeStore(GObject.TYPE_STRING)
-        
-        self.__setear_columnas()
-        
-        self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(self.__selecciones, self.modelo)
-        
-        self.set_model(self.modelo)
+        hbox = Gtk.HBox()
+        boton = Gtk.CheckButton()
+        boton.set_active(True)
+        hbox.pack_start(boton, False, False, 0)
+        label = Gtk.Label("Terminal")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate", self.__emit_accion_menu, "ver")
+        menu_ver.append(item)
         
         self.show_all()
         
-    def __setear_columnas(self):
+    def __emit_accion_menu(self, widget, menu):
         
-        self.append_column(self.__construir_columa('Modulos', 0, True))
+        valor = not widget.get_children()[0].get_children()[0].get_active()
+        widget.get_children()[0].get_children()[0].set_active(valor)
+        label = widget.get_children()[0].get_children()[1]
+        self.emit("accion-menu", menu, label.get_text(), valor)
         
-    def __construir_columa(self, text, index, visible):
+    def __emit_import(self, widget, menu):
         
-        render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn(text, render, text = index)
+        self.emit("import", menu, widget.get_label())
         
-        columna.set_sort_column_id(index)
-        columna.set_property('visible', visible)
-        columna.set_property('resizable', True)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+    def __set_add_menu(self, widget):
         
-        return columna
-    
-    def __selecciones(self, treeselection, model, path, is_selected, listore):
-        """
-        Cuando se selecciona un item en la lista.
-        """
-        
-        # model y listore son ==
-        iter = model.get_iter(path)
-        valor = model.get_value(iter, 0)
-        
-        if not is_selected and self.valor_select != valor:
-            self.valor_select = valor
-            self.emit('nueva-seleccion', self.valor_select)
-            
-        return True
+        print "Agregar un Item en:", widget.get_label()
     
