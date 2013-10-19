@@ -26,22 +26,41 @@ import pydoc
 BASEPATH = os.path.dirname(__file__)
 os.chdir(BASEPATH)
 
-def get_modulo(modulo, attrib):
-
-    try:
-        mod = __import__(modulo)
-        clase = getattr(mod, attrib)
-
-        archivo = os.path.join(BASEPATH, '%s.html' % attrib)
-        ar = open(archivo, "w")
-        ar.write("")
-        ar.close()
+def get_modulo(name, attrib):
+    
+    modulo = False
+    
+    if len(name.split(".")) == 2:
+        try:
+            mod = __import__(name)
+            modulo = mod.__getattribute__(name.replace("%s." % name.split(".")[0], ''))
+        except:
+            pass
+    
+    elif len(name.split(".")) == 1:
+        try:
+            modulo = __import__(name)
+        except:
+            pass
         
-        pydoc.writedoc(clase)
-        
-        return os.path.join(BASEPATH, '%s.html' % attrib)
+    else:
+        pass
+    
+    if modulo:
+        try:
+            clase = getattr(modulo, attrib)
 
-    except:
+            archivo = os.path.join(BASEPATH, '%s.html' % attrib)
+            ar = open(archivo, "w")
+            ar.write("")
+            ar.close()
+            
+            pydoc.writedoc(clase)
+            
+        except:
+            sys.exit(0)
+        
+    else:
         sys.exit(0)
         
 print get_modulo(sys.argv[1], sys.argv[2])

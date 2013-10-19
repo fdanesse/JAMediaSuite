@@ -178,67 +178,59 @@ class IntrospectionPanel(Gtk.Paned):
         
         apiwidget.connect('update', self.__update)
     
-    def __update(self, widget, path_modulo, paquete, modulo, clase, datos):
+    def __update(self, widget, tupla):
         
-        # FIXME: Tipo de dato que se ha seleccionado.
-        import types
-        if isinstance(datos, types.TupleType):
-            print "***", datos[-1]
+        if tupla:
+            webdoc = ''
+            objeto, gdoc, doc, _type, modulo_path, tipo = tupla
+            doc = str(doc).replace("[", "").replace("]", "").replace(",", "\n").replace("u'", "").replace("'", "")
             
-        if clase == "Clases" or clase == "Funciones" or clase == "Constantes":
+        else:
             self.infonotebook.set_gdoc('')
             self.infonotebook.set_doc('')
             self.infonotebook.set_webdoc('')
             
-            self.emit("info-try", path_modulo)
+            self.emit("info-try", '')
             return
         
-        clase = clase.split(".")[-1]
-        webdoc = ""
-        gdoc = ""
-        doc = ""
+        self.infonotebook.set_gdoc(gdoc)
+        self.infonotebook.set_doc(doc)
+        
+        clase = objeto.split(".")[-1]
+        modulo = objeto.replace(".%s" % objeto.split(".")[-1], '')
         
         for f in os.listdir('/dev/shm'):
             if f.split(".")[-1] == 'html':
                 os.remove(os.path.join('/dev/shm', f))
-                
+        
         import commands
         
-        if paquete == "python-gi":
-            arch = os.path.join(BASEPATH, "SpyderHack", "Make_gi_doc.py")
-            commands.getoutput('cp %s %s' % (arch, '/dev/shm'))
+        if tipo == "python-gi":
+            arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_gi_doc.py")
+            commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
             arch = os.path.join('/dev/shm', "Make_gi_doc.py")
-            print commands.getoutput('python %s %s %s' % (arch, modulo, clase))
-            os.remove(arch)
             
-            webdoc = os.path.join('/dev/shm', "%s.html" % clase)
-            if not os.path.exists(webdoc):
-                webdoc = ""
-                
-        elif paquete == "python":
-            arch = os.path.join(BASEPATH, "SpyderHack", "Make_doc.py")
-            commands.getoutput('cp %s %s' % (arch, '/dev/shm'))
+        elif tipo == "python":
+            arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_doc.py")
+            commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
             arch = os.path.join('/dev/shm', "Make_doc.py")
-            print commands.getoutput('python %s %s %s' % (arch, modulo, clase))
-            os.remove(arch)
             
-            # FIXME: Aveces la web no tiene este nombre.
-            webdoc = os.path.join('/dev/shm', "%s.html" % clase)
-            if not os.path.exists(webdoc):
-                webdoc = ""
-            
-        if datos:
-            if isinstance(datos[0], str):
-                gdoc = datos[0]
-                
-            doc = str(datos[1]).replace("[", "").replace("]", "").replace(",", "\n").replace("'", "")
+        commands.getoutput('python %s %s %s' % (arch, modulo, clase))
+        os.remove(arch)
         
-        self.infonotebook.set_gdoc(gdoc)
-        self.infonotebook.set_doc(doc)
+        ### Porque aveces la web no tiene este nombre.
+        for file in os.listdir('/dev/shm'):
+            if str(file).endswith('.html'):
+                archivo = os.path.realpath(os.path.join('/dev/shm', file))
+                arch = open(archivo, "r")
+                text = arch.read()
+                arch.close()
+                if text: webdoc = archivo
+                
         self.infonotebook.set_webdoc(webdoc)
         
-        self.emit("info-try", path_modulo)
-
+        self.emit("info-try", "%s %s %s %s" % (objeto, _type, modulo_path, tipo))
+        
 class InfoNotebook(Gtk.Notebook):
 
     __gtype_name__ = 'PygiHackInfoNotebook'

@@ -23,16 +23,27 @@ import os
 import sys
 import types
 import json
-
+    
 def import_modulo(name):
     
     modulo = False
     
-    try:
-        modulo = __import__("%s" % name)
-    except:
-        pass
+    if len(name.split(".")) == 2:
+        try:
+            mod = __import__(name)
+            modulo = mod.__getattribute__(name.replace("%s." % name.split(".")[0], ''))
+        except:
+            pass
         
+    elif len(name.split(".")) == 1:
+        try:
+            modulo = __import__("%s" % name)
+        except:
+            pass
+        
+    else:
+        pass
+    
     dict = {
         'CONSTANTES':[],
         'DESCONOCIDOS':[],
@@ -71,30 +82,31 @@ def import_modulo(name):
                 except:
                     dict['DESCONOCIDOS'].append( (objeto, '', '', str(type(func))) )
                     continue
-            
-                if isinstance(attr, type):
-                    try:
-                        gdoc = attr.__gdoc__
-                    except:
-                        pass
-                    
-                    dict['CLASES'].append( (objeto, gdoc, dir(attr), str(type(attr))) )
-                    continue
-                    
-                elif isinstance(attr, types.FunctionType) or \
-                    isinstance(attr, types.BuiltinFunctionType) or \
-                    isinstance(attr, types.BuiltinMethodType) or \
-                    isinstance(attr, types.MethodType):
-                        dict['FUNCIONES'].append( (objeto, '', dir(attr), str(type(attr))) )
-                        continue
                 
-                else:
-                    if not type(attr) == types.ModuleType:
-                        dict['CONSTANTES'].append( (objeto, '', dir(attr), str(type(attr))) )
+                if attr:
+                    if isinstance(attr, type):
+                        try:
+                            gdoc = attr.__gdoc__
+                        except:
+                            pass
+                        
+                        dict['CLASES'].append( (objeto, gdoc, dir(attr), str(type(attr))) )
                         continue
+                        
+                    elif isinstance(attr, types.FunctionType) or \
+                        isinstance(attr, types.BuiltinFunctionType) or \
+                        isinstance(attr, types.BuiltinMethodType) or \
+                        isinstance(attr, types.MethodType):
+                            dict['FUNCIONES'].append( (objeto, '', dir(attr), str(type(attr))) )
+                            continue
                     
                     else:
-                        dict["%s.%s" % (name, func)] = import_modulo("%s.%s" % (name, func))
+                        if not type(attr) == types.ModuleType:
+                            dict['CONSTANTES'].append( (objeto, '', dir(attr), str(type(attr))) )
+                            continue
+                        
+                        else:
+                            dict["%s.%s" % (name, func)] = import_modulo("%s.%s" % (name, func))
                     
     return dict
 

@@ -57,20 +57,6 @@ BASEDICT = {
         'xfixes', 'xft', 'xlib', 'xrandr'],
     "Otros":[],
         }
-
-def gi_check(item):
-    """
-    Checkea si un módulo de python-gi se
-    encuentra disponible en el sistema.
-    """
-    
-    try:
-        pygi = __import__("gi.repository")
-        modulo = pygi.module.IntrospectionModule(item)
-        return True
-    
-    except:
-        return False
     
 def set_dict(dict):
     """
@@ -112,20 +98,22 @@ def get_dict():
     
     disponibles = []
     for item in dict["python-gi"]:
-        if gi_check(item):
+        ejecutable = os.path.join(BASEPATH, "SpyderHack", "Gi_Check.py")
+        ret = commands.getoutput('python %s %s' % (ejecutable, item))
+        if str(True) in ret:
             disponibles.append(item)
-        #else:
-        #    print item, "No se encuentra en el sistema"
+        else:
+            print item, "No se encuentra en el sistema", ret, type(ret)
     dict["python-gi"] = sorted(disponibles)
     
     disponibles = []
     for item in dict["python"]:
         ejecutable = os.path.join(BASEPATH, "SpyderHack", "Check.py")
         ret = commands.getoutput('python %s %s' % (ejecutable, item))
-        if ret == "True":
+        if str(True) in ret:
             disponibles.append(item)
         else:
-            print item, "No se encuentra en el sistema"
+            print item, "No se encuentra en el sistema", ret, type(ret)
     dict["python"] = sorted(disponibles)
     
     return dict

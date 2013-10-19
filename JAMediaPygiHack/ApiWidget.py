@@ -39,19 +39,15 @@ class ApiWidget(Gtk.TreeView):
     
     __gsignals__ = {
     "update":(GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_STRING, GObject.TYPE_STRING,
-        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
     
     def __init__(self, paquete, modulo):
         
         Gtk.TreeView.__init__(self,
             Gtk.TreeStore(
-                GdkPixbuf.Pixbuf,
-                GObject.TYPE_STRING))
+                GdkPixbuf.Pixbuf, GObject.TYPE_STRING))
         
         self.objetos = {}
-        self.path_modulo = ""
         self.old_update = False
         
         self.add_events(
@@ -81,14 +77,14 @@ class ApiWidget(Gtk.TreeView):
         columna.set_property('resizable', False)
         columna.set_property('visible', True)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-        self.append_column (columna)
+        self.append_column(columna)
         
         celda_de_texto = Gtk.CellRendererText()
         columna = Gtk.TreeViewColumn('Objeto', celda_de_texto, text=1)
         columna.set_property('resizable', False)
         columna.set_property('visible', True)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-        self.append_column (columna)
+        self.append_column(columna)
         
     def __keypress(self, widget, event):
         """
@@ -137,16 +133,11 @@ class ApiWidget(Gtk.TreeView):
         
         if not is_selected and self.old_update != datos:
             self.old_update = datos
-            self.emit('update',
-                self.path_modulo,
-                self.objetos['tipo'],
-                self.objetos['modulo'],
-                datos,
-                self.objetos['objetos'].get(datos, False))
+            self.emit('update', self.objetos.get(datos, {}))
             
         return True
     
-    def __load(self, paquete, modulo):
+    def __load(self, tipo, modulo):
         """
         Llena el treeview con los datos de un paquete.
         (Clases, funciones, constantes y otros.)
@@ -154,89 +145,74 @@ class ApiWidget(Gtk.TreeView):
         
         self.get_model().clear()
         
-        self.objetos = {
-            'tipo': paquete,
-            'modulo': modulo,
-            'objetos':{},
-            }
-            
-        if paquete == "python-gi":
-            self.__load_gi(modulo)
-            
-        elif paquete == "python":
-            self.__load_normal(modulo)
-            
-    def __load_normal(self, modulo):
-        """
-        Funcion llamada desde __load(paquete, modulo)
-        """
-        
         import commands
-        import shelve
+        import json
+        import codecs
         
-        ejecutable = os.path.join(BASEPATH, 'SpyderHack', 'Dir_Modulo.py')
+        self.objetos = {}
+        
+        if tipo == "python-gi":
+            ejecutable = os.path.join(BASEPATH, 'SpyderHack', 'Dir_Gi_Modulo.py')
+            
+        elif tipo == "python":
+            ejecutable = os.path.join(BASEPATH, 'SpyderHack', 'Dir_Modulo.py')
+        
         commands.getoutput('python %s %s' % (ejecutable, modulo))
-        archivo = shelve.open(os.path.join("/dev/shm", "shelvein"))
         
-        dict = {}
-        for key in archivo.keys():
-            dict[key] = archivo[key]
+        path = os.path.join("/dev/shm", "spyder_hack_out.json")
+        
+        archivo = codecs.open(path, "r", "utf-8")
+        dict = json.JSONDecoder("utf-8").decode(archivo.read())
         archivo.close()
         
-        os.remove(os.path.join("/dev/shm", "shelvein"))
+        if dict.get(modulo, False):
+            iter = self.get_model().get_iter_first()
+            self.__add_modulo_dict(dict[modulo], iter, tipo)
+            
+    def __add_modulo_dict(self, dict, iter, tipo):
         
-        CLASES = dict['CLASES']
-        FUNCIONES = dict['FUNCIONES']
-        CONSTANTES = dict['CONSTANTES']
-        DESCONOCIDOS = dict['DESCONOCIDOS']
-        self.path_modulo = dict['PATH']
-        
-        self.__run_load(CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS)
-        
-    def __load_gi(self, modulo):
-        """
-        Funcion llamada desde __load(paquete, modulo)
-        """
-        
-        from Gi_Import import get_info
-        CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS, self.path_modulo = get_info(modulo)
-        self.__run_load(CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS)
-        
-    def __run_load(self, CLASES, FUNCIONES, CONSTANTES, DESCONOCIDOS):
-        """
-        Llena el TreeView con clases, funciones, etc . . .
-        """
-        
-        ### Iters Base
+        ### Iconos Representativos
         icono = os.path.join(JAMediaObjectsPath, "Iconos", "class.svg")
         pixbufclase = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
         icono = os.path.join(JAMediaObjectsPath, "Iconos", "def.svg")
         pixbuffunc = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
         icono = os.path.join(JAMediaObjectsPath, "Iconos", "const.svg")
         pixbufconst = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-        #icono = os.path.join(JAMediaObjectsPath, "Iconos", "otros.svg")
-        #pixbufotros = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
+        icono = os.path.join(JAMediaObjectsPath, "Iconos", "otros.svg")
+        pixbufotros = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
         
-        iter = self.get_model().get_iter_first()
+        modulo_path = dict.get("PATH", '')
         
-        iterclass = self.get_model().append(iter,[ pixbufclase, 'Clases'])
-        iterfunc = self.get_model().append(iter,[ pixbuffunc, 'Funciones'])
-        iterconst = self.get_model().append(iter,[ pixbufconst, 'Constantes'])
-        #iterotros = self.get_model().append(iter,[ pixbufotros, 'Otros'])
+        if dict.get("CLASES", False):
+            newiter = self.get_model().append(iter,[ pixbufclase, 'Clases' ])
+            for lista in dict.get("CLASES", []):
+                self.__add(newiter, None, lista, modulo_path, tipo)
+                
+        if dict.get("FUNCIONES", False):
+            newiter = self.get_model().append(iter,[ pixbuffunc, 'Funciones' ])
+            for lista in dict.get("FUNCIONES", []):
+                self.__add(newiter, None, lista, modulo_path, tipo)
+                
+        if dict.get("CONSTANTES", False):
+            newiter = self.get_model().append(iter,[ pixbufconst, 'Constantes' ])
+            for lista in dict.get("CONSTANTES", []):
+                self.__add(newiter, None, lista, modulo_path, tipo)
+                
+        if dict.get("DESCONOCIDOS", False):
+            newiter = self.get_model().append(iter,[ pixbufotros, 'Otros' ])
+            for lista in dict.get("DESCONOCIDOS", []):
+                self.__add(newiter, None, lista, modulo_path, tipo)
         
-        for clase in CLASES:
-            self.get_model().append(iterclass,[ None, clase[0] ])
-            self.objetos['objetos'][clase[0]] = (clase[1], clase[2], clase[3])
-            
-        for funcion in FUNCIONES:
-            self.get_model().append(iterfunc,[ None, funcion[0] ])
-            self.objetos['objetos'][funcion[0]] = (funcion[1], funcion[2], funcion[3])
-            
-        for const in CONSTANTES:
-            self.get_model().append(iterconst,[ None, const[0] ])
-            self.objetos['objetos'][const[0]] = (const[1], const[2], const[3])
-            
-        #for otros in DESCONOCIDOS:
-        #    self.get_model().append(iterotros,[ None, otros[0] ])
-        #    self.objetos['objetos'][otros[0]] = (otros[1], otros[2], otros[3])
+        for key in dict.keys():
+            if key not in ["CLASES", "FUNCIONES", "CONSTANTES", "DESCONOCIDOS", "PATH"]:
+                newiter = self.get_model().append(iter,[ None, key ])
+                try:
+                    self.__add_modulo_dict(dict[key], newiter, tipo)
+                except:
+                    print "Key no Esperado:", type(dict[key]), key
+                
+    def __add(self, iter, pixbuf, lista, modulo_path, tipo):
+        
+        self.get_model().append(iter,[ pixbuf, lista[0] ])
+        self.objetos[lista[0]] = (lista[0], lista[1], lista[2], lista[3], modulo_path, tipo)
         

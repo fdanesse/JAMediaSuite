@@ -100,28 +100,29 @@ def import_modulo(modulo_name):
                     dict['DESCONOCIDOS'].append( (objeto, '', '', str(type(func))) )
                     continue
                 
-                if isinstance(attr, type):
-                    try:
-                        gdoc = attr.__gdoc__
-                    except:
-                        pass
-                    
-                    dict['CLASES'].append( (objeto, gdoc, dir(attr), str(type(attr))) )
-                    continue
-                    
-                elif isinstance(attr, types.FunctionType) or \
-                    isinstance(attr, types.BuiltinFunctionType) or \
-                    isinstance(attr, types.BuiltinMethodType) or \
-                    isinstance(attr, types.MethodType):
-                        dict['FUNCIONES'].append( (objeto, '', dir(attr), str(type(attr))) )
+                if attr:
+                    if isinstance(attr, type):
+                        try:
+                            gdoc = attr.__gdoc__
+                        except:
+                            pass
+                        
+                        dict['CLASES'].append( (objeto, gdoc, dir(attr), str(type(attr))) )
                         continue
-                
-                else:
-                    if not type(attr) == types.ModuleType:
-                        dict['CONSTANTES'].append( (objeto, '', dir(attr), str(type(attr))) )
-                        continue
+                        
+                    elif isinstance(attr, types.FunctionType) or \
+                        isinstance(attr, types.BuiltinFunctionType) or \
+                        isinstance(attr, types.BuiltinMethodType) or \
+                        isinstance(attr, types.MethodType):
+                            dict['FUNCIONES'].append( (objeto, '', dir(attr), str(type(attr))) )
+                            continue
+                    
                     else:
-                        dict["%s.%s" % (name, func)] = import_modulo("%s.%s" % (name, func))
+                        if not type(attr) == types.ModuleType:
+                            dict['CONSTANTES'].append( (objeto, '', dir(attr), str(type(attr))) )
+                            continue
+                        else:
+                            dict["%s.%s" % (name, func)] = import_modulo("%s.%s" % (name, func))
                         
     return dict
 
