@@ -6,12 +6,15 @@ import sys
 retorno = True
 
 def check(item):
-
+    
     try:
-        modulo = __import__("%s" % item)
+        pygi = __import__("gi.repository")
+        modulo = pygi.module.IntrospectionModule(item)
+        retorno = True
+    
     except:
         retorno = False
-
+    
 check(sys.argv[1])
 
 print retorno

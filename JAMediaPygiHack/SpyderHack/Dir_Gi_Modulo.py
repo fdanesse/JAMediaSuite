@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   Dir_Modulo.py por:
+#   Gi_Import.py por:
 #       Flavio Danesse <fdanesse@gmail.com>, <fdanesse@activitycentral.com>
 #       CeibalJAM - Uruguay - Activity Central
 
@@ -24,15 +24,18 @@ import sys
 import types
 import json
 
-def import_modulo(name):
+def import_modulo(modulo_name):
+    
+    pygi = __import__("gi.repository")
     
     modulo = False
     
     try:
-        modulo = __import__("%s" % name)
+        modulo = pygi.module.IntrospectionModule(modulo_name)
+        
     except:
         pass
-        
+    
     dict = {
         'CONSTANTES':[],
         'DESCONOCIDOS':[],
@@ -55,13 +58,38 @@ def import_modulo(name):
 
         for func in dir(modulo):
             if func.startswith("__") and func.endswith("__"):
+                """
+                Funciones de módulo:
+                    __class__
+                    __delattr__
+                    __dict__
+                    __dir__
+                    __doc__
+                    __format__
+                    __getattr__
+                    __getattribute__
+                    __hash__
+                    __init__
+                    __module__
+                    __name__
+                    __new__
+                    __path__
+                    __reduce__
+                    __reduce_ex__
+                    __repr__
+                    __setattr__
+                    __sizeof__
+                    __str__
+                    __subclasshook__
+                    __weakref__
+                    """
                 continue
             
             elif func.startswith("_"):
                 continue
             
             else:
-                objeto = "%s.%s" % (name, func)
+                objeto = "%s.%s" % (modulo_name, func)
                 attr = False
                 gdoc = ''
                 
@@ -71,7 +99,7 @@ def import_modulo(name):
                 except:
                     dict['DESCONOCIDOS'].append( (objeto, '', '', str(type(func))) )
                     continue
-            
+                
                 if isinstance(attr, type):
                     try:
                         gdoc = attr.__gdoc__
@@ -92,10 +120,9 @@ def import_modulo(name):
                     if not type(attr) == types.ModuleType:
                         dict['CONSTANTES'].append( (objeto, '', dir(attr), str(type(attr))) )
                         continue
-                    
                     else:
                         dict["%s.%s" % (name, func)] = import_modulo("%s.%s" % (name, func))
-                    
+                        
     return dict
 
 name = sys.argv[1]
@@ -115,3 +142,4 @@ archivo.write(
     )
 )
 archivo.close()
+    
