@@ -24,6 +24,7 @@ import os
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GdkPixbuf
 
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
@@ -62,7 +63,7 @@ class Toolbar(Gtk.Toolbar):
             archivo, flip = False,
             pixels = 32)
         boton.set_tooltip_text("Créditos")
-        #boton.connect("clicked", self.__show_credits)
+        boton.connect("clicked", self.__show_credits)
         self.insert(boton, -1)
         
         item = Gtk.ToolItem()
@@ -88,6 +89,14 @@ class Toolbar(Gtk.Toolbar):
         
         self.emit("import", paquete, modulo)
         
+    def __show_credits(self, widget):
+        
+        dialog = Credits(self.get_toplevel())
+        
+        dialog.run()
+        
+        dialog.destroy()
+    
 class ToolbarTry(Gtk.Toolbar):
     
     __gtype_name__ = 'PygiHackToolbarTry'
@@ -230,3 +239,25 @@ class Menu(Gtk.MenuBar):
         
         print "Agregar un Item en:", widget.get_label()
     
+class Credits(Gtk.Dialog):
+    
+    __gtype_name__ = 'PyGiHackCredits'
+    
+    def __init__(self, parent = None):
+
+        Gtk.Dialog.__init__(self,
+            parent = parent,
+            flags = Gtk.DialogFlags.MODAL,
+            buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
+        
+        self.set_border_width(15)
+        
+        imagen = Gtk.Image()
+        imagen.set_from_file(
+            os.path.join(JAMediaObjectsPath,
+                "Iconos", "PyGiHackCredits.svg"))
+        
+        self.vbox.pack_start(imagen, True, True, 0)
+        
+        self.vbox.show_all()
+        
