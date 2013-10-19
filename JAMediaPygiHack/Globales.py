@@ -22,6 +22,7 @@
 import os
 
 BASEPATH = os.path.dirname(__file__)
+WorkPath = os.environ["HOME"]
 
 BASEDICT = {
     "python": [
@@ -66,7 +67,7 @@ def set_dict(dict):
     
     import json
     
-    archivo = os.path.join(BASEPATH, "modulos.json")
+    archivo = os.path.join(WorkPath, "JAMediaPyGiHack.cfg")
     archivo = open(archivo, "w")
     archivo.write(
             json.dumps(
@@ -88,7 +89,7 @@ def get_dict():
     import codecs
     import commands
     
-    archivo = os.path.join(BASEPATH, "modulos.json")
+    archivo = os.path.join(WorkPath, "JAMediaPyGiHack.cfg")
     
     if not os.path.exists(archivo):
         set_dict(BASEDICT)

@@ -164,33 +164,33 @@ class Menu(Gtk.MenuBar):
                 i.connect("activate", self.__emit_import, 'python-gi')
                 m.append(i)
         
-        item = Gtk.MenuItem('Otros')
-        menu_abrir.append(item)
-        if dict.get('Otros', False):
-            m = Gtk.Menu()
-            item.set_submenu(m)
-            for key in dict.get('Otros', []):
-                i = Gtk.MenuItem(key)
-                i.connect("activate", self.__emit_import, 'Otros')
-                m.append(i)
+        #item = Gtk.MenuItem('Otros')
+        #menu_abrir.append(item)
+        #if dict.get('Otros', False):
+        #    m = Gtk.Menu()
+        #    item.set_submenu(m)
+        #    for key in dict.get('Otros', []):
+        #        i = Gtk.MenuItem(key)
+        #        i.connect("activate", self.__emit_import, 'Otros')
+        #        m.append(i)
         
         ### Items del Menú Agregar
-        item_agregar = Gtk.MenuItem('Agregar Opción de ...')
-        menu_agregar = Gtk.Menu()
-        item_agregar.set_submenu(menu_agregar)
-        self.append(item_agregar)
+        #item_agregar = Gtk.MenuItem('Agregar Opción de ...')
+        #menu_agregar = Gtk.Menu()
+        #item_agregar.set_submenu(menu_agregar)
+        #self.append(item_agregar)
         
-        item = Gtk.MenuItem('python')
-        item.connect("activate", self.__set_add_menu)
-        menu_agregar.append(item)
+        #item = Gtk.MenuItem('python')
+        #item.connect("activate", self.__set_add_menu)
+        #menu_agregar.append(item)
 
-        item = Gtk.MenuItem('python-gi')
-        item.connect("activate", self.__set_add_menu)
-        menu_agregar.append(item)
+        #item = Gtk.MenuItem('python-gi')
+        #item.connect("activate", self.__set_add_menu)
+        #menu_agregar.append(item)
         
-        item = Gtk.MenuItem('Otros')
-        item.connect("activate", self.__set_add_menu)
-        menu_agregar.append(item)
+        #item = Gtk.MenuItem('Otros')
+        #item.connect("activate", self.__set_add_menu)
+        #menu_agregar.append(item)
         
         ### Items del Menú Ver
         item_ver = Gtk.MenuItem('Ver')
