@@ -32,14 +32,6 @@ from gi.repository import Gst
 from Widgets import TextView
 from Widgets import Lista
 
-import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import ToolbarSalir
-
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
-    
-GObject.threads_init()
-Gdk.threads_init()
-
 Gst.init([])
 
 registry = Gst.Registry.get()
@@ -53,85 +45,61 @@ def get_inspect(elemento):
     import commands
     return commands.getoutput('gst-inspect-1.0 %s' % (elemento))
 
-class JAMediaGstreamer(Gtk.Plug):
-
-    __gsignals__ = {
-    "salir":(GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+class JAMediaGstreamer(Gtk.Paned):
     
     def __init__(self):
         
-        Gtk.Plug.__init__(self, 0L)
-        
-        self.toolbar = None
-        self.toolbar_salir = None
-        self.textview = None
-        self.lista = None
-        self.notebook = None
-        
-        self.show_all()
-        
-        vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        
-        self.lista = Lista()
-        
-        panel_base = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
+        Gtk.Paned.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
         
         # Izquierda
-        scroll = Gtk.ScrolledWindow()
+        self.lista = Lista()
         
+        scroll = Gtk.ScrolledWindow()
         scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
-            
         scroll.add_with_viewport(self.lista)
         scroll.set_size_request(250, -1)
         
-        panel_base.pack1(
+        self.pack1(
             scroll,
             resize = False,
             shrink = False)
         
         # Derecha
         self.textview = TextView()
-        scroll = Gtk.ScrolledWindow()
         
+        scroll = Gtk.ScrolledWindow()
         scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
-        
         scroll.add_with_viewport(self.textview)
         
-        panel_base.pack2(
+        self.pack2(
             scroll,
             resize = True,
             shrink = True)
             
-        vbox.pack_start(panel_base, True, True, 0)
-        
-        self.add(vbox)
-        
         self.show_all()
         
         self.llenar_lista()
         
-        self.connect("embedded", self.embed_event)
         self.lista.connect('nueva-seleccion', self.get_element)
         
     def llenar_lista(self):
         
-        iter = self.lista.modelo.get_iter_first()
+        iter = self.lista.get_model().get_iter_first()
         
         for elemento in plugins:
             
-            iteractual = self.lista.modelo.append(
+            iteractual = self.lista.get_model().append(
                 iter, [elemento.get_name(), elemento.get_description()])
             
             features = registry.get_feature_list_by_plugin(elemento.get_name())
             
             if len(features) > 1:
                 for feature in features:
-                    self.lista.modelo.append(
+                    self.lista.get_model().append(
                         iteractual,
                         [feature.get_name(),
                         elemento.get_description()])
@@ -139,7 +107,3 @@ class JAMediaGstreamer(Gtk.Plug):
     def get_element(self, widget, path):
         
         self.textview.get_buffer().set_text(get_inspect(path))
-        
-    def embed_event(self, widget):
-        
-        print "JAMediaGstreamer OK"

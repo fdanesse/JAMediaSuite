@@ -68,11 +68,11 @@ class Toolbar(Gtk.Toolbar):
         
         item = Gtk.ToolItem()
         item.set_expand(True)
-        menu = Menu()
-        menu.connect("import", self.__emit_import)
-        menu.connect("accion-menu", self.__emit_accion_menu)
-        menu.show()
-        item.add(menu)
+        self.menu = Menu()
+        self.menu.connect("import", self.__emit_import)
+        self.menu.connect("accion-menu", self.__emit_accion_menu)
+        self.menu.show()
+        item.add(self.menu)
         self.insert(item, -1)
         
         self.insert(
@@ -81,6 +81,10 @@ class Toolbar(Gtk.Toolbar):
             
         self.show_all()
         
+    def update(self, view):
+        
+        self.menu.update(view)
+    
     def __emit_accion_menu(self, widget, menu, wid_lab, valor):
         
         self.emit("accion-menu", menu, wid_lab, valor)
@@ -92,9 +96,7 @@ class Toolbar(Gtk.Toolbar):
     def __show_credits(self, widget):
         
         dialog = Credits(self.get_toplevel())
-        
         dialog.run()
-        
         dialog.destroy()
     
 class ToolbarTry(Gtk.Toolbar):
@@ -148,10 +150,10 @@ class Menu(Gtk.MenuBar):
         dict = get_dict()
         
         ### Items del Menú Abrir
-        item_abrir = Gtk.MenuItem('Importar')
+        self.item_abrir = Gtk.MenuItem('Importar')
         menu_abrir = Gtk.Menu()
-        item_abrir.set_submenu(menu_abrir)
-        self.append(item_abrir)
+        self.item_abrir.set_submenu(menu_abrir)
+        self.append(self.item_abrir)
         
         item = Gtk.MenuItem('python')
         menu_abrir.append(item)
@@ -221,8 +223,48 @@ class Menu(Gtk.MenuBar):
         item.add(hbox)
         item.connect("activate", self.__emit_accion_menu, "ver")
         menu_ver.append(item)
+
+        item = Gtk.MenuItem('Apis PyGiHack')
+        try:
+            item.get_child().destroy()
+        except:
+            pass
+        hbox = Gtk.HBox()
+        boton1 = Gtk.RadioButton()
+        boton1.set_active(False)
+        hbox.pack_start(boton1, False, False, 0)
+        label = Gtk.Label("Apis PyGiHack")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate", self.__emit_accion_menu2, "ver")
+        menu_ver.append(item)
+        self.show_all()
+        
+        item = Gtk.MenuItem('inspect1.0')
+        try:
+            item.get_child().destroy()
+        except:
+            pass
+        hbox = Gtk.HBox()
+        boton2 = Gtk.RadioButton()
+        boton2.set_active(True)
+        boton2.join_group(boton1)
+        hbox.pack_start(boton2, False, False, 0)
+        label = Gtk.Label("Gstreamer - Inspect 1.0")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate", self.__emit_accion_menu2, "ver")
+        menu_ver.append(item)
         
         self.show_all()
+        
+    def update(self, view):
+        
+        if view == "Gstreamer - Inspect 1.0":
+            self.item_abrir.set_sensitive(False)
+            
+        elif view == "Apis PyGiHack":
+            self.item_abrir.set_sensitive(True)
         
     def __emit_accion_menu(self, widget, menu):
         
@@ -230,6 +272,15 @@ class Menu(Gtk.MenuBar):
         widget.get_children()[0].get_children()[0].set_active(valor)
         label = widget.get_children()[0].get_children()[1]
         self.emit("accion-menu", menu, label.get_text(), valor)
+        
+    def __emit_accion_menu2(self, widget, menu):
+        
+        valor = not widget.get_children()[0].get_children()[0].get_active()
+        
+        if valor:
+            widget.get_children()[0].get_children()[0].set_active(valor)
+            label = widget.get_children()[0].get_children()[1]
+            self.emit("accion-menu", menu, label.get_text(), valor)
         
     def __emit_import(self, widget, menu):
         

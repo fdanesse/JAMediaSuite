@@ -69,10 +69,8 @@ class Ventana(Gtk.Window):
         vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         self.add(vbox)
         
-        toolbar = Toolbar()
-        toolbar.connect("import", self.__import)
-        toolbar.connect("accion-menu", self.__set_accion)
-        vbox.pack_start(toolbar, False, False, 0)
+        self.toolbar = Toolbar()
+        vbox.pack_start(self.toolbar, False, False, 0)
         
         self.base_panel = BasePanel()
         vbox.pack_start(self.base_panel, True, True, 0)
@@ -80,7 +78,20 @@ class Ventana(Gtk.Window):
         self.show_all()
         self.realize()
 
+        self.toolbar.connect("import", self.__import)
+        self.toolbar.connect("accion-menu", self.__set_accion)
+        self.base_panel.connect("update", self.__update)
+        
         self.connect("delete-event", self.__salir)
+        
+    def __update(self, widget, view):
+        
+        if view == "Terminal":
+            pass
+        
+        elif view == "Gstreamer - Inspect 1.0" or \
+            view == "Apis PyGiHack":
+            self.toolbar.update(view)
         
     def __set_accion(self, widget, menu, wid_lab, valor):
         

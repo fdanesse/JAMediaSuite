@@ -30,6 +30,9 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
 
+import JAMediaGstreamer
+from JAMediaGstreamer.JAMediaGstreamer import JAMediaGstreamer
+
 from Widgets import ToolbarTry
 from ApiWidget import ApiWidget
 
@@ -41,19 +44,38 @@ BASEPATH = os.path.dirname(__file__)
 class BasePanel(Gtk.Paned):
 
     __gtype_name__ = 'PygiHackBasePanel'
-
+    
+    __gsignals__ = {
+    "update":(GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        
     def __init__(self):
 
         Gtk.Paned.__init__(self, orientation=Gtk.Orientation.VERTICAL)
         
+        vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        
         self.base_notebook = BaseNotebook()
-        self.pack1(self.base_notebook, resize = True, shrink = True)
+        self.jamedia_gstreamer = JAMediaGstreamer()
+        
+        vbox.pack_start(self.base_notebook, True, True, 0)
+        vbox.pack_end(self.jamedia_gstreamer, True, True, 0)
+        
+        self.pack1(vbox, resize = True, shrink = False)
         
         self.terminal = JAMediaTerminal()
         self.terminal.set_size_request(-1, 200)
-        self.pack2(self.terminal, resize = False, shrink = True)
+        self.pack2(self.terminal, resize = False, shrink = False)
         
         self.show_all()
+        
+        self.connect("realize", self.__do_realize)
+        
+    def __do_realize(self, widget):
+        
+        self.set_accion("ver", "Terminal", True)
+        self.set_accion("ver", "Apis PyGiHack", True)
+        self.base_notebook.import_modulo("python-gi", "Gtk")
         
     def set_accion(self, menu, wid_lab, valor):
         
@@ -64,6 +86,16 @@ class BasePanel(Gtk.Paned):
                 elif valor == False:
                     self.terminal.hide()
                     
+            elif wid_lab == "Gstreamer - Inspect 1.0":
+                self.base_notebook.hide()
+                self.jamedia_gstreamer.show()
+                
+            elif wid_lab == "Apis PyGiHack":
+                self.jamedia_gstreamer.hide()
+                self.base_notebook.show()
+                
+            self.emit("update", wid_lab)
+            
     def import_modulo(self, paquete, modulo):
         
         self.base_notebook.import_modulo(paquete, modulo)
@@ -87,28 +119,29 @@ class BaseNotebook(Gtk.Notebook):
         Crea una lengüeta para el módulo que se cargará.
         """
         
-        hbox = Gtk.HBox()
-        label = Gtk.Label(modulo)
-        
-        boton = get_boton(
-            os.path.join(JAMediaObjectsPath,
-            "Iconos", "button-cancel.svg"),
-            pixels = get_pixels(0.5),
-            tooltip_text = "Cerrar")
-        
-        hbox.pack_start(label, False, False, 0)
-        hbox.pack_start(boton, False, False, 0)
+        if paquete == "python-gi" or paquete == "python":
+            hbox = Gtk.HBox()
+            label = Gtk.Label(modulo)
+            
+            boton = get_boton(
+                os.path.join(JAMediaObjectsPath,
+                "Iconos", "button-cancel.svg"),
+                pixels = get_pixels(0.5),
+                tooltip_text = "Cerrar")
+            
+            hbox.pack_start(label, False, False, 0)
+            hbox.pack_start(boton, False, False, 0)
 
-        introspectionwidget = IntrospectionWidget(paquete, modulo)
-        self.append_page(introspectionwidget, hbox)
-        
-        label.show()
-        boton.show()
-        self.show_all()
-        
-        boton.connect("clicked", self.__cerrar)
-        
-        self.set_current_page(-1)
+            introspectionwidget = IntrospectionWidget(paquete, modulo)
+            self.append_page(introspectionwidget, hbox)
+            
+            label.show()
+            boton.show()
+            self.show_all()
+            
+            boton.connect("clicked", self.__cerrar)
+            
+            self.set_current_page(-1)
         
     def __cerrar(self, widget):
         """
