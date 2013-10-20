@@ -58,7 +58,7 @@ class JAMediaGstreamer(Gtk.Paned):
         scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
-        scroll.add_with_viewport(self.lista)
+        scroll.add(self.lista)
         scroll.set_size_request(250, -1)
         
         self.pack1(
@@ -73,7 +73,7 @@ class JAMediaGstreamer(Gtk.Paned):
         scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
-        scroll.add_with_viewport(self.textview)
+        scroll.add(self.textview)
         
         self.pack2(
             scroll,

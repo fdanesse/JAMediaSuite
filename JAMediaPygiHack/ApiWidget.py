@@ -134,6 +134,7 @@ class ApiWidget(Gtk.TreeView):
         if not is_selected and self.old_update != datos:
             self.old_update = datos
             self.emit('update', self.objetos.get(datos, {}))
+            self.scroll_to_cell(path)
             
         return True
     

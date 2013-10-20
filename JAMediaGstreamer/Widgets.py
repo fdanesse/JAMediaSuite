@@ -38,14 +38,6 @@ class TextView(Gtk.TextView):
         
         self.show_all()
 
-class TreeStoreModel(Gtk.TreeStore):
-    
-    def __init__(self):
-        
-        Gtk.TreeStore.__init__(
-            self, GObject.TYPE_STRING,
-            GObject.TYPE_STRING)
-        
 class Lista(Gtk.TreeView):
     
     __gsignals__ = {
@@ -54,7 +46,12 @@ class Lista(Gtk.TreeView):
     
     def __init__(self):
         
-        Gtk.TreeView.__init__(self)
+        Gtk.TreeView.__init__(
+            self, Gtk.TreeStore(
+            GObject.TYPE_STRING,
+            GObject.TYPE_STRING))
+        
+        self.valor_select = None
         
         self.set_property("rules-hint", True)
         self.set_property("enable-grid-lines", True)
@@ -62,17 +59,11 @@ class Lista(Gtk.TreeView):
         
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
-
-        self.valor_select = None
-        
-        self.modelo = TreeStoreModel()
         
         self.setear_columnas()
         
         self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(self.selecciones, self.modelo)
-        
-        self.set_model(self.modelo)
+        self.treeselection.set_select_function(self.selecciones, self.get_model())
         
         self.show_all()
         
@@ -89,7 +80,7 @@ class Lista(Gtk.TreeView):
         
         tecla = event.get_keycode()[1]
         model, iter = self.treeselection.get_selected()
-        path = self.modelo.get_path(iter)
+        path = model.get_path(iter)
         
         if tecla == 22:
             if self.row_expanded(path):
@@ -107,7 +98,7 @@ class Lista(Gtk.TreeView):
     
     def activar (self, treeview, path, view_column, user_param1):
         
-        iter = self.modelo.get_iter(path)
+        iter = self.get_model().get_iter(path)
         
         if self.row_expanded(path):
             self.collapse_row(path)
@@ -144,6 +135,7 @@ class Lista(Gtk.TreeView):
         if not is_selected and self.valor_select != valor:
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
+            self.scroll_to_cell(path)
             
         return True
     
