@@ -284,7 +284,49 @@ class Menu(Gtk.MenuBar):
         
     def __emit_import(self, widget, menu):
         
-        self.emit("import", menu, widget.get_label())
+        import commands
+        
+        disponible = False
+        
+        if menu == "python-gi":
+            ejecutable = os.path.join(BASEPATH, "SpyderHack", "Gi_Check.py")
+            
+        elif menu == "python":
+            ejecutable = os.path.join(BASEPATH, "SpyderHack", "Check.py")
+            
+        else:
+            return
+        
+        ret = commands.getoutput('python %s %s' % (ejecutable, widget.get_label()))
+        
+        if 'True' in ret:
+            disponible = True
+            
+        else:
+            disponible = False
+        
+        if disponible:
+            self.emit("import", menu, widget.get_label())
+            
+        else:
+            dialog = Gtk.Dialog(
+                parent=self.get_toplevel(),
+                flags = Gtk.DialogFlags.MODAL,
+                buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
+                
+            dialog.set_border_width(15)
+            
+            dialog.vbox.pack_start(
+                Gtk.Label("%s no se Encuentra Disponible" % widget.get_label()),
+                True, True, 0)
+                
+            dialog.vbox.show_all()
+            
+            dialog.run()
+            
+            dialog.destroy()
+            
+            widget.destroy()
         
     def __set_add_menu(self, widget):
         

@@ -3,15 +3,13 @@
 
 import sys
 
-retorno = True
-
 def check(item):
 
     try:
         modulo = __import__("%s" % item)
+        return True
+    
     except:
-        retorno = False
+        return False
 
-check(sys.argv[1])
-
-print retorno
+print check(sys.argv[1])

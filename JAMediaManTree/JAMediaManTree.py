@@ -159,7 +159,7 @@ class JAMediaManTree(Gtk.Paned):
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
 
-        scroll.add_with_viewport(self.treeview)
+        scroll.add(self.treeview)
         scroll.set_size_request(200,-1)
         
         self.pack1(scroll, resize = False, shrink = False)
@@ -170,7 +170,7 @@ class JAMediaManTree(Gtk.Paned):
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
 
-        scroll.add_with_viewport(self.sourceview)
+        scroll.add(self.sourceview)
         
         self.pack2(scroll, resize = True, shrink = False)
         

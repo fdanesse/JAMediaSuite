@@ -40,7 +40,8 @@ from JAMediaManTree.JAMediaManTree import JAMediaManTree
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
-style_path = os.path.join(JAMediaObjectsPath, "JAMediaTerminal.css")
+style_path = os.path.join(
+    JAMediaObjectsPath, "JAMediaTerminal.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
 
@@ -48,9 +49,6 @@ context.add_provider_for_screen(
     screen,
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
-    
-GObject.threads_init()
-Gdk.threads_init()
 
 class Ventana(Gtk.Window):
     

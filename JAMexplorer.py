@@ -52,6 +52,7 @@ ICONOS = os.path.join(JAMediaObjects.__path__[0], "Iconos")
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
+'''
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
 style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
@@ -61,7 +62,7 @@ context.add_provider_for_screen(
     screen,
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
-
+'''
 
 class Ventana(Gtk.Window):
     """Ventana Principal de JAMexplorer."""

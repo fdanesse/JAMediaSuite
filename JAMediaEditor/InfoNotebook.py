@@ -693,7 +693,11 @@ class Estructura_Proyecto(Gtk.TreeView):
         
         for archivo in dir_list:
             
-            if "proyecto.ide" in archivo: continue
+            if archivo.endswith(".ide") or \
+                archivo.endswith(".bak") or \
+                archivo.endswith(".pyc") or \
+                archivo.endswith(".pyo"):
+                    continue
         
             direccion = os.path.join(directorio, archivo)
             

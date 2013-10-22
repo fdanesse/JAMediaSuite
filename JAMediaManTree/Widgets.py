@@ -48,15 +48,36 @@ class TreeView(Gtk.TreeView):
 
         self.show_all()
         
-        treeselection = self.get_selection()
-        treeselection.set_select_function(self.__selecciones, self.get_model())
+        self.get_selection().set_select_function(self.__selecciones, self.get_model())
         
         items = []
         for grupo in dict.keys():
             items.append([grupo, dict[grupo].keys()])
             
+        self.connect("key-press-event", self.keypress)
+        
         GLib.idle_add(self.__load_estructura, items)
 
+    def keypress(self, widget, event):
+        
+        tecla = event.get_keycode()[1]
+        model, iter = self.get_selection().get_selected()
+        path = model.get_path(iter)
+        
+        if tecla == 22:
+            if self.row_expanded(path):
+                self.collapse_row(path)
+                
+        elif tecla == 113:
+            if self.row_expanded(path):
+                self.collapse_row(path)
+                
+        elif tecla == 114:
+            if not self.row_expanded(path):
+                self.expand_to_path(path)
+        
+        return False
+    
     def __set_columnas(self):
         """
         Crea y agrega las columnas al TreeView.
@@ -105,6 +126,7 @@ class TreeView(Gtk.TreeView):
             self.scroll_to_cell(model.get_path(iter))
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
+            self.scroll_to_cell(path)
             
         return True
     

@@ -233,7 +233,6 @@ class NoteBookTerminal(Gtk.Notebook):
         hbox.pack_start(boton, False, False, 0)
         
         ### Area de Trabajo.
-        
         scroll = Gtk.ScrolledWindow()
         
         scroll.set_policy(

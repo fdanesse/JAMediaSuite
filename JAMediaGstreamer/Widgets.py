@@ -62,24 +62,18 @@ class Lista(Gtk.TreeView):
         
         self.setear_columnas()
         
-        self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(self.selecciones, self.get_model())
+        self.get_selection().set_select_function(self.selecciones, self.get_model())
         
         self.show_all()
         
         self.connect("row-activated", self.activar, None)
         
-        self.add_events(
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.KEY_PRESS_MASK |
-            Gdk.EventMask.TOUCH_MASK)
-            
         self.connect("key-press-event", self.keypress)
         
     def keypress(self, widget, event):
         
         tecla = event.get_keycode()[1]
-        model, iter = self.treeselection.get_selected()
+        model, iter = self.get_selection().get_selected()
         path = model.get_path(iter)
         
         if tecla == 22:

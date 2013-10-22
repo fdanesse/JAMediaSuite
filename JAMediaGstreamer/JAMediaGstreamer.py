@@ -82,11 +82,11 @@ class JAMediaGstreamer(Gtk.Paned):
             
         self.show_all()
         
-        self.llenar_lista()
+        self.__llenar_lista()
         
-        self.lista.connect('nueva-seleccion', self.get_element)
+        self.lista.connect('nueva-seleccion', self.__get_element)
         
-    def llenar_lista(self):
+    def __llenar_lista(self):
         
         iter = self.lista.get_model().get_iter_first()
         
@@ -104,6 +104,6 @@ class JAMediaGstreamer(Gtk.Paned):
                         [feature.get_name(),
                         elemento.get_description()])
             
-    def get_element(self, widget, path):
+    def __get_element(self, widget, path):
         
         self.textview.get_buffer().set_text(get_inspect(path))

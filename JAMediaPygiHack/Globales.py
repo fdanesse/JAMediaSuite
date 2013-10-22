@@ -24,12 +24,63 @@ import os
 BASEPATH = os.path.dirname(__file__)
 WorkPath = os.environ["HOME"]
 
+# http://docs.python.org/2.7/py-modindex.html
 BASEDICT = {
     "python": [
-        'cairo', 'commands', 'gobject', 'gst', 'json',
-        'os', 'pygame', 'pygst', 'shelve', 'simplejson',
-        'sys', 'gtk', 'pygtk'],
-    "python-gi": [
+        '__builtin__', '__future__', '__main__',
+        'abc', 'aifc', 'anydbm', 'argparse', 'array',
+        'ast', 'asynchat', 'asyncore', 'atexit', 'audioop',
+        'base64', 'BaseHTTPServer', 'bdb', 'binascii',
+        'Bastion', 'binhex', 'bisect', 'bsddb', 'bz2',
+        'calendar', 'cgi', 'CGIHTTPServer', 'cgitb', 'chunk',
+        'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections',
+        'colorsys', 'commands', 'compileall', 'compile',
+        'ConfigParser', 'contextlib', 'Cooke', 'cookielib',
+        'copy', 'copy_reg', 'cPickle', 'cProfile', 'crypt',
+        'cStringIO', 'csv', 'ctypes', 'curses',
+        'datetime', 'dbhash', 'dbm', 'decimal', 'DEVICE',
+        'difflib', 'dircache', 'dis', 'distutils', 'dl',
+        'doctest', 'DocXMLRPCServer', 'dumdbbm', 'dummy_thread',
+        'dummy_threading', 'email', 'encodings', 'errno',
+        'exceptions', 'fcntl', 'filecmp', 'fileinput', 'fnmatch',
+        'formatter', 'fpectl', 'fpformat', 'fractions', 'ftplib',
+        'functools', 'future_builtins',
+        'gc', 'gdbm', 'getopt', 'getpass', 'gettext', 'glob',
+        'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'hotshot',
+        'htmlentitydefs', 'htmllib', 'HTMLParser', 'httplib',
+        'imageop', 'imaplib', 'imghdr', 'imp', 'importlib',
+        'imputil', 'inspect', 'io', 'itertools', 'json',
+        'keyword', 'lib2to3', 'linecache', 'locale', 'logging',
+        'macpath', 'mailbox', 'mailcap', 'marshal', 'math',
+        'md5', 'mhlib', 'mimetools', 'mimetypes', 'MimeWriter',
+        'mimify', 'mmap', 'modulefinder', 'multifile',
+        'multiprocessing', 'mutex', 'netrc', 'new', 'nis',
+        'nntplib', 'numbers', 'operator', 'optparse', 'os',
+        'ossaudiodev', 'parser', 'pdb', 'pickle', 'pickletools',
+        'pipes', 'pkgutil', 'platform', 'plistlib', 'popen2',
+        'poplib', 'posix', 'posixfile', 'pprint', 'profile',
+        'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc',
+        'Queue', 'quopri', 'random', 're', 'readline', 'repr',
+        'resource', 'rexec', 'rfc822', 'rlcompleter',
+        'robotparser', 'runpy', 'sched', 'ScrolledText',
+        'select', 'sets', 'sgmllib', 'sha', 'shelve', 'shlex',
+        'shutil', 'signal', 'SimpleHTTPServer',
+        'SimpleXMLRPCServer', 'site', 'smtpd', 'smptlib',
+        'sndhdr', 'socket', 'SocketServer', 'spwd', 'sqlite3',
+        'ssl', 'stat', 'statvfs', 'string', 'StringIO',
+        'stringprep', 'struct', 'subprocess', 'sunau',
+        'symbol', 'symtable', 'sys', 'sysconfig', 'syslog',
+        'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios',
+        'test', 'textwrap', 'thread', 'threading', 'time',
+        'timeit', 'Tix', 'Tkinter', 'token', 'tokenize', 'trace',
+        'traceback', 'ttk', 'tty', 'turtle', 'types',
+        'unicodedata', 'unittest', 'urllib', 'urllib2',
+        'urlparse', 'user', 'UserDict', 'UserList', 'UserString',
+        'uu', 'uuid', 'warnings', 'wave', 'weakref', 'webbrowser',
+        'whichdb', 'wsgiref', 'xdrlib', 'xml', 'xmlrpclib',
+        'zipfile', 'zipimport', 'zlib'],
+        
+    "python-gi": sorted([
         'Abi', 'AccountsService', 'Atk', 'Atspi',
         'Avahi', 'AvahiCore', 'Babl', 'Cally',
         'Champlain', 'Cheese', 'Clutter', 'ClutterGst',
@@ -55,8 +106,12 @@ BASEDICT = {
         'TelepathyLogger', 'Totem', 'UPowerGlib', 'Unique',
         'Unity', 'Vte', 'WebKit', 'Wnck', 'cairo', 'fontconfig',
         'freetype2', 'libbonobo', 'libc', 'libxml2', 'sqlite3',
-        'xfixes', 'xft', 'xlib', 'xrandr'],
-    "Otros":[],
+        'xfixes', 'xft', 'xlib', 'xrandr']),
+        
+    "Otros": sorted([
+        'cairo', 'gobject', 'gst', 'pygame', 'pygst',
+        'simplejson', 'gtk', 'pygtk', 'telepathy', 'dbus',
+        'numpy', 'scipy']),
         }
     
 def set_dict(dict):
@@ -81,40 +136,20 @@ def set_dict(dict):
     
 def get_dict():
     """
-    Devuelve Los módulos disponibles
-    para cargar en el menu de la aplicación.
+    Devuelve Los módulos.
     """
     
-    import json
-    import codecs
-    import commands
+    #import json
+    #import codecs
     
-    archivo = os.path.join(WorkPath, "JAMediaPyGiHack.cfg")
+    #archivo = os.path.join(WorkPath, "JAMediaPyGiHack.cfg")
     
-    if not os.path.exists(archivo):
-        set_dict(BASEDICT)
+    #if not os.path.exists(archivo):
+    #    set_dict(BASEDICT)
         
-    archivo = codecs.open(archivo, "r", "utf-8")
-    dict = json.JSONDecoder("utf-8").decode(archivo.read())
+    #archivo = codecs.open(archivo, "r", "utf-8")
+    #dict = json.JSONDecoder("utf-8").decode(archivo.read())
+    #archivo.close()
     
-    disponibles = []
-    for item in dict["python-gi"]:
-        ejecutable = os.path.join(BASEPATH, "SpyderHack", "Gi_Check.py")
-        ret = commands.getoutput('python %s %s' % (ejecutable, item))
-        if str(True) in ret:
-            disponibles.append(item)
-        else:
-            print item, "No se encuentra en el sistema", ret, type(ret)
-    dict["python-gi"] = sorted(disponibles)
-    
-    disponibles = []
-    for item in dict["python"]:
-        ejecutable = os.path.join(BASEPATH, "SpyderHack", "Check.py")
-        ret = commands.getoutput('python %s %s' % (ejecutable, item))
-        if str(True) in ret:
-            disponibles.append(item)
-        else:
-            print item, "No se encuentra en el sistema", ret, type(ret)
-    dict["python"] = sorted(disponibles)
-    
-    return dict
+    #return dict
+    return BASEDICT

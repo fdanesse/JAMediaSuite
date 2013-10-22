@@ -30,22 +30,6 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 from JAMediaPygiHack.Widgets import Toolbar
 from JAMediaPygiHack.BasePanel import BasePanel
 
-'''
-screen = Gdk.Screen.get_default()
-css_provider = Gtk.CssProvider()
-
-style_path = os.path.join(
-    BASEPATH, "JAMediaPygiHack.css")
-    
-css_provider.load_from_path(style_path)
-context = Gtk.StyleContext()
-
-context.add_provider_for_screen(
-    screen,
-    css_provider,
-    Gtk.STYLE_PROVIDER_PRIORITY_USER)
-'''
-
 class Ventana(Gtk.Window):
     
     __gtype_name__ = 'JAMediaPygiHAck'

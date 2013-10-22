@@ -51,10 +51,10 @@ from Widgets import Selector_de_Archivos
 from Widgets import TextView
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
+'''
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
-style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+style_path = os.path.join(JAMediaObjectsPath, "JAMedia.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
 
@@ -62,7 +62,7 @@ context.add_provider_for_screen(
     screen,
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
-    
+'''
 class JAMediaLector(Gtk.Plug):
     """
     JAMediaLector:
