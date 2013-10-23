@@ -111,9 +111,19 @@ BASEDICT = {
     "Otros": sorted([
         'cairo', 'gobject', 'gst', 'pygame', 'pygst',
         'simplejson', 'gtk', 'pygtk', 'telepathy', 'dbus',
-        'numpy', 'scipy']),
+        'numpy', 'pango', 'webkit', 'gtksourceview2', 'ssl',
+        'gio', 'vte', 'gconf', 'smtplib', 'feedparser',
+        'twitter', 'pangocairo', 'matplotlib', 'setuptools']),
         }
-    
+
+'''
+'scipy', 'PyQt4.QtGui', 'PyQt4.QtCore',
+'pythonwifi.iwlibs', 'pyPdf',
+'PyKDE4.kdecore', 'PyKDE4.kdeui', 'appindicator',
+'gwibber.lib', 'pynotify', 'launchpadlib.launchpad',
+'zeitgeist.client', 'zeitgeist.datamodel',
+'''
+
 def set_dict(dict):
     """
     Crea el json base desde donde opera

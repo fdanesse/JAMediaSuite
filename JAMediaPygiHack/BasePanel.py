@@ -119,7 +119,9 @@ class BaseNotebook(Gtk.Notebook):
         Crea una lengüeta para el módulo que se cargará.
         """
         
-        if paquete == "python-gi" or paquete == "python":
+        if paquete == "python-gi" or paquete == "python" or \
+            paquete == "Otros":
+                
             hbox = Gtk.HBox()
             label = Gtk.Label(modulo)
             
@@ -243,7 +245,7 @@ class IntrospectionPanel(Gtk.Paned):
             commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
             arch = os.path.join('/dev/shm', "Make_gi_doc.py")
             
-        elif tipo == "python":
+        elif tipo == "python" or tipo == "Otros":
             arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_doc.py")
             commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
             arch = os.path.join('/dev/shm', "Make_doc.py")

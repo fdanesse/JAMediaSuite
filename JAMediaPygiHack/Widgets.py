@@ -175,15 +175,15 @@ class Menu(Gtk.MenuBar):
                 i.connect("activate", self.__emit_import, 'python-gi')
                 m.append(i)
         
-        #item = Gtk.MenuItem('Otros')
-        #menu_abrir.append(item)
-        #if dict.get('Otros', False):
-        #    m = Gtk.Menu()
-        #    item.set_submenu(m)
-        #    for key in dict.get('Otros', []):
-        #        i = Gtk.MenuItem(key)
-        #        i.connect("activate", self.__emit_import, 'Otros')
-        #        m.append(i)
+        item = Gtk.MenuItem('Otros')
+        menu_abrir.append(item)
+        if dict.get('Otros', False):
+            m = Gtk.Menu()
+            item.set_submenu(m)
+            for key in dict.get('Otros', []):
+                i = Gtk.MenuItem(key)
+                i.connect("activate", self.__emit_import, 'Otros')
+                m.append(i)
         
         ### Items del Menú Agregar
         #item_agregar = Gtk.MenuItem('Agregar Opción de ...')
@@ -292,6 +292,9 @@ class Menu(Gtk.MenuBar):
             ejecutable = os.path.join(BASEPATH, "SpyderHack", "Gi_Check.py")
             
         elif menu == "python":
+            ejecutable = os.path.join(BASEPATH, "SpyderHack", "Check.py")
+
+        elif menu == "Otros":
             ejecutable = os.path.join(BASEPATH, "SpyderHack", "Check.py")
             
         else:
