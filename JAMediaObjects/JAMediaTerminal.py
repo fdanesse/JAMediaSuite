@@ -44,7 +44,7 @@ class JAMediaTerminal(Gtk.Box):
     Terminal (NoteBook + Vtes) + Toolbar.
     """
     
-    __gtype_name__ = 'JAMediaTerminal'
+    #__gtype_name__ = 'JAMediaTerminal'
     
     __gsignals__ = {
     "ejecucion":(GObject.SIGNAL_RUN_FIRST,
@@ -153,7 +153,7 @@ class JAMediaTerminal(Gtk.Box):
             param       =   'sdist' en est caso
         """
         
-        terminal = self.notebook.get_children()[self.notebook.get_current_page()]
+        terminal = self.notebook.get_children()[self.notebook.get_current_page()].get_child()
         
         pty_flags = Vte.PtyFlags(0)
         
@@ -168,7 +168,7 @@ class NoteBookTerminal(Gtk.Notebook):
     Notebook Contenedor de Terminales.
     """
     
-    __gtype_name__ = 'NoteBookTerminal'
+    #__gtype_name__ = 'NoteBookTerminal'
     
     __gsignals__ = {
     "reset":(GObject.SIGNAL_RUN_FIRST,
@@ -357,7 +357,7 @@ class Terminal(Vte.Terminal):
     Terminal Configurable en distintos intérpretes.
     """
     
-    __gtype_name__ = 'Terminal'
+    #__gtype_name__ = 'Terminal'
     
     __gsignals__ = {
     "reset":(GObject.SIGNAL_RUN_FIRST,
@@ -471,7 +471,7 @@ class ToolbarTerminal(Gtk.Toolbar):
     Toolbar de JAMediaTerminal.
     """
     
-    __gtype_name__ = 'ToolbarTerminal'
+    #__gtype_name__ = 'ToolbarTerminal'
     
     __gsignals__ = {
     "accion":(GObject.SIGNAL_RUN_FIRST,
@@ -595,7 +595,7 @@ class DialogoFormato(Gtk.Dialog):
     Selector de fuente y tamaño.
     """
     
-    __gtype_name__ = 'DialogoFormato'
+    #__gtype_name__ = 'DialogoFormato'
     
     def __init__(self, parent_window = False, fuente = "Monospace", tamanio = 10):
 
@@ -695,7 +695,7 @@ class DialogoFormato(Gtk.Dialog):
     
 class TreeViewFonts(Gtk.TreeView):
     
-    __gtype_name__ = 'TreeViewFonts'
+    #__gtype_name__ = 'TreeViewFonts'
     
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
@@ -786,7 +786,7 @@ class TreeViewFonts(Gtk.TreeView):
         
 class TreeViewTamanio(Gtk.TreeView):
     
-    __gtype_name__ = 'TreeViewTamanio'
+    #__gtype_name__ = 'TreeViewTamanio'
     
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,

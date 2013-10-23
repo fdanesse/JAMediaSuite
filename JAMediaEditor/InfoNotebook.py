@@ -599,11 +599,6 @@ class Estructura_Proyecto(Gtk.TreeView):
         #self.set_property("enable-grid-lines", True)
         self.set_property("rules-hint", True)
         self.set_property("enable-tree-lines", True)
-
-        self.add_events(
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.KEY_PRESS_MASK |
-            Gdk.EventMask.TOUCH_MASK)
         
         self.__set_columnas()
         self.set_headers_visible(False)

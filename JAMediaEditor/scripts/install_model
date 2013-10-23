@@ -44,6 +44,9 @@ StartupNotify=true""" % (NAME, NAME, main_path, icon_path, "GnomeCat", "GnomeMim
 print "\t Generando Archivo Desktop:"
 print desktoptext
 
+if not os.path.exists(os.path.join(os.environ["HOME"], '.local/share/applications')):
+    os.mkdir(os.path.join(os.environ["HOME"], '.local/share/applications'))
+    
 desktop = open(os.path.join(os.environ["HOME"], ".local/share/applications/%s.desktop" % NAME), "w")
 desktop.write(desktoptext)
 desktop.close()

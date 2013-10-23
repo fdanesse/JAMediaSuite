@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   IdeMain.py por:
+#   JAMediaEditor.py por:
 #       Cristian García     <cristian99garcia@gmail.com>
 #       Ignacio Rodriguez   <nachoel01@gmail.com>
 #       Flavio Danesse      <fdanesse@gmail.com>
@@ -42,11 +42,12 @@ BatovideWorkSpace = os.path.join(
 if not os.path.exists(BatovideWorkSpace):
     os.mkdir(BatovideWorkSpace)
     
-#PATH = os.path.dirname(__file__)
+PATH = os.path.dirname(__file__)
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
-style_path = os.path.join(JAMediaObjectsPath, "JAMediaEditor.css")
+style_path = os.path.join(
+    PATH, "JAMediaEditor", "Estilo.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
 

@@ -27,18 +27,18 @@ from gi.repository import Gdk
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-from JAMediaPygiHack.Widgets import Toolbar
-from JAMediaPygiHack.BasePanel import BasePanel
+from JAMediaPyGiHack.Widgets import Toolbar
+from JAMediaPyGiHack.BasePanel import BasePanel
 
-class Ventana(Gtk.Window):
+class JAMediaPyGiHack(Gtk.Window):
     
-    __gtype_name__ = 'JAMediaPygiHAck'
+    __gtype_name__ = 'JAMediaPyGiHack'
     
     def __init__(self):
         
         Gtk.Window.__init__(self)
         
-        self.set_title("JAMediaPygiHAck")
+        self.set_title("JAMediaPygiHack")
         
         self.set_icon_from_file(
             os.path.join(JAMediaObjectsPath,
@@ -91,5 +91,5 @@ class Ventana(Gtk.Window):
         sys.exit(0)
 
 if __name__ == "__main__":
-    Ventana()
+    JAMediaPyGiHack()
     Gtk.main()

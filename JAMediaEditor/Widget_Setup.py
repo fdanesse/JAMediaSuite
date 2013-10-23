@@ -756,7 +756,6 @@ class DialogoInstall(Gtk.Dialog):
         dirpath = None):
 
         Gtk.Dialog.__init__(self,
-            #title = "Chequeo de sintáxis",
             parent = parent_window,
             flags = Gtk.DialogFlags.MODAL,
             buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
@@ -782,7 +781,7 @@ class DialogoInstall(Gtk.Dialog):
         
         GLib.idle_add(self.__run_gnome_install)
         
-    def __end_make(self, jamediaterminal, notebookterminal, terminal, id, toolbutton, label):
+    def __end_make(self, jamediaterminal, notebook, terminal, pag_indice):
         """
         Cuando Finaliza el proceso de construcción del
         instalador, se informa al usuario.
@@ -889,7 +888,7 @@ class Ceibal_Notebook(Gtk.Notebook):
         ### Borrar anteriores
         if os.path.exists(activitydirpath):
             commands.getoutput("rm -r %s" % activitydirpath)
-            
+        
         ### Copiar contenido del proyecto.
         shutil.copytree(self.proyecto["path"], activitydirpath, symlinks=False, ignore=None)
         
@@ -921,7 +920,7 @@ class Ceibal_Notebook(Gtk.Notebook):
         activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
         
         ### Escribir instalador.
-        archivo_install = "%s/install.py" % (activitydirpath)
+        archivo_install = os.path.join(activitydirpath, "install.py")
         install = self.__get_text(self.install.get_buffer())
         self.__escribir_archivo(archivo_install, install)
 
@@ -930,11 +929,11 @@ class Ceibal_Notebook(Gtk.Notebook):
         
         ### Eliminar anterior.
         if os.path.exists(zippath):
-            commands.getoutput("rm %s" % zippath)
+            os.remove(zippath)
             
         zipped = zipfile.ZipFile(zippath, "w")
         
-        RECHAZAExtension = [".pyc", ".pyo", ".bak"]
+        RECHAZAExtension = [".pyc", ".pyo", ".bak", ".ide", ".gitignore", ".git"]
         RECHAZAFiles = ["proyecto.ide", ".gitignore", "plantilla"]
         RECHAZADirs = [".git", "build", "dist"]
         
