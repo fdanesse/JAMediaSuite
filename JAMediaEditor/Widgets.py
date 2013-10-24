@@ -1718,7 +1718,8 @@ class DialogoFormato(Gtk.Dialog):
     Selector de tipografía + fuente
     """
 
-    def __init__(self, parent_window = None):
+    def __init__(self, parent_window = None,
+        fuente = "Monospace", tamanio = "10"):
 
         Gtk.Dialog.__init__(self,
             title = "Seleccione una tipografía",
@@ -1728,8 +1729,8 @@ class DialogoFormato(Gtk.Dialog):
                 "Aceptar", Gtk.ResponseType.ACCEPT,
                 "Cancelar", Gtk.ResponseType.CANCEL])
                 
-        self.tamano = "10"
-        self.fuente = "Monospace"
+        self.tamano = tamanio
+        self.fuente = fuente
 
         self.textoprueba = self.__get_box_prueba()
         self.tree_fuentes = self.__get_treeview_fuentes()
@@ -1756,14 +1757,16 @@ class DialogoFormato(Gtk.Dialog):
         de las tipografías.
         """
 
-        tree = Gtk.TreeView(Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_STRING))
-        columna = Gtk.TreeViewColumn("Tipografía", Gtk.CellRendererText(), markup=0)
+        tree = Gtk.TreeView(
+            Gtk.ListStore(GObject.TYPE_STRING,
+            GObject.TYPE_STRING))
+        columna = Gtk.TreeViewColumn("Tipografía",
+            Gtk.CellRendererText(), markup=0)
         tree.append_column(columna)
 
-        seleccion = tree.get_selection()
-        seleccion.set_mode(Gtk.SelectionMode.SINGLE)
+        tree.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
         
-        seleccion.set_select_function(
+        tree.get_selection().set_select_function(
             self.__tipografia_tamano_cambiado,
             "Fuente")
             
@@ -1775,18 +1778,21 @@ class DialogoFormato(Gtk.Dialog):
             Gtk.PolicyType.AUTOMATIC)
         
         fuentes = []
-       
         for family in FUENTES_GLOBAL:
             name = family.get_name()
             fuentes.append(name)
-
-        fuentes.sort()
-
-        for fuente in fuentes:
-            modelo = tree.get_model()
+        
+        ### seteo por defecto
+        iter = tree.get_model().get_iter_first()
+        path = 0
+        for fuente in sorted(fuentes):
             texto = '<span font="%s">%s</span>' % (fuente, fuente)
-            modelo.insert(-1, [texto, fuente])
-
+            newiter = tree.get_model().append([texto, fuente])
+            if fuente == self.fuente:
+                path = tree.get_model().get_path(newiter)
+                
+        tree.get_selection().select_path(path)
+        
         return scroll
 
     def __get_treeview_tamano(self):
@@ -1796,28 +1802,36 @@ class DialogoFormato(Gtk.Dialog):
         """
 
         tree = Gtk.TreeView(Gtk.ListStore(GObject.TYPE_INT))
-        columna = Gtk.TreeViewColumn("Tamaño", Gtk.CellRendererText(), text=0)
+        columna = Gtk.TreeViewColumn(
+            "Tamaño", Gtk.CellRendererText(), text=0)
         tree.append_column(columna)
 
-        seleccion = tree.get_selection()
-        seleccion.set_mode(Gtk.SelectionMode.SINGLE)
+        tree.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
         
-        seleccion.set_select_function(
+        tree.get_selection().set_select_function(
             self.__tipografia_tamano_cambiado,
             "Tamaño")
             
         scroll = Gtk.ScrolledWindow()
         scroll.add(tree)
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
         
         tamanos = [8, 9, 10, 11, 12,
             14, 16, 20, 22, 24, 26,
             28, 36, 48, 72]
             
+        ### seteo por defecto
+        iter = tree.get_model().get_iter_first()
+        path = 0
         for tam in tamanos:
-            modelo = tree.get_model()
-            modelo.insert(-1, [tam])
-
+            newiter = tree.get_model().append([tam])
+            if tam == int(self.tamano):
+                path = tree.get_model().get_path(newiter)
+                
+        tree.get_selection().select_path(path)
+        
         return scroll
 
     def __get_box_prueba(self):

@@ -455,7 +455,17 @@ class Notebook_SourceView(Gtk.Notebook):
                 
         ### Código.
         elif accion == "Formato":
-            dialogo = DialogoFormato(parent_window = self.get_toplevel())
+            scrolled = paginas[self.get_current_page()]
+            source = scrolled.get_children()[0]
+            
+            description = source.get_pango_context().get_font_description()
+        
+            nombre = description.get_family()
+            size = description.get_size()/1000
+            
+            dialogo = DialogoFormato(
+                parent_window = self.get_toplevel(),
+                fuente = nombre, tamanio = size)
             
             respuesta = dialogo.run()
             
