@@ -310,7 +310,7 @@ class BasePanel(Gtk.Paned):
         
         self.infonotebook.set_path_estructura(path)
         self.workpanel.abrir_archivo(os.path.join(path, main))
-
+    
     def __abrir_archivo(self, widget, archivo):
         """
         Abre un archivo.

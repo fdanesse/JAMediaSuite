@@ -355,15 +355,22 @@ class Notebook_SourceView(Gtk.Notebook):
         Abre un archivo y agrega una página
         para él, con su código.
         """
-
+        
         paginas = self.get_children()
         
         for pagina in paginas:
             view = pagina.get_child()
             
-            if view.archivo != None and view.archivo == archivo:
+            if view.archivo and view.archivo == archivo:
                 return
-        
+            
+            ### Cuando se abre un archivo, se cierra el vacío por default.
+            if not view.archivo:
+                buffer = view.get_buffer()
+                inicio, fin = buffer.get_bounds()
+                buf = buffer.get_text(inicio, fin, 0)
+                if not buf: self.remove(pagina)
+            
         sourceview = SourceView()
         
         hbox = Gtk.HBox()
