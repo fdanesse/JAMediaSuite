@@ -597,7 +597,8 @@ class DialogoFormato(Gtk.Dialog):
     
     #__gtype_name__ = 'DialogoFormato'
     
-    def __init__(self, parent_window = False, fuente = "Monospace", tamanio = 10):
+    def __init__(self, parent_window = False,
+        fuente = "Monospace", tamanio = 10):
 
         Gtk.Dialog.__init__(self,
             parent = parent_window,
@@ -710,9 +711,8 @@ class TreeViewFonts(Gtk.TreeView):
         
         self.__setear_columnas()
         
-        treeselection = self.get_selection()
-        treeselection.set_mode(Gtk.SelectionMode.SINGLE)
-        treeselection.set_select_function(self.__selecciones, self.get_model())
+        self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
+        self.get_selection().set_select_function(self.__selecciones, self.get_model())
         
         self.show_all()
         
@@ -721,7 +721,8 @@ class TreeViewFonts(Gtk.TreeView):
     def __setear_columnas(self):
         
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn("Fuente", Gtk.CellRendererText(), markup=0)
+        columna = Gtk.TreeViewColumn("Fuente",
+            Gtk.CellRendererText(), markup=0)
         columna.set_sort_column_id(0)
         columna.set_property('visible', True)
         columna.set_property('resizable', True)
@@ -730,7 +731,8 @@ class TreeViewFonts(Gtk.TreeView):
         self.append_column(columna)
         
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn("Nombre", Gtk.CellRendererText(), text=1)
+        columna = Gtk.TreeViewColumn("Nombre",
+            Gtk.CellRendererText(), text=1)
         columna.set_sort_column_id(1)
         columna.set_property('visible', False)
         columna.set_property('resizable', False)
@@ -748,24 +750,23 @@ class TreeViewFonts(Gtk.TreeView):
         for family in FAMILIES:
             name = family.get_name()
             fuentes.append(name)
-            
-        fuentes.sort()
         
-        for fuente in fuentes:
+        for fuente in sorted(fuentes):
             texto = '<span font="%s">%s</span>' % (fuente, fuente)
             self.get_model().append([texto, fuente])
             
         ### Seleccionar la fuente inicial.
-        model = self.get_model()
-        item = model.get_iter_first()
+        item = self.get_model().get_iter_first()
         
         while item:
-            if model.get_value(item, 1) == self.fuente:
-                self.get_selection().select_path(model.get_path(item))
-                self.scroll_to_cell(model.get_path(item))
+            if self.get_model().get_value(item, 1) == self.fuente:
+                self.get_selection().select_path(
+                    self.get_model().get_path(item))
+                self.scroll_to_cell(
+                    self.get_model().get_path(item))
                 return False
             
-            item = model.iter_next(item)
+            item = self.get_model().iter_next(item)
         
         return False
     
@@ -774,8 +775,7 @@ class TreeViewFonts(Gtk.TreeView):
         Cuando se selecciona un item en la lista.
         """
         
-        iter = model.get_iter(path)
-        fuente = model.get_value(iter, 1)
+        fuente = self.get_model().get_value(iter, 1)
         
         if self.fuente != fuente:
             self.fuente = fuente
@@ -801,9 +801,9 @@ class TreeViewTamanio(Gtk.TreeView):
         
         self.tamanio = tamanio
         
-        treeselection = self.get_selection()
-        treeselection.set_mode(Gtk.SelectionMode.SINGLE)
-        treeselection.set_select_function(self.__selecciones, self.get_model())
+        self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
+        self.get_selection().set_select_function(
+            self.__selecciones, self.get_model())
         
         self.show_all()
         
@@ -812,7 +812,8 @@ class TreeViewTamanio(Gtk.TreeView):
     def __setear_columnas(self):
         
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn("Tamaño", Gtk.CellRendererText(), text=0)
+        columna = Gtk.TreeViewColumn("Tamaño",
+            Gtk.CellRendererText(), text=0)
         columna.set_sort_column_id(0)
         columna.set_property('visible', True)
         columna.set_property('resizable', True)
@@ -828,16 +829,17 @@ class TreeViewTamanio(Gtk.TreeView):
             self.get_model().append([num])
         
         ### Seleccionar el tamaño inicial.
-        model = self.get_model()
-        item = model.get_iter_first()
+        item = self.get_model().get_iter_first()
         
         while item:
-            if model.get_value(item, 0) == self.tamanio:
-                self.get_selection().select_path(model.get_path(item))
-                self.scroll_to_cell(model.get_path(item))
+            if self.get_model().get_value(item, 0) == self.tamanio:
+                self.get_selection().select_path(
+                    self.get_model().get_path(item))
+                self.scroll_to_cell(
+                    self.get_model().get_path(item))
                 return False
             
-            item = model.iter_next(item)
+            item = self.get_model().iter_next(item)
         
         return False
     
@@ -846,8 +848,8 @@ class TreeViewTamanio(Gtk.TreeView):
         Cuando se selecciona un item en la lista.
         """
         
-        iter = model.get_iter(path)
-        tamanio = model.get_value(iter, 0)
+        iter = self.get_model().get_iter(path)
+        tamanio = self.get_model().get_value(iter, 0)
         
         if self.tamanio != tamanio:
             self.tamanio = tamanio

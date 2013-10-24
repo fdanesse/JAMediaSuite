@@ -1792,6 +1792,7 @@ class DialogoFormato(Gtk.Dialog):
                 path = tree.get_model().get_path(newiter)
                 
         tree.get_selection().select_path(path)
+        tree.scroll_to_cell(path)
         
         return scroll
 
@@ -1831,6 +1832,7 @@ class DialogoFormato(Gtk.Dialog):
                 path = tree.get_model().get_path(newiter)
                 
         tree.get_selection().select_path(path)
+        tree.scroll_to_cell(path)
         
         return scroll
 
