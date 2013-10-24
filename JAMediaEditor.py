@@ -298,6 +298,10 @@ class JAMediaEditor(Gtk.Window):
             self.base_panel.infonotebook.set_path_estructura(None)
             self.base_panel.proyecto = {}
         
+        paginas = self.base_panel.workpanel.notebook_sourceview.get_children()
+        if not paginas:
+            self.__ejecutar_accion_archivo(None, "Nuevo Archivo")
+        
         return True
     
 if __name__=="__main__":
