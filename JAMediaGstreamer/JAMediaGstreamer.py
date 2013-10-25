@@ -107,3 +107,16 @@ class JAMediaGstreamer(Gtk.Paned):
     def __get_element(self, widget, path):
         
         self.textview.get_buffer().set_text(get_inspect(path))
+
+if __name__ == "__main__":
+    import sys
+    ventana = Gtk.Window()
+    ventana.add(JAMediaGstreamer())
+    ventana.connect("delete-event", sys.exit)
+    ventana.show_all()
+    ventana.set_resizable(True)
+    ventana.set_size_request(640, 480)
+    ventana.set_border_width(2)
+    ventana.set_position(Gtk.WindowPosition.CENTER)
+    Gtk.main()
+    

@@ -413,6 +413,8 @@ class Notebook_SourceView(Gtk.Notebook):
         
         self.set_current_page(-1)
         
+        self.set_tab_reorderable(scroll, True)
+        
         return False
     
     def guardar_archivo(self):
