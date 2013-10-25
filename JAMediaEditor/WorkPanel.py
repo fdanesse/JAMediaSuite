@@ -25,7 +25,6 @@ import mimetypes
 import commands
 import shelve
 
-import gi
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource
@@ -293,7 +292,13 @@ class Notebook_SourceView(Gtk.Notebook):
     def __init__(self):
 
         Gtk.Notebook.__init__(self)
-
+        
+        self.config = {
+            'fuente':'Monospace',
+            'tamanio':10,
+            'numeracion':False,
+            }
+        
         self.set_scrollable(True)
         
         self.show_all()
@@ -371,7 +376,7 @@ class Notebook_SourceView(Gtk.Notebook):
                 buf = buffer.get_text(inicio, fin, 0)
                 if not buf: self.remove(pagina)
             
-        sourceview = SourceView()
+        sourceview = SourceView(self.config)
         
         hbox = Gtk.HBox()
         label = Gtk.Label("Sin Título")
@@ -447,32 +452,35 @@ class Notebook_SourceView(Gtk.Notebook):
         ### Ver.
         if accion == "Numeracion":
             for pagina in paginas:
+                self.config['numeracion'] = valor
                 view = pagina.get_child()
-                view.set_accion(accion, valor)
-        
+                view.set_accion(accion, self.config['numeracion'])
+                
         elif accion == "Aumentar":
             for pagina in paginas:
+                self.config['tamanio'] += 1
+
                 view = pagina.get_child()
-                view.set_formato(tamanio=1)
-            
+                view.set_formato(
+                    self.config['fuente'],
+                    self.config['tamanio'])
+                    
         elif accion == "Disminuir":
             for pagina in paginas:
+                if self.config['tamanio'] > 6:
+                    self.config['tamanio'] -= 1
+                
                 view = pagina.get_child()
-                view.set_formato(tamanio=-1)
+                view.set_formato(
+                    self.config['fuente'],
+                    self.config['tamanio'])
                 
         ### Código.
         elif accion == "Formato":
-            scrolled = paginas[self.get_current_page()]
-            source = scrolled.get_children()[0]
-            
-            description = source.get_pango_context().get_font_description()
-        
-            nombre = description.get_family()
-            size = description.get_size()/1000
-            
             dialogo = DialogoFormato(
                 parent_window = self.get_toplevel(),
-                fuente = nombre, tamanio = size)
+                fuente = self.config['fuente'],
+                tamanio = self.config['tamanio'])
             
             respuesta = dialogo.run()
             
@@ -481,14 +489,16 @@ class Notebook_SourceView(Gtk.Notebook):
             if respuesta == Gtk.ResponseType.ACCEPT:
                 res = dialogo.obtener_fuente()
                 
+                self.config['fuente'] = res[0]
+                self.config['tamanio'] = res[1]
+                
                 for pagina in paginas:
                     view = pagina.get_child()
                     
                     view.set_formato(
-                        tamanio=res[1],
-                        fuente=res[0],
-                        dialogo=True)
-                        
+                        self.config['fuente'],
+                        self.config['tamanio'])
+                    
         else:
             sourceview.set_accion(accion)
             
@@ -564,7 +574,7 @@ class SourceView(GtkSource.View):
     Visor de código para archivos abiertos.
     """
     
-    def __init__(self):
+    def __init__(self, config):
 
         GtkSource.View.__init__(self)
         
@@ -573,6 +583,8 @@ class SourceView(GtkSource.View):
         self.archivo = False
         self.lenguaje = False
         self.tab = "    "
+        
+        self.set_show_line_numbers(config['numeracion'])
         
         self.lenguaje_manager = GtkSource.LanguageManager()
         
@@ -584,8 +596,9 @@ class SourceView(GtkSource.View):
         self.set_insert_spaces_instead_of_tabs(True)
         self.set_tab_width(4)
         self.set_auto_indent(True)
-
-        self.modify_font(Pango.FontDescription('Monospace 10'))
+        
+        font = "%s %s" % (config['fuente'], config['tamanio'])
+        self.modify_font(Pango.FontDescription(font))
 
         self.show_all()
         
@@ -778,8 +791,8 @@ class SourceView(GtkSource.View):
                 
                 ### Forzando actualización de Introspección.
                 self.get_parent().get_parent().emit('new_select', self, True)
-            
-    def set_formato(self, fuente=None, tamanio=None, dialogo=False):
+    
+    def set_formato(self, fuente, tamanio):
         """
         Setea el formato de la fuente.
         
@@ -787,25 +800,10 @@ class SourceView(GtkSource.View):
             fuente es: 'Monospace 10'
         """
         
-        if not fuente and not tamanio: return
+        if not fuente or not tamanio: return
     
-        description =  self.get_pango_context().get_font_description()
-        
-        nombre = description.get_family()
-        size = description.get_size()/1000
-        
-        if type(tamanio) == int and not dialogo:
-            size += tamanio
-        
-        if not fuente:
-            fuente = "%s %s" % (nombre, size)
-            
-        if not dialogo:
-            self.modify_font(Pango.FontDescription("%s" % fuente))
-            
-        else:
-            self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
-        
+        self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
+    
     def set_accion(self, accion, valor = True):
         """
         Ejecuta acciones sobre el código.

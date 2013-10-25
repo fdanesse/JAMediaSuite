@@ -22,7 +22,6 @@
 
 import os
 
-import gi
 from gi.repository import Gtk
 from gi.repository import GObject
 
@@ -33,6 +32,7 @@ from Widgets import ToolbarProyecto
 from Widgets import ToolbarArchivo
 from Widgets import ToolbarBusquedas
 from Widgets import My_FileChooser
+from Widgets import Multiple_FileChooser
 from Widgets import DialogoProyecto
 from Widgets import DialogoBuscar
 
@@ -229,9 +229,8 @@ class BasePanel(Gtk.Paned):
                 if self.proyecto:
                     path = self.proyecto["path"]
             
-            filechooser = My_FileChooser(
+            filechooser = Multiple_FileChooser(
                 parent_window = self.get_toplevel(),
-                action_type = Gtk.FileChooserAction.OPEN,
                 title = "Abrir Archivo",
                 path = path,
                 mime_type = ["text/*", "image/svg+xml"])

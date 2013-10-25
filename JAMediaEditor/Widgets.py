@@ -23,7 +23,6 @@
 import os
 import commands
 
-import gi
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
@@ -1185,7 +1184,7 @@ class My_FileChooser(Gtk.FileChooserDialog):
         """
         
         self.__abrir(None)
-        
+    
     def __abrir(self, widget):
         """
         Emite el path del archivo seleccionado.
@@ -1214,6 +1213,102 @@ class My_FileChooser(Gtk.FileChooserDialog):
         
         self.destroy()
 
+class Multiple_FileChooser(Gtk.FileChooserDialog):
+    
+    __gsignals__ = {
+    'load':(GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+        
+    def __init__(self,
+        parent_window = None,
+        filter_type = [],
+        title = None,
+        path = None,
+        mime_type = []):
+        
+        Gtk.FileChooserDialog.__init__(self,
+            parent = parent_window,
+            action = Gtk.FileChooserAction.OPEN,
+            flags = Gtk.DialogFlags.MODAL,
+            title = title)
+            
+        self.set_default_size( 640, 480 )
+        self.set_select_multiple(True)
+
+        if os.path.isfile(path):
+            self.set_filename(path)
+
+        else:
+            self.set_current_folder_uri("file://%s" % path)
+        
+        if filter_type:
+            filter = Gtk.FileFilter()
+            filter.set_name("Filtro")
+            
+            for fil in filter_type:
+                filter.add_pattern(fil)
+                
+            self.add_filter(filter)
+            
+        elif mime_type:
+            filter = Gtk.FileFilter()
+            filter.set_name("Filtro")
+            
+            for mime in mime_type:
+                filter.add_mime_type(mime)
+                
+            self.add_filter(filter)
+        
+        hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+        
+        abrir = Gtk.Button("Abrir")
+        salir = Gtk.Button("Salir")
+        
+        hbox.pack_end(salir, True, True, 5)
+        hbox.pack_end(abrir, True, True, 5)
+        
+        self.set_extra_widget(hbox)
+        
+        salir.connect("clicked", self.__salir)
+        abrir.connect("clicked", self.__abrir)
+        
+        self.show_all()
+        
+        self.connect("file-activated", self.__file_activated)
+        
+    def __file_activated(self, widget):
+        """
+        Cuando se hace doble click sobre un archivo.
+        """
+        
+        self.__abrir(None)
+    
+    def __abrir(self, widget):
+        """
+        Emite el path del archivo seleccionado.
+        """
+        
+        files = self.get_filenames()
+        
+        if not files:
+            self.__salir(None)
+            return
+        
+        for file in files:
+            direccion = str(file).replace("//", "/")
+            
+            if os.path.exists(direccion) and os.path.isfile(direccion):
+                self.emit('load', direccion)
+        
+        self.__salir()
+
+    def __salir(self, widget=None):
+        """
+        Se auto destruye.
+        """
+        
+        self.destroy()
+        
 class WidgetAutores(Gtk.Box):
     """
     Box para agregar datos de los Autores
@@ -1819,10 +1914,8 @@ class DialogoFormato(Gtk.Dialog):
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
         
-        tamanos = [8, 9, 10, 11, 12,
-            14, 16, 20, 22, 24, 26,
-            28, 36, 48, 72]
-            
+        tamanos = range(6,30)
+        
         ### seteo por defecto
         iter = tree.get_model().get_iter_first()
         path = 0
