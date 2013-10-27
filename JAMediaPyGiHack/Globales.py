@@ -95,14 +95,15 @@ BASEDICT = {
         'Soup', 'SoupGNOME', 'TelepathyGLib', 'TelepathyLogger',
         'Totem', 'UPowerGlib', 'Unity', 'Vte', 'WebKit', 'Wnck',
         'cairo', 'fontconfig', 'freetype2', 'libxml2', 'xfixes',
-        'xft', 'xlib', 'xrandr']),
+        'xft', 'xlib', 'xrandr', 'gi']),
         
     "Otros": sorted([
         'cairo', 'gobject', 'gst', 'pygame', 'pygst',
         'simplejson', 'gtk', 'pygtk', 'telepathy', 'dbus',
         'numpy', 'pango', 'webkit', 'gtksourceview2', 'ssl',
         'gio', 'vte', 'gconf', 'smtplib', 'feedparser',
-        'twitter', 'pangocairo', 'matplotlib', 'setuptools']),
+        'twitter', 'pangocairo', 'matplotlib', 'setuptools',
+        'ftplib']),
         }
 
 '''python-gi

@@ -289,7 +289,11 @@ class Menu(Gtk.MenuBar):
         disponible = False
         
         if menu == "python-gi":
-            ejecutable = os.path.join(BASEPATH, "SpyderHack", "Gi_Check.py")
+            if widget.get_label() == "gi":
+                ejecutable = os.path.join(BASEPATH, "SpyderHack", "Check.py")
+                
+            else:
+                ejecutable = os.path.join(BASEPATH, "SpyderHack", "Gi_Check.py")
             
         elif menu == "python":
             ejecutable = os.path.join(BASEPATH, "SpyderHack", "Check.py")

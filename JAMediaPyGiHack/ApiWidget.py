@@ -153,7 +153,11 @@ class ApiWidget(Gtk.TreeView):
         self.objetos = {}
         
         if tipo == "python-gi":
-            ejecutable = os.path.join(BASEPATH, 'SpyderHack', 'Dir_Gi_Modulo.py')
+            if modulo == "gi":
+                ejecutable = os.path.join(BASEPATH, 'SpyderHack', 'Dir_Modulo.py')
+                
+            else:
+                ejecutable = os.path.join(BASEPATH, 'SpyderHack', 'Dir_Gi_Modulo.py')
             
         elif tipo == "python" or tipo == "Otros":
             ejecutable = os.path.join(BASEPATH, 'SpyderHack', 'Dir_Modulo.py')

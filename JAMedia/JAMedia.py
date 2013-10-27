@@ -599,7 +599,7 @@ class JAMediaPlayer(Gtk.Plug):
         else:
             return
         
-        self.cargar_lista(None, indice)
+        self.__cargar_lista(None, indice)
         
     def __set_rotacion(self, widget, valor):
         """

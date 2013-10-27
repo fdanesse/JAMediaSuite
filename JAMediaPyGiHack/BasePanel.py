@@ -144,6 +144,8 @@ class BaseNotebook(Gtk.Notebook):
             boton.connect("clicked", self.__cerrar)
             
             self.set_current_page(-1)
+            
+            self.set_tab_reorderable(introspectionwidget, True)
         
     def __cerrar(self, widget):
         """
@@ -241,9 +243,15 @@ class IntrospectionPanel(Gtk.Paned):
         import commands
         
         if tipo == "python-gi":
-            arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_gi_doc.py")
-            commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
-            arch = os.path.join('/dev/shm', "Make_gi_doc.py")
+            if modulo == "gi":
+                arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_doc.py")
+                commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
+                arch = os.path.join('/dev/shm', "Make_doc.py")
+                
+            else:
+                arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_gi_doc.py")
+                commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
+                arch = os.path.join('/dev/shm', "Make_gi_doc.py")
             
         elif tipo == "python" or tipo == "Otros":
             arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_doc.py")
