@@ -21,21 +21,12 @@
 
 import os
 
-import gi
-gi.require_version('Gst', '1.0')
-
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
-from gi.repository import Gst
 
 from Widgets import TextView
 from Widgets import Lista
-
-Gst.init([])
-
-registry = Gst.Registry.get()
-plugins = registry.get_plugin_list()
 
 def get_inspect(elemento):
     """
@@ -88,6 +79,19 @@ class JAMediaGstreamer(Gtk.Paned):
         
     def __llenar_lista(self):
         
+        try:
+            import gi
+            gi.require_version('Gst', '1.0')
+            from gi.repository import Gst
+            
+            Gst.init([])
+
+            registry = Gst.Registry.get()
+            plugins = registry.get_plugin_list()
+            
+        except:
+            return
+        
         iter = self.lista.get_model().get_iter_first()
         
         for elemento in plugins:
@@ -108,11 +112,16 @@ class JAMediaGstreamer(Gtk.Paned):
         
         self.textview.get_buffer().set_text(get_inspect(path))
 
-if __name__ == "__main__":
+def exit(self, widget=None, senial=None):
+    
     import sys
+    sys.exit(0)
+    
+if __name__ == "__main__":
+    
     ventana = Gtk.Window()
     ventana.add(JAMediaGstreamer())
-    ventana.connect("delete-event", sys.exit)
+    ventana.connect("delete-event", exit)
     ventana.show_all()
     ventana.set_resizable(True)
     ventana.set_size_request(640, 480)
