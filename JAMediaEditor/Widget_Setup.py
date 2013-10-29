@@ -23,17 +23,11 @@
 import os
 import commands
 import shutil
-import shelve
 
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource
 from gi.repository import GLib
-
-from Widgets import My_FileChooser
-
-import JAMediaObjects
-from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
 
 BASEPATH = os.path.dirname(__file__)
 
@@ -70,7 +64,7 @@ class DialogoSetup(Gtk.Dialog):
     def __init__(self, parent_window = None, proyecto = None):
 
         Gtk.Dialog.__init__(self,
-            #title = "Chequeo de sintáxis",
+            title = "Generador de Instaladores",
             parent = parent_window,
             flags = Gtk.DialogFlags.MODAL,
             buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
@@ -721,6 +715,8 @@ class Widget_icon(Gtk.Frame):
         
         if self.tipo == "sugar": mime = "image/svg+xml"
         
+        from Widgets import My_FileChooser
+        
         filechooser = My_FileChooser(
             parent_window = self.get_toplevel(),
             action_type = Gtk.FileChooserAction.OPEN,
@@ -759,6 +755,7 @@ class DialogoInstall(Gtk.Dialog):
 
         Gtk.Dialog.__init__(self,
             parent = parent_window,
+            title = "Generador de Instaladores",
             flags = Gtk.DialogFlags.MODAL,
             buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
         
@@ -767,6 +764,8 @@ class DialogoInstall(Gtk.Dialog):
         
         self.destino_path = destino_path
         self.dirpath = dirpath
+        
+        from JAMediaTerminal import JAMediaTerminal
         
         self.terminal = JAMediaTerminal()
         
@@ -837,7 +836,7 @@ class DialogoInfoInstall(Gtk.Dialog):
     def __init__(self, parent_window = None, distpath = None):
 
         Gtk.Dialog.__init__(self,
-            #title = "Chequeo de sintáxis",
+            title = "Generador de Instaladores",
             parent = parent_window,
             flags = Gtk.DialogFlags.MODAL,
             buttons = ["Cerrar", Gtk.ResponseType.ACCEPT])
@@ -899,6 +898,8 @@ class Ceibal_Notebook(Gtk.Notebook):
             newpath = os.path.join(activitydirpath, os.path.basename(iconpath))
             shutil.copyfile(iconpath, newpath)
             iconpath = newpath
+        
+        import shelve
         
         archivo = shelve.open(os.path.join(BASEPATH, "plantilla"))
         text = u"%s" % archivo.get('install', "")

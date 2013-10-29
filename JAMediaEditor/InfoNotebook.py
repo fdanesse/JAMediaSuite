@@ -27,11 +27,6 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
 
-from Widgets import Estructura_Menu
-from Widgets import DialogoEliminar
-from Widgets import BusquedaGrep
-from Widgets import DialogoBuscar
-
 class InfoNotebook(Gtk.Notebook):
     """
     Notebook Izquierdo, para introspección y
@@ -108,6 +103,8 @@ class InfoNotebook(Gtk.Notebook):
             return
         
         if boton == 3:
+            from Widgets import Estructura_Menu
+            
             menu = Estructura_Menu(
                 widget, boton, pos, tiempo,
                 path, widget.get_model(),
@@ -189,7 +186,6 @@ class InfoNotebook(Gtk.Notebook):
                 dialogo.vbox.pack_start(label, True, True, 0)
                 
                 dialogo.run()
-                
                 dialogo.destroy()
 
         elif accion == "suprimir" or accion == "eliminar proyecto":
@@ -211,12 +207,13 @@ class InfoNotebook(Gtk.Notebook):
             if accion == "eliminar proyecto":
                 text = "Proyecto"
                 
+            from Widgets import DialogoEliminar
+            
             dialogo = DialogoEliminar(
                 tipo = text,
                 parent_window = self.get_toplevel())
                 
             resp = dialogo.run()
-            
             dialogo.destroy()
             
             if resp == Gtk.ResponseType.ACCEPT:
@@ -235,6 +232,8 @@ class InfoNotebook(Gtk.Notebook):
         elif accion == "buscar":
             self.copy_cut = []
             
+            from Widgets import BusquedaGrep
+            
             dialogo = BusquedaGrep(
                 path = filepath,
                 parent_window = self.get_toplevel())
@@ -242,7 +241,6 @@ class InfoNotebook(Gtk.Notebook):
             dialogo.connect("nueva-seleccion", self.__seleccion_in_grep)
             
             dialogo.run()
-            
             dialogo.destroy()
             
         elif accion == "Crear Directorio":
@@ -353,8 +351,7 @@ class Introspeccion(Gtk.TreeView):
     def __init__(self):
 
         Gtk.TreeView.__init__(self,
-            Gtk.TreeStore(GObject.TYPE_STRING,
-                        Gdk.Color))
+            Gtk.TreeStore(GObject.TYPE_STRING, Gdk.Color))
 
         self.__set_columnas()
         self.connect("key-press-event", self.key_press_event)
@@ -399,8 +396,10 @@ class Introspeccion(Gtk.TreeView):
                 
                 if dato.startswith("import ") or dato.startswith("from "):
                     color = Gdk.color_parse("dark green")
+                    
                 else:
                     color = Gdk.color_parse("#FF0D00")
+                    
                 modelo.append(
                     None, [dato,
                     color])
@@ -515,6 +514,7 @@ class Introspeccion(Gtk.TreeView):
                     iter = self.get_model().get_iter(new_path)
                     self.get_selection().select_iter(iter)
                     self.scroll_to_cell(new_path)
+                    
                 except:
                     return False
                 
@@ -743,7 +743,8 @@ class Estructura_Proyecto(Gtk.TreeView):
             import commands
             datos = commands.getoutput('file -ik %s%s%s' % ("\"", direccion, "\""))
             
-            if "text" in datos or "x-python" in datos or "x-empty" in datos or "svg+xml" in datos:
+            if "text" in datos or "x-python" in datos or \
+                "x-empty" in datos or "svg+xml" in datos:
                 self.emit('open', direccion)
 
     def __key_press_event(self, widget, event):

@@ -25,17 +25,6 @@ import os
 from gi.repository import Gtk
 from gi.repository import GObject
 
-from InfoNotebook import InfoNotebook
-from WorkPanel import WorkPanel
-
-from Widgets import ToolbarProyecto
-from Widgets import ToolbarArchivo
-from Widgets import ToolbarBusquedas
-from Widgets import My_FileChooser
-from Widgets import Multiple_FileChooser
-from Widgets import DialogoProyecto
-from Widgets import DialogoBuscar
-
 home = os.environ["HOME"]
 
 BatovideWorkSpace = os.path.join(
@@ -43,12 +32,15 @@ BatovideWorkSpace = os.path.join(
 
 class BasePanel(Gtk.Paned):
     """
-    Panel Horizontal:
-        Izquierda:
-            Estructura de Proyecto e Introspección sobre el mismo.
+    Gtk.Paned:
+        Gtk.VBox: Estructura de Proyecto e Introspección sobre el mismo.
+            Widgets.ToolbarProyecto
+            InfoNotebook.InfoNotebook
+            Widgets.ToolbarBusquedas
             
-        Derecha:
-            Archivos y terminales.
+        Gtk.VBox: Archivos y terminales.
+            Widgets.ToolbarArchivo
+            WorkPanel.WorkPanel
     """
     
     __gtype_name__ = 'BasePanel'
@@ -60,11 +52,19 @@ class BasePanel(Gtk.Paned):
         
     def __init__(self):
 
-        Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+        Gtk.Paned.__init__(self,
+            orientation=Gtk.Orientation.HORIZONTAL)
 
         self.set_border_width(5)
         
         self.proyecto = {}
+        
+        from InfoNotebook import InfoNotebook
+        from WorkPanel import WorkPanel
+
+        from Widgets import ToolbarProyecto
+        from Widgets import ToolbarArchivo
+        from Widgets import ToolbarBusquedas
         
         self.workpanel = WorkPanel()
         self.infonotebook = InfoNotebook()
@@ -74,34 +74,52 @@ class BasePanel(Gtk.Paned):
         self.toolbararchivo = ToolbarArchivo()
         toolbarbusquedas = ToolbarBusquedas()
 
-        self.infonotebook_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.infonotebook_box = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL)
         
-        self.infonotebook_box.pack_start(self.toolbarproyecto, False, False, 0)
-        self.infonotebook_box.pack_start(self.infonotebook, True, True, 0)
-        self.infonotebook_box.pack_end(toolbarbusquedas, False, False, 0)
+        self.infonotebook_box.pack_start(
+            self.toolbarproyecto, False, False, 0)
+        self.infonotebook_box.pack_start(
+            self.infonotebook, True, True, 0)
+        self.infonotebook_box.pack_end(
+            toolbarbusquedas, False, False, 0)
         
-        workpanel_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        workpanel_box = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL)
         
-        workpanel_box.pack_start(self.toolbararchivo, False, False, 0)
-        workpanel_box.pack_end(self.workpanel, True, True, 0)
+        workpanel_box.pack_start(
+            self.toolbararchivo, False, False, 0)
+        workpanel_box.pack_end(
+            self.workpanel, True, True, 0)
 
-        self.pack1(self.infonotebook_box, resize = False, shrink = False)
-        self.pack2(workpanel_box, resize = True, shrink = True)
+        self.pack1(self.infonotebook_box,
+            resize = False, shrink = False)
+        self.pack2(workpanel_box,
+            resize = True, shrink = True)
 
         self.show_all()
         
         self.infonotebook_box.set_size_request(230, -1)
         
-        self.workpanel.connect('new_select', self.__set_introspeccion)
-        self.workpanel.connect('close_all_files', self.__set_introspeccion)
-        self.toolbararchivo.connect('accion', self.set_accion_archivo)
-        self.toolbarproyecto.connect('accion', self.set_accion_proyecto)
+        self.workpanel.connect('new_select',
+            self.__set_introspeccion)
+        self.workpanel.connect('close_all_files',
+            self.__set_introspeccion)
+        
+        self.toolbararchivo.connect('accion',
+            self.set_accion_archivo)
+        self.toolbarproyecto.connect('accion',
+            self.set_accion_proyecto)
+        
         toolbarbusquedas.connect("buscar", self.__buscar)
         toolbarbusquedas.connect("accion", self.__buscar_mas)
+        
         self.infonotebook.connect('new_select', self.__set_linea)
         self.infonotebook.connect('open', self.__open_file)
-        self.infonotebook.connect('search_on_grep', self.__search_grep)
-        self.infonotebook.connect('remove_proyect', self.__remove_proyect)
+        self.infonotebook.connect('search_on_grep',
+            self.__search_grep)
+        self.infonotebook.connect('remove_proyect',
+            self.__remove_proyect)
         
     def __search_grep(self, widget, datos, parent):
         """
@@ -128,6 +146,8 @@ class BasePanel(Gtk.Paned):
                 self.workpanel.notebook_sourceview.set_current_page(indice)
                 break
             
+        from Widgets import DialogoBuscar
+        
         dialogo = DialogoBuscar(sourceview,
             parent_window = parent,
             title = "Buscar Texto", texto = datos[2])
@@ -161,6 +181,7 @@ class BasePanel(Gtk.Paned):
         """
        
         self.infonotebook.buscar(texto)
+        
         if self.infonotebook.get_current_page() == 0:
             tree = self.infonotebook.introspeccion
             seleccion = self.infonotebook.introspeccion.get_selection()
@@ -228,6 +249,8 @@ class BasePanel(Gtk.Paned):
                 
                 if self.proyecto:
                     path = self.proyecto["path"]
+            
+            from Widgets import Multiple_FileChooser
             
             filechooser = Multiple_FileChooser(
                 parent_window = self.get_toplevel(),
@@ -319,7 +342,8 @@ class BasePanel(Gtk.Paned):
             import commands
             datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
             
-            if "text" in datos or "x-python" in datos or "x-empty" in datos or "svg+xml" in datos:
+            if "text" in datos or "x-python" in datos or \
+                "x-empty" in datos or "svg+xml" in datos:
                 self.workpanel.abrir_archivo(archivo)
                 
         else:
@@ -331,10 +355,9 @@ class BasePanel(Gtk.Paned):
         se manda ejecutar una acción desde el menú.
         """
         
-        # FIXME: Cualquier acción en las toolbars o menu,
-        # debe detener las ejecuciones en marcha?.
-
         if accion == "Nuevo Proyecto":
+            from Widgets import DialogoProyecto
+            
             dialog = DialogoProyecto(
                 parent_window = self.get_toplevel(),
                 title = "Crear Nuevo Proyecto")
@@ -364,6 +387,8 @@ class BasePanel(Gtk.Paned):
                 
         elif accion == "Editar Proyecto":
             if self.proyecto:
+                from Widgets import DialogoProyecto
+                
                 dialog = DialogoProyecto(
                     parent_window = self.get_toplevel(),
                     title = "Editar Proyecto",
@@ -381,6 +406,8 @@ class BasePanel(Gtk.Paned):
                 dialog.destroy()
                 
         elif accion == "Abrir Proyecto":
+            from Widgets import My_FileChooser
+            
             filechooser = My_FileChooser(
                 parent_window = self.get_toplevel(),
                 action_type = Gtk.FileChooserAction.OPEN,
@@ -399,7 +426,8 @@ class BasePanel(Gtk.Paned):
         
         elif accion == "Ejecutar Proyecto":
             if self.proyecto:
-                main = os.path.join(self.proyecto["path"], self.proyecto["main"])
+                main = os.path.join(self.proyecto["path"],
+                    self.proyecto["main"])
                 self.workpanel.ejecutar(archivo=main)
             
         elif accion == "Detener Ejecución":
@@ -412,13 +440,9 @@ class BasePanel(Gtk.Paned):
                 parent_window = self.get_toplevel(),
                 proyecto = self.proyecto)
         
-            respuesta = dialog.run()
-            
+            dialog.run()
             dialog.destroy()
 
-            if respuesta == Gtk.ResponseType.ACCEPT:
-                pass
-            
         else:
             print "Acccion sin asignar en BasePanel", accion
 

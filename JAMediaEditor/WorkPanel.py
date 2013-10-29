@@ -21,9 +21,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import mimetypes
-import commands
-import shelve
 
 from gi.repository import Gtk
 from gi.repository import GObject
@@ -33,18 +30,6 @@ from gi.repository import Gdk
 from gi.repository import GLib
 
 import JAMediaObjects
-
-from Widgets import My_FileChooser
-from Widgets import DialogoFormato
-from Widgets import DialogoAlertaSinGuardar
-from Widgets import DialogoSobreEscritura
-from Widgets import DialogoBuscar
-from Widgets import DialogoReemplazar
-from Widgets import DialogoErrores
-
-from JAMediaTerminal import JAMediaTerminal
-from SpyderHack.SpyderHack import SpyderHack
-
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 icons = os.path.join(JAMediaObjectsPath, "Iconos")
@@ -64,6 +49,10 @@ class WorkPanel(Gtk.Paned):
     Panel, área de trabajo.
         zona superior: Notebook + source view para archivos abiertos
         zona inferior: terminales.
+        
+    Gtk.Paned:
+        Notebook_SourceView
+        JAMediaTerminal.JAMediaTerminal
     """
     
     __gtype_name__ = 'WorkPanel'
@@ -80,23 +69,30 @@ class WorkPanel(Gtk.Paned):
         Gtk.Paned.__init__(self,
             orientation=Gtk.Orientation.VERTICAL)
             
+        from JAMediaTerminal import JAMediaTerminal
+        
         self.notebook_sourceview = Notebook_SourceView()
         self.terminal = JAMediaTerminal()
         
         self.ejecucion = False
         
-        self.pack1(self.notebook_sourceview, resize = True, shrink = False)
-        self.pack2(self.terminal, resize = False, shrink = True)
+        self.pack1(self.notebook_sourceview,
+            resize = True, shrink = False)
+        self.pack2(self.terminal,
+            resize = False, shrink = True)
         
         self.show_all()
         
         # FIXME: Cambiar fuente en terminal provoca caida de la aplicación.
-        self.terminal.toolbar.remove(self.terminal.toolbar.get_children()[3])
+        self.terminal.toolbar.remove(
+            self.terminal.toolbar.get_children()[3])
         
         self.terminal.set_size_request(-1, 170)
         
-        self.notebook_sourceview.connect('new_select', self.__re_emit_new_select)
-        self.notebook_sourceview.connect('close_all_files', self.__close_all_files)
+        self.notebook_sourceview.connect('new_select',
+            self.__re_emit_new_select)
+        self.notebook_sourceview.connect('close_all_files',
+            self.__close_all_files)
         self.terminal.connect("ejecucion", self.__set_ejecucion)
         self.terminal.connect("reset", self.detener_ejecucion)
 
@@ -176,10 +172,10 @@ class WorkPanel(Gtk.Paned):
             
             ### Si el archivo tiene cambios sin guardar o nunca se guardó.
             if not archivo or archivo == None or view.get_buffer().get_modified():
+                from Widgets import DialogoAlertaSinGuardar
+                
                 dialog = DialogoAlertaSinGuardar(parent_window = self.get_toplevel())
-                
                 respuesta = dialog.run()
-                
                 dialog.destroy()
                 
                 if respuesta == Gtk.ResponseType.ACCEPT:
@@ -204,10 +200,10 @@ class WorkPanel(Gtk.Paned):
                     
             if source:
                 if source.get_buffer().get_modified():
+                    from Widgets import DialogoAlertaSinGuardar
+                    
                     dialog = DialogoAlertaSinGuardar(parent_window = self.get_toplevel())
-                    
                     respuesta = dialog.run()
-                    
                     dialog.destroy()
                     
                     if respuesta == Gtk.ResponseType.ACCEPT:
@@ -479,6 +475,8 @@ class Notebook_SourceView(Gtk.Notebook):
                 
         ### Código.
         elif accion == "Formato":
+            from Widgets import DialogoFormato
+            
             dialogo = DialogoFormato(
                 parent_window = self.get_toplevel(),
                 fuente = self.config['fuente'],
@@ -681,6 +679,8 @@ class SourceView(GtkSource.View):
         self.get_buffer().set_highlight_syntax(False)
         self.get_buffer().set_language(None)
         
+        import mimetypes
+        
         tipo = mimetypes.guess_type(archivo)[0]
         
         if tipo:
@@ -704,6 +704,8 @@ class SourceView(GtkSource.View):
         else:
             defaultpath = BatovideWorkSpace
             
+        from Widgets import My_FileChooser
+        
         filechooser = My_FileChooser(
             parent_window = self.get_toplevel(),
             action_type = Gtk.FileChooserAction.SAVE,
@@ -751,10 +753,10 @@ class SourceView(GtkSource.View):
             archivo = os.path.join(archivo.replace("//", "/"))
             
             if os.path.exists(archivo):
+                from Widgets import DialogoSobreEscritura
+                
                 dialog = DialogoSobreEscritura(parent_window = self.get_toplevel())
-                
                 respuesta = dialog.run()
-                
                 dialog.destroy()
                 
                 if respuesta == Gtk.ResponseType.ACCEPT:
@@ -863,6 +865,8 @@ class SourceView(GtkSource.View):
             except:
                 texto = None
                 
+            from Widgets import DialogoBuscar
+            
             dialogo = DialogoBuscar(self,
                 parent_window = self.get_toplevel(),
                 title = "Buscar Texto", texto = texto)
@@ -882,6 +886,8 @@ class SourceView(GtkSource.View):
             except:
                 texto = None
                 
+            from Widgets import DialogoReemplazar
+            
             dialogo = DialogoReemplazar(self,
                 parent_window = self.get_toplevel(),
                 title = "Reemplazar Texto", texto = texto)
@@ -892,11 +898,10 @@ class SourceView(GtkSource.View):
 
         elif accion == "Cerrar Archivo":
             if buffer.get_modified():
+                from Widgets import DialogoAlertaSinGuardar
                 
                 dialog = DialogoAlertaSinGuardar(parent_window = self.get_toplevel())
-                
                 respuesta = dialog.run()
-                
                 dialog.destroy()
                 
                 if respuesta == Gtk.ResponseType.ACCEPT:
@@ -939,18 +944,18 @@ class SourceView(GtkSource.View):
                     # HACK: No se debe permitir usar la interfaz de la aplicación.
                     self.get_toplevel().set_sensitive(False)
                     
+                    from Widgets import DialogoErrores
+                    
                     dialogo = DialogoErrores(self,
                         parent_window = self.get_toplevel())
                         
                     dialogo.run()
-                    
                     dialogo.destroy()
 
                     self.set_show_line_numbers(numeracion)
                     
                     # HACK: No se debe permitir usar la interfaz de la aplicación.
                     self.get_toplevel().set_sensitive(True)
-                    
                     return
                 
             dialogo = Gtk.Dialog(parent = self.get_toplevel(),
@@ -966,7 +971,6 @@ class SourceView(GtkSource.View):
             dialogo.vbox.pack_start(label, True, True, 0)
             
             dialogo.run()
-            
             dialogo.destroy()
             
     def __identar(self):
@@ -1156,7 +1160,6 @@ class SourceView(GtkSource.View):
                         dialogo.vbox.pack_start(label, True, True, 0)
                         
                         response = dialogo.run()
-                        
                         dialogo.destroy()
                         
                         if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
@@ -1184,7 +1187,6 @@ class SourceView(GtkSource.View):
                 dialogo.vbox.pack_start(label, True, True, 0)
                 
                 response = dialogo.run()
-                
                 dialogo.destroy()
                 
                 if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
@@ -1212,20 +1214,9 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         self.opciones = []
         self.priority = 1
         
-        self.spyder_hack = SpyderHack()
+        from SpyderHack.SpyderHack import SpyderHack
         
-        """ GtkSource.CompletionProvider
-        activate_proposal(*args, **kwargs)
-        get_activation(*args, **kwargs)
-        get_icon(*args, **kwargs)
-        get_info_widget(*args, **kwargs)
-        get_interactive_delay(*args, **kwargs)
-        get_name(*args, **kwargs)
-        get_priority(*args, **kwargs)
-        get_start_iter(*args, **kwargs)
-        match(*args, **kwargs)
-        populate(*args, **kwargs)
-        update_info(*args, **kwargs)"""
+        self.spyder_hack = SpyderHack()
     
     def do_get_name(self):
         return "AutoCompletado"

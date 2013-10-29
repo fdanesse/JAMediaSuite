@@ -24,18 +24,12 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GObject
 from gi.repository import GLib
-
-import JAMediaEditor
-from JAMediaEditor.Widgets import Menu
-from JAMediaEditor.BasePanel import BasePanel
 
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 home = os.environ["HOME"]
-
 BatovideWorkSpace = os.path.join(
     home, 'BatovideWorkSpace')
 
@@ -57,6 +51,12 @@ context.add_provider_for_screen(
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
     
 class JAMediaEditor(Gtk.Window):
+    """
+    Gtk.Window
+        Gtk.VBox
+            JAMediaEditor.Widgets.Menu
+            JAMediaEditor.BasePanel.BasePanel
+    """
     
     __gtype_name__ = 'WindowJAMediaEditor'
     
@@ -67,7 +67,8 @@ class JAMediaEditor(Gtk.Window):
         self.set_title("JAMediaEditor")
         
         self.set_icon_from_file(os.path.join(
-            JAMediaObjectsPath, "Iconos", "jamediaeditor.png"))
+            JAMediaObjectsPath, "Iconos",
+            "jamediaeditor.png"))
             
         self.set_resizable(True)
         self.set_size_request(640, 480)
@@ -80,30 +81,42 @@ class JAMediaEditor(Gtk.Window):
         self.updater = False
         self.sourceview = False
         
-        base_widget = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        base_widget = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL)
+        
+        from JAMediaEditor.Widgets import Menu
+        from JAMediaEditor.BasePanel import BasePanel
         
         self.menu = Menu(accel_group)
         self.base_panel = BasePanel()
         
-        base_widget.pack_start(self.menu, False, False, 0)
-        base_widget.pack_start(self.base_panel, True, True, 0)
+        base_widget.pack_start(
+            self.menu, False, False, 0)
+        base_widget.pack_start(
+            self.base_panel, True, True, 0)
         
         self.add(base_widget)
         
         self.show_all()
         self.maximize()
         
-        self.menu.connect('accion_ver', self.__ejecutar_accion_ver)
-        self.menu.connect('accion_codigo', self.__ejecutar_accion_codigo)
-        self.menu.connect('accion_proyecto', self.__ejecutar_accion_proyecto)
-        self.menu.connect('accion_archivo', self.__ejecutar_accion_archivo)
+        self.menu.connect('accion_ver',
+            self.__ejecutar_accion_ver)
+        self.menu.connect('accion_codigo',
+            self.__ejecutar_accion_codigo)
+        self.menu.connect('accion_proyecto',
+            self.__ejecutar_accion_proyecto)
+        self.menu.connect('accion_archivo',
+            self.__ejecutar_accion_archivo)
         
-        self.base_panel.connect("update", self.__new_handler)
+        self.base_panel.connect("update",
+            self.__new_handler)
         
         self.connect("delete-event", self.__exit)
         
-    def __exit(self, widget, event):
+    def __exit(self, widget=None, event=None):
         
+        Gtk.main_quit()
         import sys
         sys.exit(0)
         

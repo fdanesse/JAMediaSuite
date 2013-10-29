@@ -24,7 +24,6 @@ import os
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
-from gi.repository import GdkPixbuf
 from gi.repository import Vte
 from gi.repository import Pango
 from gi.repository import GLib
@@ -156,7 +155,7 @@ class JAMediaTerminal(Gtk.Box):
             param       =   'sdist' en est caso
         """
         
-        terminal = self.notebook.get_children()[self.notebook.get_current_page()]
+        terminal = self.notebook.get_children()[self.notebook.get_current_page()].get_child()
         
         pty_flags = Vte.PtyFlags(0)
         
@@ -218,7 +217,8 @@ class NoteBookTerminal(Gtk.Notebook):
             "Iconos", "button-cancel.svg")
             
         boton = get_boton(archivo,
-            pixels = get_pixels(Width_Button), tooltip_text = "Cerrar")
+            pixels = get_pixels(Width_Button),
+            tooltip_text = "Cerrar")
         
         text = "bash"
         
@@ -304,7 +304,8 @@ class NoteBookTerminal(Gtk.Notebook):
 
         if "ipython" in interprete: text = "ipython"
         
-        label = self.get_tab_label(self.get_children()[self.get_current_page()]).get_children()[0]
+        label = self.get_tab_label(
+            self.get_children()[self.get_current_page()]).get_children()[0]
         label.set_text(text)
         
         terminal = self.get_children()[self.get_current_page()].get_child()
@@ -515,7 +516,8 @@ class ToolbarTerminal(Gtk.Toolbar):
             "Iconos", "edit-copy.svg")
             
         boton = get_boton(archivo,
-            pixels = get_pixels(Width_Button), tooltip_text = "Copiar")
+            pixels = get_pixels(Width_Button),
+            tooltip_text = "Copiar")
         
         boton.connect("clicked", self.__emit_accion, "copiar")
         self.insert(boton, -1)
@@ -525,7 +527,8 @@ class ToolbarTerminal(Gtk.Toolbar):
             "Iconos", "editpaste.svg")
             
         boton = get_boton(archivo,
-            pixels = get_pixels(Width_Button), tooltip_text = "Pegar")
+            pixels = get_pixels(Width_Button),
+            tooltip_text = "Pegar")
         
         boton.connect("clicked", self.__emit_accion, "pegar")
         self.insert(boton, -1)
@@ -539,7 +542,8 @@ class ToolbarTerminal(Gtk.Toolbar):
             "Iconos", "font.svg")
             
         boton = get_boton(archivo,
-            pixels = get_pixels(Width_Button), tooltip_text = "Fuente")
+            pixels = get_pixels(Width_Button),
+            tooltip_text = "Fuente")
         
         boton.connect("clicked", self.__emit_formato)
         self.insert(boton, -1)
@@ -550,7 +554,8 @@ class ToolbarTerminal(Gtk.Toolbar):
             "Iconos", "tab-new.svg")
             
         boton = get_boton(archivo,
-            pixels = get_pixels(Width_Button), tooltip_text = "Nueva Terminal")
+            pixels = get_pixels(Width_Button),
+            tooltip_text = "Nueva Terminal")
         
         boton.connect("clicked", self.__emit_accion, "agregar")
         self.insert(boton, -1)
@@ -564,7 +569,8 @@ class ToolbarTerminal(Gtk.Toolbar):
             "Iconos", "bash.svg")
             
         boton = get_boton(archivo,
-            pixels = get_pixels(Width_Button), tooltip_text = "Terminal bash")
+            pixels = get_pixels(Width_Button),
+            tooltip_text = "Terminal bash")
         
         boton.connect("clicked", self.__emit_reset, bash_path)
         self.insert(boton, -1)
@@ -575,7 +581,8 @@ class ToolbarTerminal(Gtk.Toolbar):
             "Iconos", "python.svg")
             
         boton = get_boton(archivo,
-            pixels = get_pixels(Width_Button), tooltip_text = "Terminal python")
+            pixels = get_pixels(Width_Button),
+            tooltip_text = "Terminal python")
         
         boton.connect("clicked", self.__emit_reset, python_path)
         self.insert(boton, -1)
@@ -601,7 +608,8 @@ class DialogoFormato(Gtk.Dialog):
     
     __gtype_name__ = 'DialogoFormato'
     
-    def __init__(self, parent_window = False, fuente = "Monospace", tamanio = 10):
+    def __init__(self, parent_window = False,
+        fuente = "Monospace", tamanio = 10):
 
         Gtk.Dialog.__init__(self,
             parent = parent_window,
@@ -679,7 +687,8 @@ class DialogoFormato(Gtk.Dialog):
         
         if self.fuente != fuente:
             self.fuente = fuente
-            self.preview.modify_font(Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
+            self.preview.modify_font(
+                Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
         
     def __set_tamanio(self, widget, tamanio):
         """
@@ -688,7 +697,8 @@ class DialogoFormato(Gtk.Dialog):
         
         if self.tamanio != tamanio:
             self.tamanio = tamanio
-            self.preview.modify_font(Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
+            self.preview.modify_font(
+                Pango.FontDescription("%s %s" % (self.fuente, self.tamanio)))
     
     def get_font(self):
         """
@@ -725,7 +735,8 @@ class TreeViewFonts(Gtk.TreeView):
     def __setear_columnas(self):
         
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn("Fuente", Gtk.CellRendererText(), markup=0)
+        columna = Gtk.TreeViewColumn("Fuente",
+            Gtk.CellRendererText(), markup=0)
         columna.set_sort_column_id(0)
         columna.set_property('visible', True)
         columna.set_property('resizable', True)
@@ -734,7 +745,8 @@ class TreeViewFonts(Gtk.TreeView):
         self.append_column(columna)
         
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn("Nombre", Gtk.CellRendererText(), text=1)
+        columna = Gtk.TreeViewColumn("Nombre",
+            Gtk.CellRendererText(), text=1)
         columna.set_sort_column_id(1)
         columna.set_property('visible', False)
         columna.set_property('resizable', False)
@@ -816,7 +828,8 @@ class TreeViewTamanio(Gtk.TreeView):
     def __setear_columnas(self):
         
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn("Tamaño", Gtk.CellRendererText(), text=0)
+        columna = Gtk.TreeViewColumn("Tamaño",
+            Gtk.CellRendererText(), text=0)
         columna.set_sort_column_id(0)
         columna.set_property('visible', True)
         columna.set_property('resizable', True)
