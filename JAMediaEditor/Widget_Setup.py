@@ -54,6 +54,115 @@ def get_separador(draw = False, ancho = 0, expand = False):
     
     return separador
 
+HELP_TEXT = """
+Guía para Realizar Modificaciones en Archivos Instaladores:
+    
+    Archivos Instaladores para gnome:
+        
+        setup.cfg:
+            Establece donde se instalará tu aplicación.
+            No es necesario que hagas modificaciones en
+            este archivo a menos que comprendas bien como
+            funciona el instalador.
+            
+        *.desktop:
+            Es el lanzador de tu aplicación que aparecerá
+            en el escritorio y menú de tu sistema.
+            
+            Por defecto, este instalador te deja 3 campos libres
+            que debes llenar tu si es que deseas hacerlo,
+            si no lo haces, el instalador de todas formas
+            funcionará correctamente.
+            
+            Los campos libres son:
+                Comment:
+                    Para ingresar una descripción de tu aplicación.
+                    
+                MimeType:
+                    Determina que formatos de archivos puede leer tu aplicación.
+                    Esto permite que puedas abrir archivos desde el explorador
+                    de archivos de tu sistema.
+                    
+                Categories:
+                    Para ingresar la categoría en el menú de tu escritorio
+                    en la cual deseas que aparezca el lanzador, por ejemplo:
+                        GTK;GNOME;AudioVideo;Player;Video;
+            
+        MANIFEST:
+            Contiene la lista completa de archivos a distribuir en tu instalador
+            No debieras tocarlo a menos que comprendas como funciona el instalador.
+            
+        setup.py:
+            Contiene el guión python de instalación.
+            No debieras tocarlo a menos que comprendas el
+            funcionamiento del instalador.
+            
+            Pero puede serte muy útil para agregar sentencias.
+            Por ejemplo para decirle al instalador que instale otras
+            bibliotecas de código que sean necesarias para que tu
+            aplicación funcione.
+            
+        lanzador:
+            sentencia bash que lanzará tu aplicación cuando el usuario la ejecute
+            desde terminal o desde el escritorio de su sistema.
+            
+            No se necesario que modifiques este archivo a menos que comprendas
+            como funciona el instalador.
+            
+        desinstalador:
+            Guión python para facilitar la desinstalación de tu aplicación.
+            No se necesario que modifiques este archivo a menos que comprendas
+            como funciona el instalador.
+            
+    Archivos Instaladores para gnome ceibal:
+        install.py:
+            Guión instalador para sistemas donde no tienes acceso al root.
+            
+            Este archivo simplemente creará un directorio con el nombre de tu
+            aplicación en el home de tu sistema y copiará tu aplicación allí.
+            
+            Luego creará un archivo desktop para ella y lo agregará en el menú
+            del sistema donde sea instalada la aplicación.
+            
+            No es necesario que modifiques nada en este archivo a menos que
+            comprendas bien como funciona el instalador, salvo en la parte
+            donde se genera el archivo desktop. Allí debieras modificar:
+                
+                Categories=GTK;GNOME;Juegos;
+                    Por la categoría del menú del sistema donde quieras que
+                    aparezca el lanzador de tu aplicación.
+                    
+                También puedes agregar los campos Comment y MimeType para
+                definir los datos deseados como se explica en la descripción
+                del archivo desktop del instalador para gnome.
+            
+    Archivos Instaladores para sugar:
+        activity.info:
+            Determina el nombre y versión de la aplicación y cual es el
+            archivo y clase que debe iniciarse cuando el usuario ejecute
+            tu aplicación.
+            
+            Para aclarar el funcionamiento de este archivo, a continuación se
+            describen los campos más importantes del mismo:
+                
+                bundle_id:
+                    Esto establece el nombre único de la aplicación.
+                    En sugar no pueden haber dos aplicaciones con el mismo nombre.
+                    
+                exec:
+                    Esto establece cual es el archivo y la clase en tu proyecto
+                    que deben ejecutarse cuando el usuario lance la aplicación.
+                    
+            Ninguno de estos campos debieras modificarlos a menos que comprendas
+            bien el funcionamiento del instalador.
+            
+            Otros campos que quedan libres para que tu llenes como desees son:
+                mime_types y summary.
+                
+            Esos campos deben contener lo mismo que contienen los campos
+            MimeType y Comment en los instaldores anteriores (gnome y gnome ceibal).
+"""
+
 class DialogoSetup(Gtk.Dialog):
     """
     Dialogo para presentar Información de Instaladores.
@@ -74,9 +183,38 @@ class DialogoSetup(Gtk.Dialog):
         
         self.notebook = Notebook_Setup(proyecto)
         
-        self.vbox.pack_start(self.notebook, True, True, 0)
+        help = Gtk.TextView()
+        help.set_editable(False)
+        help.set_border_width(15)
         
+        scroll = Gtk.ScrolledWindow()
+        
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+            
+        scroll.add(help)
+        
+        help.get_buffer().set_text(HELP_TEXT)
+    
+        hpaned = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
+        
+        hpaned.pack1(self.notebook,
+            resize = False, shrink = False)
+        hpaned.pack2(scroll,
+            resize = False, shrink = True)
+            
+        self.vbox.pack_start(hpaned, True, True, 0)
+        
+        self.vbox.show_all()
         self.maximize()
+        
+        self.connect("realize", self.__reescalar, scroll)
+        
+    def __reescalar(self, widget, scroll):
+        
+        rect = self.get_allocation()
+        scroll.set_size_request(rect.width/3, -1)
         
 class Notebook_Setup(Gtk.Notebook):
     """

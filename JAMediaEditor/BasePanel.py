@@ -434,6 +434,8 @@ class BasePanel(Gtk.Paned):
             self.workpanel.detener_ejecucion()
         
         elif accion == "Construir":
+            self.get_toplevel().set_sensitive(False)
+            
             from Widget_Setup import DialogoSetup
             
             dialog = DialogoSetup(
@@ -442,7 +444,9 @@ class BasePanel(Gtk.Paned):
         
             dialog.run()
             dialog.destroy()
-
+            
+            self.get_toplevel().set_sensitive(True)
+            
         else:
             print "Acccion sin asignar en BasePanel", accion
 
