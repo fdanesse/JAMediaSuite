@@ -973,68 +973,12 @@ class Credits(Gtk.Dialog):
         
         self.set_border_width(15)
         
-        tabla1 = Gtk.Table(columns=5, rows=1, homogeneous=False)
-        
-        jamedia = Gtk.Image()
-        jamedia.set_from_file(
+        imagen = Gtk.Image()
+        imagen.set_from_file(
             os.path.join(JAMediaObjectsPath,
-                "Iconos", "JAMedia.svg"))
-        tabla1.attach_defaults(jamedia, 0, 1, 0, 1)
+                "Iconos", "JAMediaCredits.svg"))
         
-        jam = Gtk.Image()
-        pix = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            os.path.join(JAMediaObjectsPath,
-            "Iconos", "ceibaljam-o.png"),-1, 25)
-        jam.set_from_pixbuf(pix)
-        tabla1.attach_defaults(jam, 1, 2, 0, 1)
-
-        jam = Gtk.Image()
-        pix = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            os.path.join(JAMediaObjectsPath,
-            "Iconos", "licencia.png"),-1, 25)
-        jam.set_from_pixbuf(pix)
-        tabla1.attach_defaults(jam, 2, 3, 0, 1)
-
-        jam = Gtk.Image()
-        pix = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            os.path.join(JAMediaObjectsPath,
-            "Iconos", "uruguay-o.png"),-1, 25)
-        jam.set_from_pixbuf(pix)
-        tabla1.attach_defaults(jam, 3, 4, 0, 1)
-        
-        tabla2 = Gtk.Table(columns=3, rows=2, homogeneous=False)
-        
-        credits = Gtk.Image()
-        credits.set_from_file(
-            os.path.join(JAMediaObjectsPath,
-            "Iconos", "credits.png"))
-        tabla2.attach_defaults(credits, 0, 1, 0, 2)
-        
-        credits = Gtk.Image()
-        credits.set_from_file(
-            os.path.join(JAMediaObjectsPath,
-            "Iconos", "terron.png"))
-        tabla2.attach_defaults(credits, 2, 3, 0, 2)
-        
-        tabla2.set_col_spacing(1, 15)
-        
-        self.vbox.pack_start(tabla1, True, True, 0)
-        self.vbox.pack_start(tabla2, True, True, 0)
-        
-        from gi.repository import Pango
-        label = Gtk.Label("Flavio Danesse  -  fdanesse@gmail.com")
-        label.modify_font(Pango.FontDescription('Monospace 8'))
-        self.vbox.pack_start(
-            label,
-            True, True, 0)
-            
-        label = Gtk.Label(
-            "https://sites.google.com/site/sugaractivities/jamediaobjects/")
-        label.modify_font(Pango.FontDescription('Monospace 8'))
-        self.vbox.pack_start(
-            label,
-            True, True, 0)
-            
+        self.vbox.pack_start(imagen, True, True, 0)
         self.vbox.show_all()
         
 class Help(Gtk.Dialog):

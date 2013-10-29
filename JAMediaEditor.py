@@ -83,19 +83,14 @@ class JAMediaEditor(Gtk.Window):
         base_widget = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         
         self.menu = Menu(accel_group)
-        #toolbar = MainToolbar()
         self.base_panel = BasePanel()
-        #trytoolbar = TryToolbar()
         
         base_widget.pack_start(self.menu, False, False, 0)
-        #base_widget.pack_start(toolbar, False, False, 0)
         base_widget.pack_start(self.base_panel, True, True, 0)
-        #base_widget.pack_start(trytoolbar, False, False, 0)
         
         self.add(base_widget)
         
         self.show_all()
-        
         self.maximize()
         
         self.menu.connect('accion_ver', self.__ejecutar_accion_ver)

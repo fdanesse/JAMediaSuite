@@ -81,9 +81,13 @@ class InfoNotebook(Gtk.Notebook):
 
         self.show_all()
         
-        self.introspeccion.connect("new_select", self.__re_emit_new_select)
-        self.estructura_proyecto.connect("button-press-event", self.__click_derecho_en_estructura)
-        self.estructura_proyecto.connect("open", self.__re_emit_open)
+        self.introspeccion.connect(
+            "new_select", self.__re_emit_new_select)
+        self.estructura_proyecto.connect(
+            "button-press-event",
+            self.__click_derecho_en_estructura)
+        self.estructura_proyecto.connect(
+            "open", self.__re_emit_open)
         
     def __click_derecho_en_estructura(self, widget, event):
         """
@@ -604,10 +608,10 @@ class Estructura_Proyecto(Gtk.TreeView):
         
         self.posibles = []
 
-        self.connect("key-press-event", self.key_press_event)
-
-        self.show_all()
+        self.connect("key-press-event", self.__key_press_event)
         
+        self.show_all()
+    
     def set_path_estructura(self, path):
         """
         Carga la estructura de directorios y
@@ -713,7 +717,7 @@ class Estructura_Proyecto(Gtk.TreeView):
         ### Agregar todos los archivos en este nivel.
         for x in archivos:
             archivo = os.path.basename(x)
-            
+
             self.get_model().append(
                 iter,[Gtk.STOCK_FILE, archivo, x])
             
@@ -742,7 +746,7 @@ class Estructura_Proyecto(Gtk.TreeView):
             if "text" in datos or "x-python" in datos or "x-empty" in datos or "svg+xml" in datos:
                 self.emit('open', direccion)
 
-    def key_press_event(self, widget, event):
+    def __key_press_event(self, widget, event):
         """
         Funciones adicionales para moverse en el TreeView
         """
@@ -856,3 +860,4 @@ class Estructura_Proyecto(Gtk.TreeView):
             self.get_selection().select_iter(self.posibles[0])
             new_path = model.get_path(self.posibles[0])
             self.scroll_to_cell(new_path)
+            

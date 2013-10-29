@@ -2412,8 +2412,8 @@ class Credits(Gtk.Dialog):
         imagen = Gtk.Image()
         
         imagen.set_from_file(
-            os.path.join(BASEPATH,
-            "Imagenes", "about.png"))
+            os.path.join(JAMediaObjectsPath,
+                "Iconos", "JAMediaEditorCredits.svg"))
         
         self.vbox.pack_start(imagen, False, False, 0)
         self.vbox.show_all()

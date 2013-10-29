@@ -103,7 +103,7 @@ BASEDICT = {
         'numpy', 'pango', 'webkit', 'gtksourceview2', 'ssl',
         'gio', 'vte', 'gconf', 'smtplib', 'feedparser',
         'twitter', 'pangocairo', 'matplotlib', 'setuptools',
-        'ftplib']),
+        'ftplib', 'pyglet', 'hippo']),
         }
 
 '''python-gi

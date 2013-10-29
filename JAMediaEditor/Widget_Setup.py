@@ -165,7 +165,8 @@ class Notebook_Setup(Gtk.Notebook):
             
             dialog = DialogoInstall(
                 parent_window = self.get_toplevel(),
-                dirpath = self.gnome_notebook.activitydirpath)
+                dirpath = self.gnome_notebook.activitydirpath,
+                destino_path = self.proyecto["path"])
         
             respuesta = dialog.run()
             
@@ -753,7 +754,8 @@ class DialogoInstall(Gtk.Dialog):
     
     def __init__(self,
         parent_window = None,
-        dirpath = None):
+        dirpath = None,
+        destino_path = None):
 
         Gtk.Dialog.__init__(self,
             parent = parent_window,
@@ -763,6 +765,7 @@ class DialogoInstall(Gtk.Dialog):
         self.set_size_request(640, 480)
         self.set_border_width(15)
         
+        self.destino_path = destino_path
         self.dirpath = dirpath
         
         self.terminal = JAMediaTerminal()
@@ -789,7 +792,7 @@ class DialogoInstall(Gtk.Dialog):
 
         dialog = DialogoInfoInstall(
             parent_window = self.get_toplevel(),
-            distpath = os.path.join(self.dirpath, "dist"))
+            distpath = os.path.join(self.destino_path, "dist"))
     
         respuesta = dialog.run()
         
