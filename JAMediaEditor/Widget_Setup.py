@@ -115,6 +115,7 @@ Guía para Realizar Modificaciones en Archivos Instaladores:
             como funciona el instalador.
             
     Archivos Instaladores para gnome ceibal:
+        
         install.py:
             Guión instalador para sistemas donde no tienes acceso al root.
             
@@ -137,6 +138,7 @@ Guía para Realizar Modificaciones en Archivos Instaladores:
                 del archivo desktop del instalador para gnome.
             
     Archivos Instaladores para sugar:
+        
         activity.info:
             Determina el nombre y versión de la aplicación y cual es el
             archivo y clase que debe iniciarse cuando el usuario ejecute
@@ -180,22 +182,23 @@ class DialogoSetup(Gtk.Dialog):
         
         self.set_size_request(640, 480)
         self.set_border_width(15)
-        
+       
         self.notebook = Notebook_Setup(proyecto)
         
+        tags_table = Gtk.TextTagTable()
+        buffer_help = Gtk.TextBuffer.new(tags_table)
         help = Gtk.TextView()
+        help.set_buffer(buffer_help)
         help.set_editable(False)
         help.set_border_width(15)
+        buffer_help.set_text(HELP_TEXT)
+        self.__format_help(buffer_help, tags_table)
         
         scroll = Gtk.ScrolledWindow()
-        
         scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
-            
         scroll.add(help)
-        
-        help.get_buffer().set_text(HELP_TEXT)
     
         hpaned = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
         
@@ -215,6 +218,46 @@ class DialogoSetup(Gtk.Dialog):
         
         rect = self.get_allocation()
         scroll.set_size_request(rect.width/3, -1)
+
+    def __format_help(self, buffer_help, tags_table):
+
+        from gi.repository import Gdk
+        from gi.repository import Pango
+        
+        tag1 = Gtk.TextTag.new("1")
+        tag1.set_property("weight", Pango.Weight.BOLD)
+        tags_table.add(tag1)
+        
+        tag2 = Gtk.TextTag.new("2")
+        tag2.set_property("weight", Pango.Weight.BOLD)
+        tag2.set_property("background-gdk",
+            Gdk.Color(0,0,0))
+        tag2.set_property("foreground-gdk",
+            Gdk.Color(65000,65000,65000))
+        tags_table.add(tag2)
+        
+        tag3 = Gtk.TextTag.new("3")
+        tag3.set_property("weight", Pango.Weight.BOLD)
+        tag3.set_property("background-gdk",
+            Gdk.Color(60000,60000,60000))
+        tags_table.add(tag3)
+        
+        tit2 = [3, 60, 83]
+        tit3 = [5, 11, 34, 38, 48, 55, 62, 85]
+        
+        self.__apply_tag(buffer_help, 1, tag1)
+        
+        for id in tit2:
+            self.__apply_tag(buffer_help, id, tag2)
+            
+        for id in tit3:
+            self.__apply_tag(buffer_help, id, tag3)
+            
+    def __apply_tag(self, buffer_help, id, tag):
+        
+        iter_inicio = buffer_help.get_iter_at_line(id)
+        iter_fin = buffer_help.get_iter_at_line(id + 1)
+        buffer_help.apply_tag(tag, iter_inicio, iter_fin)
         
 class Notebook_Setup(Gtk.Notebook):
     """
@@ -776,6 +819,7 @@ class Setup_SourceView(GtkSource.View):
         self.set_buffer(GtkSource.Buffer())
         
         from gi.repository import Pango
+        
         self.modify_font(Pango.FontDescription('Monospace 10'))
 
         self.show_all()
