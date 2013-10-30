@@ -947,7 +947,7 @@ class DialogoInstall(Gtk.Dialog):
         self.destino_path = destino_path
         self.dirpath = dirpath
         
-        from JAMediaTerminal import JAMediaTerminal
+        from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
         
         self.terminal = JAMediaTerminal()
         

@@ -52,7 +52,7 @@ class WorkPanel(Gtk.Paned):
         
     Gtk.Paned:
         Notebook_SourceView
-        JAMediaTerminal.JAMediaTerminal
+        JAMediaObjects.JAMediaTerminal
     """
     
     __gtype_name__ = 'WorkPanel'
@@ -69,7 +69,7 @@ class WorkPanel(Gtk.Paned):
         Gtk.Paned.__init__(self,
             orientation=Gtk.Orientation.VERTICAL)
             
-        from JAMediaTerminal import JAMediaTerminal
+        from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
         
         self.notebook_sourceview = Notebook_SourceView()
         self.terminal = JAMediaTerminal()
@@ -84,8 +84,8 @@ class WorkPanel(Gtk.Paned):
         self.show_all()
         
         # FIXME: Cambiar fuente en terminal provoca caida de la aplicación.
-        self.terminal.toolbar.remove(
-            self.terminal.toolbar.get_children()[3])
+        #self.terminal.toolbar.remove(
+        #    self.terminal.toolbar.get_children()[3])
         
         self.terminal.set_size_request(-1, 170)
         
@@ -475,7 +475,7 @@ class Notebook_SourceView(Gtk.Notebook):
                 
         ### Código.
         elif accion == "Formato":
-            from Widgets import DialogoFormato
+            from JAMediaObjects.JAMediaTerminal import DialogoFormato
             
             dialogo = DialogoFormato(
                 parent_window = self.get_toplevel(),
@@ -487,7 +487,7 @@ class Notebook_SourceView(Gtk.Notebook):
             dialogo.destroy()
 
             if respuesta == Gtk.ResponseType.ACCEPT:
-                res = dialogo.obtener_fuente()
+                res = dialogo.get_font()
                 
                 self.config['fuente'] = res[0]
                 self.config['tamanio'] = res[1]

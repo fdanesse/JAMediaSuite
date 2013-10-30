@@ -49,7 +49,7 @@ context.add_provider_for_screen(
     screen,
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
-    
+
 class JAMediaEditor(Gtk.Window):
     """
     Gtk.Window
