@@ -23,43 +23,43 @@ import os
 
 from gi.repository import Gtk
 
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
+from Widgets import Toolbar
+from BasePanel import BasePanel
 
-class Ventana(Gtk.Window):
+class JAMediaPyGiHack(Gtk.Box):
     
     #__gtype_name__ = 'JAMediaPyGiHack'
     
     def __init__(self):
         
-        Gtk.Window.__init__(self)
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
         
-        self.set_title("JAMediaPygiHack")
+        self.toolbar = Toolbar()
+        self.pack_start(self.toolbar, False, False, 0)
         
-        self.set_icon_from_file(
-            os.path.join(JAMediaObjectsPath,
-            "Iconos", "PygiHack.svg"))
-            
-        self.set_resizable(True)
-        self.set_size_request(640, 480)
-        self.maximize()
-        self.set_border_width(2)
-        self.set_position(Gtk.WindowPosition.CENTER)
-        
-        from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack
-        
-        self.add(JAMediaPyGiHack())
+        self.base_panel = BasePanel()
+        self.pack_start(self.base_panel, True, True, 0)
         
         self.show_all()
-        self.realize()
-        
-        self.connect("delete-event", self.__salir)
 
-    def __salir(self, widget = None, senial = None):
+        self.toolbar.connect("import", self.__import)
+        self.toolbar.connect("accion-menu", self.__set_accion)
+        self.base_panel.connect("update", self.__update)
         
-        import sys
-        sys.exit(0)
-
-if __name__ == "__main__":
-    Ventana()
-    Gtk.main()
+    def __update(self, widget, view):
+        
+        if view == "Terminal":
+            pass
+        
+        elif view == "Gstreamer - Inspect 1.0" or \
+            view == "Apis PyGiHack":
+            self.toolbar.update(view)
+        
+    def __set_accion(self, widget, menu, wid_lab, valor):
+        
+        self.base_panel.set_accion(menu, wid_lab, valor)
+        
+    def __import(self, widget, paquete, modulo):
+        
+        self.base_panel.import_modulo(paquete, modulo)
+        

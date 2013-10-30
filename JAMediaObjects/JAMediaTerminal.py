@@ -775,6 +775,7 @@ class TreeViewFonts(Gtk.TreeView):
         Cuando se selecciona un item en la lista.
         """
         
+        iter = self.get_model().get_iter(path)
         fuente = self.get_model().get_value(iter, 1)
         
         if self.fuente != fuente:
