@@ -28,7 +28,7 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 class Ventana(Gtk.Window):
     
-    #__gtype_name__ = 'JAMediaPyGiHack'
+    __gtype_name__ = 'VentanaJAMediaPyGiHack'
     
     def __init__(self):
         
@@ -48,11 +48,13 @@ class Ventana(Gtk.Window):
         
         from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack
         
-        self.add(JAMediaPyGiHack())
+        jamediapygihack = JAMediaPyGiHack()
+        self.add(jamediapygihack)
         
         self.show_all()
         self.realize()
         
+        jamediapygihack.connect("salir", self.__salir)
         self.connect("delete-event", self.__salir)
 
     def __salir(self, widget = None, senial = None):

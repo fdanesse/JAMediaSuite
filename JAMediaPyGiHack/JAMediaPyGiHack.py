@@ -22,14 +22,19 @@
 import os
 
 from gi.repository import Gtk
+from gi.repository import GObject
 
 from Widgets import Toolbar
 from BasePanel import BasePanel
 
 class JAMediaPyGiHack(Gtk.Box):
     
-    #__gtype_name__ = 'JAMediaPyGiHack'
+    __gtype_name__ = 'JAMediaPyGiHack'
     
+    __gsignals__ = {
+    'salir': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
+        
     def __init__(self):
         
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
@@ -44,7 +49,12 @@ class JAMediaPyGiHack(Gtk.Box):
 
         self.toolbar.connect("import", self.__import)
         self.toolbar.connect("accion-menu", self.__set_accion)
+        self.toolbar.connect("salir", self.__emit_salir)
         self.base_panel.connect("update", self.__update)
+        
+    def __emit_salir(self, widget):
+        
+        self.emit('salir')
         
     def __update(self, widget, view):
         

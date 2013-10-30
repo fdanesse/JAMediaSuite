@@ -970,11 +970,11 @@ class SpyderHack():
         #print "Control base keys:"
         #print "\t", dict.keys(), "\n"
         
-        print "Keys in Dict:"
-        for k in dict.get(self.__id, {}).keys():
-            print "\t", k
-            #for key in dict[self.__id][k].keys():
-            #    print "\t\t", key
+        #print "Keys in Dict:"
+        #for k in dict.get(self.__id, {}).keys():
+        #    print "\t", k
+        #    #for key in dict[self.__id][k].keys():
+        #    #    print "\t\t", key
         
         return dict.get(self.__id, {}).get(expresion, {}).get("lista", [])
     

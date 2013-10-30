@@ -86,19 +86,25 @@ class JAMediaEditor(Gtk.Window):
         
         from JAMediaEditor.Widgets import Menu
         from JAMediaEditor.BasePanel import BasePanel
+        from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack
         
         self.menu = Menu(accel_group)
         self.base_panel = BasePanel()
+        self.jamediapygihack = JAMediaPyGiHack()
         
         base_widget.pack_start(
             self.menu, False, False, 0)
         base_widget.pack_start(
             self.base_panel, True, True, 0)
-        
+        base_widget.pack_start(
+            self.jamediapygihack, True, True, 0)
+            
         self.add(base_widget)
         
         self.show_all()
         self.maximize()
+        
+        self.jamediapygihack.hide()
         
         self.menu.connect('accion_ver',
             self.__ejecutar_accion_ver)
@@ -108,11 +114,27 @@ class JAMediaEditor(Gtk.Window):
             self.__ejecutar_accion_proyecto)
         self.menu.connect('accion_archivo',
             self.__ejecutar_accion_archivo)
-        
+        self.menu.connect('run_jamediapygihack',
+            self.__run_jamediapygihack)
+        self.jamediapygihack.connect('salir',
+            self.__run_editor)
+            
         self.base_panel.connect("update",
             self.__new_handler)
         
         self.connect("delete-event", self.__exit)
+        
+    def __run_editor(self, widget):
+        
+        self.jamediapygihack.hide()
+        self.menu.show()
+        self.base_panel.show()
+        
+    def __run_jamediapygihack(self, widget):
+        
+        self.menu.hide()
+        self.base_panel.hide()
+        self.jamediapygihack.show()
         
     def __exit(self, widget=None, event=None):
         

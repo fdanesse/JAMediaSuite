@@ -58,8 +58,10 @@ class Menu(Gtk.MenuBar):
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_BOOLEAN)),
     'accion_codigo': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
-
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'run_jamediapygihack': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
+        
     def __init__(self, accel_group):
 
         Gtk.MenuBar.__init__(self)
@@ -396,11 +398,19 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__run_about)
         menu_ayuda.append(item)
 
+        item = Gtk.MenuItem('JAMediaPyGiHack')
+        item.connect("activate", self.__emit_run_jamediapygihack)
+        menu_ayuda.append(item)
+        
         self.show_all()
         
         for item in self.dict_archivo.keys():
             self.dict_archivo[item].set_sensitive(False)
             
+    def __emit_run_jamediapygihack(self, widget):
+        
+        self.emit('run_jamediapygihack')
+        
     def __run_about(self, widget):
         
         dialog = Credits(parent = self.get_toplevel())

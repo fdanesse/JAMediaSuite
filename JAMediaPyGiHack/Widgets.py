@@ -41,12 +41,14 @@ class Toolbar(Gtk.Toolbar):
     __gtype_name__ = 'PygiHackToolbar'
     
     __gsignals__ = {
-     'import': (GObject.SIGNAL_RUN_FIRST,
+    'import': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING)),
     'accion-menu': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_STRING, GObject.TYPE_BOOLEAN))}
+        GObject.TYPE_STRING, GObject.TYPE_BOOLEAN)),
+    'salir': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
     
     def __init__(self):
         
@@ -79,8 +81,26 @@ class Toolbar(Gtk.Toolbar):
             get_separador(draw = False,
             ancho = 0, expand = True), -1)
             
+        archivo = os.path.join(
+            JAMediaObjectsPath,
+            "Iconos", "button-cancel.svg")
+        boton = get_boton(
+            archivo, flip = False,
+            pixels = 32)
+        boton.set_tooltip_text("Salir")
+        boton.connect("clicked", self.__emit_salir)
+        self.insert(boton, -1)
+        
+        self.insert(
+            get_separador(draw = False,
+            ancho = 3, expand = False), -1)
+            
         self.show_all()
         
+    def __emit_salir(self, widget):
+        
+        self.emit('salir')
+    
     def update(self, view):
         
         self.menu.update(view)
