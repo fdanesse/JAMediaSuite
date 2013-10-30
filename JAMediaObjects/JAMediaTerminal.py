@@ -44,7 +44,7 @@ class JAMediaTerminal(Gtk.Box):
     Terminal (NoteBook + Vtes) + Toolbar.
     """
     
-    #__gtype_name__ = 'JAMediaTerminal'
+    __gtype_name__ = 'JAMediaTerminal'
     
     __gsignals__ = {
     "ejecucion":(GObject.SIGNAL_RUN_FIRST,
@@ -83,6 +83,8 @@ class JAMediaTerminal(Gtk.Box):
         tamanio = int(string.split(" ")[-1])
         fuente = string.replace("%s" % tamanio, "").strip()
         
+        self.get_toplevel().set_sensitive(False)
+        
         dialogo = DialogoFormato(
             parent_window = self.get_toplevel(),
             fuente = fuente,
@@ -95,6 +97,8 @@ class JAMediaTerminal(Gtk.Box):
             font = "%s %s" % dialogo.get_font()
             
         dialogo.destroy()
+        
+        self.get_toplevel().set_sensitive(True)
         
         if font: self.notebook.set_font(font)
         
@@ -168,7 +172,7 @@ class NoteBookTerminal(Gtk.Notebook):
     Notebook Contenedor de Terminales.
     """
     
-    #__gtype_name__ = 'NoteBookTerminal'
+    __gtype_name__ = 'NoteBookTerminal'
     
     __gsignals__ = {
     "reset":(GObject.SIGNAL_RUN_FIRST,
@@ -357,7 +361,7 @@ class Terminal(Vte.Terminal):
     Terminal Configurable en distintos intérpretes.
     """
     
-    #__gtype_name__ = 'Terminal'
+    __gtype_name__ = 'Terminal'
     
     __gsignals__ = {
     "reset":(GObject.SIGNAL_RUN_FIRST,
@@ -471,7 +475,7 @@ class ToolbarTerminal(Gtk.Toolbar):
     Toolbar de JAMediaTerminal.
     """
     
-    #__gtype_name__ = 'ToolbarTerminal'
+    __gtype_name__ = 'ToolbarTerminal'
     
     __gsignals__ = {
     "accion":(GObject.SIGNAL_RUN_FIRST,
@@ -595,7 +599,7 @@ class DialogoFormato(Gtk.Dialog):
     Selector de fuente y tamaño.
     """
     
-    #__gtype_name__ = 'DialogoFormato'
+    __gtype_name__ = 'DialogoFormato'
     
     def __init__(self, parent_window = False,
         fuente = "Monospace", tamanio = 10):
@@ -696,7 +700,7 @@ class DialogoFormato(Gtk.Dialog):
     
 class TreeViewFonts(Gtk.TreeView):
     
-    #__gtype_name__ = 'TreeViewFonts'
+    __gtype_name__ = 'TreeViewFonts'
     
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
@@ -787,7 +791,7 @@ class TreeViewFonts(Gtk.TreeView):
         
 class TreeViewTamanio(Gtk.TreeView):
     
-    #__gtype_name__ = 'TreeViewTamanio'
+    __gtype_name__ = 'TreeViewTamanio'
     
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,

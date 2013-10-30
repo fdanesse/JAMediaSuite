@@ -477,6 +477,8 @@ class Notebook_SourceView(Gtk.Notebook):
         elif accion == "Formato":
             from JAMediaObjects.JAMediaTerminal import DialogoFormato
             
+            self.get_toplevel().set_sensitive(False)
+            
             dialogo = DialogoFormato(
                 parent_window = self.get_toplevel(),
                 fuente = self.config['fuente'],
@@ -486,6 +488,8 @@ class Notebook_SourceView(Gtk.Notebook):
             
             dialogo.destroy()
 
+            self.get_toplevel().set_sensitive(True)
+            
             if respuesta == Gtk.ResponseType.ACCEPT:
                 res = dialogo.get_font()
                 
