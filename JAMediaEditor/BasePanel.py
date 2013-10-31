@@ -43,7 +43,7 @@ class BasePanel(Gtk.Paned):
             WorkPanel.WorkPanel
     """
     
-    __gtype_name__ = 'BasePanel'
+    __gtype_name__ = 'JAMediaEditorBasePanel'
 
     __gsignals__ = {
      'update': (GObject.SIGNAL_RUN_FIRST,

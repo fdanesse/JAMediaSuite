@@ -2,13 +2,12 @@
 /*https://developer.gnome.org/gtk3/3.0/GtkCssProvider.html*/
 /*background: url{../images/imagen.png} no-repeat;*/
 
-/* Contenedores */
-GtkWindow {
+GtkWindow, GtkToolbar {
     background-color: #edf5ff;
     color: #000000;
 }
 
-DialogoProyecto {
+JAMediaEditorDialogoProyecto {
     background-color: #edf5ff;
     color: #000000;
     background-image: -gtk-gradient(linear,
@@ -17,27 +16,16 @@ DialogoProyecto {
         to(shade(#edf5ff, 1.00)));
 }
 
-GtkToolbar {
-    background-color: #edf5ff;
-    color: #000000;
-}
-
-BasePanel {
+GtkPaned {
     background-color: #edf5ff;
 }
 
-WorkPanel {
-    background-color: #edf5ff;
-}
-
-/* Widgets */
-
-Menu {
+JAMediaEditorMenu {
     background-color: #000000;
     color: #ffffff;
 }
 
-ToolbarArchivo {
+JAMediaEditorToolbarArchivo, JAMediaEditorToolbarProyecto, PygiHackToolbar, PygiHackMenu {
     background-color: #ffffff;
     background-image: -gtk-gradient(linear,
         left top, left bottom,
@@ -45,23 +33,7 @@ ToolbarArchivo {
         to(shade(#edf5ff, 1.00)));
 }
 
-ToolbarProyecto {
-    background-color: #ffffff;
-    background-image: -gtk-gradient(linear,
-        left top, left bottom,
-        from(shade(#edf5ff, 0.50)),
-        to(shade(#edf5ff, 1.00)));
-}
-
-ToolbarTerminal {
-    background-color: #ffffff;
-    background-image: -gtk-gradient(linear,
-        left top, left bottom,
-        from(shade(#edf5ff, 1.00)),
-        to(shade(#edf5ff, 0.50)));
-}
-
-ToolbarBusquedas {
+ToolbarTerminal, JAMediaEditorToolbarBusquedas {
     background-color: #ffffff;
     background-image: -gtk-gradient(linear,
         left top, left bottom,

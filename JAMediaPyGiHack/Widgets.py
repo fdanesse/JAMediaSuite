@@ -77,10 +77,6 @@ class Toolbar(Gtk.Toolbar):
         item.add(self.menu)
         self.insert(item, -1)
         
-        self.insert(
-            get_separador(draw = False,
-            ancho = 0, expand = True), -1)
-            
         archivo = os.path.join(
             JAMediaObjectsPath,
             "Iconos", "button-cancel.svg")

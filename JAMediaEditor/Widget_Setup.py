@@ -170,7 +170,7 @@ class DialogoSetup(Gtk.Dialog):
     Dialogo para presentar Información de Instaladores.
     """
     
-    __gtype_name__ = 'DialogoSetup'
+    __gtype_name__ = 'JAMediaEditorDialogoSetup'
     
     def __init__(self, parent_window = None, proyecto = None):
 
@@ -201,6 +201,7 @@ class DialogoSetup(Gtk.Dialog):
         scroll.add(help)
     
         hpaned = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
+        hpaned.__gtype_name__ = 'JAMediaEditorPanelWidget_setup'
         
         hpaned.pack1(self.notebook,
             resize = False, shrink = False)
@@ -264,7 +265,7 @@ class Notebook_Setup(Gtk.Notebook):
     Contenedor de Información de Instaladores gnome y sugar.
     """
     
-    __gtype_name__ = 'Notebook_Setup'
+    __gtype_name__ = 'JAMediaEditorNotebook_Setup'
     
     def __init__(self, proyecto):
 
@@ -399,7 +400,7 @@ class Gnome_Notebook(Gtk.Notebook):
     Contenedor de información de instalador gnome.
     """
     
-    __gtype_name__ = 'Gnome_Notebook'
+    __gtype_name__ = 'JAMediaEditorGnome_Notebook'
     
     def __init__(self, proyecto):
 
@@ -645,7 +646,7 @@ class Sugar_Notebook(Gtk.Notebook):
     Contenedor de información de instalador sugar.
     """
     
-    __gtype_name__ = 'Sugar_Notebook'
+    __gtype_name__ = 'JAMediaEditorSugar_Notebook'
     
     def __init__(self, proyecto):
 
@@ -810,7 +811,7 @@ class Setup_SourceView(GtkSource.View):
     Widget para mostrar contenido de archivos instaladores.
     """
     
-    __gtype_name__ = 'Setup_SourceView'
+    __gtype_name__ = 'JAMediaEditorSetup_SourceView'
     
     def __init__(self):
 
@@ -829,7 +830,7 @@ class Widget_icon(Gtk.Frame):
     Widget que permite al usuario seleccionar el ícono de la aplicación.
     """
     
-    __gtype_name__ = 'Widget_icon'
+    __gtype_name__ = 'JAMediaEditorWidget_icon'
 
     __gsignals__ = {
      'iconpath': (GObject.SIGNAL_RUN_FIRST,
@@ -928,7 +929,7 @@ class DialogoInstall(Gtk.Dialog):
     Dialogo para mostrar proceso de construcción de Instaladores.
     """
     
-    __gtype_name__ = 'DialogoInstall'
+    __gtype_name__ = 'JAMediaEditorDialogoInstall'
     
     def __init__(self,
         parent_window = None,
@@ -1013,7 +1014,7 @@ class DialogoInfoInstall(Gtk.Dialog):
     paquete de distribución de su proyecto.
     """
     
-    __gtype_name__ = 'DialogoInfoInstall'
+    __gtype_name__ = 'JAMediaEditorDialogoInfoInstall'
     
     def __init__(self, parent_window = None, distpath = None):
 
@@ -1037,7 +1038,7 @@ class Ceibal_Notebook(Gtk.Notebook):
     Contenedor de información de instalador gnome ceibal.
     """
     
-    __gtype_name__ = 'Ceibal_Notebook'
+    __gtype_name__ = 'JAMediaEditorCeibal_Notebook'
     
     def __init__(self, proyecto):
 

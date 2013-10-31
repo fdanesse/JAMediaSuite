@@ -33,6 +33,8 @@ class InfoNotebook(Gtk.Notebook):
     Estructura de proyecto.
     """
 
+    __gtype_name__ = 'JAMediaEditorInfoNotebook'
+    
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
@@ -344,6 +346,8 @@ class Introspeccion(Gtk.TreeView):
     TreeView para la Introspección
     """
 
+    __gtype_name__ = 'JAMediaEditorIntrospeccion'
+    
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
@@ -586,6 +590,8 @@ class Estructura_Proyecto(Gtk.TreeView):
     """
     TreeView para la estructura del proyecto.
     """
+    
+    __gtype_name__ = 'JAMediaEditorEstructura_Proyecto'
     
     __gsignals__ = {
     'open': (GObject.SIGNAL_RUN_FIRST,

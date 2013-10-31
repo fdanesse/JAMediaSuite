@@ -47,7 +47,7 @@ class Menu(Gtk.MenuBar):
     Toolbar Principal.
     """
     
-    __gtype_name__ = 'Menu'
+    __gtype_name__ = 'JAMediaEditorMenu'
     
     __gsignals__ = {
     'accion_proyecto': (GObject.SIGNAL_RUN_FIRST,
@@ -482,7 +482,7 @@ class DialogoProyecto(Gtk.Dialog):
     Diálogo para crear un nuevo proyecto.
     """
 
-    __gtype_name__ = 'DialogoProyecto'
+    __gtype_name__ = 'JAMediaEditorDialogoProyecto'
     
     def __init__(self, parent_window = None,
         title = "Crear Proyecto Nuevo", accion = "nuevo"):
@@ -802,6 +802,8 @@ class DialogoProyecto(Gtk.Dialog):
 
 class DialogoBuscar(Gtk.Dialog):
 
+    __gtype_name__ = 'JAMediaEditorDialogoBuscar'
+    
     def __init__(self, view, parent_window = None,
         title = "Buscar Texto", texto = None):
 
@@ -959,6 +961,8 @@ class DialogoBuscar(Gtk.Dialog):
 
 class DialogoReemplazar(Gtk.Dialog):
 
+    __gtype_name__ = 'JAMediaEditorDialogoReemplazar'
+    
     def __init__(self, view, parent_window = None,
         title = "Reemplazar Texto", texto = None):
 
@@ -1148,6 +1152,8 @@ class My_FileChooser(Gtk.FileChooserDialog):
     hacer "guardar como" sobre un archivo abierto.
     """
     
+    __gtype_name__ = 'JAMediaEditorMy_FileChooser'
+    
     __gsignals__ = {
     'load':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
@@ -1255,6 +1261,8 @@ class My_FileChooser(Gtk.FileChooserDialog):
 
 class Multiple_FileChooser(Gtk.FileChooserDialog):
     
+    __gtype_name__ = 'JAMediaEditorMultiple_FileChooser'
+    
     __gsignals__ = {
     'load':(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
@@ -1349,6 +1357,8 @@ class WidgetAutores(Gtk.Box):
     """
     Box para agregar datos de los Autores
     """
+    
+    __gtype_name__ = 'JAMediaEditorWidgetAutores'
 
     def __init__(self):
         
@@ -1452,7 +1462,7 @@ class ToolbarProyecto(Gtk.Toolbar):
     Toolbar para el proyecto.
     """
     
-    __gtype_name__ = 'ToolbarProyecto'
+    __gtype_name__ = 'JAMediaEditorToolbarProyecto'
     
     __gsignals__ = {
     "accion":(GObject.SIGNAL_RUN_FIRST,
@@ -1569,7 +1579,7 @@ class ToolbarArchivo(Gtk.Toolbar):
     Toolbar para el archivo
     """
     
-    __gtype_name__ = 'ToolbarArchivo'
+    __gtype_name__ = 'JAMediaEditorToolbarArchivo'
     
     __gsignals__ = {
     "accion":(GObject.SIGNAL_RUN_FIRST,
@@ -1726,7 +1736,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         
 class ToolbarBusquedas(Gtk.Toolbar):
     
-    __gtype_name__ = 'ToolbarBusquedas'
+    __gtype_name__ = 'JAMediaEditorToolbarBusquedas'
     
     __gsignals__ = {
     "accion":(GObject.SIGNAL_RUN_FIRST,
@@ -1797,7 +1807,7 @@ class DialogoAlertaSinGuardar(Gtk.Dialog):
     que contiene cambios sin guardar.
     """
 
-    __gtype_name__ = 'DialogoAlertaSinGuardar'
+    __gtype_name__ = 'JAMediaEditorDialogoAlertaSinGuardar'
     
     def __init__(self, parent_window = None):
 
@@ -1824,7 +1834,7 @@ class DialogoSobreEscritura(Gtk.Dialog):
     reescritura de un archivo existente.
     """
 
-    __gtype_name__ = 'DialogoSobreEscritura'
+    __gtype_name__ = 'JAMediaEditorDialogoSobreEscritura'
     
     def __init__(self, parent_window = None):
 
@@ -1849,6 +1859,8 @@ class DialogoErrores(Gtk.Dialog):
     Diálogo para chequear errores
     """
 
+    __gtype_name__ = 'JAMediaEditorDialogoErrores'
+    
     def __init__(self, view, parent_window = None):
 
         Gtk.Dialog.__init__(self,
@@ -1879,6 +1891,8 @@ class DialogoErrores(Gtk.Dialog):
         
 class ErroresTreeview(Gtk.TreeView):
 
+    __gtype_name__ = 'JAMediaEditorErroresTreeview'
+    
     def __init__(self, view):
 
         Gtk.TreeView.__init__(self,
@@ -1950,6 +1964,8 @@ class Estructura_Menu(Gtk.Menu):
     """
     Menu con opciones para treeview de Estructura.
     """
+    
+    __gtype_name__ = 'JAMediaEditorEstructura_Menu'
     
     __gsignals__ = {
     'accion':(GObject.SIGNAL_RUN_FIRST,
@@ -2080,6 +2096,8 @@ class DialogoEliminar(Gtk.Dialog):
     del archivo/directorio seleccionado
     """
 
+    __gtype_name__ = 'JAMediaEditorDialogoEliminar'
+    
     def __init__(self, tipo = "Archivo", parent_window = None):
 
         Gtk.Dialog.__init__(self,
@@ -2102,6 +2120,8 @@ class BusquedaGrep(Gtk.Dialog):
     Dialogo con un TreeView para busquedas con Grep
     """
 
+    __gtype_name__ = 'JAMediaEditorBusquedaGrep'
+    
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
@@ -2179,6 +2199,8 @@ class BusquedaGrep(Gtk.Dialog):
             self.treeview.agregar_items(items)
         
 class TreeViewBusquedaGrep(Gtk.TreeView):
+    
+    __gtype_name__ = 'JAMediaEditorTreeViewBusquedaGrep'
     
     __gsignals__ = {
     "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
@@ -2261,7 +2283,7 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
 
 class Credits(Gtk.Dialog):
     
-    __gtype_name__ = 'Credits'
+    __gtype_name__ = 'JAMediaEditorCredits'
     
     def __init__(self, parent = None):
 

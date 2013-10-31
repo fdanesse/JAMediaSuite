@@ -55,7 +55,7 @@ class WorkPanel(Gtk.Paned):
         JAMediaObjects.JAMediaTerminal
     """
     
-    __gtype_name__ = 'WorkPanel'
+    __gtype_name__ = 'JAMediaEditorWorkPanel'
     
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_FIRST,
@@ -278,6 +278,8 @@ class Notebook_SourceView(Gtk.Notebook):
     archivos abiertos.
     """
 
+    __gtype_name__ = 'JAMediaEditorNotebook_SourceView'
+    
     __gsignals__ = {
      'new_select': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
@@ -577,6 +579,8 @@ class SourceView(GtkSource.View):
     """
     Visor de código para archivos abiertos.
     """
+    
+    __gtype_name__ = 'JAMediaEditorSourceView'
     
     def __init__(self, config):
 
