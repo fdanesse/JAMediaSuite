@@ -115,7 +115,7 @@ class BasePanel(Gtk.Paned):
         toolbarbusquedas.connect("accion", self.__buscar_mas)
         
         self.infonotebook.connect('new_select', self.__set_linea)
-        self.infonotebook.connect('open', self.__open_file)
+        self.infonotebook.connect('open', self.__abrir_archivo)
         self.infonotebook.connect('search_on_grep',
             self.__search_grep)
         self.infonotebook.connect('remove_proyect',
@@ -157,14 +157,6 @@ class BasePanel(Gtk.Paned):
         dialogo.destroy()
         
         sourceview.set_show_line_numbers(visible)
-        
-    def __open_file(self, widget, filepath):
-        """
-        Cuando se envia "abrir" un archivo desde el
-        visor de estructura del proyecto.
-        """
-        
-        self.workpanel.abrir_archivo(filepath)
         
     def __buscar(self, widget, texto):
         """
@@ -337,7 +329,7 @@ class BasePanel(Gtk.Paned):
         """
         Abre un archivo.
         """
-
+        
         if archivo:
             import commands
             datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
