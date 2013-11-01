@@ -324,7 +324,9 @@ class InfoNotebook(Gtk.Notebook):
         
         if not nombre: nombre = "Introspección"
         
-        self.set_tab_label_text(self.get_nth_page(0), nombre)
+        if self.get_nth_page(0):
+            self.set_tab_label_text(self.get_nth_page(0), nombre)
+            
         self.introspeccion.set_introspeccion(nombre, texto)
         
     def buscar(self, texto):
@@ -382,7 +384,11 @@ class Introspeccion(Gtk.TreeView):
         realizar introspeccion sobre él.
         """
         
-        self.get_model().clear()
+        if self.get_model():
+            self.get_model().clear()
+            
+        else:
+            return
 
         if not texto: return
         
