@@ -257,7 +257,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_escala_rotacion = []
         self.buttons_config = []
         self.buttons_guardar = []
-        self.modo = "edit"
+        self.modo = False # Solo almacenará edit o player
         
         self.insert(get_separador(draw = False,
             ancho = 3, expand = False), -1)
@@ -447,6 +447,9 @@ class ToolbarImagen(Gtk.Toolbar):
         
     def set_modo(self, modo):
         
+        if modo == "edit" or modo == "player":
+            self.modo = modo
+            
         if modo == "edit":
             map(self.__ocultar, self.buttons_player)
             map(self.__mostrar, self.buttons_escala_rotacion)
@@ -463,8 +466,6 @@ class ToolbarImagen(Gtk.Toolbar):
             
         elif modo == "nochanged":
             map(self.__ocultar, self.buttons_guardar)
-            
-        self.modo = modo
         
     def __mostrar(self, objeto):
         
