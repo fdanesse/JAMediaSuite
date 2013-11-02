@@ -107,6 +107,10 @@ class VisorImagenes (Gtk.EventBox):
         
     def __clicks_en_pantalla(self, widget, event):
         
+        pass
+        # FIXME: El visor es fullscreen, pero esta funcionalidad puede ser
+        # insteresante cuando la aplicación está embebida en otra.
+        """
         if event.type.value_name == "GDK_2BUTTON_PRESS":
             
             self.get_toplevel().set_sensitive(False)
@@ -123,6 +127,7 @@ class VisorImagenes (Gtk.EventBox):
                 GLib.idle_add(ventana.fullscreen)
                 
             self.get_toplevel().set_sensitive(True)
+        """
             
     def __do_motion_notify_event(self, widget, event):
         """
@@ -592,6 +597,20 @@ class Visor(Gtk.DrawingArea):
             self.set_size_request(width, height)
             self.rotar(0)
         
+        GLib.idle_add(self.__center_scroll)
+        
+    def __center_scroll(self):
+        
+        adj = self.get_parent().get_hadjustment()
+        up = adj.get_upper()
+        adj.set_value((up - adj.get_page_size())/2)
+        
+        adj = self.get_parent().get_vadjustment()
+        up = adj.get_upper()
+        adj.set_value((up - adj.get_page_size())/2)
+        
+        return False
+    
     def center_image(self):
         
         self.zoom_valor = 0
