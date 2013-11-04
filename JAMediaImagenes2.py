@@ -44,8 +44,8 @@ class Ventana(Gtk.Window):
         self.set_default_size(640, 480)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_border_width(0)
-        self.maximize()
-        self.fullscreen()
+        #self.maximize()
+        #self.fullscreen()
         
         self.socket = Gtk.Socket()
         self.add(self.socket)

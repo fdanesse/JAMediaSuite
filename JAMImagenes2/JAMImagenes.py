@@ -42,7 +42,7 @@ PATH = os.path.dirname(__file__)
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
-style_path = os.path.join(PATH, "JAMediaImagenes.css")
+style_path = os.path.join(PATH, "Estilo.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
 

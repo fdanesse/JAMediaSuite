@@ -41,6 +41,8 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 from JAMediaObjects.JAMFileSystem import describe_archivo
 
+GObject.threads_init()
+
 class VisorImagenes (Gtk.EventBox):
     
     __gtype_name__ = 'JAMediaImagenesVisorImagenes'
@@ -59,8 +61,6 @@ class VisorImagenes (Gtk.EventBox):
         
         base_box = Gtk.VBox()
         
-        self.imagenes = []
-        self.active_index_imagen = 0
         self.intervalo = False
         self.actualizador = False
         
@@ -69,19 +69,35 @@ class VisorImagenes (Gtk.EventBox):
         self.toolbar_config = ToolbarConfig()
         self.toolbartry = ToolbarTry()
         
+        ### En panel
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(self.visor)
         
+        panel = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
+        panel.pack1(scroll, resize = True, shrink = False)
+        
+        self.listaiconview = ListaIconView(None)
+        
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(
+            Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC)
+        scroll.add_with_viewport(self.listaiconview)
+        
+        panel.pack2(scroll, resize = False, shrink = False)
+        ###
+        
         base_box.pack_start(self.toolbar, False, False, 0)
         base_box.pack_start(self.toolbar_config, False, False, 0)
-        base_box.pack_start(scroll, True, True, 0)
+        base_box.pack_start(panel, True, True, 0)
         base_box.pack_end(self.toolbartry, False, False, 0)
         
         self.add(base_box)
         
+        self.connect("realize", self.__rescale)
         self.show_all()
     
         self.toolbar.connect('switch_to', self.__emit_switch)
@@ -104,6 +120,13 @@ class VisorImagenes (Gtk.EventBox):
         )
         
         self.visor.connect("button_press_event", self.__clicks_en_pantalla)
+        self.listaiconview.connect("selected", self.__show_imagen)
+        
+    def __rescale(self, widget):
+        
+        rect = self.get_toplevel().get_allocation()
+        self.listaiconview.set_size_request(-1, -1)
+        self.listaiconview.hide()
         
     def __clicks_en_pantalla(self, widget, event):
         
@@ -128,7 +151,7 @@ class VisorImagenes (Gtk.EventBox):
                 
             self.get_toplevel().set_sensitive(True)
         """
-            
+        
     def __do_motion_notify_event(self, widget, event):
         """
         Cuando se mueve el mouse sobre la ventana.
@@ -145,14 +168,19 @@ class VisorImagenes (Gtk.EventBox):
         abajo = range(root_rect.height - rect.height, root_rect.height)
         x, y = self.get_toplevel().get_pointer()
         
-        if y in arriba or y in abajo:
+        rect = self.listaiconview.get_allocation()
+        derecha = range(root_rect.width - rect.width, root_rect.width)
+        
+        if y in arriba or y in abajo or x in derecha:
             if not self.toolbar.get_visible(): self.toolbar.show()
             if not self.toolbartry.get_visible(): self.toolbartry.show()
+            if not self.listaiconview.get_visible(): self.listaiconview.show()
             return
         
         else:
             if self.toolbar.get_visible(): self.toolbar.hide()
             if self.toolbartry.get_visible(): self.toolbartry.hide()
+            if self.listaiconview.get_visible(): self.listaiconview.hide()
             return
         
     def __set_presentacion(self, widget = None, intervalo = False):
@@ -185,14 +213,7 @@ class VisorImagenes (Gtk.EventBox):
         Cuando está en modo Diapositivas.
         """
         
-        if self.active_index_imagen < len(self.imagenes)-1:
-            self.active_index_imagen += 1
-            
-        else:
-            self.active_index_imagen = 0
-            
-        self.__show_imagen(self.imagenes[self.active_index_imagen])
-        
+        self.listaiconview.seleccionar_siguiente()
         return True
     
     def __set_accion(self, widget, accion):
@@ -224,28 +245,14 @@ class VisorImagenes (Gtk.EventBox):
                 self.toolbar_config.hide()
                 
             self.__stop_presentacion()
-
-            if self.active_index_imagen > 0:
-                self.active_index_imagen -= 1
-                
-            else:
-                self.active_index_imagen = self.imagenes.index(self.imagenes[-1])
-                
-            self.__show_imagen(self.imagenes[self.active_index_imagen])
+            self.listaiconview.seleccionar_anterior()
         
         elif accion == "Siguiente":
             if self.toolbar_config.get_visible():
                 self.toolbar_config.hide()
                 
             self.__stop_presentacion()
-
-            if self.active_index_imagen < len(self.imagenes)-1:
-                self.active_index_imagen += 1
-                
-            else:
-                self.active_index_imagen = 0
-                
-            self.__show_imagen(self.imagenes[self.active_index_imagen])
+            self.listaiconview.seleccionar_siguiente()
             
         elif accion == "Detener":
             if self.toolbar_config.get_visible():
@@ -323,23 +330,9 @@ class VisorImagenes (Gtk.EventBox):
         
     def run(self):
         
-        self.imagenes = []
-        for arch in os.listdir(self.path):
-            path = os.path.join(self.path, arch)
-            
-            if os.path.isfile(path):
-                descripcion = describe_archivo(path)
-                
-                if 'image' in descripcion and not 'iso' in descripcion:
-                    self.imagenes.append(path)
-                    
-        if self.imagenes:
-            if len(self.imagenes) == 1:
-                self.toolbar.set_modo("noconfig")
-                
-            self.__show_imagen(self.imagenes[0])
-            
-    def __show_imagen(self, imagen):
+        self.listaiconview.load_previews(self.path)
+        
+    def __show_imagen(self, widget, imagen):
         
         self.visor.load(imagen)
 
@@ -501,7 +494,7 @@ class Visor(Gtk.DrawingArea):
             
         Gdk.cairo_set_source_pixbuf(context, dst, x, y)
         context.paint()
-            
+        
     def rotar(self, angulo):
         
         if not self.imagen_original: return
@@ -615,4 +608,129 @@ class Visor(Gtk.DrawingArea):
         
         self.zoom_valor = 0
         self.set_size_request(-1, -1)
+        
+class ListaIconView(Gtk.IconView):
+    """
+    http://python-gtk-3-tutorial.readthedocs.org/en/latest/iconview.html
+    """
+    
+    __gtype_name__ = 'JAMediaImagenesListaIconView'
+    
+    __gsignals__ = {
+    'selected': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        
+    def __init__(self, path):
+        
+        Gtk.IconView.__init__(self)
+        
+        self.path = path
+        
+        self.previews = Gtk.ListStore(
+            GdkPixbuf.Pixbuf,
+            GObject.TYPE_STRING)
+            
+        self.set_model(self.previews)
+        self.set_pixbuf_column(0)
+        self.set_text_column(1)
+        
+        self.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        
+        self.show_all()
+        
+    def load_previews(self, basepath):
+        """
+        Crea y carga los previews de imagen de los archivos
+        contenidos en basepath.
+        """
+        
+        imagen_en_path = False
+        
+        self.get_toplevel().set_sensitive(False)
+        
+        self.path = basepath
+        
+        for temp_path in os.listdir(self.path):
+            path = os.path.join(self.path, temp_path)
+            
+            if not os.access(path, os.R_OK) or os.path.isdir(path):
+                continue
+                
+            elif os.path.isfile(path):
+                descripcion = describe_archivo(path)
+                
+                if 'image' in descripcion and not 'iso' in descripcion:
+                    try:
+                        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, 100, -1)
+                        self.previews.append([pixbuf, path.split("/")[-1]])
+                        
+                        imagen_en_path = True
+                        
+                        while Gtk.events_pending():
+                            Gtk.main_iteration()
+                            
+                    except:
+                        pass
+                
+        self.seleccionar_primero()
+        self.get_toplevel().set_sensitive(True)
+        
+        return imagen_en_path
+        
+    def do_selection_changed(self):
+        """
+        Cuando se selecciona un item.
+        """
+        
+        try:
+            path = self.get_selected_items()[0].to_string()
+            
+        except:
+            return
+        
+        iter = self.get_model().get_iter(path)
+        valor =  self.get_model().get_value(iter, 1)
+        
+        self.emit("selected", os.path.join(self.path, valor))
+
+    def seleccionar_primero(self):
+        
+        iter = self.get_model().get_iter_first()
+        self.select_path(self.get_model().get_path(iter))
+        
+    def seleccionar_siguiente(self):
+        
+        try:
+            path = self.get_selected_items()[0].to_string()
+            iter = self.get_model().get_iter(path)
+            next = self.get_model().iter_next(iter)
+        
+            self.select_path(self.get_model().get_path(next))
+            
+        except:
+            self.seleccionar_primero()
+    
+    def seleccionar_anterior(self):
+        
+        try:
+            path = self.get_selected_items()[0].to_string()
+            iter = self.get_model().get_iter(path)
+            previous = self.get_model().iter_previous(iter)
+            
+            self.select_path(self.get_model().iter_previous(previous))
+            
+        except:
+            self.seleccionar_ultimo()
+        
+    def seleccionar_ultimo(self):
+        
+        iter = self.get_model().get_iter_first()
+
+        ultimo = None
+        while iter:
+            ultimo = iter
+            iter = self.get_model().iter_next(iter)
+
+        if ultimo:
+            self.select_path(self.get_model().get_path(ultimo))
         

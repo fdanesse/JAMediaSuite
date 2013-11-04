@@ -6,8 +6,8 @@ JAMediaImagenesControlReproduccion{
     background-color: #b0c4de;
 }
 
-WindowBase, PlugBase, JAMediaImagenesIconView,
-JAMediaImagenesVisor,
+WindowBase, PlugBase, GtkIconView,
+JAMediaImagenesVisor, GtkPaned,
 JAMediaImagenesHelp, JAMediaImagenesCredits{
     background-color: #778899;
 }

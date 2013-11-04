@@ -521,7 +521,7 @@ class Lista(Gtk.TreeView):
 
         if iter:
             self.treeselection.select_iter(iter)
-            path = model.get_path(iter)
+            #path = model.get_path(iter)
             
 # << -------------------- LISTA GENERICA --------------------- #
 
