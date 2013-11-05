@@ -143,6 +143,8 @@ class JAMediaYoutube(Gtk.Widget):
     def download(self, url, titulo):
         """
         Inicia la descarga de un archivo.
+        
+        http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
         """
         
         import time
@@ -162,7 +164,7 @@ class JAMediaYoutube(Gtk.Widget):
         archivo = "%s%s%s" % ("\"", self.titulo, "\"")
         destino = os.path.join(get_tube_directory(), archivo)
         #estructura = "%s %s -i -R %s -f %s -w --no-part -o %s" % (youtubedl, self.url, 1, 34, destino)
-        estructura = "%s %s -i -R %s -f %s --no-part -o %s" % (youtubedl, self.url, 1, 34, destino)
+        estructura = "%s %s -i -R %s -f %s --no-part -o %s" % (youtubedl, self.url, 1, 5, destino)
         self.youtubedl = subprocess.Popen(estructura, shell = True, stdout = open(self.STDOUT,"w+b"),
         stderr = open(self.STDOUT,"r+b"), universal_newlines=True)
         self.salida = open(self.STDOUT,"r")
