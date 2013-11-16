@@ -333,9 +333,10 @@ class BasePanel(Gtk.Paned):
         if archivo:
             import commands
             datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
-            
+            print datos
             if "text" in datos or "x-python" in datos or \
-                "x-empty" in datos or "svg+xml" in datos:
+                "x-empty" in datos or "svg+xml" in datos or \
+                "application/xml" in datos:
                 self.workpanel.abrir_archivo(archivo)
                 
         else:

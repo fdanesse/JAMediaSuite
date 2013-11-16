@@ -45,7 +45,8 @@ class PanelTube(Gtk.Paned):
     
     def __init__(self):
         
-        Gtk.Paned.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
+        Gtk.Paned.__init__(self,
+            orientation = Gtk.Orientation.HORIZONTAL)
         
         self.toolbar_encontrados = None
         self.encontrados = None
@@ -110,22 +111,36 @@ class PanelTube(Gtk.Paned):
         
         self.show_all()
         
-        self.toolbar_videos_izquierda.connect('mover_videos', self.__mover_videos)
-        self.toolbar_videos_derecha.connect('mover_videos', self.__mover_videos)
-        self.toolbar_videos_izquierda.connect('borrar', self.__set_borrar)
-        self.toolbar_videos_derecha.connect('borrar', self.__set_borrar)
-        self.toolbar_accion_izquierda.connect('ok', self.__ejecutar_borrar)
-        self.toolbar_accion_derecha.connect('ok', self.__ejecutar_borrar)
-        self.toolbar_encontrados.connect('abrir', self.__abrir_lista_shelve)
-        self.toolbar_encontrados.connect('guardar', self.__show_toolbar_guardar)
-        self.toolbar_guardar_encontrados.connect('ok', self.__guardar_lista_shelve)
-        self.toolbar_descargar.connect('abrir', self.__abrir_lista_shelve)
-        self.toolbar_descargar.connect('guardar', self.__show_toolbar_guardar)
-        self.toolbar_guardar_descargar.connect('ok', self.__guardar_lista_shelve)
-        self.toolbar_videos_derecha.connect("comenzar_descarga",
-            self.__comenzar_descarga)
-        self.toolbar_descargar.connect("menu_activo", self.__ejecutar_cancel_toolbars)
-        self.toolbar_encontrados.connect("menu_activo", self.__ejecutar_cancel_toolbars)
+        self.toolbar_videos_izquierda.connect(
+            'mover_videos', self.__mover_videos)
+        self.toolbar_videos_derecha.connect(
+            'mover_videos', self.__mover_videos)
+        self.toolbar_videos_izquierda.connect(
+            'borrar', self.__set_borrar)
+        self.toolbar_videos_derecha.connect(
+            'borrar', self.__set_borrar)
+        self.toolbar_accion_izquierda.connect(
+            'ok', self.__ejecutar_borrar)
+        self.toolbar_accion_derecha.connect(
+            'ok', self.__ejecutar_borrar)
+        self.toolbar_encontrados.connect(
+            'abrir', self.__abrir_lista_shelve)
+        self.toolbar_encontrados.connect(
+            'guardar', self.__show_toolbar_guardar)
+        self.toolbar_guardar_encontrados.connect(
+            'ok', self.__guardar_lista_shelve)
+        self.toolbar_descargar.connect(
+            'abrir', self.__abrir_lista_shelve)
+        self.toolbar_descargar.connect(
+            'guardar', self.__show_toolbar_guardar)
+        self.toolbar_guardar_descargar.connect(
+            'ok', self.__guardar_lista_shelve)
+        self.toolbar_videos_derecha.connect(
+            "comenzar_descarga", self.__comenzar_descarga)
+        self.toolbar_descargar.connect(
+            "menu_activo", self.__ejecutar_cancel_toolbars)
+        self.toolbar_encontrados.connect(
+            "menu_activo", self.__ejecutar_cancel_toolbars)
         
         self.toolbars_flotantes = [
             self.toolbar_guardar_encontrados,

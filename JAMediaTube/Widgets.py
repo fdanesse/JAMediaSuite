@@ -714,7 +714,8 @@ class Toolbar_Descarga(Gtk.Box):
         from JAMediaObjects.JAMediaYoutube import JAMediaYoutube
         self.jamediayoutube = JAMediaYoutube()
         
-        self.toolbar.insert(get_separador(draw = False,
+        self.toolbar.insert(
+            get_separador(draw = False,
             ancho = 3, expand = False), -1)
         
         item = Gtk.ToolItem()
@@ -755,7 +756,9 @@ class Toolbar_Descarga(Gtk.Box):
         
         self.show_all()
         
-        self.jamediayoutube.connect("progress_download", self.__progress_download)
+        self.jamediayoutube.connect(
+            "progress_download",
+            self.__progress_download)
         
     def download(self, video_item):
         """
@@ -782,7 +785,8 @@ class Toolbar_Descarga(Gtk.Box):
         if self.actualizador:
             GLib.source_remove(self.actualizador)
             
-        self.actualizador = GLib.timeout_add(1000, self.__handle)
+        self.actualizador = GLib.timeout_add(
+            1000, self.__handle)
         
         self.show_all()
         
@@ -798,10 +802,10 @@ class Toolbar_Descarga(Gtk.Box):
         else:
             self.contadortestigo += 1
             
-        if self.contadortestigo > 10:
+        if self.contadortestigo > 15:
+            print "\nNo se pudo controlar la descarga de:"
+            print ("%s %s\n") % (self.titulo, self.url)
             self.__cancel_download()
-            print "No se pudo controlar la descarga de:"
-            print self.titulo, self.url
             return False
         
         return True
@@ -864,7 +868,7 @@ class Toolbar_Descarga(Gtk.Box):
             self.actualizador = False
             
         try:
-            self.jamediayoutube.end()
+            self.jamediayoutube.reset()
             
         except:
             pass

@@ -46,7 +46,8 @@ class Ventana(Gtk.Window):
         super(Ventana, self).__init__()
         
         self.set_title("JAMediaTube")
-        self.set_icon_from_file(os.path.join(JAMediaObjectsPath,
+        self.set_icon_from_file(
+            os.path.join(JAMediaObjectsPath,
             "Iconos", "JAMediaTube.png"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
@@ -128,7 +129,8 @@ class Ventana(Gtk.Window):
         self.jamedia.setup_init()
         self.jamedia.pack_standar()
         self.jamedia.pack_efectos()
-        self.jamedia.switch_reproductor(None, "JAMediaReproductor")
+        self.jamedia.switch_reproductor(
+            None, "JAMediaReproductor")
         
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
@@ -149,7 +151,8 @@ class Ventana(Gtk.Window):
             target,
             Gdk.DragAction.MOVE)
             
-        self.paneltube.encontrados.connect("drag-drop", self.__drag_drop)
+        self.paneltube.encontrados.connect(
+            "drag-drop", self.__drag_drop)
         self.paneltube.encontrados.drag_dest_add_uri_targets()
         
         self.paneltube.descargar.drag_dest_set(
@@ -157,19 +160,28 @@ class Ventana(Gtk.Window):
             target,
             Gdk.DragAction.MOVE)
             
-        self.paneltube.descargar.connect("drag-drop", self.__drag_drop)
+        self.paneltube.descargar.connect(
+            "drag-drop", self.__drag_drop)
         self.paneltube.descargar.drag_dest_add_uri_targets()
         
         self.connect("delete-event", self.__salir)
         self.toolbar.connect('salir', self.__confirmar_salir)
-        self.toolbar_salir.connect('salir', self.__salir)
-        self.toolbar.connect('switch', self.__switch, 'jamedia')
-        self.jamedia.connect('salir', self.__switch, 'jamediatube')
-        self.toolbar_busqueda.connect("comenzar_busqueda", self.__comenzar_busqueda)
-        self.paneltube.connect('download', self.__run_download)
-        self.paneltube.connect('open_shelve_list', self.__open_shelve_list)
-        self.toolbar_descarga.connect('end', self.__run_download)
-        self.paneltube.connect("cancel_toolbar", self.__cancel_toolbar)
+        self.toolbar_salir.connect(
+            'salir', self.__salir)
+        self.toolbar.connect(
+            'switch', self.__switch, 'jamedia')
+        self.jamedia.connect(
+            'salir', self.__switch, 'jamediatube')
+        self.toolbar_busqueda.connect(
+            "comenzar_busqueda", self.__comenzar_busqueda)
+        self.paneltube.connect('download',
+            self.__run_download)
+        self.paneltube.connect('open_shelve_list',
+            self.__open_shelve_list)
+        self.toolbar_descarga.connect('end',
+            self.__run_download)
+        self.paneltube.connect("cancel_toolbar",
+            self.__cancel_toolbar)
         
     def __cancel_toolbar(self, widget = None):
         
@@ -259,7 +271,8 @@ class Ventana(Gtk.Window):
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
         map(self.__mostrar,[self.alerta_busqueda])
-        self.alerta_busqueda.label.set_text("Buscando: %s" % (palabras))
+        self.alerta_busqueda.label.set_text(
+            "Buscando: %s" % (palabras))
         
         objetos = self.paneltube.encontrados.get_children()
         
@@ -275,12 +288,14 @@ class Ventana(Gtk.Window):
         que agrega los videos al panel.
         """
         
+        # FIXME: Reparar (Si no hay conexión)
         import JAMediaObjects.JAMediaYoutube as YT
         
         for video in YT.Buscar(palabras):
             self.videos_temp.append(video)
         
-        GLib.idle_add(self.__add_videos, self.videos_temp, self.paneltube.encontrados)
+        GLib.idle_add(self.__add_videos, self.videos_temp,
+            self.paneltube.encontrados)
         
         return False
     
