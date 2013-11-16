@@ -379,6 +379,7 @@ class Introspeccion(Gtk.TreeView):
         iter = self.get_model().get_iter(path)
         index = self.get_model().get_value(iter, 0)
         texto = self.get_model().get_value(iter, 1)
+        texto = texto.split(":")[0]
 
         self.emit('new_select', index, texto)
 

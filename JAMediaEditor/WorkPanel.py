@@ -192,31 +192,35 @@ class WorkPanel(Gtk.Paned):
         else:
             ### Cuando se ejecuta el main de proyecto.
             source = None
-            
-            for view in self.get_archivos_de_proyecto(self.get_parent().get_parent().proyecto["path"]):
+
+            for view in self.get_archivos_de_proyecto(
+                self.get_parent().get_parent().proyecto["path"]):
+
                 if view.archivo == archivo:
                     source = view
                     break
-                    
+
             if source:
                 if source.get_buffer().get_modified():
                     from Widgets import DialogoAlertaSinGuardar
-                    
-                    dialog = DialogoAlertaSinGuardar(parent_window = self.get_toplevel())
+
+                    dialog = DialogoAlertaSinGuardar(
+                        parent_window=self.get_toplevel())
                     respuesta = dialog.run()
                     dialog.destroy()
-                    
+
                     if respuesta == Gtk.ResponseType.ACCEPT:
                         source.guardar()
-                        
+
                     elif respuesta == Gtk.ResponseType.CANCEL:
                         return
-                    
+
                     elif respuesta == Gtk.ResponseType.CLOSE:
                         return
-                    
-        if archivo: self.terminal.ejecutar(archivo)
-        
+
+        if archivo:
+            self.terminal.ejecutar(archivo)
+
     def detener_ejecucion(self, widget=None, notebook=None,
         terminal=None, pag_indice=None):
         """
@@ -454,7 +458,8 @@ class Notebook_SourceView(Gtk.Notebook):
             for pagina in paginas:
                 self.config['numeracion'] = valor
                 view = pagina.get_child()
-                view.set_accion(accion, self.config['numeracion'])
+                view.set_accion(accion,
+                    self.config['numeracion'])
                 
         elif accion == "Aumentar":
             for pagina in paginas:
@@ -1083,7 +1088,7 @@ class SourceView(GtkSource.View):
         texto = buffer.get_text(linea_iter, linea_iter_next, True)
 
         buffer.select_range(linea_iter, linea_iter_next)
-        self.scroll_to_iter(linea_iter_next, 0.1, 1, 1, 1)
+        self.scroll_to_iter(linea_iter_next, 0.1, 1, 1, 0.1)
 
     def __key_press_event(self, widget, event):
         """
