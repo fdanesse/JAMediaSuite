@@ -131,33 +131,33 @@ class BasePanel(Gtk.Paned):
             Se selecciona y
             Se abre el dialogo buscar.
         """
-        
-        self.__open_file(None, datos[0])
-        
+
+        self.__abrir_archivo(None, datos[0])
+
         paginas = self.workpanel.notebook_sourceview.get_n_pages()
-        
+
         for indice in range(paginas):
             sourceview = self.workpanel.notebook_sourceview.get_nth_page(indice).get_child()
-            
+
             visible = sourceview.get_show_line_numbers()
             sourceview.set_show_line_numbers(True)
-            
+
             if sourceview.archivo == datos[0]:
                 self.workpanel.notebook_sourceview.set_current_page(indice)
                 break
-            
+
         from Widgets import DialogoBuscar
-        
+
         dialogo = DialogoBuscar(sourceview,
-            parent_window = parent,
-            title = "Buscar Texto", texto = datos[2])
+            parent_window=parent,
+            title="Buscar Texto", texto=datos[2])
 
         dialogo.run()
-        
+
         dialogo.destroy()
-        
+
         sourceview.set_show_line_numbers(visible)
-        
+
     def __buscar(self, widget, texto):
         """
         Recibe el texto a buscar.
@@ -329,19 +329,22 @@ class BasePanel(Gtk.Paned):
         """
         Abre un archivo.
         """
-        
+
         if archivo:
             import commands
-            datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
+            datos = commands.getoutput(
+                'file -ik %s%s%s' % ("\"", archivo, "\""))
+
             print datos
             if "text" in datos or "x-python" in datos or \
                 "x-empty" in datos or "svg+xml" in datos or \
                 "application/xml" in datos:
+
                 self.workpanel.abrir_archivo(archivo)
-                
+
         else:
             self.workpanel.abrir_archivo(None)
-        
+
     def set_accion_proyecto(self, widget, accion):
         """
         Cuando se hace click en la toolbar de proyecto o
