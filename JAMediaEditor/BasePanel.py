@@ -272,20 +272,20 @@ class BasePanel(Gtk.Paned):
         else:
             print "Accion sin asignar en BasePanel", accion
         
-    def __set_linea(self, widget, texto):
+    def __set_linea(self, widget, index, texto):
         """
         Recibe la linea seleccionada en instrospeccion y
         y la pasa a workpanel para ser seleccionada en el código.
         """
         
-        self.workpanel.set_linea(texto)
+        self.workpanel.set_linea(index, texto)
 
     def __set_introspeccion(self, widget, view=False, estructura=False):
         """
         Recibe nombre y contenido de archivo para
         realizar introspeccion sobre él.
         """
-        
+
         nombre = "Introspección"
         text = ''
         
@@ -300,7 +300,7 @@ class BasePanel(Gtk.Paned):
             text = buffer.get_text(inicio, fin, 0)
             
         ### Setear Introspeción.
-        self.infonotebook.set_introspeccion(nombre, text)
+        self.infonotebook.set_introspeccion(nombre, text, view)
         
         ### Actualizar sourceview para actualizador de toolbars y menus.
         self.emit("update", view, True)
@@ -310,7 +310,7 @@ class BasePanel(Gtk.Paned):
             if self.proyecto:
                 if self.proyecto["path"] in archivo:
                     self.infonotebook.set_path_estructura(self.proyecto["path"])
-        
+
     def __load(self, proyecto):
         """
         Carga los datos del proyecto en la interfaz

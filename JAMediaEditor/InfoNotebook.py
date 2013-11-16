@@ -37,7 +37,8 @@ class InfoNotebook(Gtk.Notebook):
     
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+        GObject.TYPE_NONE, (GObject.TYPE_INT,
+        GObject.TYPE_STRING)),
     'open': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
     'search_on_grep': (GObject.SIGNAL_RUN_FIRST,
@@ -299,13 +300,13 @@ class InfoNotebook(Gtk.Notebook):
         
         self.emit("open", filepath)
         
-    def __re_emit_new_select(self, widget, texto):
+    def __re_emit_new_select(self, widget, index, texto):
         """
         Emite la señal new_select cuando se hace doble
         click sobre una fila en la instrospeccion.
         """
         
-        self.emit('new_select', texto)
+        self.emit('new_select', index, texto)
         
     def set_path_estructura(self, path):
         """
@@ -316,18 +317,18 @@ class InfoNotebook(Gtk.Notebook):
         self.estructura_proyecto.set_path_estructura(path)
         self.path_actual = path
 
-    def set_introspeccion(self, nombre, texto):
+    def set_introspeccion(self, nombre, texto, view):
         """
         Recibe nombre y contenido de archivo para
         realizar introspeccion sobre él.
         """
-        
+
         if not nombre: nombre = "Introspección"
         
         if self.get_nth_page(0):
             self.set_tab_label_text(self.get_nth_page(0), nombre)
             
-        self.introspeccion.set_introspeccion(nombre, texto)
+        self.introspeccion.set_introspeccion(nombre, texto, view)
         
     def buscar(self, texto):
         """
@@ -352,12 +353,14 @@ class Introspeccion(Gtk.TreeView):
     
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_INT,
+        GObject.TYPE_STRING))}
 
     def __init__(self):
 
         Gtk.TreeView.__init__(self,
-            Gtk.TreeStore(GObject.TYPE_STRING, Gdk.Color))
+            Gtk.TreeStore(GObject.TYPE_INT,
+            GObject.TYPE_STRING, Gdk.Color))
 
         self.__set_columnas()
         self.connect("key-press-event", self.key_press_event)
@@ -374,98 +377,93 @@ class Introspeccion(Gtk.TreeView):
         """
 
         iter = self.get_model().get_iter(path)
-        texto = self.get_model().get_value(iter, 0)
+        index = self.get_model().get_value(iter, 0)
+        texto = self.get_model().get_value(iter, 1)
 
-        self.emit('new_select', texto)
+        self.emit('new_select', index, texto)
 
-    def set_introspeccion(self, nombre, texto):
+    def set_introspeccion(self, nombre, texto, view):
         """
         Recibe nombre y contenido de archivo para
         realizar introspeccion sobre él.
         """
-        
+
         if self.get_model():
             self.get_model().clear()
-            
+
         else:
             return
 
-        if not texto: return
-        
-        import re
-        analisis = re.compile(r'(^[ \t]*?class\s.*[(:])|(^[ \t]*?def\s.*[(:])|(^[\t]*?import\s.*$)|(^[ \t]*?from\s.*$)|(^\s*#---.+)', re.MULTILINE)
+        if not texto:
+            return
 
-        datos, posiciones = self.__get_datos_introspeccion(texto, analisis)
+        buscar = ["class", "def", "import", "from"]
+        dict = self.__get_datos_introspeccion(texto, buscar)
 
-        actual = 0
-        self.iteractual = None
-        modelo = self.get_model()
+        iterbase = self.get_model().get_iter_first()
 
-        for dato in datos:
-            if dato.startswith("import ") or dato.startswith("from ") or dato.startswith("def "):
-                
-                if dato.startswith("import ") or dato.startswith("from "):
-                    color = Gdk.color_parse("dark green")
-                    
-                else:
-                    color = Gdk.color_parse("#FF0D00")
-                    
-                modelo.append(
-                    None, [dato,
-                    color])
+        new_class = iterbase
+        new_funcion = iterbase
 
-            if dato.startswith("class "):
-                
-                self.iteractual = modelo.append(
-                    None, [dato,
-                    Gdk.color_parse("purple")])
-                    
-            if dato[0:13] == "-Tabulacion- " and dato[14] != "T":
-                
-                nuevodato = dato.replace("-Tabulacion- ", "")
-                
-                self.ultimodef = modelo.append(
-                    self.iteractual, [nuevodato,
-                    Gdk.color_parse("#FF0D00")])
+        for key in dict.keys():
 
-            if dato[0:26] == "-Tabulacion- -Tabulacion- ":
-                
-                nuevodato = dato.replace("-Tabulacion- ", "")
-                
-                self.ultimodef = modelo.append(
-                    self.ultimodef, [nuevodato,
-                    Gdk.color_parse("#FF0D00")])
-                    
-            actual += 1
-
-    def __get_datos_introspeccion(self, texto, objetos):
-        """
-        Devuelve dos listas, una con los datos y otra con las posiciones
-        """
-
-        datos = []
-        posiciones = []
-
-        objetos = objetos.finditer(texto)
-
-        try:
-            resultado = objetos.next()
+            temp = dict[key].strip()
+            color = Gdk.color_parse("#FF0D00")
             
-        except:
-            resultado = None
-            
-        while resultado is not None:
-            dato_nuevo = resultado.group().replace("    ", "-Tabulacion- ")
-            datos.append(dato_nuevo)
-            posiciones.append(resultado.start())
-            
-            try:
-                resultado = objetos.next()
-                
-            except:
-                resultado = None
+            if temp.startswith("class "):
+                color = Gdk.color_parse("purple")
+                new_class = self.__append(iterbase, key, color, temp)
+                new_funcion = new_class
 
-        return datos, posiciones
+            elif temp.startswith("import ") or temp.startswith("from "):
+                color = Gdk.color_parse("dark green")
+                self.__append(new_funcion, key, color, temp)
+                
+            elif temp.startswith("def "):
+                color = Gdk.color_parse("#FF0D00")
+                new_funcion = self.__append(new_class, key, color, temp)
+
+    def __append(self, iter, key, color, texto):
+
+        new_iter = self.get_model().append(
+            iter, [int(key), texto, color])
+
+        return new_iter
+
+    def __get_datos_introspeccion(self, texto, buscar):
+
+        from collections import OrderedDict
+
+        dict = OrderedDict()
+
+        bloqueo = False
+        lineas =  texto.splitlines()
+        contador = -1
+
+        for linea in lineas:
+            temp = linea.strip()
+            contador += 1
+
+            ### Bloquear comentarios multilinea.
+            if temp and (temp.startswith("\'\'\'") or temp.startswith("\"\"\"")):
+                bloqueo = bool(not bloqueo)
+                
+            if temp and (temp.endswith("\'\'\'") or temp.endswith("\"\"\"")):
+                bloqueo = bool(not bloqueo)
+
+            if bloqueo:
+                continue
+
+            if temp and not bloqueo:
+                if temp.split()[0] in buscar:
+                    l = linea.strip().split(":")[0]
+
+                    if temp.split()[0] == "class" or temp.split()[0] == "def":
+                        l = "%s:" % l
+
+                    dict[str(contador)] = l
+
+        return dict
 
     def __set_columnas(self):
         """
@@ -473,10 +471,18 @@ class Introspeccion(Gtk.TreeView):
         """
 
         render = Gtk.CellRendererText()
-        columna1 = Gtk.TreeViewColumn('Datos', render , text=0)
-        columna1.add_attribute(render, 'foreground-gdk', 1)
-
-        self.append_column(columna1)
+        columna = Gtk.TreeViewColumn('Indice', render , text=0)
+        columna.set_property('visible', False)
+        columna.set_property('resizable', False)
+        self.append_column(columna)
+        
+        render = Gtk.CellRendererText()
+        columna = Gtk.TreeViewColumn('Datos', render , text=1)
+        columna.add_attribute(render, 'foreground-gdk', 2)
+        columna.set_property('visible', True)
+        columna.set_property('resizable', True)
+        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        self.append_column(columna)
 
     def key_press_event(self, widget, event):
         """

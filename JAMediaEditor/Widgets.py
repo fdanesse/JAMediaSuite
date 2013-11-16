@@ -957,7 +957,7 @@ class DialogoBuscar(Gtk.Dialog):
         if match:
             match_start, match_end = match
             buffer.select_range(match_end, match_start)
-            self.view.scroll_to_iter(match_end, 0.1, 1, 1, 1)
+            self.view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
 
         else:
             if direccion == 'Adelante':
@@ -1149,7 +1149,7 @@ class DialogoReemplazar(Gtk.Dialog):
         if match:
             match_start, match_end = match
             buffer.select_range(match_end, match_start)
-            self.view.scroll_to_iter(match_end, 0.1, 1, 1, 1)
+            self.view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
 
         else:
             if direccion == 'Adelante':

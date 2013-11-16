@@ -58,10 +58,10 @@ class WorkPanel(Gtk.Paned):
     __gtype_name__ = 'JAMediaEditorWorkPanel'
     
     __gsignals__ = {
-    'new_select': (GObject.SIGNAL_RUN_FIRST,
+    'new_select': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_BOOLEAN)),
-    'close_all_files': (GObject.SIGNAL_RUN_FIRST,
+    'close_all_files': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -115,20 +115,20 @@ class WorkPanel(Gtk.Paned):
         
         return self.notebook_sourceview.get_default_path()
         
-    def set_linea(self, texto):
+    def set_linea(self, index, texto):
         """
         Recibe la linea seleccionada en instrospeccion y
         y la pasa a notebook_sourceview para seleccionarla.
         """
         
-        self.notebook_sourceview.set_linea(texto)
+        self.notebook_sourceview.set_linea(index, texto)
         
     def __re_emit_new_select(self, widget, view, estructura):
         """
         Recibe nombre y contenido de archivo seleccionado
         en Notebook_SourceView y los envia BasePanel.
         """
-        
+
         self.emit('new_select', view, estructura)
         
     def abrir_archivo(self, archivo):
@@ -281,10 +281,10 @@ class Notebook_SourceView(Gtk.Notebook):
     __gtype_name__ = 'JAMediaEditorNotebook_SourceView'
     
     __gsignals__ = {
-     'new_select': (GObject.SIGNAL_RUN_FIRST,
+     'new_select': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_BOOLEAN)),
-    'close_all_files': (GObject.SIGNAL_RUN_FIRST,
+    'close_all_files': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -298,7 +298,8 @@ class Notebook_SourceView(Gtk.Notebook):
             }
         
         self.set_scrollable(True)
-        
+        self.ultimo_view_activo = False
+
         self.show_all()
 
         self.connect('switch_page', self.__switch_page)
@@ -311,7 +312,7 @@ class Notebook_SourceView(Gtk.Notebook):
         if not paginas:
             self.emit("close_all_files")
         
-    def set_linea(self, texto):
+    def set_linea(self, index, texto):
         """
         Recibe la linea seleccionada en instrospeccion y
         y la selecciona en el sourceview activo.
@@ -321,26 +322,22 @@ class Notebook_SourceView(Gtk.Notebook):
         view = scrolled.get_children()[0]
         buffer = view.get_buffer()
 
-        start = buffer.get_start_iter()
-        end = buffer.get_end_iter()
+        start, end = buffer.get_bounds()
+        linea_iter = buffer.get_iter_at_line(index)
 
-        if start.get_offset() == buffer.get_char_count():
-            start = buffer.get_start_iter()
-
-        match = start.forward_search(texto, 0, end)
-
+        match = linea_iter.forward_search(texto, 0, None)
+        
         if match:
             match_start, match_end = match
+            buffer.select_range(match_end, match_start)
+            view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
 
-            buffer.select_range(match_start, match_end)
-            view.scroll_to_iter(match_end, 0.1, 1, 1, 1)
-            
     def __switch_page(self, widget, widget_child, indice):
         """
         Cuando el usuario selecciona una lengüeta en
         el notebook, se emite la señal 'new_select'.
         """
-        
+
         ### Detener inspectores y activar solo el seleccionado
         paginas = self.get_children()
         
@@ -350,8 +347,11 @@ class Notebook_SourceView(Gtk.Notebook):
             
         view = widget_child.get_child()
         view.new_handle(True)
-        
-        self.emit('new_select', view, False)
+
+        if view != self.ultimo_view_activo:
+            self.emit('new_select', view, False)
+
+        self.ultimo_view_activo = view
         
     def abrir_archivo(self, archivo):
         """
@@ -1070,14 +1070,16 @@ class SourceView(GtkSource.View):
         Selecciona el error en la línea especificada.
         """
 
-        if not linea > -1: return
-    
+        # FIXME: Esto no funciona en la última línea.
+        if not linea > -1:
+            return
+
         buffer = self.get_buffer()
         start, end = buffer.get_bounds()
-        
+
         linea_iter = buffer.get_iter_at_line(linea - 1)
         linea_iter_next = buffer.get_iter_at_line(linea)
-        
+
         texto = buffer.get_text(linea_iter, linea_iter_next, True)
 
         buffer.select_range(linea_iter, linea_iter_next)
