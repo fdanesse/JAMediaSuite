@@ -399,7 +399,8 @@ class Introspeccion(Gtk.TreeView):
             return
 
         buscar = ["class", "def", "import", "from"]
-        dict = self.__get_datos_introspeccion(texto, buscar)
+        dict = self.__get_datos_introspeccion(
+            texto, buscar)
 
         iterbase = self.get_model().get_iter_first()
 
@@ -410,19 +411,24 @@ class Introspeccion(Gtk.TreeView):
 
             temp = dict[key].strip()
             color = Gdk.color_parse("#FF0D00")
-            
+
             if temp.startswith("class "):
                 color = Gdk.color_parse("purple")
-                new_class = self.__append(iterbase, key, color, temp)
+                new_class = self.__append(iterbase,
+                    key, color, temp)
                 new_funcion = new_class
 
-            elif temp.startswith("import ") or temp.startswith("from "):
+            elif temp.startswith("import ") or \
+                temp.startswith("from "):
+
                 color = Gdk.color_parse("dark green")
-                self.__append(new_funcion, key, color, temp)
-                
+                self.__append(new_funcion,
+                    key, color, temp)
+
             elif temp.startswith("def "):
                 color = Gdk.color_parse("#FF0D00")
-                new_funcion = self.__append(new_class, key, color, temp)
+                new_funcion = self.__append(new_class,
+                    key, color, temp)
 
     def __append(self, iter, key, color, texto):
 
@@ -446,10 +452,14 @@ class Introspeccion(Gtk.TreeView):
             contador += 1
 
             ### Bloquear comentarios multilinea.
-            if temp and (temp.startswith("\'\'\'") or temp.startswith("\"\"\"")):
+            if temp and (temp.startswith("\'\'\'") or \
+                temp.startswith("\"\"\"")):
+
                 bloqueo = bool(not bloqueo)
-                
-            if temp and (temp.endswith("\'\'\'") or temp.endswith("\"\"\"")):
+
+            if temp and (temp.endswith("\'\'\'") or \
+                temp.endswith("\"\"\"")):
+
                 bloqueo = bool(not bloqueo)
 
             if bloqueo:
@@ -459,7 +469,9 @@ class Introspeccion(Gtk.TreeView):
                 if temp.split()[0] in buscar:
                     l = linea.strip().split(":")[0]
 
-                    if temp.split()[0] == "class" or temp.split()[0] == "def":
+                    if temp.split()[0] == "class" or \
+                        temp.split()[0] == "def":
+
                         l = "%s:" % l
 
                     dict[str(contador)] = l
