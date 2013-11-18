@@ -664,7 +664,8 @@ class SourceView(GtkSource.View):
         prov_words = GtkSource.CompletionWords.new(None, None)
         prov_words.register(self.get_buffer())
 
-        autocompletado = AutoCompletado(self.get_buffer(), self.archivo, self)
+        autocompletado = AutoCompletado(
+            self.get_buffer(), self.archivo, self)
         completion.add_provider(autocompletado)
 
         completion.set_property("remember-info-visibility", True)
