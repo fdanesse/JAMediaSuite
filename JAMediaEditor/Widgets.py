@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   Widgets.py por:
-#       Cristian García     <cristian99garcia@gmail.com>
-#       Ignacio Rodriguez   <nachoel01@gmail.com>
-#       Flavio Danesse      <fdanesse@gmail.com>
+# Widgets.py por:
+#     Cristian García    <cristian99garcia@gmail.com>
+#     Ignacio Rodriguez  <nachoel01@gmail.com>
+#     Flavio Danesse     <fdanesse@gmail.com>
 
-# This program is free software; you can redistribute it and/or modify
+# This program is free software; you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110 - 1301 USA
 
 import os
 import commands
@@ -51,14 +51,14 @@ class Menu(Gtk.MenuBar):
 
     __gsignals__ = {
     'accion_proyecto': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
     'accion_archivo': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
     'accion_ver': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_BOOLEAN)),
     'accion_codigo': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
     'run_jamediapygihack': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
 
@@ -351,13 +351,13 @@ class Menu(Gtk.MenuBar):
 
         #item = Gtk.MenuItem('Identar con Espacios')
         #item.connect("activate", self.__emit_accion_codigo,
-        #   "Identar con Espacios")
+        # "Identar con Espacios")
         #self.dict_archivo['Identar con Espacios'] = item
         #menu_codigo.append(item)
 
         #item = Gtk.MenuItem('Identar con Tabulaciones')
         #item.connect("activate", self.__emit_accion_codigo,
-        #   "Identar con Tabulaciones")
+        # "Identar con Tabulaciones")
         #self.dict_archivo['Identar con Tabulaciones'] = item
         #menu_codigo.append(item)
 
@@ -1172,7 +1172,7 @@ class My_FileChooser(Gtk.FileChooserDialog):
 
     __gsignals__ = {
     'load': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self,
         parent_window=None,
@@ -1282,7 +1282,7 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
 
     __gsignals__ = {
     'load': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self,
         parent_window=None,
@@ -1485,7 +1485,7 @@ class ToolbarProyecto(Gtk.Toolbar):
 
     __gsignals__ = {
     "accion": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -1534,18 +1534,18 @@ class ToolbarProyecto(Gtk.Toolbar):
         self.dict_proyecto["Ejecutar Proyecto"] = ejecutar_proyecto
         self.dict_proyecto["Detener Ejecución"] = detener
 
-        self.insert(nuevo_proyecto, -1)
-        self.insert(abrir_proyecto, -1)
-        self.insert(editar_proyecto, -1)
-        self.insert(guardar_proyecto, -1)
-        self.insert(cerrar_proyecto, -1)
+        self.insert(nuevo_proyecto, - 1)
+        self.insert(abrir_proyecto, - 1)
+        self.insert(editar_proyecto, - 1)
+        self.insert(guardar_proyecto, - 1)
+        self.insert(cerrar_proyecto, - 1)
         self.insert(get_separador(draw=True,
-            ancho=0, expand=False), -1)
-        self.insert(ejecutar_proyecto, -1)
-        self.insert(detener, -1)
+            ancho=0, expand=False), - 1)
+        self.insert(ejecutar_proyecto, - 1)
+        self.insert(detener, - 1)
 
         self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+            ancho=0, expand=True), - 1)
 
         self.show_all()
 
@@ -1609,7 +1609,7 @@ class ToolbarArchivo(Gtk.Toolbar):
 
     __gsignals__ = {
     "accion": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -1689,31 +1689,31 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Detener Ejecución"] = detener
 
         self.insert(get_separador(draw=False,
-            ancho=10, expand=False), -1)
+            ancho=10, expand=False), - 1)
 
-        self.insert(nuevo_archivo, -1)
-        self.insert(abrir_archivo, -1)
-        self.insert(guardar_archivo, -1)
-        self.insert(guardar_como, -1)
+        self.insert(nuevo_archivo, - 1)
+        self.insert(abrir_archivo, - 1)
+        self.insert(guardar_archivo, - 1)
+        self.insert(guardar_como, - 1)
         self.insert(get_separador(draw=True,
-            ancho=0, expand=False), -1)
-        self.insert(ejecutar, -1)
-        self.insert(detener, -1)
+            ancho=0, expand=False), - 1)
+        self.insert(ejecutar, - 1)
+        self.insert(detener, - 1)
         self.insert(get_separador(draw=True,
-            ancho=0, expand=False), -1)
-        self.insert(deshacer, -1)
-        self.insert(rehacer, -1)
+            ancho=0, expand=False), - 1)
+        self.insert(deshacer, - 1)
+        self.insert(rehacer, - 1)
         self.insert(get_separador(draw=True,
-            ancho=0, expand=False), -1)
-        self.insert(copiar, -1)
-        self.insert(cortar, -1)
-        self.insert(pegar, -1)
+            ancho=0, expand=False), - 1)
+        self.insert(copiar, - 1)
+        self.insert(cortar, - 1)
+        self.insert(pegar, - 1)
         self.insert(get_separador(draw=True,
-            ancho=0, expand=False), -1)
-        self.insert(seleccionar_todo, -1)
+            ancho=0, expand=False), - 1)
+        self.insert(seleccionar_todo, - 1)
 
         self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+            ancho=0, expand=True), - 1)
 
         self.show_all()
 
@@ -1775,9 +1775,10 @@ class ToolbarBusquedas(Gtk.Toolbar):
 
     __gsignals__ = {
     "accion": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, GObject.TYPE_STRING)),
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING)),
     "buscar": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -1789,7 +1790,7 @@ class ToolbarBusquedas(Gtk.Toolbar):
             tooltip_text="Anterior")
 
         self.anterior.connect("clicked", self.__emit_accion)
-        self.insert(self.anterior, -1)
+        self.insert(self.anterior, - 1)
 
         item = Gtk.ToolItem()
         item.set_expand(True)
@@ -1798,7 +1799,7 @@ class ToolbarBusquedas(Gtk.Toolbar):
         self.entry.show()
 
         item.add(self.entry)
-        self.insert(item, -1)
+        self.insert(item, - 1)
 
         self.siguiente = get_boton(
             os.path.join(icons, "go-next.svg"),
@@ -1806,7 +1807,7 @@ class ToolbarBusquedas(Gtk.Toolbar):
             tooltip_text="Siguiente")
 
         self.siguiente.connect("clicked", self.__emit_accion)
-        self.insert(self.siguiente, -1)
+        self.insert(self.siguiente, - 1)
 
         self.entry.connect("changed", self.__emit_buscar)
         self.show_all()
@@ -1943,7 +1944,8 @@ class ErroresTreeview(Gtk.TreeView):
 
         seleccion = self.get_selection()
         seleccion.set_mode(Gtk.SelectionMode.SINGLE)
-        seleccion.set_select_function(self.__clicked, self.get_model())
+        seleccion.set_select_function(
+            self.__clicked, self.get_model())
 
         columna = Gtk.TreeViewColumn("Línea",
             Gtk.CellRendererText(), text=0)
@@ -1964,35 +1966,45 @@ class ErroresTreeview(Gtk.TreeView):
         arch.close()
 
         check = os.path.join(BASEPATH, "Check1.py")
-        errores = commands.getoutput('python %s %s' % (check, path))
+        errores = commands.getoutput(
+            'python %s %s' % (check, path))
 
         for linea in errores.splitlines():
-            # Fixme: item_str = linea.split("%s:" % path)[1]
-            # IndexError: list index out of range
-            item_str = linea.split("%s:" % path)[1]
+            try:
+                item_str = linea.split("%s:" % path)[1]
 
-            if not path in item_str:
-                numero = item_str.split(":")[0].strip()
-                comentario = item_str.replace(item_str.split()[0], "").strip()
+                if not path in item_str:
+                    numero = item_str.split(":")[0].strip()
+                    comentario = item_str.replace(
+                        item_str.split()[0], "").strip()
 
-                item = [numero, comentario]
-                self.get_model().append(item)
+                    item = [numero, comentario]
+                    self.get_model().append(item)
+
+            except:
+                pass
 
         check = os.path.join(BASEPATH, "Check2.py")
-        errores = commands.getoutput('python %s %s' % (check, path))
+        errores = commands.getoutput(
+            'python %s %s' % (check, path))
 
         for linea in errores.splitlines():
+            try:
+                item_str = linea.split("%s:" % path)[1]
 
-            item_str = linea.split("%s:" % path)[1]
+                if not path in item_str:
+                    numero = item_str.split(":")[0].strip()
+                    comentario = item_str.replace(
+                        item_str.split()[0], "").strip()
 
-            if not path in item_str:
-                numero = item_str.split(":")[0].strip()
-                comentario = item_str.replace(item_str.split()[0], "").strip()
+                    item = [numero, comentario]
+                    self.get_model().append(item)
 
-                item = [numero, comentario]
-                self.get_model().append(item)
+            except:
+                pass
 
-    def __clicked(self, treeselection, model, path, is_selected, listore):
+    def __clicked(self, treeselection,
+        model, path, is_selected, listore):
 
         iter_sel = model.get_iter(path)
         linea = model.get_value(iter_sel, 0)
@@ -2029,9 +2041,9 @@ class Estructura_Menu(Gtk.Menu):
 
             if os.path.isfile(filepath):
                 datos = commands.getoutput(
-                    'file -ik %s%s%s' % ("\"", filepath, "\""))
+                    'file - ik %s%s%s' % ("\"", filepath, "\""))
 
-                if "text" in datos or "x-python" in datos and lectura:
+                if "text" in datos or "x - python" in datos and lectura:
                     self.__get_item(widget, path, "abrir")
 
                 if lectura:
@@ -2084,8 +2096,8 @@ class Estructura_Menu(Gtk.Menu):
 
     def __verificar_permisos(self, path):
         # verificar:
-        # 1- Si es un archivo o un directorio
-        # 2- Si sus permisos permiten la copia, escritura y borrado
+        # 1 - Si es un archivo o un directorio
+        # 2 - Si sus permisos permiten la copia, escritura y borrado
 
         # Comprobar existencia y permisos:
         # http://docs.python.org/library/os.html?highlight=os#module-os
@@ -2099,7 +2111,7 @@ class Estructura_Menu(Gtk.Menu):
             return False, False, False
 
         try:
-            if  os.access(path, os.F_OK):
+            if os.access(path, os.F_OK):
                 r = os.access(path, os.R_OK)
                 w = os.access(path, os.W_OK)
                 x = os.access(path, os.X_OK)
@@ -2148,7 +2160,7 @@ class Estructura_Menu(Gtk.Menu):
 class DialogoEliminar(Gtk.Dialog):
     """
     Diálogo para confirmar la eliminación
-    del archivo/directorio seleccionado
+    del archivo / directorio seleccionado
     """
 
     __gtype_name__ = 'JAMediaEditorDialogoEliminar'
