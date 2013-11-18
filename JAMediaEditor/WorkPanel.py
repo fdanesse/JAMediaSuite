@@ -739,28 +739,33 @@ class SourceView(GtkSource.View):
             if buffer.get_modified() and \
                 os.path.exists(self.archivo):
 
-                inicio, fin = buffer.get_bounds()
-                texto = buffer.get_text(inicio, fin, 0)
-
-                texto = self.__limpiar_codigo(texto)
-
-                archivo = open(self.archivo, "w")
-                archivo.write(texto)
-                archivo.close()
-
-                self.set_archivo(self.archivo)
-                #buffer.set_modified(False)
-                #self.control = os.path.getmtime(self.archivo)
-
-                ### Forzando actualización de Introspección.
-                self.get_parent().get_parent().emit(
-                    'new_select', self, True)
+                self.__procesar_y_guardar()
 
             elif not os.path.exists(self.archivo):
                 return self.guardar_archivo_como()
 
         else:
             return self.guardar_archivo_como()
+
+    def __procesar_y_guardar(self):
+
+        buffer = self.get_buffer()
+
+        inicio, fin = buffer.get_bounds()
+        texto = buffer.get_text(inicio, fin, 0)
+
+        if self.archivo.endswith(".py"):
+            texto = self.__limpiar_codigo(texto)
+
+        archivo = open(self.archivo, "w")
+        archivo.write(texto)
+        archivo.close()
+
+        self.set_archivo(self.archivo)
+
+        ### Forzando actualización de Introspección.
+        self.get_parent().get_parent().emit(
+            'new_select', self, True)
 
     def __limpiar_codigo(self, texto):
         """
@@ -783,7 +788,11 @@ class SourceView(GtkSource.View):
             temp_line = line
             for word in line.split(self.tab):
                 if word:
-                    w = word.replace("   ", " ").replace("  ", " ")
+                    w = word
+                    w = w.replace("     ", " ")
+                    w = w.replace("    ", " ")
+                    w = w.replace("   ", " ")
+                    w = w.replace("  ", " ")
                     temp_line = temp_line.replace(word, w)
             line = temp_line
 
@@ -815,22 +824,7 @@ class SourceView(GtkSource.View):
                     self.archivo = os.path.join(
                         archivo.replace("//", "/"))
 
-                    buffer = self.get_buffer()
-
-                    inicio, fin = buffer.get_bounds()
-                    texto = buffer.get_text(inicio, fin, 0)
-
-                    texto = self.__limpiar_codigo(texto)
-
-                    archivo = open(self.archivo, "w")
-                    archivo.write(texto)
-                    archivo.close()
-
-                    self.set_archivo(self.archivo)
-
-                    ### Forzando actualización de Introspección.
-                    self.get_parent().get_parent().emit(
-                        'new_select', self, True)
+                    self.__procesar_y_guardar()
 
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
@@ -839,20 +833,7 @@ class SourceView(GtkSource.View):
                 self.archivo = os.path.join(
                     archivo.replace("//", "/"))
 
-                buffer = self.get_buffer()
-
-                inicio, fin = buffer.get_bounds()
-                texto = buffer.get_text(inicio, fin, 0)
-
-                archivo = open(self.archivo, "w")
-                archivo.write(texto)
-                archivo.close()
-
-                self.set_archivo(self.archivo)
-
-                ### Forzando actualización de Introspección.
-                self.get_parent().get_parent().emit(
-                    'new_select', self, True)
+                self.__procesar_y_guardar()
 
     def set_formato(self, fuente, tamanio):
         """
