@@ -620,8 +620,11 @@ class SourceView(GtkSource.View):
         self.set_insert_spaces_instead_of_tabs(True)
         self.set_tab_width(4)
         self.set_show_right_margin(True)
-
         self.set_auto_indent(True)
+        self.set_smart_home_end(True)
+        self.set_highlight_current_line(True)
+        #self.set_accepts_tab(True)
+        #self.set_pixels_above_lines(5)
 
         font = "%s %s" % (config['fuente'], config['tamanio'])
         self.modify_font(Pango.FontDescription(font))
