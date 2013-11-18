@@ -27,6 +27,7 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
 
+
 class InfoNotebook(Gtk.Notebook):
     """
     Notebook Izquierdo, para introspección y
@@ -100,7 +101,8 @@ class InfoNotebook(Gtk.Notebook):
         path, columna, xdefondo, ydefondo = (None, None, None, None)
 
         try:
-            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(int(pos[0]), int(pos[1]))
+            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
+                int(pos[0]), int(pos[1]))
 
         except:
             return
@@ -144,7 +146,8 @@ class InfoNotebook(Gtk.Notebook):
         elif accion == "pegar":
             path = lista.get_model().get_value(self.copy_cut[1], 2)
 
-            if path != filepath and not os.path.basename(path) in os.listdir(filepath):
+            if path != filepath and \
+                not os.path.basename(path) in os.listdir(filepath):
                 expresion = ""
 
                 if os.path.isdir(path):
@@ -168,9 +171,9 @@ class InfoNotebook(Gtk.Notebook):
                 self.set_path_estructura(self.path_actual)
 
             else:
-                dialogo = Gtk.Dialog(parent = self.get_toplevel(),
-                    flags = Gtk.DialogFlags.MODAL,
-                    buttons = ["OK", Gtk.ResponseType.ACCEPT])
+                dialogo = Gtk.Dialog(parent=self.get_toplevel(),
+                    flags=Gtk.DialogFlags.MODAL,
+                    buttons=["OK", Gtk.ResponseType.ACCEPT])
 
                 dialogo.set_size_request(300, 100)
                 dialogo.set_border_width(15)
@@ -178,10 +181,14 @@ class InfoNotebook(Gtk.Notebook):
                 text = ""
 
                 if path == filepath:
-                    text = "No se Puede Pegar aquí, Origen y Destino son Iguales."
+                    text = "No se Puede Pegar aquí"
+                    text = "%s%s" % (
+                        text, ", Origen y Destino son Iguales.")
 
                 elif os.path.basename(path) in os.listdir(filepath):
-                    text = "No se Puede Pegar aquí, Ya hay un\nArchivo con el Mismo Nombre en el Destino."
+                    text = "No se Puede Pegar aquí, Ya hay un\n"
+                    text = "%s%s" % (
+                        text, "Archivo con el Mismo Nombre en el Destino.")
 
                 label = Gtk.Label(text)
                 label.show()
@@ -192,8 +199,9 @@ class InfoNotebook(Gtk.Notebook):
                 dialogo.destroy()
 
         elif accion == "suprimir" or accion == "eliminar proyecto":
-            ### FIXME: Si hay un archivo abierto de dicho directorio
-            ### o ese archivo es el abierto actualmente, pedir doble-confirmación
+            # FIXME: Si hay un archivo abierto de dicho directorio
+            # o ese archivo es el abierto actualmente,
+            # pedir doble-confirmación
 
             tipo = ""
 
@@ -213,8 +221,8 @@ class InfoNotebook(Gtk.Notebook):
             from Widgets import DialogoEliminar
 
             dialogo = DialogoEliminar(
-                tipo = text,
-                parent_window = self.get_toplevel())
+                tipo=text,
+                parent_window=self.get_toplevel())
 
             resp = dialogo.run()
             dialogo.destroy()
@@ -238,8 +246,8 @@ class InfoNotebook(Gtk.Notebook):
             from Widgets import BusquedaGrep
 
             dialogo = BusquedaGrep(
-                path = filepath,
-                parent_window = self.get_toplevel())
+                path=filepath,
+                parent_window=self.get_toplevel())
 
             dialogo.connect("nueva-seleccion", self.__seleccion_in_grep)
 
@@ -323,7 +331,8 @@ class InfoNotebook(Gtk.Notebook):
         realizar introspeccion sobre él.
         """
 
-        if not nombre: nombre = "Introspección"
+        if not nombre:
+            nombre = "Introspección"
 
         if self.get_nth_page(0):
             self.set_tab_label_text(self.get_nth_page(0), nombre)
@@ -343,6 +352,7 @@ class InfoNotebook(Gtk.Notebook):
 
         else:
             self.estructura_proyecto.buscar(texto)
+
 
 class Introspeccion(Gtk.TreeView):
     """
@@ -375,6 +385,8 @@ class Introspeccion(Gtk.TreeView):
         """
         Emite la señal new_select cuando se hace doble click sobre una fila
         """
+
+        self.expand_to_path(path)
 
         iter = self.get_model().get_iter(path)
         index = self.get_model().get_value(iter, 0)
@@ -443,7 +455,7 @@ class Introspeccion(Gtk.TreeView):
         dict = OrderedDict()
 
         bloqueo = False
-        lineas =  texto.splitlines()
+        lineas = texto.splitlines()
         contador = -1
 
         buscar = ["class", "def", "import", "from"]
@@ -483,13 +495,13 @@ class Introspeccion(Gtk.TreeView):
         """
 
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn('Indice', render , text=0)
+        columna = Gtk.TreeViewColumn('Indice', render, text=0)
         columna.set_property('visible', False)
         columna.set_property('resizable', False)
         self.append_column(columna)
 
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn('Datos', render , text=1)
+        columna = Gtk.TreeViewColumn('Datos', render, text=1)
         columna.add_attribute(render, 'foreground-gdk', 2)
         columna.set_property('visible', True)
         columna.set_property('resizable', True)
@@ -505,7 +517,8 @@ class Introspeccion(Gtk.TreeView):
 
         model, iter = self.get_selection().get_selected()
 
-        if iter is None: return
+        if iter is None:
+            return
 
         path = self.get_model().get_path(iter)
 
@@ -569,7 +582,8 @@ class Introspeccion(Gtk.TreeView):
         model = self.get_model()
         item = model.get_iter_first()
 
-        if not item: return
+        if not item:
+            return
 
         self.get_selection().select_iter(item)
         first_path = model.get_path(item)
@@ -609,6 +623,7 @@ class Introspeccion(Gtk.TreeView):
             self.get_selection().select_iter(self.posibles[0])
             new_path = model.get_path(self.posibles[0])
             self.scroll_to_cell(new_path)
+
 
 class Estructura_Proyecto(Gtk.TreeView):
     """
@@ -650,7 +665,8 @@ class Estructura_Proyecto(Gtk.TreeView):
 
         self.get_model().clear()
 
-        if not path: return
+        if not path:
+            return
 
         iter = self.get_model().get_iter_first()
 
@@ -738,7 +754,7 @@ class Estructura_Proyecto(Gtk.TreeView):
                 ### Para Recursividad.
                 estructura.append(
                     (direccion,
-                    self.get_model().get_path(iteractual)) )
+                    self.get_model().get_path(iteractual)))
 
             ### Si es un archivo.
             elif os.path.isfile(direccion):
@@ -749,7 +765,7 @@ class Estructura_Proyecto(Gtk.TreeView):
             archivo = os.path.basename(x)
 
             self.get_model().append(
-                iter,[Gtk.STOCK_FILE, archivo, x])
+                iter, [Gtk.STOCK_FILE, archivo, x])
 
         ### Recursividad en la función.
         self.__load_estructura(estructura)
@@ -771,7 +787,8 @@ class Estructura_Proyecto(Gtk.TreeView):
 
         elif os.path.isfile(os.path.join(direccion)):
             import commands
-            datos = commands.getoutput('file -ik %s%s%s' % ("\"", direccion, "\""))
+            datos = commands.getoutput(
+                'file -ik %s%s%s' % ("\"", direccion, "\""))
 
             if "text" in datos or "x-python" in datos or \
                 "x-empty" in datos or "svg+xml" in datos:
@@ -786,7 +803,8 @@ class Estructura_Proyecto(Gtk.TreeView):
 
         model, iter = self.get_selection().get_selected()
 
-        if iter is None: return
+        if iter is None:
+            return
 
         path = self.get_model().get_path(iter)
 
@@ -891,4 +909,3 @@ class Estructura_Proyecto(Gtk.TreeView):
             self.get_selection().select_iter(self.posibles[0])
             new_path = model.get_path(self.posibles[0])
             self.scroll_to_cell(new_path)
-

@@ -619,6 +619,8 @@ class SourceView(GtkSource.View):
 
         self.set_insert_spaces_instead_of_tabs(True)
         self.set_tab_width(4)
+        self.set_show_right_margin(True)
+
         self.set_auto_indent(True)
 
         font = "%s %s" % (config['fuente'], config['tamanio'])
@@ -763,10 +765,17 @@ class SourceView(GtkSource.View):
 
     def __procesar_y_guardar(self):
 
+        self.new_handle(False)
+
         buffer = self.get_buffer()
 
         inicio, fin = buffer.get_bounds()
         texto = buffer.get_text(inicio, fin, 0)
+
+        ### Para devolver el scroll a donde estaba.
+        textmark = buffer.get_insert()
+        textiter = buffer.get_iter_at_mark(textmark)
+        id = textiter.get_line()
 
         if self.archivo.endswith(".py"):
             texto = self.__limpiar_codigo(texto)
@@ -780,6 +789,10 @@ class SourceView(GtkSource.View):
         ### Forzando actualización de Introspección.
         self.get_parent().get_parent().emit(
             'new_select', self, True)
+
+        ### Devolve el scroll a donde estaba.
+        linea_iter = self.get_buffer().get_iter_at_line(id)
+        GLib.idle_add(self.scroll_to_iter, linea_iter, 0.1, 1, 1, 0.1)
 
     def __limpiar_codigo(self, texto):
         """
@@ -879,7 +892,7 @@ class SourceView(GtkSource.View):
                 if buffer.get_selection_bounds():
                     start, end = buffer.get_selection_bounds()
                     texto_seleccion = buffer.get_text(
-                        start, end, 0) ### Texto selección
+                        start, end, 0)
                     buffer.delete(start, end)
 
                 buffer.insert_at_cursor(texto)
@@ -890,7 +903,7 @@ class SourceView(GtkSource.View):
             if buffer.get_selection_bounds():
                 start, end = buffer.get_selection_bounds()
                 texto_seleccion = buffer.get_text(
-                    start, end, 0) ### Texto selección
+                    start, end, 0)
                 buffer.delete(start, end)
                 clipboard.set_text(texto_seleccion, -1)
 
@@ -1005,7 +1018,9 @@ class SourceView(GtkSource.View):
             dialogo.set_size_request(300, 100)
             dialogo.set_border_width(15)
 
-            label = Gtk.Label("El Archivo no Contiene Código python\no Todavía no ha Sido Guardado.")
+            lab = "El Archivo no Contiene Código python\n"
+            lab = "%s%s" % (lab, "o Todavía no ha Sido Guardado.")
+            label = Gtk.Label(lab)
             label.show()
 
             dialogo.vbox.pack_start(label, True, True, 0)
@@ -1144,7 +1159,8 @@ class SourceView(GtkSource.View):
 
                 if texto == ":":
                     ### Tola la linea.
-                    line_end_iter = buffer.get_iter_at_line_offset(id, chars - 1)
+                    line_end_iter = buffer.get_iter_at_line_offset(
+                        id, chars - 1)
                     texto = buffer.get_text(line_iter, line_end_iter, True)
 
                     tabs = 0
@@ -1195,11 +1211,14 @@ class SourceView(GtkSource.View):
                             flags=Gtk.DialogFlags.MODAL,
                             buttons=[
                                 "Recargar", Gtk.ResponseType.ACCEPT,
-                                "Continuar sin recargar", Gtk.ResponseType.CANCEL])
+                                "Continuar sin recargar",
+                                Gtk.ResponseType.CANCEL])
 
                         dialogo.set_border_width(15)
 
-                        label = Gtk.Label("El archivo ha sido modificado por otra aplicación.")
+                        lab = "El archivo ha sido modificado "
+                        lab = "%s%s" % (lab, "por otra aplicación.")
+                        label = Gtk.Label(lab)
                         label.show()
 
                         dialogo.vbox.pack_start(label, True, True, 0)
@@ -1207,10 +1226,12 @@ class SourceView(GtkSource.View):
                         response = dialogo.run()
                         dialogo.destroy()
 
-                        if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
+                        if Gtk.ResponseType(response) == \
+                            Gtk.ResponseType.ACCEPT:
                             self.set_archivo(self.archivo)
 
-                        elif Gtk.ResponseType(response) == Gtk.ResponseType.CANCEL:
+                        elif Gtk.ResponseType(response) == \
+                            Gtk.ResponseType.CANCEL:
                             return False
 
                 else:
@@ -1226,7 +1247,9 @@ class SourceView(GtkSource.View):
 
                 dialogo.set_border_width(15)
 
-                label = Gtk.Label("El archivo fue eliminado o\n movido de lugar por otra aplicación.")
+                lab = "El archivo fue eliminado o\n"
+                lab = "%s%s" % (lab, "movido de lugar por otra aplicación.")
+                label = Gtk.Label(lab)
                 label.show()
 
                 dialogo.vbox.pack_start(label, True, True, 0)
@@ -1273,8 +1296,10 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
 
         Metodología para autocompletado:
             * Importar todos los paquetes y módulos que se están
-                importando en el archivo sobre el cual estamos auto completando.
-            * Hacer el auto completado propiamente dicho, trabajando sobre
+                importando en el archivo sobre el cual estamos
+                auto completando.
+            * Hacer el auto completado propiamente dicho,
+                trabajando sobre
                 la línea de código que se está editando.
         """
 
@@ -1316,7 +1341,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             opciones = []
 
             for opcion in self.opciones:
-                if opcion.startswith(text): # http://docs.python.org/release/2.5.2/lib/string-methods.html
+                if opcion.startswith(text):
                     new_opciones.append(opcion)
                     opciones.append(GtkSource.CompletionItem.new(
                         opcion, opcion, None, None))
@@ -1333,7 +1358,8 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
             workpath = os.path.dirname(self.archivo)
 
         elif self.parent.get_toplevel().base_panel.proyecto:
-            workpath = self.parent.get_toplevel().base_panel.proyecto.get("path", "")
+            workpath = self.parent.get_toplevel().base_panel.proyecto.get(
+                "path", "")
 
         else:
             home = os.environ["HOME"]
