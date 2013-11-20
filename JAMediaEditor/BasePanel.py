@@ -352,7 +352,7 @@ class BasePanel(Gtk.Paned):
         """
 
         if accion == "Nuevo Proyecto":
-            from Widgets import DialogoProyecto
+            from DialogoProyecto import DialogoProyecto
 
             dialog = DialogoProyecto(
                 parent_window = self.get_toplevel(),
@@ -383,7 +383,7 @@ class BasePanel(Gtk.Paned):
 
         elif accion == "Editar Proyecto":
             if self.proyecto:
-                from Widgets import DialogoProyecto
+                from DialogoProyecto import DialogoProyecto
 
                 dialog = DialogoProyecto(
                     parent_window = self.get_toplevel(),
