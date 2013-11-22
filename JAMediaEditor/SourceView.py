@@ -82,7 +82,7 @@ class SourceView(GtkSource.View):
         Setea el archivo cuyo codigo debe mostrarse.
         """
 
-        if archivo and archivo != None:
+        if archivo:
             archivo = os.path.join(archivo.replace("//", "/"))
 
             if os.path.exists(archivo):
@@ -237,8 +237,9 @@ class SourceView(GtkSource.View):
 
         ### Forzando actualización de Introspección.
         # FIXME: Esto debiera hacerse al cargar el archivo.
+        # FIXME: Forzando Introspección.
         self.get_parent().get_parent().emit(
-            'new_select', self, True)
+            'new_select', self)
 
         ### Devolver el scroll a donde estaba.
         linea_iter = self.get_buffer().get_iter_at_line(id)
@@ -550,7 +551,9 @@ class SourceView(GtkSource.View):
         Cierra la página en el Notebook_SourceView
         que contiene este sourceview.
         """
-
+        
+        self.get_toplevel().set_sensitive(False)
+        
         scroll = self.get_parent()
         notebook = scroll.get_parent()
 

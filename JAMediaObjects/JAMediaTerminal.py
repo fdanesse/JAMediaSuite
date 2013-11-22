@@ -141,9 +141,9 @@ class JAMediaTerminal(Gtk.Box):
                 path=path,
                 interprete='/bin/bash',
                 ejecutar=archivo)
-        
-            self.emit("ejecucion", terminal)
     
+            self.emit("ejecucion", terminal)
+            
     def ejecute_script(self, dirpath, interprete, path_script, param):
         """
         Ejecuta un script con parámetros, en la terminal activa

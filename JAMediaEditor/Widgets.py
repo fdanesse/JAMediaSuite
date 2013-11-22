@@ -137,7 +137,7 @@ class Menu(Gtk.MenuBar):
             Gdk.ModifierType.CONTROL_MASK,
             Gtk.AccelFlags.VISIBLE)
 
-        item = Gtk.MenuItem('Construir')
+        item = Gtk.MenuItem('Construir . . .')
         item.connect("activate",
             self.__emit_accion_proyecto, "Construir")
         self.dict_proyecto["Construir"] = item
@@ -420,7 +420,7 @@ class Menu(Gtk.MenuBar):
 
         self.emit('accion_proyecto', accion)
 
-    def activar_proyecto(self, visibility):
+    def activar_proyecto(self, sensitive):
         """
         Activa o desactiva opciones.
         """
@@ -430,7 +430,7 @@ class Menu(Gtk.MenuBar):
         for option in self.dict_proyecto.keys():
             submenus.append(self.dict_proyecto[option])
 
-        if visibility:
+        if sensitive:
             map(self.__activar, submenus)
 
         else:

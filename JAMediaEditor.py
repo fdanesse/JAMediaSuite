@@ -23,17 +23,20 @@
 '''
 Cambios en setup.py:
     GTK;Development;IDE
-    
+
 import os
 
-mime_path = os.path.join(os.environ["HOME"], ".local/share/mime/packages/")
+mime_path = os.path.join(os.environ["HOME"],
+    ".local/share/mime/packages/")
 
 if not os.path.exists(mime_path):
     os.mkdir(mime_path)
 
 commands.getoutput("cp jamediaeditor.xml %s" % mime_path)
-commands.getoutput('update-mime-database %s' % os.path.join(os.environ["HOME"], ".local/share/mime/"))
-commands.getoutput('chmod 755 %s' % os.path.join(os.environ["HOME"], ".local/share/mime/jamediaeditor.xml"))
+commands.getoutput('update-mime-database %s' % os.path.join(
+    os.environ["HOME"], ".local/share/mime/"))
+commands.getoutput('chmod 755 %s' % os.path.join(
+    os.environ["HOME"], ".local/share/mime/jamediaeditor.xml"))
 '''
 
 import os
@@ -51,7 +54,7 @@ BatovideWorkSpace = os.path.join(
 
 if not os.path.exists(BatovideWorkSpace):
     os.mkdir(BatovideWorkSpace)
-    
+
 PATH = os.path.dirname(__file__)
 
 screen = Gdk.Screen.get_default()
@@ -73,55 +76,55 @@ class JAMediaEditor(Gtk.Window):
             JAMediaEditor.Widgets.Menu
             JAMediaEditor.BasePanel.BasePanel
     """
-    
+
     __gtype_name__ = 'WindowJAMediaEditor'
-    
+
     def __init__(self):
-        
+
         Gtk.Window.__init__(self)
-        
+
         self.set_title("JAMediaEditor")
-        
+
         self.set_icon_from_file(os.path.join(
             JAMediaObjectsPath, "Iconos",
             "JAMediaEditor2.svg"))
-            
+
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(5)
         self.set_position(Gtk.WindowPosition.CENTER)
-        
+
         accel_group = Gtk.AccelGroup()
         self.add_accel_group(accel_group)
-        
+
         self.updater = False
         self.sourceview = False
-        
+
         base_widget = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL)
-        
+
         from JAMediaEditor.Widgets import Menu
         from JAMediaEditor.BasePanel import BasePanel
         from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack
-        
+
         self.menu = Menu(accel_group)
         self.base_panel = BasePanel()
         self.jamediapygihack = JAMediaPyGiHack()
-        
+
         base_widget.pack_start(
             self.menu, False, False, 0)
         base_widget.pack_start(
             self.base_panel, True, True, 0)
         base_widget.pack_start(
             self.jamediapygihack, True, True, 0)
-            
+
         self.add(base_widget)
-        
+
         self.show_all()
         self.maximize()
-        
+
         self.jamediapygihack.hide()
-        
+
         self.menu.connect('accion_ver',
             self.__ejecutar_accion_ver)
         self.menu.connect('accion_codigo',
@@ -134,70 +137,130 @@ class JAMediaEditor(Gtk.Window):
             self.__run_jamediapygihack)
         self.jamediapygihack.connect('salir',
             self.__run_editor)
-            
+
         self.base_panel.connect("update",
             self.__new_handler)
-        
+        self.base_panel.connect("proyecto_abierto",
+            self.__set_toolbar_proyecto_and_menu)
+        self.base_panel.connect("ejecucion",
+            self.__set_toolbars_ejecucion)
+            
         self.connect("delete-event", self.__exit)
-        
+
     def __run_editor(self, widget):
-        
+
         self.jamediapygihack.hide()
         self.menu.show()
         self.base_panel.show()
-        
+
     def __run_jamediapygihack(self, widget):
-        
+
         self.menu.hide()
         self.base_panel.hide()
         self.jamediapygihack.show()
-        
+
     def __exit(self, widget=None, event=None):
-        
+
         Gtk.main_quit()
         import sys
         sys.exit(0)
-        
+
     def __ejecutar_accion_codigo(self, widget, accion):
         """
         Cuando se hace click en una opción del menú codigo.
         """
-        
+
         self.base_panel.set_accion_codigo(widget, accion)
-        
+
     def __ejecutar_accion_ver(self, widget, accion, valor):
         """
         Cuando se hace click en una opción del menú ver.
         """
-        
+
         self.base_panel.set_accion_ver(widget, accion, valor)
-        
+
     def __ejecutar_accion_archivo(self, widget, accion):
         """
         Cuando se hace click en una opción del menú que
         afecta al archivo seleccionado.
         """
-        
+
         self.base_panel.set_accion_archivo(widget, accion)
-        
+
     def __ejecutar_accion_proyecto(self, widget, accion):
         """
         Cuando se hace click en una opción del menú proyecto.
         """
-        
+
         self.base_panel.set_accion_proyecto(widget, accion)
-    
+
+    def __set_toolbar_proyecto_and_menu(self, widget, valor):
+        """
+        Activa y desactiva las opciones de proyecto en la
+        toolbar y menú correspondiente cuando se abre o se
+        cierra un proyecto.
+        """
+        
+        self.base_panel.workpanel.detener_ejecucion()
+        
+        self.menu.activar_proyecto(valor)
+        self.base_panel.toolbarproyecto.activar_proyecto(valor)
+        
+        ### Ejecuciones
+        if valor:
+            self.base_panel.toolbarproyecto.activar_ejecucion(False)
+            # actualizar en toolbar de archivo.
+            
+        else:
+            self.base_panel.toolbarproyecto.activar_ejecucion(None)
+            # actualizar en toolbar de archivo.
+            
+    def __set_toolbars_ejecucion(self, widget, tipo, valor):
+        """
+        Cuando se ejecuta un archivo o proyecto, se
+        actualizan las toolbars correspondientes.
+        """
+        
+        if not valor:
+            # desactivar detener ejecucion de archivo.
+            # activar ejecucion de archivo.
+
+            proyecto = self.base_panel.proyecto
+            if proyecto:
+                self.base_panel.toolbarproyecto.activar_ejecucion(False)
+                
+            else:
+                self.base_panel.toolbarproyecto.activar_ejecucion(None)
+        
+        elif valor:
+            if tipo == "proyecto":
+                ### Se está ejecutando proyecto.
+                # desactivar ejecutar y detener archivo.
+                
+                # desactivar ejecutar proyecto.
+                # activar detener proyecto.
+                self.base_panel.toolbarproyecto.activar_ejecucion(True)
+
+            elif tipo == "archivo":
+                ### Se está ejecutando archivo.
+                # desactivar ejecutar y detener proyecto.
+                self.base_panel.toolbarproyecto.activar_ejecucion(None)
+                
+                # desactivar ejecutar archivo.
+                # activar detener archivo.
+                pass
+        
     def __new_handler(self, widget, sourceview, reset):
         """
         Elimina o reinicia la funcion que
         actualiza las toolbars y menús.
         """
-        
+
         if self.updater and self.updater != None:
             GLib.source_remove(self.updater)
             self.updater = False
             self.sourceview = False
-            
+
         if reset:
             self.sourceview = sourceview
             self.updater = GLib.timeout_add(500, self.__update)
@@ -206,24 +269,24 @@ class JAMediaEditor(Gtk.Window):
         """
         Actualiza las toolbars y menus.
         """
-        
+
         activar = []
         desactivar = []
-        
+
         try:
             ### Si hay un archivo seleccionado.
             if self.sourceview:
                 buffer = self.sourceview.get_buffer()
-                
+
                 activar.extend([
                     "Guardar Como", "Cerrar",
                     "Numeracion", "Aumentar",
                     "Disminuir", "Formato"])
-                
+
                 ### Si hay texto en el archivo seleccionado.
                 inicio, fin = buffer.get_bounds()
                 buf = buffer.get_text(inicio, fin, 0)
-            
+
                 if buf:
                     activar.extend([
                         "Seleccionar Todo", "Identar",
@@ -236,7 +299,7 @@ class JAMediaEditor(Gtk.Window):
                         "De Identar", "Buscar Texto",
                         "Reemplazar Texto", "Chequear",
                         ])
-                    
+
                 ### Si el contenido del archivo != al del buffer.
                 archivo = self.sourceview.archivo
                 texto = ""
@@ -245,47 +308,47 @@ class JAMediaEditor(Gtk.Window):
                         arch = open(archivo, 'r')
                         texto = arch.read()
                         arch.close()
-                    
+
                 if texto != buf:
                     activar.append("Guardar")
-                    
+
                 else:
                     desactivar.append("Guardar")
-                    
+
                 ### Si hay texto seleccionado, se puede copiar y cortar.
                 if buffer.get_selection_bounds():
                     activar.extend(["Cortar", "Copiar"])
-                    
+
                 else:
                     desactivar.extend(["Cortar", "Copiar"])
-                    
+
                 ### Si hay texto en el clipboard, se puede pegar
                 clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
                 texto = clipboard.wait_for_text()
-                
+
                 if texto:
                     activar.append("Pegar")
-                    
+
                 else:
                     desactivar.append("Pegar")
-                    
+
                 ### Si se puede deshacer.
                 if buffer.can_undo():
                     activar.append("Deshacer")
-                    
+
                 else:
                     desactivar.append("Deshacer")
-                    
+
                 ### Si se puede Rehacer.
                 if buffer.can_redo():
                     activar.append("Rehacer")
-                    
+
                 else:
                     desactivar.append("Rehacer")
-                
+
             else:
                 self.base_panel.infonotebook.set_introspeccion(None, "")
-                
+
                 desactivar.extend([
                     "Cortar", "Copiar",
                     "Rehacer", "Deshacer",
@@ -300,22 +363,22 @@ class JAMediaEditor(Gtk.Window):
                     "Chequear",
                     "Numeracion", "Aumentar",
                     "Disminuir", "Formato"])
-            
+
             ### Actualizar las toolbars y el menu.
             self.base_panel.toolbararchivo.update(True, activar)
             self.base_panel.toolbararchivo.update(False, desactivar)
-            
+
             self.menu.update_archivos(True, activar)
             self.menu.update_archivos(False, desactivar)
-            
+            '''
             ### Opciones de Proyecto.
             if self.base_panel.proyecto:
                 self.menu.activar_proyecto(True)
-                
+
                 self.base_panel.toolbarproyecto.activar(
                     bool(self.base_panel.proyecto),
                     bool(self.base_panel.workpanel.ejecucion))
-                    
+
             else:
                 self.menu.activar_proyecto(False)
                 self.base_panel.toolbarproyecto.dict_proyecto["Ejecutar Proyecto"].set_sensitive(False)
@@ -323,33 +386,36 @@ class JAMediaEditor(Gtk.Window):
                 self.base_panel.toolbarproyecto.dict_proyecto["Editar Proyecto"].set_sensitive(False)
                 self.base_panel.toolbarproyecto.dict_proyecto["Cerrar Proyecto"].set_sensitive(False)
                 self.base_panel.toolbarproyecto.dict_proyecto["Guardar Proyecto"].set_sensitive(False)
-            
+
             ### Ejecución de archivo.
             if self.sourceview:
                 self.base_panel.toolbararchivo.dict_archivo["Ejecutar Archivo"].set_sensitive(
                     not bool(self.base_panel.workpanel.ejecucion))
-                
+
                 self.base_panel.toolbararchivo.dict_archivo["Detener Ejecución"].set_sensitive(
                     bool(self.base_panel.workpanel.ejecucion))
-                    
+
             else:
                 self.base_panel.toolbararchivo.dict_archivo["Ejecutar Archivo"].set_sensitive(False)
                 self.base_panel.toolbararchivo.dict_archivo["Detener Ejecución"].set_sensitive(False)
-                
+            '''
         except:
             self.sourceview = False
-        
-        codeviews = self.base_panel.workpanel.get_archivos_de_proyecto(self.base_panel.proyecto.get("path", ""))
+        '''
+        codeviews = self.base_panel.workpanel.get_archivos_de_proyecto(
+            self.base_panel.proyecto.get("path", ""))
+
         if not codeviews:
             self.base_panel.infonotebook.set_path_estructura(None)
             self.base_panel.proyecto = {}
-        
+        '''
+        '''
         paginas = self.base_panel.workpanel.notebook_sourceview.get_children()
         if not paginas:
             self.__ejecutar_accion_archivo(None, "Nuevo Archivo")
-        
+        '''
         return True
-    
+
 if __name__=="__main__":
     JAMediaEditor()
     Gtk.main()

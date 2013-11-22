@@ -1,0 +1,51 @@
+Metadata-Version: 1.0
+Name: pdfcrowd
+Version: 2.4
+Summary: A client for Pdfcrowd API.
+Home-page: http://pdfcrowd.com/html-to-pdf-api/
+Author: Pdfcrowd Team
+Author-email: info@pdfcrowd.com
+License: License :: OSI Approved :: MIT License
+Description: 
+        The Pdfcrowd API lets you easily create PDF from web pages or raw HTML
+        code in your Python applications.
+        
+        
+        To use the API, you need an account on `pdfcrowd.com
+        <https://pdfcrowd.com>`_, if you don't have one you can sign up `here
+        <https://pdfcrowd.com/pricing/api/>`_. This will give you a username
+        and an API key.
+        
+        
+        An example::
+        
+        import pdfcrowd
+        
+        try:
+        # create an API client instance
+        client = pdfcrowd.Client("username", "apikey")
+        
+        # convert a web page and store the generated PDF into a pdf variable
+        pdf = client.convertURI('http://example.com')
+        
+        # convert an HTML string and save the result to a file
+        html="<html><body>In-memory HTML.</body></html>"
+        client.convertHtml(html, open('html.pdf', 'wb'))
+        
+        # convert an HTML file
+        client.convertFile('/path/to/local/file.html', open('file.pdf', 'wb'))
+        
+        except pdfcrowd.Error, why:
+        print 'Failed:', why
+        
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Unix
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries

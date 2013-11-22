@@ -59,10 +59,10 @@ class WorkPanel(Gtk.Paned):
 
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_BOOLEAN)),
-    'close_all_files': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
+    'ejecucion': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_BOOLEAN))}
 
     def __init__(self):
 
@@ -74,8 +74,11 @@ class WorkPanel(Gtk.Paned):
         self.notebook_sourceview = Notebook_SourceView()
         self.terminal = JAMediaTerminal()
 
+        ### Terminal en ejecución.
         self.ejecucion = False
-
+        ### Tipo: proyecto o archivo.
+        self.ejecucion_activa = False
+        
         self.pack1(self.notebook_sourceview,
             resize=True, shrink=False)
         self.pack2(self.terminal,
@@ -87,14 +90,9 @@ class WorkPanel(Gtk.Paned):
 
         self.notebook_sourceview.connect('new_select',
             self.__re_emit_new_select)
-        self.notebook_sourceview.connect('close_all_files',
-            self.__close_all_files)
+
         self.terminal.connect("ejecucion", self.__set_ejecucion)
         self.terminal.connect("reset", self.detener_ejecucion)
-
-    def __close_all_files(self, widget):
-
-        self.emit('close_all_files')
 
     def __set_ejecucion(self, widget, terminal):
         """
@@ -119,13 +117,13 @@ class WorkPanel(Gtk.Paned):
 
         self.notebook_sourceview.set_linea(index, texto)
 
-    def __re_emit_new_select(self, widget, view, estructura):
+    def __re_emit_new_select(self, widget, view):
         """
         Recibe nombre y contenido de archivo seleccionado
         en Notebook_SourceView y los envia BasePanel.
         """
 
-        self.emit('new_select', view, estructura)
+        self.emit('new_select', view)
 
     def abrir_archivo(self, archivo):
         """
@@ -158,11 +156,6 @@ class WorkPanel(Gtk.Paned):
             ### Cuando se ejecuta el archivo seleccionado.
             pagina = self.notebook_sourceview.get_current_page()
 
-            # FIXME: Cuando se hace ejecutar y no hay archivos abiertos.
-            # No debiera estar activo el botón ejecutar en este caso.
-            if not pagina > -1:
-                return
-
             view = self.notebook_sourceview.get_children()[
                 pagina].get_children()[0]
 
@@ -176,6 +169,7 @@ class WorkPanel(Gtk.Paned):
 
                 dialog = DialogoAlertaSinGuardar(
                     parent_window=self.get_toplevel())
+                
                 respuesta = dialog.run()
                 dialog.destroy()
 
@@ -189,6 +183,9 @@ class WorkPanel(Gtk.Paned):
                     return
 
                 archivo = view.archivo
+
+            self.ejecucion_activa = "archivo"
+            self.emit("ejecucion", self.ejecucion_activa, True)
 
         else:
             ### Cuando se ejecuta el main de proyecto.
@@ -218,6 +215,9 @@ class WorkPanel(Gtk.Paned):
 
                     elif respuesta == Gtk.ResponseType.CLOSE:
                         return
+                    
+            self.ejecucion_activa = "proyecto"
+            self.emit("ejecucion", self.ejecucion_activa, True)
 
         if archivo:
             self.terminal.ejecutar(archivo)
@@ -227,12 +227,14 @@ class WorkPanel(Gtk.Paned):
         """
         Detiene la ejecución en proceso.
         """
-
+        
         if self.ejecucion:
             self.ejecucion.set_interprete()
             self.ejecucion = False
             self.terminal.set_sensitive(True)
-
+            self.emit("ejecucion", self.ejecucion_activa, False)
+            self.ejecucion_activa = False
+        
     def set_accion_codigo(self, accion):
         """
         Ejecuta acciones sobre el código del archivo seleccionado.
@@ -287,11 +289,8 @@ class Notebook_SourceView(Gtk.Notebook):
     __gtype_name__ = 'JAMediaEditorNotebook_SourceView'
 
     __gsignals__ = {
-     'new_select': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_BOOLEAN)),
-    'close_all_files': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+    'new_select': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
 
     def __init__(self):
 
@@ -310,13 +309,7 @@ class Notebook_SourceView(Gtk.Notebook):
 
         self.connect('switch_page', self.__switch_page)
 
-        GLib.idle_add(self.abrir_archivo, None)
-
-    def do_page_removed(self, uno, dos):
-
-        paginas = self.get_children()
-        if not paginas:
-            self.emit("close_all_files")
+        GLib.idle_add(self.abrir_archivo, False)
 
     def set_linea(self, index, texto):
         """
@@ -357,9 +350,8 @@ class Notebook_SourceView(Gtk.Notebook):
         # view.new_handle(True)
 
         if view != self.ultimo_view_activo:
-            self.emit('new_select', view, False)
-
-        self.ultimo_view_activo = view
+            self.ultimo_view_activo = view
+            self.emit('new_select', view)
 
     def abrir_archivo(self, archivo):
         """
@@ -372,17 +364,9 @@ class Notebook_SourceView(Gtk.Notebook):
         for pagina in paginas:
             view = pagina.get_child()
 
+            ### FIXME: No permitir abrir dos veces el mismo archivo?
             if view.archivo and view.archivo == archivo:
                 return
-
-            ### Cuando se abre un archivo, se cierra el vacío por default.
-            if not view.archivo:
-                buffer = view.get_buffer()
-                inicio, fin = buffer.get_bounds()
-                buf = buffer.get_text(inicio, fin, 0)
-
-                if not buf:
-                    self.remove(pagina)
 
         sourceview = SourceView(self.config)
 
@@ -423,6 +407,22 @@ class Notebook_SourceView(Gtk.Notebook):
 
         self.set_tab_reorderable(scroll, True)
 
+        '''
+        ### Cuando se abre un archivo, se cierra el vacío por default.
+        if len(paginas) > 1:
+            for pagina in paginas:
+                view = pagina.get_child()
+                
+                if not view.archivo:
+                    buffer = view.get_buffer()
+                    inicio, fin = buffer.get_bounds()
+                    buf = buffer.get_text(inicio, fin, 0)
+
+                    if not buf:
+                        self.remove(pagina)
+                        break
+        '''
+        
         return False
 
     def guardar_archivo(self):
@@ -538,6 +538,17 @@ class Notebook_SourceView(Gtk.Notebook):
                     "Cerrar Archivo")
                 break
 
+    def do_page_removed(self, scroll, num):
+        
+        paginas = self.get_children()
+        
+        if not paginas:
+            self.abrir_archivo(False)
+
+        # FIXME: Forzando Introspección.
+        self.get_parent().emit('new_select', False)
+        self.get_toplevel().set_sensitive(True)
+        
     def get_archivos_de_proyecto(self, proyecto_path):
         """
         Devuelve sourceview de todos los archivos abiertos

@@ -24,6 +24,7 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import GdkPixbuf
 
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
@@ -34,6 +35,22 @@ from JAMediaObjects.JAMediaGlobales import get_boton
 from JAMediaObjects.JAMediaGlobales import get_separador
 from JAMediaObjects.JAMediaGlobales import get_pixels
 
+def make_icon_active(icon_path):
+
+    file_name = os.path.basename(icon_path)
+    arch_path = os.path.join('/tmp', file_name)
+    
+    if not os.path.exists(arch_path):
+        svg = open(icon_path, "r")
+        contenido = svg.read()
+        svg.close()
+
+        contenido = contenido.replace('000000', 'ff4500')
+        arch = open(arch_path, "w")
+        arch.write(contenido)
+        arch.close()
+        
+    return arch_path
 
 class ToolbarProyecto(Gtk.Toolbar):
     """
@@ -50,112 +67,151 @@ class ToolbarProyecto(Gtk.Toolbar):
 
         Gtk.Toolbar.__init__(self)
 
-        self.dict_proyecto = {}
+        from collections import OrderedDict
 
+        self.dict_proyecto = OrderedDict()
+
+        icon_path = make_icon_active(
+            os.path.join(icons, "document-new.svg"))
         nuevo_proyecto = get_boton(
-            os.path.join(icons, "document-new.svg"),
+            icon_path,
             pixels=get_pixels(0.5),
             tooltip_text="Nuevo Proyecto")
+        self.dict_proyecto["Nuevo Proyecto"] = [
+            nuevo_proyecto,
+            "document-new.svg"]
 
+        icon_path = make_icon_active(
+            os.path.join(icons, "document-open.svg"))
         abrir_proyecto = get_boton(
-            os.path.join(icons, "document-open.svg"),
+            icon_path,
             pixels=get_pixels(0.5),
             tooltip_text="Abrir Proyecto")
+        self.dict_proyecto["Abrir Proyecto"] = [
+            abrir_proyecto,
+            "document-open.svg"]
 
         cerrar_proyecto = get_boton(
             os.path.join(icons, "button-cancel.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Cerrar Proyecto")
+        self.dict_proyecto["Cerrar Proyecto"] = [
+            cerrar_proyecto,
+            "button-cancel.svg"]
 
         editar_proyecto = get_boton(
             os.path.join(icons, "gtk-edit.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Editar Proyecto")
+        self.dict_proyecto["Editar Proyecto"] = [
+            editar_proyecto,
+            "gtk-edit.svg"]
 
         guardar_proyecto = get_boton(
             os.path.join(icons, "document-save.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Guardar Proyecto")
+        self.dict_proyecto["Guardar Proyecto"] = [
+            guardar_proyecto,
+            "document-save.svg"]
 
         ejecutar_proyecto = get_boton(
             os.path.join(icons, "media-playback-start.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Ejecutar Proyecto")
+        self.dict_proyecto["Ejecutar Proyecto"] = [
+            ejecutar_proyecto,
+            "media-playback-start.svg"]
 
-        detener = get_boton(
+        detener_ejecucion = get_boton(
             os.path.join(icons, "media-playback-stop.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Detener Ejecución")
-
-        self.dict_proyecto["Cerrar Proyecto"] = cerrar_proyecto
-        self.dict_proyecto["Editar Proyecto"] = editar_proyecto
-        self.dict_proyecto["Guardar Proyecto"] = guardar_proyecto
-        self.dict_proyecto["Ejecutar Proyecto"] = ejecutar_proyecto
-        self.dict_proyecto["Detener Ejecución"] = detener
+        self.dict_proyecto["Detener Ejecución"] = [
+            detener_ejecucion,
+            "media-playback-stop.svg"]
 
         self.insert(nuevo_proyecto, - 1)
         self.insert(abrir_proyecto, - 1)
         self.insert(editar_proyecto, - 1)
         self.insert(guardar_proyecto, - 1)
         self.insert(cerrar_proyecto, - 1)
-        self.insert(get_separador(draw=True,
-            ancho=0, expand=False), - 1)
-        self.insert(ejecutar_proyecto, - 1)
-        self.insert(detener, - 1)
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), - 1)
+        self.insert(get_separador(
+            draw=True, ancho=0,
+            expand=False), - 1)
+
+        self.insert(ejecutar_proyecto, - 1)
+        self.insert(detener_ejecucion, - 1)
+
+        self.insert(get_separador(
+            draw=False, ancho=0,
+            expand=True), - 1)
 
         self.show_all()
 
-        botones = [
-            nuevo_proyecto,
-            abrir_proyecto,
-            cerrar_proyecto,
-            editar_proyecto,
-            guardar_proyecto,
-            ejecutar_proyecto,
-            detener]
+        for key in self.dict_proyecto.keys():
+            self.dict_proyecto[key][0].connect(
+                "clicked", self.__emit_accion)
 
-        for boton in botones:
-            boton.connect("clicked", self.__emit_accion)
-
-        for boton in self.dict_proyecto.keys():
-            self.dict_proyecto[boton].set_sensitive(False)
+        self.activar_proyecto(False)
+        self.activar_ejecucion(None)
 
     def __emit_accion(self, widget):
 
         self.emit("accion", widget.TOOLTIP)
 
-    def activar(self, visibility, ejecucion):
+    def activar_ejecucion(self, ejecucion):
         """
-        Activa o desactiva oopciones.
+        Activa y desactiva opción de ejecución de proyecto.
         """
 
-        submenus = []
+        if ejecucion == None:
+            map(self.__desactivar, self.dict_proyecto.keys()[-1:])
+            
+        elif ejecucion == False:
+            map(self.__activar, [self.dict_proyecto.keys()[-2]])
+            map(self.__desactivar, [self.dict_proyecto.keys()[-1]])
+            
+        elif ejecucion == True:
+            map(self.__desactivar, [self.dict_proyecto.keys()[-2]])
+            map(self.__activar, [self.dict_proyecto.keys()[-1]])
 
-        for option in self.dict_proyecto.keys():
-            submenus.append(self.dict_proyecto[option])
+    def activar_proyecto(self, sensitive):
+        """
+        Activa o desactiva opciones básicas de proyecto.
+        """
 
-        if visibility:
-            map(self.__activar, submenus)
+        if sensitive:
+            map(self.__activar, self.dict_proyecto.keys()[2:])
 
         else:
-            map(self.__desactivar, submenus)
+            map(self.__desactivar, self.dict_proyecto.keys()[2:])
 
-        self.dict_proyecto["Ejecutar Proyecto"].set_sensitive(
-            not ejecucion)
-        self.dict_proyecto["Detener Ejecución"].set_sensitive(
-            ejecucion)
+    def __activar(self, key):
 
-    def __activar(self, option):
-
+        option, icon = self.dict_proyecto[key]
+        
         if not option.get_sensitive():
+            icon_path = make_icon_active(os.path.join(icons, icon))
+            pixels = get_pixels(0.5)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, pixels, pixels)
+            imagen = option.get_icon_widget()
+            imagen.set_from_pixbuf(pixbuf)
             option.set_sensitive(True)
 
-    def __desactivar(self, option):
+    def __desactivar(self, key):
+
+        option, icon = self.dict_proyecto[key]
 
         if option.get_sensitive():
+            icon_path = os.path.join(icons, icon)
+            pixels = get_pixels(0.5)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, pixels, pixels)
+            imagen = option.get_icon_widget()
+            imagen.set_from_pixbuf(pixbuf)
             option.set_sensitive(False)
 
 

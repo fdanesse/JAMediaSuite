@@ -22,6 +22,31 @@
 import gi
 from gi.repository import WebKit
 
+'''
+client = pdfcrowd.Client("cristian99garcia", "736774e3e4e9f16c862f3630f1259f7a")
+file = os.path.expanduser('~/.config/user-dirs.dirs')
+documents = None
+
+if os.path.exists(file):
+    text = open(file).read()
+
+    for line in texto.splitlines():
+        if 'DOCUMENTS' in line:
+            documents = linea.split('XDG_DOCUMENTS_DIR="$HOME/')[1]
+            documents = os.path.join(os.path.expanduser('~'), documents)
+
+if not documents or not os.path.exists(documents):
+    documents = os.path.expanduser('~/Documents/')
+    os.mkdir(documents)
+
+pdf = client.convertURI(self._browser.get_uri())
+filename = os.path.join(documents, self._browser.props.title)
+
+archivo = open(filename, 'w')
+archivo.write(pdf)
+archivo.close()
+'''
+
 class Navegador(WebKit.WebView):
     """Navegador Web."""
     
@@ -31,12 +56,20 @@ class Navegador(WebKit.WebView):
         
         self.show_all()
         
-        #self.open('https://www.google.com/')
+        self.open('https://www.google.com/')
         #self.open('/home/flavio/Datos-pygi-hack/Widget.html')
         
         self.set_zoom_level(1.0)
         
         print self.get_settings() # WebKit.WebSettings()
+        
+        self.connect("draw", self.__check)
+        
+    def __check(self, widget, context):
+        
+        rect = self.get_allocation()
+        print rect.width, rect.height
+        print widget, context
         
     def do_choose_file(self):
         print 'do_choose_file'
@@ -69,6 +102,9 @@ class Navegador(WebKit.WebView):
 
     def do_navigation_requested(self, webwrame, networkrequest):
         print 'do_navigation_requested', webwrame, networkrequest
+        #from gi.repository import Gtk
+        #op = Gtk.PrintOperation()
+        #print webwrame.print_full(op, Gtk.PrintOperationResult.APPLY)
 
     def do_paste_clipboard(self):
         print 'do_paste_clipboard'
