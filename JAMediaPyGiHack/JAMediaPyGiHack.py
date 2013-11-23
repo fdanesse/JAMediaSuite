@@ -19,57 +19,55 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
-
 from gi.repository import Gtk
 from gi.repository import GObject
 
 from Widgets import Toolbar
 from BasePanel import BasePanel
 
+
 class JAMediaPyGiHack(Gtk.Box):
-    
+
     __gtype_name__ = 'JAMediaPyGiHack'
-    
+
     __gsignals__ = {
     'salir': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
-        
+
     def __init__(self):
-        
-        Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
-        
+
+        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
+
         self.toolbar = Toolbar()
         self.pack_start(self.toolbar, False, False, 0)
-        
+
         self.base_panel = BasePanel()
         self.pack_start(self.base_panel, True, True, 0)
-        
+
         self.show_all()
 
         self.toolbar.connect("import", self.__import)
         self.toolbar.connect("accion-menu", self.__set_accion)
         self.toolbar.connect("salir", self.__emit_salir)
         self.base_panel.connect("update", self.__update)
-        
+
     def __emit_salir(self, widget):
-        
+
         self.emit('salir')
-        
+
     def __update(self, widget, view):
-        
+
         if view == "Terminal":
             pass
-        
+
         elif view == "Gstreamer - Inspect 1.0" or \
             view == "Apis PyGiHack":
             self.toolbar.update(view)
-        
+
     def __set_accion(self, widget, menu, wid_lab, valor):
-        
+
         self.base_panel.set_accion(menu, wid_lab, valor)
-        
+
     def __import(self, widget, paquete, modulo):
-        
+
         self.base_panel.import_modulo(paquete, modulo)
-        

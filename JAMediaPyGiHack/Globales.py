@@ -79,7 +79,7 @@ BASEDICT = {
         'uu', 'uuid', 'warnings', 'wave', 'weakref', 'webbrowser',
         'whichdb', 'wsgiref', 'xdrlib', 'xml', 'xmlrpclib',
         'zipfile', 'zipimport', 'zlib'],
-        
+
     "python-gi": sorted([
         'AccountsService', 'Atk', 'Atspi', 'Cally', 'Clutter',
         'ClutterGst', 'ClutterX11', 'Cogl', 'DBus', 'DBusGLib',
@@ -96,7 +96,7 @@ BASEDICT = {
         'Totem', 'UPowerGlib', 'Unity', 'Vte', 'WebKit', 'Wnck',
         'cairo', 'fontconfig', 'freetype2', 'libxml2', 'xfixes',
         'xft', 'xlib', 'xrandr', 'gi']),
-        
+
     "Otros": sorted([
         'cairo', 'gobject', 'gst', 'pygame', 'pygst',
         'simplejson', 'gtk', 'pygtk', 'telepathy', 'dbus',
@@ -126,14 +126,15 @@ BASEDICT = {
 'zeitgeist.client', 'zeitgeist.datamodel',
 '''
 
+
 def set_dict(dict):
     """
     Crea el json base desde donde opera
     la función get_dict()
     """
-    
+
     import json
-    
+
     archivo = os.path.join(WorkPath, "JAMediaPyGiHack.cfg")
     archivo = open(archivo, "w")
     archivo.write(
@@ -145,23 +146,24 @@ def set_dict(dict):
             )
         )
     archivo.close()
-    
+
+
 def get_dict():
     """
     Devuelve Los módulos.
     """
-    
+
     #import json
     #import codecs
-    
+
     #archivo = os.path.join(WorkPath, "JAMediaPyGiHack.cfg")
-    
+
     #if not os.path.exists(archivo):
     #    set_dict(BASEDICT)
-        
+
     #archivo = codecs.open(archivo, "r", "utf-8")
     #dict = json.JSONDecoder("utf-8").decode(archivo.read())
     #archivo.close()
-    
+
     #return dict
     return BASEDICT

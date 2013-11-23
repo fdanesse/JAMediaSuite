@@ -26,39 +26,40 @@ from gi.repository import Gtk
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
+
 class Ventana(Gtk.Window):
-    
+
     __gtype_name__ = 'VentanaJAMediaPyGiHack'
-    
+
     def __init__(self):
-        
+
         Gtk.Window.__init__(self)
-        
+
         self.set_title("JAMediaPygiHack")
-        
+
         self.set_icon_from_file(
             os.path.join(JAMediaObjectsPath,
             "Iconos", "PygiHack.svg"))
-            
+
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.maximize()
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
-        
+
         from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack
-        
+
         jamediapygihack = JAMediaPyGiHack()
         self.add(jamediapygihack)
-        
+
         self.show_all()
         self.realize()
-        
+
         jamediapygihack.connect("salir", self.__salir)
         self.connect("delete-event", self.__salir)
 
-    def __salir(self, widget = None, senial = None):
-        
+    def __salir(self, widget=None, senial=None):
+
         import sys
         sys.exit(0)
 
