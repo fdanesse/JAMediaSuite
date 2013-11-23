@@ -43,7 +43,6 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GLib
 
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
@@ -68,6 +67,7 @@ context.add_provider_for_screen(
     screen,
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
 
 class JAMediaEditor(Gtk.Window):
     """
@@ -141,7 +141,7 @@ class JAMediaEditor(Gtk.Window):
             self.__set_toolbar_proyecto_and_menu)
         self.base_panel.connect("ejecucion",
             self.__set_toolbars_ejecucion)
-            
+
         self.connect("delete-event", self.__exit)
 
     def __run_editor(self, widget):
@@ -192,47 +192,47 @@ class JAMediaEditor(Gtk.Window):
         self.base_panel.set_accion_proyecto(widget, accion)
 
     def __set_toolbar_archivo_and_menu(self, widget, dict):
-        
+
         self.menu.update_archivos(dict)
         self.base_panel.toolbararchivo.update(dict)
-        
+
     def __set_toolbar_proyecto_and_menu(self, widget, valor):
         """
         Activa y desactiva las opciones de proyecto en la
         toolbar y menú correspondiente cuando se abre o se
         cierra un proyecto.
         """
-        
+
         self.base_panel.workpanel.detener_ejecucion()
-        
+
         self.menu.activar_proyecto(valor)
         self.base_panel.toolbarproyecto.activar_proyecto(valor)
-        
+
         ### Ejecuciones
         self.base_panel.toolbararchivo.activar_ejecucion(False)
-        
+
         if valor:
             self.base_panel.toolbarproyecto.activar_ejecucion(False)
-            
+
         else:
             self.base_panel.toolbarproyecto.activar_ejecucion(None)
-            
+
     def __set_toolbars_ejecucion(self, widget, tipo, valor):
         """
         Cuando se ejecuta un archivo o proyecto, se
         actualizan las toolbars correspondientes.
         """
-        
+
         if not valor:
             self.base_panel.toolbararchivo.activar_ejecucion(False)
 
             proyecto = self.base_panel.proyecto
             if proyecto:
                 self.base_panel.toolbarproyecto.activar_ejecucion(False)
-                
+
             else:
                 self.base_panel.toolbarproyecto.activar_ejecucion(None)
-        
+
         elif valor:
             if tipo == "proyecto":
                 ### Se está ejecutando proyecto.
@@ -243,7 +243,8 @@ class JAMediaEditor(Gtk.Window):
                 ### Se está ejecutando archivo.
                 self.base_panel.toolbarproyecto.activar_ejecucion(None)
                 self.base_panel.toolbararchivo.activar_ejecucion(True)
-        
-if __name__=="__main__":
+
+
+if __name__ == "__main__":
     JAMediaEditor()
     Gtk.main()

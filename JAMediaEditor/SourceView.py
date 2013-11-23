@@ -45,7 +45,7 @@ class SourceView(GtkSource.View):
     __gsignals__ = {
     'update': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
-    
+
     def __init__(self, config):
 
         GtkSource.View.__init__(self)
@@ -243,7 +243,7 @@ class SourceView(GtkSource.View):
         ### Devolver el scroll a donde estaba.
         linea_iter = self.get_buffer().get_iter_at_line(id)
         GLib.idle_add(self.scroll_to_iter, linea_iter, 0.1, 1, 1, 0.1)
-        
+
     def __limpiar_codigo(self, texto):
         """
         Cuando se guarda un archivo,
@@ -402,7 +402,7 @@ class SourceView(GtkSource.View):
 
                 dialog = DialogoAlertaSinGuardar(
                     parent_window=self.get_toplevel())
-                    
+
                 respuesta = dialog.run()
                 dialog.destroy()
 
@@ -551,11 +551,11 @@ class SourceView(GtkSource.View):
         Cierra la página en el Notebook_SourceView
         que contiene este sourceview.
         """
-        
+
         self.get_toplevel().set_sensitive(False)
-        
+
         self.new_handle(False)
-        
+
         scroll = self.get_parent()
         notebook = scroll.get_parent()
 
@@ -642,18 +642,18 @@ class SourceView(GtkSource.View):
             self.__identar()
 
         return False
-    
+
     def __control_cambios(self):
         """
         Alerta sobre cambios externos al archivo.
         """
-        
+
         if self.archivo:
             if os.path.exists(self.archivo):
                 if self.control:
-                    
+
                     if self.control != os.path.getmtime(self.archivo):
-                        
+
                         dialogo = Gtk.Dialog(
                             parent=self.get_toplevel(),
                             flags=Gtk.DialogFlags.MODAL,
@@ -682,12 +682,12 @@ class SourceView(GtkSource.View):
                             Gtk.ResponseType.CANCEL:
                             self.archivo = False
                             self.get_buffer().set_modified(True)
-                        
+
                 else:
                     self.control = os.path.getmtime(self.archivo)
 
             elif not os.path.exists(self.archivo):
-                
+
                 dialogo = Gtk.Dialog(
                     parent=self.get_toplevel(),
                     flags=Gtk.DialogFlags.MODAL,
@@ -706,20 +706,20 @@ class SourceView(GtkSource.View):
 
                 response = dialogo.run()
                 dialogo.destroy()
-                # FIXME: Analizar cambiar por self.archivo = False y guardar como.
+
                 if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
                     self.guardar()
 
                 elif Gtk.ResponseType(response) == Gtk.ResponseType.CANCEL:
                     self.archivo = False
                     self.get_buffer().set_modified(True)
-                
+
         else:
             self.archivo = False
             self.get_buffer().set_modified(True)
-        
+
         return True
-        
+
     def new_handle(self, reset):
 
         if self.actualizador:
@@ -734,14 +734,14 @@ class SourceView(GtkSource.View):
         """
         Emite una señal con el estado general del archivo.
         """
-        
+
         self.new_handle(False)
-        
+
         self.__control_cambios()
-        
+
         buffer = self.get_buffer()
         inicio, fin = buffer.get_bounds()
-        
+
         modificado = self.get_buffer().get_modified()
         tiene_texto = bool(buffer.get_text(inicio, fin, 0))
         texto_seleccionado = bool(buffer.get_selection_bounds())
@@ -760,9 +760,9 @@ class SourceView(GtkSource.View):
             'deshacer': deshacer,
             'rehacer': rehacer,
             }
-            
+
         self.emit('update', dict)
-        
+
         self.new_handle(True)
 
 

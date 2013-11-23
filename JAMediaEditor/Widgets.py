@@ -432,46 +432,46 @@ class Menu(Gtk.MenuBar):
         """
         Activa o desactiva opciones.
         """
-        
+
         activar = []
         desactivar = []
-        
+
         if dict['rehacer']:
             activar.append(self.dict_archivo['Rehacer'])
-            
+
         else:
             desactivar.append(self.dict_archivo['Rehacer'])
-            
+
         if dict['deshacer']:
             activar.append(self.dict_archivo['Deshacer'])
-            
+
         else:
             desactivar.append(self.dict_archivo['Deshacer'])
-            
+
         if dict['modificado']:
             activar.append(self.dict_archivo['Guardar'])
-            
+
         else:
             desactivar.append(self.dict_archivo['Guardar'])
-            
+
         if dict['clipboard_texto']:
             activar.append(self.dict_archivo['Pegar'])
-            
+
         else:
             desactivar.append(self.dict_archivo['Pegar'])
-            
+
         if dict['texto_seleccionado']:
             activar.extend([
                 self.dict_archivo['Cortar'],
                 self.dict_archivo['Copiar'],
                 ])
-                
+
         else:
             desactivar.extend([
                 self.dict_archivo['Cortar'],
                 self.dict_archivo['Copiar'],
                 ])
-            
+
         if dict['tiene_texto']:
             activar.extend([
                 self.dict_archivo['Identar'],
@@ -483,7 +483,7 @@ class Menu(Gtk.MenuBar):
                 self.dict_archivo['Disminuir'],
                 self.dict_archivo['Aumentar'],
                 ])
-        
+
         else:
             desactivar.extend([
                 self.dict_archivo['Identar'],
@@ -495,7 +495,7 @@ class Menu(Gtk.MenuBar):
                 self.dict_archivo['Disminuir'],
                 self.dict_archivo['Aumentar'],
                 ])
-                
+
         map(self.__activar, activar)
         map(self.__desactivar, desactivar)
 

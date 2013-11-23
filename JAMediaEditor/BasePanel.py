@@ -30,6 +30,7 @@ home = os.environ["HOME"]
 BatovideWorkSpace = os.path.join(
     home, 'BatovideWorkSpace')
 
+
 class BasePanel(Gtk.Paned):
     """
     Gtk.Paned:
@@ -97,9 +98,9 @@ class BasePanel(Gtk.Paned):
             self.workpanel, True, True, 0)
 
         self.pack1(self.infonotebook_box,
-            resize = False, shrink = False)
+            resize=False, shrink=False)
         self.pack2(workpanel_box,
-            resize = True, shrink = True)
+            resize=True, shrink=True)
 
         self.show_all()
 
@@ -111,7 +112,7 @@ class BasePanel(Gtk.Paned):
             self.__re_emit_ejecucion)
         self.workpanel.connect('update',
             self.__re_emit_update)
-            
+
         self.toolbararchivo.connect('accion',
             self.set_accion_archivo)
         self.toolbarproyecto.connect('accion',
@@ -128,9 +129,9 @@ class BasePanel(Gtk.Paned):
             self.__remove_proyect)
 
     def __re_emit_update(self, widget, dict):
-        
+
         self.emit("update", dict)
-        
+
     def __search_grep(self, widget, datos, parent):
         """
         Cuando se hace una busqueda grep en la
@@ -147,7 +148,8 @@ class BasePanel(Gtk.Paned):
         paginas = self.workpanel.notebook_sourceview.get_n_pages()
 
         for indice in range(paginas):
-            sourceview = self.workpanel.notebook_sourceview.get_nth_page(indice).get_child()
+            sourceview = self.workpanel.notebook_sourceview.get_nth_page(
+                indice).get_child()
 
             visible = sourceview.get_show_line_numbers()
             sourceview.set_show_line_numbers(True)
@@ -208,7 +210,8 @@ class BasePanel(Gtk.Paned):
 
         if posibles != []:
             seleccion.select_iter(posibles[self.seleccionado_actual])
-            new_path = tree.get_model().get_path(posibles[self.seleccionado_actual])
+            new_path = tree.get_model().get_path(
+                posibles[self.seleccionado_actual])
             tree.scroll_to_cell(new_path)
 
     def __set_linea(self, widget, index, texto):
@@ -223,9 +226,9 @@ class BasePanel(Gtk.Paned):
         """
         Cuando se ejecutan o detienen archivos en terminales.
         """
-        
+
         self.emit("ejecucion", tipo, valor)
-        
+
     def __set_introspeccion(self, widget, view):
         """
         Cuando se selecciona una lengüeta en el Notebook:
@@ -234,7 +237,7 @@ class BasePanel(Gtk.Paned):
         """
 
         path = self.proyecto.get("path", False)
-        
+
         if path:
             codeviews = self.workpanel.get_archivos_de_proyecto(
                 path)
@@ -251,7 +254,7 @@ class BasePanel(Gtk.Paned):
             self.proyecto = {}
             self.emit("proyecto_abierto", False)
             self.infonotebook.set_path_estructura(False)
-        
+
         nombre = "Introspección"
         text = ''
 
@@ -273,7 +276,7 @@ class BasePanel(Gtk.Paned):
         Carga los datos del proyecto en la interfaz
         de la aplicación.
         """
-        
+
         self.proyecto = proyecto
 
         path = proyecto.get("path", False)
@@ -431,7 +434,7 @@ class BasePanel(Gtk.Paned):
         self.proyecto = {}
 
         return True
-    
+
     def cerrar_proyecto(self):
         """
         Cierra el proyecto.
@@ -463,7 +466,7 @@ class BasePanel(Gtk.Paned):
             self.infonotebook.set_path_estructura(False)
             self.emit("proyecto_abierto", False)
             return True
-        
+
         codeviews = self.workpanel.get_archivos_de_proyecto(
             self.proyecto["path"])
 
@@ -484,7 +487,7 @@ class BasePanel(Gtk.Paned):
             self.infonotebook.set_path_estructura(False)
             self.emit("proyecto_abierto", False)
             return True
-        
+
         codeviews = self.workpanel.get_archivos_de_proyecto(
             self.proyecto["path"])
 
@@ -520,13 +523,13 @@ class BasePanel(Gtk.Paned):
 
             dialog.destroy()
 
-            ### El nuevo Proyecto se crea solo cuando se ha cerrado el anterior.
+            ### El Proyecto se crea solo cuando se ha cerrado el anterior.
             if nuevoproyecto:
                 anterior_cerrado = True
 
-                #FIXME: No se puede Crear un proyecto con el mismo nombre de uno existente
+                #FIXME: No se puede Crear un proyecto con el mismo
+                # nombre de uno existente
                 if nuevoproyecto["nombre"] in os.listdir(BatovideWorkSpace):
-                    print " No se puede Crear un proyecto con el mismo nombre de uno existente"
                     return
 
                 anterior_cerrado = self.cerrar_proyecto()
@@ -592,8 +595,8 @@ class BasePanel(Gtk.Paned):
             from Widget_Setup import DialogoSetup
 
             dialog = DialogoSetup(
-                parent_window = self.get_toplevel(),
-                proyecto = self.proyecto)
+                parent_window=self.get_toplevel(),
+                proyecto=self.proyecto)
 
             dialog.run()
             dialog.destroy()
@@ -647,10 +650,10 @@ class BasePanel(Gtk.Paned):
             from Widgets import Multiple_FileChooser
 
             filechooser = Multiple_FileChooser(
-                parent_window = self.get_toplevel(),
-                title = "Abrir Archivo",
-                path = path,
-                mime_type = ["text/*", "image/svg+xml"])
+                parent_window=self.get_toplevel(),
+                title="Abrir Archivo",
+                path=path,
+                mime_type=["text/*", "image/svg+xml"])
 
             filechooser.connect('load', self.__abrir_archivo)
 

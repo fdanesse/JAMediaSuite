@@ -35,11 +35,12 @@ from JAMediaObjects.JAMediaGlobales import get_boton
 from JAMediaObjects.JAMediaGlobales import get_separador
 from JAMediaObjects.JAMediaGlobales import get_pixels
 
+
 def make_icon_active(icon_path):
 
     file_name = os.path.basename(icon_path)
     arch_path = os.path.join('/tmp', file_name)
-    
+
     if not os.path.exists(arch_path):
         svg = open(icon_path, "r")
         contenido = svg.read()
@@ -49,8 +50,9 @@ def make_icon_active(icon_path):
         arch = open(arch_path, "w")
         arch.write(contenido)
         arch.close()
-        
+
     return arch_path
+
 
 class ToolbarProyecto(Gtk.Toolbar):
     """
@@ -165,14 +167,14 @@ class ToolbarProyecto(Gtk.Toolbar):
         """
         Activa y desactiva opción de ejecución de proyecto.
         """
-        
+
         if ejecucion == None:
             map(self.__desactivar, self.dict_proyecto.keys()[-2:])
-            
+
         elif ejecucion == False:
             map(self.__activar, [self.dict_proyecto.keys()[-2]])
             map(self.__desactivar, [self.dict_proyecto.keys()[-1]])
-            
+
         elif ejecucion == True:
             map(self.__desactivar, [self.dict_proyecto.keys()[-2]])
             map(self.__activar, [self.dict_proyecto.keys()[-1]])
@@ -191,7 +193,7 @@ class ToolbarProyecto(Gtk.Toolbar):
     def __activar(self, key):
 
         option, icon = self.dict_proyecto[key]
-        
+
         if not option.get_sensitive():
             icon_path = make_icon_active(os.path.join(icons, icon))
             pixels = get_pixels(0.5)
@@ -231,7 +233,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         Gtk.Toolbar.__init__(self)
 
         from collections import OrderedDict
-        
+
         self.dict_archivo = OrderedDict()
 
         icon_path = make_icon_active(
@@ -253,7 +255,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Abrir Archivo"] = [
             abrir_archivo,
             "document-open.svg"]
-            
+
         guardar_archivo = get_boton(
             os.path.join(icons, "document-save.svg"),
             pixels=get_pixels(0.5),
@@ -261,7 +263,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Guardar Archivo"] = [
             guardar_archivo,
             "document-save.svg"]
-            
+
         icon_path = make_icon_active(
             os.path.join(icons, "document-save-as.svg"))
         guardar_como = get_boton(
@@ -271,7 +273,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Guardar Como"] = [
             guardar_como,
             "document-save-as.svg"]
-            
+
         icon_path = make_icon_active(
             os.path.join(icons, "media-playback-start.svg"))
         ejecutar = get_boton(
@@ -281,7 +283,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Ejecutar Archivo"] = [
             ejecutar,
             "media-playback-start.svg"]
-            
+
         detener = get_boton(
             os.path.join(icons, "media-playback-stop.svg"),
             pixels=get_pixels(0.5),
@@ -289,7 +291,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Detener Ejecución"] = [
             detener,
             "media-playback-stop.svg"]
-            
+
         deshacer = get_boton(
             os.path.join(icons, "edit-undo.svg"),
             pixels=get_pixels(0.5),
@@ -297,7 +299,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Deshacer"] = [
             deshacer,
             "edit-undo.svg"]
-            
+
         rehacer = get_boton(
             os.path.join(icons, "edit-redo.svg"),
             pixels=get_pixels(0.5),
@@ -305,7 +307,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Rehacer"] = [
             rehacer,
             "edit-redo.svg"]
-            
+
         copiar = get_boton(
             os.path.join(icons, "edit-copy.svg"),
             pixels=get_pixels(0.5),
@@ -313,7 +315,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Copiar"] = [
             copiar,
             "edit-copy.svg"]
-            
+
         cortar = get_boton(
             os.path.join(icons, "editcut.svg"),
             pixels=get_pixels(0.5),
@@ -329,7 +331,7 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Pegar"] = [
             pegar,
             "editpaste.svg"]
-            
+
         seleccionar_todo = get_boton(
             os.path.join(icons, "edit-select-all.svg"),
             pixels=get_pixels(0.5),
@@ -379,82 +381,82 @@ class ToolbarArchivo(Gtk.Toolbar):
         """
         Activa y desactiva opción de ejecución de proyecto.
         """
-        
+
         if ejecucion == None:
             map(self.__desactivar, [
                 self.dict_archivo["Ejecutar Archivo"],
                 self.dict_archivo["Detener Ejecución"],
                 ])
-            
+
         elif ejecucion == False:
             map(self.__activar,
                 [self.dict_archivo["Ejecutar Archivo"]])
             map(self.__desactivar,
                 [self.dict_archivo["Detener Ejecución"]])
-            
+
         elif ejecucion == True:
             map(self.__desactivar,
                 [self.dict_archivo["Ejecutar Archivo"]])
             map(self.__activar,
                 [self.dict_archivo["Detener Ejecución"]])
-        
+
     def update(self, dict):
         """
         Activa o desactiva opciones.
         """
-        
+
         activar = []
         desactivar = []
-        
+
         if dict['rehacer']:
             activar.append(self.dict_archivo['Rehacer'])
-            
+
         else:
             desactivar.append(self.dict_archivo['Rehacer'])
-            
+
         if dict['deshacer']:
             activar.append(self.dict_archivo['Deshacer'])
-            
+
         else:
             desactivar.append(self.dict_archivo['Deshacer'])
-            
+
         if dict['modificado']:
             activar.append(self.dict_archivo['Guardar Archivo'])
-            
+
         else:
             desactivar.append(self.dict_archivo['Guardar Archivo'])
-            
+
         if dict['clipboard_texto']:
             activar.append(self.dict_archivo["Pegar"])
-            
+
         else:
             desactivar.append(self.dict_archivo["Pegar"])
-            
+
         if dict['tiene_texto']:
             activar.append(self.dict_archivo["Seleccionar Todo"])
-        
+
         else:
             desactivar.append(self.dict_archivo["Seleccionar Todo"])
-            
+
         if dict['texto_seleccionado']:
             activar.extend([
                 self.dict_archivo['Cortar'],
                 self.dict_archivo['Copiar'],
                 ])
-                
+
         else:
             desactivar.extend([
                 self.dict_archivo['Cortar'],
                 self.dict_archivo['Copiar'],
                 ])
-            
+
         map(self.__activar, activar)
         map(self.__desactivar, desactivar)
 
     def __activar(self, item):
 
         option, icon = item
-        
+
         if not option.get_sensitive():
             icon_path = make_icon_active(os.path.join(icons, icon))
             pixels = get_pixels(0.5)
@@ -467,7 +469,7 @@ class ToolbarArchivo(Gtk.Toolbar):
     def __desactivar(self, item):
 
         option, icon = item
-        
+
         if option.get_sensitive():
             icon_path = os.path.join(icons, icon)
             pixels = get_pixels(0.5)

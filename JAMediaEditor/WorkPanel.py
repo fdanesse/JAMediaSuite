@@ -80,7 +80,7 @@ class WorkPanel(Gtk.Paned):
         self.ejecucion = False
         ### Tipo: proyecto o archivo.
         self.ejecucion_activa = False
-        
+
         self.pack1(self.notebook_sourceview,
             resize=True, shrink=False)
         self.pack2(self.terminal,
@@ -94,14 +94,14 @@ class WorkPanel(Gtk.Paned):
             self.__re_emit_new_select)
         self.notebook_sourceview.connect('update',
             self.__re_emit_update)
-            
+
         self.terminal.connect("ejecucion", self.__set_ejecucion)
         self.terminal.connect("reset", self.detener_ejecucion)
 
     def __re_emit_update(self, widget, dict):
-        
+
         self.emit("update", dict)
-        
+
     def __set_ejecucion(self, widget, terminal):
         """
         Cuando se ejecuta un archivo o un proyecto.
@@ -177,7 +177,7 @@ class WorkPanel(Gtk.Paned):
 
                 dialog = DialogoAlertaSinGuardar(
                     parent_window=self.get_toplevel())
-                
+
                 respuesta = dialog.run()
                 dialog.destroy()
 
@@ -223,7 +223,7 @@ class WorkPanel(Gtk.Paned):
 
                     elif respuesta == Gtk.ResponseType.CLOSE:
                         return
-                    
+
             self.ejecucion_activa = "proyecto"
             self.emit("ejecucion", self.ejecucion_activa, True)
 
@@ -235,14 +235,14 @@ class WorkPanel(Gtk.Paned):
         """
         Detiene la ejecución en proceso.
         """
-        
+
         if self.ejecucion:
             self.ejecucion.set_interprete()
             self.ejecucion = False
             self.terminal.set_sensitive(True)
             self.emit("ejecucion", self.ejecucion_activa, False)
             self.ejecucion_activa = False
-        
+
     def set_accion_codigo(self, accion):
         """
         Ejecuta acciones sobre el código del archivo seleccionado.
@@ -352,7 +352,7 @@ class Notebook_SourceView(Gtk.Notebook):
 
         for pagina in paginas:
             view = pagina.get_child()
-            
+
             if view != widget_child.get_child():
                 view.new_handle(False)
 
@@ -422,7 +422,7 @@ class Notebook_SourceView(Gtk.Notebook):
         if len(paginas) > 1:
             for pagina in paginas:
                 view = pagina.get_child()
-                
+
                 if not view.archivo:
                     buffer = view.get_buffer()
                     inicio, fin = buffer.get_bounds()
@@ -432,15 +432,15 @@ class Notebook_SourceView(Gtk.Notebook):
                         self.remove(pagina)
                         break
         '''
-        
+
         sourceview.connect("update", self.__re_emit_update)
-        
+
         return False
 
     def __re_emit_update(self, widget, dict):
-        
+
         self.emit("update", dict)
-        
+
     def guardar_archivo(self):
         """
         Guarda el archivo actual.
@@ -555,16 +555,16 @@ class Notebook_SourceView(Gtk.Notebook):
                 break
 
     def do_page_removed(self, scroll, num):
-        
+
         paginas = self.get_children()
-        
+
         if not paginas:
             self.abrir_archivo(False)
 
         # FIXME: Forzando Introspección.
         self.get_parent().emit('new_select', False)
         self.get_toplevel().set_sensitive(True)
-        
+
     def get_archivos_de_proyecto(self, proyecto_path):
         """
         Devuelve sourceview de todos los archivos abiertos
