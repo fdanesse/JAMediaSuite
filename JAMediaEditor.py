@@ -194,7 +194,8 @@ class JAMediaEditor(Gtk.Window):
     def __set_toolbar_archivo_and_menu(self, widget, dict):
         
         self.menu.update_archivos(dict)
-    
+        self.base_panel.toolbararchivo.update(dict)
+        
     def __set_toolbar_proyecto_and_menu(self, widget, valor):
         """
         Activa y desactiva las opciones de proyecto en la
@@ -208,13 +209,13 @@ class JAMediaEditor(Gtk.Window):
         self.base_panel.toolbarproyecto.activar_proyecto(valor)
         
         ### Ejecuciones
+        self.base_panel.toolbararchivo.activar_ejecucion(False)
+        
         if valor:
             self.base_panel.toolbarproyecto.activar_ejecucion(False)
-            # actualizar en toolbar de archivo.
             
         else:
             self.base_panel.toolbarproyecto.activar_ejecucion(None)
-            # actualizar en toolbar de archivo.
             
     def __set_toolbars_ejecucion(self, widget, tipo, valor):
         """
@@ -223,8 +224,7 @@ class JAMediaEditor(Gtk.Window):
         """
         
         if not valor:
-            # desactivar detener ejecucion de archivo.
-            # activar ejecucion de archivo.
+            self.base_panel.toolbararchivo.activar_ejecucion(False)
 
             proyecto = self.base_panel.proyecto
             if proyecto:
@@ -236,20 +236,13 @@ class JAMediaEditor(Gtk.Window):
         elif valor:
             if tipo == "proyecto":
                 ### Se está ejecutando proyecto.
-                # desactivar ejecutar y detener archivo.
-                
-                # desactivar ejecutar proyecto.
-                # activar detener proyecto.
+                self.base_panel.toolbararchivo.activar_ejecucion(None)
                 self.base_panel.toolbarproyecto.activar_ejecucion(True)
 
             elif tipo == "archivo":
                 ### Se está ejecutando archivo.
-                # desactivar ejecutar y detener proyecto.
                 self.base_panel.toolbarproyecto.activar_ejecucion(None)
-                
-                # desactivar ejecutar archivo.
-                # activar detener archivo.
-                pass
+                self.base_panel.toolbararchivo.activar_ejecucion(True)
         
 if __name__=="__main__":
     JAMediaEditor()

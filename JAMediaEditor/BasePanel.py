@@ -268,8 +268,6 @@ class BasePanel(Gtk.Paned):
         ### Setear Introspeción.
         self.infonotebook.set_introspeccion(nombre, text, view)
 
-        ### Actualizar sourceview para actualizador de toolbars y menus.
-
     def __cargar_proyecto(self, proyecto):
         """
         Carga los datos del proyecto en la interfaz

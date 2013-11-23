@@ -165,9 +165,9 @@ class ToolbarProyecto(Gtk.Toolbar):
         """
         Activa y desactiva opción de ejecución de proyecto.
         """
-
+        
         if ejecucion == None:
-            map(self.__desactivar, self.dict_proyecto.keys()[-1:])
+            map(self.__desactivar, self.dict_proyecto.keys()[-2:])
             
         elif ejecucion == False:
             map(self.__activar, [self.dict_proyecto.keys()[-2]])
@@ -230,78 +230,113 @@ class ToolbarArchivo(Gtk.Toolbar):
 
         Gtk.Toolbar.__init__(self)
 
-        self.dict_archivo = {}
+        from collections import OrderedDict
+        
+        self.dict_archivo = OrderedDict()
 
+        icon_path = make_icon_active(
+            os.path.join(icons, "document-new.svg"))
         nuevo_archivo = get_boton(
-            os.path.join(icons, "document-new.svg"),
+            os.path.join(icons, icon_path),
             pixels=get_pixels(0.5),
             tooltip_text="Nuevo Archivo")
+        self.dict_archivo["Nuevo Archivo"] = [
+            nuevo_archivo,
+            "document-new.svg"]
 
+        icon_path = make_icon_active(
+            os.path.join(icons, "document-open.svg"))
         abrir_archivo = get_boton(
-            os.path.join(icons, "document-open.svg"),
+            os.path.join(icons, icon_path),
             pixels=get_pixels(0.5),
             tooltip_text="Abrir Archivo")
-
+        self.dict_archivo["Abrir Archivo"] = [
+            abrir_archivo,
+            "document-open.svg"]
+            
         guardar_archivo = get_boton(
             os.path.join(icons, "document-save.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Guardar Archivo")
-
+        self.dict_archivo["Guardar Archivo"] = [
+            guardar_archivo,
+            "document-save.svg"]
+            
+        icon_path = make_icon_active(
+            os.path.join(icons, "document-save-as.svg"))
         guardar_como = get_boton(
-            os.path.join(icons, "document-save-as.svg"),
+            os.path.join(icons, icon_path),
             pixels=get_pixels(0.5),
             tooltip_text="Guardar Como")
-
+        self.dict_archivo["Guardar Como"] = [
+            guardar_como,
+            "document-save-as.svg"]
+            
+        icon_path = make_icon_active(
+            os.path.join(icons, "media-playback-start.svg"))
         ejecutar = get_boton(
-            os.path.join(icons, "media-playback-start.svg"),
+            os.path.join(icons, icon_path),
             pixels=get_pixels(0.5),
             tooltip_text="Ejecutar Archivo")
-
+        self.dict_archivo["Ejecutar Archivo"] = [
+            ejecutar,
+            "media-playback-start.svg"]
+            
         detener = get_boton(
             os.path.join(icons, "media-playback-stop.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Detener Ejecución")
-
+        self.dict_archivo["Detener Ejecución"] = [
+            detener,
+            "media-playback-stop.svg"]
+            
         deshacer = get_boton(
             os.path.join(icons, "edit-undo.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Deshacer")
-
+        self.dict_archivo["Deshacer"] = [
+            deshacer,
+            "edit-undo.svg"]
+            
         rehacer = get_boton(
             os.path.join(icons, "edit-redo.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Rehacer")
-
+        self.dict_archivo["Rehacer"] = [
+            rehacer,
+            "edit-redo.svg"]
+            
         copiar = get_boton(
             os.path.join(icons, "edit-copy.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Copiar")
-
+        self.dict_archivo["Copiar"] = [
+            copiar,
+            "edit-copy.svg"]
+            
         cortar = get_boton(
             os.path.join(icons, "editcut.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Cortar")
+        self.dict_archivo["Cortar"] = [
+            cortar,
+            "editcut.svg"]
 
         pegar = get_boton(
             os.path.join(icons, "editpaste.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Pegar")
-
+        self.dict_archivo["Pegar"] = [
+            pegar,
+            "editpaste.svg"]
+            
         seleccionar_todo = get_boton(
             os.path.join(icons, "edit-select-all.svg"),
             pixels=get_pixels(0.5),
             tooltip_text="Seleccionar Todo")
-
-        self.dict_archivo["Guardar"] = guardar_archivo
-        self.dict_archivo["Guardar Como"] = guardar_como
-        self.dict_archivo["Deshacer"] = deshacer
-        self.dict_archivo["Rehacer"] = rehacer
-        self.dict_archivo["Copiar"] = copiar
-        self.dict_archivo["Cortar"] = cortar
-        self.dict_archivo["Pegar"] = pegar
-        self.dict_archivo["Seleccionar Todo"] = seleccionar_todo
-        self.dict_archivo["Ejecutar Archivo"] = ejecutar
-        self.dict_archivo["Detener Ejecución"] = detener
+        self.dict_archivo["Seleccionar Todo"] = [
+            seleccionar_todo,
+            "edit-select-all.svg"]
 
         self.insert(get_separador(draw=False,
             ancho=10, expand=False), - 1)
@@ -332,55 +367,114 @@ class ToolbarArchivo(Gtk.Toolbar):
 
         self.show_all()
 
-        botones = [
-            nuevo_archivo,
-            abrir_archivo,
-            guardar_archivo,
-            guardar_como,
-            ejecutar,
-            detener,
-            deshacer,
-            rehacer,
-            copiar,
-            cortar,
-            pegar,
-            seleccionar_todo]
-
-        for boton in botones:
+        for key in self.dict_archivo.keys():
+            boton = self.dict_archivo[key][0]
             boton.connect("clicked", self.__emit_accion)
-
-        for boton in self.dict_archivo.keys():
-            self.dict_archivo[boton].set_sensitive(False)
 
     def __emit_accion(self, widget):
 
         self.emit("accion", widget.TOOLTIP)
 
-    def update(self, visibility, options):
+    def activar_ejecucion(self, ejecucion):
         """
-        Activa o desactiva oopciones.
+        Activa y desactiva opción de ejecución de proyecto.
         """
-
-        submenus = []
-
-        for option in options:
-            if self.dict_archivo.get(option, False):
-                submenus.append(self.dict_archivo[option])
-
-        if visibility:
-            map(self.__activar, submenus)
-
+        
+        if ejecucion == None:
+            map(self.__desactivar, [
+                self.dict_archivo["Ejecutar Archivo"],
+                self.dict_archivo["Detener Ejecución"],
+                ])
+            
+        elif ejecucion == False:
+            map(self.__activar,
+                [self.dict_archivo["Ejecutar Archivo"]])
+            map(self.__desactivar,
+                [self.dict_archivo["Detener Ejecución"]])
+            
+        elif ejecucion == True:
+            map(self.__desactivar,
+                [self.dict_archivo["Ejecutar Archivo"]])
+            map(self.__activar,
+                [self.dict_archivo["Detener Ejecución"]])
+        
+    def update(self, dict):
+        """
+        Activa o desactiva opciones.
+        """
+        
+        activar = []
+        desactivar = []
+        
+        if dict['rehacer']:
+            activar.append(self.dict_archivo['Rehacer'])
+            
         else:
-            map(self.__desactivar, submenus)
+            desactivar.append(self.dict_archivo['Rehacer'])
+            
+        if dict['deshacer']:
+            activar.append(self.dict_archivo['Deshacer'])
+            
+        else:
+            desactivar.append(self.dict_archivo['Deshacer'])
+            
+        if dict['modificado']:
+            activar.append(self.dict_archivo['Guardar Archivo'])
+            
+        else:
+            desactivar.append(self.dict_archivo['Guardar Archivo'])
+            
+        if dict['clipboard_texto']:
+            activar.append(self.dict_archivo["Pegar"])
+            
+        else:
+            desactivar.append(self.dict_archivo["Pegar"])
+            
+        if dict['tiene_texto']:
+            activar.append(self.dict_archivo["Seleccionar Todo"])
+        
+        else:
+            desactivar.append(self.dict_archivo["Seleccionar Todo"])
+            
+        if dict['texto_seleccionado']:
+            activar.extend([
+                self.dict_archivo['Cortar'],
+                self.dict_archivo['Copiar'],
+                ])
+                
+        else:
+            desactivar.extend([
+                self.dict_archivo['Cortar'],
+                self.dict_archivo['Copiar'],
+                ])
+            
+        map(self.__activar, activar)
+        map(self.__desactivar, desactivar)
 
-    def __activar(self, option):
+    def __activar(self, item):
 
+        option, icon = item
+        
         if not option.get_sensitive():
+            icon_path = make_icon_active(os.path.join(icons, icon))
+            pixels = get_pixels(0.5)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, pixels, pixels)
+            imagen = option.get_icon_widget()
+            imagen.set_from_pixbuf(pixbuf)
             option.set_sensitive(True)
 
-    def __desactivar(self, option):
+    def __desactivar(self, item):
 
+        option, icon = item
+        
         if option.get_sensitive():
+            icon_path = os.path.join(icons, icon)
+            pixels = get_pixels(0.5)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, pixels, pixels)
+            imagen = option.get_icon_widget()
+            imagen.set_from_pixbuf(pixbuf)
             option.set_sensitive(False)
 
 
