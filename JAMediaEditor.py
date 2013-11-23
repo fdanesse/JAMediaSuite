@@ -97,9 +97,6 @@ class JAMediaEditor(Gtk.Window):
         accel_group = Gtk.AccelGroup()
         self.add_accel_group(accel_group)
 
-        self.updater = False
-        self.sourceview = False
-
         base_widget = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL)
 
@@ -139,7 +136,7 @@ class JAMediaEditor(Gtk.Window):
             self.__run_editor)
 
         self.base_panel.connect("update",
-            self.__new_handler)
+            self.__set_toolbar_archivo_and_menu)
         self.base_panel.connect("proyecto_abierto",
             self.__set_toolbar_proyecto_and_menu)
         self.base_panel.connect("ejecucion",
@@ -194,6 +191,10 @@ class JAMediaEditor(Gtk.Window):
 
         self.base_panel.set_accion_proyecto(widget, accion)
 
+    def __set_toolbar_archivo_and_menu(self, widget, dict):
+        
+        self.menu.update_archivos(dict)
+    
     def __set_toolbar_proyecto_and_menu(self, widget, valor):
         """
         Activa y desactiva las opciones de proyecto en la
@@ -250,172 +251,6 @@ class JAMediaEditor(Gtk.Window):
                 # activar detener archivo.
                 pass
         
-    def __new_handler(self, widget, sourceview, reset):
-        """
-        Elimina o reinicia la funcion que
-        actualiza las toolbars y menús.
-        """
-
-        if self.updater and self.updater != None:
-            GLib.source_remove(self.updater)
-            self.updater = False
-            self.sourceview = False
-
-        if reset:
-            self.sourceview = sourceview
-            self.updater = GLib.timeout_add(500, self.__update)
-
-    def __update(self):
-        """
-        Actualiza las toolbars y menus.
-        """
-
-        activar = []
-        desactivar = []
-
-        try:
-            ### Si hay un archivo seleccionado.
-            if self.sourceview:
-                buffer = self.sourceview.get_buffer()
-
-                activar.extend([
-                    "Guardar Como", "Cerrar",
-                    "Numeracion", "Aumentar",
-                    "Disminuir", "Formato"])
-
-                ### Si hay texto en el archivo seleccionado.
-                inicio, fin = buffer.get_bounds()
-                buf = buffer.get_text(inicio, fin, 0)
-
-                if buf:
-                    activar.extend([
-                        "Seleccionar Todo", "Identar",
-                        "De Identar", "Buscar Texto",
-                        "Reemplazar Texto", "Chequear",
-                        ])
-                else:
-                    desactivar.extend([
-                        "Seleccionar Todo", "Identar",
-                        "De Identar", "Buscar Texto",
-                        "Reemplazar Texto", "Chequear",
-                        ])
-
-                ### Si el contenido del archivo != al del buffer.
-                archivo = self.sourceview.archivo
-                texto = ""
-                if archivo:
-                    if os.path.exists(archivo):
-                        arch = open(archivo, 'r')
-                        texto = arch.read()
-                        arch.close()
-
-                if texto != buf:
-                    activar.append("Guardar")
-
-                else:
-                    desactivar.append("Guardar")
-
-                ### Si hay texto seleccionado, se puede copiar y cortar.
-                if buffer.get_selection_bounds():
-                    activar.extend(["Cortar", "Copiar"])
-
-                else:
-                    desactivar.extend(["Cortar", "Copiar"])
-
-                ### Si hay texto en el clipboard, se puede pegar
-                clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-                texto = clipboard.wait_for_text()
-
-                if texto:
-                    activar.append("Pegar")
-
-                else:
-                    desactivar.append("Pegar")
-
-                ### Si se puede deshacer.
-                if buffer.can_undo():
-                    activar.append("Deshacer")
-
-                else:
-                    desactivar.append("Deshacer")
-
-                ### Si se puede Rehacer.
-                if buffer.can_redo():
-                    activar.append("Rehacer")
-
-                else:
-                    desactivar.append("Rehacer")
-
-            else:
-                self.base_panel.infonotebook.set_introspeccion(None, "")
-
-                desactivar.extend([
-                    "Cortar", "Copiar",
-                    "Rehacer", "Deshacer",
-                    "Guardar", "Cerrar",
-                    "Guardar Como", "Pegar",
-                    "Seleccionar Todo",
-                    #"Ejecutar Archivo",
-                    #"Detener Ejecución",
-                    "Identar", "De Identar",
-                    "Buscar Texto",
-                    "Reemplazar Texto",
-                    "Chequear",
-                    "Numeracion", "Aumentar",
-                    "Disminuir", "Formato"])
-
-            ### Actualizar las toolbars y el menu.
-            self.base_panel.toolbararchivo.update(True, activar)
-            self.base_panel.toolbararchivo.update(False, desactivar)
-
-            self.menu.update_archivos(True, activar)
-            self.menu.update_archivos(False, desactivar)
-            '''
-            ### Opciones de Proyecto.
-            if self.base_panel.proyecto:
-                self.menu.activar_proyecto(True)
-
-                self.base_panel.toolbarproyecto.activar(
-                    bool(self.base_panel.proyecto),
-                    bool(self.base_panel.workpanel.ejecucion))
-
-            else:
-                self.menu.activar_proyecto(False)
-                self.base_panel.toolbarproyecto.dict_proyecto["Ejecutar Proyecto"].set_sensitive(False)
-                self.base_panel.toolbarproyecto.dict_proyecto["Detener Ejecución"].set_sensitive(False)
-                self.base_panel.toolbarproyecto.dict_proyecto["Editar Proyecto"].set_sensitive(False)
-                self.base_panel.toolbarproyecto.dict_proyecto["Cerrar Proyecto"].set_sensitive(False)
-                self.base_panel.toolbarproyecto.dict_proyecto["Guardar Proyecto"].set_sensitive(False)
-
-            ### Ejecución de archivo.
-            if self.sourceview:
-                self.base_panel.toolbararchivo.dict_archivo["Ejecutar Archivo"].set_sensitive(
-                    not bool(self.base_panel.workpanel.ejecucion))
-
-                self.base_panel.toolbararchivo.dict_archivo["Detener Ejecución"].set_sensitive(
-                    bool(self.base_panel.workpanel.ejecucion))
-
-            else:
-                self.base_panel.toolbararchivo.dict_archivo["Ejecutar Archivo"].set_sensitive(False)
-                self.base_panel.toolbararchivo.dict_archivo["Detener Ejecución"].set_sensitive(False)
-            '''
-        except:
-            self.sourceview = False
-        '''
-        codeviews = self.base_panel.workpanel.get_archivos_de_proyecto(
-            self.base_panel.proyecto.get("path", ""))
-
-        if not codeviews:
-            self.base_panel.infonotebook.set_path_estructura(None)
-            self.base_panel.proyecto = {}
-        '''
-        '''
-        paginas = self.base_panel.workpanel.notebook_sourceview.get_children()
-        if not paginas:
-            self.__ejecutar_accion_archivo(None, "Nuevo Archivo")
-        '''
-        return True
-
 if __name__=="__main__":
     JAMediaEditor()
     Gtk.main()

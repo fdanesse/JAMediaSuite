@@ -160,14 +160,14 @@ class Menu(Gtk.MenuBar):
             ord('O'), Gdk.ModifierType.CONTROL_MASK,
             Gtk.AccelFlags.VISIBLE)
 
-        item = Gtk.MenuItem('Cerrar')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Cerrar Archivo")
-        self.dict_archivo['Cerrar'] = item
-        menu_archivos.append(item)
-        item.add_accelerator("activate", accel_group,
-            ord('W'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+        #item = Gtk.MenuItem('Cerrar')
+        #item.connect("activate",
+        #    self.__emit_accion_archivo, "Cerrar Archivo")
+        #self.dict_archivo['Cerrar'] = item
+        #menu_archivos.append(item)
+        #item.add_accelerator("activate", accel_group,
+        #    ord('W'), Gdk.ModifierType.CONTROL_MASK,
+        #    Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Guardar')
         item.connect("activate",
@@ -181,7 +181,7 @@ class Menu(Gtk.MenuBar):
         item = Gtk.MenuItem('Guardar Como ...')
         item.connect("activate",
             self.__emit_accion_archivo, "Guardar Como")
-        self.dict_archivo['Guardar Como'] = item
+        #self.dict_archivo['Guardar Como'] = item
         menu_archivos.append(item)
 
         ### Items del Menú Edición
@@ -255,7 +255,7 @@ class Menu(Gtk.MenuBar):
         item.add(hbox)
         item.connect("activate",
             self.__emit_accion_ver, "Numeracion")
-        self.dict_archivo['Numeracion'] = item
+        #self.dict_archivo['Numeracion'] = item
         menu_ver.append(item)
 
         item = Gtk.MenuItem()
@@ -316,7 +316,7 @@ class Menu(Gtk.MenuBar):
         item = Gtk.MenuItem('Formato de Texto . . .')
         item.connect("activate",
             self.__emit_accion_codigo, "Formato")
-        self.dict_archivo['Formato'] = item
+        #self.dict_archivo['Formato'] = item
         menu_codigo.append(item)
         item.add_accelerator("activate", accel_group,
             ord('T'), Gdk.ModifierType.CONTROL_MASK,
@@ -388,9 +388,6 @@ class Menu(Gtk.MenuBar):
 
         self.show_all()
 
-        for item in self.dict_archivo.keys():
-            self.dict_archivo[item].set_sensitive(False)
-
     def __emit_run_jamediapygihack(self, widget):
 
         self.emit('run_jamediapygihack')
@@ -425,33 +422,82 @@ class Menu(Gtk.MenuBar):
         Activa o desactiva opciones.
         """
 
-        submenus = []
-
-        for option in self.dict_proyecto.keys():
-            submenus.append(self.dict_proyecto[option])
-
         if sensitive:
-            map(self.__activar, submenus)
+            map(self.__activar, self.dict_proyecto.values())
 
         else:
-            map(self.__desactivar, submenus)
+            map(self.__desactivar, self.dict_proyecto.values())
 
-    def update_archivos(self, visibility, options):
+    def update_archivos(self, dict):
         """
         Activa o desactiva opciones.
         """
-
-        submenus = []
-
-        for option in options:
-            if self.dict_archivo.get(option, False):
-                submenus.append(self.dict_archivo[option])
-
-        if visibility:
-            map(self.__activar, submenus)
-
+        
+        activar = []
+        desactivar = []
+        
+        if dict['rehacer']:
+            activar.append(self.dict_archivo['Rehacer'])
+            
         else:
-            map(self.__desactivar, submenus)
+            desactivar.append(self.dict_archivo['Rehacer'])
+            
+        if dict['deshacer']:
+            activar.append(self.dict_archivo['Deshacer'])
+            
+        else:
+            desactivar.append(self.dict_archivo['Deshacer'])
+            
+        if dict['modificado']:
+            activar.append(self.dict_archivo['Guardar'])
+            
+        else:
+            desactivar.append(self.dict_archivo['Guardar'])
+            
+        if dict['clipboard_texto']:
+            activar.append(self.dict_archivo['Pegar'])
+            
+        else:
+            desactivar.append(self.dict_archivo['Pegar'])
+            
+        if dict['texto_seleccionado']:
+            activar.extend([
+                self.dict_archivo['Cortar'],
+                self.dict_archivo['Copiar'],
+                ])
+                
+        else:
+            desactivar.extend([
+                self.dict_archivo['Cortar'],
+                self.dict_archivo['Copiar'],
+                ])
+            
+        if dict['tiene_texto']:
+            activar.extend([
+                self.dict_archivo['Identar'],
+                self.dict_archivo['De Identar'],
+                self.dict_archivo['Buscar Texto'],
+                self.dict_archivo['Reemplazar Texto'],
+                self.dict_archivo['Seleccionar Todo'],
+                self.dict_archivo['Chequear'],
+                self.dict_archivo['Disminuir'],
+                self.dict_archivo['Aumentar'],
+                ])
+        
+        else:
+            desactivar.extend([
+                self.dict_archivo['Identar'],
+                self.dict_archivo['De Identar'],
+                self.dict_archivo['Buscar Texto'],
+                self.dict_archivo['Reemplazar Texto'],
+                self.dict_archivo['Seleccionar Todo'],
+                self.dict_archivo['Chequear'],
+                self.dict_archivo['Disminuir'],
+                self.dict_archivo['Aumentar'],
+                ])
+                
+        map(self.__activar, activar)
+        map(self.__desactivar, desactivar)
 
     def __activar(self, option):
 

@@ -47,8 +47,7 @@ class BasePanel(Gtk.Paned):
 
     __gsignals__ = {
     'update': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_BOOLEAN)),
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
     'proyecto_abierto': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,)),
     'ejecucion': (GObject.SIGNAL_RUN_LAST,
@@ -110,7 +109,9 @@ class BasePanel(Gtk.Paned):
             self.__set_introspeccion)
         self.workpanel.connect('ejecucion',
             self.__re_emit_ejecucion)
-
+        self.workpanel.connect('update',
+            self.__re_emit_update)
+            
         self.toolbararchivo.connect('accion',
             self.set_accion_archivo)
         self.toolbarproyecto.connect('accion',
@@ -126,6 +127,10 @@ class BasePanel(Gtk.Paned):
         self.infonotebook.connect('remove_proyect',
             self.__remove_proyect)
 
+    def __re_emit_update(self, widget, dict):
+        
+        self.emit("update", dict)
+        
     def __search_grep(self, widget, datos, parent):
         """
         Cuando se hace una busqueda grep en la
@@ -264,7 +269,6 @@ class BasePanel(Gtk.Paned):
         self.infonotebook.set_introspeccion(nombre, text, view)
 
         ### Actualizar sourceview para actualizador de toolbars y menus.
-        #self.emit("update", view, True)
 
     def __cargar_proyecto(self, proyecto):
         """

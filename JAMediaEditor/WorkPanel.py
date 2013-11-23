@@ -62,7 +62,9 @@ class WorkPanel(Gtk.Paned):
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
     'ejecucion': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_BOOLEAN))}
+        GObject.TYPE_BOOLEAN)),
+    'update': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
 
     def __init__(self):
 
@@ -90,10 +92,16 @@ class WorkPanel(Gtk.Paned):
 
         self.notebook_sourceview.connect('new_select',
             self.__re_emit_new_select)
-
+        self.notebook_sourceview.connect('update',
+            self.__re_emit_update)
+            
         self.terminal.connect("ejecucion", self.__set_ejecucion)
         self.terminal.connect("reset", self.detener_ejecucion)
 
+    def __re_emit_update(self, widget, dict):
+        
+        self.emit("update", dict)
+        
     def __set_ejecucion(self, widget, terminal):
         """
         Cuando se ejecuta un archivo o un proyecto.
@@ -290,6 +298,8 @@ class Notebook_SourceView(Gtk.Notebook):
 
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
+    'update': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
 
     def __init__(self):
@@ -342,12 +352,12 @@ class Notebook_SourceView(Gtk.Notebook):
 
         for pagina in paginas:
             view = pagina.get_child()
-            # FIXME: Anular control de cambios externos, no es relevante.
-            #view.new_handle(False)
+            
+            if view != widget_child.get_child():
+                view.new_handle(False)
 
         view = widget_child.get_child()
-        # FIXME: Anular control de cambios externos, no es relevante.
-        # view.new_handle(True)
+        view.new_handle(True)
 
         if view != self.ultimo_view_activo:
             self.ultimo_view_activo = view
@@ -423,8 +433,14 @@ class Notebook_SourceView(Gtk.Notebook):
                         break
         '''
         
+        sourceview.connect("update", self.__re_emit_update)
+        
         return False
 
+    def __re_emit_update(self, widget, dict):
+        
+        self.emit("update", dict)
+        
     def guardar_archivo(self):
         """
         Guarda el archivo actual.
