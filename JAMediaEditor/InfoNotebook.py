@@ -403,6 +403,7 @@ class Introspeccion(Gtk.TreeView):
 
         if self.get_model():
             self.get_model().clear()
+            #self.posibles = []
 
         else:
             return
@@ -593,7 +594,7 @@ class Introspeccion(Gtk.TreeView):
         self.posibles = []
 
         while item:
-            valor = model.get_value(item, 0)
+            valor = model.get_value(item, 1)
 
             if texto in valor:
                 self.posibles.append(item)
@@ -607,19 +608,19 @@ class Introspeccion(Gtk.TreeView):
 
             item = model.iter_next(item)
 
-        if padres != []:
+        if padres:
             for padre in padres:
                 item = model.iter_children(padre)
 
                 while item:
-                    valor = model.get_value(item, 0)
+                    valor = model.get_value(item, 1)
 
                     if texto in valor:
                         self.posibles.append(item)
 
                     item = model.iter_next(item)
 
-        if self.posibles != []:
+        if self.posibles:
             self.get_selection().select_iter(self.posibles[0])
             new_path = model.get_path(self.posibles[0])
             self.scroll_to_cell(new_path)

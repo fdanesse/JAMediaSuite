@@ -563,8 +563,6 @@ class Notebook_SourceView(Gtk.Notebook):
         if not paginas:
             self.abrir_archivo(False)
 
-        # FIXME: Forzando Introspección.
-        self.get_parent().emit('new_select', False)
         self.get_toplevel().set_sensitive(True)
 
     def get_archivos_de_proyecto(self, proyecto_path):
