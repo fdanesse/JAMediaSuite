@@ -209,6 +209,13 @@ class NoteBookTerminal(Gtk.Notebook):
         for pagina in paginas:
             pagina.get_child().re_set_font(self.fuente)
 
+    def do_page_removed(self, scroll, num):
+
+        paginas = self.get_children()
+
+        if not paginas:
+            self.agregar_terminal()
+
     def agregar_terminal(self, path=os.environ["HOME"],
         interprete="/bin/bash", ejecutar=None):
         """
