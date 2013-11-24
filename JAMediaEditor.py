@@ -153,11 +153,13 @@ class JAMediaEditor(Gtk.Window):
         self.jamediapygihack.hide()
         self.menu.show()
         self.base_panel.show()
+        self.toolbar_estado.show()
 
     def __run_jamediapygihack(self, widget):
 
         self.menu.hide()
         self.base_panel.hide()
+        self.toolbar_estado.hide()
         self.jamediapygihack.show()
 
     def __exit(self, widget=None, event=None):

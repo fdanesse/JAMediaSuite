@@ -233,7 +233,7 @@ class Menu(Gtk.MenuBar):
             pass
         hbox = Gtk.HBox()
         boton = Gtk.CheckButton()
-        boton.set_active(True)
+        boton.set_active(False)
         hbox.pack_start(boton, False, False, 0)
         label = Gtk.Label("Terminal")
         hbox.pack_start(label, False, False, 5)
