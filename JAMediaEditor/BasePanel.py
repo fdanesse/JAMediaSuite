@@ -282,7 +282,9 @@ class BasePanel(Gtk.Paned):
         path = proyecto.get("path", False)
         main = proyecto.get("main", False)
 
-        self.infonotebook.set_path_estructura(path)
+        # Deshabilitado porque: Cuando se carga un proyecto, se
+        # ejecuta esta funcion dos veces.
+        # self.infonotebook.set_path_estructura(path)
         self.workpanel.abrir_archivo(os.path.join(path, main))
 
         self.emit("proyecto_abierto", True)

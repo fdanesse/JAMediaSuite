@@ -741,7 +741,10 @@ class Estructura_Proyecto(Gtk.TreeView):
             if archivo.endswith(".ide") or \
                 archivo.endswith(".bak") or \
                 archivo.endswith(".pyc") or \
-                archivo.endswith(".pyo"):
+                archivo.endswith(".pyo") or \
+                archivo == ".git" or \
+                archivo == "build" or \
+                archivo == "dist":
                     continue
 
             direccion = os.path.join(directorio, archivo)
