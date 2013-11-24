@@ -102,10 +102,12 @@ class JAMediaEditor(Gtk.Window):
 
         from JAMediaEditor.Widgets import Menu
         from JAMediaEditor.BasePanel import BasePanel
+        from JAMediaEditor.Toolbars import ToolbarEstado
         from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack
 
         self.menu = Menu(accel_group)
         self.base_panel = BasePanel()
+        self.toolbar_estado = ToolbarEstado()
         self.jamediapygihack = JAMediaPyGiHack()
 
         base_widget.pack_start(
@@ -114,6 +116,8 @@ class JAMediaEditor(Gtk.Window):
             self.base_panel, True, True, 0)
         base_widget.pack_start(
             self.jamediapygihack, True, True, 0)
+        base_widget.pack_start(
+            self.toolbar_estado, False, False, 0)
 
         self.add(base_widget)
 
@@ -195,6 +199,14 @@ class JAMediaEditor(Gtk.Window):
 
         self.menu.update_archivos(dict)
         self.base_panel.toolbararchivo.update(dict)
+
+        info = {
+            'renglones': dict['renglones'],
+            'caracteres': dict['caracteres'],
+            'archivo': dict['archivo'],
+            }
+
+        self.toolbar_estado.set_info(info)
 
     def __set_toolbar_proyecto_and_menu(self, widget, valor):
         """

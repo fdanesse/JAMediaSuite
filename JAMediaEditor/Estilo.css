@@ -20,7 +20,7 @@ GtkPaned {
     background-color: #edf5ff;
 }
 
-JAMediaEditorMenu {
+JAMediaEditorMenu, JAMediaEditorToolbarEstado {
     background-color: #000000;
     color: #ffffff;
 }

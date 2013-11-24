@@ -752,6 +752,10 @@ class SourceView(GtkSource.View):
         deshacer = buffer.can_undo()
         rehacer = buffer.can_redo()
 
+        renglones = self.get_buffer().get_line_count()
+        caracteres = self.get_buffer().get_char_count()
+        archivo = self.archivo
+
         dict = {
             'modificado': modificado,
             'tiene_texto': tiene_texto,
@@ -759,6 +763,9 @@ class SourceView(GtkSource.View):
             'clipboard_texto': clipboard_texto,
             'deshacer': deshacer,
             'rehacer': rehacer,
+            'renglones': renglones,
+            'caracteres': caracteres,
+            'archivo': archivo,
             }
 
         self.emit('update', dict)

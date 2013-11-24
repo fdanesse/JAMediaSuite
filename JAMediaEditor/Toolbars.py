@@ -547,3 +547,44 @@ class ToolbarBusquedas(Gtk.Toolbar):
             self.siguiente.set_sensitive(False)
 
         self.emit("buscar", widget.get_text())
+
+
+class ToolbarEstado(Gtk.Toolbar):
+    """
+    Barra de estado.
+    """
+
+    __gtype_name__ = 'JAMediaEditorToolbarEstado'
+
+    def __init__(self):
+
+        Gtk.Toolbar.__init__(self)
+
+        self.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
+
+        item = Gtk.ToolItem()
+        item.set_expand(True)
+        self.label = Gtk.Label("")
+        self.label.set_alignment(0.0, 0.5)
+        self.label.show()
+        item.add(self.label)
+        self.insert(item, -1)
+
+        #self.insert(get_separador(draw=False,
+        #    ancho=0, expand=True), -1)
+
+        self.show_all()
+
+    def set_info(self, dict):
+
+        reng = dict['renglones']
+        carac = dict['caracteres']
+        arch = dict['archivo']
+
+        text = self.label.get_text()
+        new_text = "Archivo: %s  Lineas: %s  Caracteres: %s" % (
+            arch, reng, carac)
+
+        if text != new_text:
+            self.label.set_text(new_text)
