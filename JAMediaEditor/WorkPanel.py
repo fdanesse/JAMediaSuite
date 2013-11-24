@@ -98,6 +98,8 @@ class WorkPanel(Gtk.Paned):
         self.terminal.connect("ejecucion", self.__set_ejecucion)
         self.terminal.connect("reset", self.detener_ejecucion)
 
+        GLib.idle_add(self.terminal.hide)
+
     def __re_emit_update(self, widget, dict):
 
         self.emit("update", dict)
@@ -309,7 +311,7 @@ class Notebook_SourceView(Gtk.Notebook):
         self.config = {
             'fuente': 'Monospace',
             'tamanio': 10,
-            'numeracion': False,
+            'numeracion': True,
             }
 
         self.set_scrollable(True)

@@ -249,7 +249,9 @@ class Menu(Gtk.MenuBar):
             pass
 
         hbox = Gtk.HBox()
-        hbox.pack_start(Gtk.CheckButton(), False, False, 0)
+        button = Gtk.CheckButton()
+        button.set_active(True)
+        hbox.pack_start(button, False, False, 0)
         label = Gtk.Label("Numeros de línea")
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
@@ -267,7 +269,7 @@ class Menu(Gtk.MenuBar):
 
         hbox = Gtk.HBox()
         button = Gtk.CheckButton()
-        button.set_active(True)
+        button.set_active(False)
         hbox.pack_start(button, False, False, 0)
         label = Gtk.Label("Panel inferior")
         hbox.pack_start(label, False, False, 5)
