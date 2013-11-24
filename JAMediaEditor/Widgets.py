@@ -1172,11 +1172,6 @@ class ErroresTreeview(Gtk.TreeView):
 
         self.view = view
 
-        seleccion = self.get_selection()
-        seleccion.set_mode(Gtk.SelectionMode.SINGLE)
-        seleccion.set_select_function(
-            self.__clicked, self.get_model())
-
         columna = Gtk.TreeViewColumn("Línea",
             Gtk.CellRendererText(), text=0)
         self.append_column(columna)
@@ -1203,13 +1198,13 @@ class ErroresTreeview(Gtk.TreeView):
             try:
                 item_str = linea.split("%s:" % path)[1]
 
-                if not path in item_str:
-                    numero = item_str.split(":")[0].strip()
-                    comentario = item_str.replace(
-                        item_str.split()[0], "").strip()
+                #if not path in item_str:
+                numero = item_str.split(":")[0].strip()
+                comentario = item_str.replace(
+                    item_str.split()[0], "").strip()
 
-                    item = [numero, comentario]
-                    self.get_model().append(item)
+                item = [numero, comentario]
+                self.get_model().append(item)
 
             except:
                 pass
@@ -1222,16 +1217,22 @@ class ErroresTreeview(Gtk.TreeView):
             try:
                 item_str = linea.split("%s:" % path)[1]
 
-                if not path in item_str:
-                    numero = item_str.split(":")[0].strip()
-                    comentario = item_str.replace(
-                        item_str.split()[0], "").strip()
+                #if not path in item_str:
+                numero = item_str.split(":")[0].strip()
+                comentario = item_str.replace(
+                    item_str.split()[0], "").strip()
 
-                    item = [numero, comentario]
-                    self.get_model().append(item)
+                item = [numero, comentario]
+                self.get_model().append(item)
 
             except:
                 pass
+
+        self.show_all()
+
+        self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
+        self.get_selection().set_select_function(
+            self.__clicked, self.get_model())
 
     def __clicked(self, treeselection,
         model, path, is_selected, listore):
