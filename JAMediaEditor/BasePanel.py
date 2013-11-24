@@ -33,15 +33,15 @@ BatovideWorkSpace = os.path.join(
 
 class BasePanel(Gtk.Paned):
     """
-    Gtk.Paned:
+    Gtk.HPaned:
         Gtk.VBox: Estructura de Proyecto e Introspección sobre el mismo.
-            Widgets.ToolbarProyecto
-            InfoNotebook.InfoNotebook
-            Widgets.ToolbarBusquedas
+            ToolbarProyecto
+            InfoNotebook
+            ToolbarBusquedas
 
         Gtk.VBox: Archivos y terminales.
-            Widgets.ToolbarArchivo
-            WorkPanel.WorkPanel
+            ToolbarArchivo
+            WorkPanel
     """
 
     __gtype_name__ = 'JAMediaEditorBasePanel'

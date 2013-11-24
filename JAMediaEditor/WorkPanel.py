@@ -50,9 +50,9 @@ class WorkPanel(Gtk.Paned):
         zona superior: Notebook + source view para archivos abiertos
         zona inferior: terminales.
 
-    Gtk.Paned:
+    Gtk.VPaned:
         Notebook_SourceView
-        JAMediaObjects.JAMediaTerminal
+        JAMediaTerminal
     """
 
     __gtype_name__ = 'JAMediaEditorWorkPanel'

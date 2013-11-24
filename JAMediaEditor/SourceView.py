@@ -720,6 +720,31 @@ class SourceView(GtkSource.View):
 
         return True
 
+    def __senialar(self, valor=False):
+        """
+        Pinta la etiqueta cuando el archivo
+        contiene cambios sin guardar.
+        """
+
+        color = Gdk.Color(0, 0, 0)
+
+        if valor:
+            color = Gdk.Color(65000, 26000, 0)
+
+        scroll = self.get_parent()
+        notebook = scroll.get_parent()
+
+        paginas = notebook.get_n_pages()
+
+        for indice in range(paginas):
+            page = notebook.get_children()[indice]
+
+            if page == scroll:
+                pag = notebook.get_children()[indice]
+                label = notebook.get_tab_label(pag).get_children()[0]
+                label.modify_fg(0, color)
+                return
+
     def new_handle(self, reset):
 
         if self.actualizador:
@@ -770,7 +795,11 @@ class SourceView(GtkSource.View):
 
         self.emit('update', dict)
 
+        self.__senialar(modificado)
+
         self.new_handle(True)
+
+        return False
 
 
 class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):

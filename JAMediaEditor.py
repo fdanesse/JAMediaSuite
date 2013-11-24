@@ -73,8 +73,9 @@ class JAMediaEditor(Gtk.Window):
     """
     Gtk.Window
         Gtk.VBox
-            JAMediaEditor.Widgets.Menu
-            JAMediaEditor.BasePanel.BasePanel
+            Menu
+            BasePanel - JAMediaPyGiHack
+            ToolbarEstado
     """
 
     __gtype_name__ = 'WindowJAMediaEditor'
