@@ -80,7 +80,7 @@ class JAMediaEditor(Gtk.Window):
 
     __gtype_name__ = 'WindowJAMediaEditor'
 
-    def __init__(self):
+    def __init__(self, archivos=False):
 
         Gtk.Window.__init__(self)
 
@@ -148,6 +148,26 @@ class JAMediaEditor(Gtk.Window):
             self.__set_toolbars_ejecucion)
 
         self.connect("delete-event", self.__exit)
+
+        # Cuando se abre el editor con archivo como parámetro.
+        if archivos:
+            from gi.repository import GLib
+
+            for archivo in archivos:
+                if os.path.exists(archivo):
+                    if os.path.isfile(archivo):
+                        extension = os.path.splitext(
+                            os.path.split(archivo)[1])[1]
+
+                        if extension == ".ide":
+                            GLib.idle_add(
+                                self.base_panel.external_open_proyect,
+                                archivo)
+
+                        else:
+                            GLib.idle_add(
+                                self.base_panel.external_open_file,
+                                archivo)
 
     def __run_editor(self, widget):
 
@@ -261,5 +281,15 @@ class JAMediaEditor(Gtk.Window):
 
 
 if __name__ == "__main__":
-    JAMediaEditor()
+
+    import sys
+
+    items = []
+
+    if len(sys.argv) > 1:
+        JAMediaEditor(sys.argv[1:])
+
+    else:
+        JAMediaEditor()
+
     Gtk.main()

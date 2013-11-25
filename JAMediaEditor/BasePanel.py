@@ -678,3 +678,17 @@ class BasePanel(Gtk.Paned):
 
         else:
             print "Accion sin asignar en BasePanel", accion
+
+    def external_open_proyect(self, ide_file):
+        """
+        Cuando se abre el editor con archivo como parámetro.
+        """
+
+        self.__abrir_proyecto(None, ide_file)
+
+    def external_open_file(self, archivo):
+        """
+        Cuando se abre el editor con archivo como parámetro.
+        """
+
+        self.__abrir_archivo(None, archivo)
