@@ -473,15 +473,19 @@ class Gnome_Notebook(Gtk.Notebook):
             commands.getoutput("rm -r %s" % self.activitydirpath)
 
         ### Copiar contenido del proyecto.
-        shutil.copytree(self.proyecto["path"], self.activitydirpath, symlinks=False, ignore=None)
+        shutil.copytree(self.proyecto["path"],
+            self.activitydirpath, symlinks=False, ignore=None)
 
         ### Generar Archivos Necesarios para Construir Instalador.
-        self.archivo_lanzador = "%s/%s_run" % (self.activitydirpath, self.proyecto["nombre"].lower())
-        self.archivo_desinstalador = "%s/%s_uninstall" % (self.activitydirpath, self.proyecto["nombre"].lower())
+        self.archivo_lanzador = "%s/%s_run" % (
+            self.activitydirpath, self.proyecto["nombre"].lower())
+        self.archivo_desinstalador = "%s/%s_uninstall" % (
+            self.activitydirpath, self.proyecto["nombre"].lower())
         self.archivo_setup_py = "%s/setup.py" % (self.activitydirpath)
         self.archivo_setup_cfg = "%s/setup.cfg" % (self.activitydirpath)
         self.archivo_manifest = "%s/MANIFEST" % (self.activitydirpath)
-        self.archivo_desktop = "%s/%s.desktop" % (self.activitydirpath, self.proyecto["nombre"])
+        self.archivo_desktop = "%s/%s.desktop" % (
+            self.activitydirpath, self.proyecto["nombre"])
 
         lista = [
             self.archivo_lanzador,
@@ -708,6 +712,13 @@ class Sugar_Notebook(Gtk.Notebook):
         activity = "[Activity]\nname = %s\nactivity_version = %s\nbundle_id = org.laptop.%s\nicon = %s\nexec = sugar-activity %s.%s -s\nmime_types =%s\nlicense = %s\nsummary = " % (self.proyecto["nombre"], self.proyecto["version"], self.proyecto["nombre"], newiconpath, main_name, main_name, self.proyecto["mimetypes"], self.proyecto["licencia"])
         setup = "#!/usr/bin/env python\n\nfrom sugar3.activity import bundlebuilder\nbundlebuilder.start()"
 
+        self.__generar_temporal_dir(iconpath)
+
+        self.activity_sourceview.get_buffer().set_text(activity)
+        self.setup_sourceview.get_buffer().set_text(setup)
+
+    def __generar_temporal_dir(self, iconpath):
+
         ### Comenzar a generar el temporal
         activitydirpath = os.path.join("/tmp",
             "%s.activity" % self.proyecto["nombre"])
@@ -715,7 +726,8 @@ class Sugar_Notebook(Gtk.Notebook):
 
         ### Borrar anteriores
         if os.path.exists(activitydirpath):
-            commands.getoutput("rm -r %s" % activitydirpath)
+            shutil.rmtree(activitydirpath,
+                ignore_errors=False, onerror=None)
 
         ### Copiar contenido del proyecto.
         shutil.copytree(self.proyecto["path"],
@@ -729,16 +741,15 @@ class Sugar_Notebook(Gtk.Notebook):
             os.path.basename(iconpath))
         shutil.copyfile(iconpath, newpath)
 
-        self.activity_sourceview.get_buffer().set_text(activity)
-        self.setup_sourceview.get_buffer().set_text(setup)
+        return (activitydirpath, activityinfodirpath)
 
     def make(self):
         """
         Construye los archivos instaladores para su distribución.
         """
 
-        activitydirpath = os.path.join("/tmp", "%s.activity" % self.proyecto["nombre"])
-        activityinfodirpath = os.path.join(activitydirpath, "activity")
+        activitydirpath, activityinfodirpath = self.__generar_temporal_dir(
+            self.iconpath)
 
         infopath = os.path.join(activityinfodirpath, "activity.info")
         setuppath = os.path.join(activitydirpath, "setup.py")
@@ -755,21 +766,28 @@ class Sugar_Notebook(Gtk.Notebook):
         desinstalador = ("%s_uninstall" % nombre).lower()
         desktop = "%s.desktop" % nombre
 
-        borrar = [ejecutable, desinstalador, "MANIFEST", desktop, "setup.cfg"]
+        borrar = [
+            ejecutable, desinstalador,
+            "MANIFEST", desktop, "setup.cfg",
+            ".git", "build", "dist"]
 
-        for file in borrar:
-            path = os.path.join(activitydirpath, file)
+        for arch in borrar:
+            path = os.path.join(activitydirpath, arch)
 
             if os.path.exists(path):
-                os.remove(path)
+                if os.path.isfile(path):
+                    os.remove(path)
+
+                elif os.path.isdir(path):
+                    shutil.rmtree(path, ignore_errors=False, onerror=None)
 
         ### Generar archivo de distribución "*.xo"
         import zipfile
-
         zippath = "%s.xo" % (activitydirpath)
 
+        ### Borrar anterior
         if os.path.exists(zippath):
-            commands.getoutput("rm %s" % zippath)
+            os.remove(zippath)
 
         zipped = zipfile.ZipFile(zippath, "w")
 
@@ -795,8 +813,14 @@ class Sugar_Notebook(Gtk.Notebook):
             os.mkdir(distpath)
 
         ### Copiar el *.xo a la estructura del proyecto.
-        commands.getoutput("cp %s %s" % (zippath, distpath))
+        shutil.copy(zippath, distpath)
         os.chmod(os.path.join(distpath, os.path.basename(zippath)), 0755)
+
+        if os.path.exists(zippath):
+            os.remove(zippath)
+
+        if os.path.exists(activitydirpath):
+            shutil.rmtree(activitydirpath, ignore_errors=False, onerror=None)
 
     def __get_text(self, buffer):
         """
@@ -1093,7 +1117,8 @@ class Ceibal_Notebook(Gtk.Notebook):
             commands.getoutput("rm -r %s" % activitydirpath)
 
         ### Copiar contenido del proyecto.
-        shutil.copytree(self.proyecto["path"], activitydirpath, symlinks=False, ignore=None)
+        shutil.copytree(self.proyecto["path"],
+            activitydirpath, symlinks=False, ignore=None)
 
         if not self.proyecto["path"] in iconpath:
             newpath = os.path.join(activitydirpath, os.path.basename(iconpath))
@@ -1120,6 +1145,13 @@ class Ceibal_Notebook(Gtk.Notebook):
         Construye los archivos instaladores para su distribución.
         """
 
+        # FIXME: IOError: [Errno 2] No existe el archivo o
+        # el directorio: u'/tmp/JAMedia/install.py'
+        # Construir dos veces seguidas sin salir del dialogo falla.
+        # Es necesario:
+        #   copiar proyecto a tmp.
+        #   copiar el icono.
+        #   Reescribir install.py
         import zipfile
 
         activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
@@ -1138,8 +1170,9 @@ class Ceibal_Notebook(Gtk.Notebook):
 
         zipped = zipfile.ZipFile(zippath, "w")
 
-        RECHAZAExtension = [".pyc", ".pyo", ".bak", ".ide", ".gitignore", ".git"]
-        RECHAZAFiles = ["proyecto.ide", ".gitignore", "plantilla"]
+        RECHAZAExtension = [".pyc", ".pyo",
+            ".bak", ".ide", ".gitignore", ".git"]
+        RECHAZAFiles = ["proyecto.ide", ".gitignore"]
         RECHAZADirs = [".git", "build", "dist"]
 
         ### Forzar eliminacion de dist
@@ -1156,10 +1189,12 @@ class Ceibal_Notebook(Gtk.Notebook):
                 for fileName in fileNames:
                     if not fileName in RECHAZAFiles:
                         filePath = os.path.join(archiveDirPath, fileName)
-                        extension = os.path.splitext(os.path.split(filePath)[1])[1]
+                        extension = os.path.splitext(
+                            os.path.split(filePath)[1])[1]
 
                         if not extension in RECHAZAExtension:
-                            zipped.write(filePath, filePath.split(activitydirpath)[1])
+                            zipped.write(filePath,
+                                filePath.split(activitydirpath)[1])
 
         zipped.close()
 
