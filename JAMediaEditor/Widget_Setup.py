@@ -967,7 +967,7 @@ class Widget_icon(Gtk.Frame):
 
 class DialogoInstall(Gtk.Dialog):
     """
-    Dialogo para mostrar proceso de construcción de Instaladores.
+    Dialogo para mostrar proceso de construcción de Instalador gnome.
     """
 
     __gtype_name__ = 'JAMediaEditorDialogoInstall'
@@ -998,7 +998,8 @@ class DialogoInstall(Gtk.Dialog):
         self.terminal.toolbar.hide()
 
         notebook = self.terminal.notebook
-        cerrar = notebook.get_tab_label(notebook.get_children()[0]).get_children()[1]
+        cerrar = notebook.get_tab_label(
+            notebook.get_children()[0]).get_children()[1]
         cerrar.set_sensitive(False)
 
         self.maximize()
@@ -1109,12 +1110,30 @@ class Ceibal_Notebook(Gtk.Notebook):
 
         self.iconpath = iconpath
 
+        activitydirpath, iconpath = self.__generar_temporal_dir(iconpath)
+
+        import shelve
+
+        archivo = shelve.open(os.path.join(BASEPATH, "plantilla"))
+        text = u"%s" % archivo.get('install', "")
+        archivo.close()
+
+        text = text.replace('mainfile', self.proyecto["main"])
+        text = text.replace('iconfile', iconpath)
+        text = text.replace('GnomeCat', self.proyecto["categoria"])
+        text = text.replace('GnomeMimeTypes', self.proyecto["mimetypes"])
+
+        self.install.get_buffer().set_text(text)
+
+    def __generar_temporal_dir(self, iconpath):
+
         ### Comenzar a generar el temporal
         activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
 
         ### Borrar anteriores
         if os.path.exists(activitydirpath):
-            commands.getoutput("rm -r %s" % activitydirpath)
+            shutil.rmtree(activitydirpath,
+                ignore_errors=False, onerror=None)
 
         ### Copiar contenido del proyecto.
         shutil.copytree(self.proyecto["path"],
@@ -1125,36 +1144,16 @@ class Ceibal_Notebook(Gtk.Notebook):
             shutil.copyfile(iconpath, newpath)
             iconpath = newpath
 
-        import shelve
-
-        archivo = shelve.open(os.path.join(BASEPATH, "plantilla"))
-        text = u"%s" % archivo.get('install', "")
-        archivo.close()
-
         iconpath = iconpath.split(self.proyecto["path"])[-1]
 
-        text = text.replace('mainfile', self.proyecto["main"])
-        text = text.replace('iconfile', iconpath)
-        text = text.replace('GnomeCat', self.proyecto["categoria"])
-        text = text.replace('GnomeMimeTypes', self.proyecto["mimetypes"])
-
-        self.install.get_buffer().set_text(text)
+        return (activitydirpath, iconpath)
 
     def make(self):
         """
         Construye los archivos instaladores para su distribución.
         """
 
-        # FIXME: IOError: [Errno 2] No existe el archivo o
-        # el directorio: u'/tmp/JAMedia/install.py'
-        # Construir dos veces seguidas sin salir del dialogo falla.
-        # Es necesario:
-        #   copiar proyecto a tmp.
-        #   copiar el icono.
-        #   Reescribir install.py
-        import zipfile
-
-        activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
+        activitydirpath, iconpath = self.__generar_temporal_dir(self.iconpath)
 
         ### Escribir instalador.
         archivo_install = os.path.join(activitydirpath, "install.py")
@@ -1168,6 +1167,7 @@ class Ceibal_Notebook(Gtk.Notebook):
         if os.path.exists(zippath):
             os.remove(zippath)
 
+        import zipfile
         zipped = zipfile.ZipFile(zippath, "w")
 
         RECHAZAExtension = [".pyc", ".pyo",
@@ -1181,7 +1181,8 @@ class Ceibal_Notebook(Gtk.Notebook):
 
             if os.path.isdir(d):
                 if d.split("/")[-1] in RECHAZADirs:
-                    commands.getoutput("rm -r %s" % d)
+                    shutil.rmtree(d,
+                        ignore_errors=False, onerror=None)
 
         for (archiveDirPath, dirNames, fileNames) in os.walk(activitydirpath):
 
@@ -1209,7 +1210,8 @@ class Ceibal_Notebook(Gtk.Notebook):
 
         if os.path.exists(zippath):
             os.remove(zippath)
-            commands.getoutput("rm -r %s" % activitydirpath)
+            shutil.rmtree(activitydirpath,
+                ignore_errors=False, onerror=None)
 
     def __get_text(self, buffer):
         """

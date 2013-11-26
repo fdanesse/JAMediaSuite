@@ -39,18 +39,35 @@ Type=Application
 Icon=%s
 Categories=%s
 MimeType=%s
-StartupNotify=true""" % (NAME, NAME, main_path, icon_path, "GnomeCat", "GnomeMimeTypes")
+StartupNotify=true""" % (NAME, NAME, main_path,
+    icon_path, "GnomeCat", "GnomeMimeTypes")
 
 print "\t Generando Archivo Desktop:"
 print desktoptext
 
-if not os.path.exists(os.path.join(os.environ["HOME"], '.local/share/applications')):
+if not os.path.exists(os.path.join(os.environ["HOME"],
+    '.local')):
+    os.mkdir(os.path.join(os.environ["HOME"], '.local'))
+    
+if not os.path.exists(os.path.join(os.environ["HOME"],
+    '.local/bin')):
+    os.mkdir(os.path.join(os.environ["HOME"], '.local/bin'))
+    
+if not os.path.exists(os.path.join(os.environ["HOME"],
+    '.local/share')):
+    os.mkdir(os.path.join(os.environ["HOME"], '.local/share'))
+    
+if not os.path.exists(os.path.join(os.environ["HOME"],
+    '.local/share/applications')):
     os.mkdir(os.path.join(os.environ["HOME"], '.local/share/applications'))
     
-desktop = open(os.path.join(os.environ["HOME"], ".local/share/applications/%s.desktop" % NAME), "w")
+desktop = open(os.path.join(os.environ["HOME"],
+    ".local/share/applications/%s.desktop" % NAME), "w")
 desktop.write(desktoptext)
 desktop.close()
 
-commands.getoutput('chmod 755 %s' % os.path.join(os.environ["HOME"], ".local/share/applications/%s.desktop" % NAME))
-commands.getoutput("update-desktop-database %s" % os.path.join(os.environ["HOME"], ".local/share/applications/"))
+commands.getoutput('chmod 755 %s' % os.path.join(os.environ["HOME"],
+    ".local/share/applications/%s.desktop" % NAME))
+commands.getoutput("update-desktop-database %s" % os.path.join(
+    os.environ["HOME"], ".local/share/applications/"))
 print "Instalacion Finalizada."
