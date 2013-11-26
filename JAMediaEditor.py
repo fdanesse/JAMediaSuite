@@ -20,25 +20,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-'''
-Cambios en setup.py:
-    GTK;Development;IDE
-
-import os
-
-mime_path = os.path.join(os.environ["HOME"],
-    ".local/share/mime/packages/")
-
-if not os.path.exists(mime_path):
-    os.mkdir(mime_path)
-
-commands.getoutput("cp jamediaeditor.xml %s" % mime_path)
-commands.getoutput('update-mime-database %s' % os.path.join(
-    os.environ["HOME"], ".local/share/mime/"))
-commands.getoutput('chmod 755 %s' % os.path.join(
-    os.environ["HOME"], ".local/share/mime/jamediaeditor.xml"))
-'''
-
 import os
 
 from gi.repository import Gtk
