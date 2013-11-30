@@ -65,7 +65,7 @@ class ToolbarPreviews(Gtk.Toolbar):
             JAMediaObjectsPath,
             "Iconos", "go-next-rtl.svg")
         boton = get_boton(
-            archivo, #flip=True,
+            archivo,  # flip=True,
             rotacion=None,
             pixels=get_pixels(1),
             tooltip_text="Anterior")
@@ -116,14 +116,14 @@ class ToolbarPreviews(Gtk.Toolbar):
         boton.connect("clicked", self.__show_credits)
         self.insert(boton, -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia-help1.svg")
-        boton = get_boton(
-            archivo, flip=False,
-            pixels=get_pixels(1),
-            tooltip_text="Ayuda.")
-        boton.connect("clicked", self.__show_help)
-        self.insert(boton, -1)
+        #archivo = os.path.join(JAMediaObjectsPath,
+        #    "Iconos", "JAMedia-help1.svg")
+        #boton = get_boton(
+        #    archivo, flip=False,
+        #    pixels=get_pixels(1),
+        #    tooltip_text="Ayuda.")
+        #boton.connect("clicked", self.__show_help)
+        #self.insert(boton, -1)
 
         self.insert(get_separador(draw=True,
             expand=False), -1)
@@ -235,7 +235,7 @@ class ToolbarImagen(Gtk.Toolbar):
         self.buttons_escala_rotacion = []
         self.buttons_config = []
         self.buttons_guardar = []
-        self.modo = False # Solo almacenará edit o player
+        self.modo = False  # Solo almacenará edit o player
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
@@ -244,7 +244,7 @@ class ToolbarImagen(Gtk.Toolbar):
             JAMediaObjectsPath,
             "Iconos", "go-next-rtl.svg")
         boton = get_boton(
-            archivo, #flip = True,
+            archivo,  # flip = True,
             rotacion=None,
             pixels=get_pixels(1),
             tooltip_text="Anterior")
@@ -320,7 +320,7 @@ class ToolbarImagen(Gtk.Toolbar):
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "object-rotate-left.svg")
         boton = get_boton(
-            archivo, #flip=False,
+            archivo,  # flip=False,
             pixels=get_pixels(1),
             tooltip_text="Rotar Izquierda")
         boton.connect("clicked", self.__activar)
@@ -330,7 +330,7 @@ class ToolbarImagen(Gtk.Toolbar):
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "object-rotate-right.svg")
         boton = get_boton(
-            archivo, #flip=True,
+            archivo,  # flip=True,
             pixels=get_pixels(1),
             tooltip_text="Rotar Derecha")
         boton.connect("clicked", self.__activar)
@@ -346,7 +346,7 @@ class ToolbarImagen(Gtk.Toolbar):
         archivo = os.path.join(JAMediaObjectsPath,
             "Iconos", "media-seek-backward.svg")
         boton = get_boton(
-            archivo, #flip=True,
+            archivo,  # flip=True,
             pixels=get_pixels(1),
             tooltip_text="Anterior")
         boton.connect("clicked", self.__activar)
@@ -751,3 +751,66 @@ class Help(Gtk.Dialog):
         for help in self.helps:
             if help.get_visible():
                 return self.helps.index(help)
+
+
+class MenuList(Gtk.Menu):
+    """
+    Menu con opciones para operar sobre el archivo o
+    directorio seleccionado en la lista de imagenes
+    o vista de previews al hacer click derecho sobre él.
+    """
+
+    __gtype_name__ = 'JAMediaImagenesMenuList'
+
+    __gsignals__ = {
+    'accion': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT,
+        GObject.TYPE_PYOBJECT))}
+
+    def __init__(self, widget, boton, pos, tiempo, path, modelo, base_path):
+
+        Gtk.Menu.__init__(self)
+
+        iter = modelo.get_iter(path)
+        file_path = os.path.join(base_path, modelo.get_value(iter, 1))
+
+        quitar = Gtk.MenuItem("Quitar de la Lista")
+        self.append(quitar)
+        quitar.connect_object("activate", self.__set_accion,
+            widget, iter, file_path, "Quitar")
+
+        from JAMediaObjects.JAMFileSystem import describe_acceso_uri
+        from JAMediaObjects.JAMediaGlobales import get_imagenes_directory
+
+        if describe_acceso_uri(file_path):
+            lectura, escritura, ejecucion = describe_acceso_uri(file_path)
+
+            if lectura and os.path.dirname(file_path) != \
+                get_imagenes_directory():
+
+                copiar = Gtk.MenuItem("Copiar a JAMedia")
+                self.append(copiar)
+                copiar.connect_object("activate", self.__set_accion,
+                    widget, iter, file_path, "Copiar")
+
+                mover = Gtk.MenuItem("Mover a JAMedia")
+                self.append(mover)
+                mover.connect_object("activate", self.__set_accion,
+                    widget, iter, file_path, "Mover")
+
+            if escritura:
+                borrar = Gtk.MenuItem("Borrar el Archivo")
+                self.append(borrar)
+                borrar.connect_object("activate", self.__set_accion,
+                    widget, iter, file_path, "Borrar")
+
+        self.show_all()
+        self.attach_to_widget(widget, self.__null)
+
+    def __null(self):
+        pass
+
+    def __set_accion(self, widget, iter, file_path, accion):
+
+        self.emit('accion', widget, accion, iter, file_path)

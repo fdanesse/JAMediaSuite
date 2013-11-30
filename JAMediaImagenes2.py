@@ -28,52 +28,51 @@ import JAMediaObjects
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-import JAMImagenes2
 from JAMImagenes2.JAMImagenes import JAMImagenes
 
+
 class Ventana(Gtk.Window):
-    
-    __gtype_name__ = 'WindowBase'
-    
+
+    __gtype_name__ = 'JAMImagenesWindowBase'
+
     def __init__(self):
-        
+
         super(Ventana, self).__init__()
-        
+
         self.set_title("JAMImagenes")
         self.set_resizable(True)
         self.set_default_size(640, 480)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_border_width(0)
-        #self.maximize()
-        #self.fullscreen()
-        
+        self.maximize()
+        self.fullscreen()
+
         self.socket = Gtk.Socket()
         self.add(self.socket)
         self.jamediaimagenes = JAMImagenes()
         self.socket.add_id(self.jamediaimagenes.get_id())
-        
+
         self.show_all()
         self.realize()
-        
+
         self.connect("delete-event", self.__salir)
         self.jamediaimagenes.connect("salir", self.__salir)
-        
+
         ### Iniciar en path por defecto de JAMediaSuite.
         path = os.path.join(
             os.environ["HOME"],
             "JAMediaDatos", "Fotos")
-        
+
         GLib.idle_add(
             self.jamediaimagenes.switch_to,
             None, path)
-    
+
     def __salir(self, widget=None, signal=None):
-        
+
         import sys
         sys.exit(0)
 
 if __name__ == "__main__":
-    
+
     Ventana()
     Gtk.main()
-    

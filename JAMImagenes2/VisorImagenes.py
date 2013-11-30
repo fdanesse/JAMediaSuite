@@ -122,6 +122,8 @@ class VisorImagenes (Gtk.EventBox):
 
         self.visor.connect("button_press_event", self.__clicks_en_pantalla)
         self.listaiconview.connect("selected", self.__show_imagen)
+        self.listaiconview.connect("button-press-event",
+            self.__click_derecho_en_lista)
 
     def __rescale(self, widget):
 
@@ -152,6 +154,65 @@ class VisorImagenes (Gtk.EventBox):
 
             self.get_toplevel().set_sensitive(True)
         """
+
+    def __click_derecho_en_lista(self, widget, event):
+        """
+        Esto es para abrir un menu de opciones cuando
+        el usuario hace click derecho sobre un elemento en
+        la lista de imágenes, permitiendo copiar, mover y
+        borrar el archivo o simplemente quitarlo
+        de la lista.
+        """
+
+        boton = event.button
+        pos = (event.x, event.y)
+        tiempo = event.time
+
+        if boton == 1:
+            return
+
+        elif boton == 3:
+
+            path = widget.get_path_at_pos(
+                int(pos[0]), int(pos[1]))
+            #iter = widget.get_model().get_iter(path)
+
+            from Widgets import MenuList
+
+            menu = MenuList(
+                widget, boton, pos,
+                tiempo, path, widget.get_model(),
+                self.path)
+
+            menu.connect('accion', self.__set_menu_accion)
+            menu.popup(None, None, None, None, boton, tiempo)
+
+        elif boton == 2:
+            return
+
+    def __set_menu_accion(self, widget, widget_item, accion, iter, file_path):
+
+        if accion == "Quitar":
+            widget_item.get_model().remove(iter)
+
+        elif accion == "Borrar":
+            from JAMediaObjects.JAMFileSystem import borrar
+            widget_item.get_model().remove(iter)
+
+            borrar(file_path)
+
+        elif accion == "Copiar":
+            from JAMediaObjects.JAMediaGlobales import get_imagenes_directory
+            from JAMediaObjects.JAMFileSystem import copiar
+
+            copiar(file_path, get_imagenes_directory())
+
+        elif accion == "Mover":
+            from JAMediaObjects.JAMediaGlobales import get_imagenes_directory
+            from JAMediaObjects.JAMFileSystem import mover
+            widget_item.get_model().remove(iter)
+
+            mover(file_path, get_imagenes_directory())
 
     def __do_motion_notify_event(self, widget, event):
         """

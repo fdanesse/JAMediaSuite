@@ -425,7 +425,7 @@ class WidgetAutores(Gtk.Box):
         box.pack_start(frame1, False, False, 5)
         box.pack_start(frame2, False, False, 0)
         box.pack_start(remover, False, False, 0)
-        box.pack_end(agregar, False, False, 0)
+        box.pack_start(agregar, False, False, 0)
 
         self.pack_start(box, False, False, 0)
 

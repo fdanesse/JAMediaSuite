@@ -141,7 +141,6 @@ class JAMImagenes(Gtk.Plug):
         elif os.path.isfile(path):
             self.__switch_to_visor(os.path.dirname(path))
 
-
     def __switch_to_editor(self, path):
 
         pass

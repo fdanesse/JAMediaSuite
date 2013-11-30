@@ -334,6 +334,9 @@ class InfoNotebook(Gtk.Notebook):
         if not nombre:
             nombre = "Introspección"
 
+        if len(nombre) > 13:
+            nombre = str(nombre[0:13]) + " . . . "
+
         if self.get_nth_page(0):
             self.set_tab_label_text(self.get_nth_page(0), nombre)
 
@@ -664,7 +667,12 @@ class Estructura_Proyecto(Gtk.TreeView):
         archivos del proyecto.
         """
 
-        self.get_model().clear()
+        if self.get_model():
+            self.get_model().clear()
+            #self.posibles = []
+
+        else:
+            return
 
         if not path:
             return
