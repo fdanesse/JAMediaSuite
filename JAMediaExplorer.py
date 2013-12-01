@@ -20,10 +20,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import sys
 
 from gi.repository import Gtk
-#from gi.repository import Gdk
+from gi.repository import Gdk
 #from gi.repository import GObject
 #from gi.repository import GdkPixbuf
 #from gi.repository import GLib
@@ -51,17 +50,20 @@ ICONOS = os.path.join(JAMediaObjects.__path__[0], "Iconos")
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-'''
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
-style_path = os.path.join(JAMediaObjectsPath, "JAMediaEstilo.css")
+
+style_path = os.path.join(
+    os.path.dirname(__file__),
+    "JAMediaExplorer", "Estilo.css")
+
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
+
 context.add_provider_for_screen(
     screen,
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
-'''
 
 
 class Ventana(Gtk.Window):
@@ -69,13 +71,15 @@ class Ventana(Gtk.Window):
     Ventana Principal de JAMexplorer.
     """
 
+    __gtype_name__ = 'JAMediaExplorer'
+
     def __init__(self):
 
         super(Ventana, self).__init__()
 
         self.set_title("JAMexplorer")
         #self.modify_bg(0, Gdk.Color(49000, 52000, 18000))
-        self.set_icon_from_file(os.path.join(ICONOS, "jamexplorer.png"))
+        self.set_icon_from_file(os.path.join(ICONOS, "JAMediaExplorer.svg"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_position(Gtk.WindowPosition.CENTER)
@@ -312,7 +316,9 @@ class Ventana(Gtk.Window):
 
     def __salir(self, widget=None, senial=None):
 
+        import sys
         sys.exit(0)
+        Gtk.main_quit()
 
 
 if __name__ == "__main__":

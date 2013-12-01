@@ -40,6 +40,8 @@ class Toolbar(Gtk.Toolbar):
     Toolbar Principal de JAMexplorer.
     """
 
+    __gtype_name__ = 'JAMediaExplorerToolbar'
+
     __gsignals__ = {
     "salir": (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, [])}
@@ -54,7 +56,7 @@ class Toolbar(Gtk.Toolbar):
             ancho=3, expand=False), -1)
 
         imagen = Gtk.Image()
-        icono = os.path.join(ICONOS, "jamexplorer.png")
+        icono = os.path.join(ICONOS, "JAMediaExplorer.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
             -1, get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
@@ -67,59 +69,7 @@ class Toolbar(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
-        imagen = Gtk.Image()
-        icono = os.path.join(ICONOS, "ceibaljam.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        imagen = Gtk.Image()
-        icono = os.path.join(ICONOS, "uruguay.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        imagen = Gtk.Image()
-        icono = os.path.join(ICONOS, "licencia.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
-        imagen.set_from_pixbuf(pixbuf)
-        #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
-        imagen.show()
-        item = Gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("fdanesse@gmail.com")
-        #self.label.modify_fg(0, Gdk.Color(65000, 65000, 65000))
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        archivo = os.path.join(ICONOS, "salir.png")
+        archivo = os.path.join(ICONOS, "button-cancel.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(1))
         boton.set_tooltip_text("Salir")
@@ -137,6 +87,8 @@ class ToolbarTry(Gtk.Toolbar):
     """
     Barra de estado de JAMexplorer.
     """
+
+    __gtype_name__ = 'JAMediaExplorerToolbarTry'
 
     def __init__(self):
 
@@ -166,6 +118,8 @@ class ToolbarAccion(Gtk.Toolbar):
     borrar un archivo.
     """
 
+    __gtype_name__ = 'JAMediaExplorerToolbarAccion'
+
     __gsignals__ = {
     "borrar": (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
@@ -183,7 +137,7 @@ class ToolbarAccion(Gtk.Toolbar):
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "alejar.png")
+            "Iconos", "button-cancel.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
@@ -204,7 +158,7 @@ class ToolbarAccion(Gtk.Toolbar):
         #    ancho = 3, expand = False), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "acercar.png")
+            "Iconos", "dialog-ok.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")

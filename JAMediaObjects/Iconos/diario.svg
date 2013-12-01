@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="24"
+   height="24"
+   id="svg6662"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="sonido.svg">
+  <defs
+     id="defs6664">
+    <linearGradient
+       y2="11.02436"
+       y1="3.0069399"
+       x2="0"
+       id="linearGradient1022-8-8-3-0-06-7"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         id="stop3001-0-9-4-9-91"
+         offset="0" />
+      <stop
+         id="stop3003-5-6-6-5-8"
+         stop-color="#363636"
+         offset="1" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.919596"
+     inkscape:cx="0.2400858"
+     inkscape:cy="18.488838"
+     inkscape:document-units="px"
+     inkscape:current-layer="capa1"
+     showgrid="false"
+     inkscape:showpageshadow="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="712"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata6667">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="capa1"
+     transform="translate(0,-1028.3622)">
+    <rect
+       y="1028.3622"
+       x="-1e-06"
+       height="23.999996"
+       width="23.999996"
+       id="rect3077"
+       style="opacity:0.6;color:#000000;fill:none;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+    <g
+       id="g3926"
+       transform="matrix(0.01091306,0,0,0.01091306,11.656191,1028.9741)">
+      <rect
+         inkscape:export-ydpi="1.9231522"
+         inkscape:export-xdpi="1.9231522"
+         inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/diario.png"
+         ry="336.33102"
+         y="58.341824"
+         x="-843.90802"
+         height="1973.1421"
+         width="1636.811"
+         id="rect3591"
+         style="fill:#ffe4b5;fill-opacity:1;stroke:#000000;stroke-width:121.09999847;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         style="fill:#000000;fill-opacity:0.37254902"
+         inkscape:export-ydpi="1.9231522"
+         inkscape:export-xdpi="1.9231522"
+         inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/diario.png"
+         transform="matrix(-0.66632322,0.74566305,-0.74566305,-0.66632322,-7362.3555,9945.9479)"
+         id="g4375-0">
+        <path
+           style="fill:#000000;fill-opacity:0.37254902;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m -11123.392,272.18173 353.148,100.8994 -355.95,67.2662 z"
+           id="path4363-8"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccc" />
+        <path
+           style="fill:#000000;fill-opacity:0.37254902;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m -10769.193,372.73073 -92.088,-25.9598 c 3.078,15.2566 -14.811,30.1943 0.277,43.389 z"
+           id="path4365-7"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccc" />
+        <rect
+           style="fill:#000000;fill-opacity:0.37254902"
+           id="rect4361-9"
+           width="1801.4996"
+           height="179.37656"
+           x="-12854.822"
+           y="266.5762"
+           ry="89.688278" />
+      </g>
+      <g
+         inkscape:export-ydpi="1.9231522"
+         inkscape:export-xdpi="1.9231522"
+         inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/diario.png"
+         transform="matrix(-0.60214254,0.79838861,-0.79838861,-0.60214254,-6655.0945,10490.842)"
+         id="g4375">
+        <path
+           style="fill:#ffa07a;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m -11123.392,272.18173 353.148,100.8994 -355.95,67.2662 z"
+           id="path4363"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccc" />
+        <path
+           style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m -10769.193,372.73073 -92.088,-25.9598 c 3.078,15.2566 -14.811,30.1943 0.277,43.389 z"
+           id="path4365"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccc" />
+        <rect
+           style="fill:#ff6600;fill-opacity:1"
+           id="rect4361"
+           width="1801.4996"
+           height="179.37656"
+           x="-12854.822"
+           y="266.5762"
+           ry="89.688278" />
+      </g>
+      <path
+         inkscape:export-ydpi="1.9231522"
+         inkscape:export-xdpi="1.9231522"
+         inkscape:export-filename="/home/flavio/Documentos/JAMediaSuite/JAMediaObjects/Iconos/diario.png"
+         sodipodi:nodetypes="cccccc"
+         inkscape:connector-curvature="0"
+         id="path4380"
+         d="M -467.63869,1667.1253 -169.84559,1447.1087 827.2358,126.30871 c 15.9878,-36.002905 6.8635,-53.742705 3.5034,-75.674505 L -256.03039,1463.9253 z"
+         style="fill:#000000;fill-opacity:0.1875;stroke:none" />
+    </g>
+  </g>
+</svg>

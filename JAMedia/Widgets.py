@@ -60,7 +60,7 @@ class ToolbarGrabar(Gtk.Toolbar):
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "stop.png")
+            "Iconos", "stop.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
         boton.set_tooltip_text("Detener.")
@@ -147,7 +147,7 @@ class ToolbarLista(Gtk.Toolbar):
         Gtk.Toolbar.__init__(self)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "lista.png")
+            "Iconos", "lista.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
         boton.set_tooltip_text("Selecciona una Lista.")
@@ -167,7 +167,7 @@ class ToolbarLista(Gtk.Toolbar):
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "agregar.png")
+            "Iconos", "agregar.svg")
         self.boton_agregar = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
         self.boton_agregar.set_tooltip_text("Agregar Streaming.")
@@ -258,7 +258,7 @@ class Toolbar(Gtk.Toolbar):
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia.png")
+            "Iconos", "JAMedia.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(1.2))
         boton.set_tooltip_text("Autor.")
@@ -266,7 +266,7 @@ class Toolbar(Gtk.Toolbar):
         self.insert(boton, -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "configurar.png")
+            "Iconos", "configurar.svg")
         self.configurar = get_boton(archivo, flip=False,
             pixels=get_pixels(1))
         self.configurar.set_tooltip_text("Configuraciones.")
@@ -293,7 +293,7 @@ class Toolbar(Gtk.Toolbar):
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "salir.png")
+            "Iconos", "salir.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(1))
         boton.set_tooltip_text("Salir")
@@ -585,7 +585,7 @@ class ToolbarInfo(Gtk.Toolbar):
 
         imagen = Gtk.Image()
         icono = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia.png")
+            "Iconos", "JAMedia.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
             -1, get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
@@ -598,7 +598,7 @@ class ToolbarInfo(Gtk.Toolbar):
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "rotar.png")
+            "Iconos", "rotar.svg")
         self.boton_izquierda = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
         self.boton_izquierda.set_tooltip_text("Izquierda")
@@ -606,7 +606,7 @@ class ToolbarInfo(Gtk.Toolbar):
         self.insert(self.boton_izquierda, -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "rotar.png")
+            "Iconos", "rotar.svg")
         self.boton_derecha = get_boton(archivo, flip=True,
             pixels=get_pixels(0.8))
         self.boton_derecha.set_tooltip_text("Derecha")
@@ -632,7 +632,7 @@ class ToolbarInfo(Gtk.Toolbar):
         self.insert(item, -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "iconplay.png")
+            "Iconos", "iconplay.svg")
         self.descarga = get_boton(archivo, flip=False,
             rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE,
             pixels=get_pixels(0.8))
@@ -739,7 +739,7 @@ class ToolbarConfig(Gtk.Table):
         toolbar.insert(self.mplayer_boton, -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia.png")
+            "Iconos", "JAMedia.svg")
         self.jamedia_boton = get_togle_boton(archivo,
             flip=False,
             pixels=get_pixels(1))
@@ -833,7 +833,7 @@ class ToolbarAddStream(Gtk.Toolbar):
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "alejar.png")
+            "Iconos", "alejar.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
         boton.set_tooltip_text("Cancelar")
@@ -869,7 +869,7 @@ class ToolbarAddStream(Gtk.Toolbar):
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "acercar.png")
+            "Iconos", "acercar.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
@@ -1020,7 +1020,7 @@ class Help(Gtk.Dialog):
 
         vbox = Gtk.HBox()
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "play.png")
+            "Iconos", "play.svg")
         self.anterior = get_boton(
             archivo, flip=True,
             pixels=get_pixels(0.8),
@@ -1030,7 +1030,7 @@ class Help(Gtk.Dialog):
         vbox.pack_start(self.anterior, False, False, 0)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "play.png")
+            "Iconos", "play.svg")
         self.siguiente = get_boton(
             archivo,
             pixels=get_pixels(0.8),

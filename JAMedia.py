@@ -45,7 +45,7 @@ class Ventana(Gtk.Window):
 
         self.set_icon_from_file(
             os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia.png"))
+            "Iconos", "JAMedia.svg"))
 
         self.set_resizable(True)
         self.set_size_request(640, 480)

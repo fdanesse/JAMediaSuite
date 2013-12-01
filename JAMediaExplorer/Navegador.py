@@ -30,8 +30,8 @@ from Directorios import Directorios
 
 import JAMediaObjects
 from JAMediaObjects.JAMFileSystem import DeviceManager
-import JAMediaObjects.JAMFileSystem as JAMF
-import JAMediaObjects.JAMediaGlobales as G
+from JAMediaObjects.JAMFileSystem import describe_uri
+from JAMediaObjects.JAMediaGlobales import get_pixels
 
 ICONOS = os.path.join(JAMediaObjects.__path__[0], "Iconos")
 
@@ -47,6 +47,8 @@ class Navegador(Gtk.Paned):
     """
     Navegador de Archivos.
     """
+
+    __gtype_name__ = 'JAMediaExplorerNavegador'
 
     __gsignals__ = {
     "info": (GObject.SIGNAL_RUN_FIRST,
@@ -66,30 +68,30 @@ class Navegador(Gtk.Paned):
         self.directorios = None
         self.infowidget = None
 
-        self.pack1(self.area_izquierda_del_panel(),
+        self.pack1(self.__area_izquierda_del_panel(),
             resize=False, shrink=True)
-        self.pack2(self.area_derecha_del_panel(),
+        self.pack2(self.__area_derecha_del_panel(),
             resize=True, shrink=True)
 
         self.show_all()
 
-        self.unidades.connect('leer', self.leer)
-        self.unidades.treeselection.select_path(0)
-        self.unidades.connect('info', self.emit_info)
+        self.unidades.connect('leer', self.__leer)
+        self.unidades.get_selection().select_path(0)
+        self.unidades.connect('info', self.__emit_info)
 
-        self.directorios.connect('info', self.emit_info)
-        self.directorios.connect('borrar', self.emit_borrar)
+        self.directorios.connect('info', self.__emit_info)
+        self.directorios.connect('borrar', self.__emit_borrar)
 
-        self.infowidget.connect('cargar', self.emit_cargar)
+        self.infowidget.connect('cargar', self.__emit_cargar)
 
-    def emit_borrar(self, widget, direccion, modelo, iter):
+    def __emit_borrar(self, widget, direccion, modelo, iter):
         """
         Cuando se selecciona borrar en el menu de un item.
         """
 
         self.emit('borrar', direccion, modelo, iter)
 
-    def emit_cargar(self, widget, tipo):
+    def __emit_cargar(self, widget, tipo):
         """
         Cuando se hace click en infowidget se pasa
         los datos a la ventana principal.
@@ -97,7 +99,7 @@ class Navegador(Gtk.Paned):
 
         self.emit('cargar', tipo)
 
-    def emit_info(self, widget, path):
+    def __emit_info(self, widget, path):
         """
         Cuando el usuario selecciona un archivo
         o directorio en la estructura de directorios,
@@ -106,7 +108,7 @@ class Navegador(Gtk.Paned):
 
         self.emit('info', path)
 
-    def area_izquierda_del_panel(self):
+    def __area_izquierda_del_panel(self):
 
         self.unidades = Unidades()
 
@@ -126,7 +128,7 @@ class Navegador(Gtk.Paned):
 
         return panel_izquierdo
 
-    def area_derecha_del_panel(self):
+    def __area_derecha_del_panel(self):
 
         scrolled_window = Gtk.ScrolledWindow()
         scrolled_window.set_policy(
@@ -138,7 +140,7 @@ class Navegador(Gtk.Paned):
 
         return scrolled_window
 
-    def leer(self, widget, directorio):
+    def __leer(self, widget, directorio):
         self.directorios.leer_directorio(directorio)
 
 
@@ -146,6 +148,8 @@ class Unidades(Gtk.TreeView):
     """
     Treview para unidades y directorios marcados.
     """
+
+    __gtype_name__ = 'JAMediaExplorerUnidades'
 
     __gsignals__ = {
     "leer": (GObject.SIGNAL_RUN_FIRST,
@@ -155,65 +159,67 @@ class Unidades(Gtk.TreeView):
 
     def __init__(self):
 
-        Gtk.TreeView.__init__(self)
+        Gtk.TreeView.__init__(self,
+            Gtk.ListStore(GdkPixbuf.Pixbuf,
+            GObject.TYPE_STRING, GObject.TYPE_STRING))
 
         self.set_property("rules-hint", True)
         self.set_headers_clickable(False)
         self.set_headers_visible(False)
 
         self.dir_select = None
-        self.modelo = ListoreModel()
 
         self.demonio_unidades = DeviceManager()
 
-        self.setear_columnas()
-        self.Llenar_ListStore()
+        self.__setear_columnas()
+        self.__Llenar_ListStore()
 
-        self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(self.selecciones, self.modelo)
+        self.get_selection().set_select_function(
+            self.__selecciones, self.get_model())
 
-        self.set_model(self.modelo)
         self.show_all()
 
         self.demonio_unidades.connect(
-            'nueva_unidad_conectada', self.nueva_unidad_conectada)
+            'nueva_unidad_conectada', self.__nueva_unidad_conectada)
         self.demonio_unidades.connect(
-            'nueva_unidad_desconectada', self.nueva_unidad_desconectada)
+            'nueva_unidad_desconectada', self.__nueva_unidad_desconectada)
 
-    def nueva_unidad_conectada(self, widget, unidad):
+    def __nueva_unidad_conectada(self, widget, unidad):
         """
         Cuando se conecta una unidad, se agrega a la lista.
         """
 
-        icono = os.path.join(ICONOS, "usb.png")
+        icono = os.path.join(ICONOS, "drive-removable-media-usb.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            icono, G.get_pixels(0.8), -1)
-        self.modelo.append([
-            pixbuf, unidad['label'], unidad['mount_path']])
+            icono, get_pixels(0.8), -1)
 
-    def nueva_unidad_desconectada(self, widget, unidad):
+        self.get_model().append([
+            pixbuf, unidad['label'],
+            unidad['mount_path']])
+
+    def __nueva_unidad_desconectada(self, widget, unidad):
         """
         Cuando se desconecta una unidad, se quita de la lista.
         """
 
-        iter = self.modelo.get_iter_first()
+        iter = self.get_model().get_iter_first()
         self.remover_unidad(iter, unidad)
 
-    def remover_unidad(self, iter, unidad):
+    def __remover_unidad(self, iter, unidad):
         """
         Cuando se desconecta una unidad, se quita de la lista.
         """
 
-        directorio = self.modelo.get_value(iter, 2)
+        directorio = self.get_model().get_value(iter, 2)
 
         if directorio == unidad['mount_path']:
-            self.modelo.remove(iter)
+            self.get_model().remove(iter)
 
         else:
-            iter = self.modelo.iter_next(iter)
+            iter = self.get_model().iter_next(iter)
             self.remover_unidad(iter, unidad)
 
-    def selecciones(self, treeselection, model, path, is_selected, listore):
+    def __selecciones(self, treeselection, model, path, is_selected, listore):
         """
         Cuando se hace click sobre una unidad de almacenamiento.
         """
@@ -229,13 +235,13 @@ class Unidades(Gtk.TreeView):
 
         return True
 
-    def setear_columnas(self):
+    def __setear_columnas(self):
 
-        self.append_column(self.construir_columa_icono('Icono', 0, True))
-        self.append_column(self.construir_columa('Nombre', 1, True))
-        self.append_column(self.construir_columa('Directorio', 2, False))
+        self.append_column(self.__construir_columa_icono('Icono', 0, True))
+        self.append_column(self.__construir_columa('Nombre', 1, True))
+        self.append_column(self.__construir_columa('Directorio', 2, False))
 
-    def construir_columa(self, text, index, visible):
+    def __construir_columa(self, text, index, visible):
 
         render = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn(text, render, text=index)
@@ -244,7 +250,7 @@ class Unidades(Gtk.TreeView):
 
         return column
 
-    def construir_columa_icono(self, text, index, visible):
+    def __construir_columa_icono(self, text, index, visible):
 
         render = Gtk.CellRendererPixbuf()
         column = Gtk.TreeViewColumn(text, render, pixbuf=index)
@@ -252,55 +258,49 @@ class Unidades(Gtk.TreeView):
 
         return column
 
-    def Llenar_ListStore(self):
+    def __Llenar_ListStore(self):
 
-        icono = os.path.join(ICONOS, "root.png")
+        icono = os.path.join(ICONOS, "def.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            icono, G.get_pixels(0.8), -1)
-        self.modelo.append([pixbuf, 'Raiz', ROOT])
-        icono = os.path.join(ICONOS, "home.png")
+            icono, get_pixels(0.8), -1)
+        self.get_model().append([pixbuf, 'Raiz', ROOT])
+
+        icono = os.path.join(ICONOS, "stock-home.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            icono, G.get_pixels(0.8), -1)
-        self.modelo.append([pixbuf, 'Usuario', HOME])
+            icono, get_pixels(0.8), -1)
+        self.get_model().append([pixbuf, 'Usuario', HOME])
 
-        if JAMF.describe_uri(ACTIVITIES):
-            icono = os.path.join(ICONOS, "home.png")
+        if describe_uri(ACTIVITIES):
+            icono = os.path.join(ICONOS, "stock-home.svg")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                icono, G.get_pixels(0.8), -1)
-            self.modelo.append([pixbuf, 'Actividades', ACTIVITIES])
+                icono, get_pixels(0.8), -1)
+            self.get_model().append([pixbuf, 'Actividades', ACTIVITIES])
 
-        if JAMF.describe_uri(JAMEDIA):
-            icono = os.path.join(ICONOS, "JAMedia.png")
+        if describe_uri(JAMEDIA):
+            icono = os.path.join(ICONOS, "JAMedia.svg")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                icono, G.get_pixels(0.8), -1)
-            self.modelo.append([pixbuf, 'JAMediaDatos', JAMEDIA])
+                icono, get_pixels(0.8), -1)
+            self.get_model().append([pixbuf, 'JAMediaDatos', JAMEDIA])
 
-        if JAMF.describe_uri(DIARIO):
-            icono = os.path.join(ICONOS, "diario.png")
+        if describe_uri(DIARIO):
+            icono = os.path.join(ICONOS, "diario.svg")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                icono, G.get_pixels(0.8), -1)
-            self.modelo.append([pixbuf, 'Diario', DIARIO])
+                icono, get_pixels(0.8), -1)
+            self.get_model().append([pixbuf, 'Diario', DIARIO])
 
-        if JAMF.describe_uri(LOGS):
-            icono = os.path.join(ICONOS, "diario.png")
+        if describe_uri(LOGS):
+            icono = os.path.join(ICONOS, "diario.svg")
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                icono, G.get_pixels(0.8), -1)
-            self.modelo.append([pixbuf, 'Logs', LOGS])
+                icono, get_pixels(0.8), -1)
+            self.get_model().append([pixbuf, 'Logs', LOGS])
 
-        icono = os.path.join(ICONOS, "usb.png")
+        icono = os.path.join(ICONOS, "drive-removable-media-usb.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            icono, G.get_pixels(0.8), -1)
+            icono, get_pixels(0.8), -1)
+
         for unidad in self.demonio_unidades.get_unidades():
-            self.modelo.append([
+            self.get_model().append([
                 pixbuf, unidad['label'], unidad['mount_path']])
-
-
-class ListoreModel(Gtk.ListStore):
-
-    def __init__(self):
-
-        Gtk.ListStore.__init__(self, GdkPixbuf.Pixbuf,
-        GObject.TYPE_STRING, GObject.TYPE_STRING)
 
 
 class InfoWidget(Gtk.EventBox):
@@ -308,6 +308,8 @@ class InfoWidget(Gtk.EventBox):
     Widgets con información sobre en path
     seleccionado en la estructura de directorios y archivos.
     """
+
+    __gtype_name__ = 'JAMediaExplorerInfoWidget'
 
     __gsignals__ = {
     "cargar": (GObject.SIGNAL_RUN_FIRST,
@@ -348,31 +350,31 @@ class InfoWidget(Gtk.EventBox):
         icono = None
 
         if textinfo.startswith("Directorio") or textinfo.startswith("Enlace"):
-            icono = os.path.join(ICONOS, "directorio.png")
+            icono = os.path.join(ICONOS, "document-open.svg")
 
         else:
             if 'video' in typeinfo:
-                icono = os.path.join(ICONOS, "video.png")
+                icono = os.path.join(ICONOS, "video.svg")
 
             elif 'pdf' in typeinfo:
-                icono = os.path.join(ICONOS, "pdf.png")
+                icono = os.path.join(ICONOS, "pdf.svg")
 
             elif 'audio' in typeinfo:
-                icono = os.path.join(ICONOS, "sonido.png")
+                icono = os.path.join(ICONOS, "sonido.svg")
 
             elif 'image' in typeinfo and not 'iso' in typeinfo:
-                icono = os.path.join(ICONOS, "imagen.png")
+                icono = os.path.join(ICONOS, "edit-select-all.svg")
 
             elif 'zip' in typeinfo or 'tar' in typeinfo:
-                icono = os.path.join(ICONOS, "zip.png")
+                icono = os.path.join(ICONOS, "edit-select-all.svg")
 
             elif 'text' in typeinfo:
                 # FIXME: Hay un problema con los tipos,
                 # cuando el archivo es uno de creados por JAMedia.
-                icono = os.path.join(ICONOS, "archivo.png")
+                icono = os.path.join(ICONOS, "edit-select-all.svg")
 
             else:
-                icono = os.path.join(ICONOS, "archivo.png")
+                icono = os.path.join(ICONOS, "edit-select-all.svg")
                 self.typeinfo = None
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, 100, -1)

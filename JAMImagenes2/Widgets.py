@@ -108,7 +108,7 @@ class ToolbarPreviews(Gtk.Toolbar):
             ancho=15, expand=False), -1)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMediaImagenes.png")
+            "Iconos", "JAMediaImagenes.svg")
         boton = get_boton(
             archivo, flip=False,
             pixels=get_pixels(1.2),
@@ -668,7 +668,7 @@ class Help(Gtk.Dialog):
 
         vbox = Gtk.HBox()
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "play.png")
+            "Iconos", "play.svg")
         self.anterior = get_boton(
             archivo, flip=True,
             pixels=get_pixels(0.8),
@@ -678,7 +678,7 @@ class Help(Gtk.Dialog):
         vbox.pack_start(self.anterior, False, False, 0)
 
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "play.png")
+            "Iconos", "play.svg")
         self.siguiente = get_boton(
             archivo,
             pixels=get_pixels(0.8),

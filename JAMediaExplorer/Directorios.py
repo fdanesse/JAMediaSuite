@@ -27,8 +27,15 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
 import JAMediaObjects
-import JAMediaObjects.JAMFileSystem as JAMF
-import JAMediaObjects.JAMediaGlobales as G
+
+from JAMediaObjects.JAMFileSystem import describe_acceso_uri
+from JAMediaObjects.JAMFileSystem import describe_archivo
+from JAMediaObjects.JAMFileSystem import mover
+from JAMediaObjects.JAMFileSystem import copiar
+from JAMediaObjects.JAMFileSystem import crear_directorio
+from JAMediaObjects.JAMFileSystem import describe_uri
+
+from JAMediaObjects.JAMediaGlobales import get_pixels
 
 ICONOS = os.path.join(JAMediaObjects.__path__[0], "Iconos")
 
@@ -37,6 +44,8 @@ class Directorios(Gtk.TreeView):
     """
     TreView para toda la estructura de directorios.
     """
+
+    __gtype_name__ = 'JAMediaExplorerDirectorios'
 
     __gsignals__ = {
     "info": (GObject.SIGNAL_RUN_FIRST,
@@ -185,17 +194,17 @@ class Directorios(Gtk.TreeView):
 
                 if os.path.isdir(direccion):
                     icono = None
-                    lectura, escritura, ejecucion = JAMF.describe_acceso_uri(
+                    lectura, escritura, ejecucion = describe_acceso_uri(
                         direccion)
 
                     if not lectura:
-                        icono = os.path.join(ICONOS, "cerrado.png")
+                        icono = os.path.join(ICONOS, "button-cancel.svg")
 
                     else:
-                        icono = os.path.join(ICONOS, "directorio.png")
+                        icono = os.path.join(ICONOS, "document-open.svg")
 
                     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                        icono, -1, G.get_pixels(0.8))
+                        icono, -1, get_pixels(0.8))
 
                     iteractual = self.get_model().append(
                         iter, [pixbuf,
@@ -209,29 +218,29 @@ class Directorios(Gtk.TreeView):
             for x in archivos:
                 archivo = os.path.basename(x)
                 icono = None
-                tipo = JAMF.describe_archivo(x)
+                tipo = describe_archivo(x)
 
                 if 'video' in tipo:
-                    icono = os.path.join(ICONOS, "video.png")
+                    icono = os.path.join(ICONOS, "video.svg")
 
                 elif 'audio' in tipo:
-                    icono = os.path.join(ICONOS, "sonido.png")
+                    icono = os.path.join(ICONOS, "sonido.svg")
 
                 elif 'image' in tipo and not 'iso' in tipo:
                     #icono = os.path.join(x) #exige en rendimiento
-                    icono = os.path.join(ICONOS, "imagen.png")
+                    icono = os.path.join(ICONOS, "edit-select-all.svg")
 
                 elif 'pdf' in tipo:
-                    icono = os.path.join(ICONOS, "pdf.png")
+                    icono = os.path.join(ICONOS, "pdf.svg")
 
                 elif 'zip' in tipo or 'rar' in tipo:
-                    icono = os.path.join(ICONOS, "zip.png")
+                    icono = os.path.join(ICONOS, "edit-select-all.svg")
 
                 else:
-                    icono = os.path.join(ICONOS, "archivo.png")
+                    icono = os.path.join(ICONOS, "edit-select-all.svg")
 
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                    icono, -1, G.get_pixels(0.8))
+                    icono, -1, get_pixels(0.8))
 
                 self.get_model().append(
                     iter, [pixbuf, archivo,
@@ -334,7 +343,7 @@ class Directorios(Gtk.TreeView):
 
         iter = self.get_model().get_iter(path)
         direccion = self.get_model().get_value(iter, 2)
-        lectura, escritura, ejecucion = JAMF.describe_acceso_uri(direccion)
+        lectura, escritura, ejecucion = describe_acceso_uri(direccion)
 
         if accion == "Copiar":
             self.direccion_seleccionada = direccion
@@ -351,13 +360,13 @@ class Directorios(Gtk.TreeView):
 
         elif accion == "Pegar":
             if self.direccion_seleccionada_para_cortar:
-                if JAMF.mover(self.direccion_seleccionada_para_cortar, direccion):
+                if mover(self.direccion_seleccionada_para_cortar, direccion):
                     self.collapse_row(path)
                     self.expand_to_path(path)
                     self.direccion_seleccionada_para_cortar = None
 
             else:
-                if JAMF.copiar(self.direccion_seleccionada, direccion):
+                if copiar(self.direccion_seleccionada, direccion):
                     self.collapse_row(path)
                     self.expand_to_path(path)
                     self.direccion_seleccionada = None
@@ -386,7 +395,7 @@ class Directorios(Gtk.TreeView):
                 directorio_nuevo = entry.get_text()
 
                 if directorio_nuevo != "" and directorio_nuevo != None:
-                    if JAMF.crear_directorio(direccion, directorio_nuevo):
+                    if crear_directorio(direccion, directorio_nuevo):
                         self.collapse_row(path)
                         self.expand_to_path(path)
 
@@ -397,6 +406,8 @@ class Directorios(Gtk.TreeView):
 
 
 class MenuList(Gtk.Menu):
+
+    __gtype_name__ = 'JAMediaExplorerMenuList'
 
     __gsignals__ = {
     "accion": (GObject.SIGNAL_RUN_FIRST,
@@ -416,9 +427,9 @@ class MenuList(Gtk.Menu):
         iter = self.modelo.get_iter(path)
         direccion = self.modelo.get_value(iter, 2)
 
-        if JAMF.describe_acceso_uri(direccion):
-            lectura, escritura, ejecucion = JAMF.describe_acceso_uri(direccion)
-            unidad, directorio, archivo, enlace = JAMF.describe_uri(direccion)
+        if describe_acceso_uri(direccion):
+            lectura, escritura, ejecucion = describe_acceso_uri(direccion)
+            unidad, directorio, archivo, enlace = describe_uri(direccion)
 
         else:
             return
@@ -426,12 +437,14 @@ class MenuList(Gtk.Menu):
         if lectura:
             copiar = Gtk.MenuItem("Copiar")
             self.append(copiar)
-            copiar.connect_object("activate", self.emit_accion, path, "Copiar")
+            copiar.connect_object("activate",
+                self.__emit_accion, path, "Copiar")
 
         if escritura and not unidad:
             borrar = Gtk.MenuItem("Borrar")
             self.append(borrar)
-            borrar.connect_object("activate", self.emit_accion, path, "Borrar")
+            borrar.connect_object("activate",
+                self.__emit_accion, path, "Borrar")
 
         if escritura and (directorio or unidad) \
             and (self.parent_objet.direccion_seleccionada != None \
@@ -439,26 +452,28 @@ class MenuList(Gtk.Menu):
 
             pegar = Gtk.MenuItem("Pegar")
             self.append(pegar)
-            pegar.connect_object("activate", self.emit_accion, path, "Pegar")
+            pegar.connect_object("activate",
+                self.__emit_accion, path, "Pegar")
 
         if escritura and (directorio or archivo):
             cortar = Gtk.MenuItem("Cortar")
             self.append(cortar)
-            cortar.connect_object("activate", self.emit_accion, path, "Cortar")
+            cortar.connect_object("activate",
+                self.__emit_accion, path, "Cortar")
 
         if escritura and (directorio or unidad):
             nuevodirectorio = Gtk.MenuItem("Crear Directorio")
             self.append(nuevodirectorio)
             nuevodirectorio.connect_object("activate",
-                self.emit_accion, path, "Crear Directorio")
+                self.__emit_accion, path, "Crear Directorio")
 
         self.show_all()
-        self.attach_to_widget(widget, self.null)
+        self.attach_to_widget(widget, self.__null)
 
-    def null(self):
+    def __null(self):
 
         pass
 
-    def emit_accion(self, path, accion):
+    def __emit_accion(self, path, accion):
 
         self.emit('accion', path, accion)

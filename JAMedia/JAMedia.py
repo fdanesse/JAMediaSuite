@@ -353,7 +353,7 @@ class JAMediaPlayer(Gtk.Plug):
 
         ### Controlador del mouse.
         icono = os.path.join(JAMediaObjectsPath,
-            "Iconos", "jamedia_cursor.png")
+            "Iconos", "jamedia_cursor.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
             -1, get_pixels(0.8))
         self.jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
@@ -494,9 +494,11 @@ class JAMediaPlayer(Gtk.Plug):
             lado = get_pixels(0.5)
             botonefecto.set_tamanio(lado, lado)
 
-            archivo = os.path.join(JAMediaObjectsPath, "Iconos", 'configurar.png')
+            archivo = os.path.join(JAMediaObjectsPath,
+                "Iconos", 'configurar.svg')
 
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                archivo, lado, lado)
             botonefecto.imagen.set_from_pixbuf(pixbuf)
 
             self.hbox_efectos_en_pipe.pack_start(botonefecto, False, False, 0)
