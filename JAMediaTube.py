@@ -23,7 +23,7 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GObject
+#from gi.repository import GObject
 from gi.repository import GLib
 
 import JAMediaObjects
@@ -35,6 +35,7 @@ TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
 
 #GObject.threads_init()
 #Gdk.threads_init()
+
 
 class Ventana(Gtk.Window):
     """
@@ -86,8 +87,8 @@ class Ventana(Gtk.Window):
 
         from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 
-        boxbase = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        self.box_tube = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        boxbase = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.box_tube = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         self.toolbar = Toolbar()
         self.toolbar_busqueda = Toolbar_Busqueda()
@@ -117,7 +118,7 @@ class Ventana(Gtk.Window):
         self.show_all()
         self.realize()
 
-        self.paneltube.set_vista_inicial() # oculta las toolbarsaccion
+        self.paneltube.set_vista_inicial()  # oculta las toolbarsaccion
 
         GLib.idle_add(self.__setup_init2)
 
@@ -135,7 +136,7 @@ class Ventana(Gtk.Window):
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
 
-        map(self.__ocultar,[
+        map(self.__ocultar, [
             self.toolbar_descarga,
             self.alerta_busqueda])
 
@@ -183,7 +184,7 @@ class Ventana(Gtk.Window):
         self.paneltube.connect("cancel_toolbar",
             self.__cancel_toolbar)
 
-    def __cancel_toolbar(self, widget = None):
+    def __cancel_toolbar(self, widget=None):
 
         self.toolbar_salir.cancelar()
 
@@ -270,7 +271,7 @@ class Ventana(Gtk.Window):
 
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
-        map(self.__mostrar,[self.alerta_busqueda])
+        map(self.__mostrar, [self.alerta_busqueda])
         self.alerta_busqueda.label.set_text(
             "Buscando: %s" % (palabras))
 
@@ -309,7 +310,7 @@ class Ventana(Gtk.Window):
             # self.videos_temp contiene solo los videos
             # encontrados en las búsquedas, no los que se cargan
             # desde un archivo.
-            map(self.__ocultar,[self.alerta_busqueda])
+            map(self.__ocultar, [self.alerta_busqueda])
 
         if not videos:
             self.paneltube.set_sensitive(True)
@@ -339,7 +340,8 @@ class Ventana(Gtk.Window):
 
         # FIXME: Enlentece la aplicación ya que exige procesamiento.
         #archivo = "/tmp/preview%d" % time.time()
-        #fileimage, headers = urllib.urlretrieve(video["previews"][0][0], archivo)
+        #fileimage, headers = urllib.urlretrieve(
+        #   video["previews"][0][0], archivo)
         #pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(fileimage,
         #    50, 50)
         #videowidget.drag_source_set_icon_pixbuf(pixbuf)
@@ -353,8 +355,10 @@ class Ventana(Gtk.Window):
             texto = str(texto[0:50]) + " . . . "
 
         self.alerta_busqueda.label.set_text(texto)
-        #self.alerta_busqueda.label.set_text("Encontrado: %s" % (video["titulo"]))
-        #self.get_property('window').invalidate_rect(self.get_allocation(), True)
+        #self.alerta_busqueda.label.set_text(
+        #   "Encontrado: %s" % (video["titulo"]))
+        #self.get_property('window').invalidate_rect(
+        #   self.get_allocation(), True)
         #self.get_property('window').process_updates(True)
 
         GLib.idle_add(self.__add_videos, videos, destino)
@@ -373,22 +377,24 @@ class Ventana(Gtk.Window):
         """
 
         if valor == 'jamediatube':
-            map(self.__ocultar,[self.socketjamedia])
+            map(self.__ocultar, [self.socketjamedia])
             map(self.__mostrar, [self.box_tube])
 
         elif valor == 'jamedia':
-            map(self.__ocultar,[self.box_tube])
+            map(self.__ocultar, [self.box_tube])
             map(self.__mostrar, [self.socketjamedia])
 
     def __ocultar(self, objeto):
 
-        if objeto.get_visible(): objeto.hide()
+        if objeto.get_visible():
+            objeto.hide()
 
     def __mostrar(self, objeto):
 
-        if not objeto.get_visible(): objeto.show()
+        if not objeto.get_visible():
+            objeto.show()
 
-    def __confirmar_salir(self, widget = None, senial = None):
+    def __confirmar_salir(self, widget=None, senial=None):
         """
         Recibe salir y lo pasa a la toolbar de confirmación.
         """
@@ -397,7 +403,7 @@ class Ventana(Gtk.Window):
 
         self.toolbar_salir.run("JAMediaTube")
 
-    def __salir(self, widget = None, senial = None):
+    def __salir(self, widget=None, senial=None):
 
         # FIXME: Hay que Mejorar esta forma de salir.
         import commands
@@ -407,6 +413,7 @@ class Ventana(Gtk.Window):
         sys.exit(0)
 
 target = [Gtk.TargetEntry.new('Mover', Gtk.TargetFlags.SAME_APP, 0)]
+
 
 def get_item_list(path):
 
@@ -437,7 +444,7 @@ if __name__ == "__main__":
                 item = get_item_list(path)
 
                 if item:
-                    items.append( item )
+                    items.append(item)
 
             elif os.path.isdir(path):
 
@@ -448,7 +455,7 @@ if __name__ == "__main__":
                         item = get_item_list(newpath)
 
                         if item:
-                            items.append( item )
+                            items.append(item)
 
         if items:
             jamediatube = Ventana()
@@ -461,4 +468,3 @@ if __name__ == "__main__":
         jamediatube = Ventana()
 
     Gtk.main()
-
