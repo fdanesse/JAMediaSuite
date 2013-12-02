@@ -34,8 +34,6 @@ from JAMediaObjects.JAMediaGlobales import get_video_directory
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-#from JAMImagenes.JAMImagenes import JAMImagenes
-
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
 
@@ -110,6 +108,7 @@ class JAMediaVideo(Gtk.Window):
         from JAMediaVideo.JAMediaVideoAplicaciones import JAMediaAudioWidget
 
         from JAMedia.JAMedia import JAMediaPlayer
+        from JAMImagenes2.JAMImagenes import JAMImagenes
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.add(vbox)
@@ -151,8 +150,8 @@ class JAMediaVideo(Gtk.Window):
         self.jamediaplayer = JAMediaPlayer()
         self.socketjamedia.add_id(self.jamediaplayer.get_id())
 
-        #self.jamimagenes = JAMImagenes()
-        #self.socketjamimagenes.add_id(self.jamimagenes.get_id())
+        self.jamimagenes = JAMImagenes()
+        self.socketjamimagenes.add_id(self.jamimagenes.get_id())
 
         self.show_all()
         self.realize()
@@ -200,7 +199,7 @@ class JAMediaVideo(Gtk.Window):
         self.jamediafotografia.connect('salir', self.__get_menu_base)
         self.jamediaaudio.connect('salir', self.__get_menu_base)
         self.jamediaplayer.connect('salir', self.__get_menu_base)
-        #self.jamimagenes.connect('salir', self.__get_menu_base)
+        self.jamimagenes.connect('salir', self.__get_menu_base)
 
         self.pantalla.connect("button_press_event", self.__clicks_en_pantalla)
 
@@ -305,13 +304,8 @@ class JAMediaVideo(Gtk.Window):
             self.jamediawebcam.stop()
             map(self.__ocultar, [self.pantalla])
             map(self.__mostrar, [self.socketjamimagenes])
-            archivos = []
 
-            for arch in os.listdir(get_imagenes_directory()):
-                ar = os.path.join(get_imagenes_directory(), arch)
-                archivos.append([arch, ar])
-
-            #GLib.idle_add(self.jamimagenes.set_lista, archivos)
+            self.jamimagenes.switch_to(None, get_imagenes_directory())
 
     def __ocultar(self, objeto):
         """

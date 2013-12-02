@@ -154,7 +154,7 @@ class ToolbarPrincipal(Gtk.Toolbar):
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(1))
         boton.set_tooltip_text("Ver")
-        #boton.connect("clicked", self.__emit_senial, "Ver")
+        boton.connect("clicked", self.__emit_senial, "Ver")
         self.insert(boton, -1)
 
         self.insert(get_separador(draw=False,
