@@ -33,57 +33,60 @@ YOUTUBE = "gdata.youtube.com"
 STDERR = "/dev/null"
 youtubedl = os.path.join(os.path.dirname(__file__), "youtube-dl")
 
+
 def Buscar(palabras):
     """
     Recibe una cadena de texto, separa las palabras,
     busca videos que coincidan con ellas y devuelve
     un feed no mayor a 50 videos.
     """
-    
+
     import gdata.youtube
     import gdata.youtube.service
-    
+
     yt_service = gdata.youtube.service.YouTubeService()
     query = gdata.youtube.service.YouTubeVideoQuery()
     query.feed = 'http://%s/feeds/videos' % (YOUTUBE)
     query.max_results = 50
     query.orderby = 'viewCount'
     query.racy = 'include'
-    
+
     for palabra in palabras.split(" "):
         query.categories.append('/%s' % palabra.lower())
-        
+
     try: # FIXME: Porque Falla si no hay Conexión.
         feed = yt_service.YouTubeQuery(query)
         return DetalleFeed(feed)
-    
+
     except:
         return []
+
 
 def DetalleFeed(feed):
     """
     Recibe un feed de videos y devuelve una
     lista con diccionarios por video.
     """
-    
+
     videos = []
-    
+
     for entry in feed.entry:
         videos.append(DetalleVideo(entry))
-        
+
     return videos
+
 
 def DetalleVideo(entry):
     """
     Recibe un video en un feed y devuelve
     un diccionario con su información.
     """
-    
+
     metadata = entry.media.__dict__
     entrada = entry.__dict__
-    
+
     video = {}
-    
+
     video["id"] = entrada['_GDataEntry__id'].text
     video["titulo"] = metadata['title'].text
     video["descripcion"] = metadata['description'].text
@@ -92,47 +95,48 @@ def DetalleVideo(entry):
     video["url"] = metadata['player'].url.split("&")[0]
     #video["flash player"] = entry.GetSwfUrl()
     video["duracion"] = metadata['duration'].seconds
-    
+
     try:
         previews = []
-        
+
         for thumbnail in metadata['thumbnail']:
             tubn = [thumbnail.url, thumbnail.height, thumbnail.width]
             previews.append(tubn)
-            
+
         video["previews"] = previews
-        
+
     except:
         pass
-    
+
     return video
+
 
 class JAMediaYoutube(Gtk.Widget):
     """
     Widget para descarga de videos a través de youtube_dl.
     """
-    
+
     __gsignals__ = {
-    'progress_download':(GObject.SIGNAL_RUN_FIRST,
+    'progress_download': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
-    
+
     def __init__(self):
-        
+
         Gtk.Widget.__init__(self)
-        
+
         self.ultimosdatos = False
         self.contador = 0
         self.datos_originales = [False, False]
-        
+
         self.url = False
         self.titulo = False
         self.estado = False
-        
+
         self.youtubedl = False
         self.salida = False
         self.actualizador = False
         self.STDOUT = False
-        
+
         self.codecs = [
             #[34, "FLV", "360p H.264 Main 0.5 AAC 128"],
             #[100, "WebM", "360p VP8 3D N/A Vorbis 128"],
@@ -167,39 +171,39 @@ class JAMediaYoutube(Gtk.Widget):
             #[141, "MP4", "N/A N/A N/A N/A ?? high"],
             #[160, "MP4", "144p ? N/A ?? N/A N/A"],
             ]
-            
+
         self.codec = 0
-        
+
     def __get_titulo(self, titulo):
-        
+
         texto = ""
         excluir = ["\\", "/", ",",".","&","¿","?","@","#","$","\'",":",";","|",
         "!", "¡","%","+","*","ª","º","~","{", "}","Ç","[","]","^","`","=","¬","\""]
-        
+
         for l in titulo:
             if not l in excluir:
                 texto += l
-                
+
         return str(texto)
-    
+
     def download(self, url, titulo):
         """
         Inicia la descarga de un archivo.
         """
-        
+
         self.datos_originales = [url, titulo]
-        
+
         self.ultimosdatos = False
         self.contador = 0
-        
+
         import time
         import subprocess
-        
+
         from JAMediaGlobales import get_tube_directory
-        
+
         print "Intentando Descargar:", titulo
         print "\t En Formato:", self.codecs[self.codec]
-        
+
         self.estado = True
         # http://youtu.be/XWDZMMMbvhA => codigo compartir
         # url del video => 'http://www.youtube.com/watch?v=XWDZMMMbvhA'
@@ -207,55 +211,55 @@ class JAMediaYoutube(Gtk.Widget):
         # self.url = url
         self.url = "http://youtu.be/" + url.split(
             "http://www.youtube.com/watch?v=")[1]
-            
+
         self.titulo = self.__get_titulo(titulo)
         self.STDOUT = "/tmp/jamediatube%d" % time.time()
-        
+
         archivo = "%s%s%s" % ("\"", self.titulo, "\"")
         destino = os.path.join(get_tube_directory(), archivo)
-        
+
         estructura = "%s %s -i -R %s -f %s --no-part -o %s" % (
             youtubedl, self.url, 1,
             self.codecs[self.codec][0], destino)
-            
+
         self.youtubedl = subprocess.Popen(
             estructura, shell = True,
             stdout = open(self.STDOUT,"w+b"),
             stderr = open(self.STDOUT,"r+b"),
             universal_newlines=True)
-            
+
         self.salida = open(self.STDOUT,"r")
-        
+
         if self.actualizador:
             GLib.source_remove(self.actualizador)
             self.actualizador = False
-            
+
         self.actualizador = GLib.timeout_add(
             500, self.__get_progress)
-        
+
     def __get_progress(self):
         """
         Actualiza el Progreso de la descarga.
         """
-        
+
         progress = self.salida.readline()
-        
+
         if progress:
             if "100.0%" in progress.split():
                 self.estado = False
-                
+
             self.emit("progress_download", progress)
 
         ### control switch codec.
         if self.ultimosdatos != progress:
             self.ultimosdatos = progress
             self.contador = 0
-            
+
         else:
             self.contador += 1
-            
+
         if self.contador > 15:
-            
+
             if self.codec + 1 < len(self.codecs):
                 self.end()
                 self.codec += 1
@@ -263,42 +267,44 @@ class JAMediaYoutube(Gtk.Widget):
                 self.download(url, titulo)
 
         return self.estado
-        
+
     def reset(self):
-        
+
         self.end()
         self.codec = 0
-        
+
     def end(self):
-        
+
         if self.actualizador:
             GLib.source_remove(self.actualizador)
             self.actualizador = False
-            
+
         self.youtubedl.kill()
-        
-        if self.salida: self.salida.close()
-        
-        if os.path.exists(self.STDOUT): os.unlink(self.STDOUT)
-        
+
+        if self.salida:
+            self.salida.close()
+
+        if os.path.exists(self.STDOUT):
+            os.unlink(self.STDOUT)
+
         self.estado = False
-        
-if __name__=="__main__":
-    
+
+if __name__ == "__main__":
+
     import sys
-    
+
     entrada = sys.argv[1:]
     palabras = ""
-    
+
     for palabra in entrada:
         palabras += "%s " % (palabra)
-        
+
     videos = Buscar(palabras)
-    
+
     for video in videos:
         for item in video.items():
             print item
-            
+
 '''
 Ejemplo de detalles en un video.
 Corresponde a def DetalleVideo(entry)
@@ -354,4 +360,4 @@ entrada {
     'title': <atom.Title object at 0x19f88d0>,
     'racy': None,
     'published': <atom.Published object at 0x1750a90>} '''
-    
+

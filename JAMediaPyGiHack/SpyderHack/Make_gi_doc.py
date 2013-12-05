@@ -26,6 +26,7 @@ import pydoc
 BASEPATH = os.path.dirname(__file__)
 os.chdir(BASEPATH)
 
+
 def get_modulo(modulo, attrib):
     #pygi = __import__("gi.repository")
     #modulo = pygi.module.IntrospectionModule(modulo_name)
@@ -39,12 +40,12 @@ def get_modulo(modulo, attrib):
         ar = open(archivo, "w")
         ar.write("")
         ar.close()
-        
+
         pydoc.writedoc(clase)
-        
+
         return os.path.join(BASEPATH, '%s.html' % attrib)
-    
+
     except:
         sys.exit(0)
-        
+
 print get_modulo(sys.argv[1], sys.argv[2])

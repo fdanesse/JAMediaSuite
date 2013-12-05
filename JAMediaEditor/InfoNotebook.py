@@ -82,9 +82,10 @@ class InfoNotebook(Gtk.Notebook):
 
         self.introspeccion.connect(
             "new_select", self.__re_emit_new_select)
-        self.estructura_proyecto.connect(
-            "button-press-event",
-            self.__click_derecho_en_estructura)
+        # FIXME: La Interfaz se cuelga
+        #self.estructura_proyecto.connect(
+        #    "button-press-event",
+        #    self.__click_derecho_en_estructura)
         self.estructura_proyecto.connect(
             "open", self.__re_emit_open)
 

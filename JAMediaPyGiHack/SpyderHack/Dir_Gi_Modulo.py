@@ -24,35 +24,38 @@ import sys
 import types
 import json
 
+
 def import_modulo(modulo_name):
-    
+
     pygi = __import__("gi.repository")
-    
+
     modulo = False
-    
+
     try:
         modulo = pygi.module.IntrospectionModule(modulo_name)
-        
+
     except:
         pass
-    
+
     dict = {
-        'CONSTANTES':[],
-        'DESCONOCIDOS':[],
-        'FUNCIONES':[],
-        'CLASES':[],
-        'PATH':""
+        'CONSTANTES': [],
+        'DESCONOCIDOS': [],
+        'FUNCIONES': [],
+        'CLASES': [],
+        'PATH': "",
         }
-        
+
     if modulo:
         try:
             dict['PATH'] = str(modulo.__path__)
+
         except:
             pass
-        
+
         if not dict['PATH']:
             try:
                 dict['PATH'] = str(modulo.__file__)
+
             except:
                 pass
 
@@ -84,46 +87,52 @@ def import_modulo(modulo_name):
                     __weakref__
                     """
                 continue
-            
+
             elif func.startswith("_"):
                 continue
-            
+
             else:
                 objeto = "%s.%s" % (modulo_name, func)
                 attr = False
                 gdoc = ''
-                
+
                 try:
                     attr = getattr(modulo, func)
-                    
+
                 except:
-                    dict['DESCONOCIDOS'].append( (objeto, '', '', str(type(func))) )
+                    dict['DESCONOCIDOS'].append(
+                        (objeto, '', '', str(type(func))))
                     continue
-                
+
                 if attr:
                     if isinstance(attr, type):
                         try:
                             gdoc = attr.__gdoc__
+
                         except:
                             pass
-                        
-                        dict['CLASES'].append( (objeto, gdoc, dir(attr), str(type(attr))) )
+
+                        dict['CLASES'].append(
+                            (objeto, gdoc, dir(attr), str(type(attr))))
                         continue
-                        
+
                     elif isinstance(attr, types.FunctionType) or \
                         isinstance(attr, types.BuiltinFunctionType) or \
                         isinstance(attr, types.BuiltinMethodType) or \
                         isinstance(attr, types.MethodType):
-                            dict['FUNCIONES'].append( (objeto, '', dir(attr), str(type(attr))) )
+                            dict['FUNCIONES'].append(
+                                (objeto, '', dir(attr), str(type(attr))))
                             continue
-                    
+
                     else:
                         if not type(attr) == types.ModuleType:
-                            dict['CONSTANTES'].append( (objeto, '', dir(attr), str(type(attr))) )
+                            dict['CONSTANTES'].append(
+                                (objeto, '', dir(attr), str(type(attr))))
                             continue
                         else:
-                            dict["%s.%s" % (name, func)] = import_modulo("%s.%s" % (name, func))
-                        
+                            dict["%s.%s" % (name, func)] = import_modulo(
+                                "%s.%s" % (name, func))
+
     return dict
 
 name = sys.argv[1]
@@ -143,4 +152,3 @@ archivo.write(
     )
 )
 archivo.close()
-    
