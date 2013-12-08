@@ -882,8 +882,6 @@ class Widget_icon(Gtk.Frame):
         self.set_label(" Selecciona un Icono para Tu Aplicación ")
         self.set_border_width(15)
 
-        # FIXME: tipo debe determinar que formato
-        # de icono se permite (svg para sugar)
         self.tipo = tipo
         self.proyecto = proyecto
 

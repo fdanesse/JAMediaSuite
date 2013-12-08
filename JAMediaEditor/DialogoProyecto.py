@@ -109,7 +109,12 @@ class DialogoProyecto(Gtk.Dialog):
         ### Autores
         self.autores = WidgetAutores()
 
-        boton = Gtk.Button("Ver más Opciones...")
+        if accion == "nuevo":
+            boton = Gtk.Button("Ver más Opciones...")
+
+        else:
+            boton = Gtk.Button("Ocultar Opciones...")
+
         boton.connect("clicked", self.__show_options)
 
         self.internal_widgets = [
@@ -179,10 +184,12 @@ class DialogoProyecto(Gtk.Dialog):
 
         if options:
             self.resize(self.sizes[1][0], self.sizes[1][1])
+            self.set_size_request(self.sizes[1][0], self.sizes[1][1])
             button.set_label("Ocultar Opciones...")
 
         else:
             self.resize(self.sizes[0][0], self.sizes[0][1])
+            self.set_size_request(self.sizes[0][0], self.sizes[0][1])
             button.set_label("Ver más Opciones...")
 
     def __check_version(self, widget):

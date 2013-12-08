@@ -411,12 +411,10 @@ class BasePanel(Gtk.Paned):
         ### Guardar el Proyecto.
         proyecto_file = os.path.join(path, "proyecto.ide")
 
-        # FIXME: Usar Json o shelve
-        import simplejson
-
+        import json
         archivo = open(proyecto_file, "w")
         archivo.write(
-            simplejson.dumps(
+            json.dumps(
                 proyecto,
                 indent=4,
                 separators=(", ", ":"),

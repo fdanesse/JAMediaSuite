@@ -200,12 +200,7 @@ class InfoNotebook(Gtk.Notebook):
                 dialogo.destroy()
 
         elif accion == "suprimir" or accion == "eliminar proyecto":
-            # FIXME: Si hay un archivo abierto de dicho directorio
-            # o ese archivo es el abierto actualmente,
-            # pedir doble-confirmación
-
             tipo = ""
-
             self.copy_cut = []
 
             if os.path.isdir(filepath):
