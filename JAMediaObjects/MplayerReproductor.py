@@ -390,7 +390,7 @@ class MplayerReproductor(GObject.GObject):
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(35, self.__handle)
+            self.actualizador = GLib.timeout_add(500, self.__handle)
 
     def set_position(self, posicion):
         """
@@ -540,7 +540,7 @@ class MplayerGrabador(GObject.GObject):
 
         self.actualizador = False
         self.archivo = False
-        self.uri = ""
+        self.uri = uri
         self.info = ""
 
         estructura = "%s -slave -idle -nolirc" % MPLAYER
@@ -574,7 +574,7 @@ class MplayerGrabador(GObject.GObject):
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(35, self.__handle)
+            self.actualizador = GLib.timeout_add(500, self.__handle)
 
     def __handle(self):
         """
@@ -587,15 +587,19 @@ class MplayerGrabador(GObject.GObject):
             tamanio = None
 
             if linea:
-                if 'Playing' in linea:
-                    self.uri = linea.split()[-1]
+                #if 'Playing' in linea:
+                #    self.uri = linea.split()[-1]
 
                 if 'dump:' in linea:
                     tamanio = int(int(linea.split()[1]) / 1024)
 
                 if self.uri and tamanio:
+                    uri = self.uri
+                    if len(self.uri) > 20:
+                        uri = str(self.uri[0:20]) + " . . . "
+
                     info = "Grabando: %s - %s Kb Almacenados." % (
-                        str(self.uri), str(tamanio))
+                        uri, str(tamanio))
 
                     if self.info != info:
                         self.info = info

@@ -278,7 +278,8 @@ class JAMediaPlayer(Gtk.Plug):
             self.derecha_vbox,
             self.toolbar,
             self.toolbar_info,
-            self.hbox_efectos_en_pipe]
+            self.hbox_efectos_en_pipe.get_parent().get_parent(
+                ).get_parent()]
 
         basebox.show_all()
 
@@ -371,6 +372,9 @@ class JAMediaPlayer(Gtk.Plug):
 
         self.get_parent().connect("hide", self.__hide_show_parent)
         self.get_parent().connect("show", self.__hide_show_parent)
+
+        self.hbox_efectos_en_pipe.get_parent().get_parent(
+            ).get_parent().hide()
 
         self.get_toplevel().set_sensitive(True)
 
@@ -502,6 +506,8 @@ class JAMediaPlayer(Gtk.Plug):
             botonefecto.imagen.set_from_pixbuf(pixbuf)
 
             self.hbox_efectos_en_pipe.pack_start(botonefecto, False, False, 0)
+            self.hbox_efectos_en_pipe.get_parent().get_parent(
+                ).get_parent().show()
 
         else:
             self.player.quitar_efecto(nombre_efecto)
@@ -513,6 +519,10 @@ class JAMediaPlayer(Gtk.Plug):
                 if efecto.get_tooltip_text() == nombre_efecto:
                     efecto.destroy()
                     break
+
+            if not self.hbox_efectos_en_pipe.get_children():
+                self.hbox_efectos_en_pipe.get_parent().get_parent(
+                    ).get_parent().hide()
 
         self.get_toplevel().set_sensitive(True)
 
@@ -528,6 +538,10 @@ class JAMediaPlayer(Gtk.Plug):
         self.player.quitar_efecto(nombre_efecto)
         self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
         widget.destroy()
+
+        if not self.hbox_efectos_en_pipe.get_children():
+            self.hbox_efectos_en_pipe.get_parent().get_parent(
+                ).get_parent().hide()
 
     def __cargar_efectos(self, efectos):
         """
@@ -720,12 +734,12 @@ class JAMediaPlayer(Gtk.Plug):
         reproductor = self.player
 
         # HACK: JAMediaReproductor no funciona con Tv.
-        if reproductor == self.mplayerreproductor and \
-            ("TV" in self.toolbar_list.label.get_text() or \
-            "Tv" in self.toolbar_list.label.get_text()):
-                self.toolbar_config.mplayer_boton.set_active(True)
-                self.toolbar_config.jamedia_boton.set_active(False)
-                return
+        #if reproductor == self.mplayerreproductor and \
+        #    ("TV" in self.toolbar_list.label.get_text() or \
+        #    "Tv" in self.toolbar_list.label.get_text()):
+        #        self.toolbar_config.mplayer_boton.set_active(True)
+        #        self.toolbar_config.jamedia_boton.set_active(False)
+        #        return
 
         if nombre == "MplayerReproductor":
             if get_programa('mplayer'):
@@ -829,6 +843,9 @@ class JAMediaPlayer(Gtk.Plug):
         elif not zona and ocultar:
             #self.scroll_config.hide()
             map(self.__mostrar, self.controles_dinamicos)
+            if not self.hbox_efectos_en_pipe.get_children():
+                self.hbox_efectos_en_pipe.get_parent().get_parent(
+                    ).get_parent().hide()
 
         elif not zona and not ocultar:
             pass
@@ -1133,8 +1150,8 @@ class JAMediaPlayer(Gtk.Plug):
 
         elif indice == 1:
             # HACK: Tv no funciona con JAMediaReproductor.
-            if self.player == self.jamediareproductor:
-                self.switch_reproductor(None, "MplayerReproductor")
+            #if self.player == self.jamediareproductor:
+            #    self.switch_reproductor(None, "MplayerReproductor")
 
             archivo = os.path.join(
                 get_data_directory(),
@@ -1152,8 +1169,8 @@ class JAMediaPlayer(Gtk.Plug):
 
         elif indice == 3:
             # HACK: Tv no funciona con JAMediaReproductor.
-            if self.player == self.jamediareproductor:
-                self.switch_reproductor(None, "MplayerReproductor")
+            #if self.player == self.jamediareproductor:
+            #    self.switch_reproductor(None, "MplayerReproductor")
 
             archivo = os.path.join(
                 get_data_directory(),
@@ -1341,6 +1358,7 @@ class JAMediaPlayer(Gtk.Plug):
 
         self.__detener_grabacion()
 
+        # FIXME: Reparar para grabar Tv Con JAMediaReproductor
         extension = ""
         if "TV" in self.toolbar_list.label.get_text() or \
             "Tv" in self.toolbar_list.label.get_text():

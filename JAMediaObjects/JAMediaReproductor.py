@@ -137,12 +137,13 @@ class JAMediaReproductor(GObject.GObject):
         self.__reset()
 
         if os.path.exists(uri):
+            # Archivo
             direccion = Gst.filename_to_uri(uri)
             self.player.set_property("uri", direccion)
             self.__play()
 
         else:
-            # FIXME: Funciona con la radio pero no con la Tv
+            # Streaming
             if Gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
                 self.__play()
@@ -243,7 +244,7 @@ class JAMediaReproductor(GObject.GObject):
         Retorna los valores actuales de balance en % float.
         """
 
-        # FIXME: No es correcto si se llama a los valores reales.
+        # No funciona llamar a los valores reales.
         #return self.video_pipeline.get_balance()
         return self.config
 
