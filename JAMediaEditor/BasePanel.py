@@ -403,8 +403,14 @@ class BasePanel(Gtk.Paned):
         autores_path = os.path.join(proyecto["path"], "AUTHORS")
 
         arch = open(autores_path, "w")
-        for autor in proyecto["autores"]:
-            arch.write("%s %s \n" % (autor[0], autor[1]))
+        # FIXME: UnicodeEncodeError: 'ascii' codec can't encode
+        # character u'\xed' in position 13: ordinal not in range(128)
+        try:
+            for autor in proyecto["autores"]:
+                arch.write("%s %s\n" % (autor[0], autor[1]))
+
+        except:
+            pass
 
         arch.close()
 

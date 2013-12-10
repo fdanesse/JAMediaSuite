@@ -393,9 +393,15 @@ class Notebook_SourceView(Gtk.Notebook):
         hbox.pack_start(label, False, False, 0)
         hbox.pack_start(boton, False, False, 0)
 
-        if archivo:
-            if os.path.exists(archivo):
-                label.set_text(os.path.basename(archivo))
+        # Se hace posteriormente
+        # if archivo:
+        #    if os.path.exists(archivo):
+        #        nombre = str(os.path.basename(archivo))
+
+        #        if len(nombre) > 13:
+        #            nombre = nombre[0:13] + " . . . "
+
+        #        label.set_text(nombre)
 
         sourceview.set_archivo(archivo)
 

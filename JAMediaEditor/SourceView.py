@@ -101,6 +101,10 @@ class SourceView(GtkSource.View):
                 self.get_buffer().set_text(texto)
 
                 nombre = os.path.basename(self.archivo)
+
+                if len(nombre) > 13:
+                    nombre = nombre[0:13] + " . . . "
+
                 GLib.idle_add(self.__set_label, nombre)
 
                 self.control = os.path.getmtime(self.archivo)

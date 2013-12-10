@@ -117,7 +117,6 @@ class InfoNotebook(Gtk.Notebook):
                 self.accion_instrospeccion)
 
             menu.connect('accion', self.__set_accion_estructura)
-
             menu.popup(None, None, None, None, boton, tiempo)
 
     def __set_accion_estructura(self, widget, lista, accion, iter):

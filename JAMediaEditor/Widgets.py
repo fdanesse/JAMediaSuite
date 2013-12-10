@@ -1253,7 +1253,7 @@ class Estructura_Menu(Gtk.Menu):
     __gtype_name__ = 'JAMediaEditorEstructura_Menu'
 
     __gsignals__ = {
-    'accion': (GObject.SIGNAL_RUN_FIRST,
+    'accion': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
 
@@ -1322,7 +1322,6 @@ class Estructura_Menu(Gtk.Menu):
                         self.__get_item(widget, path, "buscar")
 
         self.show_all()
-
         self.attach_to_widget(widget, self.__null)
 
     def __verificar_permisos(self, path):
@@ -1378,7 +1377,7 @@ class Estructura_Menu(Gtk.Menu):
         """
         Responde a la seleccion del usuario sobre el menu.
 
-        Recibe la lista de sobre la que ha hecho click,
+        Recibe la lista sobre la que ha hecho click,
         una accion a realizar sobre el elemento seleccionado en ella y
         el elemento seleccionado y emite una señal con todo para pedir
         confirmacion al usuario sobre la accion a realizar.
