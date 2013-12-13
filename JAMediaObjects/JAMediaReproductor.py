@@ -84,7 +84,7 @@ class JAMediaReproductor(GObject.GObject):
         self.posicion = 0
         self.actualizador = False
 
-        self.player = None              # reproductor
+        self.player = None
         self.bus = None
 
         from JAMediaGstreamer.JAMediaBins import JAMedia_Video_Pipeline
@@ -96,7 +96,8 @@ class JAMediaReproductor(GObject.GObject):
         # Gestor de salida de Audio del reproductor.
         self.audio_pipelin = JAMedia_Audio_Pipeline()
 
-        self.video_in_stream = None # Debe iniciarse como None (ver señal video)
+        # Debe iniciarse como None (ver señal video)
+        self.video_in_stream = None
 
         self.efectos = []
         #self.config_efectos = {}
@@ -290,7 +291,8 @@ class JAMediaReproductor(GObject.GObject):
         if pos != self.posicion:
             self.posicion = pos
             self.emit("newposicion", self.posicion)
-            # print "***", gst.video_convert_frame(self.player.get_property("frame"))
+            # print "***", gst.video_convert_frame(
+            #   self.player.get_property("frame"))
 
         return True
 
@@ -424,23 +426,30 @@ class JAMediaReproductor(GObject.GObject):
             datos = taglist.to_string()
 
             if 'audio-codec' in datos and not 'video-codec' in datos:
-                if self.video_in_stream == True or self.video_in_stream == None:
+                if self.video_in_stream == True or \
+                    self.video_in_stream == None:
+
                     self.video_in_stream = False
                     self.emit("video", False)
                     #self.audio_pipelin.agregar_visualizador('monoscope')
 
             elif 'video-codec' in datos:
-                if self.video_in_stream == False or self.video_in_stream == None:
+                if self.video_in_stream == False or \
+                    self.video_in_stream == None:
+
                     self.video_in_stream = True
                     self.emit("video", True)
                     #self.audio_pipelin.quitar_visualizador()
 
-            #self.duracion = int(taglist.to_string().split("duration=(guint64)")[1].split(',')[0])
+            #self.duracion = int(taglist.to_string().split(
+            #   "duration=(guint64)")[1].split(',')[0])
+
             #Ejemplo:
                 # taglist,
                 # duration=(guint64)780633000000,
                 # video-codec=(string)H.264,
                 # audio-codec=(string)"MPEG-4\ AAC"
+
             return
 
         elif mensaje.type == Gst.MessageType.ERROR:
@@ -531,24 +540,33 @@ class JAMediaGrabador(GObject.GObject):
     "update": (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
-    def __init__(self, uri, archivo):
+    def __init__(self, uri, archivo, tipo):
 
         GObject.GObject.__init__(self)
+
+        self.tipo = tipo
+
+        if tipo == "video":
+            archivo = "%s%s" % (archivo, ".ogg")
+
+        elif tipo == "audio":
+            #archivo = "%s%s" % (archivo, ".mp3")
+            archivo = "%s%s" % (archivo, ".ogg")
 
         self.patharchivo = archivo
         self.actualizador = False
         self.info = ""
         self.uri = ""
 
+        self.pipeline = None
         self.player = None
         self.archivo = None
         self.bus = None
 
         self.__reset()
 
-        # FIXME: Funciona con la radio pero no con la Tv
         if Gst.uri_is_valid(uri):
-            self.archivo.set_property("location", archivo)
+            self.archivo.set_property("location", self.patharchivo)
             self.player.set_property("uri", uri)
             self.__play()
             self.__new_handle(True)
@@ -558,50 +576,99 @@ class JAMediaGrabador(GObject.GObject):
         Crea el pipe de Gst. (playbin)
         """
 
-        self.player = Gst.ElementFactory.make("playbin", "player")
+        self.pipeline = Gst.Pipeline()
 
-        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
-        mp3enc = Gst.ElementFactory.make('lamemp3enc', "lamemp3enc")
+        self.player = Gst.ElementFactory.make(
+            "uridecodebin", "uridecodebin")
+        self.pipeline.add(self.player)
 
-        self.archivo = Gst.ElementFactory.make('filesink', "archivo")
+        # AUDIO
+        audioconvert = Gst.ElementFactory.make(
+            'audioconvert', 'audioconvert')
+        audioresample = Gst.ElementFactory.make(
+            'audioresample', 'audioresample')
+        vorbisenc = Gst.ElementFactory.make(
+            'vorbisenc', 'vorbisenc')
 
-        jamedia_sink = Gst.Bin()
-        jamedia_sink.add(audioconvert)
+        self.pipeline.add(audioconvert)
+        self.pipeline.add(audioresample)
+        self.pipeline.add(vorbisenc)
 
-        pad = audioconvert.get_static_pad('sink')
-        ghostpad = Gst.GhostPad.new('sink', pad)
-        jamedia_sink.add_pad(ghostpad)
+        audioconvert.link(audioresample)
+        audioresample.link(vorbisenc)
 
-        jamedia_sink.add(mp3enc)
-        jamedia_sink.add(self.archivo)
+        self.audio_sink = audioconvert.get_static_pad('sink')
 
-        audioconvert.link(mp3enc)
-        mp3enc.link(self.archivo)
+        # VIDEO
+        videoconvert = Gst.ElementFactory.make(
+            'videoconvert', 'videoconvert')
+        videorate = Gst.ElementFactory.make(
+            'videorate', 'videorate')
+        theoraenc = Gst.ElementFactory.make(
+            'theoraenc', 'theoraenc')
 
-        self.player.set_property('audio-sink', jamedia_sink)
+        if self.tipo == "video":
+            self.pipeline.add(videoconvert)
+            self.pipeline.add(videorate)
+            self.pipeline.add(theoraenc)
 
-        self.bus = self.player.get_bus()
+            videoconvert.link(videorate)
+            videorate.link(theoraenc)
+
+        self.video_sink = videoconvert.get_static_pad('sink')
+
+        # MUXOR y ARCHIVO
+        oggmux = Gst.ElementFactory.make(
+            'oggmux', "oggmux")
+        self.archivo = Gst.ElementFactory.make(
+            'filesink', "filesink")
+
+        self.pipeline.add(oggmux)
+        self.pipeline.add(self.archivo)
+
+        vorbisenc.link(oggmux)
+
+        if self.tipo == "video":
+            theoraenc.link(oggmux)
+
+        oggmux.link(self.archivo)
+
+        self.bus = self.pipeline.get_bus()
         self.bus.add_signal_watch()
         self.bus.connect('message', self.__on_mensaje)
 
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.__sync_message)
 
-        self.player.connect("about-to-finish", self.__about_to_finish)
-        self.player.connect("audio-tags-changed", self.__audio_tags_changed)
+        self.player.connect('pad-added', self.__on_pad_added)
         self.player.connect("source-setup", self.__source_setup)
+
+    def __on_pad_added(self, uridecodebin, pad):
+        """
+        Agregar elementos en forma dinámica según
+        sean necesarios. https://wiki.ubuntu.com/Novacut/GStreamer1.0
+        """
+
+        string = pad.query_caps(None).to_string()
+        # print "Agregando:", string
+
+        if string.startswith('audio/'):
+            pad.link(self.audio_sink)
+
+        elif string.startswith('video/'):
+            pad.link(self.video_sink)
 
     def __play(self, widget=None, event=None):
 
-        self.player.set_state(Gst.State.PLAYING)
+        self.pipeline.set_state(Gst.State.PLAYING)
 
     def stop(self, widget=None, event=None):
         """
         Detiene y limpia el pipe.
         """
 
-        self.player.set_state(Gst.State.PAUSED)
-        self.player.set_state(Gst.State.NULL)
+        self.pipeline.set_state(Gst.State.PAUSED)
+        self.pipeline.set_state(Gst.State.NULL)
         self.__new_handle(False)
 
         if os.path.exists(self.patharchivo):
@@ -622,7 +689,7 @@ class JAMediaGrabador(GObject.GObject):
 
         if mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
-            print err, debug
+            # print "ERROR:", err, debug
             self.__new_handle(False)
 
     def __new_handle(self, reset):
@@ -658,16 +725,57 @@ class JAMediaGrabador(GObject.GObject):
 
         return True
 
-    def __about_to_finish(self, player):
-
-        #print "\n>>>", "about-to-finish"
-        pass
-
-    def __audio_tags_changed(self, player, otro):
-
-        #print "\n>>>", "audio-tags-changed"
-        pass
-
     def __source_setup(self, player, source):
 
         self.uri = source.get_property('location')
+        # print "Grabando:", self.uri
+
+    #def __about_to_finish(self, player):
+
+        #print "\n>>>", "about-to-finish"
+    #    pass
+
+    #def __audio_tags_changed(self, player, otro):
+
+        #print "\n>>>", "audio-tags-changed"
+    #    pass
+
+    '''
+    def __mp3_reset(self):
+        """
+        Grabar audio mp3
+        """
+
+        self.player = Gst.ElementFactory.make("playbin", "player")
+
+        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
+        mp3enc = Gst.ElementFactory.make('lamemp3enc', "lamemp3enc")
+
+        self.archivo = Gst.ElementFactory.make('filesink', "archivo")
+
+        jamedia_sink = Gst.Bin()
+        jamedia_sink.add(audioconvert)
+
+        pad = audioconvert.get_static_pad('sink')
+        ghostpad = Gst.GhostPad.new('sink', pad)
+        jamedia_sink.add_pad(ghostpad)
+
+        jamedia_sink.add(mp3enc)
+        jamedia_sink.add(self.archivo)
+
+        audioconvert.link(mp3enc)
+        mp3enc.link(self.archivo)
+
+        self.player.set_property('audio-sink', jamedia_sink)
+
+        self.bus = self.player.get_bus()
+        self.bus.add_signal_watch()
+        self.bus.connect('message', self.__on_mensaje)
+
+        self.bus.enable_sync_message_emission()
+        self.bus.connect('sync-message', self.__sync_message)
+
+        #self.player.connect("about-to-finish", self.__about_to_finish)
+        #self.player.connect("audio-tags-changed", self.__audio_tags_changed)
+        self.player.connect("source-setup", self.__source_setup)
+    '''

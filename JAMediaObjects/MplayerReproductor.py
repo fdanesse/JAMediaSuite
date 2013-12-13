@@ -534,19 +534,25 @@ class MplayerGrabador(GObject.GObject):
     "update": (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
-    def __init__(self, uri, archivo):
+    def __init__(self, uri, archivo, tipo):
 
         GObject.GObject.__init__(self)
 
+        if tipo == "video":
+            archivo = "%s%s" % (archivo, ".avi")
+
+        elif tipo == "audio":
+            archivo = "%s%s" % (archivo, ".mp3")
+
         self.actualizador = False
-        self.archivo = False
+        self.archivo = archivo
         self.uri = uri
         self.info = ""
 
         estructura = "%s -slave -idle -nolirc" % MPLAYER
         estructura = "%s -nomouseinput -noconsolecontrols" % estructura
         estructura = "%s -nojoystick -dumpstream -dumpfile %s" % (
-            estructura, archivo)
+            estructura, self.archivo)
 
         self.mplayer = subprocess.Popen(
             estructura, shell=True,

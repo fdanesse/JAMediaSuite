@@ -353,6 +353,9 @@ def descarga_lista_de_streamings(url):
 
         for linea in lineas:
 
+            #if 'dir="ltr"><div><div>' in linea:
+            #    print linea
+
             if 'table' in linea:
                 l = linea.split('table')
 
@@ -364,7 +367,7 @@ def descarga_lista_de_streamings(url):
                             if "," in z:
                                 s = z.split('</div>')[0]
                                 stream = s.split(",")
-
+                                #print stream
                                 streamings.append(stream)
 
                                 temp_url = stream[1]

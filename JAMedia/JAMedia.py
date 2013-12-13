@@ -1358,14 +1358,13 @@ class JAMediaPlayer(Gtk.Plug):
 
         self.__detener_grabacion()
 
-        # FIXME: Reparar para grabar Tv Con JAMediaReproductor
-        extension = ""
+        tipo = "video"
         if "TV" in self.toolbar_list.label.get_text() or \
             "Tv" in self.toolbar_list.label.get_text():
-                extension = ".avi"
+                tipo = "video"
 
         else:
-            extension = ".mp3"
+            tipo = "audio"
 
         import time
         import datetime
@@ -1375,14 +1374,14 @@ class JAMediaPlayer(Gtk.Plug):
 
         from JAMediaObjects.JAMediaGlobales import get_my_files_directory
 
-        archivo = "%s-%s-%s" % (fecha, hora, extension)
+        archivo = "%s-%s" % (fecha, hora)
         archivo = os.path.join(get_my_files_directory(), archivo)
 
         if self.player == self.jamediareproductor:
-            self.grabador = JAMediaGrabador(uri, archivo)
+            self.grabador = JAMediaGrabador(uri, archivo, tipo)
 
         elif self.player == self.mplayerreproductor:
-            self.grabador = MplayerGrabador(uri, archivo)
+            self.grabador = MplayerGrabador(uri, archivo, tipo)
 
         self.grabador.connect('update', self.__update_grabador)
 

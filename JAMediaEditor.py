@@ -219,7 +219,9 @@ class JAMediaEditor(Gtk.Window):
         cierra un proyecto.
         """
 
-        self.base_panel.workpanel.detener_ejecucion()
+        # FIXME: Esta funcion se ejecuta tambien cuando se cambia de lengueta,
+        # por este motivo detener_ejecucion() no debe llamarse aquí.
+        #self.base_panel.workpanel.detener_ejecucion()
 
         self.menu.activar_proyecto(valor)
         self.base_panel.toolbarproyecto.activar_proyecto(valor)
