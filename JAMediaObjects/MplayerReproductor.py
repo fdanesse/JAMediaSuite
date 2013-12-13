@@ -601,10 +601,10 @@ class MplayerGrabador(GObject.GObject):
 
                 if self.uri and tamanio:
                     uri = self.uri
-                    if len(self.uri) > 20:
-                        uri = str(self.uri[0:20]) + " . . . "
+                    if len(self.uri) > 25:
+                        uri = str(self.uri[0:25]) + " . . . "
 
-                    info = "Grabando: %s - %s Kb Almacenados." % (
+                    info = "Grabando: %s - %s Kb" % (
                         uri, str(tamanio))
 
                     if self.info != info:
