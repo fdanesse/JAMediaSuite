@@ -1,0 +1,27 @@
+
+# Reproducir un archivo
+#gst-launch-0.10 filesrc location=/home/flavio/Documentos/001 ! \
+#    decodebin name=t ! \
+#        queue ! autoaudiosink t. ! \
+#        queue ! autovideosink
+
+# Extraer audio en formato mp3
+#gst-launch-0.10 filesrc location=/home/flavio/Documentos/001 ! \
+#    decodebin name=t ! \
+#        queue ! audioconvert ! lamemp3enc ! filesink location=/home/flavio/Documentos/002.mp3 \
+#        t. ! queue ! autovideosink
+
+# Extraer audio en formato ogg
+#gst-launch-0.10 filesrc location=/home/flavio/Documentos/001 ! \
+#    decodebin name=t ! \
+#        queue ! audioconvert ! vorbisenc ! oggmux ! filesink location=/home/flavio/Documentos/002.ogg \
+#        t. ! queue ! autovideosink
+
+# Convertir audio y video a ogg
+# gst-launch-0.10 filesrc location=/home/flavio/Documentos/001 ! \
+#    decodebin name=decodificador ! \
+#        queue ! audioconvert ! audioresample ! \
+#            vorbisenc ! \
+#                oggmux name=contenedor ! filesink location=/home/flavio/Documentos/004.ogg \
+#        decodificador. ! queue ! ffmpegcolorspace ! videorate ! \
+#            theoraenc ! contenedor.

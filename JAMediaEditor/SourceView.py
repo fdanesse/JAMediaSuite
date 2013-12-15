@@ -229,8 +229,8 @@ class SourceView(GtkSource.View):
         textiter = buffer.get_iter_at_mark(textmark)
         id = textiter.get_line()
 
-        if self.archivo.endswith(".py"):
-            texto = self.__limpiar_codigo(texto)
+        #if self.archivo.endswith(".py"):
+        texto = self.__limpiar_codigo(texto)
 
         archivo = open(self.archivo, "w")
         archivo.write(texto)

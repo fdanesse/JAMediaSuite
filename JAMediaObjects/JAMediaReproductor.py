@@ -533,12 +533,15 @@ class JAMediaReproductor(GObject.GObject):
 
 class JAMediaGrabador(GObject.GObject):
     """
-    Graba desde un streaming de radio o tv.
+    Graba en formato ogg desde un streaming de radio o tv.
+    Convierte un archivo de audio o video a ogg.
     """
 
     __gsignals__ = {
-    "update": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    "update": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "endfile": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self, uri, archivo, tipo):
 
@@ -546,12 +549,9 @@ class JAMediaGrabador(GObject.GObject):
 
         self.tipo = tipo
 
-        if tipo == "video":
+        if not archivo.endswith(".ogg"):
             archivo = "%s%s" % (archivo, ".ogg")
-
-        elif tipo == "audio":
             #archivo = "%s%s" % (archivo, ".mp3")
-            archivo = "%s%s" % (archivo, ".ogg")
 
         self.patharchivo = archivo
         self.actualizador = False
@@ -565,11 +565,17 @@ class JAMediaGrabador(GObject.GObject):
 
         self.__reset()
 
+        if os.path.exists(uri):
+            uri = Gst.filename_to_uri(uri)
+
         if Gst.uri_is_valid(uri):
             self.archivo.set_property("location", self.patharchivo)
             self.player.set_property("uri", uri)
             self.__play()
             self.__new_handle(True)
+
+        else:
+            self.emit("endfile")
 
     def __reset(self):
         """
@@ -674,6 +680,8 @@ class JAMediaGrabador(GObject.GObject):
         if os.path.exists(self.patharchivo):
             os.chmod(self.patharchivo, 0755)
 
+        self.emit("endfile")
+
     def __sync_message(self, bus, mensaje):
         """
         Captura los mensajes en el bus del pipe Gst.
@@ -687,9 +695,15 @@ class JAMediaGrabador(GObject.GObject):
         Captura los mensajes en el bus del pipe Gst.
         """
 
+        if mensaje.type == Gst.MessageType.EOS:
+            # self.video_pipeline.seek_simple(Gst.Format.TIME,
+            # Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0)
+            self.__new_handle(False)
+            self.emit("endfile")
+
         if mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
-            # print "ERROR:", err, debug
+            print "ERROR:", err, debug
             self.__new_handle(False)
 
     def __new_handle(self, reset):
@@ -779,3 +793,34 @@ class JAMediaGrabador(GObject.GObject):
         #self.player.connect("audio-tags-changed", self.__audio_tags_changed)
         self.player.connect("source-setup", self.__source_setup)
     '''
+
+
+def update(grabador, datos):
+    print datos
+
+
+def end(grabador):
+    import sys
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+
+    import sys
+
+    if not len(sys.argv) == 4:
+        print "Debes pasar tres parámetros:"
+        print "\t Dirección origen, puede ser url o file path."
+        print "\t Nombre de archivo final, puede ser path completo o solo el nombre."
+        print "\t Tipo de contenido, puede ser audio o video."
+
+        sys.exit(0)
+
+    uri = sys.argv[1]
+    archivo = sys.argv[2]
+    tipo = sys.argv[3]
+
+    grabador = JAMediaGrabador(uri, archivo, tipo)
+
+    grabador.connect('update', update)
+    grabador.connect('endfile', end)
