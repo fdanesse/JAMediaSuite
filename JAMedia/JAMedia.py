@@ -110,7 +110,7 @@ class JAMediaPlayer(Gtk.Plug):
     __gtype_name__ = 'JAMediaPlayer'
 
     __gsignals__ = {
-    "salir": (GObject.SIGNAL_RUN_FIRST,
+    "salir": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -1384,6 +1384,7 @@ class JAMediaPlayer(Gtk.Plug):
             self.grabador = MplayerGrabador(uri, archivo, tipo)
 
         self.grabador.connect('update', self.__update_grabador)
+        self.grabador.connect('endfile', self.__detener_grabacion)
 
         self.get_toplevel().set_sensitive(True)
 

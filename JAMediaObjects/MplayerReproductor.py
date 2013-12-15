@@ -41,16 +41,16 @@ class MplayerReproductor(GObject.GObject):
     """
 
     __gsignals__ = {
-    "endfile": (GObject.SIGNAL_RUN_FIRST,
+    "endfile": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
-    "estado": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_STRING,)),
-    "newposicion": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_INT,)),
-    "volumen": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_FLOAT,)),
-    "video": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_BOOLEAN,))}
+    "estado": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "newposicion": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_INT,)),
+    "volumen": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,)),
+    "video": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
 
     # Estados: playing, paused, None
 
@@ -531,8 +531,10 @@ class MplayerGrabador(GObject.GObject):
     """
 
     __gsignals__ = {
-    "update": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    "update": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "endfile": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self, uri, archivo, tipo):
 

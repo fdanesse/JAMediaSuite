@@ -97,6 +97,7 @@ class ToolbarGrabar(Gtk.Toolbar):
         self.color = self.colors[0]
         self.label.modify_fg(0, self.color)
         self.label.set_text("Grabador Detenido.")
+
         if self.get_visible():
             self.hide()
 

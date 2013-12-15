@@ -46,16 +46,16 @@ class JAMediaReproductor(GObject.GObject):
     """
 
     __gsignals__ = {
-    "endfile": (GObject.SIGNAL_RUN_FIRST,
+    "endfile": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
-    "estado": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_STRING,)),
-    "newposicion": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_INT,)),
-    "volumen": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_FLOAT,)),
-    "video": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_BOOLEAN,))}
+    "estado": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "newposicion": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_INT,)),
+    "volumen": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,)),
+    "video": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
 
     # Estados: playing, paused, None
 
@@ -555,6 +555,7 @@ class JAMediaGrabador(GObject.GObject):
 
         self.patharchivo = archivo
         self.actualizador = False
+        self.control = 0
         self.info = ""
         self.uri = ""
 
@@ -680,14 +681,14 @@ class JAMediaGrabador(GObject.GObject):
         if os.path.exists(self.patharchivo):
             os.chmod(self.patharchivo, 0755)
 
-        self.emit("endfile")
-
     def __sync_message(self, bus, mensaje):
         """
         Captura los mensajes en el bus del pipe Gst.
         """
 
-        #print "A", mensaje.type
+        #if mensaje.get_structure().get_name() == 'prepare-window-handle':
+        #    mensaje.src.set_window_handle(xid)
+
         pass
 
     def __on_mensaje(self, bus, mensaje):
@@ -705,6 +706,8 @@ class JAMediaGrabador(GObject.GObject):
             err, debug = mensaje.parse_error()
             print "ERROR:", err, debug
             self.__new_handle(False)
+            self.stop()
+            self.emit("endfile")
 
     def __new_handle(self, reset):
         """
@@ -717,7 +720,8 @@ class JAMediaGrabador(GObject.GObject):
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(500, self.__handle)
+            self.actualizador = GLib.timeout_add(
+                500, self.__handle)
 
     def __handle(self):
         """
@@ -734,8 +738,17 @@ class JAMediaGrabador(GObject.GObject):
             info = "Grabando: %s %s Kb" % (texto, str(tamanio))
 
             if self.info != info:
+                self.control = 0
                 self.info = info
                 self.emit('update', self.info)
+
+            else:
+                self.control += 1
+
+        if self.control > 60:
+            self.stop()
+            self.emit("endfile")
+            return False
 
         return True
 
@@ -820,6 +833,7 @@ if __name__ == "__main__":
     archivo = sys.argv[2]
     tipo = sys.argv[3]
 
+    # FIXME: Esto Provoca: Violación de segmento
     grabador = JAMediaGrabador(uri, archivo, tipo)
 
     grabador.connect('update', update)
