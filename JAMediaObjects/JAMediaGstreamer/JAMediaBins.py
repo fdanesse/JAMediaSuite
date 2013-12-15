@@ -33,6 +33,7 @@ Gst.init([])
 class JAMedia_Efecto_bin(Gst.Bin):
     """
     Bin para efecto de video individual.
+        videoconvert ! efecto
     """
 
     def __init__(self, efecto):
@@ -191,6 +192,7 @@ class Foto_bin(Gst.Bin):
 class Efectos_Video_bin(Gst.Bin):
     """
     Bin para agregar efectos de video.
+        queue ! [ efecto=videoconvert ! efecto, . . .] ! videoconvert
     """
 
     def __init__(self, efectos, config_efectos):
@@ -558,9 +560,9 @@ class JAMedia_Video_Pipeline(Gst.Pipeline):
         self.efectos = []
         self.config_efectos = {}
 
-        self.video_balance_bin = Video_Balance_Bin()
         self.efectos_bin = Efectos_Video_bin(
             self.efectos, self.config_efectos)
+        self.video_balance_bin = Video_Balance_Bin()
 
         self.pantalla_bin = Pantalla_Bin()
 

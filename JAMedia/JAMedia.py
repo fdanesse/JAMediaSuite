@@ -560,6 +560,7 @@ class JAMediaPlayer(Gtk.Plug):
 
         self.__cancel_toolbars_flotantes()
 
+        # FIXME: Agregar control de conexión para evitar errores.
         from Widgets import DialogoDescarga
 
         dialog = DialogoDescarga(parent=self.get_toplevel())

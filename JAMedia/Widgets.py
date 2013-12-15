@@ -976,6 +976,7 @@ class DialogoDescarga(Gtk.Dialog):
 
     def __descargar(self):
 
+        # FIXME: Agregar control de conexión para evitar errores.
         from JAMediaObjects.JAMediaGlobales import get_streaming_default
         get_streaming_default()
 
