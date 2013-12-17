@@ -15,8 +15,17 @@ import commands
 
 contador = 0
 
+codecs = {
+    "MP3": ["lamemp3enc", "mp3"],
+    "WAV": ["wavenc", "wav"],
+    "OGG": ["vorbisenc ! oggmux", "ogg"],
+    }
 
-def extraer(origen):
+def extraer(origen, codec):
+    """
+    Extrae el audio de un video y lo guarda en un archivo con el mismo
+    nombre, con la extensión y formato elegido.
+    """
 
     if not os.path.exists(origen):
         print "No se encontró:", origen
@@ -27,12 +36,13 @@ def extraer(origen):
         return
 
     print "Extrayendo audio de:", origen
+    print "Guardando en Formato:", codec[1]
 
-    destino = "%s.mp3" % origen
+    destino = "%s.%s" % (origen, codec[1])
 
     comando = "gst-launch-1.0 filesrc location=\"%s\" !" % origen
     comando = "%s decodebin name=t !" % comando
-    comando = "%s queue ! audioconvert ! lamemp3enc !" % comando
+    comando = "%s queue ! audioconvert ! %s !" % (comando, codec[0])
     comando = "%s filesink location=\"%s\"" % (comando, destino)
     comando = "%s t. ! queue ! autovideosink" % comando
 
@@ -55,11 +65,19 @@ def get_data(archivo):
     return retorno
 
 
-if not len(sys.argv) == 2:
+if not len(sys.argv) > 1:
     print "Debes ingresar el nombre de un archivo o directorio."
+    print "También Puedes ingresar el formato final (ogg, mp3, wav)."
     sys.exit(0)
 
 origen = sys.argv[1]
+codec = codecs["MP3"]
+
+if len(sys.argv) > 2:
+    C = str(sys.argv[2]).upper()
+
+    if codecs.get(C, False):
+        codec = codecs[C]
 
 if os.path.isdir(origen):
 
@@ -68,11 +86,11 @@ if os.path.isdir(origen):
 
         if "video" in get_data(arch):
             contador += 1
-            extraer(arch)
+            extraer(arch, codec)
 
 elif os.path.isfile(origen):
     contador += 1
-    extraer(origen)
+    extraer(origen, codec)
 
 print "Proceso Terminado. Se han procesado %s archivos." % contador
 

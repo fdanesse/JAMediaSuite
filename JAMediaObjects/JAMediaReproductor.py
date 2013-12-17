@@ -33,6 +33,8 @@ from gi.repository import GstVideo
 Gst.init([])
 
 # Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html
+# Manual: http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/index.html
+# https://wiki.ubuntu.com/Novacut/GStreamer1.0
 
 
 class JAMediaReproductor(GObject.GObject):

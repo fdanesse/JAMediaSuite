@@ -463,6 +463,7 @@ class Introspeccion(Gtk.TreeView):
             temp = linea.strip()
             contador += 1
 
+            # FIXME: Corregir caso """Comentarios . . ."""
             ### Bloquear comentarios multilinea.
             if temp:
                 if temp.startswith("\'\'\'") or \
