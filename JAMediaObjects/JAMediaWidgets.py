@@ -646,7 +646,7 @@ class BarraProgreso(Gtk.EventBox):
     """
 
     __gsignals__ = {
-    "user-set-value": (GObject.SIGNAL_RUN_FIRST,
+    "user-set-value": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
 
     def __init__(self):

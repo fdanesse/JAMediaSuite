@@ -23,6 +23,7 @@ import os
 import sys
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import Gst
 from gi.repository import GstVideo
 from gi.repository import GObject
@@ -51,9 +52,15 @@ class Ventana(Gtk.Window):
 
         vbox = Gtk.VBox()
 
+        from JAMediaWidgets import BarraProgreso
+
         self.video_widget = Gtk.DrawingArea()
+        self.video_widget.modify_bg(0, Gdk.Color(0, 0, 0))
+        self.barradeprogreso = BarraProgreso()
+        self.barradeprogreso.set_sensitive(False)
 
         vbox.pack_start(self.video_widget, True, True, 0)
+        vbox.pack_start(self.barradeprogreso, False, False, 0)
 
         self.add(vbox)
 
@@ -67,7 +74,8 @@ class Ventana(Gtk.Window):
     def __play(self):
 
         if not self.lista:
-            self.__exit()
+            #self.__exit()
+            return
 
         origen = self.lista[0]
         self.lista.remove(origen)
@@ -95,11 +103,18 @@ class Ventana(Gtk.Window):
 
     def __set_posicion(self, player, posicion):
 
-        print "Posicion:", posicion
+        self.barradeprogreso.set_progress(float(posicion))
+        if float(posicion) == 100.0:
+            self.player.stop()
+            self.barradeprogreso.set_progress(0.0)
+            self.video_widget.modify_bg(0, Gdk.Color(0, 0, 0))
+            self.__play()
 
     def __exit(self, widget=None, senial=None):
 
-        self.player.stop()
+        if self.player:
+            self.player.stop()
+
         sys.exit(0)
 
 
@@ -417,8 +432,8 @@ class JAMediaAudioExtractor(Gst.Pipeline):
         bool1, valor1 = self.query_duration(Gst.Format.TIME)
         bool2, valor2 = self.query_position(Gst.Format.TIME)
 
-        duracion = float(valor1)
-        posicion = float(valor2)
+        duracion = int(valor1)
+        posicion = int(valor2)
 
         pos = 0
         try:
@@ -427,8 +442,10 @@ class JAMediaAudioExtractor(Gst.Pipeline):
         except:
             pass
 
-        if pos < 0 or pos > self.duracion:
-            return True
+        #print pos, posicion, duracion, posicion * 100 / duracion
+        #if pos < 0.0 or pos > self.duracion:
+        #    print pos, duracion
+        #    return True
 
         if self.duracion != duracion:
             self.duracion = duracion
@@ -460,36 +477,30 @@ def get_data(archivo):
 
 if __name__ == "__main__":
 
-    if not len(sys.argv) > 1:
-        print "Debes ingresar el nombre de un archivo o directorio."
-        print "También Puedes ingresar el formato final (ogg, mp3, wav)."
-        sys.exit(0)
+    origen = False
 
-    origen = sys.argv[1]
+    if len(sys.argv) > 1:
+        origen = sys.argv[1]
+
     codec = "mp3"
+    lista = []
 
     if len(sys.argv) > 2:
         codec = str(sys.argv[2]).lower()
 
-    # Directorio
-    if os.path.isdir(origen):
-        lista = []
+    if origen:
+        # Directorio
+        if os.path.isdir(origen):
+            for archivo in os.listdir(origen):
+                arch = os.path.join(origen, archivo)
 
-        for archivo in os.listdir(origen):
-            arch = os.path.join(origen, archivo)
+                if "video" in get_data(arch):
+                    lista.append(arch)
 
-            if "video" in get_data(arch):
-                lista.append(arch)
+        # Archivo
+        elif os.path.isfile(origen):
+            if "video" in get_data(origen):
+                lista.append(origen)
 
-
-        Ventana(lista, codec)
-        Gtk.main()
-
-    # Archivo
-    elif os.path.isfile(origen):
-        if "video" in get_data(origen):
-            Ventana([origen], codec)
-            Gtk.main()
-
-        else:
-            print "Debes Pasar un path como Parámetro."
+    Ventana(lista, codec)
+    Gtk.main()
