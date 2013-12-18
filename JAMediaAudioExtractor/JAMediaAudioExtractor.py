@@ -34,37 +34,6 @@ GObject.threads_init()
 Gst.init([])
 
 
-class Ventana(Gtk.Window):
-
-    def __init__(self, origen, codec):
-
-        Gtk.Window.__init__(self)
-
-        self.set_title("Mi Aplicación")
-
-        self.set_resizable(True)
-        self.set_size_request(640, 480)
-        self.set_border_width(2)
-        self.set_position(Gtk.WindowPosition.CENTER)
-
-        self.socket = Gtk.Socket()
-        self.add(self.socket)
-
-        self.jamediaaudioextractor = JAMediaAudioExtractor(origen, codec)
-        self.socket.add_id(self.jamediaaudioextractor.get_id())
-
-        self.show_all()
-        self.realize()
-
-        self.connect("delete-event", self.__exit)
-
-    def __exit(self, widget=None, senial=None):
-
-        if self.jamediaaudioextractor:
-            self.jamediaaudioextractor.stop()
-
-        sys.exit(0)
-
 class JAMediaAudioExtractor(Gtk.Plug):
 
     __gtype_name__ = 'JAMediaAudioExtractor'
@@ -80,13 +49,15 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         Gtk.Plug.__init__(self, 0L)
 
+        self.set_size_request(320, 240)
+
         self.player = None
         self.lista = origen
         self.codec = codec
 
         vbox = Gtk.VBox()
 
-        from JAMediaWidgets import BarraProgreso
+        from JAMediaObjects.JAMediaWidgets import BarraProgreso
 
         self.video_widget = Gtk.DrawingArea()
         self.video_widget.modify_bg(0, Gdk.Color(0, 0, 0))
@@ -103,7 +74,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         self.connect("embedded", self.__embed_event)
 
-        GLib.idle_add(self.__play)
+        GLib.idle_add(self.play)
 
     def __embed_event(self, widget):
         """
@@ -112,7 +83,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         print "JAMediaAudioExtractor => OK"
 
-    def __play(self):
+    def play(self):
 
         if not self.lista:
             #self.__exit()
@@ -123,7 +94,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         self.player = Extractor(
             self.video_widget.get_property(
-            'window').get_xid(), origen, codec)
+            'window').get_xid(), origen, self.codec)
 
         self.player.connect('endfile', self.__set_end)
         self.player.connect('estado', self.__set_estado)
@@ -133,19 +104,19 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         return False
 
+    def stop(self):
+
+        if self.player:
+            self.player.stop()
+
     def __set_end(self, player):
 
-        GLib.idle_add(self.__play)
+        GLib.idle_add(self.play)
 
     def __set_estado(self, player, estado):
 
         #print "Estado:", estado
         pass
-
-    def stop(self):
-
-        if self.player:
-            self.player.stop()
 
     def __set_posicion(self, player, posicion):
 
@@ -154,7 +125,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
             self.player.stop()
             self.barradeprogreso.set_progress(0.0)
             self.video_widget.modify_bg(0, Gdk.Color(0, 0, 0))
-            self.__play()
+            self.play()
 
 
 class Extractor(Gst.Pipeline):
@@ -494,52 +465,3 @@ class Extractor(Gst.Pipeline):
             self.emit("newposicion", self.posicion)
 
         return True
-
-
-def get_data(archivo):
-    """
-    Devuelve el tipo de un archivo (imagen, video, texto).
-    """
-
-    import commands
-
-    datos = commands.getoutput(
-        'file -ik %s%s%s' % ("\"", archivo, "\""))
-
-    retorno = ""
-
-    for dat in datos.split(":")[1:]:
-        retorno += " %s" % (dat)
-
-    return retorno
-
-
-if __name__ == "__main__":
-
-    origen = False
-
-    if len(sys.argv) > 1:
-        origen = sys.argv[1]
-
-    codec = "mp3"
-    lista = []
-
-    if len(sys.argv) > 2:
-        codec = str(sys.argv[2]).lower()
-
-    if origen:
-        # Directorio
-        if os.path.isdir(origen):
-            for archivo in os.listdir(origen):
-                arch = os.path.join(origen, archivo)
-
-                if "video" in get_data(arch):
-                    lista.append(arch)
-
-        # Archivo
-        elif os.path.isfile(origen):
-            if "video" in get_data(origen):
-                lista.append(origen)
-
-    Ventana(lista, codec)
-    Gtk.main()
