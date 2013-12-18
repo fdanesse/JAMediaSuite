@@ -24,6 +24,78 @@ import os
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GLib
+
+class InfoBox(Gtk.Frame):
+
+    def __init__(self):
+
+        Gtk.Frame.__init__(self)
+
+        self.info = ""
+
+        self.set_size_request(320, 240)
+
+        self.set_label("Archivos Restantes:")
+
+        self.info_widget = Gtk.TextView()
+        self.info_widget.set_editable(False)
+        self.info_widget.set_buffer(Gtk.TextBuffer())
+
+        from gi.repository import Pango
+
+        self.info_widget.modify_font(
+            Pango.FontDescription('Monospace 8'))
+
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+        scroll.add_with_viewport(self.info_widget)
+
+        self.add(scroll)
+        self.show_all()
+
+    def reset(self):
+
+        self.info = ""
+        self.set_cantidad(0)
+        GLib.idle_add(self.__update_info, "")
+
+    def set_info(self, info):
+
+        if self.info:
+            self.info = "%s\n%s" % (self.info, str(info))
+
+        else:
+            self.info = str(info)
+
+        text = self.info
+
+        GLib.idle_add(self.__update_info, text)
+
+    def __update_info(self, text):
+
+        buffer = self.info_widget.get_buffer()
+
+        buffer.set_text(text)
+        '''
+        textmark = buffer.get_insert()
+        textiter = buffer.get_iter_at_mark(textmark)
+        id = textiter.get_line()
+
+        linea_iter = buffer.get_iter_at_line(id)
+        GLib.idle_add(
+            self.info_widget.scroll_to_iter,
+            linea_iter, 0.1, 1, 1, 0.1)
+        '''
+        return False
+
+    def set_cantidad(self, cantidad):
+
+        valor = "Archivos Restantes: %s" % cantidad
+        if self.get_label() != valor:
+            self.set_label(valor)
 
 
 class Menu(Gtk.MenuBar):
@@ -35,7 +107,9 @@ class Menu(Gtk.MenuBar):
 
     __gsignals__ = {
     'load': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+    'accion_formato': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -54,7 +128,75 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_accion)
         menu_Procesar.append(item)
 
+        item_codec = Gtk.MenuItem('Seleccionar Formato')
+        menu_codec = Gtk.Menu()
+        item_codec.set_submenu(menu_codec)
+        self.append(item_codec)
+
+        item = Gtk.MenuItem()
+        try:
+            item.get_child().destroy()
+
+        except:
+            pass
+
+        hbox = Gtk.HBox()
+        button1 = Gtk.RadioButton()
+        button1.set_active(True)
+        hbox.pack_start(button1, False, False, 0)
+        label = Gtk.Label("mp3")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate",
+            self.__emit_accion_formato, label.get_text())
+        menu_codec.append(item)
+
+        item = Gtk.MenuItem()
+        try:
+            item.get_child().destroy()
+
+        except:
+            pass
+
+        hbox = Gtk.HBox()
+        button = Gtk.RadioButton()
+        button.set_active(False)
+        button.join_group(button1)
+        hbox.pack_start(button, False, False, 0)
+        label = Gtk.Label("ogg")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate",
+            self.__emit_accion_formato, label.get_text())
+        menu_codec.append(item)
+
+        item = Gtk.MenuItem()
+        try:
+            item.get_child().destroy()
+
+        except:
+            pass
+
+        hbox = Gtk.HBox()
+        button = Gtk.RadioButton()
+        button.set_active(False)
+        button.join_group(button1)
+        hbox.pack_start(button, False, False, 0)
+        label = Gtk.Label("wav")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate",
+            self.__emit_accion_formato, label.get_text())
+        menu_codec.append(item)
+
         self.show_all()
+
+    def __emit_accion_formato(self, widget, accion):
+
+        valor = not widget.get_children()[0].get_children()[0].get_active()
+        widget.get_children()[0].get_children()[0].set_active(valor)
+
+        self.emit('accion_formato', accion)
 
     def __emit_accion(self, widget):
 

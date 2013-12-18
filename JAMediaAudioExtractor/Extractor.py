@@ -397,6 +397,5 @@ class Extractor(Gst.Pipeline):
         if pos != self.posicion:
             self.posicion = pos
             self.emit("newposicion", self.posicion)
-            self.emit("info", "Procesado: %s %s" % (self.posicion, "%"))
 
         return True

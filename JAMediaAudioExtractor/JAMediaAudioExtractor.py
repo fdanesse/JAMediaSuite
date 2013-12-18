@@ -74,11 +74,14 @@ class JAMediaAudioExtractor(Gtk.Plug):
         self.lista = origen
         self.codec = codec
 
+        basebox = Gtk.VBox()
+        hbox = Gtk.HBox()
         vbox = Gtk.VBox()
 
         from JAMediaObjects.JAMediaWidgets import BarraProgreso
         from Widgets import Widget_extractor
         from Widgets import Menu
+        from Widgets import InfoBox
 
         self.menu = Menu()
         self.widget_extractor = Widget_extractor()
@@ -87,20 +90,32 @@ class JAMediaAudioExtractor(Gtk.Plug):
         self.barradeprogreso2 = BarraProgreso()
         self.barradeprogreso2.set_sensitive(False)
 
-        vbox.pack_start(self.menu, False, False, 0)
+        basebox.pack_start(self.menu, False, False, 0)
+        basebox.pack_start(hbox, False, False, 0)
+
         vbox.pack_start(self.widget_extractor, True, True, 0)
         vbox.pack_start(self.barradeprogreso, False, False, 0)
         vbox.pack_start(self.barradeprogreso2, False, False, 0)
 
-        self.add(vbox)
+        self.info_widget = InfoBox()
+
+        hbox.pack_start(vbox, False, False, 0)
+        hbox.pack_start(self.info_widget, False, False, 0)
+
+        self.add(basebox)
 
         self.show_all()
         self.realize()
 
         self.connect("embedded", self.__embed_event)
         self.menu.connect('load', self.__add_file)
+        self.menu.connect('accion_formato', self.__set_formato)
 
         GLib.idle_add(self.play)
+
+    def __set_formato(self, widget, formato):
+
+        self.codec = formato
 
     def __add_file(self, widget, lista):
         """
@@ -138,6 +153,8 @@ class JAMediaAudioExtractor(Gtk.Plug):
         Comienza a Procesar los archivos en la lista.
         """
 
+        self.info_widget.reset()
+
         if not self.lista or self.player:
             return
 
@@ -169,6 +186,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
             self.widget_extractor.reset()
             self.barradeprogreso.set_progress(0.0)
             self.barradeprogreso2.set_progress(0.0)
+            self.info_widget.reset()
 
             if self.player:
                 del(self.player)
@@ -186,11 +204,12 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
     def __set_info(self, player, info):
 
-        pass #print info
+        self.info_widget.set_info(info)
 
     def __set_posicion(self, player, posicion):
 
         self.barradeprogreso.set_progress(float(posicion))
+        self.info_widget.set_cantidad(len(self.lista))
 
         if self.lista:
             self.barradeprogreso2.set_progress(
