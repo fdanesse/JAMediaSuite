@@ -34,7 +34,7 @@ class Ventana(Gtk.Window):
 
         Gtk.Window.__init__(self)
 
-        self.set_title("JAMediaAudioExtractor")
+        self.set_title("JAMedia Audio Extractor")
 
         self.set_resizable(True)
         #self.set_size_request(320, 240)
@@ -97,12 +97,14 @@ if __name__ == "__main__":
             for archivo in os.listdir(origen):
                 arch = os.path.join(origen, archivo)
 
-                if "video" in get_data(arch):
+                datos = get_data(arch)
+                if "video" in datos or 'audio' in datos:
                     lista.append(arch)
 
         # Archivo
         elif os.path.isfile(origen):
-            if "video" in get_data(origen):
+            datos = get_data(arch)
+            if "video" in datos or 'audio' in datos:
                 lista.append(origen)
 
     Ventana(lista, codec)
