@@ -33,6 +33,7 @@ from gi.repository import GLib
 GObject.threads_init()
 Gst.init([])
 
+
 class Ventana(Gtk.Window):
 
     def __init__(self, origen, codec):
@@ -45,6 +46,39 @@ class Ventana(Gtk.Window):
         self.set_size_request(640, 480)
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
+
+        self.socket = Gtk.Socket()
+        self.add(self.socket)
+
+        self.jamediaaudioextractor = JAMediaAudioExtractor(origen, codec)
+        self.socket.add_id(self.jamediaaudioextractor.get_id())
+
+        self.show_all()
+        self.realize()
+
+        self.connect("delete-event", self.__exit)
+
+    def __exit(self, widget=None, senial=None):
+
+        if self.jamediaaudioextractor:
+            self.jamediaaudioextractor.stop()
+
+        sys.exit(0)
+
+class JAMediaAudioExtractor(Gtk.Plug):
+
+    __gtype_name__ = 'JAMediaAudioExtractor'
+
+    __gsignals__ = {
+    "salir": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
+
+    def __init__(self, origen, codec):
+        """
+        JAMediaAudioExtractor: Gtk.Plug para embeber en otra aplicacion.
+        """
+
+        Gtk.Plug.__init__(self, 0L)
 
         self.player = None
         self.lista = origen
@@ -67,9 +101,16 @@ class Ventana(Gtk.Window):
         self.show_all()
         self.realize()
 
-        self.connect("delete-event", self.__exit)
+        self.connect("embedded", self.__embed_event)
 
         GLib.idle_add(self.__play)
+
+    def __embed_event(self, widget):
+        """
+        No hace nada por ahora.
+        """
+
+        print "JAMediaAudioExtractor => OK"
 
     def __play(self):
 
@@ -80,7 +121,7 @@ class Ventana(Gtk.Window):
         origen = self.lista[0]
         self.lista.remove(origen)
 
-        self.player = JAMediaAudioExtractor(
+        self.player = Extractor(
             self.video_widget.get_property(
             'window').get_xid(), origen, codec)
 
@@ -94,12 +135,17 @@ class Ventana(Gtk.Window):
 
     def __set_end(self, player):
 
-        print "END"
         GLib.idle_add(self.__play)
 
     def __set_estado(self, player, estado):
 
-        print "Estado:", estado
+        #print "Estado:", estado
+        pass
+
+    def stop(self):
+
+        if self.player:
+            self.player.stop()
 
     def __set_posicion(self, player, posicion):
 
@@ -110,15 +156,8 @@ class Ventana(Gtk.Window):
             self.video_widget.modify_bg(0, Gdk.Color(0, 0, 0))
             self.__play()
 
-    def __exit(self, widget=None, senial=None):
 
-        if self.player:
-            self.player.stop()
-
-        sys.exit(0)
-
-
-class JAMediaAudioExtractor(Gst.Pipeline):
+class Extractor(Gst.Pipeline):
     """
     Extractor de audio de un video y conversor de formatos de audio.
 
