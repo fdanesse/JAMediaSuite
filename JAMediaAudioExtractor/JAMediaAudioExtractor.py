@@ -22,7 +22,7 @@
 import os
 
 from gi.repository import Gtk
-#from gi.repository import Gdk
+from gi.repository import Gdk
 from gi.repository import Gst
 from gi.repository import GstVideo
 from gi.repository import GObject
@@ -51,6 +51,21 @@ def get_data(archivo):
         retorno += " %s" % (dat)
 
     return retorno
+
+
+PATH = os.path.dirname(__file__)
+
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+style_path = os.path.join(
+    PATH, "Estilo.css")
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
 
 class JAMediaAudioExtractor(Gtk.Plug):
@@ -155,6 +170,13 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         self.info_widget.reset()
 
+        if self.lista:
+            self.barradeprogreso2.set_progress(
+                100.0 * 1.0 / float(len(self.lista)))
+
+        else:
+            self.barradeprogreso2.set_progress(100.0)
+
         if not self.lista or self.player:
             return
 
@@ -210,13 +232,6 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         self.barradeprogreso.set_progress(float(posicion))
         self.info_widget.set_cantidad(len(self.lista))
-
-        if self.lista:
-            self.barradeprogreso2.set_progress(
-                100.0 * 1.0 / float(len(self.lista)))
-
-        else:
-            self.barradeprogreso2.set_progress(100.0)
 
         if float(posicion) == 100.0:
             # Pista de audio siempre termina antes
