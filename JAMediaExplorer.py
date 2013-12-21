@@ -271,7 +271,7 @@ class Ventana(Gtk.Window):
         """
         Recibe el path seleccionado en la estructura
         de directorios, obtiene información sobre el mismo
-        y la pasa infowidget para ser mostrada.
+        y la pasa a infowidget para ser mostrada.
         """
 
         if not path:
