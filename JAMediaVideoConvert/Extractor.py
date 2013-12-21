@@ -123,8 +123,7 @@ class Extractor(Gst.Pipeline):
             "tee", "tee")
         videoconvert = Gst.ElementFactory.make(
             "videoconvert", "videoconvert")
-        videoconvert1 = Gst.ElementFactory.make(
-            "videoconvert", "videoconvert1")
+
         videorate = Gst.ElementFactory.make(
             "videorate", "videorate")
         theoraenc = Gst.ElementFactory.make(
@@ -149,7 +148,6 @@ class Extractor(Gst.Pipeline):
         self.add(oggmux)
         self.add(tee)
         self.add(videoconvert)
-        self.add(videoconvert1)
         self.add(videorate)
         self.add(theoraenc)
         self.add(filesink)
@@ -159,10 +157,9 @@ class Extractor(Gst.Pipeline):
         filesrc.link(decodebin)
         queue0.link(audioconvert)
 
-        queue1.link(tee)
-        tee.link(videoconvert)
-        videoconvert.link(xvimagesink)
-        tee.link(videoconvert1)
+        queue1.link(videoconvert)
+        videoconvert.link(tee)
+        tee.link(xvimagesink)
 
         oggmux.link(filesink)
 
@@ -238,13 +235,13 @@ class Extractor(Gst.Pipeline):
         self.emit("info", "Construyendo ogg bin")
         print "Construyendo ogg bin"
 
-        videoconver1 = self.get_by_name('videoconver1')
+        tee = self.get_by_name('tee')
         videorate = self.get_by_name('videorate')
         theoraenc = self.get_by_name('theoraenc')
         oggmux = self.get_by_name('oggmux')
         #filesink = self.get_by_name('filesink')
 
-        videoconver1.link(videorate)
+        tee.link(videorate)
         videorate.link(theoraenc)
         theoraenc.link(oggmux)
         #oggmux.link(filesink)
