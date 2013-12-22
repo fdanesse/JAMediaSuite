@@ -178,7 +178,7 @@ class Ventana(Gtk.Window):
         """
 
         self.toolbar_accion.hide()
-        self.toolbar_salir.run("JAMexplorer")
+        self.toolbar_salir.run("JAMediaExplorer")
 
     #def setup_init(self):
 

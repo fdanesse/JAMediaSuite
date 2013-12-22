@@ -51,11 +51,11 @@ class Navegador(Gtk.Paned):
     __gtype_name__ = 'JAMediaExplorerNavegador'
 
     __gsignals__ = {
-    "info": (GObject.SIGNAL_RUN_FIRST,
+    "info": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
-    "cargar": (GObject.SIGNAL_RUN_FIRST,
+    "cargar": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
-    "borrar": (GObject.SIGNAL_RUN_FIRST,
+    "borrar": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
 
@@ -76,13 +76,14 @@ class Navegador(Gtk.Paned):
 
         self.unidades.connect('leer', self.__leer)
         self.unidades.connect('add-leer', self.__add)
-        self.unidades.get_selection().select_path(0)
         self.unidades.connect('info', self.__emit_info)
 
         self.notebookdirectorios.connect('info', self.__emit_info)
         self.notebookdirectorios.connect('borrar', self.__emit_borrar)
 
         self.infowidget.connect('cargar', self.__emit_cargar)
+
+        self.unidades.get_selection().select_path(0)
 
     def __emit_borrar(self, widget, direccion, modelo, iter):
         """
@@ -155,11 +156,11 @@ class Unidades(Gtk.TreeView):
     __gtype_name__ = 'JAMediaExplorerUnidades'
 
     __gsignals__ = {
-    "leer": (GObject.SIGNAL_RUN_FIRST,
+    "leer": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
-    "add-leer": (GObject.SIGNAL_RUN_FIRST,
+    "add-leer": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
-    "info": (GObject.SIGNAL_RUN_FIRST,
+    "info": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
@@ -451,7 +452,7 @@ class MenuListUnidades(Gtk.Menu):
     __gtype_name__ = 'JAMediaExplorerMenuListUnidades'
 
     __gsignals__ = {
-    "accion": (GObject.SIGNAL_RUN_FIRST,
+    "accion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_STRING))}
 
@@ -536,7 +537,7 @@ class InfoWidget(Gtk.EventBox):
     __gtype_name__ = 'JAMediaExplorerInfoWidget'
 
     __gsignals__ = {
-    "cargar": (GObject.SIGNAL_RUN_FIRST,
+    "cargar": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):

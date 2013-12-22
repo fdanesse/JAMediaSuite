@@ -48,13 +48,17 @@ class Directorios(Gtk.TreeView):
     __gtype_name__ = 'JAMediaExplorerDirectorios'
 
     __gsignals__ = {
-    "info": (GObject.SIGNAL_RUN_FIRST,
+    "info": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
-    "add-leer": (GObject.SIGNAL_RUN_FIRST,
+    "add-leer": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
-    "borrar": (GObject.SIGNAL_RUN_FIRST,
+    "borrar": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
+        GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT)),
+    "accion": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING))
+    }
 
     def __init__(self):
 
@@ -81,9 +85,8 @@ class Directorios(Gtk.TreeView):
 
         self.show_all()
 
+        self.path = False
         self.dir_select = None
-        self.direccion_seleccionada = None
-        self.direccion_seleccionada_para_cortar = None
 
         self.connect("row-expanded", self.__expandir, None)
         self.connect("row-activated", self.__activar, None)
@@ -134,8 +137,8 @@ class Directorios(Gtk.TreeView):
         Cuando se selecciona un archivo o directorio.
         """
 
-        iter = model.get_iter(path)
-        directorio = model.get_value(iter, 2)
+        iter_ = model.get_iter(path)
+        directorio = model.get_value(iter_, 2)
 
         if not is_selected and self.dir_select != directorio:
             self.dir_select = directorio
@@ -175,6 +178,7 @@ class Directorios(Gtk.TreeView):
 
     def load(self, directorio):
 
+        self.path = directorio
         self.get_model().clear()
         self.__leer((directorio, False))
 
@@ -354,40 +358,7 @@ class Directorios(Gtk.TreeView):
         direccion = self.get_model().get_value(iter_, 2)
         lectura, escritura, ejecucion = describe_acceso_uri(direccion)
 
-        if accion == "Copiar":
-            #self.direccion_seleccionada = direccion
-            pass
-
-        elif accion == "Borrar":
-            self.direccion_seleccionada = direccion
-
-            self.emit('borrar',
-                self.direccion_seleccionada,
-                self.get_model(), iter_)
-
-            self.direccion_seleccionada = None
-
-        elif accion == "Pegar":
-            #if self.direccion_seleccionada_para_cortar:
-            #    if mover(self.direccion_seleccionada_para_cortar, direccion):
-            #        self.collapse_row(path)
-            #        self.expand_to_path(path)
-            #        self.direccion_seleccionada_para_cortar = None
-
-            #else:
-            #    if copiar(self.direccion_seleccionada, direccion):
-            #        self.collapse_row(path)
-            #        self.expand_to_path(path)
-            #        self.direccion_seleccionada = None
-            pass
-
-        elif accion == "Cortar":
-            #self.direccion_seleccionada_para_cortar = direccion
-            #self.get_model().remove(iter_)
-            #self.direccion_seleccionada = None
-            pass
-
-        elif accion == "Crear Directorio":
+        if accion == "Crear Directorio":
             dialog = Gtk.Dialog(
                 "Crear Directorio . . .",
                 self.get_toplevel(),
@@ -415,9 +386,16 @@ class Directorios(Gtk.TreeView):
             elif respuesta == 2:
                 pass
 
+        elif accion == "Borrar":
+            self.emit('borrar',
+                direccion,
+                self.get_model(), iter_)
+
         elif accion == "Abrir":
             self.emit('add-leer', direccion)
-            #self.emit('info', direccion)
+
+        else:
+            self.emit('accion', path, accion)
 
 
 class MenuList(Gtk.Menu):
@@ -425,7 +403,7 @@ class MenuList(Gtk.Menu):
     __gtype_name__ = 'JAMediaExplorerMenuList'
 
     __gsignals__ = {
-    "accion": (GObject.SIGNAL_RUN_FIRST,
+    "accion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_STRING))}
 
@@ -461,9 +439,10 @@ class MenuList(Gtk.Menu):
             borrar.connect_object("activate",
                 self.__emit_accion, path, "Borrar")
 
-        if escritura and (directorio or unidad) \
-            and (self.parent_objet.direccion_seleccionada != None \
-            or self.parent_objet.direccion_seleccionada_para_cortar != None):
+        notebook = self.parent_objet.get_parent().get_parent()
+        if escritura and (directorio or unidad) and \
+            (notebook.direccion_seleccionada or \
+            notebook.direccion_seleccionada_para_cortar):
 
             pegar = Gtk.MenuItem("Pegar")
             self.append(pegar)

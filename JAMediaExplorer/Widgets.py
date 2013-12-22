@@ -43,7 +43,7 @@ class Toolbar(Gtk.Toolbar):
     __gtype_name__ = 'JAMediaExplorerToolbar'
 
     __gsignals__ = {
-    "salir": (GObject.SIGNAL_RUN_FIRST,
+    "salir": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -121,7 +121,7 @@ class ToolbarAccion(Gtk.Toolbar):
     __gtype_name__ = 'JAMediaExplorerToolbarAccion'
 
     __gsignals__ = {
-    "borrar": (GObject.SIGNAL_RUN_FIRST,
+    "borrar": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
 
@@ -187,7 +187,11 @@ class ToolbarAccion(Gtk.Toolbar):
         self.modelo = modelo
         self.iter = iter
 
-        self.label.set_text("¿Borrar?: %s" % (self.direccion))
+        texto = direccion
+        if len(texto) > 25:
+            texto = " . . . " + str(texto[-25:])
+
+        self.label.set_text("¿Borrar?: %s" % (texto))
         self.show_all()
 
     def cancelar(self, widget=None):

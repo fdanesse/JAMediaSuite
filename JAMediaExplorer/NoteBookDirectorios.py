@@ -26,9 +26,9 @@ class NoteBookDirectorios(Gtk.Notebook):
     __gtype_name__ = 'JAMediaExplorerNoteBookDirectorios'
 
     __gsignals__ = {
-    "info": (GObject.SIGNAL_RUN_FIRST,
+    "info": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
-    "borrar": (GObject.SIGNAL_RUN_FIRST,
+    "borrar": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
 
@@ -37,6 +37,9 @@ class NoteBookDirectorios(Gtk.Notebook):
         Gtk.Notebook.__init__(self)
 
         self.set_scrollable(True)
+
+        self.direccion_seleccionada = False
+        self.direccion_seleccionada_para_cortar = False
 
         self.show_all()
 
@@ -117,6 +120,7 @@ class NoteBookDirectorios(Gtk.Notebook):
 
         directorios.connect('info', self.__emit_info)
         directorios.connect('borrar', self.__emit_borrar)
+        directorios.connect('accion', self.__set_accion)
         directorios.connect('add-leer', self.__action_add_leer)
 
         directorios.load(path)
@@ -137,6 +141,43 @@ class NoteBookDirectorios(Gtk.Notebook):
         """
 
         self.emit('info', path)
+
+    def __set_accion(self, widget, path, accion):
+
+        iter_ = widget.get_model().get_iter(path)
+        direccion = widget.get_model().get_value(iter_, 2)
+
+        if accion == "Copiar":
+            self.direccion_seleccionada = direccion
+            self.direccion_seleccionada_para_cortar = False
+
+        elif accion == "Pegar":
+            if self.direccion_seleccionada_para_cortar:
+                from JAMediaObjects.JAMFileSystem import mover
+                dire, wid, it = self.direccion_seleccionada_para_cortar
+
+                if mover(dire, direccion):
+                    if wid:
+                        wid.get_model().remove(it)
+
+                    widget.collapse_row(path)
+                    widget.expand_to_path(path)
+                    self.direccion_seleccionada_para_cortar = False
+                    self.direccion_seleccionada = False
+
+            else:
+                if self.direccion_seleccionada:
+                    from JAMediaObjects.JAMFileSystem import copiar
+
+                    if copiar(self.direccion_seleccionada, direccion):
+                        widget.collapse_row(path)
+                        widget.expand_to_path(path)
+                        self.direccion_seleccionada = False
+                        self.direccion_seleccionada_para_cortar = False
+
+        elif accion == "Cortar":
+            self.direccion_seleccionada_para_cortar = (direccion, widget, iter_)
+            self.direccion_seleccionada = False
 
     def __emit_borrar(self, widget, direccion, modelo, iter_):
         """
