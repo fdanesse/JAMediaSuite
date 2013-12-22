@@ -75,6 +75,7 @@ class Navegador(Gtk.Paned):
         self.show_all()
 
         self.unidades.connect('leer', self.__leer)
+        self.unidades.connect('add-leer', self.__add)
         self.unidades.get_selection().select_path(0)
         self.unidades.connect('info', self.__emit_info)
 
@@ -138,6 +139,13 @@ class Navegador(Gtk.Paned):
 
         self.notebookdirectorios.load(directorio)
 
+    def __add(self, widget, directorio):
+        """
+        Cuando se selecciona una unidad en el panel izquierdo.
+        """
+
+        self.notebookdirectorios.add_leer(directorio)
+
 
 class Unidades(Gtk.TreeView):
     """
@@ -148,6 +156,8 @@ class Unidades(Gtk.TreeView):
 
     __gsignals__ = {
     "leer": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+    "add-leer": (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "info": (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
@@ -169,8 +179,10 @@ class Unidades(Gtk.TreeView):
         self.__setear_columnas()
         self.__Llenar_ListStore()
 
-        self.get_selection().set_select_function(
-            self.__selecciones, self.get_model())
+        self.connect("button-press-event", self.__handler_click)
+
+        #self.get_selection().set_select_function(
+        #    self.__selecciones, self.get_model())
 
         self.show_all()
 
@@ -181,6 +193,119 @@ class Unidades(Gtk.TreeView):
         self.demonio_unidades.connect(
             'nueva_unidad_desconectada',
             self.__nueva_unidad_desconectada)
+
+    def __handler_click(self, widget, event):
+
+        boton = event.button
+        pos = (event.x, event.y)
+        tiempo = event.time
+        path, columna, xdefondo, ydefondo = (None, None, None, None)
+
+        try:
+            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
+                int(pos[0]), int(pos[1]))
+
+        except:
+            return
+
+        # TreeView.get_path_at_pos(event.x, event.y) devuelve:
+        # * La ruta de acceso en el punto especificado (x, y),
+        # en relación con las coordenadas widget
+        # * El gtk.TreeViewColumn en ese punto
+        # * La coordenada X en relación con el fondo de la celda
+        # * La coordenada Y en relación con el fondo de la celda
+
+        if boton == 1:
+            iter_ = self.get_model().get_iter(path)
+            directorio = self.get_model().get_value(iter_, 2)
+
+            #if self.dir_select != directorio:
+            self.dir_select = directorio
+            self.emit('leer', self.dir_select)
+            self.emit('info', self.dir_select)
+
+            return
+
+        elif boton == 3:
+            menu = MenuListUnidades(
+                widget, boton, pos, tiempo, path, self.get_model())
+            menu.connect('accion', self.__get_accion)
+            menu.popup(None, None, None, None, boton, tiempo)
+
+        elif boton == 2:
+            return
+
+
+    def __get_accion(self, widget, path, accion):
+
+        iter_ = self.get_model().get_iter(path)
+        direccion = self.get_model().get_value(iter_, 2)
+        #lectura, escritura, ejecucion = describe_acceso_uri(direccion)
+
+        if accion == "Abrir":
+            self.dir_select = direccion
+            self.emit('add-leer', self.dir_select)
+            self.emit('info', self.dir_select)
+
+        '''
+        if accion == "Copiar":
+            self.direccion_seleccionada = direccion
+
+        elif accion == "Borrar":
+            self.direccion_seleccionada = direccion
+
+            self.emit('borrar',
+                self.direccion_seleccionada,
+                self.get_model(), iter_)
+
+            self.direccion_seleccionada = None
+
+        elif accion == "Pegar":
+            if self.direccion_seleccionada_para_cortar:
+                if mover(self.direccion_seleccionada_para_cortar, direccion):
+                    self.collapse_row(path)
+                    self.expand_to_path(path)
+                    self.direccion_seleccionada_para_cortar = None
+
+            else:
+                if copiar(self.direccion_seleccionada, direccion):
+                    self.collapse_row(path)
+                    self.expand_to_path(path)
+                    self.direccion_seleccionada = None
+
+        elif accion == "Cortar":
+            self.direccion_seleccionada_para_cortar = direccion
+            self.get_model().remove(iter_)
+            self.direccion_seleccionada = None
+
+        elif accion == "Crear Directorio":
+            dialog = Gtk.Dialog(
+                "Crear Directorio . . .",
+                self.get_toplevel(),
+                Gtk.DialogFlags.MODAL, None)
+
+            etiqueta = Gtk.Label("Nombre del Directorio: ")
+            entry = Gtk.Entry()
+            dialog.vbox.pack_start(etiqueta, True, True, 5)
+            dialog.vbox.pack_start(entry, True, True, 5)
+            dialog.add_button("Crear Directorio", 1)
+            dialog.add_button("Cancelar", 2)
+
+            dialog.show_all()
+
+            if dialog.run() == 1:
+                directorio_nuevo = entry.get_text()
+
+                if directorio_nuevo != "" and directorio_nuevo != None:
+                    if crear_directorio(direccion, directorio_nuevo):
+                        self.collapse_row(path)
+                        self.expand_to_path(path)
+
+            elif dialog.run() == 2:
+                pass
+
+            dialog.destroy()
+    '''
 
     def __nueva_unidad_conectada(self, widget, unidad):
         """
@@ -218,22 +343,22 @@ class Unidades(Gtk.TreeView):
         else:
             iter = self.get_model().iter_next(iter)
             self.remover_unidad(iter, unidad)
-
+    '''
     def __selecciones(self, treeselection, model, path, is_selected, listore):
         """
         Cuando se hace click sobre una unidad de almacenamiento.
         """
 
         # model y listore son ==
-        iter = model.get_iter(path)
-        directorio = model.get_value(iter, 2)
+        iter_ = model.get_iter(path)
+        directorio = model.get_value(iter_, 2)
 
         if not is_selected and self.dir_select != directorio:
             self.dir_select = directorio
             self.emit('leer', self.dir_select)
             self.emit('info', self.dir_select)
 
-        return True
+        return True'''
 
     def __setear_columnas(self):
 
@@ -304,6 +429,87 @@ class Unidades(Gtk.TreeView):
         for unidad in self.demonio_unidades.get_unidades():
             self.get_model().append([
                 pixbuf, unidad['label'], unidad['mount_path']])
+
+
+class MenuListUnidades(Gtk.Menu):
+
+    __gtype_name__ = 'JAMediaExplorerMenuListUnidades'
+
+    __gsignals__ = {
+    "accion": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING))}
+
+    def __init__(self, widget, boton, pos, tiempo, path, modelo):
+
+        Gtk.Menu.__init__(self)
+
+        self.modelo = modelo
+        self.parent_objet = widget
+
+        #lectura, escritura, ejecucion = (False, False, False)
+        #unidad, directorio, archivo, enlace = (False, False, False, False)
+
+        iter_ = self.modelo.get_iter(path)
+        direccion = self.modelo.get_value(iter_, 2)
+
+        #if describe_acceso_uri(direccion):
+        #    lectura, escritura, ejecucion = describe_acceso_uri(direccion)
+        #    unidad, directorio, archivo, enlace = describe_uri(direccion)
+
+        #else:
+        #    return
+
+        abrir_pestania = Gtk.MenuItem("Abrir")
+        self.append(abrir_pestania)
+        abrir_pestania.connect_object("activate",
+            self.__emit_accion, path, "Abrir")
+
+        '''
+        if lectura:
+            copiar = Gtk.MenuItem("Copiar")
+            self.append(copiar)
+            copiar.connect_object("activate",
+                self.__emit_accion, path, "Copiar")
+
+        if escritura and not unidad:
+            borrar = Gtk.MenuItem("Borrar")
+            self.append(borrar)
+            borrar.connect_object("activate",
+                self.__emit_accion, path, "Borrar")
+
+        if escritura and (directorio or unidad) \
+            and (self.parent_objet.direccion_seleccionada != None \
+            or self.parent_objet.direccion_seleccionada_para_cortar != None):
+
+            pegar = Gtk.MenuItem("Pegar")
+            self.append(pegar)
+            pegar.connect_object("activate",
+                self.__emit_accion, path, "Pegar")
+
+        if escritura and (directorio or archivo):
+            cortar = Gtk.MenuItem("Cortar")
+            self.append(cortar)
+            cortar.connect_object("activate",
+                self.__emit_accion, path, "Cortar")
+
+        if escritura and (directorio or unidad):
+            nuevodirectorio = Gtk.MenuItem("Crear Directorio")
+            self.append(nuevodirectorio)
+            nuevodirectorio.connect_object("activate",
+                self.__emit_accion, path, "Crear Directorio")
+        '''
+
+        self.show_all()
+        self.attach_to_widget(widget, self.__null)
+
+    def __null(self):
+
+        pass
+
+    def __emit_accion(self, path, accion):
+
+        self.emit('accion', path, accion)
 
 
 class InfoWidget(Gtk.EventBox):

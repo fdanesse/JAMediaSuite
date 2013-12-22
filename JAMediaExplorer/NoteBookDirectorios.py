@@ -45,13 +45,13 @@ class NoteBookDirectorios(Gtk.Notebook):
         paginas = self.get_children()
 
         if not paginas:
-            self.__add(path)
+            self.add_leer(path)
 
         else:
             scrolled = paginas[self.get_current_page()]
             scrolled.get_children()[0].load(path)
 
-    def __add(self, path):
+    def add_leer(self, path):
         """
         Carga un Directorio y Agrega una Lengüeta para él.
         """

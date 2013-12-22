@@ -77,7 +77,7 @@ class Ventana(Gtk.Window):
 
         super(Ventana, self).__init__()
 
-        self.set_title("JAMexplorer")
+        self.set_title("JAMediaExplorer")
         self.set_icon_from_file(os.path.join(ICONOS, "JAMediaExplorer.svg"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
