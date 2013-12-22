@@ -460,7 +460,7 @@ class MenuListUnidades(Gtk.Menu):
         #else:
         #    return
 
-        abrir_pestania = Gtk.MenuItem("Abrir")
+        abrir_pestania = Gtk.MenuItem("Abrir en Pestaña Nueva")
         self.append(abrir_pestania)
         abrir_pestania.connect_object("activate",
             self.__emit_accion, path, "Abrir")

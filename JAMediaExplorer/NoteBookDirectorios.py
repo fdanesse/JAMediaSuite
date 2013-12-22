@@ -51,6 +51,10 @@ class NoteBookDirectorios(Gtk.Notebook):
             scrolled = paginas[self.get_current_page()]
             scrolled.get_children()[0].load(path)
 
+    def __action_add_leer(self, widget, path):
+
+        self.add_leer(path)
+
     def add_leer(self, path):
         """
         Carga un Directorio y Agrega una Lengüeta para él.
@@ -59,7 +63,12 @@ class NoteBookDirectorios(Gtk.Notebook):
         directorios = Directorios()
 
         hbox = Gtk.HBox()
-        label = Gtk.Label("Sin Título")
+
+        texto = path
+        if len(texto) > 15:
+            texto =  " . . . " + str(path[-15:])
+
+        label = Gtk.Label(texto)
 
         boton = get_boton(
             os.path.join(icons, "button-cancel.svg"),
@@ -83,6 +92,7 @@ class NoteBookDirectorios(Gtk.Notebook):
 
         directorios.connect('info', self.__emit_info)
         directorios.connect('borrar', self.__emit_borrar)
+        directorios.connect('add-leer', self.__action_add_leer)
 
         directorios.load(path)
 

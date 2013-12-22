@@ -50,6 +50,8 @@ class Directorios(Gtk.TreeView):
     __gsignals__ = {
     "info": (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+    "add-leer": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "borrar": (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
@@ -350,7 +352,8 @@ class Directorios(Gtk.TreeView):
         lectura, escritura, ejecucion = describe_acceso_uri(direccion)
 
         if accion == "Copiar":
-            self.direccion_seleccionada = direccion
+            #self.direccion_seleccionada = direccion
+            pass
 
         elif accion == "Borrar":
             self.direccion_seleccionada = direccion
@@ -362,22 +365,24 @@ class Directorios(Gtk.TreeView):
             self.direccion_seleccionada = None
 
         elif accion == "Pegar":
-            if self.direccion_seleccionada_para_cortar:
-                if mover(self.direccion_seleccionada_para_cortar, direccion):
-                    self.collapse_row(path)
-                    self.expand_to_path(path)
-                    self.direccion_seleccionada_para_cortar = None
+            #if self.direccion_seleccionada_para_cortar:
+            #    if mover(self.direccion_seleccionada_para_cortar, direccion):
+            #        self.collapse_row(path)
+            #        self.expand_to_path(path)
+            #        self.direccion_seleccionada_para_cortar = None
 
-            else:
-                if copiar(self.direccion_seleccionada, direccion):
-                    self.collapse_row(path)
-                    self.expand_to_path(path)
-                    self.direccion_seleccionada = None
+            #else:
+            #    if copiar(self.direccion_seleccionada, direccion):
+            #        self.collapse_row(path)
+            #        self.expand_to_path(path)
+            #        self.direccion_seleccionada = None
+            pass
 
         elif accion == "Cortar":
-            self.direccion_seleccionada_para_cortar = direccion
-            self.get_model().remove(iter_)
-            self.direccion_seleccionada = None
+            #self.direccion_seleccionada_para_cortar = direccion
+            #self.get_model().remove(iter_)
+            #self.direccion_seleccionada = None
+            pass
 
         elif accion == "Crear Directorio":
             dialog = Gtk.Dialog(
@@ -394,12 +399,11 @@ class Directorios(Gtk.TreeView):
 
             dialog.vbox.show_all()
             respuesta = dialog.run()
+            directorio_nuevo = entry.get_text()
 
             dialog.destroy()
 
             if respuesta == 1:
-                directorio_nuevo = entry.get_text()
-
                 if directorio_nuevo != "" and directorio_nuevo != None:
                     if crear_directorio(direccion, directorio_nuevo):
                         self.collapse_row(path)
@@ -407,6 +411,10 @@ class Directorios(Gtk.TreeView):
 
             elif respuesta == 2:
                 pass
+
+        elif accion == "Abrir":
+            self.emit('add-leer', direccion)
+            #self.emit('info', direccion)
 
 
 class MenuList(Gtk.Menu):
@@ -466,6 +474,11 @@ class MenuList(Gtk.Menu):
                 self.__emit_accion, path, "Cortar")
 
         if escritura and (directorio or unidad):
+            abrir_pestania = Gtk.MenuItem("Abrir en Pestaña Nueva")
+            self.append(abrir_pestania)
+            abrir_pestania.connect_object("activate",
+                self.__emit_accion, path, "Abrir")
+
             nuevodirectorio = Gtk.MenuItem("Crear Directorio")
             self.append(nuevodirectorio)
             nuevodirectorio.connect_object("activate",
