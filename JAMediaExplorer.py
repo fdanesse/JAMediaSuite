@@ -281,8 +281,10 @@ class Ventana(Gtk.Window):
 
         self.toolbar_try.label.set_text(path)
 
+        # FIXME: Falla si se movió y no se actualiza
         unidad, directorio, archivo, enlace = describe_uri(path)
         lectura, escritura, ejecucion = describe_acceso_uri(path)
+
         texto = ""
         typeinfo = ""
 

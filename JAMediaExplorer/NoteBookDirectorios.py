@@ -55,10 +55,19 @@ class NoteBookDirectorios(Gtk.Notebook):
             ).get_selection().get_selected()
 
         if iter_:
-            #path = model.get_path(iter_)
             directorio = model.get_value(iter_, 2)
-            #print model, iter_, path
             self.emit('info', directorio)
+
+        paginas = self.get_children()
+
+        for pagina in paginas:
+            directorio = pagina.get_child()
+
+            if directorio != widget_child.get_child():
+                directorio.new_handle(False)
+
+        directorio = widget_child.get_child()
+        directorio.new_handle(True)
 
     def load(self, path):
 
@@ -158,7 +167,8 @@ class NoteBookDirectorios(Gtk.Notebook):
 
                 if mover(dire, direccion):
                     if wid:
-                        wid.get_model().remove(it)
+                        if wid != widget:
+                            wid.get_model().remove(it)
 
                     widget.collapse_row(path)
                     widget.expand_to_path(path)
@@ -199,5 +209,6 @@ class NoteBookDirectorios(Gtk.Notebook):
                 self.get_children()[indice]).get_children()[1]
 
             if boton == widget:
+                self.get_children()[indice].get_child().new_handle(False)
                 self.remove_page(indice)
                 break

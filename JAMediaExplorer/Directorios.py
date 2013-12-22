@@ -25,6 +25,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+from gi.repository import GLib
 
 import JAMediaObjects
 
@@ -87,6 +88,8 @@ class Directorios(Gtk.TreeView):
 
         self.path = False
         self.dir_select = None
+        self.actualizador = False
+        self.control = ""
 
         self.connect("row-expanded", self.__expandir, None)
         self.connect("row-activated", self.__activar, None)
@@ -179,6 +182,7 @@ class Directorios(Gtk.TreeView):
     def load(self, directorio):
 
         self.path = directorio
+        self.control = str(os.listdir(self.path))
         self.get_model().clear()
         self.__leer((directorio, False))
 
@@ -259,7 +263,9 @@ class Directorios(Gtk.TreeView):
             print "**** Error de acceso:", dire, archivo
 
         iter_ = self.get_model().get_iter_first()
-        self.get_selection().select_iter(iter_)
+
+        if iter_:
+            self.get_selection().select_iter(iter_)
 
     def __agregar_nada(self, iterador):
 
@@ -396,6 +402,30 @@ class Directorios(Gtk.TreeView):
 
         else:
             self.emit('accion', path, accion)
+
+    def new_handle(self, reset):
+
+        # FIXME: Deshabilitado temporalmente
+        return False
+
+        if self.actualizador:
+            GLib.source_remove(self.actualizador)
+            self.actualizador = False
+
+        if reset:
+            self.actualizador = GLib.timeout_add(
+                1000, self.__handle)
+
+    def __handle(self):
+
+        self.new_handle(False)
+
+        if self.control != str(os.listdir(self.path)):
+            print self
+
+        self.new_handle(True)
+
+        return False
 
 
 class MenuList(Gtk.Menu):

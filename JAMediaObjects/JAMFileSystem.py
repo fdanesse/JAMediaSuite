@@ -136,6 +136,7 @@ def mover(origen, destino):
         if os.path.isdir(origen):
             copiar(origen, destino)
             borrar(origen)
+            return True
 
         elif os.path.isfile(origen):
             expresion = "mv \"" + origen + "\" \"" + destino + "\""
