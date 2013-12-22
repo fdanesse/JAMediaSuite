@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   Navegador.py por:
-#   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM - Uruguay
+#       Flavio Danesse <fdanesse@gmail.com>
+#       CeibalJAM - Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
-from Directorios import Directorios
+from NoteBookDirectorios import NoteBookDirectorios
 
 import JAMediaObjects
 from JAMediaObjects.JAMFileSystem import DeviceManager
@@ -63,14 +63,13 @@ class Navegador(Gtk.Paned):
 
         Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
-        #self.modify_bg(0, Gdk.Color(49000, 52000, 18000))
         self.unidades = None
-        self.directorios = None
+        self.notebookdirectorios = NoteBookDirectorios()
         self.infowidget = None
 
         self.pack1(self.__area_izquierda_del_panel(),
             resize=False, shrink=True)
-        self.pack2(self.__area_derecha_del_panel(),
+        self.pack2(self.notebookdirectorios,
             resize=True, shrink=True)
 
         self.show_all()
@@ -79,8 +78,8 @@ class Navegador(Gtk.Paned):
         self.unidades.get_selection().select_path(0)
         self.unidades.connect('info', self.__emit_info)
 
-        self.directorios.connect('info', self.__emit_info)
-        self.directorios.connect('borrar', self.__emit_borrar)
+        self.notebookdirectorios.connect('info', self.__emit_info)
+        self.notebookdirectorios.connect('borrar', self.__emit_borrar)
 
         self.infowidget.connect('cargar', self.__emit_cargar)
 
@@ -112,9 +111,11 @@ class Navegador(Gtk.Paned):
 
         self.unidades = Unidades()
 
-        panel_izquierdo = Gtk.Paned(orientation=Gtk.Orientation.VERTICAL)
-        #panel_izquierdo.modify_bg(0, Gdk.Color(49000, 52000, 18000))
-        panel_izquierdo.pack1(self.unidades, resize=False, shrink=True)
+        panel_izquierdo = Gtk.Paned(
+            orientation=Gtk.Orientation.VERTICAL)
+
+        panel_izquierdo.pack1(
+            self.unidades, resize=False, shrink=True)
 
         self.infowidget = InfoWidget()
 
@@ -124,29 +125,23 @@ class Navegador(Gtk.Paned):
             Gtk.PolicyType.AUTOMATIC)
 
         scrolled_window.add_with_viewport(self.infowidget)
-        panel_izquierdo.pack2(scrolled_window, resize=True, shrink=True)
+
+        panel_izquierdo.pack2(
+            scrolled_window, resize=True, shrink=True)
 
         return panel_izquierdo
 
-    def __area_derecha_del_panel(self):
-
-        scrolled_window = Gtk.ScrolledWindow()
-        scrolled_window.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-
-        self.directorios = Directorios()
-        scrolled_window.add_with_viewport(self.directorios)
-
-        return scrolled_window
-
     def __leer(self, widget, directorio):
-        self.directorios.leer_directorio(directorio)
+        """
+        Cuando se selecciona una unidad en el panel izquierdo.
+        """
+
+        self.notebookdirectorios.load(directorio)
 
 
 class Unidades(Gtk.TreeView):
     """
-    Treview para unidades y directorios marcados.
+    Treview para unidades y directorios.
     """
 
     __gtype_name__ = 'JAMediaExplorerUnidades'
@@ -180,16 +175,21 @@ class Unidades(Gtk.TreeView):
         self.show_all()
 
         self.demonio_unidades.connect(
-            'nueva_unidad_conectada', self.__nueva_unidad_conectada)
+            'nueva_unidad_conectada',
+            self.__nueva_unidad_conectada)
+
         self.demonio_unidades.connect(
-            'nueva_unidad_desconectada', self.__nueva_unidad_desconectada)
+            'nueva_unidad_desconectada',
+            self.__nueva_unidad_desconectada)
 
     def __nueva_unidad_conectada(self, widget, unidad):
         """
         Cuando se conecta una unidad, se agrega a la lista.
         """
 
-        icono = os.path.join(ICONOS, "drive-removable-media-usb.svg")
+        icono = os.path.join(ICONOS,
+            "drive-removable-media-usb.svg")
+
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             icono, get_pixels(0.8), -1)
 
@@ -237,9 +237,12 @@ class Unidades(Gtk.TreeView):
 
     def __setear_columnas(self):
 
-        self.append_column(self.__construir_columa_icono('Icono', 0, True))
-        self.append_column(self.__construir_columa('Nombre', 1, True))
-        self.append_column(self.__construir_columa('Directorio', 2, False))
+        self.append_column(
+            self.__construir_columa_icono('Icono', 0, True))
+        self.append_column(
+            self.__construir_columa('Nombre', 1, True))
+        self.append_column(
+            self.__construir_columa('Directorio', 2, False))
 
     def __construir_columa(self, text, index, visible):
 
@@ -345,11 +348,14 @@ class InfoWidget(Gtk.EventBox):
         en la estructura de directorios.
         """
 
+        # FIXME: Verificar Iconos
+
         self.label.set_text(textinfo)
         self.typeinfo = typeinfo
         icono = None
 
-        if textinfo.startswith("Directorio") or textinfo.startswith("Enlace"):
+        if textinfo.startswith("Directorio") or \
+            textinfo.startswith("Enlace"):
             icono = os.path.join(ICONOS, "document-open.svg")
 
         else:
@@ -369,8 +375,6 @@ class InfoWidget(Gtk.EventBox):
                 icono = os.path.join(ICONOS, "edit-select-all.svg")
 
             elif 'text' in typeinfo:
-                # FIXME: Hay un problema con los tipos,
-                # cuando el archivo es uno de creados por JAMedia.
                 icono = os.path.join(ICONOS, "edit-select-all.svg")
 
             else:

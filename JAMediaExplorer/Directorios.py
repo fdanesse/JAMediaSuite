@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   Directorios.py por:
-#   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM - Uruguay
+#       Flavio Danesse <fdanesse@gmail.com>
+#       CeibalJAM - Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ ICONOS = os.path.join(JAMediaObjects.__path__[0], "Iconos")
 
 class Directorios(Gtk.TreeView):
     """
-    TreView para toda la estructura de directorios.
+    TreView para estructura del directorios seleccionado.
     """
 
     __gtype_name__ = 'JAMediaExplorerDirectorios'
@@ -90,19 +90,20 @@ class Directorios(Gtk.TreeView):
         self.connect("button-press-event", self.__handler_click)
         self.connect("key-press-event", self.__keypress)
 
-        self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(
+        self.get_selection().set_select_function(
             self.__selecciones, self.get_model())
 
     def __keypress(self, widget, event):
-        """Para navegar por los directorios."""
+        """
+        Para navegar por los directorios.
+        """
 
         # derecha 114 izquierda 113 suprimir 119
         # backspace 22 (en xo no existe suprimir)
         tecla = event.get_keycode()[1]
-        model, iter = self.treeselection.get_selected()
+        model, iter_ = self.get_selection().get_selected()
         #valor = self.get_model().get_value(iter, 2)
-        path = self.get_model().get_path(iter)
+        path = self.get_model().get_path(iter_)
 
         if tecla == 22:
             if self.row_expanded(path):
@@ -127,7 +128,9 @@ class Directorios(Gtk.TreeView):
 
     def __selecciones(self, treeselection, model,
         path, is_selected, treestore):
-        """Cuando se selecciona un archivo o directorio."""
+        """
+        Cuando se selecciona un archivo o directorio.
+        """
 
         iter = model.get_iter(path)
         directorio = model.get_value(iter, 2)
@@ -168,24 +171,24 @@ class Directorios(Gtk.TreeView):
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         self.append_column(columna)
 
-    def leer_directorio(self, directorio):
+    def load(self, directorio):
 
         self.get_model().clear()
         self.__leer((directorio, False))
 
-    def __leer(self, dir):
+    def __leer(self, dire):
 
         archivo = ""
 
         try:
-            directorio = dir[0]
-            path = dir[1]
+            directorio = dire[0]
+            path = dire[1]
 
             if path:
-                iter = self.get_model().get_iter(path)
+                iter_ = self.get_model().get_iter(path)
 
             else:
-                iter = self.get_model().get_iter_first()
+                iter_ = self.get_model().get_iter_first()
 
             archivos = []
 
@@ -207,7 +210,7 @@ class Directorios(Gtk.TreeView):
                         icono, -1, get_pixels(0.8))
 
                     iteractual = self.get_model().append(
-                        iter, [pixbuf,
+                        iter_, [pixbuf,
                         archivo, direccion, ""])
 
                     self.__agregar_nada(iteractual)
@@ -243,11 +246,11 @@ class Directorios(Gtk.TreeView):
                     icono, -1, get_pixels(0.8))
 
                 self.get_model().append(
-                    iter, [pixbuf, archivo,
+                    iter_, [pixbuf, archivo,
                     x, str(os.path.getsize(x)) + " bytes"])
 
         except:
-            print "**** Error de acceso a un archivo o directorio ****", dir, archivo
+            print "**** Error de acceso:", dire, archivo
 
     def __agregar_nada(self, iterador):
 
@@ -256,13 +259,13 @@ class Directorios(Gtk.TreeView):
             "(Vacío, Sin Permisos o link)",
             None, None])
 
-    def __expandir(self, treeview, iter, path, user_param1):
+    def __expandir(self, treeview, iter_, path, user_param1):
 
-        iterdelprimerhijo = self.get_model().iter_children(iter)
+        iterdelprimerhijo = self.get_model().iter_children(iter_)
         valordelprimerhijoenlafila = self.get_model().get_value(
             iterdelprimerhijo, 1)
-        valor = self.get_model().get_value(iter, 2)
-        dir = (valor, path)
+        valor = self.get_model().get_value(iter_, 2)
+        dire = (valor, path)
 
         if os.path.islink(os.path.join(valor)):
             return
@@ -272,7 +275,7 @@ class Directorios(Gtk.TreeView):
                 and valordelprimerhijoenlafila == \
                 "(Vacío, Sin Permisos o link)":
 
-                self.__leer(dir)
+                self.__leer(dire)
                 self.get_model().remove(iterdelprimerhijo)
 
             else:
@@ -285,8 +288,8 @@ class Directorios(Gtk.TreeView):
 
     def __activar(self, treeview, path, view_column, user_param1):
 
-        iter = self.get_model().get_iter(path)
-        valor = self.get_model().get_value(iter, 2)
+        iter_ = self.get_model().get_iter(path)
+        valor = self.get_model().get_value(iter_, 2)
 
         try:
             if os.path.isdir(os.path.join(valor)):
@@ -299,13 +302,13 @@ class Directorios(Gtk.TreeView):
         except:
             pass
 
-    def __colapsar(self, treeview, iter, path, user_param1):
+    def __colapsar(self, treeview, iter_, path, user_param1):
 
-        while self.get_model().iter_n_children(iter):
-            iterdelprimerhijo = self.get_model().iter_children(iter)
+        while self.get_model().iter_n_children(iter_):
+            iterdelprimerhijo = self.get_model().iter_children(iter_)
             self.get_model().remove(iterdelprimerhijo)
 
-        self.__agregar_nada(iter)
+        self.__agregar_nada(iter_)
 
     def __handler_click(self, widget, event):
 
@@ -332,7 +335,8 @@ class Directorios(Gtk.TreeView):
             return
 
         elif boton == 3:
-            menu = MenuList(widget, boton, pos, tiempo, path, self.get_model())
+            menu = MenuList(
+                widget, boton, pos, tiempo, path, self.get_model())
             menu.connect('accion', self.__get_accion)
             menu.popup(None, None, None, None, boton, tiempo)
 
@@ -341,8 +345,8 @@ class Directorios(Gtk.TreeView):
 
     def __get_accion(self, widget, path, accion):
 
-        iter = self.get_model().get_iter(path)
-        direccion = self.get_model().get_value(iter, 2)
+        iter_ = self.get_model().get_iter(path)
+        direccion = self.get_model().get_value(iter_, 2)
         lectura, escritura, ejecucion = describe_acceso_uri(direccion)
 
         if accion == "Copiar":
@@ -351,10 +355,9 @@ class Directorios(Gtk.TreeView):
         elif accion == "Borrar":
             self.direccion_seleccionada = direccion
 
-            # "Emite 'borrar' para pedir confirmacion en toolbaraccion."
             self.emit('borrar',
                 self.direccion_seleccionada,
-                self.get_model(), iter)
+                self.get_model(), iter_)
 
             self.direccion_seleccionada = None
 
@@ -373,7 +376,7 @@ class Directorios(Gtk.TreeView):
 
         elif accion == "Cortar":
             self.direccion_seleccionada_para_cortar = direccion
-            self.get_model().remove(iter)
+            self.get_model().remove(iter_)
             self.direccion_seleccionada = None
 
         elif accion == "Crear Directorio":
@@ -424,8 +427,8 @@ class MenuList(Gtk.Menu):
         lectura, escritura, ejecucion = (False, False, False)
         unidad, directorio, archivo, enlace = (False, False, False, False)
 
-        iter = self.modelo.get_iter(path)
-        direccion = self.modelo.get_value(iter, 2)
+        iter_ = self.modelo.get_iter(path)
+        direccion = self.modelo.get_value(iter_, 2)
 
         if describe_acceso_uri(direccion):
             lectura, escritura, ejecucion = describe_acceso_uri(direccion)

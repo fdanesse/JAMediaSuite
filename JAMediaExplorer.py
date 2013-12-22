@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   JAMediaExplorer.py por:
-#   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM - Uruguay
+#       Flavio Danesse <fdanesse@gmail.com>
+#       CeibalJAM - Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,7 +78,6 @@ class Ventana(Gtk.Window):
         super(Ventana, self).__init__()
 
         self.set_title("JAMexplorer")
-        #self.modify_bg(0, Gdk.Color(49000, 52000, 18000))
         self.set_icon_from_file(os.path.join(ICONOS, "JAMediaExplorer.svg"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
@@ -258,8 +257,6 @@ class Ventana(Gtk.Window):
             from JAMediaObjects.JAMFileSystem import describe_archivo
 
             path = os.path.join(directorio, archivo)
-            # FIXME: and not 'iso' in tipo es un hack para que no tome
-            # imagenes iso como imagenes gráficas.
             descripcion = describe_archivo(path)
 
             if tipo in descripcion and not 'iso' in descripcion:
