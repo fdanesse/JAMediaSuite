@@ -30,8 +30,8 @@ import JAMediaObjects
 
 from JAMediaObjects.JAMFileSystem import describe_acceso_uri
 from JAMediaObjects.JAMFileSystem import describe_archivo
-from JAMediaObjects.JAMFileSystem import mover
-from JAMediaObjects.JAMFileSystem import copiar
+#from JAMediaObjects.JAMFileSystem import mover
+#from JAMediaObjects.JAMFileSystem import copiar
 from JAMediaObjects.JAMFileSystem import crear_directorio
 from JAMediaObjects.JAMFileSystem import describe_uri
 
@@ -254,6 +254,9 @@ class Directorios(Gtk.TreeView):
         except:
             print "**** Error de acceso:", dire, archivo
 
+        iter_ = self.get_model().get_iter_first()
+        self.get_selection().select_iter(iter_)
+
     def __agregar_nada(self, iterador):
 
         self.get_model().append(
@@ -447,9 +450,9 @@ class MenuList(Gtk.Menu):
             return
 
         if lectura:
-            copiar = Gtk.MenuItem("Copiar")
-            self.append(copiar)
-            copiar.connect_object("activate",
+            item = Gtk.MenuItem("Copiar")
+            self.append(item)
+            item.connect_object("activate",
                 self.__emit_accion, path, "Copiar")
 
         if escritura and not unidad:

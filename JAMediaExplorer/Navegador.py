@@ -235,7 +235,6 @@ class Unidades(Gtk.TreeView):
         elif boton == 2:
             return
 
-
     def __get_accion(self, widget, path, accion):
 
         iter_ = self.get_model().get_iter(path)
@@ -430,6 +429,22 @@ class Unidades(Gtk.TreeView):
             self.get_model().append([
                 pixbuf, unidad['label'], unidad['mount_path']])
 
+        from gi.repository import GLib
+        GLib.idle_add(self.__select_first)
+
+    def __select_first(self):
+
+        modelo, iter_ = self.get_selection().get_selected()
+        iter_ = self.get_model().iter_next(iter_)
+        self.get_selection().select_iter(iter_)
+
+        #if self.dir_select != directorio:
+        self.dir_select = self.get_model().get_value(iter_, 2)
+        self.emit('leer', self.dir_select)
+        self.emit('info', self.dir_select)
+
+        return False
+
 
 class MenuListUnidades(Gtk.Menu):
 
@@ -450,8 +465,8 @@ class MenuListUnidades(Gtk.Menu):
         #lectura, escritura, ejecucion = (False, False, False)
         #unidad, directorio, archivo, enlace = (False, False, False, False)
 
-        iter_ = self.modelo.get_iter(path)
-        direccion = self.modelo.get_value(iter_, 2)
+        #iter_ = self.modelo.get_iter(path)
+        #direccion = self.modelo.get_value(iter_, 2)
 
         #if describe_acceso_uri(direccion):
         #    lectura, escritura, ejecucion = describe_acceso_uri(direccion)

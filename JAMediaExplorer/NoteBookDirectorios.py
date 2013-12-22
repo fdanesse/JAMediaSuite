@@ -10,11 +10,11 @@ import os
 from gi.repository import Gtk
 from gi.repository import GObject
 
-from JAMediaObjects.JAMediaGlobales import get_boton
-from JAMediaObjects.JAMediaGlobales import get_pixels
-
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+from JAMediaObjects.JAMediaGlobales import get_boton
+from JAMediaObjects.JAMediaGlobales import get_pixels
 
 icons = os.path.join(JAMediaObjectsPath, "Iconos")
 
@@ -40,6 +40,23 @@ class NoteBookDirectorios(Gtk.Notebook):
 
         self.show_all()
 
+        self.connect('switch_page', self.__switch_page)
+
+    def __switch_page(self, widget, widget_child, indice):
+        """
+        Cuando el usuario selecciona una lengüeta en
+        el notebook, se emite la señal 'new_select'.
+        """
+
+        model, iter_ = widget_child.get_child(
+            ).get_selection().get_selected()
+
+        if iter_:
+            #path = model.get_path(iter_)
+            directorio = model.get_value(iter_, 2)
+            #print model, iter_, path
+            self.emit('info', directorio)
+
     def load(self, path):
 
         paginas = self.get_children()
@@ -50,6 +67,14 @@ class NoteBookDirectorios(Gtk.Notebook):
         else:
             scrolled = paginas[self.get_current_page()]
             scrolled.get_children()[0].load(path)
+
+            label = self.get_tab_label(scrolled).get_children()[0]
+
+            texto = path
+            if len(texto) > 15:
+                texto = " . . . " + str(path[-15:])
+
+            label.set_text(texto)
 
     def __action_add_leer(self, widget, path):
 
@@ -66,7 +91,7 @@ class NoteBookDirectorios(Gtk.Notebook):
 
         texto = path
         if len(texto) > 15:
-            texto =  " . . . " + str(path[-15:])
+            texto = " . . . " + str(path[-15:])
 
         label = Gtk.Label(texto)
 
