@@ -392,9 +392,12 @@ class Directorios(Gtk.TreeView):
             dialog.add_button("Crear Directorio", 1)
             dialog.add_button("Cancelar", 2)
 
-            dialog.show_all()
+            dialog.vbox.show_all()
+            respuesta = dialog.run()
 
-            if dialog.run() == 1:
+            dialog.destroy()
+
+            if respuesta == 1:
                 directorio_nuevo = entry.get_text()
 
                 if directorio_nuevo != "" and directorio_nuevo != None:
@@ -402,10 +405,8 @@ class Directorios(Gtk.TreeView):
                         self.collapse_row(path)
                         self.expand_to_path(path)
 
-            elif dialog.run() == 2:
+            elif respuesta == 2:
                 pass
-
-            dialog.destroy()
 
 
 class MenuList(Gtk.Menu):
