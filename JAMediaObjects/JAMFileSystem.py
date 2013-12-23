@@ -267,6 +267,7 @@ class DeviceManager(GObject.GObject):
         propiedades['label'] = punto_montaje.get_name()
         propiedades['mount_path'] = punto_montaje.get_default_location(
             ).get_path()
+
         return propiedades
 
     def __emit_update(self, demonio_unidades, unidad):
@@ -276,10 +277,3 @@ class DeviceManager(GObject.GObject):
 
         self.__set_unidades()
         self.emit('update')
-
-
-#def convert_mpeg(archivo):
-#    "avconv -i WakaWaka WakaWaka.mpeg" # ffmpeg
-
-#def convert_mp3(archivo):
-#    pass

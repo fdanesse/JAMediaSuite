@@ -25,3 +25,6 @@
 #                oggmux name=contenedor ! filesink location=/home/flavio/Documentos/004.ogg \
 #        decodificador. ! queue ! ffmpegcolorspace ! videorate ! \
 #            theoraenc ! contenedor.
+
+#def convert_mpeg(archivo):
+#    "avconv -i WakaWaka WakaWaka.mpeg" # ffmpeg

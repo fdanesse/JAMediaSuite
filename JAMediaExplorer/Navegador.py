@@ -180,7 +180,8 @@ class Unidades(Gtk.TreeView):
         self.__setear_columnas()
         self.__Llenar_ListStore()
 
-        self.connect("button-press-event", self.__handler_click)
+        self.connect("button-press-event",
+            self.__handler_click)
 
         self.show_all()
 
@@ -300,64 +301,67 @@ class Unidades(Gtk.TreeView):
     '''
 
     def __update_unidades(self, widget):
+        """
+        Cuando se Conecta o Desconecta una Unidad.
+        """
 
         unidades = self.demonio_unidades.get_unidades()
 
+        lista = {}
         for unidad in unidades.keys():
             dic = unidades.get(unidad, False)
 
             if dic:
                 label = dic.get('label', "")
                 mount_path = dic.get('mount_path', "")
+                lista[mount_path.split("/")[-1]] = mount_path
 
-                #self.get_model().append([
-                #    pixbuf, label, mount_path])
+        from gi.repository import GLib
 
-        # FIXME: Actualizar Unidades
-        # Recorrer items, sino existen los paths, quitarlos
-        # Actualizar Lengüetas.
-        # Si hay algun nuevo path, agregarlo
-    '''
-    def __remover_unidad(self, iter_, unidad):
+        GLib.timeout_add(
+            1000, self.__update_unidades2, lista)
+
+    def __update_unidades2(self, lista):
         """
-        Cuando se desconecta una unidad, se quita de la lista.
+        Actualizar lista de unidades.
         """
 
-        directorio = self.get_model().get_value(iter_, 2)
+        model = self.get_model()
+        item = model.get_iter_first()
 
-        # FIXME: Agregar un while
+        mounts = []
+        remove_explorers = []
+        while item:
+            # Remover Unidades desmontadas.
+            item_remove = False
 
-        if directorio == unidad['mount_path']:
-            self.get_model().remove(iter_)
+            if not os.path.exists(model.get_value(item, 2)):
+                remove_explorers.append(model.get_value(item, 2))
+                item_remove = item
 
-        else:
-            iter_ = self.get_model().iter_next(iter_)
-            self.__remover_unidad(iter_, unidad)
+            else:
+                mounts.append(model.get_value(item, 1))
 
-        # FIXME: Cerrar lengüetas.
+            item = model.iter_next(item)
 
-    def __nueva_unidad_conectada(self, widget, unidad):
-        """
-        Cuando se conecta una unidad, se agrega a la lista.
-        """
+            if item_remove:
+                model.remove(item_remove)
 
-        icono = os.path.join(ICONOS,
-            "drive-removable-media-usb.svg")
+        for it in lista.keys():
+            # Agregar Unidades nuevas.
 
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            icono, get_pixels(0.8), -1)
+            if not it in mounts:
+                icono = os.path.join(ICONOS, "drive-removable-media-usb.svg")
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                    icono, get_pixels(0.8), -1)
 
-        self.get_model().append([
-            pixbuf, unidad['label'],
-            unidad['mount_path']])
+                model.append([pixbuf, it, lista[it]])
 
-    def __nueva_unidad_desconectada(self, widget, unidad):
-        """
-        Cuando se desconecta una unidad, se quita de la lista.
-        """
+        # FIXME:
+        #   Quitar explorers cuyo path contiene remove_explorers.
+        #   Verificar informacion en cortar y copiar y actualizarla.
 
-        iter_ = self.get_model().get_iter_first()
-        self.__remover_unidad(iter_, unidad)'''
+        return False
 
     def __setear_columnas(self):
 
@@ -438,7 +442,7 @@ class Unidades(Gtk.TreeView):
                 mount_path = dic.get('mount_path', "")
 
                 self.get_model().append([
-                    pixbuf, label, mount_path])
+                    pixbuf, mount_path.split("/")[-1], mount_path])
 
         from gi.repository import GLib
         GLib.idle_add(self.__select_first)

@@ -154,7 +154,7 @@ class Ventana(Gtk.Window):
 
         #GLib.idle_add(self.setup_init)
 
-    def __ejecutar_borrar(self, widget, direccion, modelo, iter):
+    def __ejecutar_borrar(self, widget, direccion, modelo, iter_):
         """
         Ejecuta borrar un archivo o directorio.
         """
@@ -162,15 +162,15 @@ class Ventana(Gtk.Window):
         from JAMediaObjects.JAMFileSystem import borrar
 
         if borrar(direccion):
-            modelo.remove(iter)
+            modelo.remove(iter_)
 
-    def __set_borrar(self, widget, direccion, modelo, iter):
+    def __set_borrar(self, widget, direccion, modelo, iter_):
         """
         Setea borrar un archivo en toolbaraccion.
         """
 
         self.toolbar_salir.hide()
-        self.toolbar_accion.set_accion(direccion, modelo, iter)
+        self.toolbar_accion.set_accion(direccion, modelo, iter_)
 
     def __confirmar_salir(self, widget=None, senial=None):
         """

@@ -186,7 +186,8 @@ class NoteBookDirectorios(Gtk.Notebook):
                         self.direccion_seleccionada_para_cortar = False
 
         elif accion == "Cortar":
-            self.direccion_seleccionada_para_cortar = (direccion, widget, iter_)
+            self.direccion_seleccionada_para_cortar = (
+                direccion, widget, iter_)
             self.direccion_seleccionada = False
 
     def __emit_borrar(self, widget, direccion, modelo, iter_):
