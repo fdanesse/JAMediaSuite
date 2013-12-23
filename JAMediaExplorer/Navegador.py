@@ -182,18 +182,10 @@ class Unidades(Gtk.TreeView):
 
         self.connect("button-press-event", self.__handler_click)
 
-        #self.get_selection().set_select_function(
-        #    self.__selecciones, self.get_model())
-
         self.show_all()
 
-        self.demonio_unidades.connect(
-            'nueva_unidad_conectada',
-            self.__nueva_unidad_conectada)
-
-        self.demonio_unidades.connect(
-            'nueva_unidad_desconectada',
-            self.__nueva_unidad_desconectada)
+        self.demonio_unidades.connect('update',
+            self.__update_unidades)
 
     def __handler_click(self, widget, event):
 
@@ -307,6 +299,43 @@ class Unidades(Gtk.TreeView):
             dialog.destroy()
     '''
 
+    def __update_unidades(self, widget):
+
+        unidades = self.demonio_unidades.get_unidades()
+
+        for unidad in unidades.keys():
+            dic = unidades.get(unidad, False)
+
+            if dic:
+                label = dic.get('label', "")
+                mount_path = dic.get('mount_path', "")
+
+                #self.get_model().append([
+                #    pixbuf, label, mount_path])
+
+        # FIXME: Actualizar Unidades
+        # Recorrer items, sino existen los paths, quitarlos
+        # Actualizar Lengüetas.
+        # Si hay algun nuevo path, agregarlo
+    '''
+    def __remover_unidad(self, iter_, unidad):
+        """
+        Cuando se desconecta una unidad, se quita de la lista.
+        """
+
+        directorio = self.get_model().get_value(iter_, 2)
+
+        # FIXME: Agregar un while
+
+        if directorio == unidad['mount_path']:
+            self.get_model().remove(iter_)
+
+        else:
+            iter_ = self.get_model().iter_next(iter_)
+            self.__remover_unidad(iter_, unidad)
+
+        # FIXME: Cerrar lengüetas.
+
     def __nueva_unidad_conectada(self, widget, unidad):
         """
         Cuando se conecta una unidad, se agrega a la lista.
@@ -327,38 +356,8 @@ class Unidades(Gtk.TreeView):
         Cuando se desconecta una unidad, se quita de la lista.
         """
 
-        iter = self.get_model().get_iter_first()
-        self.remover_unidad(iter, unidad)
-
-    def __remover_unidad(self, iter, unidad):
-        """
-        Cuando se desconecta una unidad, se quita de la lista.
-        """
-
-        directorio = self.get_model().get_value(iter, 2)
-
-        if directorio == unidad['mount_path']:
-            self.get_model().remove(iter)
-
-        else:
-            iter = self.get_model().iter_next(iter)
-            self.remover_unidad(iter, unidad)
-    '''
-    def __selecciones(self, treeselection, model, path, is_selected, listore):
-        """
-        Cuando se hace click sobre una unidad de almacenamiento.
-        """
-
-        # model y listore son ==
-        iter_ = model.get_iter(path)
-        directorio = model.get_value(iter_, 2)
-
-        if not is_selected and self.dir_select != directorio:
-            self.dir_select = directorio
-            self.emit('leer', self.dir_select)
-            self.emit('info', self.dir_select)
-
-        return True'''
+        iter_ = self.get_model().get_iter_first()
+        self.__remover_unidad(iter_, unidad)'''
 
     def __setear_columnas(self):
 
@@ -388,6 +387,8 @@ class Unidades(Gtk.TreeView):
 
     def __Llenar_ListStore(self):
 
+        import commands
+
         icono = os.path.join(ICONOS, "def.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             icono, get_pixels(0.8), -1)
@@ -396,7 +397,8 @@ class Unidades(Gtk.TreeView):
         icono = os.path.join(ICONOS, "stock-home.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             icono, get_pixels(0.8), -1)
-        self.get_model().append([pixbuf, 'Usuario', HOME])
+        self.get_model().append([pixbuf,
+            commands.getoutput('whoami'), HOME])
 
         if describe_uri(ACTIVITIES):
             icono = os.path.join(ICONOS, "stock-home.svg")
@@ -426,9 +428,17 @@ class Unidades(Gtk.TreeView):
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             icono, get_pixels(0.8), -1)
 
-        for unidad in self.demonio_unidades.get_unidades():
-            self.get_model().append([
-                pixbuf, unidad['label'], unidad['mount_path']])
+        unidades = self.demonio_unidades.get_unidades()
+
+        for unidad in unidades.keys():
+            dic = unidades.get(unidad, False)
+
+            if dic:
+                label = dic.get('label', "")
+                mount_path = dic.get('mount_path', "")
+
+                self.get_model().append([
+                    pixbuf, label, mount_path])
 
         from gi.repository import GLib
         GLib.idle_add(self.__select_first)

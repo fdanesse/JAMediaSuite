@@ -224,20 +224,11 @@ def verificar_Gstreamer():
 class DeviceManager(GObject.GObject):
     """
     Demonio para unidades de montaje.
-
-    Importa la clase e instánciala.
-
-    Seguidamente, para obtener las unidades montadas
-    en ese momento, llama a get_unidades.
-
-    Para monitorear los cambios posteriormente, conectate a las señales.
     """
 
     __gsignals__ = {
-    'nueva_unidad_conectada': (GObject.SignalFlags.RUN_FIRST,
-        None, (GObject.TYPE_PYOBJECT, )),
-    'nueva_unidad_desconectada': (GObject.SignalFlags.RUN_FIRST,
-        None, (GObject.TYPE_PYOBJECT, ))}
+    'update': (GObject.SignalFlags.RUN_FIRST,
+        None, [])}
 
     def __init__(self):
 
@@ -249,25 +240,25 @@ class DeviceManager(GObject.GObject):
         self.demonio_unidades = Gio.VolumeMonitor.get()
 
         self.demonio_unidades.connect('mount-added',
-            self.emit_unidad_conectada)
+            self.__emit_update)
         self.demonio_unidades.connect('mount-removed',
-            self.emit_unidad_desconectada)
+            self.__emit_update)
+
+        self.__set_unidades()
 
     def get_unidades(self):
-        """
-        Devuelve una lista de diccionarios que representa
-        las unidades montadas actualmente.
-        """
 
-        unidades = []
+        return self.unidades
+
+    def __set_unidades(self):
+
+        self.unidades = {}
 
         for punto_montaje in self.demonio_unidades.get_mounts():
-            propiedades = self.get_propiedades(punto_montaje)
-            unidades.append(propiedades)
+            propiedades = self.__get_propiedades(punto_montaje)
+            self.unidades[punto_montaje] = propiedades
 
-        return unidades
-
-    def get_propiedades(self, punto_montaje):
+    def __get_propiedades(self, punto_montaje):
         """
         Devuelve las propiedades de una unidad montada.
         """
@@ -278,43 +269,13 @@ class DeviceManager(GObject.GObject):
             ).get_path()
         return propiedades
 
-    def emit_unidad_conectada(self, demonio_unidades, unidad):
+    def __emit_update(self, demonio_unidades, unidad):
         """
         Cuando se conecta una unidad usb.
         """
 
-        propiedades = self.get_propiedades(unidad)
-        self.unidades[unidad] = propiedades
-        self.emit('nueva_unidad_conectada', self.unidades[unidad])
-
-    def emit_unidad_desconectada(self, demonio_unidades, unidad):
-        """
-        Cuando se desconecta una unidad usb.
-        """
-
-        self.emit('nueva_unidad_desconectada', self.unidades[unidad])
-        del self.unidades[unidad]
-
-
-def unidad_conectada(widget=None, senial=None):
-    print widget, senial, widget.get_unidades()
-
-
-def unidad_desconectada(widget=None, senial=None):
-    print widget, senial, widget.get_unidades()
-
-
-if __name__ == "__main__":
-    """
-    Demonio para unidades de montaje.
-    """
-
-    from gi.repository import Gtk
-
-    manager = DeviceManager()
-    manager.connect('nueva_unidad_conectada', unidad_conectada)
-    manager.connect('nueva_unidad_desconectada', unidad_conectada)
-    Gtk.main()
+        self.__set_unidades()
+        self.emit('update')
 
 
 #def convert_mpeg(archivo):
