@@ -77,6 +77,7 @@ class Navegador(Gtk.Paned):
         self.unidades.connect('leer', self.__leer)
         self.unidades.connect('add-leer', self.__add)
         self.unidades.connect('info', self.__emit_info)
+        self.unidades.connect('remove_explorers', self.__remove_explorers)
 
         self.notebookdirectorios.connect('info', self.__emit_info)
         self.notebookdirectorios.connect('borrar', self.__emit_borrar)
@@ -84,6 +85,28 @@ class Navegador(Gtk.Paned):
         self.infowidget.connect('cargar', self.__emit_cargar)
 
         self.unidades.get_selection().select_path(0)
+
+    def __remove_explorers(self, widget, remove_explorers):
+        """
+        Cuando se desmonta una unidad, se cierran las lenguetas
+        que refieren a ella y se verifican los paths en cortar y copiar.
+        """
+
+        for path in remove_explorers:
+            # FIXME:
+            #   Quitar explorers cuyo path contiene remove_explorers.
+
+            copiando = self.notebookdirectorios.direccion_seleccionada
+            cortando = self.notebookdirectorios.direccion_seleccionada_para_cortar
+
+            if copiando:
+                if path in copiando:
+                    self.notebookdirectorios.direccion_seleccionada = False
+
+            if cortando:
+                path_cortando = self.notebookdirectorios.direccion_seleccionada_para_cortar[0]
+                if path in path_cortando:
+                    self.notebookdirectorios.direccion_seleccionada_para_cortar = False
 
     def __emit_borrar(self, widget, direccion, modelo, iter):
         """
@@ -161,6 +184,8 @@ class Unidades(Gtk.TreeView):
     "add-leer": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "info": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+    "remove_explorers": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
@@ -357,9 +382,8 @@ class Unidades(Gtk.TreeView):
 
                 model.append([pixbuf, it, lista[it]])
 
-        # FIXME:
-        #   Quitar explorers cuyo path contiene remove_explorers.
-        #   Verificar informacion en cortar y copiar y actualizarla.
+        if remove_explorers:
+            self.emit('remove_explorers', remove_explorers)
 
         return False
 
