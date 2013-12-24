@@ -78,7 +78,8 @@ class Ventana(Gtk.Window):
         super(Ventana, self).__init__()
 
         self.set_title("JAMediaExplorer")
-        self.set_icon_from_file(os.path.join(ICONOS, "JAMediaExplorer.svg"))
+        self.set_icon_from_file(
+            os.path.join(ICONOS, "JAMediaExplorer.svg"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_position(Gtk.WindowPosition.CENTER)
@@ -154,6 +155,12 @@ class Ventana(Gtk.Window):
 
         #GLib.idle_add(self.setup_init)
 
+    #def setup_init(self):
+
+    #    self.jamediaplayer.setup_init()
+    #    self.jamedialector.setup_init()
+    #    map(self.ocultar, self.sockets)
+
     def __ejecutar_borrar(self, widget, direccion, modelo, iter_):
         """
         Ejecuta borrar un archivo o directorio.
@@ -180,12 +187,6 @@ class Ventana(Gtk.Window):
         self.toolbar_accion.hide()
         self.toolbar_salir.run("JAMediaExplorer")
 
-    #def setup_init(self):
-
-    #    self.jamediaplayer.setup_init()
-    #    self.jamedialector.setup_init()
-    #    map(self.ocultar, self.sockets)
-
     def __ocultar(self, objeto):
 
         if objeto.get_visible():
@@ -195,55 +196,6 @@ class Ventana(Gtk.Window):
 
         if not objeto.get_visible():
             objeto.show()
-
-    #def get_explorador(self, widget):
-
-    #    map(self.ocultar, self.sockets)
-    #    map(self.mostrar, self.objetos_no_visibles_en_switch)
-
-    #    map(self.ocultar,
-    #        [self.toolbar_accion,
-    #        self.toolbar_salir])
-
-    #    self.queue_draw()
-
-    #    GLib.idle_add(self.jamimagenes.limpiar)
-    #    GLib.idle_add(self.jamedialector.limpiar)
-
-    #def switch(self, widget, tipo):
-    #    """Carga una aplicacion embebida de acuerdo
-    #    al tipo de archivo que recibe."""
-
-    #    if 'image' in tipo:
-    #        map(self.ocultar, self.objetos_no_visibles_en_switch)
-    #        self.socketimagenes.show()
-    #        model, iter = self.navegador.directorios.treeselection.get_selected()
-    #        valor = model.get_value(iter, 2)
-    #        items = self.get_items(os.path.dirname(valor), 'image')
-    #        GLib.idle_add(self.jamimagenes.set_lista, items)
-    #        # agregar seleccionar segun valor ?
-
-    #    elif 'video' in tipo or 'audio' in tipo:
-    #        map(self.ocultar, self.objetos_no_visibles_en_switch)
-    #        self.socketjamedia.show()
-    #        model, iter = self.navegador.directorios.treeselection.get_selected()
-    #        valor = model.get_value(iter, 2)
-    #        items = self.get_items(os.path.dirname(valor), 'video')
-    #        items.extend(self.get_items(os.path.dirname(valor), 'audio'))
-    #        GLib.idle_add(self.jamediaplayer.set_nueva_lista, items)
-    #        # agregar seleccionar segun valor ?
-
-    #    elif 'pdf' in tipo or 'text' in tipo:
-    #        map(self.ocultar, self.objetos_no_visibles_en_switch)
-    #        self.socketjamedialector.show()
-    #        model, iter = self.navegador.directorios.treeselection.get_selected()
-    #        valor = model.get_value(iter, 2)
-    #        GLib.idle_add(self.jamedialector.abrir, valor)
-
-    #    else:
-    #        print tipo
-
-    #    self.queue_draw()
 
     def __get_items(self, directorio, tipo):
 
@@ -315,9 +267,65 @@ class Ventana(Gtk.Window):
 
     def __salir(self, widget=None, senial=None):
 
+        notebook = self.navegador.notebookdirectorios
+        paginas = notebook.get_n_pages()
+
+        for indice in range(paginas):
+            pags = notebook.get_children()
+            pags[indice].get_child().new_handle(False)
+
         import sys
         sys.exit(0)
         Gtk.main_quit()
+
+    #def get_explorador(self, widget):
+
+    #    map(self.ocultar, self.sockets)
+    #    map(self.mostrar, self.objetos_no_visibles_en_switch)
+
+    #    map(self.ocultar,
+    #        [self.toolbar_accion,
+    #        self.toolbar_salir])
+
+    #    self.queue_draw()
+
+    #    GLib.idle_add(self.jamimagenes.limpiar)
+    #    GLib.idle_add(self.jamedialector.limpiar)
+
+    #def switch(self, widget, tipo):
+    #    """Carga una aplicacion embebida de acuerdo
+    #    al tipo de archivo que recibe."""
+
+    #    if 'image' in tipo:
+    #        map(self.ocultar, self.objetos_no_visibles_en_switch)
+    #        self.socketimagenes.show()
+    #        model, iter = self.navegador.directorios.treeselection.get_selected()
+    #        valor = model.get_value(iter, 2)
+    #        items = self.get_items(os.path.dirname(valor), 'image')
+    #        GLib.idle_add(self.jamimagenes.set_lista, items)
+    #        # agregar seleccionar segun valor ?
+
+    #    elif 'video' in tipo or 'audio' in tipo:
+    #        map(self.ocultar, self.objetos_no_visibles_en_switch)
+    #        self.socketjamedia.show()
+    #        model, iter = self.navegador.directorios.treeselection.get_selected()
+    #        valor = model.get_value(iter, 2)
+    #        items = self.get_items(os.path.dirname(valor), 'video')
+    #        items.extend(self.get_items(os.path.dirname(valor), 'audio'))
+    #        GLib.idle_add(self.jamediaplayer.set_nueva_lista, items)
+    #        # agregar seleccionar segun valor ?
+
+    #    elif 'pdf' in tipo or 'text' in tipo:
+    #        map(self.ocultar, self.objetos_no_visibles_en_switch)
+    #        self.socketjamedialector.show()
+    #        model, iter = self.navegador.directorios.treeselection.get_selected()
+    #        valor = model.get_value(iter, 2)
+    #        GLib.idle_add(self.jamedialector.abrir, valor)
+
+    #    else:
+    #        print tipo
+
+    #    self.queue_draw()
 
 
 if __name__ == "__main__":

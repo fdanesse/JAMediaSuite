@@ -88,8 +88,8 @@ class Directorios(Gtk.TreeView):
 
         self.path = False
         self.dir_select = None
+        self.dict = {}
         self.actualizador = False
-        self.control = ""
 
         self.connect("row-expanded", self.__expandir, None)
         self.connect("row-activated", self.__activar, None)
@@ -181,8 +181,8 @@ class Directorios(Gtk.TreeView):
 
     def load(self, directorio):
 
+        self.dict = {}
         self.path = directorio
-        self.control = str(os.listdir(self.path))
         self.get_model().clear()
         self.__leer((directorio, False))
 
@@ -201,8 +201,10 @@ class Directorios(Gtk.TreeView):
                 iter_ = self.get_model().get_iter_first()
 
             archivos = []
+            listdir = os.listdir(os.path.join(directorio))
+            listdir.sort()
 
-            for archivo in os.listdir(os.path.join(directorio)):
+            for archivo in listdir:
                 direccion = os.path.join(directorio, archivo)
 
                 if os.path.isdir(direccion):
@@ -258,6 +260,8 @@ class Directorios(Gtk.TreeView):
                 self.get_model().append(
                     iter_, [pixbuf, archivo,
                     x, str(os.path.getsize(x)) + " bytes"])
+
+            self.dict[directorio] = str(listdir)
 
         except:
             print "**** Error de acceso:", dire, archivo
@@ -318,6 +322,11 @@ class Directorios(Gtk.TreeView):
             pass
 
     def __colapsar(self, treeview, iter_, path, user_param1):
+
+        valor = self.get_model().get_value(iter_, 2)
+
+        if self.dict.get(valor, False):
+            del (self.dict[valor])
 
         while self.get_model().iter_n_children(iter_):
             iterdelprimerhijo = self.get_model().iter_children(iter_)
@@ -405,9 +414,6 @@ class Directorios(Gtk.TreeView):
 
     def new_handle(self, reset):
 
-        # FIXME: Deshabilitado temporalmente
-        return False
-
         if self.actualizador:
             GLib.source_remove(self.actualizador)
             self.actualizador = False
@@ -420,8 +426,13 @@ class Directorios(Gtk.TreeView):
 
         self.new_handle(False)
 
-        if self.control != str(os.listdir(self.path)):
-            print self
+        for directorio in self.dict.keys():
+            listdir = os.listdir(os.path.join(directorio))
+            listdir.sort()
+
+            if not self.dict.get(directorio, False) == str(listdir):
+                self.load(self.path)
+                return
 
         self.new_handle(True)
 
@@ -471,8 +482,8 @@ class MenuList(Gtk.Menu):
 
         notebook = self.parent_objet.get_parent().get_parent()
         if escritura and (directorio or unidad) and \
-            (notebook.direccion_seleccionada or \
-            notebook.direccion_seleccionada_para_cortar):
+            (notebook.copiando or \
+            notebook.cortando):
 
             pegar = Gtk.MenuItem("Pegar")
             self.append(pegar)

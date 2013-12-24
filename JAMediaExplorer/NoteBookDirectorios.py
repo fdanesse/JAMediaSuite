@@ -30,7 +30,9 @@ class NoteBookDirectorios(Gtk.Notebook):
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
     "borrar": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT))}
+        GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT)),
+    "montaje": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -46,17 +48,6 @@ class NoteBookDirectorios(Gtk.Notebook):
         self.connect('switch_page', self.__switch_page)
 
     def __switch_page(self, widget, widget_child, indice):
-        """
-        Cuando el usuario selecciona una lengüeta en
-        el notebook, se emite la señal 'new_select'.
-        """
-
-        model, iter_ = widget_child.get_child(
-            ).get_selection().get_selected()
-
-        if iter_:
-            directorio = model.get_value(iter_, 2)
-            self.emit('info', directorio)
 
         paginas = self.get_children()
 
@@ -65,6 +56,14 @@ class NoteBookDirectorios(Gtk.Notebook):
 
             if directorio != widget_child.get_child():
                 directorio.new_handle(False)
+
+        model, iter_ = widget_child.get_child(
+            ).get_selection().get_selected()
+
+        if iter_:
+            directorio = model.get_value(iter_, 2)
+            self.emit('info', directorio)
+            self.emit('montaje', widget_child.get_child().path)
 
         directorio = widget_child.get_child()
         directorio.new_handle(True)
@@ -199,7 +198,7 @@ class NoteBookDirectorios(Gtk.Notebook):
 
     def __cerrar(self, widget):
         """
-        Cerrar la lengueta seleccionada.
+        Cerrar la lengüeta seleccionada.
         """
 
         notebook = widget.get_parent().get_parent()

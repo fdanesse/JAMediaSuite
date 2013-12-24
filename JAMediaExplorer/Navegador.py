@@ -81,10 +81,28 @@ class Navegador(Gtk.Paned):
 
         self.notebookdirectorios.connect('info', self.__emit_info)
         self.notebookdirectorios.connect('borrar', self.__emit_borrar)
+        self.notebookdirectorios.connect('montaje', self.__select_montaje)
 
         self.infowidget.connect('cargar', self.__emit_cargar)
 
         self.unidades.get_selection().select_path(0)
+
+    def __select_montaje(self, widget, montaje):
+        """
+        Cuando se hace switch en el notebook, se selecciona
+        la unidad de montaje a la cual refiere.
+        """
+
+        model = self.unidades.get_model()
+        item = model.get_iter_first()
+
+        while item:
+
+            if model.get_value(item, 2) == montaje:
+                self.unidades.get_selection().select_iter(item)
+                break
+
+            item = model.iter_next(item)
 
     def __remove_explorers(self, widget, remove_explorers):
         """
