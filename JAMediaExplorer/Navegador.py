@@ -92,21 +92,36 @@ class Navegador(Gtk.Paned):
         que refieren a ella y se verifican los paths en cortar y copiar.
         """
 
-        for path in remove_explorers:
-            # FIXME:
-            #   Quitar explorers cuyo path contiene remove_explorers.
+        paginas = self.notebookdirectorios.get_children()
+        pags = []
 
-            copiando = self.notebookdirectorios.direccion_seleccionada
-            cortando = self.notebookdirectorios.direccion_seleccionada_para_cortar
+        for pagina in paginas:
+            directorio = pagina.get_child()
+
+            for path in remove_explorers:
+                if path in directorio.path:
+                    pags.append(paginas.index(pagina))
+                    break
+
+        pags.reverse()
+
+        for pag in pags:
+            self.notebookdirectorios.remove_page(pag)
+
+        copiando = self.notebookdirectorios.copiando
+        cortando = self.notebookdirectorios.cortando
+
+        for path in remove_explorers:
 
             if copiando:
                 if path in copiando:
-                    self.notebookdirectorios.direccion_seleccionada = False
+                    self.notebookdirectorios.copiando = False
 
             if cortando:
-                path_cortando = self.notebookdirectorios.direccion_seleccionada_para_cortar[0]
+                path_cortando = self.notebookdirectorios.cortando[0]
+
                 if path in path_cortando:
-                    self.notebookdirectorios.direccion_seleccionada_para_cortar = False
+                    self.notebookdirectorios.cortando = False
 
     def __emit_borrar(self, widget, direccion, modelo, iter):
         """
@@ -267,34 +282,34 @@ class Unidades(Gtk.TreeView):
 
         '''
         if accion == "Copiar":
-            self.direccion_seleccionada = direccion
+            self.copiando = direccion
 
         elif accion == "Borrar":
-            self.direccion_seleccionada = direccion
+            self.copiando = direccion
 
             self.emit('borrar',
-                self.direccion_seleccionada,
+                self.copiando,
                 self.get_model(), iter_)
 
-            self.direccion_seleccionada = None
+            self.copiando = None
 
         elif accion == "Pegar":
-            if self.direccion_seleccionada_para_cortar:
-                if mover(self.direccion_seleccionada_para_cortar, direccion):
+            if self.cortando:
+                if mover(self.cortando, direccion):
                     self.collapse_row(path)
                     self.expand_to_path(path)
-                    self.direccion_seleccionada_para_cortar = None
+                    self.cortando = None
 
             else:
-                if copiar(self.direccion_seleccionada, direccion):
+                if copiar(self.copiando, direccion):
                     self.collapse_row(path)
                     self.expand_to_path(path)
-                    self.direccion_seleccionada = None
+                    self.copiando = None
 
         elif accion == "Cortar":
-            self.direccion_seleccionada_para_cortar = direccion
+            self.cortando = direccion
             self.get_model().remove(iter_)
-            self.direccion_seleccionada = None
+            self.copiando = None
 
         elif accion == "Crear Directorio":
             dialog = Gtk.Dialog(
@@ -376,7 +391,8 @@ class Unidades(Gtk.TreeView):
             # Agregar Unidades nuevas.
 
             if not it in mounts:
-                icono = os.path.join(ICONOS, "drive-removable-media-usb.svg")
+                icono = os.path.join(ICONOS,
+                    "drive-removable-media-usb.svg")
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
                     icono, get_pixels(0.8), -1)
 
@@ -533,8 +549,8 @@ class MenuListUnidades(Gtk.Menu):
                 self.__emit_accion, path, "Borrar")
 
         if escritura and (directorio or unidad) \
-            and (self.parent_objet.direccion_seleccionada != None \
-            or self.parent_objet.direccion_seleccionada_para_cortar != None):
+            and (self.parent_objet.copiando != None \
+            or self.parent_objet.cortando != None):
 
             pegar = Gtk.MenuItem("Pegar")
             self.append(pegar)

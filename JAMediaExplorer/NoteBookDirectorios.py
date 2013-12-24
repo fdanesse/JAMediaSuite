@@ -38,8 +38,8 @@ class NoteBookDirectorios(Gtk.Notebook):
 
         self.set_scrollable(True)
 
-        self.direccion_seleccionada = False
-        self.direccion_seleccionada_para_cortar = False
+        self.copiando = False
+        self.cortando = False
 
         self.show_all()
 
@@ -157,13 +157,13 @@ class NoteBookDirectorios(Gtk.Notebook):
         direccion = widget.get_model().get_value(iter_, 2)
 
         if accion == "Copiar":
-            self.direccion_seleccionada = direccion
-            self.direccion_seleccionada_para_cortar = False
+            self.copiando = direccion
+            self.cortando = False
 
         elif accion == "Pegar":
-            if self.direccion_seleccionada_para_cortar:
+            if self.cortando:
                 from JAMediaObjects.JAMFileSystem import mover
-                dire, wid, it = self.direccion_seleccionada_para_cortar
+                dire, wid, it = self.cortando
 
                 if mover(dire, direccion):
                     if wid:
@@ -172,23 +172,23 @@ class NoteBookDirectorios(Gtk.Notebook):
 
                     widget.collapse_row(path)
                     widget.expand_to_path(path)
-                    self.direccion_seleccionada_para_cortar = False
-                    self.direccion_seleccionada = False
+                    self.cortando = False
+                    self.copiando = False
 
             else:
-                if self.direccion_seleccionada:
+                if self.copiando:
                     from JAMediaObjects.JAMFileSystem import copiar
 
-                    if copiar(self.direccion_seleccionada, direccion):
+                    if copiar(self.copiando, direccion):
                         widget.collapse_row(path)
                         widget.expand_to_path(path)
-                        self.direccion_seleccionada = False
-                        self.direccion_seleccionada_para_cortar = False
+                        self.copiando = False
+                        self.cortando = False
 
         elif accion == "Cortar":
-            self.direccion_seleccionada_para_cortar = (
+            self.cortando = (
                 direccion, widget, iter_)
-            self.direccion_seleccionada = False
+            self.copiando = False
 
     def __emit_borrar(self, widget, direccion, modelo, iter_):
         """
