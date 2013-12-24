@@ -47,6 +47,14 @@ class NoteBookDirectorios(Gtk.Notebook):
 
         self.connect('switch_page', self.__switch_page)
 
+    def do_page_removed(self, scroll, num):
+
+        paginas = self.get_children()
+
+        if not paginas:
+            #self.abrir_archivo(False)
+            print "FIXME: Agregar lengüeta"
+
     def __switch_page(self, widget, widget_child, indice):
 
         paginas = self.get_children()

@@ -226,6 +226,9 @@ class Ventana(Gtk.Window):
         if not path:
             return
 
+        if not os.path.exists(path):
+            return
+
         from JAMediaObjects.JAMFileSystem import get_tamanio
         from JAMediaObjects.JAMFileSystem import describe_archivo
         from JAMediaObjects.JAMFileSystem import describe_uri

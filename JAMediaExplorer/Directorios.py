@@ -427,6 +427,11 @@ class Directorios(Gtk.TreeView):
         self.new_handle(False)
 
         for directorio in self.dict.keys():
+
+            if not os.path.exists(os.path.join(directorio)):
+                self.load(self.path)
+                return
+
             listdir = os.listdir(os.path.join(directorio))
             listdir.sort()
 
