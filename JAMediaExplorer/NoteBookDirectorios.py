@@ -44,10 +44,24 @@ class NoteBookDirectorios(Gtk.Notebook):
 
         self.copiando = False
         self.cortando = False
+        self.ver_ocultos = False
 
         self.show_all()
 
         self.connect('switch_page', self.__switch_page)
+
+    def recargar(self, valor):
+        """
+        Recarga todas las lengüetas.
+        """
+
+        self.ver_ocultos = valor
+
+        paginas = self.get_children()
+
+        for pagina in paginas:
+            directorio = pagina.get_child()
+            directorio.load(directorio.path)
 
     def do_page_removed(self, scroll, num):
 
@@ -181,7 +195,7 @@ class NoteBookDirectorios(Gtk.Notebook):
                     widget.collapse_row(path)
                     widget.expand_to_path(path)
                     self.cortando = False
-                    self.copiando = False
+                    #self.copiando = False
 
             else:
                 if self.copiando:
@@ -190,7 +204,7 @@ class NoteBookDirectorios(Gtk.Notebook):
                     if copiar(self.copiando, direccion):
                         widget.collapse_row(path)
                         widget.expand_to_path(path)
-                        self.copiando = False
+                        #self.copiando = False
                         self.cortando = False
 
         elif accion == "Cortar":

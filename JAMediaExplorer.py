@@ -141,6 +141,7 @@ class Ventana(Gtk.Window):
         self.toolbar_salir.hide()
 
         self.toolbar.connect('salir', self.__confirmar_salir)
+        self.toolbar.connect('accion_ver', self.__set_accion)
         self.toolbar_accion.connect('borrar', self.__ejecutar_borrar)
         self.toolbar_salir.connect('salir', self.__salir)
         self.connect("delete-event", self.__salir)
@@ -161,6 +162,15 @@ class Ventana(Gtk.Window):
     #    self.jamedialector.setup_init()
     #    map(self.ocultar, self.sockets)
 
+    def __set_accion(self, widget, accion, valor):
+        """
+        Cuando se hace click en ver ocultos del menu.
+        """
+
+        self.get_toplevel().set_sensitive(False)
+        self.navegador.notebookdirectorios.recargar(valor)
+        self.get_toplevel().set_sensitive(True)
+
     def __ejecutar_borrar(self, widget, direccion, modelo, iter_):
         """
         Ejecuta borrar un archivo o directorio.
@@ -172,6 +182,8 @@ class Ventana(Gtk.Window):
 
         if borrar(direccion):
             modelo.remove(iter_)
+            self.navegador.notebookdirectorios.copiando = False
+            self.navegador.notebookdirectorios.cortando = False
 
         self.get_toplevel().set_sensitive(True)
 

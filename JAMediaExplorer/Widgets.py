@@ -44,7 +44,10 @@ class Toolbar(Gtk.Toolbar):
 
     __gsignals__ = {
     "salir": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, []),
+    'accion_ver': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_BOOLEAN))}
 
     def __init__(self):
 
@@ -66,6 +69,14 @@ class Toolbar(Gtk.Toolbar):
         item.add(imagen)
         self.insert(item, -1)
 
+        menu = Menu()
+        item = Gtk.ToolItem()
+        #item.set_size_request(100, -1)
+        item.set_expand(True)
+        item.add(menu)
+        menu.connect('accion_ver', self.__re_emit_accion_ver)
+        self.insert(item, -1)
+
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
@@ -77,6 +88,13 @@ class Toolbar(Gtk.Toolbar):
         self.insert(boton, -1)
 
         self.show_all()
+
+    def __re_emit_accion_ver(self, widget, accion, valor):
+        """
+        Ver o no ver archivos y directorios ocultos.
+        """
+
+        self.emit('accion_ver', accion, valor)
 
     def emit_salir(self, widget):
 
@@ -195,7 +213,9 @@ class ToolbarAccion(Gtk.Toolbar):
         self.show_all()
 
     def cancelar(self, widget=None):
-        """Cancela la borrar."""
+        """
+        Cancela la borrar.
+        """
 
         self.label.set_text("")
 
@@ -204,3 +224,53 @@ class ToolbarAccion(Gtk.Toolbar):
         self.iter = None
 
         self.hide()
+
+
+class Menu(Gtk.MenuBar):
+
+    __gtype_name__ = 'JAMediaExplorerMenu'
+
+    __gsignals__ = {
+    'accion_ver': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_BOOLEAN))}
+
+    def __init__(self):
+
+        Gtk.MenuBar.__init__(self)
+
+        item_opciones = Gtk.MenuItem('Opciones')
+
+        menu_opciones = Gtk.Menu()
+        item_opciones.set_submenu(menu_opciones)
+        self.append(item_opciones)
+
+        item = Gtk.MenuItem()
+        try:
+            item.get_child().destroy()
+
+        except:
+            pass
+
+        hbox = Gtk.HBox()
+        button = Gtk.CheckButton()
+        button.set_active(False)
+        hbox.pack_start(button, False, False, 0)
+        label = Gtk.Label("Ver Ocultos")
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate",
+            self.__emit_accion_ver, "Ocultos")
+        menu_opciones.append(item)
+
+        self.show_all()
+
+    def __emit_accion_ver(self, widget, accion):
+        """
+        Ver o no ver archivos y directorios ocultos.
+        """
+
+        valor = not widget.get_children()[0].get_children()[0].get_active()
+        widget.get_children()[0].get_children()[0].set_active(valor)
+
+        self.emit('accion_ver', accion, valor)

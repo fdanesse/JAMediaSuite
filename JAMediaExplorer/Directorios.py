@@ -207,6 +207,10 @@ class Directorios(Gtk.TreeView):
             for archivo in listdir:
                 direccion = os.path.join(directorio, archivo)
 
+                if not self.get_parent().get_parent().ver_ocultos:
+                    if archivo.startswith('.'):
+                        continue
+
                 if os.path.isdir(direccion):
                     icono = None
                     lectura, escritura, ejecucion = describe_acceso_uri(
@@ -406,7 +410,7 @@ class Directorios(Gtk.TreeView):
                 direccion,
                 self.get_model(), iter_)
 
-        elif accion == "Abrir":
+        elif accion == "new-tab":
             self.emit('add-leer', direccion)
 
         else:
@@ -505,7 +509,7 @@ class MenuList(Gtk.Menu):
             abrir_pestania = Gtk.MenuItem("Abrir en Pestaña Nueva")
             self.append(abrir_pestania)
             abrir_pestania.connect_object("activate",
-                self.__emit_accion, path, "Abrir")
+                self.__emit_accion, path, "new-tab")
 
             nuevodirectorio = Gtk.MenuItem("Crear Directorio")
             self.append(nuevodirectorio)
