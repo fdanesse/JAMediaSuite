@@ -85,12 +85,16 @@ class Extractor(Gst.Pipeline):
             self.location = self.origen.replace(
                 extension, ".%s" % self.codec)
 
+        '''
         if os.path.exists(self.location):
             print "Este Archivo se Procesó Anteriormente"
             GLib.idle_add(self.emit, "endfile")
 
         else:
             self.__run()
+        '''
+
+        self.__run()
 
     def __run(self):
 
@@ -155,16 +159,61 @@ class Extractor(Gst.Pipeline):
         self.bus.connect('sync-message', self.__sync_message)
 
         decodebin.connect('pad-added', self.__on_pad_added)
+        decodebin.connect( "no-more-pads", self.__no_more_pads)
+        #decodebin.connect("pad-removed", self.__pad_removed)
+        #decodebin.connect("unknown-type", self.__unknown_type)
+        #decodebin.connect("autoplug-continue", self.__autoplug_continue)
+        #decodebin.connect("autoplug-factories", self.__autoplug_factories)
+        #decodebin.connect("autoplug-sort", self.__autoplug_sort)
+        #decodebin.connect("autoplug-select", self.__autoplug_select)
+        #decodebin.connect("autoplug-query", self.__autoplug_query)
+        #decodebin.connect("drained", self.__drained)
 
         filesrc.set_property('location', self.origen)
         filesink.set_property('location', self.location)
+
+    def __drained(self, decodebin=None):
+
+        print "__drained", decodebin
+
+    def __autoplug_query(self, decodebin=None):
+
+        print "__autoplug_query", decodebin
+
+    def __autoplug_select(self, decodebin=None):
+
+        print "__autoplug_select", decodebin
+
+    def __autoplug_sort(self, decodebin=None):
+
+        print "__autoplug_factories", decodebin
+
+    def __autoplug_factories(self, decodebin=None):
+
+        print "__autoplug_factories", decodebin
+
+    def __autoplug_continue(self, decodebin, otro1, otro2):
+
+        print "__autoplug_continue", decodebin, otro1, otro2
+
+    def __unknown_type(self, decodebin=None):
+
+        print "__unknown_type", decodebin
+
+    def __pad_removed(self, decodebin=None, otro1=None):
+
+        print "pad-removed", decodebin, otro1
+
+    def __no_more_pads(self, decodebin=None):
+
+        print "no_more_pads", decodebin
 
     def play(self):
 
         GLib.idle_add(self.__play)
         self.__new_handle(True)
 
-    def __on_pad_added(self, uridecodebin, pad):
+    def __on_pad_added(self, decodebin, pad):
         """
         Agregar elementos en forma dinámica según
         sean necesarios. https://wiki.ubuntu.com/Novacut/GStreamer1.0

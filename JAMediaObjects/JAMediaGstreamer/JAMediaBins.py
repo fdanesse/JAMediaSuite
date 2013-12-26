@@ -42,7 +42,8 @@ class JAMedia_Efecto_bin(Gst.Bin):
 
         self.set_name(efecto)
 
-        videoconvert = Gst.ElementFactory.make("videoconvert",
+        videoconvert = Gst.ElementFactory.make(
+            "videoconvert",
             "videoconvert_%s" % (efecto))
 
         efecto = Gst.ElementFactory.make(efecto, efecto)

@@ -126,7 +126,8 @@ class JAMediaWebCam(GObject.GObject):
 
         self.camara = JAMedia_Camara_bin()
 
-        self.gamma = Gst.ElementFactory.make('gamma', "gamma")
+        self.gamma = Gst.ElementFactory.make(
+            'gamma', "gamma")
 
         self.videoflip = Gst.ElementFactory.make(
             'videoflip', "videoflip")
@@ -135,10 +136,12 @@ class JAMediaWebCam(GObject.GObject):
 
         self.bus = self.pipeline.get_bus()
         self.bus.add_signal_watch()
-        self.bus.connect('message', self.__on_mensaje)
+        self.bus.connect(
+            'message', self.__on_mensaje)
 
         self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message', self.__sync_message)
+        self.bus.connect(
+            'sync-message', self.__sync_message)
 
     def __set_base_pipe(self):
         """
@@ -151,17 +154,24 @@ class JAMediaWebCam(GObject.GObject):
         #self.gamma
         #self.videoflip
 
-        multi_out_tee = Gst.ElementFactory.make('tee', "multi_out_tee")
+        multi_out_tee = Gst.ElementFactory.make(
+            'tee', "multi_out_tee")
 
         queue_xvimagesink = Gst.ElementFactory.make(
             'queue', "queue_xvimagesink")
-        queue_xvimagesink.set_property('max-size-buffers', 1000)
-        queue_xvimagesink.set_property('max-size-bytes', 0)
-        queue_xvimagesink.set_property('max-size-time', 0)
 
-        pantalla = Gst.ElementFactory.make('xvimagesink', "xvimagesink")
+        queue_xvimagesink.set_property(
+            'max-size-buffers', 1000)
+        queue_xvimagesink.set_property(
+            'max-size-bytes', 0)
+        queue_xvimagesink.set_property(
+            'max-size-time', 0)
 
-        efectos_bin = Efectos_Video_bin(self.efectos, self.config_efectos)
+        pantalla = Gst.ElementFactory.make(
+            'xvimagesink', "xvimagesink")
+
+        efectos_bin = Efectos_Video_bin(
+            self.efectos, self.config_efectos)
 
         fotobin = Foto_bin()
 
@@ -201,11 +211,15 @@ class JAMediaWebCam(GObject.GObject):
 
         self.camara.camara.set_property(
             'saturation', self.config['saturacion'])
-        self.camara.camara.set_property('contrast', self.config['contraste'])
-        self.camara.camara.set_property('brightness', self.config['brillo'])
-        self.camara.camara.set_property('hue', self.config['hue'])
+        self.camara.camara.set_property(
+            'contrast', self.config['contraste'])
+        self.camara.camara.set_property(
+            'brightness', self.config['brillo'])
+        self.camara.camara.set_property(
+            'hue', self.config['hue'])
 
-        self.gamma.set_property('gamma', self.config['gamma'])
+        self.gamma.set_property(
+            'gamma', self.config['gamma'])
 
         self.videoflip.set_property('method', 0)
 
@@ -324,12 +338,14 @@ class JAMediaWebCam(GObject.GObject):
             new_valor = int(total * int(hue) / 100)
             new_valor -= min
             self.config['hue'] = new_valor
-            self.camara.camara.set_property('hue', self.config['hue'])
+            self.camara.camara.set_property(
+                'hue', self.config['hue'])
 
         if gamma:
             # Double. Range: 0,01 - 10 Default: 1
             self.config['gamma'] = (10.0 * gamma / 100.0)
-            self.gamma.set_property('gamma', self.config['gamma'])
+            self.gamma.set_property(
+                'gamma', self.config['gamma'])
 
     def get_balance(self):
         """
@@ -438,13 +454,18 @@ class JAMediaWebCam(GObject.GObject):
         video_bin = Theoraenc_bin()
         audio_bin = Vorbisenc_bin()
 
-        oggmux = Gst.ElementFactory.make('oggmux', "oggmux")
-        filesink = Gst.ElementFactory.make('filesink', "filesink")
+        oggmux = Gst.ElementFactory.make(
+            'oggmux', "oggmux")
+        filesink = Gst.ElementFactory.make(
+            'filesink', "filesink")
 
         fecha = datetime.date.today()
         hora = time.strftime("%H-%M-%S")
+
         archivo = os.path.join(
-            get_video_directory(), "%s-%s.ogg" % (fecha, hora))
+            get_video_directory(),
+            "%s-%s.ogg" % (fecha, hora))
+
         self.patharchivo = archivo
         filesink.set_property("location", archivo)
 
@@ -467,10 +488,13 @@ class JAMediaWebCam(GObject.GObject):
 
         self.stop()
 
-        multi_out_tee = self.pipeline.get_by_name('multi_out_tee')
+        multi_out_tee = self.pipeline.get_by_name(
+            'multi_out_tee')
 
-        video_bin = self.pipeline.get_by_name('video_theoraenc_bin')
-        audio_bin = self.pipeline.get_by_name('audio_vorbisenc_bin')
+        video_bin = self.pipeline.get_by_name(
+            'video_theoraenc_bin')
+        audio_bin = self.pipeline.get_by_name(
+            'audio_vorbisenc_bin')
 
         oggmux = self.pipeline.get_by_name('oggmux')
         filesink = self.pipeline.get_by_name('filesink')
@@ -528,15 +552,18 @@ class JAMediaWebCam(GObject.GObject):
         self.stop()
 
         # Quitar efectos
-        efectos_bin = self.pipeline.get_by_name('efectos_bin')
-        jamedia_camara_bin = self.pipeline.get_by_name('jamedia_camara_bin')
+        efectos_bin = self.pipeline.get_by_name(
+            'efectos_bin')
+        jamedia_camara_bin = self.pipeline.get_by_name(
+            'jamedia_camara_bin')
         jamedia_camara_bin.unlink(efectos_bin)
         efectos_bin.unlink(self.gamma)
         self.pipeline.remove(efectos_bin)
         del(efectos_bin)
 
         # Agregar efectos
-        efectos_bin = Efectos_Video_bin(self.efectos, self.config_efectos)
+        efectos_bin = Efectos_Video_bin(
+            self.efectos, self.config_efectos)
         self.pipeline.add(efectos_bin)
         jamedia_camara_bin.link(efectos_bin)
         efectos_bin.link(self.gamma)
