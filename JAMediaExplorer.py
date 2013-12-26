@@ -166,10 +166,14 @@ class Ventana(Gtk.Window):
         Ejecuta borrar un archivo o directorio.
         """
 
+        self.get_toplevel().set_sensitive(False)
+
         from JAMediaObjects.JAMFileSystem import borrar
 
         if borrar(direccion):
             modelo.remove(iter_)
+
+        self.get_toplevel().set_sensitive(True)
 
     def __set_borrar(self, widget, direccion, modelo, iter_):
         """

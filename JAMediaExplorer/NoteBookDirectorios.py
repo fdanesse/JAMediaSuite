@@ -32,7 +32,9 @@ class NoteBookDirectorios(Gtk.Notebook):
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT)),
     "montaje": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    "no-paginas": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
@@ -52,8 +54,7 @@ class NoteBookDirectorios(Gtk.Notebook):
         paginas = self.get_children()
 
         if not paginas:
-            #self.abrir_archivo(False)
-            print "FIXME: Agregar lengüeta"
+            self.emit('no-paginas')
 
     def __switch_page(self, widget, widget_child, indice):
 

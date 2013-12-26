@@ -61,7 +61,8 @@ class Navegador(Gtk.Paned):
 
     def __init__(self):
 
-        Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+        Gtk.Paned.__init__(
+            self, orientation=Gtk.Orientation.HORIZONTAL)
 
         self.unidades = None
         self.notebookdirectorios = NoteBookDirectorios()
@@ -74,18 +75,31 @@ class Navegador(Gtk.Paned):
 
         self.show_all()
 
-        self.unidades.connect('leer', self.__leer)
-        self.unidades.connect('add-leer', self.__add)
-        self.unidades.connect('info', self.__emit_info)
-        self.unidades.connect('remove_explorers', self.__remove_explorers)
+        self.unidades.connect(
+            'leer', self.__leer)
+        self.unidades.connect(
+            'add-leer', self.__add)
+        self.unidades.connect(
+            'info', self.__emit_info)
+        self.unidades.connect(
+            'remove_explorers', self.__remove_explorers)
 
-        self.notebookdirectorios.connect('info', self.__emit_info)
-        self.notebookdirectorios.connect('borrar', self.__emit_borrar)
-        self.notebookdirectorios.connect('montaje', self.__select_montaje)
+        self.notebookdirectorios.connect(
+            'info', self.__emit_info)
+        self.notebookdirectorios.connect(
+            'borrar', self.__emit_borrar)
+        self.notebookdirectorios.connect(
+            'montaje', self.__select_montaje)
+        self.notebookdirectorios.connect(
+            'no-paginas', self.__select_home)
 
-        self.infowidget.connect('cargar', self.__emit_cargar)
+        self.infowidget.connect(
+            'cargar', self.__emit_cargar)
 
-        self.unidades.get_selection().select_path(0)
+    def __select_home(self, widget):
+
+        from gi.repository import GLib
+        GLib.idle_add(self.unidades.select_home)
 
     def __select_montaje(self, widget, montaje):
         """
@@ -194,15 +208,18 @@ class Navegador(Gtk.Paned):
         Cuando se selecciona una unidad en el panel izquierdo.
         """
 
+        self.get_toplevel().set_sensitive(False)
         self.notebookdirectorios.load(directorio)
+        self.get_toplevel().set_sensitive(True)
 
     def __add(self, widget, directorio):
         """
         Cuando se selecciona una unidad en el panel izquierdo.
         """
 
+        self.get_toplevel().set_sensitive(False)
         self.notebookdirectorios.add_leer(directorio)
-
+        self.get_toplevel().set_sensitive(True)
 
 class Unidades(Gtk.TreeView):
     """
@@ -245,6 +262,9 @@ class Unidades(Gtk.TreeView):
 
         self.demonio_unidades.connect('update',
             self.__update_unidades)
+
+        from gi.repository import GLib
+        GLib.idle_add(self.select_home)
 
     def __handler_click(self, widget, event):
 
@@ -449,6 +469,8 @@ class Unidades(Gtk.TreeView):
 
     def __Llenar_ListStore(self):
 
+        self.get_toplevel().set_sensitive(False)
+
         import commands
 
         icono = os.path.join(ICONOS, "def.svg")
@@ -502,19 +524,25 @@ class Unidades(Gtk.TreeView):
                 self.get_model().append([
                     pixbuf, mount_path.split("/")[-1], mount_path])
 
-        from gi.repository import GLib
-        GLib.idle_add(self.__select_first)
+        self.get_toplevel().set_sensitive(True)
 
-    def __select_first(self):
+    def select_home(self):
 
+        self.get_toplevel().set_sensitive(False)
+
+        self.get_selection().select_path(1)
         modelo, iter_ = self.get_selection().get_selected()
-        iter_ = self.get_model().iter_next(iter_)
-        self.get_selection().select_iter(iter_)
 
-        #if self.dir_select != directorio:
-        self.dir_select = self.get_model().get_value(iter_, 2)
-        self.emit('leer', self.dir_select)
-        self.emit('info', self.dir_select)
+        if iter_:
+            #iter_ = self.get_model().iter_next(iter_)
+            self.get_selection().select_iter(iter_)
+
+            #if self.dir_select != directorio:
+            self.dir_select = self.get_model().get_value(iter_, 2)
+            self.emit('leer', self.dir_select)
+            self.emit('info', self.dir_select)
+
+        self.get_toplevel().set_sensitive(True)
 
         return False
 
