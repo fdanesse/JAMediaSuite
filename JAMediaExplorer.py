@@ -278,9 +278,9 @@ class Ventana(Gtk.Window):
                 texto += "\t%s bytes\n" % (get_tamanio(path))
 
         texto += "Permisos: \n"
-        texto += "Lactura: %s\n" % (lectura)
-        texto += "Escritura: %s\n" % (escritura)
-        texto += "Ejecución: %s" % (ejecucion)
+        texto += "\tLactura: %s\n" % (lectura)
+        texto += "\tEscritura: %s\n" % (escritura)
+        texto += "\tEjecución: %s\n" % (ejecucion)
 
         self.navegador.infowidget.set_info(texto, typeinfo)
 

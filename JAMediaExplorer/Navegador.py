@@ -221,6 +221,7 @@ class Navegador(Gtk.Paned):
         self.notebookdirectorios.add_leer(directorio)
         self.get_toplevel().set_sensitive(True)
 
+
 class Unidades(Gtk.TreeView):
     """
     Treview para unidades y directorios.
@@ -390,7 +391,7 @@ class Unidades(Gtk.TreeView):
             dic = unidades.get(unidad, False)
 
             if dic:
-                label = dic.get('label', "")
+                #label = dic.get('label', "")
                 mount_path = dic.get('mount_path', "")
                 lista[mount_path.split("/")[-1]] = mount_path
 
@@ -518,7 +519,7 @@ class Unidades(Gtk.TreeView):
             dic = unidades.get(unidad, False)
 
             if dic:
-                label = dic.get('label', "")
+                #label = dic.get('label', "")
                 mount_path = dic.get('mount_path', "")
 
                 self.get_model().append([
@@ -649,7 +650,7 @@ class InfoWidget(Gtk.EventBox):
         self.clicked_color = Gdk.Color(61686, 65000, 17078)
 
         self.modify_bg(0, self.normal_color)
-        self.set_tooltip_text("Click para Ver el Archivo.")
+        #self.set_tooltip_text("Click para Ver el Archivo.")
 
         self.typeinfo = None
 
@@ -659,7 +660,7 @@ class InfoWidget(Gtk.EventBox):
         self.imagen.modify_bg(0, self.normal_color)
 
         self.box.pack_start(self.label, False, False, 5)
-        self.box.pack_start(self.imagen, True, True, 5)
+        self.box.pack_start(self.imagen, False, False, 5)
 
         self.add(self.box)
         self.show_all()

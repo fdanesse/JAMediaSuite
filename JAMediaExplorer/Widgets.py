@@ -61,7 +61,7 @@ class Toolbar(Gtk.Toolbar):
         imagen = Gtk.Image()
         icono = os.path.join(ICONOS, "JAMediaExplorer.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
+            -1, get_pixels(1.0))
         imagen.set_from_pixbuf(pixbuf)
         #imagen.modify_bg(0, Gdk.Color(0, 0, 0))
         imagen.show()
