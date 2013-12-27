@@ -143,13 +143,17 @@ class JAMediaAudioExtractor(Gtk.Plug):
                     arch = os.path.join(origen, archivo)
 
                     datos = get_data(arch)
-                    if "video" in datos or 'audio' in datos:
+                    if "video" in datos or \
+                        'audio' in datos or \
+                        'application/ogg' in datos:
                         if not arch in self.lista:
                             self.lista.append(arch)
 
             elif os.path.isfile(origen):
                 datos = get_data(origen)
-                if "video" in datos or 'audio' in datos:
+                if "video" in datos or \
+                    'audio' in datos or \
+                    'application/ogg' in datos:
                     if not origen in self.lista:
                         self.lista.append(origen)
 

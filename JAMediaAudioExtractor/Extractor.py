@@ -24,6 +24,7 @@ import os
 from gi.repository import Gst
 from gi.repository import GObject
 from gi.repository import GLib
+from gi.repository import GstVideo
 
 GObject.threads_init()
 Gst.init([])
@@ -85,18 +86,14 @@ class Extractor(Gst.Pipeline):
             self.location = self.origen.replace(
                 extension, ".%s" % self.codec)
 
-        '''
         if os.path.exists(self.location):
             print "Este Archivo se Procesó Anteriormente"
             GLib.idle_add(self.emit, "endfile")
 
         else:
-            self.__run()
-        '''
+            self.__setup()
 
-        self.__run()
-
-    def __run(self):
+    def __setup(self):
 
         text = "Iniciando JAMediaExtractor:"
         text = "%s\n\t Id Video Widget: %s" % (text, self.ventana_id)

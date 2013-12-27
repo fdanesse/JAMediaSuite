@@ -98,13 +98,17 @@ if __name__ == "__main__":
                 arch = os.path.join(origen, archivo)
 
                 datos = get_data(arch)
-                if "video" in datos or 'audio' in datos:
+                if "video" in datos or \
+                    'audio' in datos or \
+                    'application/ogg' in datos:
                     lista.append(arch)
 
         # Archivo
         elif os.path.isfile(origen):
             datos = get_data(arch)
-            if "video" in datos or 'audio' in datos:
+            if "video" in datos or \
+                'audio' in datos or \
+                'application/ogg' in datos:
                 lista.append(origen)
 
     Ventana(lista, codec)

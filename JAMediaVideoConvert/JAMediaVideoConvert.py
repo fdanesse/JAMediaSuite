@@ -29,7 +29,7 @@ from gi.repository import GObject
 from gi.repository import GdkX11
 from gi.repository import GLib
 
-from Extractor import Extractor
+from JAMedia_Video_Ogg_Convert import JAMedia_Video_Ogg_Convert
 
 GObject.threads_init()
 Gst.init([])
@@ -183,9 +183,9 @@ class JAMediaVideoConvert(Gtk.Plug):
         origen = self.lista[0]
         self.lista.remove(origen)
 
-        self.player = Extractor(
-            self.widget_extractor.visor.get_property(
-            'window').get_xid(), origen, self.codec)
+        self.player = JAMedia_Video_Ogg_Convert(origen)
+            #self.widget_extractor.visor.get_property(
+            #'window').get_xid(), origen, self.codec)
 
         self.widget_extractor.set_extraccion(origen)
 

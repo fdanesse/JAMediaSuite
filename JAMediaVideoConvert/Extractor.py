@@ -24,6 +24,7 @@ import os
 from gi.repository import Gst
 from gi.repository import GObject
 from gi.repository import GLib
+from gi.repository import GstVideo
 
 GObject.threads_init()
 Gst.init([])
@@ -141,25 +142,30 @@ class Extractor(Gst.Pipeline):
 
         self.add(filesrc)
         self.add(decodebin)
+
         self.add(queue0)
         self.add(audioconvert)
         self.add(audioresample)
         self.add(vorbisenc)
+
         self.add(oggmux)
-        self.add(tee)
+
+        self.add(queue1)
         self.add(videoconvert)
+        self.add(tee)
+
         self.add(videorate)
         self.add(theoraenc)
         self.add(filesink)
-        self.add(queue1)
-        self.add(xvimagesink)
+
+        #self.add(xvimagesink)
 
         filesrc.link(decodebin)
         queue0.link(audioconvert)
 
         queue1.link(videoconvert)
         videoconvert.link(tee)
-        tee.link(xvimagesink)
+        #tee.link(xvimagesink)
 
         oggmux.link(filesink)
 

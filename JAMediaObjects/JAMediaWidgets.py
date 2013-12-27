@@ -452,7 +452,7 @@ class Lista(Gtk.TreeView):
                 # Es un Archivo
                 tipo = describe_archivo(path)
 
-                if 'video' in tipo:
+                if 'video' in tipo or 'application/ogg' in tipo:
                     icono = os.path.join(JAMediaWidgetsBASE,
                         "Iconos", "video.svg")
 
