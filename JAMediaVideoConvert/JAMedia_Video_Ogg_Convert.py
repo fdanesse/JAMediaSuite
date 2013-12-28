@@ -95,6 +95,7 @@ class JAMedia_Video_Ogg_Convert(Gst.Pipeline):
 
         videorate = Gst.ElementFactory.make(
             'videorate', 'videorate')
+        videorate.set_property('max-rate', 30)
 
         self.add(videoconvert)
         self.add(videorate)
@@ -124,17 +125,24 @@ class JAMedia_Video_Ogg_Convert(Gst.Pipeline):
         audioconvert = Gst.ElementFactory.make(
             "audioconvert", "audioconvert")
 
+        volumen = Gst.ElementFactory.make(
+            "volume", "volumen")
+        volumen.set_property('volume', 1.0)
+
         audioresample = Gst.ElementFactory.make(
             "audioresample", "audioresample")
+        audioresample.set_property('quality', 10)
 
         vorbisenc = Gst.ElementFactory.make(
             "vorbisenc", "vorbisenc")
 
         self.add(audioconvert)
+        self.add(volumen)
         self.add(audioresample)
         self.add(vorbisenc)
 
-        audioconvert.link(audioresample)
+        audioconvert.link(volumen)
+        volumen.link(audioresample)
         audioresample.link(vorbisenc)
         vorbisenc.link(oggmux)
 
@@ -244,7 +252,7 @@ class JAMedia_Video_Ogg_Convert(Gst.Pipeline):
 
         if pos != self.posicion:
             self.posicion = pos
-            print pos
+            #print pos
             self.emit("newposicion", self.posicion)
 
         return True
