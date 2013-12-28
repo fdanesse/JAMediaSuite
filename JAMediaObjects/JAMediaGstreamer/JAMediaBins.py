@@ -407,7 +407,9 @@ class Video_Balance_Bin(Gst.Bin):
 
     # FIXME: No es correcto si se llama a los valores reales.
     #def get_balance(self):
-    #    """Retorna los valores actuales de balance en % float."""
+    #    """
+    #    Retorna los valores actuales de balance en % float.
+    #    """
 
     #    return {
     #    'saturacion': self.config['saturacion'] * 100.0 / 2.0,

@@ -589,13 +589,17 @@ class JAMediaGrabador(GObject.GObject):
 
         self.player = Gst.ElementFactory.make(
             "uridecodebin", "uridecodebin")
+
         self.pipeline.add(self.player)
 
         # AUDIO
         audioconvert = Gst.ElementFactory.make(
             'audioconvert', 'audioconvert')
+
         audioresample = Gst.ElementFactory.make(
             'audioresample', 'audioresample')
+        audioresample.set_property('quality', 10)
+
         vorbisenc = Gst.ElementFactory.make(
             'vorbisenc', 'vorbisenc')
 
@@ -611,8 +615,11 @@ class JAMediaGrabador(GObject.GObject):
         # VIDEO
         videoconvert = Gst.ElementFactory.make(
             'videoconvert', 'videoconvert')
+
         videorate = Gst.ElementFactory.make(
             'videorate', 'videorate')
+        videorate.set_property('max-rate', 30)
+
         theoraenc = Gst.ElementFactory.make(
             'theoraenc', 'theoraenc')
 

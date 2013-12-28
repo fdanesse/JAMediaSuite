@@ -184,7 +184,7 @@ class JAMedia_Video_Ogg_Convert(Gst.Pipeline):
 
         if mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
-            print err, debug
+            # FIXME: print err, debug
             self.__new_handle(False)
             return
 
@@ -198,7 +198,7 @@ class JAMedia_Video_Ogg_Convert(Gst.Pipeline):
             err, debug = mensaje.parse_error()
             self.emit("info",
                 "Error en la Reproducción: %s %s" % (err, debug))
-            print "Error en la Reproducción:", err, debug
+            # FIXME: print "Error en la Reproducción:", err, debug
             self.__new_handle(False)
             self.emit("endfile")
 

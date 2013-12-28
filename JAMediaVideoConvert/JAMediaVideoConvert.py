@@ -178,6 +178,7 @@ class JAMediaVideoConvert(Gtk.Plug):
             self.barradeprogreso2.set_progress(100.0)
 
         if not self.lista or self.player:
+            # FIXME: Dialog para informar
             return
 
         origen = self.lista[0]
