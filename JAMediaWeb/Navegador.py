@@ -48,42 +48,43 @@ archivo.close()
 '''
 
 class Navegador(WebKit.WebView):
-    """Navegador Web."""
-    
+    """
+    Navegador Web
+    """
+
     def __init__(self):
-        
+
         WebKit.WebView.__init__(self)
-        
+
         self.show_all()
-        
+
         self.open('https://www.google.com/')
-        #self.open('/home/flavio/Datos-pygi-hack/Widget.html')
-        
+
         self.set_zoom_level(1.0)
-        
+
         print self.get_settings() # WebKit.WebSettings()
-        
-        self.connect("draw", self.__check)
-        
+
+        #self.connect("draw", self.__check)
+    '''
     def __check(self, widget, context):
-        
+
         rect = self.get_allocation()
         print rect.width, rect.height
         print widget, context
-        
+
     def do_choose_file(self):
         print 'do_choose_file'
-        
+
     def do_close_web_view(self):
         print 'do_close_web_view'
-        
+
     def do_console_message(self, uno, dos, tres):
-        
+
         print 'do_console_message',
         print "*", uno
         print "*",dos
         print "*",tres
-        
+
         """
         do_console_message
         * The page at https://sites.google.com/site/flaviodanesse/ displayed insecure content from http://activities.sugarlabs.org/en-US/sugar/images/t/540/1292037530.
@@ -120,21 +121,23 @@ class Navegador(WebKit.WebView):
 
     def do_script_prompt(self):
         print 'do_script_prompt'
-        
+
     def do_select_all(self):
         print 'do_select_all'
-        
+
     def do_set_scroll_adjustments(self):
         print 'do_set_scroll_adjustments'
 
     #def do_should_allow_editing_action(self):
     #    """Cuando se hace click en el frame, o
     #    cuando se escribe en el buscador."""
-        
+
     #    print 'do_should_allow_editing_action'
 
     def do_undo(self):
         print 'do_undo'
-        
+
     def do_web_view_ready(self):
         print 'do_web_view_ready'
+    '''
+

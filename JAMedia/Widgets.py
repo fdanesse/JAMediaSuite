@@ -222,6 +222,10 @@ class ToolbarLista(Gtk.Toolbar):
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 8)
 
+        item = Gtk.MenuItem("Web Cams")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 9)
+
         menu.show_all()
         menu.attach_to_widget(widget, self.__null)
         menu.popup(None, None, None, None, 1, 0)

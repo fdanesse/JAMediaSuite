@@ -19,8 +19,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/canales'
-radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/radios'
+#canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/canales'
+canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-tv-2014'
+#radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/radios'
+radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014'
+webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
 
 
 def make_base_directory():
@@ -325,7 +328,6 @@ def get_togle_boton(archivo, flip=False,
     return boton
 
 
-# >>> JAMedia
 def descarga_lista_de_streamings(url):
     """
     Recibe la web donde se publican los streamings
@@ -336,46 +338,45 @@ def descarga_lista_de_streamings(url):
         [nombre, url]
     """
 
-    print "Conectandose a:", url
-    print "\tDescargando Streamings . . ."
+    print "Conectandose a:", url, "\n\tDescargando Streamings . . ."
+
+    import urllib
 
     cont = 0
     urls = []
+    cabecera = 'JAMedia Channels:'
+    streamings = []
 
     try:
-        import urllib
-
-        streamings = []
-
         web = urllib.urlopen(url)
-        lineas = web.readlines()
+        t = web.readlines()
         web.close()
 
-        for linea in lineas:
+        text = ""
+        for l in t:
+            text = "%s%s" % (text, l)
 
-            #if 'dir="ltr"><div><div>' in linea:
-            #    print linea
+        streamings_text = text.split(cabecera)[1]
+        streamings_text = streamings_text.replace('</div>', "")
+        streamings_text = streamings_text.replace('/>', "")
+        lista = streamings_text.split('<br')
 
-            if 'table' in linea:
-                l = linea.split('table')
+        for s in lista:
+            if not len(s.split(",")) == 2:
+                continue
 
-                for x in l:
-                    if '<div>' in x:
-                        xx = x.split('<div>')
+            name, direc = s.split(",")
+            name = name.strip()
+            direc = direc.strip()
 
-                        for z in xx:
-                            if "," in z:
-                                s = z.split('</div>')[0]
-                                stream = s.split(",")
-                                #print stream
-                                streamings.append(stream)
+            if not direc in urls:
+                urls.append(direc)
+                stream = [name, direc]
+                streamings.append(stream)
+                cont += 1
 
-                                temp_url = stream[1]
-                                if temp_url in urls:
-                                    print "\tURL Repetida:", temp_url
-
-                                urls.append(stream[1])
-                                cont += 1
+            else:
+                print "Direccion Descartada por Repetición:", name, direc
 
         print "\tSe han Descargado:", cont, "Estreamings.\n"
         return streamings
@@ -443,7 +444,8 @@ def set_listas_default():
         os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"),
         os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"),
         os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia"),
-        os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
+        os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia"),
+        os.path.join(DIRECTORIO_DATOS, "JAMediaWebCams.JAMedia")
         ]
 
     for archivo in listas:
@@ -500,6 +502,30 @@ def set_listas_default():
         except:
             print "Error al descargar Streamings de Radios."
 
+    # verificar si las listas están vacías,
+    # si lo están se descargan las de JAMedia
+    archivo = shelve.open(
+        os.path.join(
+            DIRECTORIO_DATOS,
+            "JAMediaWebCams.JAMedia"))
+
+    lista = archivo.items()
+    archivo.close()
+
+    if not lista:
+        try:
+            # Streamings JAMediaWebCams
+            lista_webcams = descarga_lista_de_streamings(webcams)
+
+            guarda_lista_de_streamings(
+                os.path.join(
+                    DIRECTORIO_DATOS,
+                    "JAMediaWebCams.JAMedia"),
+                    lista_webcams)
+
+        except:
+            print "Error al descargar Streamings de WebCams."
+
 
 def get_streaming_default():
     """
@@ -546,6 +572,24 @@ def get_streaming_default():
 
     except:
         print "Error al descargar Streamings de Radios."
+
+    try:
+        # Streamings JAMediaWebCams
+        lista_webcams = descarga_lista_de_streamings(webcams)
+
+        clear_lista_de_streamings(
+            os.path.join(
+                DIRECTORIO_DATOS,
+                "JAMediaWebCams.JAMedia"))
+
+        guarda_lista_de_streamings(
+            os.path.join(
+                DIRECTORIO_DATOS,
+                "JAMediaWebCams.JAMedia"),
+                lista_webcams)
+
+    except:
+        print "Error al descargar Streamings de webcams."
 
 
 def add_stream(tipo, item):

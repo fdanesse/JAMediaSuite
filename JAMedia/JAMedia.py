@@ -1223,6 +1223,18 @@ class JAMediaPlayer(Gtk.Plug):
             if selector:
                 selector.destroy()
 
+        elif indice == 9:
+            # HACK: Tv no funciona con JAMediaReproductor.
+            #if self.player == self.jamediareproductor:
+            #    self.switch_reproductor(None, "MplayerReproductor")
+
+            archivo = os.path.join(
+                get_data_directory(),
+                'JAMediaWebCams.JAMedia')
+
+            self.__seleccionar_lista_de_stream(archivo, "WebCams")
+            #self.toolbar_list.boton_agregar.show()
+
     def __cargar_directorio(self, widget, archivos):
         """
         Recibe una lista de archivos y setea la lista

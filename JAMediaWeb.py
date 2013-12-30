@@ -21,13 +21,14 @@ import JAMediaWeb
 from JAMediaWeb.JAMediaWeb import JAMediaWeb
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
-    
+
+
 class Ventana(Gtk.Window):
-    
+
     def __init__(self):
-        
+
         super(Ventana, self).__init__()
-        
+
         self.set_title("JAMediaWeb")
         #self.set_icon_from_file(os.path.join(JAMediaObjectsPath,
         #    "Iconos", "JAMedia.png"))
@@ -36,30 +37,29 @@ class Ventana(Gtk.Window):
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
         #self.modify_bg(0, G.GRIS)
-        
+
         self.socket = Gtk.Socket()
         self.add(self.socket)
         self.jamediaweb = JAMediaWeb()
         self.socket.add_id(self.jamediaweb.get_id())
-        
+
         self.show_all()
         self.realize()
-        
+
         self.connect("destroy", self.salir)
         self.jamediaweb.connect('salir', self.salir)
-        
+
         GLib.idle_add(self.setup_init)
-        
+
     def setup_init(self):
-        
+
         self.jamediaweb.setup_init()
-        
+
     def salir(self, widget = None, senial = None):
-        
+
         sys.exit(0)
-        
+
 if __name__ == "__main__":
-    
+
     jamedia = Ventana()
     Gtk.main()
-    
