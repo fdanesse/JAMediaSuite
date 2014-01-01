@@ -51,6 +51,10 @@ class Ventana(Gtk.Window):
 
         GLib.idle_add(self.setup_init)
 
+    def load(self, url):
+
+        GLib.idle_add(self.jamediaweb.load, url)
+
     def setup_init(self):
 
         self.jamediaweb.setup_init()
@@ -61,5 +65,12 @@ class Ventana(Gtk.Window):
 
 if __name__ == "__main__":
 
-    jamedia = Ventana()
+    jamediaweb = Ventana()
+
+    try:
+        jamediaweb.load(sys.argv[1])
+
+    except:
+        pass
+
     Gtk.main()

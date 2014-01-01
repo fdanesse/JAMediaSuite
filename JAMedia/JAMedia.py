@@ -420,7 +420,7 @@ class JAMediaPlayer(Gtk.Plug):
                     return
 
         else:
-            if estado == "moviendose" or "detenido":
+            if estado == "moviendose" or estado == "detenido":
                 if self.get_parent_window().get_cursor() != self.jamedia_cursor:
                         self.get_parent_window().set_cursor(
                             self.jamedia_cursor)
@@ -825,11 +825,10 @@ class JAMediaPlayer(Gtk.Plug):
 
         self.mouse_in_visor = valor
 
-        self.get_toplevel().set_sensitive(False)
-
         zona, ocultar = (valor, self.toolbar_info.ocultar_controles)
 
         if zona and ocultar:
+
             map(self.__ocultar, [
                 #self.scroll_config,
                 self.toolbar_accion,
@@ -850,8 +849,6 @@ class JAMediaPlayer(Gtk.Plug):
 
         elif not zona and not ocultar:
             pass
-
-        self.get_toplevel().set_sensitive(True)
 
     def __ocultar(self, objeto):
         """

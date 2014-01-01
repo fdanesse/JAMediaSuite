@@ -638,6 +638,9 @@ def eliminar_streaming(url, lista):
     elif lista == "JAM-TV":
         path = os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia")
 
+    elif lista == "WebCams":
+        path = os.path.join(DIRECTORIO_DATOS, "JAMediaWebCams.JAMedia")
+
     else:
         return
 

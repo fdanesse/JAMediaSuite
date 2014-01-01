@@ -58,13 +58,18 @@ class Navegador(WebKit.WebView):
 
         self.show_all()
 
-        self.open('https://www.google.com/')
+        #self.open('https://www.google.com/')
 
         self.set_zoom_level(1.0)
 
         print self.get_settings() # WebKit.WebSettings()
 
         #self.connect("draw", self.__check)
+
+    def load(self, url):
+
+        self.load_uri(url)
+
     '''
     def __check(self, widget, context):
 
@@ -100,13 +105,13 @@ class Navegador(WebKit.WebView):
 
     def do_move_cursor(self):
         print 'do_move_cursor'
+    '''
+    #def do_navigation_requested(self, webwrame, networkrequest):
+    #    print 'do_navigation_requested', webwrame, networkrequest
+    #    print networkrequest.get_message()
+    #    print networkrequest.get_uri()
 
-    def do_navigation_requested(self, webwrame, networkrequest):
-        print 'do_navigation_requested', webwrame, networkrequest
-        #from gi.repository import Gtk
-        #op = Gtk.PrintOperation()
-        #print webwrame.print_full(op, Gtk.PrintOperationResult.APPLY)
-
+    '''
     def do_paste_clipboard(self):
         print 'do_paste_clipboard'
 
@@ -140,4 +145,3 @@ class Navegador(WebKit.WebView):
     def do_web_view_ready(self):
         print 'do_web_view_ready'
     '''
-

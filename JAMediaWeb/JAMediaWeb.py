@@ -97,6 +97,10 @@ class JAMediaWeb(Gtk.Plug):
         #print self.navegador.get_view_mode()
         #self.navegador.set_view_mode(WebKit.WebViewViewMode.FLOATING)
 
+    def load(self, url):
+
+        self.navegador.load(url)
+
     def anterior(self, widget):
         """
         Carga la página anterior.
