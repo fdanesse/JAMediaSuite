@@ -45,8 +45,8 @@ else:
 
 # HACK: La aplicación nunca debe explotar :P
 if verificar_Gstreamer():
-    from JAMediaObjects.JAMediaReproductor import JAMediaReproductor
-    from JAMediaObjects.JAMediaReproductor import JAMediaGrabador
+    from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
+    from JAMediaReproductor.JAMediaReproductor import JAMediaGrabador
 
 else:
     from JAMediaObjects.PlayerNull import JAMediaReproductor
