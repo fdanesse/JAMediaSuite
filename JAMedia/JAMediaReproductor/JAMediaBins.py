@@ -42,152 +42,22 @@ class JAMedia_Efecto_bin(Gst.Bin):
 
         self.set_name(efecto)
 
-        videoconvert = Gst.ElementFactory.make(
+        self.videoconvert = Gst.ElementFactory.make(
             "videoconvert",
             "videoconvert_%s" % (efecto))
 
-        efecto = Gst.ElementFactory.make(efecto, efecto)
+        self.efecto = Gst.ElementFactory.make(
+            efecto, efecto)
 
-        self.add(videoconvert)
-        self.add(efecto)
+        self.add(self.videoconvert)
+        self.add(self.efecto)
 
-        videoconvert.link(efecto)
-
-        self.add_pad(Gst.GhostPad.new(
-            "sink", videoconvert.get_static_pad("sink")))
-        self.add_pad(Gst.GhostPad.new(
-            "src", efecto.get_static_pad("src")))
-
-
-class JAMedia_Camara_bin(Gst.Bin):
-    """
-    Bin para cámara y sus configuraciones
-    particulares.
-    """
-
-    def __init__(self):
-
-        Gst.Bin.__init__(self)
-
-        self.set_name('jamedia_camara_bin')
-
-        self.camara = Gst.ElementFactory.make("v4l2src", "v4l2src")
-
-        caps = Gst.Caps.from_string('video/x-raw,framerate=10/1')
-        camerafilter = Gst.ElementFactory.make("capsfilter", "camera_filter")
-        camerafilter.set_property("caps", caps)
-
-        self.add(self.camara)
-        self.add(camerafilter)
-
-        self.camara.link(camerafilter)
+        self.videoconvert.link(self.efecto)
 
         self.add_pad(Gst.GhostPad.new(
-            "src", camerafilter.get_static_pad("src")))
-
-
-class Theoraenc_bin(Gst.Bin):
-    """
-    Bin para elementos codificadores
-    de video a theoraenc.
-    """
-
-    def __init__(self):
-
-        Gst.Bin.__init__(self)
-
-        self.set_name('video_theoraenc_bin')
-
-        que_encode_video = Gst.ElementFactory.make(
-            "queue", "que_encode_video")
-        que_encode_video.set_property('max-size-buffers', 1000)
-        que_encode_video.set_property('max-size-bytes', 0)
-        que_encode_video.set_property('max-size-time', 0)
-
-        theoraenc = Gst.ElementFactory.make('theoraenc', 'theoraenc')
-        # kbps compresion + resolucion = calidad
-        theoraenc.set_property("bitrate", 1024)
-        theoraenc.set_property('keyframe-freq', 15)
-        theoraenc.set_property('cap-overflow', False)
-        theoraenc.set_property('speed-level', 0)
-        theoraenc.set_property('cap-underflow', True)
-        theoraenc.set_property('vp3-compatible', True)
-
-        self.add(que_encode_video)
-        self.add(theoraenc)
-
-        que_encode_video.link(theoraenc)
-
-        pad = que_encode_video.get_static_pad("sink")
-        self.add_pad(Gst.GhostPad.new("sink", pad))
-
-        pad = theoraenc.get_static_pad("src")
-        self.add_pad(Gst.GhostPad.new("src", pad))
-
-
-class Vorbisenc_bin(Gst.Bin):
-    """
-    Bin para elementos codificadores
-    de audio a vorbisenc.
-    """
-
-    def __init__(self):
-
-        Gst.Bin.__init__(self)
-
-        self.set_name('audio_vorbisenc_bin')
-
-        # FIXME: Corregir para no tomar autoaudiosrc
-        autoaudiosrc = Gst.ElementFactory.make('autoaudiosrc', "autoaudiosrc")
-        audiorate = Gst.ElementFactory.make('audiorate', "audiorate")
-        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
-        vorbisenc = Gst.ElementFactory.make('vorbisenc', "vorbisenc")
-
-        self.add(autoaudiosrc)
-        self.add(audiorate)
-        self.add(audioconvert)
-        self.add(vorbisenc)
-
-        autoaudiosrc.link(audiorate)
-        audiorate.link(audioconvert)
-        audioconvert.link(vorbisenc)
-
-        pad = vorbisenc.get_static_pad("src")
-        self.add_pad(Gst.GhostPad.new("src", pad))
-
-
-class Foto_bin(Gst.Bin):
-    """
-    Bin para tomar fotografías.
-    """
-
-    def __init__(self):
-
-        Gst.Bin.__init__(self)
-
-        self.set_name('foto_bin')
-
-        videoconvert = Gst.ElementFactory.make(
-            "videoconvert", "videoconvert_gdkpixbuf")
-
-        queue = Gst.ElementFactory.make("queue", "queue_foto")
-        queue.set_property("leaky", 1)
-        queue.set_property("max-size-buffers", 1)
-
-        gdkpixbufsink = Gst.ElementFactory.make(
-            "gdkpixbufsink", "gdkpixbufsink")
-
-        #gdkpixbufsink.set_property('post-messages', False)
-
-        self.add(queue)
-        self.add(videoconvert)
-        self.add(gdkpixbufsink)
-
-        queue.link(videoconvert)
-        videoconvert.link(gdkpixbufsink)
-
-        pad = queue.get_static_pad("sink")
-        self.add_pad(Gst.GhostPad.new("sink", pad))
+            "sink", self.videoconvert.get_static_pad("sink")))
+        self.add_pad(Gst.GhostPad.new(
+            "src", self.efecto.get_static_pad("src")))
 
 
 class Efectos_Video_bin(Gst.Bin):
@@ -205,16 +75,17 @@ class Efectos_Video_bin(Gst.Bin):
         self.efectos = efectos
         self.config_efectos = config_efectos
 
-        queue = Gst.ElementFactory.make('queue', "queue")
+        self.queue = Gst.ElementFactory.make('queue', "queue")
+        #self.queue.set_property('leaky', 2)
         #queue.set_property('max-size-buffers', 1000)
-        #queue.set_property('max-size-bytes', 0)
-        #queue.set_property('max-size-time', 0)
+        #self.queue.set_property('max-size-bytes', 0)
+        #self.queue.set_property('max-size-time', 0)
 
-        videoconvert = Gst.ElementFactory.make(
+        self.videoconvert = Gst.ElementFactory.make(
             'videoconvert',
             "videoconvert_efectos")
 
-        self.add(queue)
+        self.add(self.queue)
 
         efectos = []
         for nombre in self.efectos:
@@ -229,7 +100,7 @@ class Efectos_Video_bin(Gst.Bin):
                 self.add(efecto)
 
             # queue a primer efecto
-            queue.link(efectos[0])
+            self.queue.link(efectos[0])
 
             for efecto in efectos:
                 index = efectos.index(efecto)
@@ -237,61 +108,26 @@ class Efectos_Video_bin(Gst.Bin):
                     # Linkea los efectos entre si
                     efecto.link(efectos[efectos.index(efecto) + 1])
 
-            self.add(videoconvert)
+            self.add(self.videoconvert)
             # linkea el ultimo efecto a videoconvert
-            efectos[-1].link(videoconvert)
+            efectos[-1].link(self.videoconvert)
 
         else:
-            self.add(videoconvert)
-            queue.link(videoconvert)
+            self.add(self.videoconvert)
+            self.queue.link(self.videoconvert)
 
         # Mantener la configuración de cada efecto.
         for efecto in self.config_efectos.keys():
-            for property in self.config_efectos[efecto].keys():
+            for prop in self.config_efectos[efecto].keys():
                 bin_efecto = self.get_by_name(efecto)
                 elemento = bin_efecto.get_by_name(efecto)
-                elemento.set_property(property,
-                    self.config_efectos[efecto][property])
+                elemento.set_property(prop,
+                    self.config_efectos[efecto][prop])
 
         self.add_pad(Gst.GhostPad.new(
-            "sink", queue.get_static_pad("sink")))
+            "sink", self.queue.get_static_pad("sink")))
         self.add_pad(Gst.GhostPad.new(
-            "src", videoconvert.get_static_pad("src")))
-
-
-class Audio_Visualizador_bin(Gst.Bin):
-    """
-    Bin visualizador de audio.
-    """
-
-    def __init__(self, visualizador):
-
-        Gst.Bin.__init__(self)
-
-        self.set_name('audio_visualizador_bin')
-
-        self.visualizador = visualizador
-
-        queue = Gst.ElementFactory.make("queue", "queue")
-
-        efecto = Gst.ElementFactory.make(
-            self.visualizador,
-            self.visualizador)
-
-        videoconvert = Gst.ElementFactory.make('videoconvert', "videoconvert")
-
-        self.add(queue)
-        self.add(efecto)
-        self.add(videoconvert)
-
-        queue.link(efecto)
-        efecto.link(videoconvert)
-
-        pad = queue.get_static_pad("sink")
-        self.add_pad(Gst.GhostPad.new("sink", pad))
-
-        pad = videoconvert.get_static_pad("src")
-        self.add_pad(Gst.GhostPad.new("src", pad))
+            "src", self.videoconvert.get_static_pad("src")))
 
 
 class Video_Balance_Bin(Gst.Bin):
@@ -362,11 +198,16 @@ class Video_Balance_Bin(Gst.Bin):
         self.config['hue'] = self.config_default['hue']
         self.config['gamma'] = self.config_default['gamma']
 
-        self.videobalance.set_property('saturation', self.config['saturacion'])
-        self.videobalance.set_property('contrast', self.config['contraste'])
-        self.videobalance.set_property('brightness', self.config['brillo'])
-        self.videobalance.set_property('hue', self.config['hue'])
-        self.gamma.set_property('gamma', self.config['gamma'])
+        self.videobalance.set_property(
+            'saturation', self.config['saturacion'])
+        self.videobalance.set_property(
+            'contrast', self.config['contraste'])
+        self.videobalance.set_property(
+            'brightness', self.config['brillo'])
+        self.videobalance.set_property(
+            'hue', self.config['hue'])
+        self.gamma.set_property(
+            'gamma', self.config['gamma'])
 
         self.videoflip.set_property('method', 0)
 
@@ -404,20 +245,6 @@ class Video_Balance_Bin(Gst.Bin):
             # Double. Range: 0,01 - 10 Default: 1
             self.config['gamma'] = (10.0 * gamma / 100.0)
             self.gamma.set_property('gamma', self.config['gamma'])
-
-    # FIXME: No es correcto si se llama a los valores reales.
-    #def get_balance(self):
-    #    """
-    #    Retorna los valores actuales de balance en % float.
-    #    """
-
-    #    return {
-    #    'saturacion': self.config['saturacion'] * 100.0 / 2.0,
-    #    'contraste': self.config['contraste'] * 100.0 / 2.0,
-    #    'brillo': (self.config['brillo']+1) * 100.0 / 2.0,
-    #    'hue': (self.config['hue']+1) * 100.0 / 2.0,
-    #    'gamma': self.config['gamma'] * 100.0 / 10.0
-    #    }
 
     def rotar(self, valor):
         """
@@ -457,37 +284,6 @@ class Video_Balance_Bin(Gst.Bin):
         return self.videoflip.set_property('method', valor)
 
 
-class Pantalla_Bin(Gst.Bin):
-
-    def __init__(self):
-
-        Gst.Bin.__init__(self)
-
-        self.set_name('Pantalla_bin')
-
-        self.multi_out_tee = Gst.ElementFactory.make(
-            'tee', "multi_out_tee")
-        self.multi_out_tee.set_property('pull-mode', 1)
-
-        self.pantalla = Gst.ElementFactory.make(
-            'xvimagesink', "pantalla")
-
-        #self.gdkpixbufsink = Gst.ElementFactory.make(
-        #    "gdkpixbufsink", "gdkpixbufsink")
-
-        self.add(self.multi_out_tee)
-        self.add(self.pantalla)
-        #self.add(self.gdkpixbufsink)
-
-        #self.multi_out_tee.link(self.gdkpixbufsink)
-        self.multi_out_tee.link(self.pantalla)
-
-        self.add_pad(
-            Gst.GhostPad.new(
-                "sink",
-                self.multi_out_tee.get_static_pad("sink")))
-
-
 class JAMedia_Audio_Pipeline(Gst.Pipeline):
     """
     Gestor de Audio de JAMedia.
@@ -499,8 +295,8 @@ class JAMedia_Audio_Pipeline(Gst.Pipeline):
 
         self.set_name('jamedia_audio_pipeline')
 
-        self.tee_audio = Gst.ElementFactory.make(
-            "tee", "tee_audio")
+        self.queue = Gst.ElementFactory.make(
+            'queue', "queue")
 
         self.audioconvert = Gst.ElementFactory.make(
             "audioconvert", "audioconvert")
@@ -508,45 +304,17 @@ class JAMedia_Audio_Pipeline(Gst.Pipeline):
         self.autoaudiosink = Gst.ElementFactory.make(
             "autoaudiosink", "autoaudiosink")
 
-        self.add(self.tee_audio)
+        self.add(self.queue)
         self.add(self.audioconvert)
         self.add(self.autoaudiosink)
 
-        self.tee_audio.link(self.audioconvert)
+        self.queue.link(self.audioconvert)
         self.audioconvert.link(self.autoaudiosink)
 
         self.add_pad(
             Gst.GhostPad.new(
                 "sink",
-                self.tee_audio.get_static_pad("sink")))
-
-        self.visualizador_bin = False
-        self.xvimagesink = False
-
-    def agregar_visualizador(self, visualizador):
-
-        if not self.visualizador_bin:
-            self.visualizador_bin = Audio_Visualizador_bin(visualizador)
-            self.xvimagesink = Gst.ElementFactory.make(
-                "xvimagesink", "xvimagesink")
-
-            self.add(self.visualizador_bin)
-            self.add(self.xvimagesink)
-
-            self.tee_audio.link(self.visualizador_bin)
-            self.visualizador_bin.link(self.xvimagesink)
-
-    def quitar_visualizador(self):
-
-        if self.visualizador_bin:
-            self.visualizador_bin.unlink(self.xvimagesink)
-            self.tee_audio.unlink(self.visualizador_bin)
-
-            self.remove(self.visualizador_bin)
-            self.remove(self.xvimagesink)
-
-            del(self.visualizador_bin)
-            del(self.xvimagesink)
+                self.queue.get_static_pad("sink")))
 
 
 class JAMedia_Video_Pipeline(Gst.Pipeline):
@@ -567,19 +335,27 @@ class JAMedia_Video_Pipeline(Gst.Pipeline):
             self.efectos, self.config_efectos)
         self.video_balance_bin = Video_Balance_Bin()
 
-        self.pantalla_bin = Pantalla_Bin()
+        self.pantalla_bin = Gst.ElementFactory.make(
+            'xvimagesink', "pantalla")
+
+        self.videorate = Gst.ElementFactory.make(
+            'videorate', 'videorate')
+        self.videorate.set_property('max-rate', 30)
 
         self.add(self.efectos_bin)
+        self.add(self.videorate)
         self.add(self.video_balance_bin)
         self.add(self.pantalla_bin)
 
-        self.efectos_bin.link(self.video_balance_bin)
+        self.efectos_bin.link(self.videorate)
+        self.videorate.link(self.video_balance_bin)
         self.video_balance_bin.link(self.pantalla_bin)
 
         self.ghost_pad = Gst.GhostPad.new(
             "sink", self.efectos_bin.get_static_pad("sink"))
 
-        self.ghost_pad.set_target(self.efectos_bin.get_static_pad("sink"))
+        self.ghost_pad.set_target(
+            self.efectos_bin.get_static_pad("sink"))
 
         self.add_pad(self.ghost_pad)
 
@@ -661,16 +437,17 @@ class JAMedia_Video_Pipeline(Gst.Pipeline):
         new_bin = Efectos_Video_bin(
             self.efectos, self.config_efectos)
 
-        self.efectos_bin.unlink(self.video_balance_bin)
+        self.efectos_bin.unlink(self.videorate)
         self.remove(self.efectos_bin)
         del(self.efectos_bin)
 
         self.add(new_bin)
         self.efectos_bin = new_bin
 
-        self.efectos_bin.link(self.video_balance_bin)
+        self.efectos_bin.link(self.videorate)
 
-        self.ghost_pad.set_target(self.efectos_bin.get_static_pad("sink"))
+        self.ghost_pad.set_target(
+            self.efectos_bin.get_static_pad("sink"))
 
     def configurar_efecto(self, nombre_efecto, propiedad, valor):
         """
