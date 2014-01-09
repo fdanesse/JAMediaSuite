@@ -361,7 +361,6 @@ class JAMediaPlayer(Gtk.Plug):
             Gdk.Display.get_default(), pixbuf, 0, 0)
 
         self.cursor_root = self.get_parent_window().get_cursor()
-
         self.get_parent_window().set_cursor(self.jamedia_cursor)
 
         from JAMediaObjects.JAMediaWidgets import MouseSpeedDetector

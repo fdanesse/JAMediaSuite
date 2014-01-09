@@ -26,6 +26,7 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
 
+
 class InfoBox(Gtk.Frame):
 
     def __init__(self):
@@ -34,7 +35,7 @@ class InfoBox(Gtk.Frame):
 
         self.info = ""
 
-        self.set_size_request(320, 240)
+        self.set_size_request(250, -1)
 
         self.set_label("Archivos Restantes:")
 
@@ -237,7 +238,7 @@ class Widget_extractor(Gtk.Frame):
 
         Gtk.Frame.__init__(self)
 
-        self.set_label("JAMedia Video Convert")
+        self.set_label("")
 
         self.visor = Gtk.DrawingArea()
         self.visor.set_size_request(320, 240)

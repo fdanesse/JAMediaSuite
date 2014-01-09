@@ -26,13 +26,13 @@ class JAMedia_Video_Ogg_Convert(Gst.Pipeline):
     "newposicion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_INT,)),
     "info": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )), }
 
     def __init__(self, origen):
 
         Gst.Pipeline.__init__(self)
 
-        self.ventana_id = False #ventana_id
+        self.ventana_id = False  # ventana_id
         self.video_sink = False
 
         self.origen = origen

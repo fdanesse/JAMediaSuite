@@ -36,7 +36,7 @@ class Ventana(Gtk.Window):
 
         self.set_title("JAMedia Audio Extractor")
 
-        self.set_resizable(True)
+        self.set_resizable(False)
         #self.set_size_request(320, 240)
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
@@ -44,8 +44,10 @@ class Ventana(Gtk.Window):
         self.socket = Gtk.Socket()
         self.add(self.socket)
 
-        self.jamediaaudioextractor = JAMediaAudioExtractor(origen, codec)
-        self.socket.add_id(self.jamediaaudioextractor.get_id())
+        self.jamediaaudioextractor = JAMediaAudioExtractor(
+            origen, codec)
+        self.socket.add_id(
+            self.jamediaaudioextractor.get_id())
 
         self.show_all()
         self.realize()

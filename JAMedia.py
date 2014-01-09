@@ -82,7 +82,9 @@ class Ventana(Gtk.Window):
         self.jamediaplayer.pack_efectos()
 
         if self.pistas:
-            GLib.idle_add(self.jamediaplayer.set_nueva_lista, self.pistas)
+            GLib.idle_add(
+                self.jamediaplayer.set_nueva_lista,
+                self.pistas)
 
         return False
 

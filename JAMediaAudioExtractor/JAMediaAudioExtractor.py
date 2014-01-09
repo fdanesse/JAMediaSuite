@@ -87,7 +87,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         self.player = False
         self.lista = origen
-        self.codec = codec
+        self.codec = codec  # FIXME: setear Menu
 
         basebox = Gtk.VBox()
         hbox = Gtk.HBox()
@@ -106,7 +106,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
         self.barradeprogreso2.set_sensitive(False)
 
         basebox.pack_start(self.menu, False, False, 0)
-        basebox.pack_start(hbox, False, False, 0)
+        basebox.pack_start(hbox, True, True, 0)
 
         vbox.pack_start(self.widget_extractor, True, True, 0)
         vbox.pack_start(self.barradeprogreso, False, False, 0)
@@ -114,7 +114,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         self.info_widget = InfoBox()
 
-        hbox.pack_start(vbox, False, False, 0)
+        hbox.pack_start(vbox, True, True, 0)
         hbox.pack_start(self.info_widget, False, False, 0)
 
         self.add(basebox)
@@ -126,7 +126,8 @@ class JAMediaAudioExtractor(Gtk.Plug):
         self.menu.connect('load', self.__add_file)
         self.menu.connect('accion_formato', self.__set_formato)
 
-        GLib.idle_add(self.play)
+        if self.lista:
+            GLib.idle_add(self.play)
 
     def __set_formato(self, widget, formato):
 
@@ -172,6 +173,8 @@ class JAMediaAudioExtractor(Gtk.Plug):
         Comienza a Procesar los archivos en la lista.
         """
 
+        self.menu.set_sensitive(False)
+
         self.info_widget.reset()
 
         if self.lista:
@@ -182,6 +185,26 @@ class JAMediaAudioExtractor(Gtk.Plug):
             self.barradeprogreso2.set_progress(100.0)
 
         if not self.lista or self.player:
+            dialog = Gtk.Dialog(
+                title="JAMedia Audio Extractor",
+                parent=self.get_toplevel(),
+                flags=Gtk.DialogFlags.MODAL,
+                buttons=[
+                    "OK", Gtk.ResponseType.ACCEPT])
+
+            dialog.set_size_request(300, 100)
+            dialog.set_border_width(10)
+
+            label = Gtk.Label(
+                "Sin Archivos para Procesar.")
+
+            label.show()
+            dialog.vbox.add(label)
+
+            dialog.run()
+            dialog.destroy()
+
+            self.menu.set_sensitive(True)
             return
 
         origen = self.lista[0]

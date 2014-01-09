@@ -32,7 +32,7 @@ Gst.init([])
 
 class Extractor(Gst.Pipeline):
     """
-    Extractor de audio de un video y conversor de formatos de audio.
+    Extractor de audio desde un video y conversor de formatos de audio.
 
     Si pasas un archivo de audio, lo convierte al formato indicado.
     Si pasas un archivo de video, extrae el audio en el formato indicado.
@@ -64,7 +64,7 @@ class Extractor(Gst.Pipeline):
     #"video": (GObject.SIGNAL_RUN_LAST,
     #    GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))
     "info": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )), }
 
     def __init__(self, ventana_id, origen, codec):
 
@@ -156,7 +156,7 @@ class Extractor(Gst.Pipeline):
         self.bus.connect('sync-message', self.__sync_message)
 
         decodebin.connect('pad-added', self.__on_pad_added)
-        decodebin.connect( "no-more-pads", self.__no_more_pads)
+        decodebin.connect("no-more-pads", self.__no_more_pads)
         #decodebin.connect("pad-removed", self.__pad_removed)
         #decodebin.connect("unknown-type", self.__unknown_type)
         #decodebin.connect("autoplug-continue", self.__autoplug_continue)
