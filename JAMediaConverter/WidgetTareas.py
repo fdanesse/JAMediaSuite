@@ -79,12 +79,11 @@ class WidgetTareas(Gtk.Frame):
         else:
             if tipo == 'audio':
                 from AudioConverter.WidgetAudioConverter import WidgetAudioConverter
-
                 wid = WidgetAudioConverter(path)
 
             elif tipo == 'video':
-                #wid = WidgetVideoTarea(path)
-                pass
+                from AudioExtractor.WidgetAudioExtractor import WidgetAudioExtractor
+                wid = WidgetAudioExtractor(path)
 
             self.tareas[path] = wid
             self.tareas[path].connect(
