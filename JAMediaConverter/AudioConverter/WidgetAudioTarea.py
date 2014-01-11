@@ -58,9 +58,9 @@ class WidgetAudioTarea(Gtk.Frame):
         self.path = path
         self.estado = False
         self.tarea = {
-            'mp3': [False, False],
-            'ogg': [False, False],
-            'wav': [False, False],
+            'mp3': False,
+            'ogg': False,
+            'wav': False,
             }
 
         self.boton_ejecutar = False

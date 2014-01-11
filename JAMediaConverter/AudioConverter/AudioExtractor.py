@@ -26,7 +26,7 @@ from gi.repository import GObject
 from gi.repository import GLib
 from gi.repository import GstVideo
 
-GObject.threads_init()
+#GObject.threads_init()
 Gst.init([])
 
 
@@ -59,25 +59,28 @@ class AudioExtractor(Gst.Pipeline):
         self.ventana_id = ventana_id
         self.origen = origen
 
-        self.codec = 'mp3' # formatos
+        self.locations = {}
 
-        self.audio_sink = False
-        self.video_sink = False
+        for formato in formatos:
+            self.locations[formato] = "%s.%s" % (
+                self.origen, formato)
 
-        self.location = "%s.%s" % (self.origen, self.codec)
-        if "." in origen:
-            extension = ".%s" % self.origen.split(".")[-1]
-            self.location = self.origen.replace(
-                extension, ".%s" % self.codec)
-
+            if "." in origen:
+                extension = ".%s" % self.origen.split(".")[-1]
+                self.locations[formato] = self.origen.replace(
+                    extension, ".%s" % formato)
+        '''
         if os.path.exists(self.location):
             print "Este Archivo se Procesó Anteriormente"
             GLib.idle_add(self.emit, "endfile")
 
         else:
             self.__setup()
+        '''
 
-    def __setup(self):
+        self.__setup1()
+
+    def __setup1(self):
 
         # origen
         filesrc = Gst.ElementFactory.make(
@@ -92,56 +95,68 @@ class AudioExtractor(Gst.Pipeline):
             "audioresample", "audioresample")
         audioresample.set_property('quality', 10)
 
-        # codecs
-        lamemp3enc = Gst.ElementFactory.make(
-            "lamemp3enc", "lamemp3enc")
-
-        wavenc = Gst.ElementFactory.make(
-            "wavenc", "wavenc")
-
-        oggmux = Gst.ElementFactory.make(
-            "oggmux", "oggmux")
-        vorbisenc = Gst.ElementFactory.make(
-            "vorbisenc", "vorbisenc")
-
-        filesink = Gst.ElementFactory.make(
-            "filesink", "filesink")
-
-        self.audio_sink = audioconvert.get_static_pad('sink')
-        #self.video_sink = queue1.get_static_pad('sink')
-
         self.add(filesrc)
         self.add(decodebin)
 
         self.add(audioconvert)
         self.add(audioresample)
 
-        self.add(lamemp3enc)
-        self.add(wavenc)
-        self.add(oggmux)
-        self.add(vorbisenc)
-
-        self.add(filesink)
-
-        # origen
         filesrc.link(decodebin)
-        # resample
+        # En __on_pad_added se conecta decodebin a audioconvert
         audioconvert.link(audioresample)
 
-        self.bus.add_signal_watch()
-        self.bus.connect('message', self.__on_mensaje)
-
-        self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message', self.__sync_message)
-
+        filesrc.set_property('location', self.origen)
         decodebin.connect('pad-added', self.__on_pad_added)
 
-        filesrc.set_property('location', self.origen)
-        filesink.set_property('location', self.location)
+        self.__setup2()
+
+    def __setup2(self):
+
+        codecs = self.locations.keys()
+        audioresample = self.get_by_name('audioresample')
+        src = audioresample
+
+        if len(codecs) > 1:
+            tee = Gst.ElementFactory.make(
+                "tee", "tee")
+
+            self.add(tee)
+            audioresample.link(tee)
+            src = tee
+
+        for codec in codecs:
+            if codec == 'mp3':
+                from Bins import mp3_bin
+                lamemp3enc = mp3_bin(self.locations[codec])
+
+                self.add(lamemp3enc)
+                src.link(lamemp3enc)
+
+            elif codec == 'wav':
+                from Bins import wav_bin
+                wavenc = wav_bin(self.locations[codec])
+
+                self.add(wavenc)
+                src.link(wavenc)
+
+            elif codec == 'ogg':
+                from Bins import ogg_bin
+                vorbisenc = ogg_bin(self.locations[codec])
+
+                self.add(vorbisenc)
+                src.link(vorbisenc)
+
+        self.bus.add_signal_watch()
+        self.bus.connect(
+            'message', self.__on_mensaje)
+
+        self.bus.enable_sync_message_emission()
+        self.bus.connect(
+            'sync-message', self.__sync_message)
 
     def play(self):
 
-        GLib.idle_add(self.__play)
+        self.__play()
         self.__new_handle(True)
 
     def __on_pad_added(self, decodebin, pad):
@@ -159,62 +174,9 @@ class AudioExtractor(Gst.Pipeline):
         self.emit("info", text)
 
         if string.startswith('audio/'):
-            if self.codec == 'mp3':
-                self.__set_mp3_codec_bin()
-
-            elif self.codec == 'wav':
-                self.__set_wav_codec_bin()
-
-            elif self.codec == 'ogg':
-                self.__set_ogg_codec_bin()
-
-            pad.link(self.audio_sink)
-
-        #elif string.startswith('video/'):
-        #    pad.link(self.video_sink)
-
-    def __set_mp3_codec_bin(self):
-        """
-        Construye y Agrega los elementos necesarios
-        para extraer el audio en formato mp3.
-
-            audioconvert ! audioresample ! lamemp3enc ! filesink
-        """
-
-        audioresample = self.get_by_name('audioresample')
-        lamemp3enc = self.get_by_name('lamemp3enc')
-        filesink = self.get_by_name('filesink')
-
-        audioresample.link(lamemp3enc)
-        lamemp3enc.link(filesink)
-
-    def __set_wav_codec_bin(self):
-        """
-        Construye y Agrega los elementos necesarios
-        para extraer el audio en formato wav.
-        """
-
-        audioresample = self.get_by_name('audioresample')
-        wavenc = self.get_by_name('wavenc')
-        filesink = self.get_by_name('filesink')
-
-        audioresample.link(wavenc)
-        wavenc.link(filesink)
-
-    def __set_ogg_codec_bin(self):
-        """
-        Construye y Agrega los elementos necesarios
-        para extraer el audio en formato ogg.
-        """
-
-        audioresample = self.get_by_name('audioresample')
-        vorbisenc = self.get_by_name('vorbisenc')
-        oggmux = self.get_by_name('oggmux')
-        filesink = self.get_by_name('filesink')
-
-        audioresample.link(vorbisenc)
-        vorbisenc.link(oggmux)
-        oggmux.link(filesink)
+            audioconvert = self.get_by_name('audioconvert')
+            sink = audioconvert.get_static_pad('sink')
+            pad.link(sink)
 
     def __sync_message(self, bus, mensaje):
 
