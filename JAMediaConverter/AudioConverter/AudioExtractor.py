@@ -48,7 +48,7 @@ class AudioExtractor(Gst.Pipeline):
     "info": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, )), }
 
-    def __init__(self, ventana_id, origen, tareas):
+    def __init__(self, ventana_id, origen, formatos):
 
         Gst.Pipeline.__init__(self)
 
@@ -59,7 +59,7 @@ class AudioExtractor(Gst.Pipeline):
         self.ventana_id = ventana_id
         self.origen = origen
 
-        self.codec = 'wav'
+        self.codec = 'mp3' # formatos
 
         self.audio_sink = False
         self.video_sink = False
@@ -157,7 +157,6 @@ class AudioExtractor(Gst.Pipeline):
             text = "%s\n\t%s" % (text, item.strip())
 
         self.emit("info", text)
-        print text
 
         if string.startswith('audio/'):
             if self.codec == 'mp3':
@@ -316,14 +315,12 @@ class AudioExtractor(Gst.Pipeline):
     def __play(self):
 
         self.emit("info", "Reproducción Iniciada")
-        print "Reproducción Iniciada"
         self.set_state(Gst.State.PLAYING)
 
     def stop(self):
 
         self.set_state(Gst.State.NULL)
         self.emit("info", "Reproducción Detenida")
-        print "Reproducción Detenida"
 
     def __new_handle(self, reset):
         """

@@ -151,11 +151,7 @@ class WidgetAudioTarea(Gtk.Frame):
 
         box = Gtk.HBox()
 
-        boton = CheckButton(formato, formato)
-        boton.connect('set_data', self.__set_data)
-        box.pack_start(boton, True, True, 5)
-
-        boton = CheckButton('Quitar voz', formato)
+        boton = CheckButton(formato)
         boton.connect('set_data', self.__set_data)
         box.pack_start(boton, True, True, 5)
 
@@ -167,10 +163,8 @@ class WidgetAudioTarea(Gtk.Frame):
         """
 
         for hbox in self.frame_formatos.get_child().get_children():
-            formato, voz = hbox.get_children()
-
-            formato.set_active(tarea[formato.get_label()][0])
-            voz.set_active(tarea[formato.get_label()][1])
+            formato = hbox.get_children()[0]
+            formato.set_active(tarea[formato.get_label()])
 
     def __detener_eliminar(self, widget):
         """
@@ -180,59 +174,40 @@ class WidgetAudioTarea(Gtk.Frame):
         # FIXME: detener tarea
         self.emit('eliminar_tarea')
 
-    def __set_data(self, widget, label, active, formato):
+    def __set_data(self, widget, formato, active):
         """
         Setea datos de tarea según selecciones del usuario
         en los checkbuttons.
         """
 
-        if 'Quitar voz' in label:
-            self.tarea[formato][1] = active
-
-            if active:
-                widget.get_parent().get_children()[0].set_active(True)
-
-            return
-
         if 'mp3' in formato:
-            self.tarea[formato][0] = active
-
-            if not active:
-                widget.get_parent().get_children()[1].set_active(False)
+            self.tarea[formato] = active
 
         elif 'ogg' in formato:
-            self.tarea[formato][0] = active
-
-            if not active:
-                widget.get_parent().get_children()[1].set_active(False)
+            self.tarea[formato] = active
 
         elif 'wav' in formato:
-            self.tarea[formato][0] = active
-
-            if not active:
-                widget.get_parent().get_children()[1].set_active(False)
+            self.tarea[formato] = active
 
     def __ejecutar_tarea(self, widget):
         """
         Ejecuta la tarea configurada.
         """
 
-        elementos = []
+        formatos = []
 
         for key in self.tarea.keys():
-            if self.tarea[key][0]:
-                # elemento = key, tarea[key][1]
-                # key = mp3, tarea[key][1] = sin voz
-                elementos.append([key, self.tarea[key][1]])
+            if self.tarea[key]:
+                formatos.append(key)
 
-        if not elementos:
+        if not formatos:
             print "FIXME: Alertar No hay tarea definida."
             return
 
         self.frame_formatos.set_sensitive(False)
         self.boton_ejecutar.hide()
         self.estado = True
-        self.control_tarea.run(elementos)
+        self.control_tarea.run(formatos)
         # FIXME: cambiar estado o eliminar tarea al detener o terminar.
 
     def __emit_copy_tarea(self, widget):
@@ -244,7 +219,7 @@ class WidgetAudioTarea(Gtk.Frame):
         """
 
         for key in self.tarea.keys():
-            if self.tarea[key][0]:
+            if self.tarea[key]:
                 self.emit('copy_tarea', self.tarea)
                 return
 
@@ -256,23 +231,20 @@ class CheckButton(Gtk.CheckButton):
     __gsignals__ = {
     'set_data': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_BOOLEAN, GObject.TYPE_STRING))}
+        GObject.TYPE_BOOLEAN))}
 
-    def __init__(self, text, formato):
+    def __init__(self, formato):
 
         Gtk.CheckButton.__init__(self)
 
-        self.set_label(text)
-
-        self.formato = formato
+        self.set_label(formato)
 
         self.show_all()
 
     def do_toggled(self):
 
-        self.emit(
-            'set_data', self.get_label(),
-            self.get_active(), self.formato)
+        self.emit('set_data', self.get_label(),
+            self.get_active())
 
 
 class ControlTarea(Gtk.Frame):
@@ -338,7 +310,7 @@ class ControlTarea(Gtk.Frame):
         # detener tarea.
         # reactivar controles
 
-    def run(self, tareas):
+    def run(self, formatos):
         """
         Ejecuta la tarea.
         """
@@ -354,7 +326,7 @@ class ControlTarea(Gtk.Frame):
         ventana_id = self.drawing.get_property(
             'window').get_xid()
         self.player = AudioExtractor(
-            ventana_id, self.path, tareas)
+            ventana_id, self.path, formatos)
 
         self.player.connect('endfile', self.__set_end)
         #self.player.connect('estado', self.__set_estado)
@@ -367,12 +339,14 @@ class ControlTarea(Gtk.Frame):
 
         #self.stop()
         #GLib.idle_add(self.play)
-        pass
+        self.queue_draw()
+        print "end"
 
     def __set_info(self, player, info):
 
         #self.info_widget.set_info(info)
-        pass
+        self.queue_draw()
+        print info
 
     def __set_posicion(self, player, posicion):
 
@@ -385,3 +359,5 @@ class ControlTarea(Gtk.Frame):
             #self.stop()
             #self.play()
             pass
+
+        self.queue_draw()
