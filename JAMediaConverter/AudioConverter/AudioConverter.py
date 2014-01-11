@@ -30,7 +30,7 @@ from gi.repository import GstVideo
 Gst.init([])
 
 
-class AudioExtractor(Gst.Pipeline):
+class AudioConverter(Gst.Pipeline):
     """
     * Conversor de formatos para archivos de audio.
     * Extractor de audio de archivos de video.
@@ -48,7 +48,7 @@ class AudioExtractor(Gst.Pipeline):
     "info": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, )), }
 
-    def __init__(self, ventana_id, origen, formatos):
+    def __init__(self, ventana_id, origen, codec):
 
         Gst.Pipeline.__init__(self)
 
@@ -59,16 +59,15 @@ class AudioExtractor(Gst.Pipeline):
         self.ventana_id = ventana_id
         self.origen = origen
 
-        self.locations = {}
+        self.codec = codec
 
-        for formato in formatos:
-            self.locations[formato] = "%s.%s" % (
-                self.origen, formato)
+        self.location = "%s.%s" % (
+            self.origen, self.codec)
 
-            if "." in origen:
-                extension = ".%s" % self.origen.split(".")[-1]
-                self.locations[formato] = self.origen.replace(
-                    extension, ".%s" % formato)
+        if "." in origen:
+            extension = ".%s" % self.origen.split(".")[-1]
+            self.location = self.origen.replace(
+                extension, ".%s" % self.codec)
         '''
         if os.path.exists(self.location):
             print "Este Archivo se Procesó Anteriormente"
@@ -112,39 +111,28 @@ class AudioExtractor(Gst.Pipeline):
 
     def __setup2(self):
 
-        codecs = self.locations.keys()
         audioresample = self.get_by_name('audioresample')
-        src = audioresample
 
-        if len(codecs) > 1:
-            tee = Gst.ElementFactory.make(
-                "tee", "tee")
+        if self.codec == 'mp3':
+            from Bins import mp3_bin
+            lamemp3enc = mp3_bin(self.location)
 
-            self.add(tee)
-            audioresample.link(tee)
-            src = tee
+            self.add(lamemp3enc)
+            audioresample.link(lamemp3enc)
 
-        for codec in codecs:
-            if codec == 'mp3':
-                from Bins import mp3_bin
-                lamemp3enc = mp3_bin(self.locations[codec])
+        elif self.codec == 'wav':
+            from Bins import wav_bin
+            wavenc = wav_bin(self.location)
 
-                self.add(lamemp3enc)
-                src.link(lamemp3enc)
+            self.add(wavenc)
+            audioresample.link(wavenc)
 
-            elif codec == 'wav':
-                from Bins import wav_bin
-                wavenc = wav_bin(self.locations[codec])
+        elif self.codec == 'ogg':
+            from Bins import ogg_bin
+            vorbisenc = ogg_bin(self.location)
 
-                self.add(wavenc)
-                src.link(wavenc)
-
-            elif codec == 'ogg':
-                from Bins import ogg_bin
-                vorbisenc = ogg_bin(self.locations[codec])
-
-                self.add(vorbisenc)
-                src.link(vorbisenc)
+            self.add(vorbisenc)
+            audioresample.link(vorbisenc)
 
         self.bus.add_signal_watch()
         self.bus.connect(

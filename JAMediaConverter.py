@@ -179,8 +179,11 @@ class Ventana(Gtk.Window):
 
     def __salir(self, widget=None, senial=None):
 
-        import sys
+        for key in self.widgettareas.tareas.keys():
+            widtarea = self.widgettareas.tareas[key]
+            widtarea.stop()
 
+        import sys
         sys.exit(0)
 
 
