@@ -29,16 +29,24 @@ from gi.repository import GLib
 
 import JAMediaObjects
 
-from JAMediaObjects.JAMediaGlobales import get_separador
-from JAMediaObjects.JAMediaGlobales import get_pixels
-from JAMediaObjects.JAMediaGlobales import get_boton
-from JAMediaObjects.JAMediaGlobales import get_color
-
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
-from JAMediaAudioExtractor.JAMediaAudioExtractor import JAMediaAudioExtractor
-from JAMediaVideoConvert.JAMediaVideoConvert import JAMediaVideoConvert
-from JAMedia.JAMedia import JAMediaPlayer
+def get_data(archivo):
+    """
+    Devuelve el tipo de un archivo (imagen, video, texto).
+    """
+
+    import commands
+
+    datos = commands.getoutput(
+        'file -ik %s%s%s' % ("\"", archivo, "\""))
+
+    retorno = ""
+
+    for dat in datos.split(":")[1:]:
+        retorno += " %s" % (dat)
+
+    return retorno
 
 
 class Ventana(Gtk.Window):
@@ -53,184 +61,127 @@ class Ventana(Gtk.Window):
 
         self.set_icon_from_file(
             os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia.svg"))
+            "Iconos", "JAMediaConvert.svg"))
 
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
 
-        self.pistas = ""
+        self.tipo = False
+
+        from JAMediaConverter.Widgets import Toolbar
+        from JAMediaObjects.JAMediaWidgets import Lista
+        from JAMediaConverter.WidgetTareas import WidgetTareas
 
         vbox = Gtk.VBox()
-        toolbar = Toolbar()
-        vbox.pack_start(
-            toolbar, False, False, 0)
+        base_panel = Gtk.HPaned()
+        vbox2 = Gtk.VBox()
 
-        self.audioextractorsocket = Gtk.Socket()
-        self.audioextractor = JAMediaAudioExtractor([], 'ogg')
+        self.toolbar = Toolbar()
+        self.lista = Lista()
+        self.widgettareas = WidgetTareas()
 
-        vbox.pack_start(
-            self.audioextractorsocket, True, True, 0)
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+        scroll.add(self.lista)
 
-        self.videoconvertsocket = Gtk.Socket()
-        self.videoconvert = JAMediaVideoConvert([], 'ogg')
-
-        vbox.pack_start(
-            self.videoconvertsocket, True, True, 0)
-
-        self.jamediasocket = Gtk.Socket()
-        self.jamediaplayer = JAMediaPlayer()
+        base_panel.pack1(scroll, resize=False, shrink=False)
+        base_panel.pack2(vbox2, resize=False, shrink=False)
 
         vbox.pack_start(
-            self.jamediasocket, True, True, 0)
+            self.toolbar, False, False, 0)
+        vbox.pack_start(
+            base_panel, True, True, 0)
+
+        vbox2.pack_start(self.widgettareas, True, True, 0)
 
         self.add(vbox)
 
         self.show_all()
         self.realize()
 
-        toolbar.connect('switch', self.__switch)
-        toolbar.connect('salir', self.__salir)
+        scroll.set_size_request(80, -1)
+
+        self.toolbar.connect('salir', self.__salir)
+        self.toolbar.connect('load', self.__load_files)
+        self.lista.connect("nueva-seleccion", self.__selecction_file)
+        self.widgettareas.connect('copy_tarea', self.__copy_tarea)
+
         self.connect("delete-event", self.__salir)
-        #self.jamediaplayer.connect('salir', self.__salir)
 
-        GLib.idle_add(self.__setup_init)
-
-    def __switch(self, widget, tipo):
-
-        if tipo == 'jamedia':
-            self.audioextractorsocket.hide()
-            self.videoconvertsocket.hide()
-            self.jamediasocket.show()
-
-        elif tipo == 'videoconvert':
-            self.audioextractorsocket.hide()
-            self.jamediasocket.hide()
-            self.videoconvertsocket.show()
-
-        elif tipo == 'audioextractor':
-            self.videoconvertsocket.hide()
-            self.jamediasocket.hide()
-            self.audioextractorsocket.show()
-
-    '''
-    def set_pistas(self, pistas):
+    def __copy_tarea(self, widget, tarea):
         """
-        Cuando se abre con una lista de archivos.
+        Extiende la tarea configurada a todos
+        los archivos en la lista, siempre que estos
+        sean del mismo tipo (audio o video) y si su formato
+        actual lo permite (ejemplo: no se convierte mp3 a mp3).
         """
 
-        self.pistas = pistas
-    '''
-    def __setup_init(self):
+        if widget.tipo != self.tipo:
+            print "FIXME: Esta tarea no puede aplicarse a archivos de:", self.tipo
+            return
 
-        self.jamediasocket.add_id(
-            self.jamediaplayer.get_id())
+        model = self.lista.get_model()
+        item = model.get_iter_first()
 
-        self.audioextractorsocket.add_id(
-            self.audioextractor.get_id())
+        it = None
 
-        self.videoconvertsocket.add_id(
-            self.videoconvert.get_id())
+        while item:
+            it = item
+            item = model.iter_next(item)
 
-        self.jamediaplayer.setup_init()
-        self.jamediaplayer.pack_standar()
-        self.jamediaplayer.pack_efectos()
-        '''
-        if self.pistas:
-            GLib.idle_add(
-                self.jamediaplayer.set_nueva_lista,
-                self.pistas)
-        '''
+            if it:
+                path = model.get_value(it, 2)
+                widtarea = self.widgettareas.tareas.get(path, False)
 
-        self.__switch(None, 'jamedia')
+                if not widtarea:
+                    self.widgettareas.go_tarea(path, self.tipo)
 
-        return False
+        for key in self.widgettareas.tareas.keys():
+            widtarea = self.widgettareas.tareas[key]
+
+            if not widtarea.estado:
+                widtarea.setear(tarea)
+
+    def __selecction_file(self, widget, path):
+
+        self.widgettareas.go_tarea(path, self.tipo)
+
+    def __load_files(self, widget, lista, tipo):
+        """
+        Agrega archivos a la lista a procesar.
+        """
+
+        items = []
+
+        for origen in lista:
+            if os.path.isdir(origen):
+                for archivo in os.listdir(origen):
+                    arch = os.path.join(origen, archivo)
+
+                    datos = get_data(arch)
+                    if tipo in datos:
+                        items.append([os.path.basename(arch), arch])
+
+            elif os.path.isfile(origen):
+                datos = get_data(origen)
+                if tipo in datos:
+                    items.append([os.path.basename(origen), origen])
+
+        self.lista.limpiar()
+
+        if items:
+            self.tipo = tipo
+            self.lista.agregar_items(items)
 
     def __salir(self, widget=None, senial=None):
 
         import sys
 
-        if self.audioextractor:
-            self.audioextractor.stop()
-
-        if self.videoconvert:
-            self.videoconvert.stop()
-
-        #import commands
-
-        #commands.getoutput('killall mplayer')
         sys.exit(0)
-
-
-class Toolbar(Gtk.Toolbar):
-
-    __gsignals__ = {
-    'salir': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, []),
-    'switch': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
-
-    def __init__(self):
-
-        Gtk.Toolbar.__init__(self)
-
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMedia.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(1))
-        boton.set_tooltip_text("Reproductor")
-        boton.connect(
-            "clicked", self.__emit_switch, 'jamedia')
-        self.insert(boton, -1)
-
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMediaExtractor.svg")
-        self.jamedia = get_boton(archivo, flip=False,
-            pixels=get_pixels(1))
-        self.jamedia.set_tooltip_text("Extractor de Audio")
-        self.jamedia.connect(
-            "clicked", self.__emit_switch, 'audioextractor')
-        self.insert(self.jamedia, -1)
-
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "JAMediaConvert.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(1))
-        boton.set_tooltip_text("Conversor de Video")
-        boton.connect(
-            "clicked", self.__emit_switch, 'videoconvert')
-        self.insert(boton, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "salir.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(1))
-        boton.set_tooltip_text("Salir")
-        boton.connect("clicked", self.__salir)
-        self.insert(boton, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        self.show_all()
-
-    def __emit_switch(self, widget, tipo):
-
-        self.emit('switch', tipo)
-
-    def __salir(self, widget):
-        """
-        Cuando se hace click en el boton salir.
-        """
-
-        self.emit('salir')
 
 
 if __name__ == "__main__":

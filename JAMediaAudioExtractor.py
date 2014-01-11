@@ -30,6 +30,8 @@ from JAMediaAudioExtractor.JAMediaAudioExtractor import JAMediaAudioExtractor
 
 class Ventana(Gtk.Window):
 
+    __gtype_name__ = 'Ventana'
+
     def __init__(self, origen, codec):
 
         Gtk.Window.__init__(self)
@@ -53,6 +55,7 @@ class Ventana(Gtk.Window):
         self.realize()
 
         self.connect("delete-event", self.__exit)
+        self.jamediaaudioextractor.connect("salir", self.__exit)
 
     def __exit(self, widget=None, senial=None):
 

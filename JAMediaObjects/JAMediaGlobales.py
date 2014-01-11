@@ -278,7 +278,8 @@ def get_boton(archivo, flip=False, rotacion=None, pixels=0, tooltip_text=None):
     boton = Gtk.ToolButton()
 
     imagen = Gtk.Image()
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixels, pixels)
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+        archivo, pixels, pixels)
 
     if flip:
         pixbuf = pixbuf.flip(True)

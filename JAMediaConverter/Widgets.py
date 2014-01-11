@@ -22,9 +22,9 @@
 import os
 
 from gi.repository import Gtk
-from gi.repository import Gdk
+#from gi.repository import Gdk
 from gi.repository import GObject
-from gi.repository import GLib
+#from gi.repository import GLib
 
 from JAMediaObjects.JAMediaGlobales import get_boton
 from JAMediaObjects.JAMediaGlobales import get_separador
@@ -36,15 +36,14 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 class Toolbar(Gtk.Toolbar):
 
-    __gtype_name__ = 'JAMediaAudioExtractorToolbar'
+    __gtype_name__ = 'JAMediaConverterToolbar'
 
     __gsignals__ = {
     'salir': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
     'load': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
-    'accion_formato': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -75,16 +74,10 @@ class Toolbar(Gtk.Toolbar):
 
         self.menu.connect(
             "load", self.__emit_load)
-        self.menu.connect(
-            "accion_formato", self.__emit_formato)
 
-    def __emit_load(self, widget, archivos):
+    def __emit_load(self, widget, archivos, tipo):
 
-        self.emit('load', archivos)
-
-    def __emit_formato(self, widget, formato):
-
-        self.emit('accion_formato', formato)
+        self.emit('load', archivos, tipo)
 
     def __salir(self, widget):
         """
@@ -94,92 +87,17 @@ class Toolbar(Gtk.Toolbar):
         self.emit('salir')
 
 
-class InfoBox(Gtk.Frame):
-
-    __gtype_name__ = 'JAMediaAudioExtractorInfoBox'
-
-    def __init__(self):
-
-        Gtk.Frame.__init__(self)
-
-        self.info = ""
-
-        self.set_size_request(250, -1)
-
-        self.set_label("Archivos Restantes:")
-
-        self.info_widget = Gtk.TextView()
-        self.info_widget.set_editable(False)
-        self.info_widget.set_buffer(Gtk.TextBuffer())
-
-        from gi.repository import Pango
-
-        self.info_widget.modify_font(
-            Pango.FontDescription('Monospace 8'))
-
-        scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-        scroll.add_with_viewport(self.info_widget)
-
-        self.add(scroll)
-        self.show_all()
-
-    def reset(self):
-
-        self.info = ""
-        self.set_cantidad(0)
-        GLib.idle_add(self.__update_info, "")
-
-    def set_info(self, info):
-
-        if self.info:
-            self.info = "%s\n%s" % (self.info, str(info))
-
-        else:
-            self.info = str(info)
-
-        text = self.info
-
-        GLib.idle_add(self.__update_info, text)
-
-    def __update_info(self, text):
-
-        buffer = self.info_widget.get_buffer()
-
-        buffer.set_text(text)
-        '''
-        textmark = buffer.get_insert()
-        textiter = buffer.get_iter_at_mark(textmark)
-        id = textiter.get_line()
-
-        linea_iter = buffer.get_iter_at_line(id)
-        GLib.idle_add(
-            self.info_widget.scroll_to_iter,
-            linea_iter, 0.1, 1, 1, 0.1)
-        '''
-        return False
-
-    def set_cantidad(self, cantidad):
-
-        valor = "Archivos Restantes: %s" % cantidad
-        if self.get_label() != valor:
-            self.set_label(valor)
-
-
 class Menu(Gtk.MenuBar):
     """
     Toolbar Principal.
     """
 
-    __gtype_name__ = 'JAMediaAudioExtractorMenu'
+    __gtype_name__ = 'JAMediaConverterMenu'
 
     __gsignals__ = {
     'load': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
-    'accion_formato': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -190,87 +108,43 @@ class Menu(Gtk.MenuBar):
         item_Procesar.set_submenu(menu_Procesar)
         self.append(item_Procesar)
 
-        item = Gtk.MenuItem('Directorio ...')
-        item.connect("activate", self.__emit_accion)
+        # Audio
+        item = Gtk.MenuItem('Archivos de Audio')
         menu_Procesar.append(item)
+
+        archivos_audio = Gtk.Menu()
+        item.set_submenu(archivos_audio)
+
+        item = Gtk.MenuItem('Directorio ...')
+        item.connect("activate", self.__emit_accion, 'audio')
+        archivos_audio.append(item)
 
         item = Gtk.MenuItem('Archivos ...')
-        item.connect("activate", self.__emit_accion)
+        item.connect("activate", self.__emit_accion, 'audio')
+        archivos_audio.append(item)
+
+        # Video
+        item = Gtk.MenuItem('Archivos de Video')
         menu_Procesar.append(item)
 
-        item_codec = Gtk.MenuItem('Seleccionar Formato')
-        menu_codec = Gtk.Menu()
-        item_codec.set_submenu(menu_codec)
-        self.append(item_codec)
+        archivos_audio = Gtk.Menu()
+        item.set_submenu(archivos_audio)
 
-        item = Gtk.MenuItem()
-        try:
-            item.get_child().destroy()
+        item = Gtk.MenuItem('Directorio ...')
+        item.connect("activate", self.__emit_accion, 'video')
+        archivos_audio.append(item)
 
-        except:
-            pass
-
-        hbox = Gtk.HBox()
-        button1 = Gtk.RadioButton()
-        button1.set_active(True)
-        hbox.pack_start(button1, False, False, 0)
-        label = Gtk.Label("mp3")
-        hbox.pack_start(label, False, False, 5)
-        item.add(hbox)
-        item.connect("activate",
-            self.__emit_accion_formato, label.get_text())
-        menu_codec.append(item)
-
-        item = Gtk.MenuItem()
-        try:
-            item.get_child().destroy()
-
-        except:
-            pass
-
-        hbox = Gtk.HBox()
-        button = Gtk.RadioButton()
-        button.set_active(False)
-        button.join_group(button1)
-        hbox.pack_start(button, False, False, 0)
-        label = Gtk.Label("ogg")
-        hbox.pack_start(label, False, False, 5)
-        item.add(hbox)
-        item.connect("activate",
-            self.__emit_accion_formato, label.get_text())
-        menu_codec.append(item)
-
-        item = Gtk.MenuItem()
-        try:
-            item.get_child().destroy()
-
-        except:
-            pass
-
-        hbox = Gtk.HBox()
-        button = Gtk.RadioButton()
-        button.set_active(False)
-        button.join_group(button1)
-        hbox.pack_start(button, False, False, 0)
-        label = Gtk.Label("wav")
-        hbox.pack_start(label, False, False, 5)
-        item.add(hbox)
-        item.connect("activate",
-            self.__emit_accion_formato, label.get_text())
-        menu_codec.append(item)
+        item = Gtk.MenuItem('Archivos ...')
+        item.connect("activate", self.__emit_accion, 'video')
+        archivos_audio.append(item)
 
         self.show_all()
 
-    def __emit_accion_formato(self, widget, accion):
-
-        valor = not widget.get_children()[0].get_children()[0].get_active()
-        widget.get_children()[0].get_children()[0].set_active(valor)
-
-        self.emit('accion_formato', accion)
-
-    def __emit_accion(self, widget):
+    def __emit_accion(self, widget, tipo):
 
         valor = widget.get_label()
+
+        mtype = "%s/*" % tipo
 
         if valor == 'Directorio ...':
             filechooser = FileChooser(
@@ -278,10 +152,10 @@ class Menu(Gtk.MenuBar):
                 title="Cargar Archivos",
                 action=Gtk.FileChooserAction.SELECT_FOLDER,
                 #path=path,
-                #mime_type=["text/*", "image/svg+xml"]
+                mime=[mtype],
                 )
 
-            filechooser.connect('load', self.__abrir_archivo)
+            filechooser.connect('load', self.__emit_load, tipo)
 
         elif valor == 'Archivos ...':
             filechooser = FileChooser(
@@ -289,52 +163,19 @@ class Menu(Gtk.MenuBar):
                 title="Cargar Archivos",
                 action=Gtk.FileChooserAction.OPEN,
                 #path=path,
-                mime=["audio/*", "video/*"],
+                mime=[mtype],
                 )
 
-            filechooser.connect('load', self.__abrir_archivo)
+            filechooser.connect('load', self.__emit_load, tipo)
 
-    def __abrir_archivo(self, widget, archivos):
+    def __emit_load(self, widget, archivos, tipo):
 
-        self.emit('load', archivos)
-
-
-class Widget_extractor(Gtk.Frame):
-
-    __gtype_name__ = 'JAMediaAudioExtractorWidget_extractor'
-
-    def __init__(self):
-
-        Gtk.Frame.__init__(self)
-
-        self.set_label("")
-
-        self.visor = Gtk.DrawingArea()
-        self.visor.set_size_request(320, 240)
-        self.visor.modify_bg(0, Gdk.Color(0, 0, 0))
-
-        self.add(self.visor)
-
-        self.show_all()
-
-    def set_extraccion(self, text):
-
-        if len(text) > 25:
-            text = "%s . . ." % text[:25]
-
-        text = "Procesando: %s" % text
-
-        self.set_label(text)
-
-    def reset(self):
-
-        self.set_label("JAMedia Audio Extractor")
-        self.visor.modify_bg(0, Gdk.Color(0, 0, 0))
+        self.emit('load', archivos, tipo)
 
 
 class FileChooser(Gtk.FileChooserDialog):
 
-    __gtype_name__ = 'JAMediaExtractorFileChooser'
+    __gtype_name__ = 'JAMediaConverterFileChooser'
 
     __gsignals__ = {
     'load': (GObject.SIGNAL_RUN_LAST,

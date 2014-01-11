@@ -95,17 +95,17 @@ class JAMediaAudioExtractor(Gtk.Plug):
 
         from JAMediaObjects.JAMediaWidgets import BarraProgreso
         from Widgets import Widget_extractor
-        from Widgets import Menu
+        from Widgets import Toolbar
         from Widgets import InfoBox
 
-        self.menu = Menu()
+        self.toolbar = Toolbar()
         self.widget_extractor = Widget_extractor()
         self.barradeprogreso = BarraProgreso()
         self.barradeprogreso.set_sensitive(False)
         self.barradeprogreso2 = BarraProgreso()
         self.barradeprogreso2.set_sensitive(False)
 
-        basebox.pack_start(self.menu, False, False, 0)
+        basebox.pack_start(self.toolbar, False, False, 0)
         basebox.pack_start(hbox, True, True, 0)
 
         vbox.pack_start(self.widget_extractor, True, True, 0)
@@ -122,12 +122,24 @@ class JAMediaAudioExtractor(Gtk.Plug):
         self.show_all()
         self.realize()
 
-        self.connect("embedded", self.__embed_event)
-        self.menu.connect('load', self.__add_file)
-        self.menu.connect('accion_formato', self.__set_formato)
+        self.connect(
+            "embedded", self.__embed_event)
+        self.toolbar.connect(
+            'load', self.__add_file)
+        self.toolbar.connect(
+            'accion_formato', self.__set_formato)
+        self.toolbar.connect(
+            'salir', self.__emit_salir)
 
         if self.lista:
             GLib.idle_add(self.play)
+
+    def __emit_salir(self, widget):
+        """
+        Cuando se hace click en el boton salir.
+        """
+
+        self.emit('salir')
 
     def __set_formato(self, widget, formato):
 
@@ -173,7 +185,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
         Comienza a Procesar los archivos en la lista.
         """
 
-        self.menu.set_sensitive(False)
+        self.toolbar.menu.set_sensitive(False)
 
         self.info_widget.reset()
 
@@ -204,7 +216,7 @@ class JAMediaAudioExtractor(Gtk.Plug):
             dialog.run()
             dialog.destroy()
 
-            self.menu.set_sensitive(True)
+            self.toolbar.menu.set_sensitive(True)
             return
 
         origen = self.lista[0]
