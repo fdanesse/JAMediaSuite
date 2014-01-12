@@ -46,7 +46,6 @@ class WidgetTareas(Gtk.Frame):
 
         Gtk.Frame.__init__(self)
 
-        self.tipo = False
         self.tareas = {}
 
         self.set_label("  Tareas a Programadas:  ")
@@ -63,36 +62,30 @@ class WidgetTareas(Gtk.Frame):
         self.add(scroll)
         self.show_all()
 
-    def go_tarea(self, path, tipo):
+    def go_tarea(self, path):
         """
         Cuando se selecciona un archivo en la lista
         crea una tarea para él o la selecciona si
         esta ya existe.
         """
 
-        self.tipo = tipo
         tarea = self.tareas.get(path, False)
 
         if tarea:
             wid = self.tareas[path]
 
         else:
-            if tipo == 'audio':
-                from AudioConverter.WidgetAudioConverter import WidgetAudioConverter
-                wid = WidgetAudioConverter(path)
+            from AudioExtractor.WidgetAudioExtractor import WidgetAudioExtractor
 
-            elif tipo == 'video':
-                from AudioExtractor.WidgetAudioExtractor import WidgetAudioExtractor
-                wid = WidgetAudioExtractor(path)
-
-            self.tareas[path] = wid
+            self.tareas[path] = WidgetAudioExtractor(path)
             self.tareas[path].connect(
                 'copy_tarea', self.__emit_copy_tarea)
             self.tareas[path].connect(
                 'eliminar_tarea', self.__eliminar_tarea)
-            self.base_box.pack_start(wid, False, False, 0)
+            self.base_box.pack_start(
+                self.tareas[path], False, False, 0)
 
-        # FIXME: seleccionar y mostrar wid
+        print "FIXME: seleccionar y mostrar wid"
 
     def __emit_copy_tarea(self, widget, tarea):
         """

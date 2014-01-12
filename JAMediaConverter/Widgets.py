@@ -42,8 +42,7 @@ class Toolbar(Gtk.Toolbar):
     'salir': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
     'load': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_STRING))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
 
@@ -75,9 +74,9 @@ class Toolbar(Gtk.Toolbar):
         self.menu.connect(
             "load", self.__emit_load)
 
-    def __emit_load(self, widget, archivos, tipo):
+    def __emit_load(self, widget, archivos):
 
-        self.emit('load', archivos, tipo)
+        self.emit('load', archivos)
 
     def __salir(self, widget):
         """
@@ -96,55 +95,32 @@ class Menu(Gtk.MenuBar):
 
     __gsignals__ = {
     'load': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_STRING))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
 
         Gtk.MenuBar.__init__(self)
 
-        item_Procesar = Gtk.MenuItem('Procesar')
+        item_Procesar = Gtk.MenuItem('Cargar')
         menu_Procesar = Gtk.Menu()
         item_Procesar.set_submenu(menu_Procesar)
         self.append(item_Procesar)
 
-        # Audio
-        item = Gtk.MenuItem('Archivos de Audio')
+        item = Gtk.MenuItem('Directorio ...')
+        item.connect("activate", self.__emit_accion)
         menu_Procesar.append(item)
 
-        archivos_audio = Gtk.Menu()
-        item.set_submenu(archivos_audio)
-
-        item = Gtk.MenuItem('Directorio ...')
-        item.connect("activate", self.__emit_accion, 'audio')
-        archivos_audio.append(item)
-
         item = Gtk.MenuItem('Archivos ...')
-        item.connect("activate", self.__emit_accion, 'audio')
-        archivos_audio.append(item)
-
-        # Video
-        item = Gtk.MenuItem('Archivos de Video')
+        item.connect("activate", self.__emit_accion)
         menu_Procesar.append(item)
-
-        archivos_audio = Gtk.Menu()
-        item.set_submenu(archivos_audio)
-
-        item = Gtk.MenuItem('Directorio ...')
-        item.connect("activate", self.__emit_accion, 'video')
-        archivos_audio.append(item)
-
-        item = Gtk.MenuItem('Archivos ...')
-        item.connect("activate", self.__emit_accion, 'video')
-        archivos_audio.append(item)
 
         self.show_all()
 
-    def __emit_accion(self, widget, tipo):
+    def __emit_accion(self, widget):
 
         valor = widget.get_label()
 
-        mtype = "%s/*" % tipo
+        mtype = ["audio/*", "video/*"]
 
         if valor == 'Directorio ...':
             filechooser = FileChooser(
@@ -152,10 +128,10 @@ class Menu(Gtk.MenuBar):
                 title="Cargar Archivos",
                 action=Gtk.FileChooserAction.SELECT_FOLDER,
                 #path=path,
-                mime=[mtype],
+                mime=mtype,
                 )
 
-            filechooser.connect('load', self.__emit_load, tipo)
+            filechooser.connect('load', self.__emit_load)
 
         elif valor == 'Archivos ...':
             filechooser = FileChooser(
@@ -163,14 +139,14 @@ class Menu(Gtk.MenuBar):
                 title="Cargar Archivos",
                 action=Gtk.FileChooserAction.OPEN,
                 #path=path,
-                mime=[mtype],
+                mime=mtype,
                 )
 
-            filechooser.connect('load', self.__emit_load, tipo)
+            filechooser.connect('load', self.__emit_load)
 
-    def __emit_load(self, widget, archivos, tipo):
+    def __emit_load(self, widget, archivos):
 
-        self.emit('load', archivos, tipo)
+        self.emit('load', archivos)
 
 
 class FileChooser(Gtk.FileChooserDialog):

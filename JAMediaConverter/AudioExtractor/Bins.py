@@ -19,14 +19,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import gi
-gi.require_version('Gst', '1.0')
+#import gi
+#gi.require_version('Gst', '1.0')
 
 from gi.repository import GObject
 from gi.repository import Gst
 from gi.repository import GstVideo  # necesario
 
-GObject.threads_init()
+#GObject.threads_init()
 
 
 class wav_bin(Gst.Bin):

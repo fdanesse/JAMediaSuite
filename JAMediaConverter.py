@@ -21,6 +21,9 @@
 
 import os
 
+import gi
+gi.require_version('Gst', '1.0')
+
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GLib
@@ -48,6 +51,8 @@ def get_data(archivo):
 
     return retorno
 
+GObject.threads_init()
+
 
 class Ventana(Gtk.Window):
 
@@ -67,8 +72,6 @@ class Ventana(Gtk.Window):
         self.set_size_request(640, 480)
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
-
-        self.tipo = False
 
         from JAMediaConverter.Widgets import Toolbar
         from JAMediaObjects.JAMediaWidgets import Lista
@@ -120,10 +123,6 @@ class Ventana(Gtk.Window):
         actual lo permite (ejemplo: no se convierte mp3 a mp3).
         """
 
-        if widget.tipo != self.tipo:
-            print "FIXME: Esta tarea no puede aplicarse a archivos de:", self.tipo
-            return
-
         model = self.lista.get_model()
         item = model.get_iter_first()
 
@@ -138,7 +137,7 @@ class Ventana(Gtk.Window):
                 widtarea = self.widgettareas.tareas.get(path, False)
 
                 if not widtarea:
-                    self.widgettareas.go_tarea(path, self.tipo)
+                    self.widgettareas.go_tarea(path)
 
         for key in self.widgettareas.tareas.keys():
             widtarea = self.widgettareas.tareas[key]
@@ -148,9 +147,9 @@ class Ventana(Gtk.Window):
 
     def __selecction_file(self, widget, path):
 
-        self.widgettareas.go_tarea(path, self.tipo)
+        self.widgettareas.go_tarea(path)
 
-    def __load_files(self, widget, lista, tipo):
+    def __load_files(self, widget, lista):
         """
         Agrega archivos a la lista a procesar.
         """
@@ -161,20 +160,24 @@ class Ventana(Gtk.Window):
             if os.path.isdir(origen):
                 for archivo in os.listdir(origen):
                     arch = os.path.join(origen, archivo)
-
                     datos = get_data(arch)
-                    if tipo in datos:
+
+                    if 'audio' in datos or \
+                        'video' in datos or \
+                        'application/ogg' in datos:
                         items.append([os.path.basename(arch), arch])
 
             elif os.path.isfile(origen):
                 datos = get_data(origen)
-                if tipo in datos:
+
+                if 'audio' in datos or \
+                    'video' in datos or \
+                    'application/ogg' in datos:
                     items.append([os.path.basename(origen), origen])
 
         self.lista.limpiar()
 
         if items:
-            self.tipo = tipo
             self.lista.agregar_items(items)
 
     def __salir(self, widget=None, senial=None):

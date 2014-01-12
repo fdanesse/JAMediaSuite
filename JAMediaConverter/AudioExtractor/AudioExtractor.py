@@ -48,7 +48,7 @@ class AudioExtractor(Gst.Pipeline):
     "info": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, )), }
 
-    def __init__(self, ventana_id, origen, codec):
+    def __init__(self, origen, codec):
 
         Gst.Pipeline.__init__(self)
 
@@ -56,7 +56,6 @@ class AudioExtractor(Gst.Pipeline):
         self.duracion = 0
         self.posicion = 0
         self.actualizador = False
-        self.ventana_id = ventana_id
         self.origen = origen
 
         self.codec = codec
@@ -92,6 +91,7 @@ class AudioExtractor(Gst.Pipeline):
             "audioconvert", "audioconvert")
         audioresample = Gst.ElementFactory.make(
             "audioresample", "audioresample")
+        audioresample.set_property('quality', 10)
         audioresample.set_property('quality', 10)
 
         self.add(filesrc)
@@ -134,6 +134,41 @@ class AudioExtractor(Gst.Pipeline):
             self.add(vorbisenc)
             audioresample.link(vorbisenc)
 
+        elif self.codec == 'ogv':
+            videoconvert = Gst.ElementFactory.make(
+                "videoconvert", "videoconvert")
+            videorate = Gst.ElementFactory.make(
+                'videorate', 'videorate')
+            videorate.set_property('max-rate', 30)
+
+            theoraenc = Gst.ElementFactory.make(
+                "theoraenc", "theoraenc")
+            oggmux = Gst.ElementFactory.make(
+                "oggmux", "oggmux")
+
+            vorbisenc = Gst.ElementFactory.make(
+                "vorbisenc", "vorbisenc")
+
+            filesink = Gst.ElementFactory.make(
+                "filesink", "filesink")
+            filesink.set_property('location',
+                self.location)
+
+            self.add(videoconvert)
+            self.add(videorate)
+            self.add(theoraenc)
+            self.add(oggmux)
+            self.add(filesink)
+            self.add(vorbisenc)
+
+            videoconvert.link(videorate)
+            videorate.link(theoraenc)
+            theoraenc.link(oggmux)
+            oggmux.link(filesink)
+
+            audioresample.link(vorbisenc)
+            vorbisenc.link(oggmux)
+
         self.bus.add_signal_watch()
         self.bus.connect(
             'message', self.__on_mensaje)
@@ -163,16 +198,25 @@ class AudioExtractor(Gst.Pipeline):
 
         if string.startswith('audio/'):
             audioconvert = self.get_by_name('audioconvert')
-            sink = audioconvert.get_static_pad('sink')
-            pad.link(sink)
+
+            if audioconvert:
+                sink = audioconvert.get_static_pad('sink')
+                pad.link(sink)
+
+        elif string.startswith('video/'):
+            videoconvert = self.get_by_name('videoconvert')
+
+            if videoconvert:
+                sink = videoconvert.get_static_pad('sink')
+                pad.link(sink)
 
     def __sync_message(self, bus, mensaje):
-
+        '''
         if mensaje.get_structure():
             if mensaje.get_structure().get_name() == 'prepare-window-handle':
                 mensaje.src.set_window_handle(self.ventana_id)
                 return
-
+        '''
         if mensaje.type == Gst.MessageType.STATE_CHANGED:
             old, new, pending = mensaje.parse_state_changed()
 

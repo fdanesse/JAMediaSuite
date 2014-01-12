@@ -34,13 +34,31 @@ import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 
+def get_data(archivo):
+    """
+    Devuelve el tipo de un archivo (imagen, video, texto).
+    """
+
+    import commands
+
+    datos = commands.getoutput(
+        'file -ik %s%s%s' % ("\"", archivo, "\""))
+
+    retorno = ""
+
+    for dat in datos.split(":")[1:]:
+        retorno += " %s" % (dat)
+
+    return retorno
+
+
 class WidgetAudioExtractor(Gtk.Frame):
     """
     * Conversor de formatos para archivos de audio.
     * Extractor de audio de archivos de video.
     """
 
-    __gtype_name__ = 'JAMediaConverterWidgetAudioTarea'
+    __gtype_name__ = 'JAMediaConverterWidgetAudioExtractor'
 
     __gsignals__ = {
     'copy_tarea': (GObject.SIGNAL_RUN_LAST,
@@ -73,11 +91,11 @@ class WidgetAudioExtractor(Gtk.Frame):
 
         self.boton_ejecutar = Gtk.Button("Ejecutar Esta Tarea")
         self.boton_ejecutar.connect("clicked", self.__ejecutar_tarea)
-        vbox.pack_start(self.boton_ejecutar, True, True, 5)
+        vbox.pack_start(self.boton_ejecutar, False, False, 5)
 
         boton = Gtk.Button("Copiar a Toda la Lista")
         boton.connect("clicked", self.__emit_copy)
-        vbox.pack_start(boton, True, True, 5)
+        vbox.pack_start(boton, False, False, 5)
 
         boton = Gtk.Button("Borrar Tarea")
         boton.connect("clicked", self.__detener_eliminar)
@@ -125,7 +143,6 @@ class WidgetAudioExtractor(Gtk.Frame):
         if self.frame_formatos.run():
             self.boton_ejecutar.set_sensitive(False)
             self.estado = True
-            print "FIXME: cambiar estado o eliminar tarea al detener o terminar."
 
         else:
             print "FIXME: Alertar No hay tarea definida."
@@ -137,7 +154,6 @@ class WidgetAudioExtractor(Gtk.Frame):
 
         self.boton_ejecutar.set_sensitive(True)
         self.estado = False
-        print "FIXME: Tarea Concluida."
 
     def __emit_copy(self, widget):
         """
@@ -165,6 +181,7 @@ class Tareas(Gtk.Frame):
             'mp3': False,
             'ogg': False,
             'wav': False,
+            'ogv': False,
             }
 
         self.barras = {}
@@ -177,6 +194,8 @@ class Tareas(Gtk.Frame):
         self.set_label(" Archivos de Salida: ")
 
         vbox = Gtk.VBox()
+
+        datos = get_data(self.path)
 
         if extension != 'mp3':
             vbox.pack_start(
@@ -193,6 +212,13 @@ class Tareas(Gtk.Frame):
                 self.__get_item_format('wav'),
                 True, True, 0)
 
+        # FIXME: hack: extension != 'ogg' (algunos ogg solo tienen audio)
+        if extension != 'ogv' and extension != 'ogg' and \
+            ('video' in datos or 'application/ogg' in datos):
+            vbox.pack_start(
+                self.__get_item_format('ogv'),
+                True, True, 0)
+
         self.add(vbox)
 
         self.show_all()
@@ -200,7 +226,7 @@ class Tareas(Gtk.Frame):
     def __get_item_format(self, formato):
         """
         Checkbuttons para seleccionar formatos
-        de salida y quitar voz.
+        de salida.
         """
 
         box = Gtk.HBox()
@@ -229,14 +255,7 @@ class Tareas(Gtk.Frame):
         en los checkbuttons.
         """
 
-        if 'mp3' in formato:
-            self.tarea[formato] = active
-
-        elif 'ogg' in formato:
-            self.tarea[formato] = active
-
-        elif 'wav' in formato:
-            self.tarea[formato] = active
+        self.tarea[formato] = active
 
     def setear(self, tarea):
         """
@@ -247,8 +266,11 @@ class Tareas(Gtk.Frame):
             self.barras[key].set_progress(0.0)
 
         for hbox in self.get_child().get_children():
-            formato = hbox.get_children()[0]
-            formato.set_active(tarea[formato.get_label()])
+            check = hbox.get_children()[0]
+
+            if check.get_label() in tarea.keys():
+                valor = tarea.get(check.get_label(), False)
+                check.set_active(valor)
 
     def stop(self):
         """
@@ -273,13 +295,12 @@ class Tareas(Gtk.Frame):
             return False
 
         self.set_sensitive(False)
-        print "FIXME: cambiar estado o eliminar tarea al detener o terminar."
 
         from AudioExtractor import AudioExtractor
 
         for formato in formatos:
             self.players[formato] = AudioExtractor(
-                False, self.path, formato)
+                self.path, formato)
 
             self.players[formato].connect('endfile', self.__set_end)
             #self.players[formato].connect('estado', self.__set_estado)
@@ -323,7 +344,7 @@ class Tareas(Gtk.Frame):
 
 class CheckButton(Gtk.CheckButton):
 
-    __gtype_name__ = 'JAMediaConverterCheckButton'
+    #__gtype_name__ = 'JAMediaConverterCheckButton'
 
     __gsignals__ = {
     'set_data': (GObject.SIGNAL_RUN_LAST,
