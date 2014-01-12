@@ -23,6 +23,7 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import GLib
+from gi.repository import GObject
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
@@ -31,6 +32,8 @@ import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 from JAMedia.JAMedia import JAMediaPlayer
+
+GObject.threads_init()
 
 
 class Ventana(Gtk.Window):

@@ -19,14 +19,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
-
 from gi.repository import Gst
 from gi.repository import GObject
 from gi.repository import GLib
-from gi.repository import GstVideo
 
-#GObject.threads_init()
 Gst.init([])
 
 
@@ -39,8 +35,8 @@ class PipelineConverter(Gst.Pipeline):
     __gsignals__ = {
     "endfile": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
-    "estado": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    #"estado": (GObject.SIGNAL_RUN_LAST,
+    #    GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
     "newposicion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_INT,)),
     #"video": (GObject.SIGNAL_RUN_LAST,
@@ -114,6 +110,7 @@ class PipelineConverter(Gst.Pipeline):
         audioresample = self.get_by_name('audioresample')
 
         if self.codec == 'mp3':
+            self.emit("info", "Agregando Codificador mp3")
             from Bins import mp3_bin
             lamemp3enc = mp3_bin(self.location)
 
@@ -121,6 +118,7 @@ class PipelineConverter(Gst.Pipeline):
             audioresample.link(lamemp3enc)
 
         elif self.codec == 'wav':
+            self.emit("info", "Agregando Codificador wav")
             from Bins import wav_bin
             wavenc = wav_bin(self.location)
 
@@ -128,6 +126,7 @@ class PipelineConverter(Gst.Pipeline):
             audioresample.link(wavenc)
 
         elif self.codec == 'ogg':
+            self.emit("info", "Agregando Codificador ogg")
             from Bins import ogg_bin
             vorbisenc = ogg_bin(self.location)
 
@@ -135,6 +134,7 @@ class PipelineConverter(Gst.Pipeline):
             audioresample.link(vorbisenc)
 
         elif self.codec == 'ogv':
+            self.emit("info", "Agregando Codificador ogv")
             videoconvert = Gst.ElementFactory.make(
                 "videoconvert", "videoconvert")
             videorate = Gst.ElementFactory.make(
@@ -177,11 +177,6 @@ class PipelineConverter(Gst.Pipeline):
         self.bus.connect(
             'sync-message', self.__sync_message)
 
-    def play(self):
-
-        self.__play()
-        self.__new_handle(True)
-
     def __on_pad_added(self, decodebin, pad):
         """
         Agregar elementos en forma dinámica según
@@ -190,7 +185,7 @@ class PipelineConverter(Gst.Pipeline):
 
         string = pad.query_caps(None).to_string()
 
-        text = "Agregando Capas:"
+        text = "Detectando Capas en la Fuente:"
         for item in string.split(","):
             text = "%s\n\t%s" % (text, item.strip())
 
@@ -211,110 +206,76 @@ class PipelineConverter(Gst.Pipeline):
                 pad.link(sink)
 
     def __sync_message(self, bus, mensaje):
-        '''
-        if mensaje.get_structure():
-            if mensaje.get_structure().get_name() == 'prepare-window-handle':
-                mensaje.src.set_window_handle(self.ventana_id)
-                return
-        '''
+
         if mensaje.type == Gst.MessageType.STATE_CHANGED:
             old, new, pending = mensaje.parse_state_changed()
 
             if old == Gst.State.PAUSED and new == Gst.State.PLAYING:
                 if self.estado != new:
                     self.estado = new
-                    self.emit("estado", "playing")
+                    #self.emit("estado", "playing")
                     self.__new_handle(True)
                     return
 
             elif old == Gst.State.READY and new == Gst.State.PAUSED:
                 if self.estado != new:
                     self.estado = new
-                    self.emit("estado", "paused")
+                    #self.emit("estado", "paused")
                     self.__new_handle(False)
                     return
 
             elif old == Gst.State.READY and new == Gst.State.NULL:
                 if self.estado != new:
                     self.estado = new
-                    self.emit("estado", "None")
+                    #self.emit("estado", "None")
                     self.__new_handle(False)
                     return
 
             elif old == Gst.State.PLAYING and new == Gst.State.PAUSED:
                 if self.estado != new:
                     self.estado = new
-                    self.emit("estado", "paused")
+                    #self.emit("estado", "paused")
                     self.__new_handle(False)
                     return
-
-            #elif old == Gst.State.NULL and new == Gst.State.READY:
-            #    pass
-
-            #elif old == Gst.State.PAUSED and new == Gst.State.READY:
-            #    pass
-
-            #else:
-            #    return
 
         elif mensaje.type == Gst.MessageType.TAG:
             taglist = mensaje.parse_tag()
             datos = taglist.to_string()
 
-            #if 'audio-codec' in datos and not 'video-codec' in datos:
-            #    if self.video_in_stream == True or \
-            #        self.video_in_stream == None:
-
-            #        self.video_in_stream = False
-            #        self.emit("video", False)
-
-            #elif 'video-codec' in datos:
-            #    if self.video_in_stream == False or \
-            #        self.video_in_stream == None:
-
-            #        self.video_in_stream = True
-            #        self.emit("video", True)
-
-            #self.duracion = int(taglist.to_string().split(
-            #   "duration=(guint64)")[1].split(',')[0])
-
-            #Ejemplo:
-            #    taglist,
-            #    duration=(guint64)780633000000,
-            #    video-codec=(string)H.264,
-            #    audio-codec=(string)"MPEG-4\ AAC"
-
+            self.emit("info", "TagList:\n\t%s" % datos)
             return
 
         elif mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
-            print err, debug
             self.__new_handle(False)
+
+            self.emit("info",
+                "Error en la Reproducción: %s %s" % (err, debug))
+            self.emit("endfile")
             return
 
     def __on_mensaje(self, bus, mensaje):
 
         if mensaje.type == Gst.MessageType.EOS:
+            self.emit("info", "Tarea Concluida.")
             self.__new_handle(False)
             self.emit("endfile")
+            return
 
         elif mensaje.type == Gst.MessageType.ERROR:
             err, debug = mensaje.parse_error()
+            self.__new_handle(False)
+
             self.emit("info",
                 "Error en la Reproducción: %s %s" % (err, debug))
-            print "Error en la Reproducción:", err, debug
-            self.__new_handle(False)
+
             self.emit("endfile")
+            return
 
     def __play(self):
 
         self.emit("info", "Reproducción Iniciada")
         self.set_state(Gst.State.PLAYING)
-
-    def stop(self):
-
-        self.set_state(Gst.State.NULL)
-        self.emit("info", "Reproducción Detenida")
 
     def __new_handle(self, reset):
         """
@@ -329,7 +290,7 @@ class PipelineConverter(Gst.Pipeline):
 
         if reset:
             self.actualizador = GLib.timeout_add(
-                500, self.__handle)
+                100, self.__handle)
 
     def __handle(self):
         """
@@ -350,11 +311,6 @@ class PipelineConverter(Gst.Pipeline):
         except:
             pass
 
-        #print pos, posicion, duracion, posicion * 100 / duracion
-        #if pos < 0.0 or pos > self.duracion:
-        #    print pos, duracion
-        #    return True
-
         if self.duracion != duracion:
             self.duracion = duracion
 
@@ -363,3 +319,13 @@ class PipelineConverter(Gst.Pipeline):
             self.emit("newposicion", self.posicion)
 
         return True
+
+    def play(self):
+
+        self.__play()
+        self.__new_handle(True)
+
+    def stop(self):
+
+        self.set_state(Gst.State.NULL)
+        self.emit("info", "Reproducción Detenida.")

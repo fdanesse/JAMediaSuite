@@ -22,13 +22,13 @@
 import os
 
 from gi.repository import Gtk
-from gi.repository import Gdk
+from gi.repository import Pango
 from gi.repository import GObject
-from gi.repository import GLib
+#from gi.repository import GLib
 
-from JAMediaObjects.JAMediaGlobales import get_boton
+#from JAMediaObjects.JAMediaGlobales import get_boton
 #from JAMediaObjects.JAMediaGlobales import get_separador
-from JAMediaObjects.JAMediaGlobales import get_pixels
+#from JAMediaObjects.JAMediaGlobales import get_pixels
 
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
@@ -89,9 +89,12 @@ class WidgetConverter(Gtk.Frame):
         # Botones.
         vbox = Gtk.VBox()
 
-        self.boton_ejecutar = Gtk.Button("Ejecutar Esta Tarea")
-        self.boton_ejecutar.connect("clicked", self.__ejecutar_tarea)
-        vbox.pack_start(self.boton_ejecutar, False, False, 5)
+        self.boton_ejecutar = Gtk.Button(
+            "Ejecutar Esta Tarea")
+        self.boton_ejecutar.connect(
+            "clicked", self.__ejecutar_tarea)
+        vbox.pack_start(
+            self.boton_ejecutar, False, False, 5)
 
         boton = Gtk.Button("Copiar a Toda la Lista")
         boton.connect("clicked", self.__emit_copy)
@@ -101,12 +104,36 @@ class WidgetConverter(Gtk.Frame):
         boton.connect("clicked", self.__detener_eliminar)
         vbox.pack_start(boton, False, False, 5)
 
-        hbox.pack_start(vbox, False, False, 5)
+        frame = Gtk.Frame()
+        frame.set_label(" Acciones: ")
+        frame.set_border_width(5)
+        frame.add(vbox)
+        hbox.pack_start(frame, False, False, 5)
+
+        frame = Gtk.Frame()
+        frame.set_label(" Estado: ")
+        frame.set_border_width(5)
+
+        self.infowidget = Gtk.TextView()
+        self.infowidget.set_editable(False)
+        self.infowidget.set_border_width(10)
+        self.infowidget.modify_font(
+            Pango.FontDescription("Monospace %s" % 7))
+
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+        scroll.add(self.infowidget)
+        frame.add(scroll)
+
+        hbox.pack_start(frame, True, True, 0)
 
         self.add(hbox)
         self.show_all()
 
         self.frame_formatos.connect("end", self.__end)
+        self.frame_formatos.connect("info", self.__set_info)
 
     def __detener_eliminar(self, widget):
         """
@@ -115,21 +142,6 @@ class WidgetConverter(Gtk.Frame):
 
         self.frame_formatos.stop()
         self.emit('eliminar_tarea')
-
-    def stop(self):
-
-        self.frame_formatos.stop()
-
-    def setear(self, tarea):
-        """
-        Configura la tarea según copia desde otro item.
-        """
-
-        if self.estado:
-            return
-
-        self.frame_formatos.setear(tarea)
-        #GLib.idle_add(self.__ejecutar_tarea, None)
 
     def __ejecutar_tarea(self, widget):
         """
@@ -151,7 +163,7 @@ class WidgetConverter(Gtk.Frame):
         """
         Cuando Todos los procesos han concluido.
         """
-
+        # FIXME: Ver como alertar, o eliminar la tarea.
         self.boton_ejecutar.set_sensitive(True)
         self.estado = False
 
@@ -165,6 +177,34 @@ class WidgetConverter(Gtk.Frame):
 
         self.emit('copy_tarea', self.frame_formatos.tarea)
 
+    def __set_info(self, widget, info):
+
+        buf = self.infowidget.get_buffer()
+
+        text = buf.get_text(
+            buf.get_start_iter(),
+            buf.get_end_iter(), True)
+
+        if text:
+            info = "%s\n%s" % (text, info)
+
+        buf.set_text(info)
+
+    def stop(self):
+
+        self.frame_formatos.stop()
+
+    def setear(self, tarea):
+        """
+        Configura la tarea según copia desde otro item.
+        """
+
+        if self.estado:
+            return
+
+        self.frame_formatos.setear(tarea)
+        #GLib.idle_add(self.__ejecutar_tarea, None)
+
 
 class Tareas(Gtk.Frame):
 
@@ -172,7 +212,9 @@ class Tareas(Gtk.Frame):
 
     __gsignals__ = {
     "end": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, []),
+    "info": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self, path):
 
@@ -237,13 +279,7 @@ class Tareas(Gtk.Frame):
         boton.connect('set_data', self.__set_data)
         box.pack_start(boton, True, True, 5)
 
-        from JAMediaObjects.JAMediaWidgets import BarraProgreso
-
         barra = BarraProgreso()
-        barra.set_size_request(200, -1)
-        barra.set_border_width(10)
-        barra.set_sensitive(False)
-
         box.pack_start(barra,
             False, False, 0)
 
@@ -296,6 +332,7 @@ class Tareas(Gtk.Frame):
         if not formatos:
             return False
 
+        self.__set_info(None, "")
         self.set_sensitive(False)
 
         from PipelineConverter import PipelineConverter
@@ -319,6 +356,8 @@ class Tareas(Gtk.Frame):
         se emite end.
         """
 
+        self.barras[player.codec].set_progress(100.0)
+
         del(self.players[player.codec])
         del(player)
 
@@ -328,19 +367,11 @@ class Tareas(Gtk.Frame):
 
     def __set_info(self, player, info):
 
-        print info
+        self.emit("info", info)
 
     def __set_posicion(self, player, posicion):
 
         self.barras[player.codec].set_progress(float(posicion))
-
-        if float(posicion) == 100.0:
-            # Pista de audio siempre termina antes
-            # si no se envia a la salida por default.
-            #self.stop()
-            #self.play()
-            pass
-
         return True
 
 
@@ -365,3 +396,38 @@ class CheckButton(Gtk.CheckButton):
 
         self.emit('set_data', self.get_label(),
             self.get_active())
+
+
+class BarraProgreso(Gtk.ProgressBar):
+
+    def __init__(self):
+
+        Gtk.ProgressBar.__init__(self)
+
+        self.set_size_request(200, 5)
+
+        self.valor = 0.0
+
+        self.modify_font(
+            Pango.FontDescription("Monospace %s" % 6))
+        self.set_show_text(True)
+
+        self.set_margin_bottom(10)
+        self.set_margin_left(10)
+        self.set_margin_right(10)
+        self.set_margin_top(10)
+
+        self.show_all()
+
+    def set_progress(self, valor=0):
+
+        if valor > 0:
+            valor = valor / 100
+
+        else:
+            valor = 0.0
+
+        if self.valor != valor:
+            self.valor = valor
+            self.set_fraction(self.valor)
+            self.queue_draw()

@@ -25,14 +25,29 @@ import gi
 gi.require_version('Gst', '1.0')
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GObject
-from gi.repository import GLib
-
-#commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
 import JAMediaObjects
 
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+PATH = os.path.dirname(__file__)
+
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+style_path = os.path.join(
+    PATH, "JAMediaConverter", "Estilo.css")
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+GObject.threads_init()
+
 
 def get_data(archivo):
     """
@@ -105,8 +120,6 @@ class Ventana(Gtk.Window):
 
         self.show_all()
         self.realize()
-
-        scroll.set_size_request(80, -1)
 
         self.toolbar.connect('salir', self.__salir)
         self.toolbar.connect('load', self.__load_files)

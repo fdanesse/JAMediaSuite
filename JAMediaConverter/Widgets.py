@@ -22,9 +22,7 @@
 import os
 
 from gi.repository import Gtk
-#from gi.repository import Gdk
 from gi.repository import GObject
-#from gi.repository import GLib
 
 from JAMediaObjects.JAMediaGlobales import get_boton
 from JAMediaObjects.JAMediaGlobales import get_separador

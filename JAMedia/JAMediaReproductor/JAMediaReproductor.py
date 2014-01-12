@@ -29,7 +29,7 @@ from gi.repository import GLib
 from gi.repository import Gst
 from gi.repository import GstVideo
 
-#GObject.threads_init()
+GObject.threads_init()
 Gst.init([])
 
 # Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html

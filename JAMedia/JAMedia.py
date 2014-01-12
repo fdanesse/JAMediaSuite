@@ -66,7 +66,7 @@ context.add_provider_for_screen(
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
-#GObject.threads_init()
+GObject.threads_init()
 #Gdk.threads_init()
 
 
@@ -894,8 +894,8 @@ class JAMediaPlayer(Gtk.Plug):
         elif senial == "pausa-play":
             self.player.pause_play()
 
-        while Gtk.events_pending():
-            Gtk.main_iteration()
+        #while Gtk.events_pending():
+        #    Gtk.main_iteration()
 
         self.get_toplevel().set_sensitive(True)
 
@@ -1097,8 +1097,8 @@ class JAMediaPlayer(Gtk.Plug):
         self.player.stop()
         #self.lista_de_reproduccion.limpiar()
 
-        while Gtk.events_pending():
-            Gtk.main_iteration()
+        #while Gtk.events_pending():
+        #    Gtk.main_iteration()
 
         self.emit('salir')
 

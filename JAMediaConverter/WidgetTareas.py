@@ -19,16 +19,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#import os
-
 from gi.repository import Gtk
-#from gi.repository import Gdk
 from gi.repository import GObject
-#from gi.repository import GLib
-
-#from JAMediaObjects.JAMediaGlobales import get_boton
-#from JAMediaObjects.JAMediaGlobales import get_separador
-#from JAMediaObjects.JAMediaGlobales import get_pixels
 
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
@@ -48,7 +40,7 @@ class WidgetTareas(Gtk.Frame):
 
         self.tareas = {}
 
-        self.set_label("  Tareas a Programadas:  ")
+        self.set_label("  Tareas:  ")
         self.set_border_width(5)
 
         self.base_box = Gtk.VBox()
@@ -61,31 +53,6 @@ class WidgetTareas(Gtk.Frame):
 
         self.add(scroll)
         self.show_all()
-
-    def go_tarea(self, path):
-        """
-        Cuando se selecciona un archivo en la lista
-        crea una tarea para él o la selecciona si
-        esta ya existe.
-        """
-
-        tarea = self.tareas.get(path, False)
-
-        if tarea:
-            wid = self.tareas[path]
-
-        else:
-            from Converter.WidgetConverter import WidgetConverter
-
-            self.tareas[path] = WidgetConverter(path)
-            self.tareas[path].connect(
-                'copy_tarea', self.__emit_copy_tarea)
-            self.tareas[path].connect(
-                'eliminar_tarea', self.__eliminar_tarea)
-            self.base_box.pack_start(
-                self.tareas[path], False, False, 0)
-
-        print "FIXME: seleccionar y mostrar wid"
 
     def __emit_copy_tarea(self, widget, tarea):
         """
@@ -104,3 +71,20 @@ class WidgetTareas(Gtk.Frame):
 
         del(self.tareas[tarea.path])
         tarea.destroy()
+
+    def go_tarea(self, path):
+        """
+        Cuando se selecciona un archivo en la lista
+        crea una tarea para él.
+        """
+
+        if not self.tareas.get(path, False):
+            from Converter.WidgetConverter import WidgetConverter
+
+            self.tareas[path] = WidgetConverter(path)
+            self.tareas[path].connect(
+                'copy_tarea', self.__emit_copy_tarea)
+            self.tareas[path].connect(
+                'eliminar_tarea', self.__eliminar_tarea)
+            self.base_box.pack_start(
+                self.tareas[path], False, False, 0)
