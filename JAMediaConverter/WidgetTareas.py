@@ -75,9 +75,9 @@ class WidgetTareas(Gtk.Frame):
             wid = self.tareas[path]
 
         else:
-            from AudioExtractor.WidgetAudioExtractor import WidgetAudioExtractor
+            from Converter.WidgetConverter import WidgetConverter
 
-            self.tareas[path] = WidgetAudioExtractor(path)
+            self.tareas[path] = WidgetConverter(path)
             self.tareas[path].connect(
                 'copy_tarea', self.__emit_copy_tarea)
             self.tareas[path].connect(

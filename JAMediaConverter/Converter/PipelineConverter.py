@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   AudioExtractor.py por:
+#   PipelineConverter.py por:
 #       Flavio Danesse <fdanesse@gmail.com>
 #       CeibalJAM! - Uruguay
 #
@@ -30,7 +30,7 @@ from gi.repository import GstVideo
 Gst.init([])
 
 
-class AudioExtractor(Gst.Pipeline):
+class PipelineConverter(Gst.Pipeline):
     """
     * Conversor de formatos para archivos de audio.
     * Extractor de audio de archivos de video.

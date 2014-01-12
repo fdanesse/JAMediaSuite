@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   WidgetAudioExtractor.py por:
+#   WidgetConverter.py por:
 #       Flavio Danesse <fdanesse@gmail.com>
 #       CeibalJAM! - Uruguay
 #
@@ -52,13 +52,13 @@ def get_data(archivo):
     return retorno
 
 
-class WidgetAudioExtractor(Gtk.Frame):
+class WidgetConverter(Gtk.Frame):
     """
     * Conversor de formatos para archivos de audio.
     * Extractor de audio de archivos de video.
     """
 
-    __gtype_name__ = 'JAMediaConverterWidgetAudioExtractor'
+    __gtype_name__ = 'JAMediaConverterWidgetConverter'
 
     __gsignals__ = {
     'copy_tarea': (GObject.SIGNAL_RUN_LAST,
@@ -167,6 +167,8 @@ class WidgetAudioExtractor(Gtk.Frame):
 
 
 class Tareas(Gtk.Frame):
+
+    __gtype_name__ = 'JAMediaConverterTareas'
 
     __gsignals__ = {
     "end": (GObject.SIGNAL_RUN_LAST,
@@ -296,10 +298,10 @@ class Tareas(Gtk.Frame):
 
         self.set_sensitive(False)
 
-        from AudioExtractor import AudioExtractor
+        from PipelineConverter import PipelineConverter
 
         for formato in formatos:
-            self.players[formato] = AudioExtractor(
+            self.players[formato] = PipelineConverter(
                 self.path, formato)
 
             self.players[formato].connect('endfile', self.__set_end)
@@ -344,7 +346,7 @@ class Tareas(Gtk.Frame):
 
 class CheckButton(Gtk.CheckButton):
 
-    #__gtype_name__ = 'JAMediaConverterCheckButton'
+    __gtype_name__ = 'JAMediaConverterCheckButton'
 
     __gsignals__ = {
     'set_data': (GObject.SIGNAL_RUN_LAST,
