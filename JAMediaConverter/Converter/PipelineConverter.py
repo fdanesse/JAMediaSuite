@@ -106,6 +106,9 @@ class PipelineConverter(Gst.Pipeline):
         self.__setup2()
 
     def __setup2(self):
+        """
+        Construye los codificadores para la salida seleccionada.
+        """
 
         audioresample = self.get_by_name('audioresample')
 

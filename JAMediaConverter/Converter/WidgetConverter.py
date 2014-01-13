@@ -258,7 +258,8 @@ class Tareas(Gtk.Frame):
 
         # FIXME: hack: extension != 'ogg' (algunos ogg solo tienen audio)
         if extension != 'ogv' and extension != 'ogg' and \
-            ('video' in datos or 'application/ogg' in datos):
+            ('video' in datos or 'application/ogg' in datos or \
+            'application/octet-stream' in datos):
             vbox.pack_start(
                 self.__get_item_format('ogv'),
                 True, True, 0)

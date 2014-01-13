@@ -354,9 +354,12 @@ def get_item_list(path):
             from JAMediaObjects.JAMFileSystem import describe_archivo
 
             archivo = os.path.basename(path)
+            datos = describe_archivo(path)
 
-            if 'audio' in describe_archivo(path) or \
-                'video' in describe_archivo(path):
+            if 'audio' in datos or \
+                'video' in datos or \
+                'application/ogg' in datos or \
+                'application/octet-stream' in datos:
                     return [archivo, path]
 
     return False

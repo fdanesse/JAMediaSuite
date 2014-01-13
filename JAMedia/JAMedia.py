@@ -176,10 +176,10 @@ class JAMediaPlayer(Gtk.Plug):
         from JAMediaObjects.JAMediaWidgets import Lista
         from JAMediaObjects.JAMediaWidgets import ToolbarReproduccion
         from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerEfectos
-        from JAMediaObjects.JAMediaWidgets import ToolbarAccion
         from JAMediaObjects.JAMediaWidgets import ToolbarSalir
 
         from Widgets import Toolbar
+        from Widgets import ToolbarAccion
         from Widgets import ToolbarConfig
         from Widgets import ToolbarGrabar
         from Widgets import ToolbarInfo
@@ -575,8 +575,8 @@ class JAMediaPlayer(Gtk.Plug):
 
         lista = self.toolbar_list.label.get_text()
 
-        from JAMediaObjects.JAMediaGlobales import eliminar_streaming
-        from JAMediaObjects.JAMediaGlobales import add_stream
+        from Globales import eliminar_streaming
+        from Globales import add_stream
 
         if accion == "Borrar":
             eliminar_streaming(url, lista)
@@ -606,7 +606,7 @@ class JAMediaPlayer(Gtk.Plug):
         que pasa toolbaraddstream en add-stream.
         """
 
-        from JAMediaObjects.JAMediaGlobales import add_stream
+        from Globales import add_stream
         add_stream(tipo, [nombre, url])
 
         if "Tv" in tipo or "TV" in tipo:
@@ -968,7 +968,7 @@ class JAMediaPlayer(Gtk.Plug):
 
         self.get_toplevel().set_sensitive(False)
 
-        from JAMediaObjects.JAMediaGlobales import set_listas_default
+        from Globales import set_listas_default
 
         set_listas_default()
 
@@ -1000,9 +1000,10 @@ class JAMediaPlayer(Gtk.Plug):
 
         self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
 
-        from JAMediaObjects.JAMediaGlobales import get_jamedia_video_efectos
+        from GstreamerVideoEfectos import get_jamedia_video_efectos
 
-        GLib.idle_add(self.__cargar_efectos, list(get_jamedia_video_efectos()))
+        GLib.idle_add(self.__cargar_efectos,
+            list(get_jamedia_video_efectos()))
 
         self.get_toplevel().set_sensitive(True)
 
@@ -1133,11 +1134,11 @@ class JAMediaPlayer(Gtk.Plug):
 
         self.toolbar_list.boton_agregar.hide()
 
-        from JAMediaObjects.JAMediaGlobales import get_data_directory
-        from JAMediaObjects.JAMediaGlobales import get_my_files_directory
-        from JAMediaObjects.JAMediaGlobales import get_tube_directory
-        from JAMediaObjects.JAMediaGlobales import get_audio_directory
-        from JAMediaObjects.JAMediaGlobales import get_video_directory
+        from Globales import get_data_directory
+        from Globales import get_my_files_directory
+        from Globales import get_tube_directory
+        from Globales import get_audio_directory
+        from Globales import get_video_directory
 
         if indice == 0:
             archivo = os.path.join(
@@ -1292,14 +1293,15 @@ class JAMediaPlayer(Gtk.Plug):
 
         self.__cancel_toolbars_flotantes()
 
-        from JAMediaObjects.JAMediaGlobales import get_streamings
+        from Globales import get_streamings
 
         items = get_streamings(archivo)
 
         self.toolbar_list.label.set_text(titulo)
         self.lista_de_reproduccion.limpiar()
 
-        GLib.idle_add(self.lista_de_reproduccion.agregar_items, items)
+        GLib.idle_add(
+            self.lista_de_reproduccion.agregar_items, items)
 
     def __click_derecho_en_lista(self, widget, event):
         """
@@ -1382,7 +1384,7 @@ class JAMediaPlayer(Gtk.Plug):
         hora = time.strftime("%H-%M-%S")
         fecha = str(datetime.date.today())
 
-        from JAMediaObjects.JAMediaGlobales import get_my_files_directory
+        from Globales import get_my_files_directory
 
         archivo = "%s-%s" % (fecha, hora)
         archivo = os.path.join(get_my_files_directory(), archivo)

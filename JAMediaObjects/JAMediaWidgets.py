@@ -452,7 +452,8 @@ class Lista(Gtk.TreeView):
                 # Es un Archivo
                 tipo = describe_archivo(path)
 
-                if 'video' in tipo or 'application/ogg' in tipo:
+                if 'video' in tipo or 'application/ogg' in tipo or \
+                    'application/octet-stream' in tipo:
                     icono = os.path.join(JAMediaWidgetsBASE,
                         "Iconos", "video.svg")
 
@@ -813,154 +814,6 @@ class ControlVolumen(Gtk.VolumeButton):
         self.emit('volumen', valor)
 
 
-class ToolbarAccion(Gtk.Toolbar):
-    """
-    Toolbar para que el usuario confirme las
-    acciones que se realizan sobre items que se
-    seleccionan en la lista de reproduccion.
-    (Borrar, mover, copiar, quitar).
-    """
-
-    __gsignals__ = {
-    "Grabar": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "accion-stream": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_STRING))}
-
-    def __init__(self):
-
-        Gtk.Toolbar.__init__(self)
-
-        self.lista = None
-        self.accion = None
-        self.iter = None
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        archivo = os.path.join(JAMediaWidgetsBASE,
-            "Iconos", "alejar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
-        boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.cancelar)
-        self.insert(boton, -1)
-
-        item = Gtk.ToolItem()
-        item.set_expand(True)
-        self.label = Gtk.Label("")
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-
-        archivo = os.path.join(JAMediaWidgetsBASE,
-            "Iconos", "acercar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
-        boton.set_tooltip_text("Aceptar")
-        boton.connect("clicked", self.__realizar_accion)
-        self.insert(boton, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        self.show_all()
-
-    def __realizar_accion(self, widget):
-        """
-        Ejecuta una accion sobre un archivo o streaming
-        en la lista de reprucción cuando el usuario confirma.
-        """
-
-        from JAMediaGlobales import get_my_files_directory
-
-        from JAMFileSystem import describe_acceso_uri
-        from JAMFileSystem import copiar
-        from JAMFileSystem import borrar
-        from JAMFileSystem import mover
-
-        uri = self.lista.modelo.get_value(self.iter, 2)
-
-        if describe_acceso_uri(uri):
-            if self.accion == "Quitar":
-                self.lista.modelo.remove(self.iter)
-
-            elif self.accion == "Copiar":
-                if os.path.isfile(uri):
-                    copiar(uri, get_my_files_directory())
-
-            elif self.accion == "Borrar":
-                if os.path.isfile(uri):
-                    if borrar(uri):
-                        self.lista.modelo.remove(self.iter)
-
-            elif self.accion == "Mover":
-                if os.path.isfile(uri):
-                    if mover(uri, get_my_files_directory()):
-                        self.lista.modelo.remove(self.iter)
-        else:
-            if self.accion == "Quitar":
-                self.lista.modelo.remove(self.iter)
-
-            elif self.accion == "Borrar":
-                self.emit("accion-stream", "Borrar", uri)
-                self.lista.modelo.remove(self.iter)
-
-            elif self.accion == "Copiar":
-                self.emit("accion-stream", "Copiar", uri)
-
-            elif self.accion == "Mover":
-                self.emit("accion-stream", "Mover", uri)
-                self.lista.modelo.remove(self.iter)
-
-            elif self.accion == "Grabar":
-                self.emit("Grabar", uri)
-
-        self.label.set_text("")
-        self.lista = None
-        self.accion = None
-        self.iter = None
-        self.hide()
-
-    def set_accion(self, lista, accion, iter):
-        """
-        Configura una accion sobre un archivo o
-        streaming y muestra toolbaraccion para que
-        el usuario confirme o cancele dicha accion.
-        """
-
-        self.lista = lista
-        self.accion = accion
-        self.iter = iter
-
-        if self.lista and self.accion and self.iter:
-            uri = self.lista.modelo.get_value(self.iter, 2)
-            texto = uri
-
-            if os.path.exists(uri):
-                texto = os.path.basename(uri)
-
-            if len(texto) > 30:
-                texto = str(texto[0:30]) + " . . . "
-
-            self.label.set_text("¿%s?: %s" % (accion, texto))
-            self.show_all()
-
-    def cancelar(self, widget=None):
-        """
-        Cancela la accion configurada sobre
-        un archivo o streaming en la lista de
-        reproduccion.
-        """
-
-        self.label.set_text("")
-        self.lista = None
-        self.accion = None
-        self.iter = None
-        self.hide()
-
-
 class ToolbarBalanceConfig(Gtk.Table):
     """
     Toolbar de Configuración de Balance
@@ -1315,12 +1168,11 @@ class WidgetsGstreamerEfectos(Gtk.Frame):
     """
 
     __gsignals__ = {
-    "click_efecto": (GObject.SIGNAL_RUN_FIRST,
+    "click_efecto": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    'configurar_efecto': (
-        GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_STRING, GObject.TYPE_STRING,
-        GObject.TYPE_PYOBJECT))}
+    'configurar_efecto': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
 
     def __init__(self):
 
@@ -1368,16 +1220,16 @@ class GstreamerVideoEfectos(Gtk.Box):
     """
 
     __gsignals__ = {
-    'agregar_efecto': (
-        GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_STRING,)),
-    'configurar_efecto': (
-        GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+    'agregar_efecto': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'configurar_efecto': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
 
     def __init__(self):
 
-        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
+        Gtk.Box.__init__(self,
+            orientation=Gtk.Orientation.VERTICAL)
 
         self.show_all()
 
@@ -1398,10 +1250,13 @@ class GstreamerVideoEfectos(Gtk.Box):
         #if 'gst-plugins-good' in datos and \
         #    ('Filter/Effect/Video' in datos or \
         # 'Transform/Effect/Video' in datos):
-        if 'Filter/Effect/Video' in datos or 'Transform/Effect/Video' in datos:
+        if 'Filter/Effect/Video' in datos or \
+            'Transform/Effect/Video' in datos:
             botonefecto = Efecto_widget_Config(nombre)
-            botonefecto.connect('agregar_efecto', self.agregar_efecto)
-            botonefecto.connect('configurar_efecto', self.__configurar_efecto)
+            botonefecto.connect(
+                'agregar_efecto', self.agregar_efecto)
+            botonefecto.connect(
+                'configurar_efecto', self.__configurar_efecto)
             self.pack_start(botonefecto, False, False, 10)
 
         self.show_all()

@@ -427,7 +427,8 @@ def get_item_list(path):
 
             if 'audio' in datos or \
                 'video' in datos or \
-                'application/ogg' in datos:
+                'application/ogg' in datos or \
+                'application/octet-stream' in datos:
                     return [archivo, path]
 
     return False

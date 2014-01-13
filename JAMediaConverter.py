@@ -177,7 +177,8 @@ class Ventana(Gtk.Window):
 
                     if 'audio' in datos or \
                         'video' in datos or \
-                        'application/ogg' in datos:
+                        'application/ogg' in datos or \
+                        'application/octet-stream' in datos:
                         items.append([os.path.basename(arch), arch])
 
             elif os.path.isfile(origen):
@@ -185,7 +186,8 @@ class Ventana(Gtk.Window):
 
                 if 'audio' in datos or \
                     'video' in datos or \
-                    'application/ogg' in datos:
+                    'application/ogg' in datos or \
+                    'application/octet-stream' in datos:
                     items.append([os.path.basename(origen), origen])
 
         self.lista.limpiar()

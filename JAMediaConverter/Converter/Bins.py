@@ -20,9 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from gi.repository import Gst
-from gi.repository import GstVideo  # necesario
-
-#GObject.threads_init()
 
 
 class wav_bin(Gst.Bin):
