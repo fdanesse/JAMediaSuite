@@ -36,12 +36,12 @@ from JAMediaObjects.JAMFileSystem import verificar_Gstreamer
 
 # HACK: La aplicación nunca debe explotar :P
 if get_programa("mplayer"):
-    from JAMediaObjects.MplayerReproductor import MplayerReproductor
-    from JAMediaObjects.MplayerReproductor import MplayerGrabador
+    from JAMediaReproductor.MplayerReproductor import MplayerReproductor
+    from JAMediaReproductor.MplayerReproductor import MplayerGrabador
 
 else:
-    from JAMediaObjects.PlayerNull import MplayerReproductor
-    from JAMediaObjects.PlayerNull import MplayerGrabador
+    from JAMediaReproductor.PlayerNull import MplayerReproductor
+    from JAMediaReproductor.PlayerNull import MplayerGrabador
 
 # HACK: La aplicación nunca debe explotar :P
 if verificar_Gstreamer():
@@ -49,15 +49,16 @@ if verificar_Gstreamer():
     from JAMediaReproductor.JAMediaReproductor import JAMediaGrabador
 
 else:
-    from JAMediaObjects.PlayerNull import JAMediaReproductor
-    from JAMediaObjects.PlayerNull import JAMediaGrabador
+    from JAMediaReproductor.PlayerNull import JAMediaReproductor
+    from JAMediaReproductor.PlayerNull import JAMediaGrabador
 
 from JAMediaObjects.JAMediaGlobales import get_color
 from JAMediaObjects.JAMediaGlobales import get_pixels
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
-style_path = os.path.join(JAMediaObjectsPath, "JAMedia.css")
+style_path = os.path.join(
+    os.path.dirname(__file__), "Estilo.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
 
@@ -66,7 +67,7 @@ context.add_provider_for_screen(
     css_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
-GObject.threads_init()
+#GObject.threads_init()
 #Gdk.threads_init()
 
 
