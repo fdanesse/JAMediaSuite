@@ -347,7 +347,7 @@ class Mini_Toolbar(Gtk.Toolbar):
         almacenadas en archivos shelve.
         """
 
-        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        from Globales import get_data_directory
         import shelve
 
         dict_tube = shelve.open(
@@ -724,7 +724,7 @@ class Toolbar_Descarga(Gtk.Box):
         self.url = None
         self.titulo = None
 
-        from JAMediaObjects.JAMediaYoutube import JAMediaYoutube
+        from JAMediaYoutube import JAMediaYoutube
         self.jamediayoutube = JAMediaYoutube()
 
         self.toolbar.insert(
@@ -1279,7 +1279,7 @@ class TubeListDialog(Gtk.Dialog):
         iter = widget.get_model().get_iter(path)
         key = widget.get_model().get_value(iter, 2)
 
-        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        from Globales import get_data_directory
         import shelve
 
         dict_tube = shelve.open(
@@ -1332,7 +1332,7 @@ class TubeListDialog(Gtk.Dialog):
             new_box,
             True, True, 0)
 
-        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        from Globales import get_data_directory
         import shelve
 
         dict_tube = shelve.open(
@@ -1418,7 +1418,7 @@ class TubeListDialog(Gtk.Dialog):
 
     def __eliminar_video(self, widget):
 
-        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        from Globales import get_data_directory
         import shelve
 
         dict_tube = shelve.open(
@@ -1449,7 +1449,7 @@ class TubeListDialog(Gtk.Dialog):
         Carga la lista de Albums de Descargas en self.listas.
         """
 
-        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        from Globales import get_data_directory
         import shelve
 
         dict_tube = shelve.open(

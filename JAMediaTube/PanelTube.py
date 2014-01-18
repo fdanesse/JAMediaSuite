@@ -161,7 +161,7 @@ class PanelTube(Gtk.Paned):
         un archivo shelve.
         """
 
-        from JAMediaObjects.JAMediaGlobales import get_data_directory
+        from Globales import get_data_directory
         import shelve
 
         dict_tube = shelve.open(
@@ -216,7 +216,7 @@ class PanelTube(Gtk.Paned):
                     videos.append(video.videodict)
 
         if videos:
-            from JAMediaObjects.JAMediaGlobales import get_data_directory
+            from Globales import get_data_directory
             import shelve
 
             dict_tube = shelve.open(
@@ -238,7 +238,9 @@ class PanelTube(Gtk.Paned):
 
                 dialog.set_border_width(15)
 
-                label = Gtk.Label("Ya Existe un Album de Búsquedas con Este Nombre.\n¿Deseas Suplantarlo?")
+                text = "Ya Existe un Album de Búsquedas con Este Nombre.\n"
+                text = "%s%s" % (text, "¿Deseas Suplantarlo?")
+                label = Gtk.Label(text)
                 dialog.vbox.pack_start(label, True, True, 0)
                 dialog.vbox.show_all()
 

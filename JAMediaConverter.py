@@ -29,7 +29,6 @@ from gi.repository import Gdk
 from gi.repository import GObject
 
 import JAMediaObjects
-
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 PATH = os.path.dirname(__file__)
@@ -65,8 +64,6 @@ def get_data(archivo):
         retorno += " %s" % (dat)
 
     return retorno
-
-GObject.threads_init()
 
 
 class Ventana(Gtk.Window):
@@ -121,10 +118,14 @@ class Ventana(Gtk.Window):
         self.show_all()
         self.realize()
 
-        self.toolbar.connect('salir', self.__salir)
-        self.toolbar.connect('load', self.__load_files)
-        self.lista.connect("nueva-seleccion", self.__selecction_file)
-        self.widgettareas.connect('copy_tarea', self.__copy_tarea)
+        self.toolbar.connect(
+            'salir', self.__salir)
+        self.toolbar.connect(
+            'load', self.__load_files)
+        self.lista.connect(
+            "nueva-seleccion", self.__selecction_file)
+        self.widgettareas.connect(
+            'copy_tarea', self.__copy_tarea)
 
         self.connect("delete-event", self.__salir)
 

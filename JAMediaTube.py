@@ -290,7 +290,7 @@ class Ventana(Gtk.Window):
         """
 
         # FIXME: Reparar (Si no hay conexión)
-        import JAMediaObjects.JAMediaYoutube as YT
+        import JAMediaTube.JAMediaYoutube as YT
 
         for video in YT.Buscar(palabras):
             self.videos_temp.append(video)

@@ -54,7 +54,7 @@ def Buscar(palabras):
     for palabra in palabras.split(" "):
         query.categories.append('/%s' % palabra.lower())
 
-    try: # FIXME: Porque Falla si no hay Conexión.
+    try:  # FIXME: Porque Falla si no hay Conexión.
         feed = yt_service.YouTubeQuery(query)
         return DetalleFeed(feed)
 
@@ -177,8 +177,10 @@ class JAMediaYoutube(Gtk.Widget):
     def __get_titulo(self, titulo):
 
         texto = ""
-        excluir = ["\\", "/", ",",".","&","¿","?","@","#","$","\'",":",";","|",
-        "!", "¡","%","+","*","ª","º","~","{", "}","Ç","[","]","^","`","=","¬","\""]
+        excluir = ["\\", "/", ",", ".", "&",
+        "¿", "?", "@", "#", "$", "\'", ":", ";", "|",
+        "!", "¡", "%", "+", "*", "ª", "º", "~", "{",
+        "}", "Ç", "[", "]", "^", "`", "=", "¬", "\""]
 
         for l in titulo:
             if not l in excluir:
@@ -199,7 +201,7 @@ class JAMediaYoutube(Gtk.Widget):
         import time
         import subprocess
 
-        from JAMediaGlobales import get_tube_directory
+        from Globales import get_tube_directory
 
         print "Intentando Descargar:", titulo
         print "\t En Formato:", self.codecs[self.codec]
@@ -223,12 +225,12 @@ class JAMediaYoutube(Gtk.Widget):
             self.codecs[self.codec][0], destino)
 
         self.youtubedl = subprocess.Popen(
-            estructura, shell = True,
-            stdout = open(self.STDOUT,"w+b"),
-            stderr = open(self.STDOUT,"r+b"),
+            estructura, shell=True,
+            stdout = open(self.STDOUT, "w+b"),
+            stderr = open(self.STDOUT, "r+b"),
             universal_newlines=True)
 
-        self.salida = open(self.STDOUT,"r")
+        self.salida = open(self.STDOUT, "r")
 
         if self.actualizador:
             GLib.source_remove(self.actualizador)
@@ -360,4 +362,3 @@ entrada {
     'title': <atom.Title object at 0x19f88d0>,
     'racy': None,
     'published': <atom.Published object at 0x1750a90>} '''
-

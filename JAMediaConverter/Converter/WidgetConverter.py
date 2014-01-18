@@ -24,14 +24,12 @@ import os
 from gi.repository import Gtk
 from gi.repository import Pango
 from gi.repository import GObject
-#from gi.repository import GLib
-
-#from JAMediaObjects.JAMediaGlobales import get_boton
-#from JAMediaObjects.JAMediaGlobales import get_separador
-#from JAMediaObjects.JAMediaGlobales import get_pixels
+from gi.repository import GLib
 
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
+
+GObject.threads_init()
 
 
 def get_data(archivo):
@@ -113,7 +111,7 @@ class WidgetConverter(Gtk.Frame):
         frame = Gtk.Frame()
         frame.set_label(" Estado: ")
         frame.set_border_width(5)
-
+        '''
         self.infowidget = Gtk.TextView()
         self.infowidget.set_editable(False)
         self.infowidget.set_border_width(10)
@@ -128,7 +126,7 @@ class WidgetConverter(Gtk.Frame):
         frame.add(scroll)
 
         hbox.pack_start(frame, True, True, 0)
-
+        '''
         self.add(hbox)
         self.show_all()
 
@@ -178,7 +176,7 @@ class WidgetConverter(Gtk.Frame):
         self.emit('copy_tarea', self.frame_formatos.tarea)
 
     def __set_info(self, widget, info):
-
+        '''
         buf = self.infowidget.get_buffer()
 
         text = buf.get_text(
@@ -189,6 +187,8 @@ class WidgetConverter(Gtk.Frame):
             info = "%s\n%s" % (text, info)
 
         buf.set_text(info)
+        '''
+        print info
 
     def stop(self):
 
@@ -317,7 +317,9 @@ class Tareas(Gtk.Frame):
         """
 
         for formato in self.players.keys():
-            self.players[formato].stop()
+            if self.players[formato]:
+                self.players[formato].stop()
+                del(self.players[formato])
 
     def run(self):
         """
@@ -336,9 +338,11 @@ class Tareas(Gtk.Frame):
         self.__set_info(None, "")
         self.set_sensitive(False)
 
-        from PipelineConverter import PipelineConverter
+        #from PipelineConverter import PipelineConverter
 
         for formato in formatos:
+            self.players[formato] = None
+            '''
             self.players[formato] = PipelineConverter(
                 self.path, formato)
 
@@ -347,9 +351,37 @@ class Tareas(Gtk.Frame):
             self.players[formato].connect('newposicion', self.__set_posicion)
             self.players[formato].connect('info', self.__set_info)
 
-            self.players[formato].play()
+            #self.players[formato].play()
+            '''
+
+        GLib.idle_add(self.__procesar_tareas)
 
         return True
+
+    def __procesar_tareas(self):
+
+        if not self.players:
+            self.set_sensitive(True)
+            self.emit("end")
+            return
+        '''
+        formato = self.players.keys()[0]
+        self.players[formato].play()'''
+
+        formato = self.players.keys()[0]
+        from PipelineConverter import PipelineConverter
+
+        self.players[formato] = PipelineConverter(
+            self.path, formato)
+
+        self.players[formato].connect('endfile', self.__set_end)
+        #self.players[formato].connect('estado', self.__set_estado)
+        self.players[formato].connect('newposicion', self.__set_posicion)
+        self.players[formato].connect('info', self.__set_info)
+
+        self.players[formato].play()
+
+        return False
 
     def __set_end(self, player):
         """
@@ -362,9 +394,7 @@ class Tareas(Gtk.Frame):
         del(self.players[player.codec])
         del(player)
 
-        if not self.players:
-            self.set_sensitive(True)
-            self.emit("end")
+        GLib.idle_add(self.__procesar_tareas)
 
     def __set_info(self, player, info):
 

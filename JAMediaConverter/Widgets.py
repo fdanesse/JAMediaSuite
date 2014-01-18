@@ -31,6 +31,8 @@ from JAMediaObjects.JAMediaGlobales import get_pixels
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
+GObject.threads_init()
+
 
 class Toolbar(Gtk.Toolbar):
 

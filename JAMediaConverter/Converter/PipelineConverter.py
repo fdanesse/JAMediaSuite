@@ -24,6 +24,7 @@ from gi.repository import GObject
 from gi.repository import GLib
 
 Gst.init([])
+GObject.threads_init()
 
 
 class PipelineConverter(Gst.Pipeline):
@@ -293,7 +294,7 @@ class PipelineConverter(Gst.Pipeline):
 
         if reset:
             self.actualizador = GLib.timeout_add(
-                100, self.__handle)
+                250, self.__handle)
 
     def __handle(self):
         """
@@ -326,9 +327,10 @@ class PipelineConverter(Gst.Pipeline):
     def play(self):
 
         self.__play()
-        self.__new_handle(True)
+        #self.__new_handle(True)
 
     def stop(self):
 
+        #self.__new_handle(False)
         self.set_state(Gst.State.NULL)
         self.emit("info", "Reproducción Detenida.")

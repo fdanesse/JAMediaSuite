@@ -25,6 +25,8 @@ from gi.repository import GObject
 import JAMediaObjects
 JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
+GObject.threads_init()
+
 
 class WidgetTareas(Gtk.Frame):
 
@@ -70,6 +72,7 @@ class WidgetTareas(Gtk.Frame):
         """
 
         del(self.tareas[tarea.path])
+        tarea.get_parent().remove(tarea)
         tarea.destroy()
 
     def go_tarea(self, path):
