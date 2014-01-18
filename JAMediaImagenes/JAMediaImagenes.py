@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   JAMImagenes.py por:
+#   JAMediaImagenes.py por:
 #       Flavio Danesse <fdanesse@gmail.com>
 #       CeibalJAM - Uruguay
 
@@ -52,7 +52,7 @@ context.add_provider_for_screen(
     Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
 
-class JAMImagenes(Gtk.Plug):
+class JAMediaImagenes(Gtk.Plug):
     """
     JAMImagenes:
         Visor de Imagenes.

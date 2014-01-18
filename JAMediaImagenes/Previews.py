@@ -143,13 +143,13 @@ class Previews (Gtk.EventBox):
             borrar(file_path)
 
         elif accion == "Copiar":
-            from JAMediaObjects.JAMediaGlobales import get_imagenes_directory
+            from Globales import get_imagenes_directory
             from JAMediaObjects.JAMFileSystem import copiar
 
             copiar(file_path, get_imagenes_directory())
 
         elif accion == "Mover":
-            from JAMediaObjects.JAMediaGlobales import get_imagenes_directory
+            from Globales import get_imagenes_directory
             from JAMediaObjects.JAMFileSystem import mover
             widget_item.get_model().remove(iter)
 

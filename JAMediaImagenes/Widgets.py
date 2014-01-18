@@ -781,7 +781,7 @@ class MenuList(Gtk.Menu):
             widget, iter, file_path, "Quitar")
 
         from JAMediaObjects.JAMFileSystem import describe_acceso_uri
-        from JAMediaObjects.JAMediaGlobales import get_imagenes_directory
+        from Globales import get_imagenes_directory
 
         if describe_acceso_uri(file_path):
             lectura, escritura, ejecucion = describe_acceso_uri(file_path)
