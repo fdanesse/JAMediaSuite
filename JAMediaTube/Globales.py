@@ -102,6 +102,22 @@ def make_base_directory():
         os.chmod(IMAGENES_JAMEDIA_VIDEO, 0755)
 
 
+def get_data_directory():
+    """
+    Devuelve el Directorio de Datos de JAMedia y JAMediaTube.
+    """
+
+    import os
+
+    DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Datos")
+
+    if not os.path.exists(DIRECTORIO_DATOS):
+        make_base_directory()
+
+    return DIRECTORIO_DATOS
+
+
 def get_tube_directory():
     """
     Devuelve el Directorio de Videos de JAMediaTube.

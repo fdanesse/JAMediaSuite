@@ -1179,26 +1179,38 @@ class JAMediaPlayer(Gtk.Plug):
             self.toolbar_list.boton_agregar.show()
 
         elif indice == 4:
+            # HACK: Tv no funciona con JAMediaReproductor.
+            #if self.player == self.jamediareproductor:
+            #    self.switch_reproductor(None, "MplayerReproductor")
+
+            archivo = os.path.join(
+                get_data_directory(),
+                'JAMediaWebCams.JAMedia')
+
+            self.__seleccionar_lista_de_stream(archivo, "WebCams")
+            #self.toolbar_list.boton_agregar.show()
+
+        elif indice == 5:
             self.__seleccionar_lista_de_archivos(
                 get_my_files_directory(),
                 "Archivos")
 
-        elif indice == 5:
+        elif indice == 6:
             self.__seleccionar_lista_de_archivos(
                 get_tube_directory(),
                 "JAM-Tube")
 
-        elif indice == 6:
+        elif indice == 7:
             self.__seleccionar_lista_de_archivos(
                 get_audio_directory(),
                 "JAM-Audio")
 
-        elif indice == 7:
+        elif indice == 8:
             self.__seleccionar_lista_de_archivos(
                 get_video_directory(),
                 "JAM-Video")
 
-        elif indice == 8:
+        elif indice == 9:
             from Widgets import My_FileChooser
 
             directorio = None
@@ -1220,18 +1232,6 @@ class JAMediaPlayer(Gtk.Plug):
 
             if selector:
                 selector.destroy()
-
-        elif indice == 9:
-            # HACK: Tv no funciona con JAMediaReproductor.
-            #if self.player == self.jamediareproductor:
-            #    self.switch_reproductor(None, "MplayerReproductor")
-
-            archivo = os.path.join(
-                get_data_directory(),
-                'JAMediaWebCams.JAMedia')
-
-            self.__seleccionar_lista_de_stream(archivo, "WebCams")
-            #self.toolbar_list.boton_agregar.show()
 
     def __cargar_directorio(self, widget, archivos):
         """

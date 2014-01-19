@@ -282,13 +282,11 @@ class IconView(Gtk.IconView):
                                 self.previews.append(
                                     [pixbuf, path.split("/")[-1]])
 
-                                while Gtk.events_pending():
-                                    Gtk.main_iteration()
+                                #while Gtk.events_pending():
+                                #    Gtk.main_iteration()
 
                             except:
                                 pass
-
-                            break
 
             elif os.path.isfile(path):
                 descripcion = describe_archivo(path)
@@ -301,8 +299,8 @@ class IconView(Gtk.IconView):
 
                         imagen_en_path = True
 
-                        while Gtk.events_pending():
-                            Gtk.main_iteration()
+                        #while Gtk.events_pending():
+                        #    Gtk.main_iteration()
 
                     except:
                         pass

@@ -350,27 +350,27 @@ class ToolbarLista(Gtk.Toolbar):
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 3)
 
-        item = Gtk.MenuItem("Mis Archivos")
+        item = Gtk.MenuItem("Web Cams")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 4)
 
-        item = Gtk.MenuItem("JAMediaTube")
+        item = Gtk.MenuItem("Mis Archivos")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 5)
 
-        item = Gtk.MenuItem("Audio-JAMediaVideo")
+        item = Gtk.MenuItem("JAMediaTube")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 6)
 
-        item = Gtk.MenuItem("Video-JAMediaVideo")
+        item = Gtk.MenuItem("Audio-JAMediaVideo")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 7)
 
-        item = Gtk.MenuItem("Archivos Externos")
+        item = Gtk.MenuItem("Video-JAMediaVideo")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 8)
 
-        item = Gtk.MenuItem("Web Cams")
+        item = Gtk.MenuItem("Archivos Externos")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 9)
 
