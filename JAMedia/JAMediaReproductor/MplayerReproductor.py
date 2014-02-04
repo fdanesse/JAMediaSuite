@@ -30,7 +30,7 @@ STDOUT = "/tmp/mplayerout%d" % time.time()
 MPLAYER = "mplayer"
 
 
-class MplayerReproductor(GObject.GObject):
+class MplayerReproductor(GObject.Object):
     """
     Reproductor de Audio, Video y Streaming de
     Radio y Television. Implementado sobre:
@@ -60,7 +60,7 @@ class MplayerReproductor(GObject.GObject):
         para mostrar el video.
         """
 
-        GObject.GObject.__init__(self)
+        GObject.Object.__init__(self)
 
         self.name = "MplayerReproductor"
         self.ventana_id = ventana_id
@@ -525,7 +525,7 @@ class MplayerReproductor(GObject.GObject):
 REC = "/tmp/mplayerrec%d" % time.time()
 
 
-class MplayerGrabador(GObject.GObject):
+class MplayerGrabador(GObject.Object):
     """
     Graba desde un streaming de radio o tv.
     """
@@ -538,7 +538,7 @@ class MplayerGrabador(GObject.GObject):
 
     def __init__(self, uri, archivo, tipo):
 
-        GObject.GObject.__init__(self)
+        GObject.Object.__init__(self)
 
         if tipo == "video":
             archivo = "%s%s" % (archivo, ".avi")

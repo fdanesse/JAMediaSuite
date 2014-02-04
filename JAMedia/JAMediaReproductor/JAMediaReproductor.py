@@ -37,7 +37,7 @@ GObject.threads_init()
 # https://wiki.ubuntu.com/Novacut/GStreamer1.0
 
 
-class JAMediaReproductor(GObject.GObject):
+class JAMediaReproductor(GObject.Object):
     """
     Reproductor de Audio, Video y Streaming de
     Radio y Television. Implementado sobre:
@@ -67,7 +67,7 @@ class JAMediaReproductor(GObject.GObject):
         para mostrar el video.
         """
 
-        GObject.GObject.__init__(self)
+        GObject.Object.__init__(self)
 
         self.name = "JAMediaReproductor"
         self.ventana_id = ventana_id
@@ -535,7 +535,7 @@ class JAMediaReproductor(GObject.GObject):
         self.video_pipeline.configurar_efecto(nombre_efecto, propiedad, valor)
 
 
-class JAMediaGrabador(GObject.GObject):
+class JAMediaGrabador(GObject.Object):
     """
     Graba en formato ogg desde un streaming de radio o tv.
     Convierte un archivo de audio o video a ogg.
@@ -549,7 +549,7 @@ class JAMediaGrabador(GObject.GObject):
 
     def __init__(self, uri, archivo, tipo):
 
-        GObject.GObject.__init__(self)
+        GObject.Object.__init__(self)
 
         self.tipo = tipo
 
