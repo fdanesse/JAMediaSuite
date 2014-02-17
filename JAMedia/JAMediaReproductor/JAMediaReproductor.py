@@ -123,8 +123,6 @@ class JAMediaReproductor(GObject.Object):
         self.player.set_property('audio-sink', self.audio_pipelin)
 
         self.bus = self.player.get_bus()
-        self.bus.add_signal_watch()
-        self.bus.connect('message', self.__on_mensaje)
 
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.__sync_message)
@@ -216,7 +214,7 @@ class JAMediaReproductor(GObject.Object):
         Captura los mensajes en el bus del pipe Gst.
         """
 
-        '''
+        """
         # Esto no es necesario si:
         # self.player.set_window_handle(self.ventana_id)
         try:
@@ -225,7 +223,7 @@ class JAMediaReproductor(GObject.Object):
                 return
 
         except:
-            pass'''
+            pass"""
 
         if mensaje.type == Gst.MessageType.STATE_CHANGED:
             old, new, pending = mensaje.parse_state_changed()
@@ -235,30 +233,28 @@ class JAMediaReproductor(GObject.Object):
                     self.estado = new
                     self.emit("estado", "playing")
                     self.__new_handle(True)
+                    # Si se llama enseguida falla.
                     GLib.idle_add(self.__re_config)
-                    return
 
             elif old == Gst.State.READY and new == Gst.State.PAUSED:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
                     self.__new_handle(False)
-                    return
 
             elif old == Gst.State.READY and new == Gst.State.NULL:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "None")
                     self.__new_handle(False)
-                    return
 
             elif old == Gst.State.PLAYING and new == Gst.State.PAUSED:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
                     self.__new_handle(False)
-                    return
-            '''
+
+            """
             elif old == Gst.State.NULL and new == Gst.State.READY:
                 pass
 
@@ -266,7 +262,7 @@ class JAMediaReproductor(GObject.Object):
                 pass
 
             else:
-                return'''
+                pass"""
 
         elif mensaje.type == Gst.MessageType.TAG:
             taglist = mensaje.parse_tag()
@@ -297,85 +293,144 @@ class JAMediaReproductor(GObject.Object):
                 # video-codec=(string)H.264,
                 # audio-codec=(string)"MPEG-4\ AAC"
 
-            return
+        elif mensaje.type == Gst.MessageType.WARNING:
+            print "\n Gst.MessageType.WARNING:"
+            print mensaje.parse_warning()
 
-        elif mensaje.type == Gst.MessageType.ERROR:
-            err, debug = mensaje.parse_error()
-            print err, debug
-            self.__new_handle(False)
-            return
+        elif mensaje.type == Gst.MessageType.LATENCY:
+            # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
+            print "\n Gst.MessageType.LATENCY"
+            self.player.recalculate_latency()
 
-        '''
-        elif mensaje.type == Gst.MessageType.EOS:
-            return
-
-        elif mensaje.type == Gst.MessageType.ASYNC_DONE:
-            return
-
-        elif mensaje.type == Gst.MessageType.NEW_CLOCK:
-            return
+        elif mensaje.type == Gst.MessageType.STREAM_START:
+            #print "\n Gst.MessageType.STREAM_START:"
+            #print mensaje.parse_stream_status()
+            pass
 
         elif mensaje.type == Gst.MessageType.STREAM_STATUS:
-            return
+            #print "\n Gst.MessageType.STREAM_STATUS:"
+            #print mensaje.parse_stream_status()
+            pass
 
-        else:
-            try:
-                nombre = mensaje.get_structure().get_name()
+        elif mensaje.type == Gst.MessageType.STRUCTURE_CHANGE:
+            #print "\n Gst.MessageType.STRUCTURE_CHANGE:"
+            #print mensaje.parse_structure_change()
+            pass
 
-                if nombre == "playbin-stream-changed":
-                    pass
+        elif mensaje.type == Gst.MessageType.TOC:
+            #print "\n Gst.MessageType.TOC:"
+            #print mensaje.parse_toc()
+            pass
 
-                elif nombre == "have-window-handle":
-                    pass
+        elif mensaje.type == Gst.MessageType.UNKNOWN:
+            #print "\n Gst.MessageType.UNKNOWN:"
+            pass
 
-                elif nombre == "prepare-window-handle":
-                    pass
+        elif mensaje.type == Gst.MessageType.DURATION_CHANGED:
+            print "\n Gst.MessageType.DURATION_CHANGED:"
 
-                else:
-                    pass
+        elif mensaje.type == Gst.MessageType.ASYNC_DONE:
+            #print "\n Gst.MessageType.ASYNC_DONE:"
+            #print mensaje.parse_async_done()
+            pass
 
-            except:
-                pass
+        elif mensaje.type == Gst.MessageType.ASYNC_START:
+            #print "\n Gst.MessageType.ASYNC_START:"
+            pass
 
-            return'''
+        elif mensaje.type == Gst.MessageType.NEW_CLOCK:
+            #print "\n Gst.MessageType.NEW_CLOCK:"
+            pass
 
-    def __on_mensaje(self, bus, mensaje):
-        """
-        Captura los mensajes en el bus del pipe Gst.
-        """
+        elif mensaje.type == Gst.MessageType.CLOCK_PROVIDE:
+            #print "\n Gst.MessageType.CLOCK_PROVIDE:"
+            #print mensaje.parse_clock_provide()
+            pass
 
-        if mensaje.type == Gst.MessageType.EOS:
+        elif mensaje.type == Gst.MessageType.CLOCK_LOST:
+            #print "\n Gst.MessageType.CLOCK_LOST:"
+            #print mensaje.parse_clock_lost()
+            pass
+
+        elif mensaje.type == Gst.MessageType.QOS:
+            print "\n Gst.MessageType.QOS:"
+            print mensaje.parse_qos()
+            print mensaje.parse_qos_stats()
+            print mensaje.parse_qos_values()
+
+        elif mensaje.type == Gst.MessageType.BUFFERING:
+            print "\n Gst.MessageType.BUFFERING:"
+            print mensaje.parse_buffering()
+            print mensaje.parse_buffering_stats()
+
+        elif mensaje.type == Gst.MessageType.RESET_TIME:
+            #print "\n Gst.MessageType.RESET_TIME:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.ELEMENT:
+            print "\n Gst.MessageType.ELEMENT:"
+
+        elif mensaje.type == Gst.MessageType.INFO:
+            print "\n Gst.MessageType.INFO:"
+
+        elif mensaje.type == Gst.MessageType.PROGRESS:
+            print "\n Gst.MessageType.PROGRESS:"
+
+        elif mensaje.type == Gst.MessageType.REQUEST_STATE:
+            print "\n Gst.MessageType.REQUEST_STATE:"
+
+        elif mensaje.type == Gst.MessageType.SEGMENT_DONE:
+            #print "\n Gst.MessageType.SEGMENT_DONE:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.SEGMENT_START:
+            #print "\n Gst.MessageType.SEGMENT_START:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.STATE_DIRTY:
+            #print "\n Gst.MessageType.STATE_DIRTY:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.STEP_DONE:
+            #print "\n Gst.MessageType.STEP_DONE:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.STEP_START:
+            #print "\n Gst.MessageType.STEP_START:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.ANY:
+            #print "\n Gst.MessageType.ANY:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.APPLICATION:
+            #print "\n Gst.MessageType.APPLICATION:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.HAVE_CONTEXT:
+            #print "\n Gst.MessageType.HAVE_CONTEXT:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.NEED_CONTEXT:
+            #print "\n Gst.MessageType.NEED_CONTEXT:"
+            pass
+
+        elif mensaje.type == Gst.MessageType.EOS:
             #self.video_pipeline.seek_simple(Gst.Format.TIME,
             #Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0)
+            print "\n Gst.MessageType.EOS:"
             self.__new_handle(False)
             self.emit("endfile")
 
         elif mensaje.type == Gst.MessageType.ERROR:
-            err, debug = mensaje.parse_error()
-            print err, debug
+            print "\n Gst.MessageType.ERROR:"
+            print mensaje.parse_error()
             self.__new_handle(False)
 
-        '''
-        if mensaje.type == Gst.MessageType.ELEMENT:
-            nombre = mensaje.get_structure().get_name()
-
-        if mensaje.type == Gst.MessageType.ASYNC_DONE:
-            print mensaje.get_structure().get_name()
-
-        elif mensaje.type == Gst.MessageType.NEW_CLOCK:
-            pass
-
-        elif mensaje.type == Gst.MessageType.QOS:
-            pass
-
-        elif mensaje.type == Gst.MessageType.WARNING:
-            pass
-
-        elif mensaje.type == Gst.MessageType.LATENCY:
-            pass
-
         else:
-            pass'''
+            print mensaje.type
+
+        return True
 
     def pause_play(self):
         """
