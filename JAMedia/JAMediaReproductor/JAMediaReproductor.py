@@ -354,9 +354,9 @@ class JAMediaReproductor(GObject.Object):
 
         elif mensaje.type == Gst.MessageType.QOS:
             print "\n Gst.MessageType.QOS:"
-            print mensaje.parse_qos()
-            print mensaje.parse_qos_stats()
-            print mensaje.parse_qos_values()
+            #print mensaje.parse_qos()
+            #print mensaje.parse_qos_stats()
+            #print mensaje.parse_qos_values()
 
         elif mensaje.type == Gst.MessageType.BUFFERING:
             print "\n Gst.MessageType.BUFFERING:"
@@ -707,8 +707,6 @@ class JAMediaGrabador(GObject.Object):
         oggmux.link(self.archivo)
 
         self.bus = self.pipeline.get_bus()
-        self.bus.add_signal_watch()
-        self.bus.connect('message', self.__on_mensaje)
 
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.__sync_message)
@@ -752,25 +750,23 @@ class JAMediaGrabador(GObject.Object):
         Captura los mensajes en el bus del pipe Gst.
         """
 
-        #if mensaje.get_structure().get_name() == 'prepare-window-handle':
-        #    mensaje.src.set_window_handle(xid)
-
-        pass
-
-    def __on_mensaje(self, bus, mensaje):
-        """
-        Captura los mensajes en el bus del pipe Gst.
-        """
-
         if mensaje.type == Gst.MessageType.EOS:
             # self.video_pipeline.seek_simple(Gst.Format.TIME,
             # Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0)
+            print "\n Gst.MessageType.EOS:"
+            print mensaje.parse_error()
             self.__new_handle(False)
+            self.stop()
             self.emit("endfile")
 
-        if mensaje.type == Gst.MessageType.ERROR:
-            err, debug = mensaje.parse_error()
-            print "ERROR:", err, debug
+        elif mensaje.type == Gst.MessageType.LATENCY:
+            # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
+            print "\n Gst.MessageType.LATENCY"
+            self.player.recalculate_latency()
+
+        elif mensaje.type == Gst.MessageType.ERROR:
+            print "\n Gst.MessageType.ERROR:"
+            print mensaje.parse_error()
             self.__new_handle(False)
             self.stop()
             self.emit("endfile")
