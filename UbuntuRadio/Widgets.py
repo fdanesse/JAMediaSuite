@@ -263,7 +263,7 @@ class ItemPlayer(Gtk.Frame):
         self.player_estado = "None"
         self.name, self.uri = valor
 
-        self.set_label("Reproduciendo . . .")
+        self.set_label(" Reproduciendo . . . ")
 
         eventbox = Gtk.EventBox()
         eventbox.set_border_width(5)
@@ -299,10 +299,16 @@ class ItemPlayer(Gtk.Frame):
         from Player import MyPlayBin
 
         self.player = MyPlayBin(self.uri, 0.10)
-        self.player.connect("estado", self.__update)
+        self.player.connect("estado", self.__update_estado)
+        self.player.connect("endfile", self.__endfile)
         self.player.play()
 
-    def __update(self, player, valor):
+    def __endfile(self, player):
+
+        # FIXME: Implementar
+        print "endfile"
+
+    def __update_estado(self, player, valor):
 
         self.player_estado = valor
 
@@ -327,6 +333,84 @@ class ItemPlayer(Gtk.Frame):
 
         else:
             self.player.play()
+
+
+class ItemRecord(Gtk.Frame):
+
+    __gtype_name__ = 'UbuntuRadioItemRecord'
+
+    def __init__(self, valor, formato):
+
+        Gtk.Frame.__init__(self)
+
+        self.tipo = "Grabador"
+        self.player_estado = "None"
+        self.name, self.uri = valor
+
+        self.set_label(" Grabando . . . ")
+
+        eventbox = Gtk.EventBox()
+        eventbox.set_border_width(5)
+
+        hbox = Gtk.HBox()
+
+        self.stop_button = Gtk.Button()
+        self.image_button = Gtk.Image()
+        self.image_button.set_from_stock(
+                Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
+        self.stop_button.set_image(self.image_button)
+
+        hbox.pack_start(Gtk.Label(self.name),
+            False, False, 0)
+        hbox.pack_end(self.stop_button,
+            False, False, 0)
+
+        eventbox.add(hbox)
+        self.add(eventbox)
+
+        self.show_all()
+
+        self.stop_button.connect(
+            "clicked", self.stop)
+
+        from Record import MyPlayBin
+
+        self.player = MyPlayBin(self.uri, formato)
+        self.player.connect("estado", self.__update_estado)
+        self.player.connect("endfile", self.__endfile)
+        self.player.connect("update", self.__update_info)
+        self.player.play(self.name)
+
+    def __update_info(self, player, info):
+
+        print info
+
+    def __endfile(self, player):
+
+        # FIXME: Implementar
+        print "endfile"
+
+    def __update_estado(self, player, valor):
+
+        self.player_estado = valor
+
+        if valor == "playing":
+            self.image_button.set_from_stock(
+                Gtk.STOCK_MEDIA_STOP, Gtk.IconSize.BUTTON)
+
+        else:
+            self.image_button.set_from_stock(
+                Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
+
+        GLib.idle_add(self.get_toplevel().queue_draw)
+
+    def stop(self, widget=False):
+
+        if self.player_estado == "playing":
+            self.player.stop()
+
+        else:
+            self.player.play(self.name)
 
 
 class MenuList(Gtk.Menu):

@@ -792,12 +792,16 @@ class JAMediaGrabador(GObject.Object):
         """
 
         if os.path.exists(self.patharchivo):
-            tamanio = int(os.path.getsize(self.patharchivo) / 1024)
+            tamanio = int(os.path.getsize(
+                self.patharchivo) / 1024.0 / 1024.0)
+
+            texto = str(self.uri)
 
             if len(self.uri) > 25:
                 texto = str(self.uri[0:25]) + " . . . "
 
-            info = "Grabando: %s %s Kb" % (texto, str(tamanio))
+            info = "Grabando: %s %.2f Mb" % (
+                texto, tamanio)
 
             if self.info != info:
                 self.control = 0

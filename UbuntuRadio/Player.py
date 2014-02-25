@@ -33,8 +33,8 @@ GObject.threads_init()
 class MyPlayBin(GObject.Object):
 
     __gsignals__ = {
-    #"endfile": (GObject.SIGNAL_RUN_LAST,
-    #    GObject.TYPE_NONE, []),
+    "endfile": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, []),
     "estado": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
     }
@@ -53,12 +53,14 @@ class MyPlayBin(GObject.Object):
         self.audio_bin = Gst.ElementFactory.make(
             'autoaudiosink', "audio")
 
-        self.player.set_property('audio-sink', self.audio_bin)
+        self.player.set_property(
+            'audio-sink', self.audio_bin)
 
         self.bus = self.player.get_bus()
 
         self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message', self.__sync_message)
+        self.bus.connect(
+            'sync-message', self.__sync_message)
 
         self.__load(uri)
         self.set_volumen(volumen)
@@ -93,10 +95,13 @@ class MyPlayBin(GObject.Object):
 
         elif mensaje.type == Gst.MessageType.EOS:
             print "\nGst.MessageType.EOS:"
+            self.emit("endfile")
 
         elif mensaje.type == Gst.MessageType.ERROR:
             print "\nGst.MessageType.ERROR:"
             print mensaje.parse_error()
+            self.stop()
+            self.emit("endfile")
 
         return True
 
@@ -105,12 +110,10 @@ class MyPlayBin(GObject.Object):
         if os.path.exists(uri):
             direccion = Gst.filename_to_uri(uri)
             self.player.set_property("uri", direccion)
-            #self.play()
 
         else:
             if Gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
-                #self.play()
 
     def set_volumen(self, valor):
 

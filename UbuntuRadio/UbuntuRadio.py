@@ -27,6 +27,7 @@ from gi.repository import GLib
 from Widgets import MenuBar
 from Widgets import Lista
 from Widgets import ItemPlayer
+from Widgets import ItemRecord
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
@@ -51,7 +52,8 @@ class UbuntuRadio(Gtk.Window):
 
         # FIXME: Leer config
         self.config = {
-            "opacity": 0.8}
+            "opacity": 0.8,
+            "format": "ogg"}
 
         self.set_title("Ubuntu Radio")
 
@@ -137,6 +139,9 @@ class UbuntuRadio(Gtk.Window):
         if accion == "play":
             self.__load_play((name, uri))
 
+        if accion == "Grabar":
+            self.__grabar((name, uri))
+
         #elif accion == "Copiar":
         #    print accion
 
@@ -171,9 +176,6 @@ class UbuntuRadio(Gtk.Window):
 
             eliminar_streaming(uri, "JAM-Radio")
             print "Streaming Eliminado:", name, uri
-
-        elif accion == "Grabar":
-            print accion
 
     def __actualizar_lista(self, widget):
         """
@@ -229,6 +231,29 @@ class UbuntuRadio(Gtk.Window):
         self.inplay.pack_start(
             ItemPlayer(valor), False, False, 0)
 
+    def __grabar(self, valor):
+        """
+        Grabar desde un Streaming.
+        """
+
+        items = self.inplay.get_children()
+
+        for item in items:
+            if item.tipo == "Grabador":
+                name, uri = valor
+
+                if name == item.name and uri == item.uri:
+                    return
+
+                else:
+                    item.stop()
+                    self.inplay.remove(item)
+                    item.destroy()
+
+        self.inplay.pack_start(
+            ItemRecord(valor, self.config["format"]),
+            False, False, 0)
+
     def __show_lista(self, widget):
         """
         Muestra u Oculta la Lista de Radios.
@@ -246,6 +271,7 @@ class UbuntuRadio(Gtk.Window):
 
     def __exit(self, widget=None, event=None):
 
+        # FIXME: hacer stop en todos los pipes
         import sys
         sys.exit(0)
 

@@ -1,10 +1,10 @@
 GtkWindow {
-    background-color: #000000; /*1e90ff;*/
+    background-color: #000000;
     color: #ffffff;
 }
 
 GtkMenuBar, GtkMenu, GtkMenuItem {
-    background-color: #000000; /*add8e6;*/
+    background-color: #000000;
     color: #ffffff;
 }
 

@@ -68,6 +68,19 @@ def get_data_directory():
     return DIRECTORIO_DATOS
 
 
+def get_my_files_directory():
+
+    import os
+
+    DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "MisArchivos")
+
+    if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
+        make_base_directory()
+
+    return DIRECTORIO_MIS_ARCHIVOS
+
+
 def get_streamings(path):
 
     import shelve
