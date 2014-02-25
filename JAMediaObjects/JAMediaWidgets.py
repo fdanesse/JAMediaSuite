@@ -372,11 +372,11 @@ class Lista(Gtk.TreeView):
             return True
 
         # model y listore son ==
-        iter = model.get_iter(path)
-        valor = model.get_value(iter, 2)
+        _iter = model.get_iter(path)
+        valor = model.get_value(_iter, 2)
 
         if not is_selected and self.valor_select != valor:
-            self.scroll_to_cell(model.get_path(iter))
+            self.scroll_to_cell(model.get_path(_iter))
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
 
@@ -497,10 +497,10 @@ class Lista(Gtk.TreeView):
 
     def seleccionar_siguiente(self, widget=None):
 
-        modelo, iter = self.treeselection.get_selected()
+        modelo, _iter = self.treeselection.get_selected()
 
         try:
-            self.treeselection.select_iter(modelo.iter_next(iter))
+            self.treeselection.select_iter(modelo.iter_next(_iter))
 
         except:
             self.seleccionar_primero()
@@ -509,10 +509,10 @@ class Lista(Gtk.TreeView):
 
     def seleccionar_anterior(self, widget=None):
 
-        modelo, iter = self.treeselection.get_selected()
+        modelo, _iter = self.treeselection.get_selected()
 
         try:
-            self.treeselection.select_iter(modelo.iter_previous(iter))
+            self.treeselection.select_iter(modelo.iter_previous(_iter))
 
         except:
             self.seleccionar_ultimo()
@@ -528,14 +528,14 @@ class Lista(Gtk.TreeView):
         model = self.get_model()
         item = model.get_iter_first()
 
-        iter = None
+        _iter = None
 
         while item:
-            iter = item
+            _iter = item
             item = model.iter_next(item)
 
-        if iter:
-            self.treeselection.select_iter(iter)
+        if _iter:
+            self.treeselection.select_iter(_iter)
             #path = model.get_path(iter)
 
 

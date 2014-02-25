@@ -1,0 +1,14 @@
+GtkWindow {
+    background-color: #000000; /*1e90ff;*/
+    color: #ffffff;
+}
+
+GtkMenuBar, GtkMenu, GtkMenuItem {
+    background-color: #000000; /*add8e6;*/
+    color: #ffffff;
+}
+
+GtkEventBox {
+    background-color: #b0e0e6;
+    color: #000000;
+}
