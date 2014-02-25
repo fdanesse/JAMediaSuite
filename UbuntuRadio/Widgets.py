@@ -305,8 +305,10 @@ class ItemPlayer(Gtk.Frame):
 
     def __endfile(self, player):
 
-        # FIXME: Implementar
-        print "endfile"
+        self.image_button.set_from_stock(
+            Gtk.STOCK_MEDIA_PLAY, Gtk.IconSize.BUTTON)
+
+        GLib.idle_add(self.get_toplevel().queue_draw)
 
     def __update_estado(self, player, valor):
 
@@ -348,10 +350,12 @@ class ItemRecord(Gtk.Frame):
         self.name, self.uri = valor
 
         self.set_label(" Grabando . . . ")
+        self.label_info = Gtk.Label("Grabación Detenida")
 
         eventbox = Gtk.EventBox()
         eventbox.set_border_width(5)
 
+        vbox = Gtk.VBox()
         hbox = Gtk.HBox()
 
         self.stop_button = Gtk.Button()
@@ -365,7 +369,12 @@ class ItemRecord(Gtk.Frame):
         hbox.pack_end(self.stop_button,
             False, False, 0)
 
-        eventbox.add(hbox)
+        vbox.pack_start(hbox,
+            False, False, 0)
+        vbox.pack_start(self.label_info,
+            False, False, 0)
+
+        eventbox.add(vbox)
         self.add(eventbox)
 
         self.show_all()
@@ -383,12 +392,16 @@ class ItemRecord(Gtk.Frame):
 
     def __update_info(self, player, info):
 
-        print info
+        self.label_info.set_text(info)
 
     def __endfile(self, player):
 
-        # FIXME: Implementar
-        print "endfile"
+        self.image_button.set_from_stock(
+            Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
+
+        self.label_info.set_text("Grabación Detenida")
+
+        GLib.idle_add(self.get_toplevel().queue_draw)
 
     def __update_estado(self, player, valor):
 
@@ -401,6 +414,7 @@ class ItemRecord(Gtk.Frame):
         else:
             self.image_button.set_from_stock(
                 Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
+            self.label_info.set_text("Grabación Detenida")
 
         GLib.idle_add(self.get_toplevel().queue_draw)
 
