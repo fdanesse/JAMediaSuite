@@ -255,7 +255,7 @@ class ItemPlayer(gtk.Frame):
 
         self.tipo = "Reproductor"
         self.player_estado = "None"
-        self.name, self.uri = valor
+        self._name, self.uri = valor
 
         self.set_label(" Reproduciendo . . . ")
 
@@ -268,10 +268,10 @@ class ItemPlayer(gtk.Frame):
         self.stop_button = gtk.Button()
         self.image_button = gtk.Image()
         self.image_button.set_from_stock(
-            gtk.STOCK_MEDIA_PLAY, gtk.IconSize.BUTTON)
+            gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
         self.stop_button.set_image(self.image_button)
 
-        hbox.pack_start(gtk.Label(self.name),
+        hbox.pack_start(gtk.Label(self._name),
             False, False, 0)
         hbox.pack_end(self.stop_button,
             False, False, 0)
@@ -290,17 +290,17 @@ class ItemPlayer(gtk.Frame):
         self.stop_button.connect(
             "clicked", self.stop)
 
-        from Player import MyPlayBin
+        #from Player import MyPlayBin
 
-        self.player = MyPlayBin(self.uri, 0.10)
-        self.player.connect("estado", self.__update_estado)
-        self.player.connect("endfile", self.__endfile)
-        self.player.play()
+        #self.player = MyPlayBin(self.uri, 0.10)
+        #self.player.connect("estado", self.__update_estado)
+        #self.player.connect("endfile", self.__endfile)
+        #self.player.play()
 
     def __endfile(self, player):
 
         self.image_button.set_from_stock(
-            gtk.STOCK_MEDIA_PLAY, gtk.IconSize.BUTTON)
+            gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
 
         gobject.idle_add(self.get_toplevel().queue_draw)
 
@@ -310,25 +310,25 @@ class ItemPlayer(gtk.Frame):
 
         if valor == "playing":
             self.image_button.set_from_stock(
-                gtk.STOCK_MEDIA_STOP, gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_STOP, gtk.ICON_SIZE_BUTTON)
 
         else:
             self.image_button.set_from_stock(
-                gtk.STOCK_MEDIA_PLAY, gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
 
         gobject.idle_add(self.get_toplevel().queue_draw)
 
     def __set_volume(self, widget, valor):
 
-        self.player.set_volumen(valor)
+        pass #self.player.set_volumen(valor)
 
     def stop(self, widget=False):
 
         if self.player_estado == "playing":
-            self.player.stop()
+            pass #self.player.stop()
 
         else:
-            self.player.play()
+            pass #self.player.play()
 
 
 class ItemRecord(gtk.Frame):
@@ -341,7 +341,7 @@ class ItemRecord(gtk.Frame):
 
         self.tipo = "Grabador"
         self.player_estado = "None"
-        self.name, self.uri = valor
+        self._name, self.uri = valor
 
         self.set_label(" Grabando . . . ")
         self.label_info = gtk.Label("Grabación Detenida")
@@ -355,10 +355,10 @@ class ItemRecord(gtk.Frame):
         self.stop_button = gtk.Button()
         self.image_button = gtk.Image()
         self.image_button.set_from_stock(
-            gtk.STOCK_MEDIA_RECORD, gtk.IconSize.BUTTON)
+            gtk.STOCK_MEDIA_RECORD, gtk.ICON_SIZE_BUTTON)
         self.stop_button.set_image(self.image_button)
 
-        hbox.pack_start(gtk.Label(self.name),
+        hbox.pack_start(gtk.Label(self._name),
             False, False, 0)
         hbox.pack_end(self.stop_button,
             False, False, 0)
@@ -376,13 +376,13 @@ class ItemRecord(gtk.Frame):
         self.stop_button.connect(
             "clicked", self.stop)
 
-        from Record import MyPlayBin
+        #from Record import MyPlayBin
 
-        self.player = MyPlayBin(self.uri, formato)
-        self.player.connect("estado", self.__update_estado)
-        self.player.connect("endfile", self.__endfile)
-        self.player.connect("update", self.__update_info)
-        self.player.play(self.name)
+        #self.player = MyPlayBin(self.uri, formato)
+        #self.player.connect("estado", self.__update_estado)
+        #self.player.connect("endfile", self.__endfile)
+        #self.player.connect("update", self.__update_info)
+        #self.player.play(self._name)
 
     def __update_info(self, player, info):
 
@@ -391,7 +391,7 @@ class ItemRecord(gtk.Frame):
     def __endfile(self, player):
 
         self.image_button.set_from_stock(
-            gtk.STOCK_MEDIA_RECORD, gtk.IconSize.BUTTON)
+            gtk.STOCK_MEDIA_RECORD, gtk.ICON_SIZE_BUTTON)
 
         self.label_info.set_text("Grabación Detenida")
 
@@ -403,11 +403,11 @@ class ItemRecord(gtk.Frame):
 
         if valor == "playing":
             self.image_button.set_from_stock(
-                gtk.STOCK_MEDIA_STOP, gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_STOP, gtk.ICON_SIZE_BUTTON)
 
         else:
             self.image_button.set_from_stock(
-                gtk.STOCK_MEDIA_RECORD, gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_RECORD, gtk.ICON_SIZE_BUTTON)
             self.label_info.set_text("Grabación Detenida")
 
         gobject.idle_add(self.get_toplevel().queue_draw)
@@ -415,10 +415,10 @@ class ItemRecord(gtk.Frame):
     def stop(self, widget=False):
 
         if self.player_estado == "playing":
-            self.player.stop()
+            pass #self.player.stop()
 
         else:
-            self.player.play(self.name)
+            pass #self.player.play(self._name)
 
 
 class MenuList(gtk.Menu):

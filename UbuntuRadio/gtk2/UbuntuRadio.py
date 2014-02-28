@@ -25,8 +25,8 @@ from gtk import gdk
 
 from Widgets import MenuBar
 from Widgets import Lista
-#from Widgets import ItemPlayer
-#from Widgets import ItemRecord
+from Widgets import ItemPlayer
+from Widgets import ItemRecord
 
 
 class UbuntuRadio(gtk.Window):
@@ -112,7 +112,6 @@ class UbuntuRadio(gtk.Window):
             tiempo, path, widget.get_model())
 
         menu.connect('accion', self.__set_accion)
-        #menu.popup(None, None, None, None, boton, tiempo)
         gtk.Menu.popup(menu, None, None, None, boton, tiempo)
 
     def __set_accion(self, widget, lista, accion, _iter):
