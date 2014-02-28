@@ -224,7 +224,7 @@ class SourceView(GtkSource.View):
         inicio, fin = buffer.get_bounds()
         texto = buffer.get_text(inicio, fin, 0)
 
-        ### Para devolver el scroll a donde estaba.
+        # Para devolver el scroll a donde estaba.
         textmark = buffer.get_insert()
         textiter = buffer.get_iter_at_mark(textmark)
         id = textiter.get_line()
@@ -238,13 +238,13 @@ class SourceView(GtkSource.View):
 
         self.set_archivo(self.archivo)
 
-        ### Forzando actualización de Introspección.
+        # Forzando actualización de Introspección.
         # FIXME: Esto debiera hacerse al cargar el archivo.
         # FIXME: Forzando Introspección.
         self.get_parent().get_parent().emit(
             'new_select', self)
 
-        ### Devolver el scroll a donde estaba.
+        # Devolver el scroll a donde estaba.
         linea_iter = self.get_buffer().get_iter_at_line(id)
         GLib.idle_add(self.scroll_to_iter, linea_iter, 0.1, 1, 1, 0.1)
 
@@ -256,9 +256,9 @@ class SourceView(GtkSource.View):
 
         limpio = ''
         for line in texto.splitlines():
-            ### Eliminar espacios al final de la linea.
+            # Eliminar espacios al final de la linea.
             text_line = line.rstrip()
-            ### Elimina espacios en lineas vacías.
+            # Elimina espacios en lineas vacías.
             limpio = "%s%s\n" % (limpio, text_line)
 
         return limpio
@@ -610,14 +610,14 @@ class SourceView(GtkSource.View):
             chars = line_iter.get_chars_in_line()
 
             if chars > 3:
-                ### Ultimo caracter.
+                # Ultimo caracter.
                 start_iter = buffer.get_iter_at_line_offset(id, chars - 2)
                 end_iter = buffer.get_iter_at_line_offset(id, chars - 1)
 
                 texto = buffer.get_text(start_iter, end_iter, True)
 
                 if texto == ":":
-                    ### Tola la linea.
+                    # Tola la linea.
                     line_end_iter = buffer.get_iter_at_line_offset(
                         id, chars - 1)
                     texto = buffer.get_text(line_iter, line_end_iter, True)
@@ -840,14 +840,14 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
                 la línea de código que se está editando.
         """
 
-        ### Iterador de texto sobre el código actual.
+        # Iterador de texto sobre el código actual.
         textiter = context.get_iter()
         indice_de_linea_activa = textiter.get_line()
         texto_de_linea_en_edicion = textiter.get_slice(
             self.buffer.get_iter_at_line(indice_de_linea_activa))
 
         expresion = ''
-        ### Auto completado se hace sobre "."
+        # Auto completado se hace sobre "."
         if texto_de_linea_en_edicion.endswith("."):
 
             expresion = str(texto_de_linea_en_edicion.split()[-1][:-1]).strip()
@@ -871,7 +871,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
                 context.add_proposals(self, opciones, True)
 
         else:
-            ### Actualizando Autocompletado cuando está Visible.
+            # Actualizando Autocompletado cuando está Visible.
             text = texto_de_linea_en_edicion.split(".")[-1]
 
             new_opciones = []

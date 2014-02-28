@@ -373,6 +373,7 @@ class Introspeccion(Gtk.TreeView):
         self.__set_columnas()
         self.connect("key-press-event", self.key_press_event)
         self.set_rules_hint(True)
+        self.set_property("enable-tree-lines", True)
 
         self.posibles = []
 
@@ -386,9 +387,9 @@ class Introspeccion(Gtk.TreeView):
 
         self.expand_to_path(path)
 
-        iter = self.get_model().get_iter(path)
-        index = self.get_model().get_value(iter, 0)
-        texto = self.get_model().get_value(iter, 1)
+        _iter = self.get_model().get_iter(path)
+        index = self.get_model().get_value(_iter, 0)
+        texto = self.get_model().get_value(_iter, 1)
         texto = texto.split(":")[0]
 
         self.emit('new_select', index, texto)
@@ -401,7 +402,6 @@ class Introspeccion(Gtk.TreeView):
 
         if self.get_model():
             self.get_model().clear()
-            #self.posibles = []
 
         else:
             return
@@ -409,7 +409,7 @@ class Introspeccion(Gtk.TreeView):
         if not texto:
             return
 
-        dict = self.__get_datos_introspeccion(
+        _dict = self.__get_datos_introspeccion(
             texto)
 
         iterbase = self.get_model().get_iter_first()
@@ -417,9 +417,9 @@ class Introspeccion(Gtk.TreeView):
         new_class = iterbase
         new_funcion = iterbase
 
-        for key in dict.keys():
+        for key in _dict.keys():
 
-            temp = dict[key].strip()
+            temp = _dict[key].strip()
             color = Gdk.color_parse("#FF0D00")
 
             if temp.startswith("class "):
@@ -440,10 +440,12 @@ class Introspeccion(Gtk.TreeView):
                 new_funcion = self.__append(new_class,
                     key, color, temp)
 
-    def __append(self, iter, key, color, texto):
+        self.expand_all()
+
+    def __append(self, _iter, key, color, texto):
 
         new_iter = self.get_model().append(
-            iter, [int(key), texto, color])
+            _iter, [int(key), texto, color])
 
         return new_iter
 
@@ -451,7 +453,7 @@ class Introspeccion(Gtk.TreeView):
 
         from collections import OrderedDict
 
-        dict = OrderedDict()
+        _dict = OrderedDict()
 
         bloqueo = False
         lineas = texto.splitlines()
@@ -463,8 +465,8 @@ class Introspeccion(Gtk.TreeView):
             temp = linea.strip()
             contador += 1
 
-            # FIXME: Corregir caso """Comentarios . . ."""
-            ### Bloquear comentarios multilinea.
+            # FIXME: Corregir casos con varias comillas
+            # Bloquear comentarios multilinea.
             if temp:
                 if temp.startswith("\'\'\'") or \
                     temp.startswith("\"\"\"") or \
@@ -485,9 +487,9 @@ class Introspeccion(Gtk.TreeView):
 
                             l = "%s:" % l
 
-                        dict[str(contador)] = l
+                        _dict[str(contador)] = l
 
-        return dict
+        return _dict
 
     def __set_columnas(self):
         """
@@ -515,12 +517,12 @@ class Introspeccion(Gtk.TreeView):
 
         tecla = event.keyval
 
-        model, iter = self.get_selection().get_selected()
+        model, _iter = self.get_selection().get_selected()
 
-        if iter is None:
+        if _iter is None:
             return
 
-        path = self.get_model().get_path(iter)
+        path = self.get_model().get_path(_iter)
 
         if tecla == 65293:
             if self.row_expanded(path):
@@ -552,17 +554,17 @@ class Introspeccion(Gtk.TreeView):
 
                 try:
                     new_path = Gtk.TreePath.new_from_string(path_str)
-                    iter = self.get_model().get_iter(new_path)
-                    self.get_selection().select_iter(iter)
+                    _iter = self.get_model().get_iter(new_path)
+                    self.get_selection().select_iter(_iter)
                     self.scroll_to_cell(new_path)
 
                 except:
                     return False
 
             else:
-                iter = self.get_model().get_iter_first()
-                self.get_selection().select_iter(iter)
-                new_path = model.get_path(iter)
+                _iter = self.get_model().get_iter_first()
+                self.get_selection().select_iter(_iter)
+                new_path = model.get_path(_iter)
                 self.scroll_to_cell(new_path)
 
         elif tecla == 65363:
@@ -665,7 +667,6 @@ class Estructura_Proyecto(Gtk.TreeView):
 
         if self.get_model():
             self.get_model().clear()
-            #self.posibles = []
 
         else:
             return
@@ -673,10 +674,10 @@ class Estructura_Proyecto(Gtk.TreeView):
         if not path:
             return
 
-        iter = self.get_model().get_iter_first()
+        _iter = self.get_model().get_iter_first()
 
         self.get_model().append(
-            iter, [Gtk.STOCK_DIRECTORY,
+            _iter, [Gtk.STOCK_DIRECTORY,
             os.path.basename(path), path])
 
         estructura = []
@@ -728,14 +729,14 @@ class Estructura_Proyecto(Gtk.TreeView):
         directorio, path = item
         estructura.remove(item)
 
-        ### Establecer el iter donde debe agregarse el item
+        # Establecer el iter donde debe agregarse el item
         if path:
-            iter = self.get_model().get_iter(path)
+            _iter = self.get_model().get_iter(path)
 
         else:
-            iter = self.get_model().get_iter_first()
+            _iter = self.get_model().get_iter_first()
 
-        ### Leer archivos y directorios en este nivel
+        # Leer archivos y directorios en este nivel
         archivos = []
         dir_list = os.listdir(os.path.join(directorio))
         dir_list.sort()
@@ -753,29 +754,29 @@ class Estructura_Proyecto(Gtk.TreeView):
 
             direccion = os.path.join(directorio, archivo)
 
-            ### Si es un directorio, se agrega y se guarda
-            ### en una lista para hacer recurrencia sobre esta función.
+            # Si es un directorio, se agrega y se guarda
+            # en una lista para hacer recurrencia sobre esta función.
             if os.path.isdir(direccion):
                 iteractual = self.get_model().append(
-                    iter, [Gtk.STOCK_DIRECTORY, archivo, direccion])
+                    _iter, [Gtk.STOCK_DIRECTORY, archivo, direccion])
 
-                ### Para Recursividad.
+                # Para Recursividad.
                 estructura.append(
                     (direccion,
                     self.get_model().get_path(iteractual)))
 
-            ### Si es un archivo.
+            # Si es un archivo.
             elif os.path.isfile(direccion):
                 archivos.append(direccion)
 
-        ### Agregar todos los archivos en este nivel.
+        # Agregar todos los archivos en este nivel.
         for x in archivos:
             archivo = os.path.basename(x)
 
             self.get_model().append(
-                iter, [Gtk.STOCK_FILE, archivo, x])
+                _iter, [Gtk.STOCK_FILE, archivo, x])
 
-        ### Recursividad en la función.
+        # Recursividad en la función.
         self.__load_estructura(estructura)
 
     def do_row_activated(self, path, column):
@@ -783,8 +784,8 @@ class Estructura_Proyecto(Gtk.TreeView):
         Cuando se hace doble click sobre una fila
         """
 
-        iter = self.get_model().get_iter(path)
-        direccion = self.get_model().get_value(iter, 2)
+        _iter = self.get_model().get_iter(path)
+        direccion = self.get_model().get_value(_iter, 2)
 
         if os.path.isdir(direccion):
             if self.row_expanded(path):
@@ -809,12 +810,12 @@ class Estructura_Proyecto(Gtk.TreeView):
 
         tecla = event.keyval
 
-        model, iter = self.get_selection().get_selected()
+        model, _iter = self.get_selection().get_selected()
 
-        if iter is None:
+        if _iter is None:
             return
 
-        path = self.get_model().get_path(iter)
+        path = self.get_model().get_path(_iter)
 
         if tecla == 65293:
             if self.row_expanded(path):
@@ -847,15 +848,15 @@ class Estructura_Proyecto(Gtk.TreeView):
 
                 try:
                     new_path = Gtk.TreePath.new_from_string(path_str)
-                    iter = self.get_model().get_iter(new_path)
-                    self.get_selection().select_iter(iter)
+                    _iter = self.get_model().get_iter(new_path)
+                    self.get_selection().select_iter(_iter)
                     self.scroll_to_cell(new_path)
 
                 except:
                     return False
             else:
-                iter = self.get_model().get_iter_first()
-                self.get_selection().select_iter(iter)
+                _iter = self.get_model().get_iter_first()
+                self.get_selection().select_iter(_iter)
                 path = model.get_path(iter)
                 self.scroll_to_cell(path)
 

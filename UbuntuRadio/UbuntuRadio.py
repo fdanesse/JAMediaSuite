@@ -29,18 +29,6 @@ from Widgets import Lista
 from Widgets import ItemPlayer
 from Widgets import ItemRecord
 
-screen = Gdk.Screen.get_default()
-css_provider = Gtk.CssProvider()
-style_path = os.path.join(
-    os.path.dirname(__file__), "Estilo.css")
-css_provider.load_from_path(style_path)
-context = Gtk.StyleContext()
-
-context.add_provider_for_screen(
-    screen,
-    css_provider,
-    Gtk.STYLE_PROVIDER_PRIORITY_USER)
-
 
 class UbuntuRadio(Gtk.Window):
 
@@ -50,10 +38,9 @@ class UbuntuRadio(Gtk.Window):
 
         Gtk.Window.__init__(self)
 
-        # FIXME: Leer config
-        self.config = {
-            "opacity": 0.8,
-            "format": "ogg"}
+        from Globales import get_estilo
+
+        self.config = get_estilo()
 
         self.set_title("Ubuntu Radio")
 
@@ -65,7 +52,7 @@ class UbuntuRadio(Gtk.Window):
         self.set_border_width(5)
         self.set_decorated(False)
         self.set_resizable(False)
-        self.set_opacity(self.config["opacity"])
+        self.set_opacity(self.config["opacidad"])
 
         vbox = Gtk.VBox()
 
@@ -94,6 +81,7 @@ class UbuntuRadio(Gtk.Window):
 
         menu.connect("lista", self.__show_lista)
         menu.connect("actualizar", self.__actualizar_lista)
+        menu.connect("configurar", self.__configurar)
         menu.connect("salir", self.__exit)
 
         self.lista.connect(
@@ -177,6 +165,19 @@ class UbuntuRadio(Gtk.Window):
             eliminar_streaming(uri, "JAM-Radio")
             print "Streaming Eliminado:", name, uri
 
+        Gtk.StyleContext.reset_widgets(Gdk.Screen.get_default())
+
+    def __configurar(self, widget):
+
+        from Widgets import DialogoConfig
+
+        dialog = DialogoConfig(
+            parent=self.get_toplevel(),
+            config=self.config)
+
+        dialog.run()
+        dialog.destroy()
+
     def __actualizar_lista(self, widget):
         """
         Actualiza la Lista de Streamings desde la Web
@@ -251,7 +252,7 @@ class UbuntuRadio(Gtk.Window):
                     item.destroy()
 
         self.inplay.pack_start(
-            ItemRecord(valor, self.config["format"]),
+            ItemRecord(valor, self.config["formato"]),
             False, False, 0)
 
     def __show_lista(self, widget):

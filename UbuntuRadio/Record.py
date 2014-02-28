@@ -114,38 +114,12 @@ class MyPlayBin(GObject.Object):
         """
 
         string = pad.query_caps(None).to_string()
-        # print "Agregando:", string
 
         if string.startswith('audio/'):
             pad.link(self.audio_sink)
 
     def __sync_message(self, bus, mensaje):
 
-        '''
-        # FIXME: Nunca se Produce esta señal
-        if mensaje.type == Gst.MessageType.STATE_CHANGED:
-            old, new, pending = mensaje.parse_state_changed()
-
-            if old == Gst.State.PAUSED and new == Gst.State.PLAYING:
-                if self.estado != new:
-                    self.estado = new
-                    self.emit("estado", "playing")
-
-            elif old == Gst.State.READY and new == Gst.State.PAUSED:
-                if self.estado != new:
-                    self.estado = new
-                    self.emit("estado", "paused")
-
-            elif old == Gst.State.READY and new == Gst.State.NULL:
-                if self.estado != new:
-                    self.estado = new
-                    self.emit("estado", "None")
-
-            elif old == Gst.State.PLAYING and new == Gst.State.PAUSED:
-                if self.estado != new:
-                    self.estado = new
-                    self.emit("estado", "paused")
-        '''
         if mensaje.type == Gst.MessageType.LATENCY:
             self.player.recalculate_latency()
 

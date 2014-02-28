@@ -76,9 +76,9 @@ class WorkPanel(Gtk.Paned):
         self.notebook_sourceview = Notebook_SourceView()
         self.terminal = JAMediaTerminal()
 
-        ### Terminal en ejecución.
+        # Terminal en ejecución.
         self.ejecucion = False
-        ### Tipo: proyecto o archivo.
+        # Tipo: proyecto o archivo.
         self.ejecucion_activa = False
 
         self.pack1(self.notebook_sourceview,
@@ -163,7 +163,7 @@ class WorkPanel(Gtk.Paned):
         """
 
         if not archivo or archivo == None:
-            ### Cuando se ejecuta el archivo seleccionado.
+            # Cuando se ejecuta el archivo seleccionado.
             pagina = self.notebook_sourceview.get_current_page()
 
             view = self.notebook_sourceview.get_children()[
@@ -171,7 +171,7 @@ class WorkPanel(Gtk.Paned):
 
             archivo = view.archivo
 
-            ### Si el archivo tiene cambios sin guardar o nunca se guardó.
+            # Si el archivo tiene cambios sin guardar o nunca se guardó.
             if not archivo or archivo == None or \
                 view.get_buffer().get_modified():
 
@@ -198,7 +198,7 @@ class WorkPanel(Gtk.Paned):
             self.emit("ejecucion", self.ejecucion_activa, True)
 
         else:
-            ### Cuando se ejecuta el main de proyecto.
+            # Cuando se ejecuta el main de proyecto.
             source = None
 
             for view in self.get_archivos_de_proyecto(
@@ -349,7 +349,7 @@ class Notebook_SourceView(Gtk.Notebook):
         el notebook, se emite la señal 'new_select'.
         """
 
-        ### Detener inspectores y activar solo el seleccionado
+        # Detener inspectores y activar solo el seleccionado
         paginas = self.get_children()
 
         for pagina in paginas:
@@ -376,7 +376,7 @@ class Notebook_SourceView(Gtk.Notebook):
         for pagina in paginas:
             view = pagina.get_child()
 
-            ### FIXME: No permitir abrir dos veces el mismo archivo?
+            # FIXME: No permitir abrir dos veces el mismo archivo?
             if view.archivo and view.archivo == archivo:
                 return
 
@@ -426,7 +426,7 @@ class Notebook_SourceView(Gtk.Notebook):
         self.set_tab_reorderable(scroll, True)
 
         '''
-        ### Cuando se abre un archivo, se cierra el vacío por default.
+        # Cuando se abre un archivo, se cierra el vacío por default.
         if len(paginas) > 1:
             for pagina in paginas:
                 view = pagina.get_child()
@@ -484,7 +484,7 @@ class Notebook_SourceView(Gtk.Notebook):
         scrolled = paginas[self.get_current_page()]
         sourceview = scrolled.get_children()[0]
 
-        ### Ver.
+        # Ver.
         if accion == "Numeracion":
             for pagina in paginas:
                 self.config['numeracion'] = valor
@@ -511,7 +511,7 @@ class Notebook_SourceView(Gtk.Notebook):
                     self.config['fuente'],
                     self.config['tamanio'])
 
-        ### Código.
+        # Código.
         elif accion == "Formato":
             from JAMediaObjects.JAMediaTerminal import DialogoFormato
 

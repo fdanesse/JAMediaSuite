@@ -351,7 +351,7 @@ class Notebook_Setup(Gtk.Notebook):
             dialog.run()
             dialog.destroy()
 
-            ### Mover Instalador
+            # Mover Instalador
             dist_path = os.path.join(
                 self.gnome_notebook.activitydirpath, "dist")
             destino = os.path.join(self.proyecto["path"], "dist")
@@ -456,7 +456,7 @@ class Gnome_Notebook(Gtk.Notebook):
             self.get_scroll(self.desinstalador),
             Gtk.Label("desinstalador"))
 
-        ### Comenzar a generar el temporal
+        # Comenzar a generar el temporal
         self.activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
 
         self.show_all()
@@ -468,15 +468,15 @@ class Gnome_Notebook(Gtk.Notebook):
         posibles correcciones.
         """
 
-        ### Borrar anteriores
+        # Borrar anteriores
         if os.path.exists(self.activitydirpath):
             commands.getoutput("rm -r %s" % self.activitydirpath)
 
-        ### Copiar contenido del proyecto.
+        # Copiar contenido del proyecto.
         shutil.copytree(self.proyecto["path"],
             self.activitydirpath, symlinks=False, ignore=None)
 
-        ### Generar Archivos Necesarios para Construir Instalador.
+        # Generar Archivos Necesarios para Construir Instalador.
         self.archivo_lanzador = "%s/%s_run" % (
             self.activitydirpath, self.proyecto["nombre"].lower())
         self.archivo_desinstalador = "%s/%s_uninstall" % (
@@ -515,19 +515,19 @@ class Gnome_Notebook(Gtk.Notebook):
         newpath = iconpath.split("%s/" % self.activitydirpath)[1]
         iconpath = os.path.join("/usr/local/share", self.proyecto["nombre"], newpath)
 
-        ### setup.cfg
+        # setup.cfg
         cfg = "[install]\ninstall_lib=/usr/local/share/%s\ninstall_data=/usr/local/share/%s\ninstall_scripts=/usr/local/bin""" % (self.proyecto["nombre"], self.proyecto["nombre"])
         self.setupcfg.get_buffer().set_text(cfg)
 
-        ### lanzador
+        # lanzador
         lanzador = "%s_run" % (self.proyecto["nombre"].lower())
         desinstalador = "%s_uninstall" % (self.proyecto["nombre"].lower())
 
-        ### desktop
+        # desktop
         desktop = "[Desktop Entry]\nEncoding=UTF-8\nName=%s\nGenericName=%s\nComment=%s\nExec=%s\nTerminal=false\nType=Application\nIcon=%s\nCategories=%s\nStartupNotify=true\nMimeType=%s" % (self.proyecto["nombre"], self.proyecto["nombre"], self.proyecto["descripcion"], os.path.join("/usr/local/bin", lanzador), iconpath, self.proyecto["categoria"], self.proyecto["mimetypes"])
         self.setupdesktop.get_buffer().set_text(desktop)
 
-        ### MANIFEST
+        # MANIFEST
         import ApiProyecto
 
         manifest_list, data_files = ApiProyecto.get_installers_data(self.activitydirpath)
@@ -539,7 +539,7 @@ class Gnome_Notebook(Gtk.Notebook):
 
         self.setupmanifest.get_buffer().set_text(manifest)
 
-        ### setup.py
+        # setup.py
         setup_py = "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n\nfrom distutils.core import setup\n\nsetup(\n\tname = \"%s\",\n\tversion = \"%s\",\n\t" % (self.proyecto["nombre"], self.proyecto["version"])
 
         autores = ""
@@ -588,11 +588,11 @@ class Gnome_Notebook(Gtk.Notebook):
 
         self.setuppy.get_buffer().set_text(setup_py)
 
-        ### lanzador.
+        # lanzador.
         lanzador = "#!/bin/sh\nexec \"/usr/bin/python\" \"/usr/local/share/%s/%s\" \"$@\"" % (self.proyecto["nombre"], self.proyecto["main"])
         self.lanzador.get_buffer().set_text(lanzador)
 
-        ### desinstalador.
+        # desinstalador.
         desinstalador = "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n\nimport os\nimport commands\n\n"
         desinstalador = "%sprint commands.getoutput(\"rm -r /usr/local/share/%s\")\n" % (desinstalador, self.proyecto["nombre"])
         desinstalador = "%sprint commands.getoutput(\"rm /usr/share/applications/%s.desktop\")\n" % (desinstalador, self.proyecto["nombre"])
@@ -719,21 +719,21 @@ class Sugar_Notebook(Gtk.Notebook):
 
     def __generar_temporal_dir(self, iconpath):
 
-        ### Comenzar a generar el temporal
+        # Comenzar a generar el temporal
         activitydirpath = os.path.join("/tmp",
             "%s.activity" % self.proyecto["nombre"])
         activityinfodirpath = os.path.join(activitydirpath, "activity")
 
-        ### Borrar anteriores
+        # Borrar anteriores
         if os.path.exists(activitydirpath):
             shutil.rmtree(activitydirpath,
                 ignore_errors=False, onerror=None)
 
-        ### Copiar contenido del proyecto.
+        # Copiar contenido del proyecto.
         shutil.copytree(self.proyecto["path"],
             activitydirpath, symlinks=False, ignore=None)
 
-        ### Escribir archivos de instalación.
+        # Escribir archivos de instalación.
         if not os.path.exists(activityinfodirpath):
             os.mkdir(activityinfodirpath)
 
@@ -760,7 +760,7 @@ class Sugar_Notebook(Gtk.Notebook):
         self.__escribir_archivo(infopath, activity)
         self.__escribir_archivo(setuppath, setup)
 
-        ### Borrar archivos innecesarios
+        # Borrar archivos innecesarios
         nombre = self.proyecto["nombre"]
         ejecutable = ("%s_run" % nombre).lower()
         desinstalador = ("%s_uninstall" % nombre).lower()
@@ -781,11 +781,11 @@ class Sugar_Notebook(Gtk.Notebook):
                 elif os.path.isdir(path):
                     shutil.rmtree(path, ignore_errors=False, onerror=None)
 
-        ### Generar archivo de distribución "*.xo"
+        # Generar archivo de distribución "*.xo"
         import zipfile
         zippath = "%s.xo" % (activitydirpath)
 
-        ### Borrar anterior
+        # Borrar anterior
         if os.path.exists(zippath):
             os.remove(zippath)
 
@@ -812,7 +812,7 @@ class Sugar_Notebook(Gtk.Notebook):
         if not os.path.exists(distpath):
             os.mkdir(distpath)
 
-        ### Copiar el *.xo a la estructura del proyecto.
+        # Copiar el *.xo a la estructura del proyecto.
         shutil.copy(zippath, distpath)
         os.chmod(os.path.join(distpath, os.path.basename(zippath)), 0755)
 
@@ -1125,15 +1125,15 @@ class Ceibal_Notebook(Gtk.Notebook):
 
     def __generar_temporal_dir(self, iconpath):
 
-        ### Comenzar a generar el temporal
+        # Comenzar a generar el temporal
         activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
 
-        ### Borrar anteriores
+        # Borrar anteriores
         if os.path.exists(activitydirpath):
             shutil.rmtree(activitydirpath,
                 ignore_errors=False, onerror=None)
 
-        ### Copiar contenido del proyecto.
+        # Copiar contenido del proyecto.
         shutil.copytree(self.proyecto["path"],
             activitydirpath, symlinks=False, ignore=None)
 
@@ -1153,15 +1153,15 @@ class Ceibal_Notebook(Gtk.Notebook):
 
         activitydirpath, iconpath = self.__generar_temporal_dir(self.iconpath)
 
-        ### Escribir instalador.
+        # Escribir instalador.
         archivo_install = os.path.join(activitydirpath, "install.py")
         install = self.__get_text(self.install.get_buffer())
         self.__escribir_archivo(archivo_install, install)
 
-        ### Generar archivo de distribución "*.zip"
+        # Generar archivo de distribución "*.zip"
         zippath = "%s.zip" % (activitydirpath)
 
-        ### Eliminar anterior.
+        # Eliminar anterior.
         if os.path.exists(zippath):
             os.remove(zippath)
 
@@ -1173,7 +1173,7 @@ class Ceibal_Notebook(Gtk.Notebook):
         RECHAZAFiles = ["proyecto.ide", ".gitignore"]
         RECHAZADirs = [".git", "build", "dist"]
 
-        ### Forzar eliminacion de dist
+        # Forzar eliminacion de dist
         for dir in os.listdir(activitydirpath):
             d = os.path.join(activitydirpath, dir)
 
@@ -1202,7 +1202,7 @@ class Ceibal_Notebook(Gtk.Notebook):
         if not os.path.exists(distpath):
             os.mkdir(distpath)
 
-        ### Copiar el *.zip a la estructura del proyecto.
+        # Copiar el *.zip a la estructura del proyecto.
         commands.getoutput("cp %s %s" % (zippath, distpath))
         os.chmod(os.path.join(distpath, os.path.basename(zippath)), 0755)
 

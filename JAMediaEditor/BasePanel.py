@@ -268,7 +268,7 @@ class BasePanel(Gtk.Paned):
             inicio, fin = buffer.get_bounds()
             text = buffer.get_text(inicio, fin, 0)
 
-        ### Setear Introspeción.
+        # Setear Introspeción.
         self.infonotebook.set_introspeccion(nombre, text, view)
 
     def __cargar_proyecto(self, proyecto):
@@ -326,7 +326,7 @@ class BasePanel(Gtk.Paned):
 
         proyecto["path"] = os.path.dirname(archivo)
 
-        ### Validación de datos del proyecto.
+        # Validación de datos del proyecto.
         if not proyecto.get("nombre", False):
             return
 
@@ -339,7 +339,7 @@ class BasePanel(Gtk.Paned):
 
         anterior_cerrado = self.cerrar_proyecto()
 
-        ### El proyecto se carga sólo si se cerró el anterior.
+        # El proyecto se carga sólo si se cerró el anterior.
         if anterior_cerrado:
             self.__cargar_proyecto(proyecto)
 
@@ -362,11 +362,11 @@ class BasePanel(Gtk.Paned):
         Guarda el proyecto actual.
         """
 
-        ### Todo Proyecto Requiere un Nombre.
+        # Todo Proyecto Requiere un Nombre.
         if not proyecto.get("nombre", False):
             return
 
-        ### Seteo automático del path del proyecto.
+        # Seteo automático del path del proyecto.
         path = False
 
         if proyecto.get("path", False):
@@ -380,7 +380,7 @@ class BasePanel(Gtk.Paned):
 
         proyecto["path"] = path
 
-        ### Seteo automático del main del proyecto.
+        # Seteo automático del main del proyecto.
         if not proyecto.get("main", False):
             proyecto["main"] = "Main.py"
 
@@ -391,7 +391,7 @@ class BasePanel(Gtk.Paned):
             arch.write("#!/usr/bin/env python\n# -*- coding: utf-8 -*-")
             arch.close()
 
-        ### Seteo automático de licencia
+        # Seteo automático de licencia
         licencia_path = os.path.join(proyecto["path"], "COPYING")
         import Licencias as Lic
 
@@ -399,7 +399,7 @@ class BasePanel(Gtk.Paned):
         arch.write(Lic.dict[proyecto["licencia"]])
         arch.close()
 
-        ### Seteo automático de autores.
+        # Seteo automático de autores.
         autores_path = os.path.join(proyecto["path"], "AUTHORS")
 
         arch = open(autores_path, "w")
@@ -414,7 +414,7 @@ class BasePanel(Gtk.Paned):
 
         arch.close()
 
-        ### Guardar el Proyecto.
+        # Guardar el Proyecto.
         proyecto_file = os.path.join(path, "proyecto.ide")
 
         import json
@@ -456,7 +456,7 @@ class BasePanel(Gtk.Paned):
             self.proyecto["path"])
 
         if codeviews:
-            ### Cerrar Archivos. Esto pedirá guardar si hay cambios en él.
+            # Cerrar Archivos. Esto pedirá guardar si hay cambios en él.
             for view in codeviews:
                 view.set_accion("Cerrar Archivo")
 
@@ -466,7 +466,7 @@ class BasePanel(Gtk.Paned):
             self.emit("proyecto_abierto", False)
             return True
 
-        ### Si algún archivo ha debido guardarse, no se ha cerrado.
+        # Si algún archivo ha debido guardarse, no se ha cerrado.
         if not self.proyecto:
             self.proyecto = {}
             self.infonotebook.set_path_estructura(False)
@@ -477,7 +477,7 @@ class BasePanel(Gtk.Paned):
             self.proyecto["path"])
 
         if codeviews:
-            ### Cerrar Archivos.
+            # Cerrar Archivos.
             for view in codeviews:
                 view.set_accion("Cerrar Archivo")
 
@@ -487,7 +487,7 @@ class BasePanel(Gtk.Paned):
             self.emit("proyecto_abierto", False)
             return True
 
-        ### Si todavía hay archivos abiertos, el usuario no desea cerrarlos.
+        # Si todavía hay archivos abiertos, el usuario no desea cerrarlos.
         if not self.proyecto:
             self.proyecto = {}
             self.infonotebook.set_path_estructura(False)
@@ -529,7 +529,7 @@ class BasePanel(Gtk.Paned):
 
             dialog.destroy()
 
-            ### El Proyecto se crea solo cuando se ha cerrado el anterior.
+            # El Proyecto se crea solo cuando se ha cerrado el anterior.
             if nuevoproyecto:
                 anterior_cerrado = True
 

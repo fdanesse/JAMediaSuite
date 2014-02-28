@@ -21,7 +21,159 @@
 radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014'
 
 
-def make_base_directory():
+def set_estilo(dict_colors):
+    """
+    Cuando se cambia el estilo,
+    se guarda y se carga en la interfaz.
+    """
+
+    estilo = """
+/*
+opacidad = %s
+formato = %s
+*/
+
+GtkWindow {
+    background-color: %s;
+    color: %s;
+}
+
+GtkMenuBar, GtkMenu, GtkMenuItem {
+    background-color: %s;
+    color: %s;
+}
+
+GtkEventBox {
+    background-color: %s;
+    color: %s;
+}
+
+UbuntuRadioDialogoConfig, UbuntuRadioDialogoDescarga,
+    UbuntuRadioCreditos{
+    background-color: #ffffff;
+    color: #000000;
+    }
+""" % (
+    dict_colors["opacidad"],
+    dict_colors["formato"],
+    dict_colors["color1"],
+    dict_colors["color2"],
+    dict_colors["color3"],
+    dict_colors["color4"],
+    dict_colors["color5"],
+    dict_colors["color6"])
+
+    import os
+
+    path = os.path.join(
+        get_data_directory(),
+        "UbuntuRadio.css")
+
+    archivo = open(path, "w")
+    archivo.write(estilo)
+    archivo.close()
+
+    __load_estilo(path)
+
+
+def get_estilo():
+    """
+    Crea y/o carga el estilo
+    y devuelve config{}
+    """
+
+    import os
+
+    path = os.path.join(
+        get_data_directory(),
+        "UbuntuRadio.css")
+
+    if not os.path.exists(path):
+        dict_colors = {
+            "opacidad": 0.8,
+            "formato": "ogg",
+            "color1": "#8ae234",
+            "color2": "#ffffff",
+            "color3": "#c0fcf4",
+            "color4": "#000000",
+            "color5": "#b0e0e6",
+            "color6": "#000000",
+            }
+        set_estilo(dict_colors)
+
+    __load_estilo(path)
+
+    return __get_config()
+
+
+def __get_config():
+    """
+    Convierte los datos del estilo en un
+    diccionario con la configuración.
+    """
+
+    import os
+
+    path = os.path.join(
+        get_data_directory(),
+        "UbuntuRadio.css")
+
+    archivo = open(path, "r")
+    texto = archivo.readlines()
+    archivo.close()
+
+    config = {
+        "opacidad": 0.8,
+        "formato": "ogg",
+        "color1": "#8ae234",
+        "color2": "#ffffff",
+        "color3": "#c0fcf4",
+        "color4": "#000000",
+        "color5": "#b0e0e6",
+        "color6": "#000000",
+        }
+
+    colores = []
+
+    for line in texto:
+        if "opacidad" in line:
+            config["opacidad"] = float(line.split()[-1].strip())
+        if "formato" in line:
+            config["formato"] = line.split()[-1].strip()
+
+        if "#" in line:
+            colores.append(line.split()[-1].replace(";", ""))
+
+    config["color_ventana"] = colores[0]
+    config["color_fuente_ventana"] = colores[1]
+    config["color_menu"] = colores[2]
+    config["color_fuente_menu"] = colores[3]
+    config["color_descarga"] = colores[4]
+    config["color_fuente_descarga"] = colores[5]
+
+    return config
+
+
+def __load_estilo(path):
+    """
+    Carga el estilo en la interfaz.
+    """
+
+    from gi.repository import Gtk
+    from gi.repository import Gdk
+
+    screen = Gdk.Screen.get_default()
+    css_provider = Gtk.CssProvider()
+    css_provider.load_from_path(path)
+    context = Gtk.StyleContext()
+
+    context.add_provider_for_screen(
+        screen,
+        css_provider,
+        Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+
+def __make_base_directory():
     """
     Crea toda la estructura de Directorios de JAMedia.
     """
@@ -63,7 +215,7 @@ def get_data_directory():
         "JAMediaDatos", "Datos")
 
     if not os.path.exists(DIRECTORIO_DATOS):
-        make_base_directory()
+        __make_base_directory()
 
     return DIRECTORIO_DATOS
 
@@ -76,7 +228,7 @@ def get_my_files_directory():
         "JAMediaDatos", "MisArchivos")
 
     if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
-        make_base_directory()
+        __make_base_directory()
 
     return DIRECTORIO_MIS_ARCHIVOS
 
@@ -92,7 +244,7 @@ def get_streamings(path):
     return items
 
 
-def descarga_lista_de_streamings(url):
+def __descarga_lista_de_streamings(url):
 
     print "Conectandose a:", url, "\n\tDescargando Streamings . . ."
 
@@ -168,9 +320,9 @@ def set_listas_default():
 
     if not lista:
         try:
-            lista_radios = descarga_lista_de_streamings(radios)
+            lista_radios = __descarga_lista_de_streamings(radios)
 
-            guarda_lista_de_streamings(
+            __guarda_lista_de_streamings(
                 os.path.join(
                     DIRECTORIO_DATOS,
                     "JAMediaRadio.JAMedia"),
@@ -180,7 +332,7 @@ def set_listas_default():
             print "Error al descargar Streamings de Radios."
 
 
-def clear_lista_de_streamings(path):
+def __clear_lista_de_streamings(path):
 
     import shelve
 
@@ -189,7 +341,7 @@ def clear_lista_de_streamings(path):
     archivo.close()
 
 
-def guarda_lista_de_streamings(path, items):
+def __guarda_lista_de_streamings(path, items):
 
     import shelve
 
@@ -208,14 +360,14 @@ def get_streaming_default():
     DIRECTORIO_DATOS = get_data_directory()
 
     try:
-        lista_radios = descarga_lista_de_streamings(radios)
+        lista_radios = __descarga_lista_de_streamings(radios)
 
-        clear_lista_de_streamings(
+        __clear_lista_de_streamings(
             os.path.join(
                 DIRECTORIO_DATOS,
                 "JAMediaRadio.JAMedia"))
 
-        guarda_lista_de_streamings(
+        __guarda_lista_de_streamings(
             os.path.join(
                 DIRECTORIO_DATOS,
                 "JAMediaRadio.JAMedia"),

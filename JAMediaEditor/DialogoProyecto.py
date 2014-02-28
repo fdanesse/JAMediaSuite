@@ -63,7 +63,7 @@ class DialogoProyecto(Gtk.Dialog):
 
         self.set_border_width(15)
 
-        ### Entradas de datos.
+        # Entradas de datos.
         self.nombre = Gtk.Entry()
         self.main = Gtk.ComboBoxText()
         self.path = Gtk.Label()
@@ -92,10 +92,10 @@ class DialogoProyecto(Gtk.Dialog):
         self.url = Gtk.Entry()
         self.icon_path = Gtk.Label()
 
-        ### Box para despues agregarlo a un scroll
+        # Box para despues agregarlo a un scroll
         self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        ### Scroll
+        # Scroll
         scroll = Gtk.ScrolledWindow()
 
         scroll.set_policy(
@@ -106,7 +106,7 @@ class DialogoProyecto(Gtk.Dialog):
 
         self.vbox.pack_start(scroll, True, True, 0)
 
-        ### Autores
+        # Autores
         self.autores = WidgetAutores()
 
         if accion == "nuevo":
@@ -160,7 +160,7 @@ class DialogoProyecto(Gtk.Dialog):
 
         self.nombre.connect("key_release_event", self.__check_nombre)
 
-        ### Si se abre para editar, no se le puede cambiar el nombre.
+        # Si se abre para editar, no se le puede cambiar el nombre.
         if accion == "editar":
             self.nombre.set_sensitive(False)
 
@@ -345,7 +345,7 @@ class DialogoProyecto(Gtk.Dialog):
         self.url.set_text(diccionario["url"])
         self.autores.set_autores(diccionario["autores"])
 
-        ### Setear Combo para archivo Main.
+        # Setear Combo para archivo Main.
         if diccionario.get("path", False):
             import glob
 
@@ -368,7 +368,7 @@ class DialogoProyecto(Gtk.Dialog):
             item = model.iter_next(item)
             count += 1
 
-        ### Setear sensibilidad en el boton aceptar.
+        # Setear sensibilidad en el boton aceptar.
         for button in self.get_action_area().get_children():
             if self.get_response_for_widget(button) == Gtk.ResponseType.ACCEPT:
 

@@ -700,7 +700,8 @@ class ProgressBar(Gtk.Scale):
 
     def __init__(self, ajuste):
 
-        Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+        Gtk.Scale.__init__(self,
+            orientation=Gtk.Orientation.HORIZONTAL)
 
         self.set_adjustment(ajuste)
         self.set_digits(0)

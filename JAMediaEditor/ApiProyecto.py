@@ -42,7 +42,7 @@ def colectdir(direccion, directorios):
 
                 leer = True
 
-                ### Rechazar Directorios preestablecidos como no distribuibles.
+                # Rechazar Directorios preestablecidos como no distribuibles.
                 for dir in RECHAZADirs:
                     if dir in directorio:
                         leer = False
@@ -67,7 +67,7 @@ def colectfiles(directorio, manifest_list):
 
             agregar = True
 
-            ### Rechazar Archivos según nombres preestablecidos
+            # Rechazar Archivos según nombres preestablecidos
             for file in RECHAZAFiles:
                 if file in fil:
                     agregar = False
@@ -76,7 +76,7 @@ def colectfiles(directorio, manifest_list):
             if not agregar:
                 continue
 
-            ### Rechazar Archivos según extensiones preestablecidos
+            # Rechazar Archivos según extensiones preestablecidos
             extension = os.path.splitext(os.path.split(archivo)[1])[1]
 
             for rechazar in RECHAZAExtension:
@@ -103,18 +103,18 @@ def get_installers_data(directorio):
 
     directorios = [raiz]
 
-    ### Todos los directorios en el Proyecto.
+    # Todos los directorios en el Proyecto.
     for directorio in directorios:
         directorios = colectdir(directorio, directorios)
 
-    ### Todos los archivos en el proyecto.
+    # Todos los archivos en el proyecto.
     manifest_list_temp = []
 
     for directorio in directorios:
         manifest_list_temp = colectfiles(directorio, manifest_list_temp)
 
-    ### Construir Lista de Archivos para MANIFEST y
-    ### data_files para setup.py.
+    # Construir Lista de Archivos para MANIFEST y
+    # data_files para setup.py.
     for archivo in manifest_list_temp:
         parent = os.path.dirname(archivo)
         directorio = parent.split(raiz)[-1]

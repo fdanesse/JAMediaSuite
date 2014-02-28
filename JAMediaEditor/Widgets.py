@@ -89,7 +89,7 @@ class Menu(Gtk.MenuBar):
         self.append(item_codigo)
         self.append(item_ayuda)
 
-        ### Items del Menú Proyectos
+        # Items del Menú Proyectos
         item = Gtk.MenuItem('Nuevo . . .')
         item.connect("activate",
             self.__emit_accion_proyecto, "Nuevo Proyecto")
@@ -143,7 +143,7 @@ class Menu(Gtk.MenuBar):
         self.dict_proyecto["Construir"] = item
         menu_proyectos.append(item)
 
-        ### Items del Menú Archivos
+        # Items del Menú Archivos
         item = Gtk.MenuItem('Nuevo')
         item.connect("activate",
             self.__emit_accion_archivo, "Nuevo Archivo")
@@ -184,7 +184,7 @@ class Menu(Gtk.MenuBar):
         #self.dict_archivo['Guardar Como'] = item
         menu_archivos.append(item)
 
-        ### Items del Menú Edición
+        # Items del Menú Edición
         item = Gtk.MenuItem('Deshacer')
         item.connect("activate",
             self.__emit_accion_archivo, "Deshacer")
@@ -240,7 +240,7 @@ class Menu(Gtk.MenuBar):
             ord('A'), Gdk.ModifierType.CONTROL_MASK,
             Gtk.AccelFlags.VISIBLE)
 
-        ### Items del menú Ver
+        # Items del menú Ver
         item = Gtk.MenuItem()
         try:
             item.get_child().destroy()
@@ -296,7 +296,7 @@ class Menu(Gtk.MenuBar):
             self.__emit_accion_ver, "Panel lateral")
         menu_ver.append(item)
 
-        ### Items del Menú Código
+        # Items del Menú Código
         item = Gtk.MenuItem('Aumentar')
         item.connect("activate",
             self.__emit_accion_codigo, "Aumentar")
@@ -686,7 +686,7 @@ class DialogoReemplazar(Gtk.Dialog):
 
         self.view = view
 
-        ### Entries.
+        # Entries.
         self.buscar_entry = Gtk.Entry()
         self.reemplazar_entry = Gtk.Entry()
 
@@ -704,7 +704,7 @@ class DialogoReemplazar(Gtk.Dialog):
 
         self.vbox.pack_start(hbox, False, False, 10)
 
-        ### Buttons.
+        # Buttons.
         cerrar = Gtk.Button("Cerrar")
         self.reemplazar = Gtk.Button("Reemplazar")
         self.button_buscar = Gtk.Button("Saltear")

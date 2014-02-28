@@ -21,6 +21,7 @@
 import os
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
 from gi.repository import GdkPixbuf
@@ -37,8 +38,8 @@ class MenuBar(Gtk.MenuBar):
         GObject.TYPE_NONE, []),
     'actualizar': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, []),
-    #'accion_archivo': (GObject.SIGNAL_RUN_FIRST,
-    #    GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    'configurar': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
         }
 
     def __init__(self):
@@ -52,11 +53,11 @@ class MenuBar(Gtk.MenuBar):
         item = Gtk.MenuItem('Radios')
         item.connect("activate", self.__listar_radios)
         menu.append(item)
-        '''
+
         item = Gtk.MenuItem('Configurar...')
         item.connect("activate", self.__configurar)
         menu.append(item)
-        '''
+
         item = Gtk.MenuItem('Creditos...')
         item.connect("activate", self.__creditos)
         menu.append(item)
@@ -85,15 +86,9 @@ class MenuBar(Gtk.MenuBar):
 
     def __configurar(self, widget):
 
-        print "Configurar"
+        self.emit("configurar")
 
     def __listar_radios(self, widget):
-
-        '''
-        dialog = Dialogo_Radios(self.get_toplevel())
-        dialog.run()
-        dialog.destroy()
-        '''
 
         self.emit("lista")
 
@@ -508,6 +503,8 @@ class DialogoDescarga(Gtk.Dialog):
             flags=Gtk.DialogFlags.MODAL)
 
         self.set_border_width(15)
+        self.set_decorated(False)
+        self.set_resizable(False)
 
         label = Gtk.Label("*** Descargando Streamings ***")
         label.show()
@@ -550,3 +547,198 @@ class Creditos(Gtk.Dialog):
 
         self.vbox.pack_start(imagen, True, True, 0)
         self.vbox.show_all()
+
+
+class DialogoConfig(Gtk.Dialog):
+
+    __gtype_name__ = 'UbuntuRadioDialogoConfig'
+
+    def __init__(self, parent=None, config={}):
+
+        Gtk.Dialog.__init__(self,
+            parent=parent,
+            flags=Gtk.DialogFlags.MODAL,
+            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
+
+        self.set_border_width(15)
+        self.set_decorated(False)
+        self.set_resizable(False)
+
+        self.config = config
+
+        frame_formatos = self.__get_frame_formatos()
+        frame_colores = self.__get_frame_colores()
+        frame_opacidad = self.__get_frame_opacidad()
+
+        self.vbox.pack_start(
+            frame_formatos, True, True, 5)
+        self.vbox.pack_start(
+            frame_colores, True, True, 5)
+        self.vbox.pack_start(
+            frame_opacidad, True, True, 5)
+
+        self.vbox.show_all()
+
+    def __get_frame_opacidad(self):
+
+        frame = Gtk.Frame()
+        frame.set_border_width(5)
+        frame.set_label(" Opacidad de Interfaz: ")
+
+        escala = Gtk.Scale()
+        escala.set_adjustment(
+            Gtk.Adjustment(0.5, 0.5, 1.1, 0.1, 0.1, 0.1))
+        escala.set_digits(1)
+        #escala.set_draw_value(False)
+
+        frame.add(escala)
+
+        escala.set_value(self.config["opacidad"])
+        escala.connect("value-changed", self.__set_opacidad)
+
+        return frame
+
+    def __get_frame_formatos(self):
+
+        frame = Gtk.Frame()
+        frame.set_border_width(5)
+        frame.set_label(" Formato de Grabación: ")
+
+        hbox = Gtk.HBox()
+
+        botones = [
+            Gtk.RadioButton("ogg"),
+            Gtk.RadioButton("mp3"),
+            Gtk.RadioButton("wav"),
+            ]
+
+        for boton in botones:
+            boton.connect("toggled", self.__set_formato)
+            hbox.pack_start(boton, True, True, 0)
+
+        for boton in botones[1:]:
+            boton.join_group(botones[0])
+            if boton.get_label() == self.config["formato"]:
+                boton.set_active(True)
+
+        frame.add(hbox)
+
+        return frame
+
+    def __get_frame_colores(self):
+
+        frame = Gtk.Frame()
+        frame.set_border_width(5)
+        frame.set_label(" Colores de la Aplicación: ")
+
+        vbox = Gtk.VBox()
+
+        hbox1 = Gtk.HBox()
+        boton_ventana = Gtk.ColorButton()
+        boton_ventana.set_title("color_ventana")
+        boton_ventana.set_color(
+            Gdk.color_parse(self.config["color_ventana"]))
+        boton_ventana.connect("color-set", self.__set_config)
+        hbox1.pack_start(boton_ventana, False, False, 3)
+        hbox1.pack_start(Gtk.Label("Ventana"), False, False, 3)
+
+        hbox2 = Gtk.HBox()
+        boton_ventana = Gtk.ColorButton()
+        boton_ventana.set_title("color_fuente_ventana")
+        boton_ventana.set_color(
+            Gdk.color_parse(self.config["color_fuente_ventana"]))
+        boton_ventana.connect("color-set", self.__set_config)
+        hbox2.pack_start(boton_ventana, False, False, 3)
+        hbox2.pack_start(Gtk.Label("Fuentes"), False, False, 3)
+
+        hbox3 = Gtk.HBox()
+        boton_menu = Gtk.ColorButton()
+        boton_menu.set_title("color_menu")
+        boton_menu.set_color(
+            Gdk.color_parse(self.config["color_menu"]))
+        boton_menu.connect("color-set", self.__set_config)
+        hbox3.pack_start(boton_menu, False, False, 3)
+        hbox3.pack_start(Gtk.Label("Fondo del Menú"), False, False, 3)
+
+        hbox4 = Gtk.HBox()
+        boton_texto = Gtk.ColorButton()
+        boton_texto.set_title("color_fuente_menu")
+        boton_texto.set_color(
+            Gdk.color_parse(self.config["color_fuente_menu"]))
+        boton_texto.connect("color-set", self.__set_config)
+        hbox4.pack_start(boton_texto, False, False, 3)
+        hbox4.pack_start(Gtk.Label("Fuente del Menú"), False, False, 3)
+
+        hbox5 = Gtk.HBox()
+        boton_texto = Gtk.ColorButton()
+        boton_texto.set_title("color_descarga")
+        boton_texto.set_color(
+            Gdk.color_parse(self.config["color_descarga"]))
+        boton_texto.connect("color-set", self.__set_config)
+        hbox5.pack_start(boton_texto, False, False, 3)
+        hbox5.pack_start(Gtk.Label("Item en Descargas"), False, False, 3)
+
+        hbox6 = Gtk.HBox()
+        boton_texto = Gtk.ColorButton()
+        boton_texto.set_title("color_fuente_descarga")
+        boton_texto.set_color(
+            Gdk.color_parse(self.config["color_fuente_descarga"]))
+        boton_texto.connect("color-set", self.__set_config)
+        hbox6.pack_start(boton_texto, False, False, 3)
+        hbox6.pack_start(Gtk.Label("Fuente en Descargas"), False, False, 3)
+
+        cajas = [hbox1, hbox2, hbox3, hbox4, hbox5, hbox6]
+
+        for caja in cajas:
+            vbox.pack_start(caja, True, True, 3)
+
+        frame.add(vbox)
+
+        return frame
+
+    def __set_config(self, widget):
+        """
+        Setea los colores y escribe la configuración
+        en el archivo css.
+        """
+
+        if widget:
+            color = widget.get_color().to_string().replace("#", "")
+            color = "#%s%s%s" % (color[0:2], color[4:6], color[8:10])
+            self.config[widget.get_title()] = color
+
+        dict_colors = {
+            "opacidad": self.config["opacidad"],
+            "formato": self.config["formato"],
+            "color1": self.config["color_ventana"],
+            "color2": self.config["color_fuente_ventana"],
+            "color3": self.config["color_menu"],
+            "color4": self.config["color_fuente_menu"],
+            "color5": self.config["color_descarga"],
+            "color6": self.config["color_fuente_descarga"],
+            }
+
+        from Globales import set_estilo
+        set_estilo(dict_colors)
+
+    def __set_formato(self, widget):
+        """
+        Setea el formato de grabación y
+        manda a guardar la configuración.
+        """
+
+        if widget.get_active():
+            self.config["formato"] = widget.get_label()
+            self.__set_config(False)
+
+    def __set_opacidad(self, widget):
+        """
+        Setea la opacidad de la ventana y
+        manda a guardar la configuración.
+        """
+
+        self.config["opacidad"] = float(
+            "%.1f" % widget.get_value())
+        self.__set_config(False)
+        self.get_toplevel().set_opacity(
+            self.config["opacidad"])
