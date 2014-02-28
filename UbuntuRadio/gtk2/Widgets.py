@@ -20,53 +20,52 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GObject
-from gi.repository import GLib
-from gi.repository import GdkPixbuf
+import gtk
+from gtk import gdk
+import gobject
+from gtk.gdk import Pixbuf
 
 
-class MenuBar(Gtk.MenuBar):
+class MenuBar(gtk.MenuBar):
 
     __gtype_name__ = 'UbuntuRadioMenu'
 
     __gsignals__ = {
-    'salir': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    'lista': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    'actualizar': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    'configurar': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
+    'salir': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    'lista': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    'actualizar': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    'configurar': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
         }
 
     def __init__(self):
 
-        Gtk.MenuBar.__init__(self)
+        gtk.MenuBar.__init__(self)
 
-        item1 = Gtk.MenuItem('Menú')
-        menu = Gtk.Menu()
+        item1 = gtk.MenuItem('Menú')
+        menu = gtk.Menu()
         item1.set_submenu(menu)
 
-        item = Gtk.MenuItem('Radios')
+        item = gtk.MenuItem('Radios')
         item.connect("activate", self.__listar_radios)
         menu.append(item)
 
-        item = Gtk.MenuItem('Configurar...')
+        item = gtk.MenuItem('Configurar...')
         item.connect("activate", self.__configurar)
         menu.append(item)
 
-        item = Gtk.MenuItem('Creditos...')
+        item = gtk.MenuItem('Creditos...')
         item.connect("activate", self.__creditos)
         menu.append(item)
 
-        item = Gtk.MenuItem('Actualizar Lista')
+        item = gtk.MenuItem('Actualizar Lista')
         item.connect("activate", self.__emit_actualizar)
         menu.append(item)
 
-        item = Gtk.MenuItem('Salir')
+        item = gtk.MenuItem('Salir')
         item.connect("activate", self.__emit_salir)
         menu.append(item)
 
@@ -97,17 +96,17 @@ class MenuBar(Gtk.MenuBar):
         self.emit("salir")
 
 
-class Lista(Gtk.TreeView):
+class Lista(gtk.TreeView):
 
     __gtype_name__ = 'UbuntuRadioLista'
 
     def __init__(self):
 
-        Gtk.TreeView.__init__(self,
-            Gtk.ListStore(
-                GdkPixbuf.Pixbuf,
-                GObject.TYPE_STRING,
-                GObject.TYPE_STRING))
+        gtk.TreeView.__init__(self,
+            gtk.ListStore(
+                Pixbuf,
+                gobject.TYPE_STRING,
+                gobject.TYPE_STRING))
 
         self.set_property("rules-hint", True)
         self.set_headers_clickable(True)
@@ -160,24 +159,24 @@ class Lista(Gtk.TreeView):
 
     def __construir_columa(self, text, index, visible):
 
-        render = Gtk.CellRendererText()
+        render = gtk.CellRendererText()
 
-        columna = Gtk.TreeViewColumn(text, render, text=index)
+        columna = gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        columna.set_sizing(gtk.TreeViewColumnSizing.AUTOSIZE)
 
         return columna
 
     def __construir_columa_icono(self, text, index, visible):
 
-        render = Gtk.CellRendererPixbuf()
+        render = gtk.CellRendererPixbuf()
 
-        columna = Gtk.TreeViewColumn(text, render, pixbuf=index)
+        columna = gtk.TreeViewColumn(text, render, pixbuf=index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        columna.set_sizing(gtk.TreeViewColumnSizing.AUTOSIZE)
 
         return columna
 
@@ -203,7 +202,7 @@ class Lista(Gtk.TreeView):
                     "Iconos", "%s.svg" % pais)
 
                 if os.path.exists(icono):
-                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                    pixbuf = Pixbuf.new_from_file_at_size(
                         icono, 24, -1)
 
                 break
@@ -212,7 +211,7 @@ class Lista(Gtk.TreeView):
 
         elementos.remove(elementos[0])
 
-        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
 
         return False
 
@@ -222,22 +221,22 @@ class Lista(Gtk.TreeView):
 
     def agregar_items(self, elementos):
 
-        GLib.idle_add(
+        gobject.idle_add(
             self.__ejecutar_agregar_elemento,
             elementos)
 
 
-class Volumen(Gtk.VolumeButton):
+class Volumen(gtk.VolumeButton):
 
     __gtype_name__ = 'UbuntuRadioVolumen'
 
     __gsignals__ = {
-    "volumen": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+    "volumen": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self):
 
-        Gtk.VolumeButton.__init__(self)
+        gtk.VolumeButton.__init__(self)
 
         self.show_all()
 
@@ -246,13 +245,13 @@ class Volumen(Gtk.VolumeButton):
         self.emit('volumen', valor)
 
 
-class ItemPlayer(Gtk.Frame):
+class ItemPlayer(gtk.Frame):
 
     __gtype_name__ = 'UbuntuRadioItemPlayer'
 
     def __init__(self, valor):
 
-        Gtk.Frame.__init__(self)
+        gtk.Frame.__init__(self)
 
         self.tipo = "Reproductor"
         self.player_estado = "None"
@@ -260,19 +259,19 @@ class ItemPlayer(Gtk.Frame):
 
         self.set_label(" Reproduciendo . . . ")
 
-        eventbox = Gtk.EventBox()
+        eventbox = gtk.EventBox()
         eventbox.set_border_width(5)
 
-        hbox = Gtk.HBox()
+        hbox = gtk.HBox()
         self.control_volumen = Volumen()
 
-        self.stop_button = Gtk.Button()
-        self.image_button = Gtk.Image()
+        self.stop_button = gtk.Button()
+        self.image_button = gtk.Image()
         self.image_button.set_from_stock(
-                Gtk.STOCK_MEDIA_PLAY, Gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_PLAY, gtk.IconSize.BUTTON)
         self.stop_button.set_image(self.image_button)
 
-        hbox.pack_start(Gtk.Label(self.name),
+        hbox.pack_start(gtk.Label(self.name),
             False, False, 0)
         hbox.pack_end(self.stop_button,
             False, False, 0)
@@ -301,9 +300,9 @@ class ItemPlayer(Gtk.Frame):
     def __endfile(self, player):
 
         self.image_button.set_from_stock(
-            Gtk.STOCK_MEDIA_PLAY, Gtk.IconSize.BUTTON)
+            gtk.STOCK_MEDIA_PLAY, gtk.IconSize.BUTTON)
 
-        GLib.idle_add(self.get_toplevel().queue_draw)
+        gobject.idle_add(self.get_toplevel().queue_draw)
 
     def __update_estado(self, player, valor):
 
@@ -311,13 +310,13 @@ class ItemPlayer(Gtk.Frame):
 
         if valor == "playing":
             self.image_button.set_from_stock(
-                Gtk.STOCK_MEDIA_STOP, Gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_STOP, gtk.IconSize.BUTTON)
 
         else:
             self.image_button.set_from_stock(
-                Gtk.STOCK_MEDIA_PLAY, Gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_PLAY, gtk.IconSize.BUTTON)
 
-        GLib.idle_add(self.get_toplevel().queue_draw)
+        gobject.idle_add(self.get_toplevel().queue_draw)
 
     def __set_volume(self, widget, valor):
 
@@ -332,34 +331,34 @@ class ItemPlayer(Gtk.Frame):
             self.player.play()
 
 
-class ItemRecord(Gtk.Frame):
+class ItemRecord(gtk.Frame):
 
     __gtype_name__ = 'UbuntuRadioItemRecord'
 
     def __init__(self, valor, formato):
 
-        Gtk.Frame.__init__(self)
+        gtk.Frame.__init__(self)
 
         self.tipo = "Grabador"
         self.player_estado = "None"
         self.name, self.uri = valor
 
         self.set_label(" Grabando . . . ")
-        self.label_info = Gtk.Label("Grabación Detenida")
+        self.label_info = gtk.Label("Grabación Detenida")
 
-        eventbox = Gtk.EventBox()
+        eventbox = gtk.EventBox()
         eventbox.set_border_width(5)
 
-        vbox = Gtk.VBox()
-        hbox = Gtk.HBox()
+        vbox = gtk.VBox()
+        hbox = gtk.HBox()
 
-        self.stop_button = Gtk.Button()
-        self.image_button = Gtk.Image()
+        self.stop_button = gtk.Button()
+        self.image_button = gtk.Image()
         self.image_button.set_from_stock(
-                Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_RECORD, gtk.IconSize.BUTTON)
         self.stop_button.set_image(self.image_button)
 
-        hbox.pack_start(Gtk.Label(self.name),
+        hbox.pack_start(gtk.Label(self.name),
             False, False, 0)
         hbox.pack_end(self.stop_button,
             False, False, 0)
@@ -392,11 +391,11 @@ class ItemRecord(Gtk.Frame):
     def __endfile(self, player):
 
         self.image_button.set_from_stock(
-            Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
+            gtk.STOCK_MEDIA_RECORD, gtk.IconSize.BUTTON)
 
         self.label_info.set_text("Grabación Detenida")
 
-        GLib.idle_add(self.get_toplevel().queue_draw)
+        gobject.idle_add(self.get_toplevel().queue_draw)
 
     def __update_estado(self, player, valor):
 
@@ -404,14 +403,14 @@ class ItemRecord(Gtk.Frame):
 
         if valor == "playing":
             self.image_button.set_from_stock(
-                Gtk.STOCK_MEDIA_STOP, Gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_STOP, gtk.IconSize.BUTTON)
 
         else:
             self.image_button.set_from_stock(
-                Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
+                gtk.STOCK_MEDIA_RECORD, gtk.IconSize.BUTTON)
             self.label_info.set_text("Grabación Detenida")
 
-        GLib.idle_add(self.get_toplevel().queue_draw)
+        gobject.idle_add(self.get_toplevel().queue_draw)
 
     def stop(self, widget=False):
 
@@ -422,18 +421,18 @@ class ItemRecord(Gtk.Frame):
             self.player.play(self.name)
 
 
-class MenuList(Gtk.Menu):
+class MenuList(gtk.Menu):
 
     __gtype_name__ = 'UbuntuRadioMenuList'
 
     __gsignals__ = {
-    'accion': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+    'accion': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
     def __init__(self, widget, boton, pos, tiempo, path, modelo):
 
-        Gtk.Menu.__init__(self)
+        gtk.Menu.__init__(self)
 
         iter = modelo.get_iter(path)
         uri = modelo.get_value(iter, 2)
@@ -441,7 +440,7 @@ class MenuList(Gtk.Menu):
         from Globales import get_data_directory
         from Globales import stream_en_archivo
 
-        play = Gtk.MenuItem("Reproducir")
+        play = gtk.MenuItem("Reproducir")
         self.append(play)
         play.connect_object("activate", self.__set_accion,
             widget, path, "play")
@@ -453,29 +452,29 @@ class MenuList(Gtk.Menu):
 
         if stream_en_archivo(uri, listas[0]):
 
-            copiar = Gtk.MenuItem("Copiar a JAMedia")
+            copiar = gtk.MenuItem("Copiar a JAMedia")
             self.append(copiar)
             copiar.connect_object("activate", self.__set_accion,
                 widget, path, "Copiar")
 
-            mover = Gtk.MenuItem("Mover a JAMedia")
+            mover = gtk.MenuItem("Mover a JAMedia")
             self.append(mover)
             mover.connect_object("activate", self.__set_accion,
                 widget, path, "Mover")
         '''
 
-        quitar = Gtk.MenuItem("Quitar de la Lista")
+        quitar = gtk.MenuItem("Quitar de la Lista")
         self.append(quitar)
         quitar.connect_object("activate", self.__set_accion,
             widget, path, "Quitar")
 
-        borrar = Gtk.MenuItem("Borrar Streaming")
+        borrar = gtk.MenuItem("Borrar Streaming")
         self.append(borrar)
         borrar.connect_object(
             "activate", self.__set_accion,
             widget, path, "Borrar")
 
-        grabar = Gtk.MenuItem("Grabar")
+        grabar = gtk.MenuItem("Grabar")
         self.append(grabar)
         grabar.connect_object("activate", self.__set_accion,
             widget, path, "Grabar")
@@ -492,21 +491,21 @@ class MenuList(Gtk.Menu):
         self.emit('accion', widget, accion, iter)
 
 
-class DialogoDescarga(Gtk.Dialog):
+class DialogoDescarga(gtk.Dialog):
 
     __gtype_name__ = 'UbuntuRadioDialogoDescarga'
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
+        gtk.Dialog.__init__(self,
             parent=parent,
-            flags=Gtk.DialogFlags.MODAL)
+            flags=gtk.DIALOG_MODAL)
 
         self.set_border_width(15)
         self.set_decorated(False)
         self.set_resizable(False)
 
-        label = Gtk.Label("*** Descargando Streamings ***")
+        label = gtk.Label("*** Descargando Streamings ***")
         label.show()
 
         self.vbox.pack_start(label, True, True, 5)
@@ -515,7 +514,7 @@ class DialogoDescarga(Gtk.Dialog):
 
     def __do_realize(self, widget):
 
-        GLib.timeout_add(500, self.__descargar)
+        gobject.timeout_add(500, self.__descargar)
 
     def __descargar(self):
 
@@ -525,22 +524,22 @@ class DialogoDescarga(Gtk.Dialog):
         self.destroy()
 
 
-class Creditos(Gtk.Dialog):
+class Creditos(gtk.Dialog):
 
     __gtype_name__ = 'UbuntuRadioCreditos'
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
+        gtk.Dialog.__init__(self,
             parent=parent,
-            flags=Gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
+            flags=gtk.DIALOG_MODAL,
+            buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_border_width(15)
         self.set_decorated(False)
         self.set_resizable(False)
 
-        imagen = Gtk.Image()
+        imagen = gtk.Image()
         imagen.set_from_file(
             os.path.join(os.path.dirname(__file__),
                 "Iconos", "creditos.svg"))
@@ -549,16 +548,16 @@ class Creditos(Gtk.Dialog):
         self.vbox.show_all()
 
 
-class DialogoConfig(Gtk.Dialog):
+class DialogoConfig(gtk.Dialog):
 
     __gtype_name__ = 'UbuntuRadioDialogoConfig'
 
     def __init__(self, parent=None, config={}):
 
-        Gtk.Dialog.__init__(self,
+        gtk.Dialog.__init__(self,
             parent=parent,
-            flags=Gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
+            flags=gtk.DIALOG_MODAL,
+            buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_border_width(15)
         self.set_decorated(False)
@@ -581,13 +580,13 @@ class DialogoConfig(Gtk.Dialog):
 
     def __get_frame_opacidad(self):
 
-        frame = Gtk.Frame()
+        frame = gtk.Frame()
         frame.set_border_width(5)
         frame.set_label(" Opacidad de Interfaz: ")
 
-        escala = Gtk.Scale()
+        escala = gtk.Scale()
         escala.set_adjustment(
-            Gtk.Adjustment(0.5, 0.5, 1.1, 0.1, 0.1, 0.1))
+            gtk.Adjustment(0.5, 0.5, 1.1, 0.1, 0.1, 0.1))
         escala.set_digits(1)
         #escala.set_draw_value(False)
 
@@ -600,16 +599,16 @@ class DialogoConfig(Gtk.Dialog):
 
     def __get_frame_formatos(self):
 
-        frame = Gtk.Frame()
+        frame = gtk.Frame()
         frame.set_border_width(5)
         frame.set_label(" Formato de Grabación: ")
 
-        hbox = Gtk.HBox()
+        hbox = gtk.HBox()
 
         botones = [
-            Gtk.RadioButton("ogg"),
-            Gtk.RadioButton("mp3"),
-            Gtk.RadioButton("wav"),
+            gtk.RadioButton("ogg"),
+            gtk.RadioButton("mp3"),
+            gtk.RadioButton("wav"),
             ]
 
         for boton in botones:
@@ -627,65 +626,65 @@ class DialogoConfig(Gtk.Dialog):
 
     def __get_frame_colores(self):
 
-        frame = Gtk.Frame()
+        frame = gtk.Frame()
         frame.set_border_width(5)
         frame.set_label(" Colores de la Aplicación: ")
 
-        vbox = Gtk.VBox()
+        vbox = gtk.VBox()
 
-        hbox1 = Gtk.HBox()
-        boton_ventana = Gtk.ColorButton()
+        hbox1 = gtk.HBox()
+        boton_ventana = gtk.ColorButton()
         boton_ventana.set_title("color_ventana")
         boton_ventana.set_color(
-            Gdk.color_parse(self.config["color_ventana"]))
+            gdk.color_parse(self.config["color_ventana"]))
         boton_ventana.connect("color-set", self.__set_config)
         hbox1.pack_start(boton_ventana, False, False, 3)
-        hbox1.pack_start(Gtk.Label("Ventana"), False, False, 3)
+        hbox1.pack_start(gtk.Label("Ventana"), False, False, 3)
 
-        hbox2 = Gtk.HBox()
-        boton_ventana = Gtk.ColorButton()
+        hbox2 = gtk.HBox()
+        boton_ventana = gtk.ColorButton()
         boton_ventana.set_title("color_fuente_ventana")
         boton_ventana.set_color(
-            Gdk.color_parse(self.config["color_fuente_ventana"]))
+            gdk.color_parse(self.config["color_fuente_ventana"]))
         boton_ventana.connect("color-set", self.__set_config)
         hbox2.pack_start(boton_ventana, False, False, 3)
-        hbox2.pack_start(Gtk.Label("Fuentes"), False, False, 3)
+        hbox2.pack_start(gtk.Label("Fuentes"), False, False, 3)
 
-        hbox3 = Gtk.HBox()
-        boton_menu = Gtk.ColorButton()
+        hbox3 = gtk.HBox()
+        boton_menu = gtk.ColorButton()
         boton_menu.set_title("color_menu")
         boton_menu.set_color(
-            Gdk.color_parse(self.config["color_menu"]))
+            gdk.color_parse(self.config["color_menu"]))
         boton_menu.connect("color-set", self.__set_config)
         hbox3.pack_start(boton_menu, False, False, 3)
-        hbox3.pack_start(Gtk.Label("Fondo del Menú"), False, False, 3)
+        hbox3.pack_start(gtk.Label("Fondo del Menú"), False, False, 3)
 
-        hbox4 = Gtk.HBox()
-        boton_texto = Gtk.ColorButton()
+        hbox4 = gtk.HBox()
+        boton_texto = gtk.ColorButton()
         boton_texto.set_title("color_fuente_menu")
         boton_texto.set_color(
-            Gdk.color_parse(self.config["color_fuente_menu"]))
+            gdk.color_parse(self.config["color_fuente_menu"]))
         boton_texto.connect("color-set", self.__set_config)
         hbox4.pack_start(boton_texto, False, False, 3)
-        hbox4.pack_start(Gtk.Label("Fuente del Menú"), False, False, 3)
+        hbox4.pack_start(gtk.Label("Fuente del Menú"), False, False, 3)
 
-        hbox5 = Gtk.HBox()
-        boton_texto = Gtk.ColorButton()
+        hbox5 = gtk.HBox()
+        boton_texto = gtk.ColorButton()
         boton_texto.set_title("color_descarga")
         boton_texto.set_color(
-            Gdk.color_parse(self.config["color_descarga"]))
+            gdk.color_parse(self.config["color_descarga"]))
         boton_texto.connect("color-set", self.__set_config)
         hbox5.pack_start(boton_texto, False, False, 3)
-        hbox5.pack_start(Gtk.Label("Item en Descargas"), False, False, 3)
+        hbox5.pack_start(gtk.Label("Item en Descargas"), False, False, 3)
 
-        hbox6 = Gtk.HBox()
-        boton_texto = Gtk.ColorButton()
+        hbox6 = gtk.HBox()
+        boton_texto = gtk.ColorButton()
         boton_texto.set_title("color_fuente_descarga")
         boton_texto.set_color(
-            Gdk.color_parse(self.config["color_fuente_descarga"]))
+            gdk.color_parse(self.config["color_fuente_descarga"]))
         boton_texto.connect("color-set", self.__set_config)
         hbox6.pack_start(boton_texto, False, False, 3)
-        hbox6.pack_start(Gtk.Label("Fuente en Descargas"), False, False, 3)
+        hbox6.pack_start(gtk.Label("Fuente en Descargas"), False, False, 3)
 
         cajas = [hbox1, hbox2, hbox3, hbox4, hbox5, hbox6]
 

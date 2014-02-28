@@ -23,7 +23,7 @@ import os
 import gtk
 from gtk import gdk
 
-#from Widgets import MenuBar
+from Widgets import MenuBar
 #from Widgets import Lista
 #from Widgets import ItemPlayer
 #from Widgets import ItemRecord
@@ -55,7 +55,7 @@ class UbuntuRadio(gtk.Window):
 
         vbox = gtk.VBox()
 
-        #menu = MenuBar()
+        menu = MenuBar()
         eventbox = gtk.EventBox()
         self.inplay = gtk.VBox()
         eventbox.add(self.inplay)
@@ -68,7 +68,7 @@ class UbuntuRadio(gtk.Window):
 
         #self.scroll.add(self.lista)
 
-        #vbox.pack_start(menu, False, False, 0)
+        vbox.pack_start(menu, False, False, 0)
         vbox.pack_start(eventbox, False, False, 0)
         vbox.pack_start(self.scroll, True, True, 0)
 
