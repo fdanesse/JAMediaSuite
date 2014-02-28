@@ -20,23 +20,22 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GLib
+import gtk
+from gtk import gdk
 
-from Widgets import MenuBar
-from Widgets import Lista
-from Widgets import ItemPlayer
-from Widgets import ItemRecord
+#from Widgets import MenuBar
+#from Widgets import Lista
+#from Widgets import ItemPlayer
+#from Widgets import ItemRecord
 
 
-class UbuntuRadio(Gtk.Window):
+class UbuntuRadio(gtk.Window):
 
     __gtype_name__ = 'UbuntuRadio'
 
     def __init__(self):
 
-        Gtk.Window.__init__(self)
+        gtk.Window.__init__(self)
 
         from Globales import get_estilo
 
@@ -54,39 +53,39 @@ class UbuntuRadio(Gtk.Window):
         self.set_resizable(False)
         self.set_opacity(self.config["opacidad"])
 
-        vbox = Gtk.VBox()
+        vbox = gtk.VBox()
 
-        menu = MenuBar()
-        eventbox = Gtk.EventBox()
-        self.inplay = Gtk.VBox()
+        #menu = MenuBar()
+        eventbox = gtk.EventBox()
+        self.inplay = gtk.VBox()
         eventbox.add(self.inplay)
-        self.lista = Lista()
+        #self.lista = Lista()
 
-        self.scroll = Gtk.ScrolledWindow()
+        self.scroll = gtk.ScrolledWindow()
         self.scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
+            gtk.POLICY_AUTOMATIC,
+            gtk.POLICY_AUTOMATIC)
 
-        self.scroll.add(self.lista)
+        #self.scroll.add(self.lista)
 
-        vbox.pack_start(menu, False, False, 0)
+        #vbox.pack_start(menu, False, False, 0)
         vbox.pack_start(eventbox, False, False, 0)
         vbox.pack_start(self.scroll, True, True, 0)
 
         self.add(vbox)
 
-        self.connect("realize", self.__load_lista)
+        #self.connect("realize", self.__load_lista)
 
         self.show_all()
 
-        menu.connect("lista", self.__show_lista)
-        menu.connect("actualizar", self.__actualizar_lista)
-        menu.connect("configurar", self.__configurar)
-        menu.connect("salir", self.__exit)
+        #menu.connect("lista", self.__show_lista)
+        #menu.connect("actualizar", self.__actualizar_lista)
+        #menu.connect("configurar", self.__configurar)
+        #menu.connect("salir", self.__exit)
 
-        self.lista.connect(
-            "button-press-event",
-            self.__get_menu_lista)
+        #self.lista.connect(
+        #    "button-press-event",
+        #    self.__get_menu_lista)
 
         self.connect("delete-event", self.__exit)
 
@@ -165,7 +164,7 @@ class UbuntuRadio(Gtk.Window):
             eliminar_streaming(uri, "JAM-Radio")
             print "Streaming Eliminado:", name, uri
 
-        Gtk.StyleContext.reset_widgets(Gdk.Screen.get_default())
+        gtk.StyleContext.reset_widgets(gdk.Screen.get_default())
 
     def __configurar(self, widget):
 
@@ -268,4 +267,4 @@ class UbuntuRadio(Gtk.Window):
 if __name__ == "__main__":
 
     UbuntuRadio()
-    Gtk.main()
+    gtk.main()
