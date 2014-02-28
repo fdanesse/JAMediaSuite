@@ -24,7 +24,7 @@ import gtk
 from gtk import gdk
 
 from Widgets import MenuBar
-#from Widgets import Lista
+from Widgets import Lista
 #from Widgets import ItemPlayer
 #from Widgets import ItemRecord
 
@@ -59,14 +59,14 @@ class UbuntuRadio(gtk.Window):
         eventbox = gtk.EventBox()
         self.inplay = gtk.VBox()
         eventbox.add(self.inplay)
-        #self.lista = Lista()
+        self.lista = Lista()
 
         self.scroll = gtk.ScrolledWindow()
         self.scroll.set_policy(
             gtk.POLICY_AUTOMATIC,
             gtk.POLICY_AUTOMATIC)
 
-        #self.scroll.add(self.lista)
+        self.scroll.add(self.lista)
 
         vbox.pack_start(menu, False, False, 0)
         vbox.pack_start(eventbox, False, False, 0)
@@ -74,18 +74,18 @@ class UbuntuRadio(gtk.Window):
 
         self.add(vbox)
 
-        #self.connect("realize", self.__load_lista)
+        self.connect("realize", self.__load_lista)
 
         self.show_all()
 
-        #menu.connect("lista", self.__show_lista)
-        #menu.connect("actualizar", self.__actualizar_lista)
-        #menu.connect("configurar", self.__configurar)
-        #menu.connect("salir", self.__exit)
+        menu.connect("lista", self.__show_lista)
+        menu.connect("actualizar", self.__actualizar_lista)
+        menu.connect("configurar", self.__configurar)
+        menu.connect("salir", self.__exit)
 
-        #self.lista.connect(
-        #    "button-press-event",
-        #    self.__get_menu_lista)
+        self.lista.connect(
+            "button-press-event",
+            self.__get_menu_lista)
 
         self.connect("delete-event", self.__exit)
 
@@ -112,7 +112,8 @@ class UbuntuRadio(gtk.Window):
             tiempo, path, widget.get_model())
 
         menu.connect('accion', self.__set_accion)
-        menu.popup(None, None, None, None, boton, tiempo)
+        #menu.popup(None, None, None, None, boton, tiempo)
+        gtk.Menu.popup(menu, None, None, None, boton, tiempo)
 
     def __set_accion(self, widget, lista, accion, _iter):
         """
@@ -164,7 +165,7 @@ class UbuntuRadio(gtk.Window):
             eliminar_streaming(uri, "JAM-Radio")
             print "Streaming Eliminado:", name, uri
 
-        gtk.StyleContext.reset_widgets(gdk.Screen.get_default())
+        #gtk.StyleContext.reset_widgets(gdk.Screen.get_default())
 
     def __configurar(self, widget):
 

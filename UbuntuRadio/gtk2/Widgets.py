@@ -143,9 +143,9 @@ class Lista(gtk.TreeView):
             pass
         return False'''
 
-    def __selecciones(self, treeselection,
-        model, path, is_selected, listore):
+    def __selecciones(self, path, listore):
 
+        model = self.get_model()
         _iter = model.get_iter(path)
         self.scroll_to_cell(model.get_path(_iter))
 
@@ -165,7 +165,7 @@ class Lista(gtk.TreeView):
         columna.set_sort_column_id(index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
-        columna.set_sizing(gtk.TreeViewColumnSizing.AUTOSIZE)
+        columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
 
         return columna
 
@@ -176,7 +176,7 @@ class Lista(gtk.TreeView):
         columna = gtk.TreeViewColumn(text, render, pixbuf=index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
-        columna.set_sizing(gtk.TreeViewColumnSizing.AUTOSIZE)
+        columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
 
         return columna
 
@@ -202,7 +202,7 @@ class Lista(gtk.TreeView):
                     "Iconos", "%s.svg" % pais)
 
                 if os.path.exists(icono):
-                    pixbuf = Pixbuf.new_from_file_at_size(
+                    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                         icono, 24, -1)
 
                 break
@@ -268,7 +268,7 @@ class ItemPlayer(gtk.Frame):
         self.stop_button = gtk.Button()
         self.image_button = gtk.Image()
         self.image_button.set_from_stock(
-                gtk.STOCK_MEDIA_PLAY, gtk.IconSize.BUTTON)
+            gtk.STOCK_MEDIA_PLAY, gtk.IconSize.BUTTON)
         self.stop_button.set_image(self.image_button)
 
         hbox.pack_start(gtk.Label(self.name),
@@ -355,7 +355,7 @@ class ItemRecord(gtk.Frame):
         self.stop_button = gtk.Button()
         self.image_button = gtk.Image()
         self.image_button.set_from_stock(
-                gtk.STOCK_MEDIA_RECORD, gtk.IconSize.BUTTON)
+            gtk.STOCK_MEDIA_RECORD, gtk.IconSize.BUTTON)
         self.stop_button.set_image(self.image_button)
 
         hbox.pack_start(gtk.Label(self.name),
@@ -542,7 +542,7 @@ class Creditos(gtk.Dialog):
         imagen = gtk.Image()
         imagen.set_from_file(
             os.path.join(os.path.dirname(__file__),
-                "Iconos", "creditos.svg"))
+            "Iconos", "creditos.svg"))
 
         self.vbox.pack_start(imagen, True, True, 0)
         self.vbox.show_all()
@@ -584,7 +584,7 @@ class DialogoConfig(gtk.Dialog):
         frame.set_border_width(5)
         frame.set_label(" Opacidad de Interfaz: ")
 
-        escala = gtk.Scale()
+        escala = gtk.HScale()
         escala.set_adjustment(
             gtk.Adjustment(0.5, 0.5, 1.1, 0.1, 0.1, 0.1))
         escala.set_digits(1)
@@ -605,10 +605,17 @@ class DialogoConfig(gtk.Dialog):
 
         hbox = gtk.HBox()
 
+        boton1 = gtk.RadioButton()
+        boton1.set_label("ogg")
+        boton2 = gtk.RadioButton()
+        boton2.set_label("mp3")
+        boton3 = gtk.RadioButton()
+        boton3.set_label("wav")
+
         botones = [
-            gtk.RadioButton("ogg"),
-            gtk.RadioButton("mp3"),
-            gtk.RadioButton("wav"),
+            boton1,
+            boton2,
+            boton3,
             ]
 
         for boton in botones:
@@ -616,7 +623,7 @@ class DialogoConfig(gtk.Dialog):
             hbox.pack_start(boton, True, True, 0)
 
         for boton in botones[1:]:
-            boton.join_group(botones[0])
+            boton.set_group(botones[0])
             if boton.get_label() == self.config["formato"]:
                 boton.set_active(True)
 
