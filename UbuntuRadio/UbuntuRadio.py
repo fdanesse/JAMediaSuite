@@ -219,15 +219,9 @@ class UbuntuRadio(Gtk.Window):
 
         for item in items:
             if item.tipo == "Reproductor":
-                name, uri = valor
-
-                if name == item.name and uri == item.uri:
-                    return
-
-                else:
-                    item.stop()
-                    self.inplay.remove(item)
-                    item.destroy()
+                item.stop()
+                self.inplay.remove(item)
+                item.destroy()
 
         self.inplay.pack_start(
             ItemPlayer(valor), False, False, 0)
@@ -241,15 +235,9 @@ class UbuntuRadio(Gtk.Window):
 
         for item in items:
             if item.tipo == "Grabador":
-                name, uri = valor
-
-                if name == item.name and uri == item.uri:
-                    return
-
-                else:
-                    item.stop()
-                    self.inplay.remove(item)
-                    item.destroy()
+                item.stop()
+                self.inplay.remove(item)
+                item.destroy()
 
         self.inplay.pack_start(
             ItemRecord(valor, self.config["formato"]),

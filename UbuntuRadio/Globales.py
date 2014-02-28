@@ -282,7 +282,7 @@ def __descarga_lista_de_streamings(url):
                 stream = [name, direc]
                 streamings.append(stream)
                 cont += 1
-
+                print name
             else:
                 print "Direccion Descartada por Repetición:", name, direc
 

@@ -71,30 +71,47 @@ class MyPlayBin(GObject.Object):
             'audioresample', 'audioresample')
         audioresample.set_property('quality', 10)
 
-        # si se quiere ogg
-        vorbisenc = Gst.ElementFactory.make(
-            'vorbisenc', 'vorbisenc')
-
         self.pipeline.add(audioconvert)
         self.pipeline.add(audioresample)
-        self.pipeline.add(vorbisenc)
 
         audioconvert.link(audioresample)
-        audioresample.link(vorbisenc)
 
         self.audio_sink = audioconvert.get_static_pad('sink')
 
-        # si se quiere ogg
-        oggmux = Gst.ElementFactory.make(
-            'oggmux', "oggmux")
         self.archivo = Gst.ElementFactory.make(
             'filesink', "filesink")
-
-        self.pipeline.add(oggmux)
         self.pipeline.add(self.archivo)
 
-        vorbisenc.link(oggmux)
-        oggmux.link(self.archivo)
+        if self.formato == "ogg":
+            vorbisenc = Gst.ElementFactory.make(
+                'vorbisenc', 'vorbisenc')
+            oggmux = Gst.ElementFactory.make(
+                'oggmux', "oggmux")
+
+            self.pipeline.add(vorbisenc)
+            self.pipeline.add(oggmux)
+
+            audioresample.link(vorbisenc)
+            vorbisenc.link(oggmux)
+            oggmux.link(self.archivo)
+
+        elif self.formato == "mp3":
+            lamemp3enc = Gst.ElementFactory.make(
+                "lamemp3enc", "lamemp3enc")
+
+            self.pipeline.add(lamemp3enc)
+
+            audioresample.link(lamemp3enc)
+            lamemp3enc.link(self.archivo)
+
+        elif self.formato == "wav":
+            wavenc = Gst.ElementFactory.make(
+                "wavenc", "wavenc")
+
+            self.pipeline.add(wavenc)
+
+            audioresample.link(wavenc)
+            wavenc.link(self.archivo)
 
         self.bus = self.player.get_bus()
 

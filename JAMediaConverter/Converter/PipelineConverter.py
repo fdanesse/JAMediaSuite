@@ -89,7 +89,6 @@ class PipelineConverter(Gst.Pipeline):
         audioresample = Gst.ElementFactory.make(
             "audioresample", "audioresample")
         audioresample.set_property('quality', 10)
-        audioresample.set_property('quality', 10)
 
         self.add(filesrc)
         self.add(decodebin)
