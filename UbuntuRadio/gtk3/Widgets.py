@@ -273,11 +273,11 @@ class ItemPlayer(Gtk.Frame):
         self.stop_button.set_image(self.image_button)
 
         hbox.pack_start(Gtk.Label(self.name),
-            False, False, 0)
+            False, True, 0)
         hbox.pack_end(self.stop_button,
-            False, False, 0)
+            False, True, 0)
         hbox.pack_end(self.control_volumen,
-            False, False, 0)
+            False, True, 0)
 
         eventbox.add(hbox)
         self.add(eventbox)
@@ -360,14 +360,14 @@ class ItemRecord(Gtk.Frame):
         self.stop_button.set_image(self.image_button)
 
         hbox.pack_start(Gtk.Label(self.name),
-            False, False, 0)
+            False, True, 0)
         hbox.pack_end(self.stop_button,
-            False, False, 0)
+            False, True, 0)
 
         vbox.pack_start(hbox,
-            False, False, 0)
+            False, True, 0)
         vbox.pack_start(self.label_info,
-            False, False, 0)
+            False, True, 0)
 
         eventbox.add(vbox)
         self.add(eventbox)

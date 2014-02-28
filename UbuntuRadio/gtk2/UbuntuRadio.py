@@ -47,9 +47,9 @@ class UbuntuRadio(gtk.Window):
             os.path.join(os.path.dirname(__file__),
             "Iconos", "ubuntu_radio.svg"))
 
-        self.set_size_request(200, 400)
+        self.set_size_request(-1, 400)
         self.set_border_width(5)
-        self.set_decorated(False)
+        #self.set_decorated(False)
         self.set_resizable(False)
         self.set_opacity(self.config["opacidad"])
 
@@ -63,7 +63,7 @@ class UbuntuRadio(gtk.Window):
 
         self.scroll = gtk.ScrolledWindow()
         self.scroll.set_policy(
-            gtk.POLICY_AUTOMATIC,
+            gtk.POLICY_NEVER,
             gtk.POLICY_AUTOMATIC)
 
         self.scroll.add(self.lista)
@@ -251,11 +251,13 @@ class UbuntuRadio(gtk.Window):
 
         if val:
             self.scroll.hide()
-            self.set_size_request(200, 10)
+            a, b, c, d = self.scroll.get_allocation()
+            x, y, w, h = self.get_allocation()
+            self.set_size_request(-1, h - d)
 
         else:
             self.scroll.show()
-            self.set_size_request(200, 400)
+            self.set_size_request(-1, 400)
 
     def __exit(self, widget=None, event=None):
 
