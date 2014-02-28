@@ -290,12 +290,12 @@ class ItemPlayer(gtk.Frame):
         self.stop_button.connect(
             "clicked", self.stop)
 
-        #from Player import MyPlayBin
+        from Player import MyPlayBin
 
-        #self.player = MyPlayBin(self.uri, 0.10)
-        #self.player.connect("estado", self.__update_estado)
-        #self.player.connect("endfile", self.__endfile)
-        #self.player.play()
+        self.player = MyPlayBin(self.uri, 0.10)
+        self.player.connect("estado", self.__update_estado)
+        self.player.connect("endfile", self.__endfile)
+        self.player.play()
 
     def __endfile(self, player):
 
@@ -320,15 +320,15 @@ class ItemPlayer(gtk.Frame):
 
     def __set_volume(self, widget, valor):
 
-        pass #self.player.set_volumen(valor)
+        self.player.set_volumen(valor)
 
     def stop(self, widget=False):
 
         if self.player_estado == "playing":
-            pass #self.player.stop()
+            self.player.stop()
 
         else:
-            pass #self.player.play()
+            self.player.play()
 
 
 class ItemRecord(gtk.Frame):

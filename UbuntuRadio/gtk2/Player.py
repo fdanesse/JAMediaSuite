@@ -19,42 +19,32 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import gobject
+import gst
+import pygst
 
-import gi
-gi.require_version('Gst', '1.0')
-
-from gi.repository import GObject
-from gi.repository import Gst
-
-Gst.init([])
-GObject.threads_init()
+gobject.threads_init()
 
 
-class MyPlayBin(GObject.Object):
+class MyPlayBin(gobject.GObject):
 
     __gsignals__ = {
-    "endfile": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, []),
-    "estado": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "endfile": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, []),
+    "estado": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
     }
 
     # Estados: playing, paused, None
 
     def __init__(self, uri, volumen):
 
-        GObject.Object.__init__(self)
+        gobject.GObject.__init__(self)
 
         self.estado = "None"
 
-        self.player = Gst.ElementFactory.make(
-            "playbin", "player")
-
-        self.audio_bin = Gst.ElementFactory.make(
-            'autoaudiosink', "audio")
-
-        self.player.set_property(
-            'audio-sink', self.audio_bin)
+        self.player = gst.element_factory_make(
+            "playbin2", "player")
 
         self.bus = self.player.get_bus()
 
@@ -67,38 +57,38 @@ class MyPlayBin(GObject.Object):
 
     def __sync_message(self, bus, mensaje):
 
-        if mensaje.type == Gst.MessageType.STATE_CHANGED:
+        if mensaje.type == gst.MESSAGE_STATE_CHANGED:
             old, new, pending = mensaje.parse_state_changed()
 
-            if old == Gst.State.PAUSED and new == Gst.State.PLAYING:
+            if old == gst.STATE_PAUSED and new == gst.STATE_PLAYING:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "playing")
 
-            elif old == Gst.State.READY and new == Gst.State.PAUSED:
+            elif old == gst.STATE_READY and new == gst.STATE_PAUSED:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
 
-            elif old == Gst.State.READY and new == Gst.State.NULL:
+            elif old == gst.STATE_READY and new == gst.STATE_NULL:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "None")
 
-            elif old == Gst.State.PLAYING and new == Gst.State.PAUSED:
+            elif old == gst.STATE_PLAYING and new == gst.STATE_PAUSED:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
 
-        elif mensaje.type == Gst.MessageType.LATENCY:
+        elif mensaje.type == gst.MESSAGE_LATENCY:
             self.player.recalculate_latency()
 
-        elif mensaje.type == Gst.MessageType.EOS:
-            print "\nGst.MessageType.EOS:"
+        elif mensaje.type == gst.MESSAGE_EOS:
+            print "\ngst.MessageType.EOS:"
             self.emit("endfile")
 
-        elif mensaje.type == Gst.MessageType.ERROR:
-            print "\nGst.MessageType.ERROR:"
+        elif mensaje.type == gst.MESSAGE_ERROR:
+            print "\ngst.MessageType.ERROR:"
             print mensaje.parse_error()
             self.stop()
             self.emit("endfile")
@@ -107,13 +97,7 @@ class MyPlayBin(GObject.Object):
 
     def __load(self, uri):
 
-        if os.path.exists(uri):
-            direccion = Gst.filename_to_uri(uri)
-            self.player.set_property("uri", direccion)
-
-        else:
-            if Gst.uri_is_valid(uri):
-                self.player.set_property("uri", uri)
+        self.player.set_property("uri", uri)
 
     def set_volumen(self, valor):
 
@@ -121,10 +105,10 @@ class MyPlayBin(GObject.Object):
 
     def stop(self):
 
-        if self.estado == Gst.State.PLAYING:
-            self.player.set_state(Gst.State.NULL)
+        if self.estado == gst.STATE_PLAYING:
+            self.player.set_state(gst.STATE_NULL)
 
     def play(self):
 
-        if not self.estado == Gst.State.PLAYING:
-            self.player.set_state(Gst.State.PLAYING)
+        if not self.estado == gst.STATE_PLAYING:
+            self.player.set_state(gst.STATE_PLAYING)

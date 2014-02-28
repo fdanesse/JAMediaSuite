@@ -50,12 +50,6 @@ class MyPlayBin(GObject.Object):
         self.player = Gst.ElementFactory.make(
             "playbin", "player")
 
-        self.audio_bin = Gst.ElementFactory.make(
-            'autoaudiosink', "audio")
-
-        self.player.set_property(
-            'audio-sink', self.audio_bin)
-
         self.bus = self.player.get_bus()
 
         self.bus.enable_sync_message_emission()
