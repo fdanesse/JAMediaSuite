@@ -21,7 +21,6 @@
 import os
 import gobject
 import gst
-import pygst
 
 gobject.threads_init()
 

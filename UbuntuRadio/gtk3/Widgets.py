@@ -120,30 +120,6 @@ class Lista(Gtk.TreeView):
 
         self.show_all()
 
-    '''
-    def keypress(self, widget, event):
-        # derecha 114 izquierda 113 suprimir 119
-        # backspace 22 (en xo no existe suprimir)
-        tecla = event.get_keycode()[1]
-        model, iter = self.treeselection.get_selected()
-        valor = self.modelo.get_value(iter, 2)
-        path = self.modelo.get_path(iter)
-        if tecla == 22:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-        elif tecla == 113:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-        elif tecla == 114:
-            if not self.row_expanded(path):
-                self.expand_to_path(path)
-        elif tecla == 119:
-            # suprimir
-            print valor, path
-        else:
-            pass
-        return False'''
-
     def __selecciones(self, treeselection,
         model, path, is_selected, listore):
 
@@ -269,7 +245,7 @@ class ItemPlayer(Gtk.Frame):
         self.stop_button = Gtk.Button()
         self.image_button = Gtk.Image()
         self.image_button.set_from_stock(
-                Gtk.STOCK_MEDIA_PLAY, Gtk.IconSize.BUTTON)
+            Gtk.STOCK_MEDIA_PLAY, Gtk.IconSize.BUTTON)
         self.stop_button.set_image(self.image_button)
 
         hbox.pack_start(Gtk.Label(self.name),
@@ -356,7 +332,7 @@ class ItemRecord(Gtk.Frame):
         self.stop_button = Gtk.Button()
         self.image_button = Gtk.Image()
         self.image_button.set_from_stock(
-                Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
+            Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
         self.stop_button.set_image(self.image_button)
 
         hbox.pack_start(Gtk.Label(self.name),
@@ -435,34 +411,10 @@ class MenuList(Gtk.Menu):
 
         Gtk.Menu.__init__(self)
 
-        iter = modelo.get_iter(path)
-        uri = modelo.get_value(iter, 2)
-
-        from Globales import get_data_directory
-        from Globales import stream_en_archivo
-
         play = Gtk.MenuItem("Reproducir")
         self.append(play)
         play.connect_object("activate", self.__set_accion,
             widget, path, "play")
-
-        '''
-        listas = [
-            os.path.join(get_data_directory(), "JAMediaRadio.JAMedia"),
-            ]
-
-        if stream_en_archivo(uri, listas[0]):
-
-            copiar = Gtk.MenuItem("Copiar a JAMedia")
-            self.append(copiar)
-            copiar.connect_object("activate", self.__set_accion,
-                widget, path, "Copiar")
-
-            mover = Gtk.MenuItem("Mover a JAMedia")
-            self.append(mover)
-            mover.connect_object("activate", self.__set_accion,
-                widget, path, "Mover")
-        '''
 
         quitar = Gtk.MenuItem("Quitar de la Lista")
         self.append(quitar)
@@ -488,8 +440,8 @@ class MenuList(Gtk.Menu):
 
     def __set_accion(self, widget, path, accion):
 
-        iter = widget.get_model().get_iter(path)
-        self.emit('accion', widget, accion, iter)
+        _iter = widget.get_model().get_iter(path)
+        self.emit('accion', widget, accion, _iter)
 
 
 class DialogoDescarga(Gtk.Dialog):

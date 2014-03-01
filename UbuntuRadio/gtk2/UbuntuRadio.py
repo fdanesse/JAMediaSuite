@@ -21,7 +21,6 @@
 import os
 
 import gtk
-from gtk import gdk
 
 from Widgets import MenuBar
 from Widgets import Lista
@@ -163,8 +162,6 @@ class UbuntuRadio(gtk.Window):
 
             eliminar_streaming(uri, "JAM-Radio")
             print "Streaming Eliminado:", name, uri
-
-        #gtk.StyleContext.reset_widgets(gdk.Screen.get_default())
 
     def __configurar(self, widget):
 
