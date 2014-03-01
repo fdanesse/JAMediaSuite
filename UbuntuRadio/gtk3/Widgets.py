@@ -26,6 +26,8 @@ from gi.repository import GObject
 from gi.repository import GLib
 from gi.repository import GdkPixbuf
 
+GObject.threads_init()
+
 
 class MenuBar(Gtk.MenuBar):
 

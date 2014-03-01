@@ -272,7 +272,7 @@ class DialogoProyecto(Gtk.Dialog):
         del proyecto.
         """
 
-        buffer = self.descripcion.get_buffer()
+        _buffer = self.descripcion.get_buffer()
 
         nombre = self.nombre.get_text()
         main = self.main.get_active_text()
@@ -280,9 +280,9 @@ class DialogoProyecto(Gtk.Dialog):
         mimetypes = self.mimetypes.get_text()
         categories = self.categories.get_text()
 
-        buffer = buffer.get_text(
-            buffer.get_start_iter(),
-            buffer.get_end_iter(), True)
+        text = _buffer.get_text(
+            _buffer.get_start_iter(),
+            _buffer.get_end_iter(), True)
 
         version = self.version.get_text()
         licencia = self.licencia.get_active_text()
@@ -303,8 +303,8 @@ class DialogoProyecto(Gtk.Dialog):
         if categories:
             categories = categories.strip()
 
-        if buffer:
-            buffer = buffer.strip()
+        if text:
+            text = text.strip()
 
         if version:
             version = version.strip()
@@ -315,11 +315,11 @@ class DialogoProyecto(Gtk.Dialog):
         if url:
             url = url.strip()
 
-        dict = {
+        _dict = {
             "nombre": nombre,
             "main": main,
             "path": path,
-            "descripcion": buffer,
+            "descripcion": text,
             "mimetypes": mimetypes,
             "categoria": categories,
             "version": version,
@@ -328,7 +328,7 @@ class DialogoProyecto(Gtk.Dialog):
             "autores": self.autores.get_autores()
             }
 
-        return dict
+        return _dict
 
     def set_proyecto(self, diccionario):
         """

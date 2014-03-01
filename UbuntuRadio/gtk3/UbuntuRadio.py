@@ -22,11 +22,14 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import GObject
 
 from Widgets import MenuBar
 from Widgets import Lista
 from Widgets import ItemPlayer
 from Widgets import ItemRecord
+
+GObject.threads_init()
 
 
 class UbuntuRadio(Gtk.Window):

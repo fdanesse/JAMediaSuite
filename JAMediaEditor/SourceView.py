@@ -204,9 +204,9 @@ class SourceView(GtkSource.View):
         """
 
         if self.archivo and self.archivo != None:
-            buffer = self.get_buffer()
+            _buffer = self.get_buffer()
 
-            if buffer.get_modified() and \
+            if _buffer.get_modified() and \
                 os.path.exists(self.archivo):
 
                 self.__procesar_y_guardar()
@@ -219,15 +219,15 @@ class SourceView(GtkSource.View):
 
     def __procesar_y_guardar(self):
 
-        buffer = self.get_buffer()
+        _buffer = self.get_buffer()
 
-        inicio, fin = buffer.get_bounds()
-        texto = buffer.get_text(inicio, fin, 0)
+        inicio, fin = _buffer.get_bounds()
+        texto = _buffer.get_text(inicio, fin, 0)
 
         # Para devolver el scroll a donde estaba.
-        textmark = buffer.get_insert()
-        textiter = buffer.get_iter_at_mark(textmark)
-        id = textiter.get_line()
+        textmark = _buffer.get_insert()
+        textiter = _buffer.get_iter_at_mark(textmark)
+        _id = textiter.get_line()
 
         #if self.archivo.endswith(".py"):
         texto = self.__limpiar_codigo(texto)
@@ -245,7 +245,7 @@ class SourceView(GtkSource.View):
             'new_select', self)
 
         # Devolver el scroll a donde estaba.
-        linea_iter = self.get_buffer().get_iter_at_line(id)
+        linea_iter = self.get_buffer().get_iter_at_line(_id)
         GLib.idle_add(self.scroll_to_iter, linea_iter, 0.1, 1, 1, 0.1)
 
     def __limpiar_codigo(self, texto):
@@ -315,26 +315,26 @@ class SourceView(GtkSource.View):
         Ejecuta acciones sobre el código.
         """
 
-        buffer = self.get_buffer()
+        _buffer = self.get_buffer()
 
         if accion == "Deshacer":
-            if buffer.can_undo():
-                buffer.undo()
+            if _buffer.can_undo():
+                _buffer.undo()
 
         elif accion == "Rehacer":
-            if buffer.can_redo():
-                buffer.redo()
+            if _buffer.can_redo():
+                _buffer.redo()
 
         elif accion == "Seleccionar Todo":
-            inicio, fin = buffer.get_bounds()
-            buffer.select_range(inicio, fin)
+            inicio, fin = _buffer.get_bounds()
+            _buffer.select_range(inicio, fin)
 
         elif accion == "Copiar":
             clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
 
-            if buffer.get_selection_bounds():
-                inicio, fin = buffer.get_selection_bounds()
-                texto = buffer.get_text(inicio, fin, 0)
+            if _buffer.get_selection_bounds():
+                inicio, fin = _buffer.get_selection_bounds()
+                texto = _buffer.get_text(inicio, fin, 0)
 
                 clipboard.set_text(texto, -1)
 
@@ -343,28 +343,28 @@ class SourceView(GtkSource.View):
             texto = clipboard.wait_for_text()
 
             if texto != None:
-                if buffer.get_selection_bounds():
-                    start, end = buffer.get_selection_bounds()
-                    texto_seleccion = buffer.get_text(
+                if _buffer.get_selection_bounds():
+                    start, end = _buffer.get_selection_bounds()
+                    texto_seleccion = _buffer.get_text(
                         start, end, 0)
-                    buffer.delete(start, end)
+                    _buffer.delete(start, end)
 
-                buffer.insert_at_cursor(texto)
+                _buffer.insert_at_cursor(texto)
 
         elif accion == "Cortar":
             clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
 
-            if buffer.get_selection_bounds():
-                start, end = buffer.get_selection_bounds()
-                texto_seleccion = buffer.get_text(
+            if _buffer.get_selection_bounds():
+                start, end = _buffer.get_selection_bounds()
+                texto_seleccion = _buffer.get_text(
                     start, end, 0)
-                buffer.delete(start, end)
+                _buffer.delete(start, end)
                 clipboard.set_text(texto_seleccion, -1)
 
         elif accion == "Buscar Texto":
             try:
-                inicio, fin = buffer.get_selection_bounds()
-                texto = buffer.get_text(inicio, fin, 0)
+                inicio, fin = _buffer.get_selection_bounds()
+                texto = _buffer.get_text(inicio, fin, 0)
 
             except:
                 texto = None
@@ -384,8 +384,8 @@ class SourceView(GtkSource.View):
             texto = ""
 
             try:
-                inicio, fin = buffer.get_selection_bounds()
-                texto = buffer.get_text(inicio, fin, 0)
+                inicio, fin = _buffer.get_selection_bounds()
+                texto = _buffer.get_text(inicio, fin, 0)
 
             except:
                 texto = None
@@ -401,7 +401,7 @@ class SourceView(GtkSource.View):
             dialogo.destroy()
 
         elif accion == "Cerrar Archivo":
-            if buffer.get_modified():
+            if _buffer.get_modified():
                 from Widgets import DialogoAlertaSinGuardar
 
                 dialog = DialogoAlertaSinGuardar(
@@ -490,25 +490,25 @@ class SourceView(GtkSource.View):
         usuario se encuentra parado.
         """
 
-        buffer = self.get_buffer()
+        _buffer = self.get_buffer()
 
-        if buffer.get_selection_bounds():
-            start, end = buffer.get_selection_bounds()
+        if _buffer.get_selection_bounds():
+            start, end = _buffer.get_selection_bounds()
             #texto = buffer.get_text(start, end, True)
 
             id_0 = start.get_line()
             id_1 = end.get_line()
 
-            for id in range(id_0, id_1 + 1):
-                iter = buffer.get_iter_at_line(id)
-                buffer.insert(iter, self.tab)
+            for _id in range(id_0, id_1 + 1):
+                _iter = _buffer.get_iter_at_line(_id)
+                _buffer.insert(_iter, self.tab)
 
         else:
-            textmark = buffer.get_insert()
-            textiter = buffer.get_iter_at_mark(textmark)
-            id = textiter.get_line()
-            line_iter = buffer.get_iter_at_line(id)
-            buffer.insert(line_iter, self.tab)
+            textmark = _buffer.get_insert()
+            textiter = _buffer.get_iter_at_mark(textmark)
+            _id = textiter.get_line()
+            line_iter = _buffer.get_iter_at_line(_id)
+            _buffer.insert(line_iter, self.tab)
 
     def __de_identar(self):
         """
@@ -516,39 +516,39 @@ class SourceView(GtkSource.View):
         la linea donde se encuentra parado el usuario.
         """
 
-        buffer = self.get_buffer()
+        _buffer = self.get_buffer()
 
-        if buffer.get_selection_bounds():
-            start, end = buffer.get_selection_bounds()
+        if _buffer.get_selection_bounds():
+            start, end = _buffer.get_selection_bounds()
 
             id_0 = start.get_line()
             id_1 = end.get_line()
 
-            for id in range(id_0, id_1 + 1):
-                line_iter = buffer.get_iter_at_line(id)
+            for _id in range(id_0, id_1 + 1):
+                line_iter = _buffer.get_iter_at_line(_id)
                 chars = line_iter.get_chars_in_line()
-                line_end_iter = buffer.get_iter_at_line_offset(id, chars - 1)
+                line_end_iter = _buffer.get_iter_at_line_offset(id, chars - 1)
 
-                texto = buffer.get_text(line_iter, line_end_iter, True)
+                texto = _buffer.get_text(line_iter, line_end_iter, True)
 
                 if texto.startswith(self.tab):
-                    buffer.delete(line_iter,
-                        buffer.get_iter_at_line_offset(id, len(self.tab)))
+                    _buffer.delete(line_iter,
+                        _buffer.get_iter_at_line_offset(_id, len(self.tab)))
 
         else:
-            textmark = buffer.get_insert()
-            textiter = buffer.get_iter_at_mark(textmark)
-            id = textiter.get_line()
+            textmark = _buffer.get_insert()
+            textiter = _buffer.get_iter_at_mark(textmark)
+            _id = textiter.get_line()
 
-            line_iter = buffer.get_iter_at_line(id)
+            line_iter = _buffer.get_iter_at_line(_id)
             chars = line_iter.get_chars_in_line()
-            line_end_iter = buffer.get_iter_at_line_offset(id, chars - 1)
+            line_end_iter = _buffer.get_iter_at_line_offset(_id, chars - 1)
 
-            texto = buffer.get_text(line_iter, line_end_iter, True)
+            texto = _buffer.get_text(line_iter, line_end_iter, True)
 
             if texto.startswith(self.tab):
-                buffer.delete(line_iter,
-                    buffer.get_iter_at_line_offset(id, len(self.tab)))
+                _buffer.delete(line_iter,
+                    _buffer.get_iter_at_line_offset(_id, len(self.tab)))
 
     def __cerrar(self):
         """
@@ -582,15 +582,15 @@ class SourceView(GtkSource.View):
         if not linea > -1:
             return
 
-        buffer = self.get_buffer()
-        start, end = buffer.get_bounds()
+        _buffer = self.get_buffer()
+        start, end = _buffer.get_bounds()
 
-        linea_iter = buffer.get_iter_at_line(linea - 1)
-        linea_iter_next = buffer.get_iter_at_line(linea)
+        linea_iter = _buffer.get_iter_at_line(linea - 1)
+        linea_iter_next = _buffer.get_iter_at_line(linea)
 
         #texto = buffer.get_text(linea_iter, linea_iter_next, True)
 
-        buffer.select_range(linea_iter, linea_iter_next)
+        _buffer.select_range(linea_iter, linea_iter_next)
         self.scroll_to_iter(linea_iter_next, 0.1, 1, 1, 0.1)
 
     def __key_press_event(self, widget, event):
@@ -599,28 +599,28 @@ class SourceView(GtkSource.View):
         """
 
         if event.keyval == 65421:
-            buffer = self.get_buffer()
+            _buffer = self.get_buffer()
 
-            textmark = buffer.get_insert()
-            textiter = buffer.get_iter_at_mark(textmark)
+            textmark = _buffer.get_insert()
+            textiter = _buffer.get_iter_at_mark(textmark)
 
-            id = textiter.get_line()
+            _id = textiter.get_line()
 
-            line_iter = buffer.get_iter_at_line(id)
+            line_iter = _buffer.get_iter_at_line(id)
             chars = line_iter.get_chars_in_line()
 
             if chars > 3:
                 # Ultimo caracter.
-                start_iter = buffer.get_iter_at_line_offset(id, chars - 2)
-                end_iter = buffer.get_iter_at_line_offset(id, chars - 1)
+                start_iter = _buffer.get_iter_at_line_offset(_id, chars - 2)
+                end_iter = _buffer.get_iter_at_line_offset(_id, chars - 1)
 
-                texto = buffer.get_text(start_iter, end_iter, True)
+                texto = _buffer.get_text(start_iter, end_iter, True)
 
                 if texto == ":":
                     # Tola la linea.
-                    line_end_iter = buffer.get_iter_at_line_offset(
-                        id, chars - 1)
-                    texto = buffer.get_text(line_iter, line_end_iter, True)
+                    line_end_iter = _buffer.get_iter_at_line_offset(
+                        _id, chars - 1)
+                    texto = _buffer.get_text(line_iter, line_end_iter, True)
 
                     tabs = 0
                     if texto.startswith(self.tab):
@@ -630,17 +630,17 @@ class SourceView(GtkSource.View):
 
     def __forzar_identacion(self, tabs):
 
-        buffer = self.get_buffer()
+        _buffer = self.get_buffer()
 
-        textmark = buffer.get_insert()
-        textiter = buffer.get_iter_at_mark(textmark)
-        id = textiter.get_line()
+        textmark = _buffer.get_insert()
+        textiter = _buffer.get_iter_at_mark(textmark)
+        _id = textiter.get_line()
 
-        line_iter = buffer.get_iter_at_line(id)
+        line_iter = _buffer.get_iter_at_line(_id)
         chars = line_iter.get_chars_in_line()
 
-        buffer.delete(line_iter,
-            buffer.get_iter_at_line_offset(id, chars - 1))
+        _buffer.delete(line_iter,
+            _buffer.get_iter_at_line_offset(_id, chars - 1))
 
         for tab in range(0, tabs):
             self.__identar()
@@ -768,24 +768,24 @@ class SourceView(GtkSource.View):
 
         self.__control_cambios()
 
-        buffer = self.get_buffer()
-        inicio, fin = buffer.get_bounds()
+        _buffer = self.get_buffer()
+        inicio, fin = _buffer.get_bounds()
 
         modificado = self.get_buffer().get_modified()
-        tiene_texto = bool(buffer.get_text(inicio, fin, 0))
-        texto_seleccionado = bool(buffer.get_selection_bounds())
+        tiene_texto = bool(_buffer.get_text(inicio, fin, 0))
+        texto_seleccionado = bool(_buffer.get_selection_bounds())
 
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         clipboard_texto = bool(clipboard.wait_for_text())
 
-        deshacer = buffer.can_undo()
-        rehacer = buffer.can_redo()
+        deshacer = _buffer.can_undo()
+        rehacer = _buffer.can_redo()
 
         renglones = self.get_buffer().get_line_count()
         caracteres = self.get_buffer().get_char_count()
         archivo = self.archivo
 
-        dict = {
+        _dict = {
             'modificado': modificado,
             'tiene_texto': tiene_texto,
             'texto_seleccionado': texto_seleccionado,
@@ -797,7 +797,7 @@ class SourceView(GtkSource.View):
             'archivo': archivo,
             }
 
-        self.emit('update', dict)
+        self.emit('update', _dict)
 
         self.__senialar(modificado)
 
@@ -810,13 +810,13 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
 
     __gtype_name__ = 'AutoCompletado'
 
-    def __init__(self, buffer, archivo, parent):
+    def __init__(self, _buffer, archivo, parent):
 
         GObject.Object.__init__(self)
 
         self.parent = parent
         self.archivo = archivo
-        self.buffer = buffer
+        self.buffer = _buffer
         self.opciones = []
         self.priority = 1
 

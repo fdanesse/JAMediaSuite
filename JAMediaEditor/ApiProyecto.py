@@ -43,8 +43,8 @@ def colectdir(direccion, directorios):
                 leer = True
 
                 # Rechazar Directorios preestablecidos como no distribuibles.
-                for dir in RECHAZADirs:
-                    if dir in directorio:
+                for _dir in RECHAZADirs:
+                    if _dir in directorio:
                         leer = False
                         break
 
@@ -68,8 +68,8 @@ def colectfiles(directorio, manifest_list):
             agregar = True
 
             # Rechazar Archivos según nombres preestablecidos
-            for file in RECHAZAFiles:
-                if file in fil:
+            for _file in RECHAZAFiles:
+                if _file in fil:
                     agregar = False
                     break
 

@@ -400,7 +400,7 @@ class ToolbarArchivo(Gtk.Toolbar):
             map(self.__activar,
                 [self.dict_archivo["Detener Ejecución"]])
 
-    def update(self, dict):
+    def update(self, _dict):
         """
         Activa o desactiva opciones.
         """
@@ -408,37 +408,37 @@ class ToolbarArchivo(Gtk.Toolbar):
         activar = []
         desactivar = []
 
-        if dict['rehacer']:
+        if _dict['rehacer']:
             activar.append(self.dict_archivo['Rehacer'])
 
         else:
             desactivar.append(self.dict_archivo['Rehacer'])
 
-        if dict['deshacer']:
+        if _dict['deshacer']:
             activar.append(self.dict_archivo['Deshacer'])
 
         else:
             desactivar.append(self.dict_archivo['Deshacer'])
 
-        if dict['modificado']:
+        if _dict['modificado']:
             activar.append(self.dict_archivo['Guardar Archivo'])
 
         else:
             desactivar.append(self.dict_archivo['Guardar Archivo'])
 
-        if dict['clipboard_texto']:
+        if _dict['clipboard_texto']:
             activar.append(self.dict_archivo["Pegar"])
 
         else:
             desactivar.append(self.dict_archivo["Pegar"])
 
-        if dict['tiene_texto']:
+        if _dict['tiene_texto']:
             activar.append(self.dict_archivo["Seleccionar Todo"])
 
         else:
             desactivar.append(self.dict_archivo["Seleccionar Todo"])
 
-        if dict['texto_seleccionado']:
+        if _dict['texto_seleccionado']:
             activar.extend([
                 self.dict_archivo['Cortar'],
                 self.dict_archivo['Copiar'],
@@ -576,11 +576,11 @@ class ToolbarEstado(Gtk.Toolbar):
 
         self.show_all()
 
-    def set_info(self, dict):
+    def set_info(self, _dict):
 
-        reng = dict['renglones']
-        carac = dict['caracteres']
-        arch = dict['archivo']
+        reng = _dict['renglones']
+        carac = _dict['caracteres']
+        arch = _dict['archivo']
 
         text = self.label.get_text()
         new_text = "Archivo: %s  Lineas: %s  Caracteres: %s" % (

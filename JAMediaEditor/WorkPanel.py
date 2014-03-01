@@ -100,9 +100,9 @@ class WorkPanel(Gtk.Paned):
 
         GLib.idle_add(self.terminal.hide)
 
-    def __re_emit_update(self, widget, dict):
+    def __re_emit_update(self, widget, _dict):
 
-        self.emit("update", dict)
+        self.emit("update", _dict)
 
     def __set_ejecucion(self, widget, terminal):
         """
@@ -331,16 +331,16 @@ class Notebook_SourceView(Gtk.Notebook):
 
         scrolled = self.get_children()[self.get_current_page()]
         view = scrolled.get_children()[0]
-        buffer = view.get_buffer()
+        _buffer = view.get_buffer()
 
-        start, end = buffer.get_bounds()
-        linea_iter = buffer.get_iter_at_line(index)
+        start, end = _buffer.get_bounds()
+        linea_iter = _buffer.get_iter_at_line(index)
 
         match = linea_iter.forward_search(texto, 0, None)
 
         if match:
             match_start, match_end = match
-            buffer.select_range(match_end, match_start)
+            _buffer.select_range(match_end, match_start)
             view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
 
     def __switch_page(self, widget, widget_child, indice):
@@ -445,9 +445,9 @@ class Notebook_SourceView(Gtk.Notebook):
 
         return False
 
-    def __re_emit_update(self, widget, dict):
+    def __re_emit_update(self, widget, _dict):
 
-        self.emit("update", dict)
+        self.emit("update", _dict)
 
     def guardar_archivo(self):
         """

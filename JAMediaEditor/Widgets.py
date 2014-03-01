@@ -430,7 +430,7 @@ class Menu(Gtk.MenuBar):
         else:
             map(self.__desactivar, self.dict_proyecto.values())
 
-    def update_archivos(self, dict):
+    def update_archivos(self, _dict):
         """
         Activa o desactiva opciones.
         """
@@ -438,31 +438,31 @@ class Menu(Gtk.MenuBar):
         activar = []
         desactivar = []
 
-        if dict['rehacer']:
+        if _dict['rehacer']:
             activar.append(self.dict_archivo['Rehacer'])
 
         else:
             desactivar.append(self.dict_archivo['Rehacer'])
 
-        if dict['deshacer']:
+        if _dict['deshacer']:
             activar.append(self.dict_archivo['Deshacer'])
 
         else:
             desactivar.append(self.dict_archivo['Deshacer'])
 
-        if dict['modificado']:
+        if _dict['modificado']:
             activar.append(self.dict_archivo['Guardar'])
 
         else:
             desactivar.append(self.dict_archivo['Guardar'])
 
-        if dict['clipboard_texto']:
+        if _dict['clipboard_texto']:
             activar.append(self.dict_archivo['Pegar'])
 
         else:
             desactivar.append(self.dict_archivo['Pegar'])
 
-        if dict['texto_seleccionado']:
+        if _dict['texto_seleccionado']:
             activar.extend([
                 self.dict_archivo['Cortar'],
                 self.dict_archivo['Copiar'],
@@ -474,7 +474,7 @@ class Menu(Gtk.MenuBar):
                 self.dict_archivo['Copiar'],
                 ])
 
-        if dict['tiene_texto']:
+        if _dict['tiene_texto']:
             activar.extend([
                 self.dict_archivo['Identar'],
                 self.dict_archivo['De Identar'],
@@ -569,21 +569,21 @@ class DialogoBuscar(Gtk.Dialog):
         la primer ocurrencia de lo buscado.
         """
 
-        buffer = self.view.get_buffer()
+        _buffer = self.view.get_buffer()
 
-        start, end = buffer.get_bounds()
-        contenido = buffer.get_text(start, end, 0)
+        start, end = _buffer.get_bounds()
+        contenido = _buffer.get_text(start, end, 0)
         numero = len(contenido)
 
         if end.get_offset() == numero and not selection:
             # Si está al final, vuelve al principio.
-            inicio = buffer.get_start_iter()
+            inicio = _buffer.get_start_iter()
             self.__seleccionar_texto(texto, inicio, 'Adelante')
 
         else:
             if selection:
                 inicio, fin = selection
-                buffer.select_range(inicio, fin)
+                _buffer.select_range(inicio, fin)
 
         return False
 
@@ -604,38 +604,38 @@ class DialogoBuscar(Gtk.Dialog):
         """
 
         texto = self.entrada.get_text()
-        buffer = self.view.get_buffer()
-        inicio, fin = buffer.get_bounds()
+        _buffer = self.view.get_buffer()
+        inicio, fin = _buffer.get_bounds()
 
-        texto_actual = buffer.get_text(inicio, fin, 0)
+        texto_actual = _buffer.get_text(inicio, fin, 0)
 
-        posicion = buffer.get_iter_at_mark(buffer.get_insert())
+        posicion = _buffer.get_iter_at_mark(_buffer.get_insert())
 
         if texto:
             if texto in texto_actual:
                 inicio = posicion
 
                 if direccion == 'Adelante':
-                    if inicio.get_offset() == buffer.get_char_count():
-                        inicio = buffer.get_start_iter()
+                    if inicio.get_offset() == _buffer.get_char_count():
+                        inicio = _buffer.get_start_iter()
 
                 elif direccion == 'Atras':
-                    if buffer.get_selection_bounds():
+                    if _buffer.get_selection_bounds():
 
-                        start, end = buffer.get_selection_bounds()
-                        contenido = buffer.get_text(start, end, 0)
+                        start, end = _buffer.get_selection_bounds()
+                        contenido = _buffer.get_text(start, end, 0)
                         numero = len(contenido)
 
                         if end.get_offset() == numero:
-                            inicio = buffer.get_end_iter()
+                            inicio = _buffer.get_end_iter()
 
                         else:
-                            inicio = buffer.get_selection_bounds()[0]
+                            inicio = _buffer.get_selection_bounds()[0]
 
                 self.__seleccionar_texto(texto, inicio, direccion)
 
             else:
-                buffer.select_range(posicion, posicion)
+                _buffer.select_range(posicion, posicion)
 
     def __seleccionar_texto(self, texto, inicio, direccion):
         """
@@ -643,7 +643,7 @@ class DialogoBuscar(Gtk.Dialog):
         y mueve el scrolled sí es necesario
         """
 
-        buffer = self.view.get_buffer()
+        _buffer = self.view.get_buffer()
 
         if direccion == 'Adelante':
             match = inicio.forward_search(texto, 0, None)
@@ -653,15 +653,15 @@ class DialogoBuscar(Gtk.Dialog):
 
         if match:
             match_start, match_end = match
-            buffer.select_range(match_end, match_start)
+            _buffer.select_range(match_end, match_start)
             self.view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
 
         else:
             if direccion == 'Adelante':
-                inicio = buffer.get_start_iter()
+                inicio = _buffer.get_start_iter()
 
             elif direccion == 'Atras':
-                inicio = buffer.get_end_iter()
+                inicio = _buffer.get_end_iter()
 
             self.__seleccionar_texto(texto, inicio, direccion)
 
@@ -738,19 +738,19 @@ class DialogoReemplazar(Gtk.Dialog):
         la primer ocurrencia de lo buscado.
         """
 
-        buffer = self.view.get_buffer()
+        _buffer = self.view.get_buffer()
 
-        start, end = buffer.get_bounds()
-        contenido = buffer.get_text(start, end, 0)
+        start, end = _buffer.get_bounds()
+        contenido = _buffer.get_text(start, end, 0)
         numero = len(contenido)
 
         if end.get_offset() == numero and not selection:
-            inicio = buffer.get_start_iter()
+            inicio = _buffer.get_start_iter()
             self.__seleccionar_texto(texto, inicio, 'Adelante')
 
         else:
             inicio, fin = selection
-            buffer.select_range(inicio, fin)
+            _buffer.select_range(inicio, fin)
 
     def __changed(self):
         """
@@ -760,8 +760,8 @@ class DialogoReemplazar(Gtk.Dialog):
         self.button_buscar.set_sensitive(
             bool(self.buscar_entry.get_text()))
 
-        buffer = self.view.get_buffer()
-        select = buffer.get_selection_bounds()
+        _buffer = self.view.get_buffer()
+        select = _buffer.get_selection_bounds()
 
         if len(select) == 2:
             select = True
@@ -781,33 +781,33 @@ class DialogoReemplazar(Gtk.Dialog):
         """
 
         texto = self.buscar_entry.get_text()
-        buffer = self.view.get_buffer()
-        inicio, fin = buffer.get_bounds()
+        _buffer = self.view.get_buffer()
+        inicio, fin = _buffer.get_bounds()
 
-        texto_actual = buffer.get_text(inicio, fin, 0)
+        texto_actual = _buffer.get_text(inicio, fin, 0)
 
-        posicion = buffer.get_iter_at_mark(buffer.get_insert())
+        posicion = _buffer.get_iter_at_mark(_buffer.get_insert())
 
         if texto:
             if texto in texto_actual:
                 inicio = posicion
 
                 if direccion == 'Adelante':
-                    if inicio.get_offset() == buffer.get_char_count():
-                        inicio = buffer.get_start_iter()
+                    if inicio.get_offset() == _buffer.get_char_count():
+                        inicio = _buffer.get_start_iter()
 
                 elif direccion == 'Atras':
-                    if buffer.get_selection_bounds():
+                    if _buffer.get_selection_bounds():
 
-                        start, end = buffer.get_selection_bounds()
-                        contenido = buffer.get_text(start, end, 0)
+                        start, end = _buffer.get_selection_bounds()
+                        contenido = _buffer.get_text(start, end, 0)
                         numero = len(contenido)
 
                         if end.get_offset() == numero:
-                            inicio = buffer.get_end_iter()
+                            inicio = _buffer.get_end_iter()
 
                         else:
-                            inicio = buffer.get_selection_bounds()[0]
+                            inicio = _buffer.get_selection_bounds()[0]
 
                 self.__seleccionar_texto(texto, inicio, direccion)
 
@@ -820,12 +820,12 @@ class DialogoReemplazar(Gtk.Dialog):
 
     def __reemplazar(self, widget):
 
-        buffer = self.view.get_buffer()
-        inicio, fin = buffer.get_selection_bounds()
+        _buffer = self.view.get_buffer()
+        inicio, fin = _buffer.get_selection_bounds()
         texto_reemplazo = self.reemplazar_entry.get_text()
 
-        buffer.delete(inicio, fin)
-        buffer.insert_at_cursor(texto_reemplazo)
+        _buffer.delete(inicio, fin)
+        _buffer.insert_at_cursor(texto_reemplazo)
 
         self.button_buscar.clicked()
 
@@ -835,7 +835,7 @@ class DialogoReemplazar(Gtk.Dialog):
         y mueve el scrolled sí es necesario.
         """
 
-        buffer = self.view.get_buffer()
+        _buffer = self.view.get_buffer()
 
         if direccion == 'Adelante':
             match = inicio.forward_search(texto, 0, None)
@@ -845,15 +845,15 @@ class DialogoReemplazar(Gtk.Dialog):
 
         if match:
             match_start, match_end = match
-            buffer.select_range(match_end, match_start)
+            _buffer.select_range(match_end, match_start)
             self.view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
 
         else:
             if direccion == 'Adelante':
-                inicio = buffer.get_start_iter()
+                inicio = _buffer.get_start_iter()
 
             elif direccion == 'Atras':
-                inicio = buffer.get_end_iter()
+                inicio = _buffer.get_end_iter()
 
             self.__seleccionar_texto(texto, inicio, direccion)
 
@@ -895,22 +895,22 @@ class My_FileChooser(Gtk.FileChooserDialog):
             self.set_current_folder_uri("file://%s" % path)
 
         if filter_type:
-            filter = Gtk.FileFilter()
-            filter.set_name("Filtro")
+            _filter = Gtk.FileFilter()
+            _filter.set_name("Filtro")
 
             for fil in filter_type:
-                filter.add_pattern(fil)
+                _filter.add_pattern(fil)
 
-            self.add_filter(filter)
+            self.add_filter(_filter)
 
         elif mime_type:
-            filter = Gtk.FileFilter()
-            filter.set_name("Filtro")
+            _filter = Gtk.FileFilter()
+            _filter.set_name("Filtro")
 
             for mime in mime_type:
-                filter.add_mime_type(mime)
+                _filter.add_mime_type(mime)
 
-            self.add_filter(filter)
+            self.add_filter(_filter)
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
@@ -1004,22 +1004,22 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
             self.set_current_folder_uri("file://%s" % path)
 
         if filter_type:
-            filter = Gtk.FileFilter()
-            filter.set_name("Filtro")
+            _filter = Gtk.FileFilter()
+            _filter.set_name("Filtro")
 
             for fil in filter_type:
-                filter.add_pattern(fil)
+                _filter.add_pattern(fil)
 
-            self.add_filter(filter)
+            self.add_filter(_filter)
 
         elif mime_type:
-            filter = Gtk.FileFilter()
-            filter.set_name("Filtro")
+            _filter = Gtk.FileFilter()
+            _filter.set_name("Filtro")
 
             for mime in mime_type:
-                filter.add_mime_type(mime)
+                _filter.add_mime_type(mime)
 
-            self.add_filter(filter)
+            self.add_filter(_filter)
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
@@ -1056,8 +1056,8 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
             self.__salir(None)
             return
 
-        for file in files:
-            direccion = str(file).replace("//", "/")
+        for _file in files:
+            direccion = str(_file).replace("//", "/")
 
             if os.path.exists(direccion) and os.path.isfile(direccion):
                 self.emit('load', direccion)
@@ -1180,10 +1180,10 @@ class ErroresTreeview(Gtk.TreeView):
             Gtk.CellRendererText(), text=1)
         self.append_column(columna)
 
-        buffer = view.get_buffer()
-        start, end = buffer.get_bounds()
+        _buffer = view.get_buffer()
+        start, end = _buffer.get_bounds()
 
-        texto = buffer.get_text(start, end, True)
+        texto = _buffer.get_text(start, end, True)
 
         path = os.path.join("/dev/shm", "check_temp.py")
         arch = open(path, "w")
@@ -1263,8 +1263,8 @@ class Estructura_Menu(Gtk.Menu):
         Gtk.Menu.__init__(self)
 
         iterfirst = modelo.get_iter_first()
-        iter = modelo.get_iter(path)
-        filepath = modelo.get_value(iter, 2)
+        _iter = modelo.get_iter(path)
+        filepath = modelo.get_value(_iter, 2)
 
         lectura, escritura, ejecucion = self.__verificar_permisos(filepath)
 
@@ -1383,8 +1383,8 @@ class Estructura_Menu(Gtk.Menu):
         confirmacion al usuario sobre la accion a realizar.
         """
 
-        iter = widget.get_model().get_iter(path)
-        self.emit('accion', widget, accion, iter)
+        _iter = widget.get_model().get_iter(path)
+        self.emit('accion', widget, accion, _iter)
 
 
 class DialogoEliminar(Gtk.Dialog):
@@ -1529,12 +1529,12 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
     def do_row_activated(self, path, treviewcolumn):
 
         model = self.get_model()
-        iter = model.get_iter(path)
+        _iter = model.get_iter(path)
 
         valor = [
-            model.get_value(iter, 0),
-            model.get_value(iter, 1),
-            model.get_value(iter, 2)]
+            model.get_value(_iter, 0),
+            model.get_value(_iter, 1),
+            model.get_value(_iter, 2)]
 
         self.emit("nueva-seleccion", valor)
 

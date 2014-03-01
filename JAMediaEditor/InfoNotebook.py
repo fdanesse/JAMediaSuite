@@ -420,23 +420,21 @@ class Introspeccion(Gtk.TreeView):
         for key in _dict.keys():
 
             temp = _dict[key].strip()
-            color = Gdk.color_parse("#FF0D00")
 
             if temp.startswith("class "):
-                color = Gdk.color_parse("purple")
+                color = Gdk.color_parse("#a40000")
                 new_class = self.__append(iterbase,
                     key, color, temp)
                 new_funcion = new_class
 
             elif temp.startswith("import ") or \
                 temp.startswith("from "):
-
-                color = Gdk.color_parse("dark green")
+                color = Gdk.color_parse("#006e00")
                 self.__append(new_funcion,
                     key, color, temp)
 
             elif temp.startswith("def "):
-                color = Gdk.color_parse("#FF0D00")
+                color = Gdk.color_parse("#000091")
                 new_funcion = self.__append(new_class,
                     key, color, temp)
 
@@ -778,6 +776,7 @@ class Estructura_Proyecto(Gtk.TreeView):
 
         # Recursividad en la función.
         self.__load_estructura(estructura)
+        return False
 
     def do_row_activated(self, path, column):
         """

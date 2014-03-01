@@ -457,7 +457,8 @@ class Gnome_Notebook(Gtk.Notebook):
             Gtk.Label("desinstalador"))
 
         # Comenzar a generar el temporal
-        self.activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
+        self.activitydirpath = os.path.join(
+            "/tmp", "%s" % self.proyecto["nombre"])
 
         self.show_all()
 
@@ -504,7 +505,10 @@ class Gnome_Notebook(Gtk.Notebook):
         self.iconpath = iconpath
 
         if not self.proyecto["path"] in iconpath:
-            newpath = os.path.join(self.activitydirpath, os.path.basename(iconpath))
+            newpath = os.path.join(
+                self.activitydirpath,
+                os.path.basename(iconpath))
+
             shutil.copyfile(iconpath, newpath)
             iconpath = newpath
 
@@ -513,7 +517,8 @@ class Gnome_Notebook(Gtk.Notebook):
             iconpath = os.path.join(self.activitydirpath, newpath)
 
         newpath = iconpath.split("%s/" % self.activitydirpath)[1]
-        iconpath = os.path.join("/usr/local/share", self.proyecto["nombre"], newpath)
+        iconpath = os.path.join("/usr/local/share",
+            self.proyecto["nombre"], newpath)
 
         # setup.cfg
         cfg = "[install]\ninstall_lib=/usr/local/share/%s\ninstall_data=/usr/local/share/%s\ninstall_scripts=/usr/local/bin""" % (self.proyecto["nombre"], self.proyecto["nombre"])
@@ -530,7 +535,8 @@ class Gnome_Notebook(Gtk.Notebook):
         # MANIFEST
         import ApiProyecto
 
-        manifest_list, data_files = ApiProyecto.get_installers_data(self.activitydirpath)
+        manifest_list, data_files = ApiProyecto.get_installers_data(
+            self.activitydirpath)
 
         manifest = ""
 
@@ -620,13 +626,13 @@ class Gnome_Notebook(Gtk.Notebook):
         self.__escribir_archivo(self.archivo_lanzador, lanzador)
         self.__escribir_archivo(self.archivo_desinstalador, desinstalador)
 
-    def __get_text(self, buffer):
+    def __get_text(self, _buffer):
         """
         Devuelve el contenido de un text buffer.
         """
 
-        inicio, fin = buffer.get_bounds()
-        texto = buffer.get_text(inicio, fin, 0)
+        inicio, fin = _buffer.get_bounds()
+        texto = _buffer.get_text(inicio, fin, 0)
 
         return texto
 
@@ -800,10 +806,12 @@ class Sugar_Notebook(Gtk.Notebook):
                 for fileName in fileNames:
                     if not fileName in RECHAZAFiles:
                         filePath = os.path.join(archiveDirPath, fileName)
-                        extension = os.path.splitext(os.path.split(filePath)[1])[1]
+                        extension = os.path.splitext(
+                            os.path.split(filePath)[1])[1]
 
                         if not extension in RECHAZAExtension:
-                            zipped.write(filePath, filePath.split(activitydirpath)[1])
+                            zipped.write(filePath, filePath.split(
+                                activitydirpath)[1])
 
         zipped.close()
 
@@ -822,13 +830,13 @@ class Sugar_Notebook(Gtk.Notebook):
         if os.path.exists(activitydirpath):
             shutil.rmtree(activitydirpath, ignore_errors=False, onerror=None)
 
-    def __get_text(self, buffer):
+    def __get_text(self, _buffer):
         """
         Devuelve el contenido de un text buffer.
         """
 
-        inicio, fin = buffer.get_bounds()
-        texto = buffer.get_text(inicio, fin, 0)
+        inicio, fin = _buffer.get_bounds()
+        texto = _buffer.get_text(inicio, fin, 0)
 
         return texto
 
@@ -1211,13 +1219,13 @@ class Ceibal_Notebook(Gtk.Notebook):
             shutil.rmtree(activitydirpath,
                 ignore_errors=False, onerror=None)
 
-    def __get_text(self, buffer):
+    def __get_text(self, _buffer):
         """
         Devuelve el contenido de un text buffer.
         """
 
-        inicio, fin = buffer.get_bounds()
-        texto = buffer.get_text(inicio, fin, 0)
+        inicio, fin = _buffer.get_bounds()
+        texto = _buffer.get_text(inicio, fin, 0)
 
         return texto
 
