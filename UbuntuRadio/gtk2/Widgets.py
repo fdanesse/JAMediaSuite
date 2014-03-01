@@ -25,6 +25,8 @@ from gtk import gdk
 import gobject
 from gtk.gdk import Pixbuf
 
+gobject.threads_init()
+
 
 class MenuBar(gtk.MenuBar):
 
@@ -238,9 +240,10 @@ class Volumen(gtk.VolumeButton):
 
         gtk.VolumeButton.__init__(self)
 
+        self.connect("value-changed", self.__do_value_changed)
         self.show_all()
 
-    def do_value_changed(self, valor):
+    def __do_value_changed(self, widget, valor):
 
         self.emit('volumen', valor)
 
@@ -376,13 +379,13 @@ class ItemRecord(gtk.Frame):
         self.stop_button.connect(
             "clicked", self.stop)
 
-        #from Record import MyPlayBin
+        from Record import MyPlayBin
 
-        #self.player = MyPlayBin(self.uri, formato)
-        #self.player.connect("estado", self.__update_estado)
-        #self.player.connect("endfile", self.__endfile)
-        #self.player.connect("update", self.__update_info)
-        #self.player.play(self._name)
+        self.player = MyPlayBin(self.uri, formato)
+        self.player.connect("estado", self.__update_estado)
+        self.player.connect("endfile", self.__endfile)
+        self.player.connect("update", self.__update_info)
+        self.player.play(self._name)
 
     def __update_info(self, player, info):
 
@@ -415,10 +418,10 @@ class ItemRecord(gtk.Frame):
     def stop(self, widget=False):
 
         if self.player_estado == "playing":
-            pass #self.player.stop()
+            self.player.stop()
 
         else:
-            pass #self.player.play(self._name)
+            self.player.play(self._name)
 
 
 class MenuList(gtk.Menu):

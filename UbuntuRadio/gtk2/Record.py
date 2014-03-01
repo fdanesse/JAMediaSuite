@@ -19,34 +19,29 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import gobject
+import gst
+import pygst
 
-import gi
-gi.require_version('Gst', '1.0')
-
-from gi.repository import GLib
-from gi.repository import GObject
-from gi.repository import Gst
-
-Gst.init([])
-GObject.threads_init()
+gobject.threads_init()
 
 
-class MyPlayBin(GObject.Object):
+class MyPlayBin(gobject.GObject):
 
     __gsignals__ = {
-    "endfile": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, []),
-    "estado": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "update": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "endfile": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, []),
+    "estado": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "update": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
     }
 
     # Estados: playing, paused, None
 
     def __init__(self, uri, formato):
 
-        GObject.Object.__init__(self)
+        gobject.GObject.__init__(self)
 
         self.estado = "None"
         self.formato = formato
@@ -58,16 +53,16 @@ class MyPlayBin(GObject.Object):
         self.uri = uri
 
         #-> Pipeline
-        self.pipeline = Gst.Pipeline()
+        self.pipeline = gst.Pipeline()
 
-        self.player = Gst.ElementFactory.make(
+        self.player = gst.element_factory_make(
             "uridecodebin", "uridecodebin")
 
         self.pipeline.add(self.player)
 
-        audioconvert = Gst.ElementFactory.make(
+        audioconvert = gst.element_factory_make(
             'audioconvert', 'audioconvert')
-        audioresample = Gst.ElementFactory.make(
+        audioresample = gst.element_factory_make(
             'audioresample', 'audioresample')
         audioresample.set_property('quality', 10)
 
@@ -76,16 +71,16 @@ class MyPlayBin(GObject.Object):
 
         audioconvert.link(audioresample)
 
-        self.audio_sink = audioconvert.get_static_pad('sink')
+        self.audio_sink = audioconvert
 
-        self.archivo = Gst.ElementFactory.make(
+        self.archivo = gst.element_factory_make(
             'filesink', "filesink")
         self.pipeline.add(self.archivo)
 
         if self.formato == "ogg":
-            vorbisenc = Gst.ElementFactory.make(
+            vorbisenc = gst.element_factory_make(
                 'vorbisenc', 'vorbisenc')
-            oggmux = Gst.ElementFactory.make(
+            oggmux = gst.element_factory_make(
                 'oggmux', "oggmux")
 
             self.pipeline.add(vorbisenc)
@@ -96,7 +91,7 @@ class MyPlayBin(GObject.Object):
             oggmux.link(self.archivo)
 
         elif self.formato == "mp3":
-            lamemp3enc = Gst.ElementFactory.make(
+            lamemp3enc = gst.element_factory_make(
                 "lamemp3enc", "lamemp3enc")
 
             self.pipeline.add(lamemp3enc)
@@ -105,7 +100,7 @@ class MyPlayBin(GObject.Object):
             lamemp3enc.link(self.archivo)
 
         elif self.formato == "wav":
-            wavenc = Gst.ElementFactory.make(
+            wavenc = gst.element_factory_make(
                 "wavenc", "wavenc")
 
             self.pipeline.add(wavenc)
@@ -130,23 +125,22 @@ class MyPlayBin(GObject.Object):
         sean necesarios. https://wiki.ubuntu.com/Novacut/GStreamer1.0
         """
 
-        string = pad.query_caps(None).to_string()
-
-        if string.startswith('audio/'):
-            pad.link(self.audio_sink)
+        tpad = self.audio_sink.get_compatible_pad(pad)
+        if tpad:
+            pad.link(tpad)
 
     def __sync_message(self, bus, mensaje):
 
-        if mensaje.type == Gst.MessageType.LATENCY:
+        if mensaje.type == gst.MESSAGE_LATENCY:
             self.player.recalculate_latency()
 
-        elif mensaje.type == Gst.MessageType.EOS:
-            print "\nGst.MessageType.EOS:"
+        elif mensaje.type == gst.MESSAGE_EOS:
+            print "\ngst.MessageType.EOS:"
             self.__new_handle(False)
             self.emit("endfile")
 
-        elif mensaje.type == Gst.MessageType.ERROR:
-            print "\nGst.MessageType.ERROR:"
+        elif mensaje.type == gst.MESSAGE_ERROR:
+            print "\ngst.MessageType.ERROR:"
             print mensaje.parse_error()
             self.__new_handle(False)
             self.stop()
@@ -156,22 +150,16 @@ class MyPlayBin(GObject.Object):
 
     def __load(self, uri):
 
-        if os.path.exists(uri):
-            direccion = Gst.filename_to_uri(uri)
-            self.player.set_property("uri", direccion)
-
-        else:
-            if Gst.uri_is_valid(uri):
-                self.player.set_property("uri", uri)
+        self.player.set_property("uri", uri)
 
     def __new_handle(self, reset):
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(
+            self.actualizador = gobject.timeout_add(
                 500, self.__handle)
 
     def __handle(self):
@@ -209,10 +197,10 @@ class MyPlayBin(GObject.Object):
 
     def stop(self):
 
-        if self.estado == Gst.State.PLAYING:
-            self.estado = Gst.State.NULL
+        if self.estado == gst.STATE_PLAYING:
+            self.estado = gst.STATE_NULL
             self.emit("estado", "None")
-            self.pipeline.set_state(Gst.State.NULL)
+            self.pipeline.set_state(gst.STATE_NULL)
 
         self.__new_handle(False)
 
@@ -238,9 +226,9 @@ class MyPlayBin(GObject.Object):
         self.archivo.set_property(
             "location", self.patharchivo)
 
-        if not self.estado == Gst.State.PLAYING:
-            self.estado = Gst.State.PLAYING
+        if not self.estado == gst.STATE_PLAYING:
+            self.estado = gst.STATE_PLAYING
             self.emit("estado", "playing")
-            self.pipeline.set_state(Gst.State.PLAYING)
+            self.pipeline.set_state(gst.STATE_PLAYING)
 
         self.__new_handle(True)

@@ -159,19 +159,6 @@ def __load_estilo(path):
     Carga el estilo en la interfaz.
     """
 
-    #from gi.repository import Gtk
-    #from gi.repository import Gdk
-
-    #screen = Gdk.Screen.get_default()
-    #css_provider = Gtk.CssProvider()
-    #css_provider.load_from_path(path)
-    #context = Gtk.StyleContext()
-
-    #context.add_provider_for_screen(
-    #    screen,
-    #    css_provider,
-    #    Gtk.STYLE_PROVIDER_PRIORITY_USER)
-
     pass
 
 
