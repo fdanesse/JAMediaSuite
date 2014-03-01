@@ -122,16 +122,7 @@ def __get_config():
     texto = archivo.readlines()
     archivo.close()
 
-    config = {
-        "opacidad": 0.8,
-        "formato": "ogg",
-        "color1": "#8ae234",
-        "color2": "#ffffff",
-        "color3": "#c0fcf4",
-        "color4": "#000000",
-        "color5": "#b0e0e6",
-        "color6": "#000000",
-        }
+    config = {}
 
     colores = []
 

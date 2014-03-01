@@ -305,7 +305,7 @@ class ItemPlayer(gtk.Frame):
         self.image_button.set_from_stock(
             gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
 
-        gobject.idle_add(self.get_toplevel().queue_draw)
+        #gobject.idle_add(self.get_toplevel().queue_draw)
 
     def __update_estado(self, player, valor):
 
@@ -319,7 +319,7 @@ class ItemPlayer(gtk.Frame):
             self.image_button.set_from_stock(
                 gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
 
-        gobject.idle_add(self.get_toplevel().queue_draw)
+        #gobject.idle_add(self.get_toplevel().queue_draw)
 
     def __set_volume(self, widget, valor):
 
@@ -398,7 +398,7 @@ class ItemRecord(gtk.Frame):
 
         self.label_info.set_text("Grabación Detenida")
 
-        gobject.idle_add(self.get_toplevel().queue_draw)
+        #gobject.idle_add(self.get_toplevel().queue_draw)
 
     def __update_estado(self, player, valor):
 
@@ -413,7 +413,7 @@ class ItemRecord(gtk.Frame):
                 gtk.STOCK_MEDIA_RECORD, gtk.ICON_SIZE_BUTTON)
             self.label_info.set_text("Grabación Detenida")
 
-        gobject.idle_add(self.get_toplevel().queue_draw)
+        #gobject.idle_add(self.get_toplevel().queue_draw)
 
     def stop(self, widget=False):
 
@@ -526,6 +526,8 @@ class DialogoDescarga(gtk.Dialog):
 
         self.destroy()
 
+        return False
+
 
 class Creditos(gtk.Dialog):
 
@@ -561,6 +563,8 @@ class DialogoConfig(gtk.Dialog):
             parent=parent,
             flags=gtk.DIALOG_MODAL,
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
+
+        self.top_window = parent
 
         self.set_border_width(15)
         self.set_decorated(False)
@@ -749,5 +753,7 @@ class DialogoConfig(gtk.Dialog):
         self.config["opacidad"] = float(
             "%.1f" % widget.get_value())
         self.__set_config(False)
-        self.get_toplevel().set_opacity(
+        self.top_window.set_opacity(
+            self.config["opacidad"])
+        self.set_opacity(
             self.config["opacidad"])

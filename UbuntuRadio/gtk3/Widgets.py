@@ -524,6 +524,8 @@ class DialogoDescarga(Gtk.Dialog):
 
         self.destroy()
 
+        return False
+
 
 class Creditos(Gtk.Dialog):
 
@@ -559,6 +561,8 @@ class DialogoConfig(Gtk.Dialog):
             parent=parent,
             flags=Gtk.DialogFlags.MODAL,
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
+
+        self.top_window = parent
 
         self.set_border_width(15)
         self.set_decorated(False)
@@ -740,5 +744,7 @@ class DialogoConfig(Gtk.Dialog):
         self.config["opacidad"] = float(
             "%.1f" % widget.get_value())
         self.__set_config(False)
-        self.get_toplevel().set_opacity(
+        self.top_window.set_opacity(
+            self.config["opacidad"])
+        self.set_opacity(
             self.config["opacidad"])
