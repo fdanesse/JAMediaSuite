@@ -59,7 +59,8 @@ class WorkPanel(Gtk.Paned):
 
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING)),
     'ejecucion': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_BOOLEAN)),
@@ -127,13 +128,13 @@ class WorkPanel(Gtk.Paned):
 
         self.notebook_sourceview.set_linea(index, texto)
 
-    def __re_emit_new_select(self, widget, view):
+    def __re_emit_new_select(self, widget, view, tipo):
         """
         Recibe nombre y contenido de archivo seleccionado
         en Notebook_SourceView y los envia BasePanel.
         """
 
-        self.emit('new_select', view)
+        self.emit('new_select', view, tipo)
 
     def abrir_archivo(self, archivo):
         """
@@ -300,7 +301,8 @@ class Notebook_SourceView(Gtk.Notebook):
 
     __gsignals__ = {
     'new_select': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING)),
     'update': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
 
@@ -363,7 +365,13 @@ class Notebook_SourceView(Gtk.Notebook):
 
         if view != self.ultimo_view_activo:
             self.ultimo_view_activo = view
-            self.emit('new_select', view)
+
+            #FIXME: HACK tipo es lenguaje (para introspeccion)
+            tipo = False
+            if view.lenguaje:
+                tipo = view.lenguaje.get_name().lower()
+
+            self.emit('new_select', view, tipo)
 
     def abrir_archivo(self, archivo):
         """

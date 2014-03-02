@@ -61,9 +61,9 @@ class SourceView(GtkSource.View):
         self.lenguaje_manager = GtkSource.LanguageManager()
 
         self.lenguajes = {}
-        for id in self.lenguaje_manager.get_language_ids():
-            lang = self.lenguaje_manager.get_language(id)
-            self.lenguajes[id] = lang.get_mime_types()
+        for _id in self.lenguaje_manager.get_language_ids():
+            lang = self.lenguaje_manager.get_language(_id)
+            self.lenguajes[_id] = lang.get_mime_types()
 
         self.set_insert_spaces_instead_of_tabs(True)
         self.set_tab_width(4)
@@ -163,10 +163,13 @@ class SourceView(GtkSource.View):
         import mimetypes
 
         tipo = mimetypes.guess_type(archivo)[0]
+        #FIXME: HACK para forzar detección vala por ejemplo
+        extension = os.path.splitext(
+            os.path.split(archivo)[1])[1].replace(".", "").lower()
 
-        if tipo:
+        if tipo or extension:
             for key in self.lenguajes.keys():
-                if tipo in self.lenguajes[key]:
+                if tipo in self.lenguajes[key] or extension == key.lower():
                     self.lenguaje = self.lenguaje_manager.get_language(key)
                     self.get_buffer().set_language(self.lenguaje)
                     self.get_buffer().set_highlight_syntax(True)
@@ -606,7 +609,7 @@ class SourceView(GtkSource.View):
 
             _id = textiter.get_line()
 
-            line_iter = _buffer.get_iter_at_line(id)
+            line_iter = _buffer.get_iter_at_line(_id)
             chars = line_iter.get_chars_in_line()
 
             if chars > 3:

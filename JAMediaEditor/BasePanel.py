@@ -229,7 +229,7 @@ class BasePanel(Gtk.Paned):
 
         self.emit("ejecucion", tipo, valor)
 
-    def __set_introspeccion(self, widget, view):
+    def __set_introspeccion(self, widget, view, tipo):
         """
         Cuando se selecciona una lengüeta en el Notebook:
         Recibe nombre y contenido de archivo para
@@ -259,17 +259,17 @@ class BasePanel(Gtk.Paned):
         text = ''
 
         if view:
-            buffer = view.get_buffer()
+            _buffer = view.get_buffer()
             archivo = view.archivo
 
             if archivo:
                 nombre = os.path.basename(archivo)
 
-            inicio, fin = buffer.get_bounds()
-            text = buffer.get_text(inicio, fin, 0)
+            inicio, fin = _buffer.get_bounds()
+            text = _buffer.get_text(inicio, fin, 0)
 
         # Setear Introspeción.
-        self.infonotebook.set_introspeccion(nombre, text, view)
+        self.infonotebook.set_introspeccion(nombre, text, view, tipo)
 
     def __cargar_proyecto(self, proyecto):
         """

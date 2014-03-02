@@ -320,7 +320,7 @@ class InfoNotebook(Gtk.Notebook):
         self.estructura_proyecto.set_path_estructura(path)
         self.path_actual = path
 
-    def set_introspeccion(self, nombre, texto, view):
+    def set_introspeccion(self, nombre, texto, view, tipo):
         """
         Recibe nombre y contenido de archivo para
         realizar introspeccion sobre él.
@@ -335,7 +335,8 @@ class InfoNotebook(Gtk.Notebook):
         if self.get_nth_page(0):
             self.set_tab_label_text(self.get_nth_page(0), nombre)
 
-        self.introspeccion.set_introspeccion(nombre, texto, view)
+        self.introspeccion.set_introspeccion(
+            nombre, texto, view, tipo)
 
     def buscar(self, texto):
         """
@@ -394,7 +395,7 @@ class Introspeccion(Gtk.TreeView):
 
         self.emit('new_select', index, texto)
 
-    def set_introspeccion(self, nombre, texto, view):
+    def set_introspeccion(self, nombre, texto, view, tipo):
         """
         Recibe nombre y contenido de archivo para
         realizar introspeccion sobre él.
@@ -410,33 +411,34 @@ class Introspeccion(Gtk.TreeView):
             return
 
         _dict = self.__get_datos_introspeccion(
-            texto)
+            texto, tipo)
 
         iterbase = self.get_model().get_iter_first()
 
         new_class = iterbase
         new_funcion = iterbase
 
-        for key in _dict.keys():
+        if tipo == "python":
+            for key in _dict.keys():
 
-            temp = _dict[key].strip()
+                temp = _dict[key].strip()
 
-            if temp.startswith("class "):
-                color = Gdk.color_parse("#a40000")
-                new_class = self.__append(iterbase,
-                    key, color, temp)
-                new_funcion = new_class
+                if temp.startswith("class "):
+                    color = Gdk.color_parse("#a40000")
+                    new_class = self.__append(iterbase,
+                        key, color, temp)
+                    new_funcion = new_class
 
-            elif temp.startswith("import ") or \
-                temp.startswith("from "):
-                color = Gdk.color_parse("#006e00")
-                self.__append(new_funcion,
-                    key, color, temp)
+                elif temp.startswith("import ") or \
+                    temp.startswith("from "):
+                    color = Gdk.color_parse("#006e00")
+                    self.__append(new_funcion,
+                        key, color, temp)
 
-            elif temp.startswith("def "):
-                color = Gdk.color_parse("#000091")
-                new_funcion = self.__append(new_class,
-                    key, color, temp)
+                elif temp.startswith("def "):
+                    color = Gdk.color_parse("#000091")
+                    new_funcion = self.__append(new_class,
+                        key, color, temp)
 
         self.expand_all()
 
@@ -447,45 +449,46 @@ class Introspeccion(Gtk.TreeView):
 
         return new_iter
 
-    def __get_datos_introspeccion(self, texto):
+    def __get_datos_introspeccion(self, texto, tipo):
 
         from collections import OrderedDict
 
         _dict = OrderedDict()
 
-        bloqueo = False
-        lineas = texto.splitlines()
-        contador = -1
+        if tipo == "python":
+            bloqueo = False
+            lineas = texto.splitlines()
+            contador = -1
 
-        buscar = ["class", "def", "import", "from"]
+            buscar = ["class", "def", "import", "from"]
 
-        for linea in lineas:
-            temp = linea.strip()
-            contador += 1
+            for linea in lineas:
+                temp = linea.strip()
+                contador += 1
 
-            # FIXME: Corregir casos con varias comillas
-            # Bloquear comentarios multilinea.
-            if temp:
-                if temp.startswith("\'\'\'") or \
-                    temp.startswith("\"\"\"") or \
-                    temp.endswith("\'\'\'") or \
-                    temp.endswith("\"\"\""):
+                # FIXME: Corregir casos con varias comillas
+                # Bloquear comentarios multilinea.
+                if temp:
+                    if temp.startswith("\'\'\'") or \
+                        temp.startswith("\"\"\"") or \
+                        temp.endswith("\'\'\'") or \
+                        temp.endswith("\"\"\""):
 
-                    bloqueo = bool(not bloqueo)
+                        bloqueo = bool(not bloqueo)
 
-                if bloqueo:
-                    continue
+                    if bloqueo:
+                        continue
 
-                elif temp and not bloqueo:
-                    if temp.split()[0] in buscar:
-                        l = linea.strip().split(":")[0]
+                    elif temp and not bloqueo:
+                        if temp.split()[0] in buscar:
+                            l = linea.strip().split(":")[0]
 
-                        if temp.split()[0] == "class" or \
-                            temp.split()[0] == "def":
+                            if temp.split()[0] == "class" or \
+                                temp.split()[0] == "def":
 
-                            l = "%s:" % l
+                                l = "%s:" % l
 
-                        _dict[str(contador)] = l
+                            _dict[str(contador)] = l
 
         return _dict
 
