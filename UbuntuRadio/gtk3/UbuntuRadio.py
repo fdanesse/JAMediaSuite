@@ -31,6 +31,8 @@ from Widgets import ItemRecord
 
 GObject.threads_init()
 
+# ATENCION: http://bugs.python.org/issue816476
+
 
 class UbuntuRadio(Gtk.Window):
 
@@ -165,7 +167,7 @@ class UbuntuRadio(Gtk.Window):
             from Globales import eliminar_streaming
 
             eliminar_streaming(uri, "JAM-Radio")
-            print "Streaming Eliminado:", name, uri
+            print("Streaming Eliminado:", name, uri)
 
         Gtk.StyleContext.reset_widgets(Gdk.Screen.get_default())
 

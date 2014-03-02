@@ -175,8 +175,8 @@ def __make_base_directory():
         os.environ["HOME"], "JAMediaDatos")):
         os.mkdir(os.path.join(
             os.environ["HOME"], "JAMediaDatos"))
-        os.chmod(os.path.join(
-            os.environ["HOME"], "JAMediaDatos"), 0755)
+        #os.chmod(os.path.join(
+        #    os.environ["HOME"], "JAMediaDatos"), 0755)
 
     DIRECTORIO_MIS_ARCHIVOS = os.path.join(
         os.environ["HOME"],
@@ -188,11 +188,11 @@ def __make_base_directory():
 
     if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
         os.mkdir(DIRECTORIO_MIS_ARCHIVOS)
-        os.chmod(DIRECTORIO_MIS_ARCHIVOS, 0755)
+        #os.chmod(DIRECTORIO_MIS_ARCHIVOS, 0755)
 
     if not os.path.exists(DIRECTORIO_DATOS):
         os.mkdir(DIRECTORIO_DATOS)
-        os.chmod(DIRECTORIO_DATOS, 0755)
+        #os.chmod(DIRECTORIO_DATOS, 0755)
 
 
 def get_data_directory():
@@ -237,7 +237,7 @@ def get_streamings(path):
 
 def __descarga_lista_de_streamings(url):
 
-    print "Conectandose a:", url, "\n\tDescargando Streamings . . ."
+    print("Conectandose a:", url, "\n\tDescargando Streamings . . .")
 
     import urllib
 
@@ -275,9 +275,9 @@ def __descarga_lista_de_streamings(url):
                 cont += 1
 
             else:
-                print "Direccion Descartada por Repetición:", name, direc
+                print("Direccion Descartada por Repetición:", name, direc)
 
-        print "\tSe han Descargado:", cont, "Estreamings.\n"
+        print("\tSe han Descargado:", cont, "Estreamings.\n")
         return streamings
 
     except:
@@ -299,7 +299,7 @@ def set_listas_default():
         if not os.path.exists(archivo):
             jamedialista = shelve.open(archivo)
             jamedialista.close()
-            os.chmod(archivo, 0666)
+            #os.chmod(archivo, 0666)
 
     archivo = shelve.open(
         os.path.join(
@@ -320,7 +320,7 @@ def set_listas_default():
                     lista_radios)
 
         except:
-            print "Error al descargar Streamings de Radios."
+            print("Error al descargar Streamings de Radios.")
 
 
 def __clear_lista_de_streamings(path):
@@ -365,7 +365,7 @@ def get_streaming_default():
                 lista_radios)
 
     except:
-        print "Error al descargar Streamings de Radios."
+        print("Error al descargar Streamings de Radios.")
 
 
 def stream_en_archivo(streaming, path):

@@ -88,12 +88,12 @@ class MyPlayBin(GObject.Object):
             self.player.recalculate_latency()
 
         elif mensaje.type == Gst.MessageType.EOS:
-            print "\nGst.MessageType.EOS:"
+            print("\nGst.MessageType.EOS:")
             self.emit("endfile")
 
         elif mensaje.type == Gst.MessageType.ERROR:
-            print "\nGst.MessageType.ERROR:"
-            print mensaje.parse_error()
+            print("\nGst.MessageType.ERROR:")
+            print(mensaje.parse_error())
             self.stop()
             self.emit("endfile")
 
@@ -122,3 +122,7 @@ class MyPlayBin(GObject.Object):
 
         if not self.estado == Gst.State.PLAYING:
             self.player.set_state(Gst.State.PLAYING)
+
+if __name__ == "__main__":
+    player = MyPlayBin('http://74.222.5.162:9698/', 0.10)
+    player.play()
