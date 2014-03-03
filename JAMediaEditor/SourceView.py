@@ -245,7 +245,7 @@ class SourceView(GtkSource.View):
         # FIXME: Esto debiera hacerse al cargar el archivo.
         # FIXME: Forzando Introspección.
         self.get_parent().get_parent().emit(
-            'new_select', self)
+            'new_select', self, self.lenguaje)
 
         # Devolver el scroll a donde estaba.
         linea_iter = self.get_buffer().get_iter_at_line(_id)
@@ -530,7 +530,7 @@ class SourceView(GtkSource.View):
             for _id in range(id_0, id_1 + 1):
                 line_iter = _buffer.get_iter_at_line(_id)
                 chars = line_iter.get_chars_in_line()
-                line_end_iter = _buffer.get_iter_at_line_offset(id, chars - 1)
+                line_end_iter = _buffer.get_iter_at_line_offset(_id, chars - 1)
 
                 texto = _buffer.get_text(line_iter, line_end_iter, True)
 
@@ -739,9 +739,19 @@ class SourceView(GtkSource.View):
             color = Gdk.Color(65000, 26000, 0)
 
         scroll = self.get_parent()
+
+        if not scroll:
+            return
+
         notebook = scroll.get_parent()
 
+        if not notebook:
+            return
+
         paginas = notebook.get_n_pages()
+
+        if not paginas:
+            return
 
         for indice in range(paginas):
             page = notebook.get_children()[indice]
