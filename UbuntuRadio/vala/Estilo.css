@@ -1,0 +1,48 @@
+/*http://wiki.xfce.org/howto/gtk_theme*/
+/*https://developer.gnome.org/gtk3/3.0/GtkCssProvider.html*/
+
+/* Contenedores */
+GtkWindow {
+    background-color: #8ae234;
+    color: #ffffff;
+}
+
+/* Menus */
+GtkMenuBar, GtkMenu, GtkMenuItem {
+    background-color: #c0fcf4;
+    color: #000000;
+}
+
+/* Scrollbars */
+.scrollbar {
+    -GtkRange-slider-width: 15;
+    -GtkRange-trough-border: 0;
+    -GtkRange-stepper-size: 0;
+    -GtkScrollbar-min-slider-length: 45;
+    -GtkScrollbar-has-forward-stepper: 0;
+    -GtkScrollbar-has-backward-stepper: 0;
+    -GtkScrollbar-has-secondary-forward-stepper: 0;
+    -GtkScrollbar-has-secondary-backward-stepper: 0;
+}
+.scrollbar.trough {
+    background-color: #ffffff;
+    border-width: 0px;
+}
+.scrollbar.slider {
+    background-color: #ffb481;
+    border-radius: 30px;
+    border-width: 0px;
+}
+.scrollbar.slider:active {
+    background-color: #ff6600;
+}
+
+.tooltip {
+    color: #ffffff;
+    background-color: #ff6600;
+    background-image: none;
+    border-color: #000000;
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 1px;
+}
