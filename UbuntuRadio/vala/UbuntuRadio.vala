@@ -1,14 +1,15 @@
 //valac --pkg gtk+-3.0 --pkg gdk-x11-3.0 --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10 UbuntuRadio.vala
 
+//using GLib;   Se importa siempre por default
 using Gtk;      //--pkg gtk+-3.0
 using Gdk;
-//using GLib;   Se importa siempre por default
+using Gst;      //--pkg gstreamer-1.0
 
 public class UbuntuRadio : Gtk.Window {
     /* Ventana Principal */
 
     private MenuUbuntuRadio menu = new MenuUbuntuRadio();
-    private ItemPlayer player = new ItemPlayer();
+    private ItemPlayer itemplayer = new ItemPlayer();
 
     public UbuntuRadio () {
         /* Constructor default */
@@ -25,7 +26,7 @@ public class UbuntuRadio : Gtk.Window {
         Gtk.Box box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
 
         box.pack_start (this.menu, false, true, 0);
-        box.pack_start (this.player, false, true, 0);
+        box.pack_start (this.itemplayer, false, true, 0);
 
         this.add (box);
 
@@ -38,6 +39,7 @@ public class UbuntuRadio : Gtk.Window {
     private void exit(){
         /* Sale de la aplicación */
 
+        this.itemplayer.stop();
         Gtk.main_quit();
     }
 
@@ -48,6 +50,7 @@ public static int main (string[] args) {
     /* main de la aplicación */
 
     Gtk.init (ref args);
+    Gst.init(ref args);
 
     var screen = Gdk.Screen.get_default();
     var css_provider = new Gtk.CssProvider();

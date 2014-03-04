@@ -46,6 +46,7 @@ public class ItemPlayer : Gtk.Frame {
 
     private Gtk.Button stop_button = new Gtk.Button();
     private Gtk.Image image_button = new Gtk.Image();
+    private UbuntuRadioPlayer player = new UbuntuRadioPlayer();
 
     public ItemPlayer () {
 
@@ -74,11 +75,55 @@ public class ItemPlayer : Gtk.Frame {
 
         this.show_all();
 
+        this.player.estado.connect(this.update_estado);
+        //FIXME: No parece funcionar
+        this.player.endfile.connect(this.endfile);
+        control_volumen.value_changed.connect(this.player.set_volumen);
         this.stop_button.clicked.connect(this.play_stop);
+    }
+
+    public void stop(){
+        /* Para detener el reproductor al cerrar la aplicación */
+
+        this.player.stop();
+    }
+
+    public void load_uri(string uri){
+        /* Carga un streaming en el Reproductor. */
+
+        this.player.load(uri);
+    }
+
+    private void update_estado(string estado){
+        /* Recibe el estado del reproductor cada vez que este cambia */
+
+        if (estado == "playing"){
+            this.image_button.set_from_stock(
+                Gtk.Stock.MEDIA_STOP, Gtk.IconSize.BUTTON);
+        }
+        else{
+            this.image_button.set_from_stock(
+                Gtk.Stock.MEDIA_PLAY, Gtk.IconSize.BUTTON);
+        }
     }
 
     private void play_stop(){
         /* Cuando se hace click en el botón stop */
+
+        if (this.player._estado == "playing"){
+            this.player.stop();
+            }
+
+        else{
+            this.player.play();
+            }
+    }
+
+    private void endfile(){
+        /* Cuando termina la reproducción */
+
+        this.image_button.set_from_stock(
+            Gtk.Stock.MEDIA_PLAY, Gtk.IconSize.BUTTON);
     }
 
 }
