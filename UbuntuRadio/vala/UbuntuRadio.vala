@@ -7,6 +7,7 @@ using Gdk;
 public class UbuntuRadio : Gtk.Window {
     /* Ventana Principal */
 
+    private MenuUbuntuRadio menu = new MenuUbuntuRadio();
 
     public UbuntuRadio () {
         /* Constructor default */
@@ -20,6 +21,13 @@ public class UbuntuRadio : Gtk.Window {
 		//this.set_resizable(true);
         this.set("border_width", 5);
 
+        Gtk.Box box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
+
+        box.pack_start (this.menu, false, true, 0);
+
+        this.add (box);
+
+        this.menu.salir.connect (this.exit);
         this.destroy.connect (this.exit);
 
         this.show_all();
