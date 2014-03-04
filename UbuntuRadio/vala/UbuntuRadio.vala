@@ -8,6 +8,7 @@ public class UbuntuRadio : Gtk.Window {
     /* Ventana Principal */
 
     private MenuUbuntuRadio menu = new MenuUbuntuRadio();
+    private ItemPlayer player = new ItemPlayer();
 
     public UbuntuRadio () {
         /* Constructor default */
@@ -24,6 +25,7 @@ public class UbuntuRadio : Gtk.Window {
         Gtk.Box box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
 
         box.pack_start (this.menu, false, true, 0);
+        box.pack_start (this.player, false, true, 0);
 
         this.add (box);
 
