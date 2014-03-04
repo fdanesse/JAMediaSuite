@@ -47,6 +47,7 @@ public class ItemPlayer : Gtk.Frame {
     private Gtk.Button stop_button = new Gtk.Button();
     private Gtk.Image image_button = new Gtk.Image();
     private UbuntuRadioPlayer player = new UbuntuRadioPlayer();
+    private Gtk.Label infolabel = new Gtk.Label("");
 
     public ItemPlayer () {
 
@@ -60,7 +61,7 @@ public class ItemPlayer : Gtk.Frame {
 
         Gtk.VolumeButton control_volumen = new Gtk.VolumeButton();
 
-        hbox.pack_start(new Gtk.Label(""),
+        hbox.pack_start(this.infolabel,
             false, true, 0);
         hbox.pack_end(this.stop_button,
             false, true, 0);
@@ -88,9 +89,10 @@ public class ItemPlayer : Gtk.Frame {
         this.player.stop();
     }
 
-    public void load_uri(string uri){
+    public void load(string bandera, string _name, string uri){
         /* Carga un streaming en el Reproductor. */
 
+        this.infolabel.set_text(_name);
         this.player.load(uri);
     }
 
@@ -124,6 +126,90 @@ public class ItemPlayer : Gtk.Frame {
 
         this.image_button.set_from_stock(
             Gtk.Stock.MEDIA_PLAY, Gtk.IconSize.BUTTON);
+    }
+
+}
+
+
+public class Streaming : GLib.Object{
+    /*
+    Un Elemento para la lista de Streamings es una lista
+    de 3 elementos que contiene:
+        path al icono de la bandera
+        nombre del streamings
+        url del streaming
+    */
+
+    public string icono;
+    public string nombre;
+    public string url;
+
+    public Streaming (string icono, string nombre, string url) {
+        this.icono = icono;
+        this.nombre = nombre;
+        this.url = url;
+    }
+}
+
+
+public class Lista : Gtk.TreeView {
+    /* Lista de Streamings */
+
+    private Gtk.ListStore lista = new Gtk.ListStore (
+        3, typeof (string), typeof (string), typeof (string));
+
+    public signal void selected(string val1, string val2, string val3);
+
+    public Lista () {
+        /* Constructor default */
+
+        this.set_model (this.lista);
+
+        this.insert_column_with_attributes (
+            -1, "", new Gtk.CellRendererText (), "text", 0);
+        this.insert_column_with_attributes (
+            -1, "Emisora", new Gtk.CellRendererText (), "text", 1);
+        this.insert_column_with_attributes (
+            -1, "", new Gtk.CellRendererText (), "text", 2);
+
+        this.lista.set_sort_column_id(1, Gtk.SortType.DESCENDING);
+
+        this.show_all();
+
+        this.row_activated.connect(this.clicked);
+    }
+
+    private void clicked(Gtk.TreePath path, Gtk.TreeViewColumn column){
+        /*
+        Cuando se hace doble click en un elemento de la lista
+        se emite la señal selected
+        */
+
+        Gtk.TreeIter iter;
+	    GLib.Value val1;
+	    GLib.Value val2;
+	    GLib.Value val3;
+
+	    this.lista.get_iter (out iter, path);
+
+        this.lista.get_value (iter, 0, out val1);
+	    this.lista.get_value (iter, 1, out val2);
+	    this.lista.get_value (iter, 2, out val3);
+
+        this.selected((string) val1, (string) val2, (string) val3);
+    }
+
+    public void set_lista(Streaming [] list){
+        /* Agrega elementos a la lista */
+
+        this.lista.clear();
+
+        foreach (Streaming streaming in list){
+            Gtk.TreeIter iter;
+            this.lista.append (out iter);
+            this.lista.set (iter, 0, streaming.icono,
+                1, streaming.nombre, 2, streaming.url);
+        }
     }
 
 }

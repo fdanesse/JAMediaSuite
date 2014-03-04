@@ -10,6 +10,8 @@ public class UbuntuRadio : Gtk.Window {
 
     private MenuUbuntuRadio menu = new MenuUbuntuRadio();
     private ItemPlayer itemplayer = new ItemPlayer();
+    private Gtk.ScrolledWindow scroll_list = new Gtk.ScrolledWindow(null, null);
+    private Lista lista = new Lista();
 
     public UbuntuRadio () {
         /* Constructor default */
@@ -25,15 +27,50 @@ public class UbuntuRadio : Gtk.Window {
 
         Gtk.Box box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
 
+        this.scroll_list.set_policy (
+            PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+        this.scroll_list.add (this.lista);
+
         box.pack_start (this.menu, false, true, 0);
         box.pack_start (this.itemplayer, false, true, 0);
+        box.pack_start (this.scroll_list, true, true, 0);
 
         this.add (box);
 
         this.menu.salir.connect (this.exit);
+        this.lista.selected.connect (this.do_clicked_in_list);
         this.destroy.connect (this.exit);
 
         this.show_all();
+
+        this.load_list ();
+    }
+
+    private void load_list () {
+        /* Carga la lista de streamings */
+
+        //Lista compleja
+        Streaming [] streaming_list = new Streaming [3];
+
+        streaming_list[0] = new Streaming(
+            "", "RauteMusik JaM (Alemania)",
+            "http://main-office.rautemusik.fm");
+        streaming_list[1] = new Streaming(
+            "", "Oceano FM 93.9 (Montevideo - Uruguay)",
+            "http://radio1.oceanofm.com:8010/");
+        streaming_list[2] = new Streaming(
+            "", "Azul FM 101.9 (Montevideo - Uruguay)",
+            "http://74.222.5.162:9698/");
+
+        this.lista.set_lista(streaming_list);
+    }
+
+    private void do_clicked_in_list(string val1, string val2, string val3){
+        /* Cuando se hace doble click en un elemento de la lista */
+
+        //stdout.printf ("%s %s %s\n", val1, val2, val3);
+
+        this.itemplayer.load(val1, val2, val3);
     }
 
     private void exit(){
