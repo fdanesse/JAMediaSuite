@@ -53,14 +53,14 @@ public class UbuntuRadioPlayer : GLib.Object{
 
         if (this._uri != ""){
             this.player.set_state(Gst.State.PLAYING);
-            loop.run();
+            this.loop.run();
         }
     }
 
     public void stop(){
 
         this.player.set_state(Gst.State.NULL);
-        loop.quit();
+        this.loop.quit();
     }
 
     private void sync_message (Gst.Message message){

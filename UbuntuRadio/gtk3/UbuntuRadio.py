@@ -29,8 +29,6 @@ from Widgets import Lista
 from Widgets import ItemPlayer
 from Widgets import ItemRecord
 
-GObject.threads_init()
-
 # ATENCION: http://bugs.python.org/issue816476
 
 
@@ -41,6 +39,7 @@ class UbuntuRadio(Gtk.Window):
     def __init__(self):
 
         Gtk.Window.__init__(self)
+        GObject.threads_init()
 
         from Globales import get_estilo
 

@@ -100,12 +100,16 @@ public class ItemPlayer : Gtk.Frame {
         /* Recibe el estado del reproductor cada vez que este cambia */
 
         if (estado == "playing"){
-            this.image_button.set_from_stock(
+            Idle.add (() => {
+                this.image_button.set_from_stock(
                 Gtk.Stock.MEDIA_STOP, Gtk.IconSize.BUTTON);
+                return false;});
         }
         else{
-            this.image_button.set_from_stock(
+            Idle.add (() => {
+                this.image_button.set_from_stock(
                 Gtk.Stock.MEDIA_PLAY, Gtk.IconSize.BUTTON);
+                return false;});
         }
     }
 
@@ -124,8 +128,10 @@ public class ItemPlayer : Gtk.Frame {
     private void endfile(){
         /* Cuando termina la reproducción */
 
-        this.image_button.set_from_stock(
-            Gtk.Stock.MEDIA_PLAY, Gtk.IconSize.BUTTON);
+        Idle.add (() => {
+            this.image_button.set_from_stock(
+            Gtk.Stock.MEDIA_STOP, Gtk.IconSize.BUTTON);
+            return false;});
     }
 
 }

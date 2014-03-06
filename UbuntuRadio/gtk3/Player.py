@@ -27,7 +27,6 @@ from gi.repository import GObject
 from gi.repository import Gst
 
 Gst.init([])
-GObject.threads_init()
 
 
 class MyPlayBin(GObject.Object):
@@ -44,6 +43,7 @@ class MyPlayBin(GObject.Object):
     def __init__(self, uri, volumen):
 
         GObject.Object.__init__(self)
+        GObject.threads_init()
 
         self.estado = "None"
 
