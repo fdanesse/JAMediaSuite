@@ -292,6 +292,6 @@ public class Creditos : Gtk.Dialog{
         Box.pack_start(imagen, true, true, 0);
         Box.show_all();
 
-        this.add_button ("Cerrar", 0);
+        this.add_button ("Cerrar", Gtk.ResponseType.OK);
     }
 }

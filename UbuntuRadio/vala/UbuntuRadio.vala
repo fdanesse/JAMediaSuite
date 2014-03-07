@@ -5,6 +5,7 @@ using Gtk;      //--pkg gtk+-3.0
 using Gdk;
 using Gst;      //--pkg gstreamer-1.0
 
+
 public class UbuntuRadio : Gtk.Window {
     /* Ventana Principal */
 
@@ -106,7 +107,7 @@ public class UbuntuRadio : Gtk.Window {
     private void creditos(){
 
         Creditos credits = new Creditos(this,
-            "This action will cause the universe to stop existing.");
+            "Creditos");
 
         credits.run();
         credits.destroy();
