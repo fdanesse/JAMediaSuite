@@ -42,7 +42,12 @@ public class UbuntuRadio : Gtk.Window {
 
         this.add (box);
 
+        this.menu.radios.connect (this.radios);
+        this.menu.configurar.connect (this.configurar);
+        this.menu.creditos.connect (this.creditos);
+        this.menu.actualizar.connect (this.actualizar);
         this.menu.salir.connect (this.exit);
+
         this.lista.selected.connect (this.do_clicked_in_list);
         this.destroy.connect (this.exit);
 
@@ -75,7 +80,39 @@ public class UbuntuRadio : Gtk.Window {
 
         //stdout.printf ("%s %s %s\n", val1, val2, val3);
 
+        //FIXME: Cambiar esto por Dialogo Contextual
         this.itemplayer.load(val1, val2, val3);
+        //this.menuSystem.popup(null, null,
+        //    this.trayicon.position_menu, 2,
+        //    Gtk.get_current_event_time());
+        //MenuStreamList menulist = new MenuStreamList();
+    }
+
+    private void radios(){
+
+        if (this.scroll_list.get_visible()){
+            this.scroll_list.hide();
+            this.resize (200, 10);
+        }
+        else{
+            this.scroll_list.show();
+            this.resize (200, 400);
+        }
+    }
+
+    private void configurar(){
+    }
+
+    private void creditos(){
+
+        Creditos credits = new Creditos(this,
+            "This action will cause the universe to stop existing.");
+
+        credits.run();
+        credits.destroy();
+    }
+
+    private void actualizar(){
     }
 
     private void exit(){

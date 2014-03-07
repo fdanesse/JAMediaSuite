@@ -2,6 +2,10 @@
 public class MenuUbuntuRadio : Gtk.MenuBar {
     /* Menú Principal de la aplicación */
 
+    public signal void radios();
+    public signal void configurar();
+    public signal void creditos();
+    public signal void actualizar();
     public signal void salir();
 
     public MenuUbuntuRadio () {
@@ -12,19 +16,19 @@ public class MenuUbuntuRadio : Gtk.MenuBar {
 		item1.set_submenu(menu);
 
 		Gtk.MenuItem item2 = new Gtk.MenuItem.with_label ("Radios");
-        //item2.activate.connect(this.listar_radios);
+        item2.activate.connect(this.emit_listar_radios);
         menu.append(item2);
 
         Gtk.MenuItem item3 = new Gtk.MenuItem.with_label ("Configurar...");
-        //item3.activate.connect(this.configurar);
+        item3.activate.connect(this.emit_configurar);
         menu.append(item3);
 
         Gtk.MenuItem item4 = new Gtk.MenuItem.with_label ("Creditos...");
-        //item4.activate.connect(this.creditos);
+        item4.activate.connect(this.emit_creditos);
         menu.append(item4);
 
         Gtk.MenuItem item5 = new Gtk.MenuItem.with_label ("Actualizar Lista");
-        //item5.activate.connect(this.emit_actualizar);
+        item5.activate.connect(this.emit_actualizar);
         menu.append(item5);
 
         Gtk.MenuItem item6 = new Gtk.MenuItem.with_label ("Salir");
@@ -35,8 +39,55 @@ public class MenuUbuntuRadio : Gtk.MenuBar {
         this.show_all();
     }
 
+    private void emit_listar_radios(){
+        this.radios();
+    }
+
+    private void emit_configurar(){
+        this.configurar();
+    }
+
+    private void emit_creditos(){
+        this.creditos();
+    }
+
+    private void emit_actualizar(){
+        this.actualizar();
+    }
+
     private void emit_salir(){
         this.salir();
+    }
+}
+
+
+public class MenuStreamList : Gtk.Menu {
+    /* Menú Principal de la aplicación */
+
+    //public signal void salir();
+
+    public MenuStreamList () {
+
+		Gtk.MenuItem item2 = new Gtk.MenuItem.with_label ("Reproducir");
+        //item2.activate.connect(this.listar_radios);
+        this.append(item2);
+
+        Gtk.MenuItem item3 = new Gtk.MenuItem.with_label ("Quitar de la Lista");
+        //item3.activate.connect(this.configurar);
+        this.append(item3);
+
+        Gtk.MenuItem item4 = new Gtk.MenuItem.with_label ("Borrar Streaming");
+        //item4.activate.connect(this.creditos);
+        this.append(item4);
+
+        Gtk.MenuItem item5 = new Gtk.MenuItem.with_label ("Grabar");
+        //item5.activate.connect(this.emit_actualizar);
+        this.append(item5);
+
+        this.show_all();
+
+        //this.popup(null, null, this.trayicon.position_menu, 2, Gtk.get_current_event_time());
+        this.popup(null, null, null, 2, Gtk.get_current_event_time());
     }
 }
 
@@ -179,7 +230,9 @@ public class Lista : Gtk.TreeView {
             -1, "", new Gtk.CellRendererText (), "text", 2);
 
         this.lista.set_sort_column_id(1, Gtk.SortType.DESCENDING);
-
+        this.set("headers_visible", true);
+        //this.set("activate_on_single_click", true);
+        this.set("headers_clickable", true);
         this.show_all();
 
         this.row_activated.connect(this.clicked);
@@ -218,4 +271,27 @@ public class Lista : Gtk.TreeView {
         }
     }
 
+}
+
+public class Creditos : Gtk.Dialog{
+
+    public Creditos (Gtk.Window parent, string title) {
+
+        this.set("title", title);
+        this.set_modal(true);
+        this.set_transient_for(parent);
+        this.set("border_width", 15);
+
+        this.set_decorated(false);
+        this.set_resizable(false);
+
+        Gtk.Image imagen = new Gtk.Image();
+        imagen.set_from_file("Iconos/creditos.svg");
+
+        Gtk.Box Box = this.get_content_area ();
+        Box.pack_start(imagen, true, true, 0);
+        Box.show_all();
+
+        this.add_button ("Cerrar", 0);
+    }
 }
