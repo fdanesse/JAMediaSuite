@@ -64,12 +64,36 @@ public class MenuUbuntuRadio : Gtk.MenuBar {
 public class MenuStreamList : Gtk.Menu {
     /* Menú Principal de la aplicación */
 
-    //public signal void salir();
+    public signal void accion(string acc, string val1, string val2, string val3);
 
-    public MenuStreamList (Gtk.Widget widget) {
+    private Gtk.ListStore lista;
+    private Gtk.TreePath path;
+    private string _val1;
+    private string _val2;
+    private string _val3;
+
+    public MenuStreamList (Gtk.Widget widget, Gtk.TreePath _path, Gtk.ListStore _model) {
+
+        this.lista = _model;
+        this.path = _path;
+
+        Gtk.TreeIter iter;
+	    GLib.Value val1;
+	    GLib.Value val2;
+	    GLib.Value val3;
+
+	    this.lista.get_iter (out iter, this.path);
+
+        this.lista.get_value (iter, 0, out val1);
+	    this.lista.get_value (iter, 1, out val2);
+	    this.lista.get_value (iter, 2, out val3);
+
+	    this._val1 = (string) val1;
+	    this._val2 = (string) val2;
+	    this._val3 = (string) val3;
 
 		Gtk.MenuItem item2 = new Gtk.MenuItem.with_label ("Reproducir");
-        //item2.activate.connect(this.listar_radios);
+        item2.activate.connect(this.emit_play);
         this.append(item2);
 
         Gtk.MenuItem item3 = new Gtk.MenuItem.with_label ("Quitar de la Lista");
@@ -86,10 +110,13 @@ public class MenuStreamList : Gtk.Menu {
 
         this.show_all();
 
-        //this.popup(null, null, this.trayicon.position_menu, 2, Gtk.get_current_event_time());
-        //this.popup(null, null, null, 2, Gtk.get_current_event_time());
         this.attach_to_widget(widget, null);
 
+    }
+
+    private void emit_play(){
+
+        this.accion("play", this._val1, this._val2, this._val3);
     }
 }
 
@@ -241,26 +268,17 @@ public class Lista : Gtk.TreeView {
     }
 
     private void clicked(Gtk.TreePath path, Gtk.TreeViewColumn column){
-        /*
-        Cuando se hace doble click en un elemento de la lista
-        se emite la señal selected
-        */
-        /*
-        Gtk.TreeIter iter;
-	    GLib.Value val1;
-	    GLib.Value val2;
-	    GLib.Value val3;
 
-	    this.lista.get_iter (out iter, path);
-
-        this.lista.get_value (iter, 0, out val1);
-	    this.lista.get_value (iter, 1, out val2);
-	    this.lista.get_value (iter, 2, out val3);
-
-        this.selected((string) val1, (string) val2, (string) val3);
-        */
-        MenuStreamList menu = new MenuStreamList(this);
+        MenuStreamList menu = new MenuStreamList(this, path, this.lista);
+        menu.accion.connect(this.set_accion);
         menu.popup(null, null, null, 1, Gtk.get_current_event_time());
+    }
+
+    private void set_accion(string acc, string val1, string val2, string val3){
+
+        if (acc == "play"){
+            this.selected(val1, val2, val3);
+        }
     }
 
     public void set_lista(SList<Streaming> list){
