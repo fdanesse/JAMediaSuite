@@ -13,6 +13,7 @@ public class UbuntuRadio : Gtk.Window {
 
     private MenuUbuntuRadio menu = new MenuUbuntuRadio();
     private ItemPlayer itemplayer = new ItemPlayer();
+    private ItemRecord itemrecord = new ItemRecord();
     private Gtk.ScrolledWindow scroll_list = new Gtk.ScrolledWindow(null, null);
     private Lista lista = new Lista();
 
@@ -40,6 +41,7 @@ public class UbuntuRadio : Gtk.Window {
 
         box.pack_start (this.menu, false, true, 0);
         box.pack_start (this.itemplayer, false, true, 0);
+        box.pack_start (this.itemrecord, false, true, 0);
         box.pack_start (this.scroll_list, true, true, 0);
 
         this.add (box);
@@ -51,6 +53,7 @@ public class UbuntuRadio : Gtk.Window {
         this.menu.salir.connect (this.exit);
 
         this.lista.play.connect (this.do_play_in_list);
+        this.lista.record.connect (this.do_record_in_list);
         this.destroy.connect (this.exit);
 
         this.show_all();
@@ -74,6 +77,14 @@ public class UbuntuRadio : Gtk.Window {
         */
 
         this.itemplayer.load(val1, val2, val3);
+    }
+
+    private void do_record_in_list(string val1, string val2, string val3){
+        /*
+        Cuando se hace grabar en un elemento de la lista
+        */
+
+        this.itemrecord.load(val1, val2, val3);
     }
 
     private void radios(){
@@ -107,6 +118,7 @@ public class UbuntuRadio : Gtk.Window {
     private void exit(){
 
         this.itemplayer.stop();
+        this.itemrecord.stop();
         Gtk.main_quit();
     }
 

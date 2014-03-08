@@ -243,7 +243,112 @@ public class ItemPlayer : Gtk.Frame {
 
         Idle.add (() => {
             this.image_button.set_from_stock(
-            Gtk.Stock.MEDIA_STOP, Gtk.IconSize.BUTTON);
+            Gtk.Stock.MEDIA_PLAY, Gtk.IconSize.BUTTON);
+            return false;});
+    }
+
+}
+
+
+public class ItemRecord : Gtk.Frame {
+    /*
+    Widget con Grabador de Streaming
+    */
+
+    private Gtk.Button stop_button = new Gtk.Button();
+    private Gtk.Image image_button = new Gtk.Image();
+    //private UbuntuRadioPlayer player = new UbuntuRadioPlayer();
+    private Gtk.Label infolabel = new Gtk.Label("");
+
+    public ItemRecord () {
+
+        this.set_label(" Grabando . . . ");
+
+        Gtk.EventBox eventbox = new Gtk.EventBox();
+        eventbox.set_border_width(5);
+        Gtk.Box hbox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+        eventbox.add(hbox);
+        this.add(eventbox);
+
+        hbox.pack_start(this.infolabel,
+            false, true, 0);
+        hbox.pack_end(this.stop_button,
+            false, true, 0);
+
+        this.image_button.set_from_stock(
+            Gtk.Stock.MEDIA_RECORD, Gtk.IconSize.BUTTON);
+        this.stop_button.set_image(this.image_button);
+
+        this.show_all();
+
+        //this.player.estado.connect(this.update_estado);
+        //FIXME: No parece funcionar
+        //this.player.endfile.connect(this.endfile);
+        this.stop_button.clicked.connect(this.play_stop);
+    }
+
+    public void stop(){
+        /*
+        Se usa para detener el reproductor al cerrar la aplicación
+        */
+        /*
+        if (this.player._estado == "playing"){
+            this.player.stop();
+            }
+        */
+    }
+
+    public void load(string bandera, string _name, string uri){
+        /*
+        Carga un streaming en el Reproductor.
+        */
+
+        this.infolabel.set_text(_name);
+        //this.player.load(uri);
+    }
+
+    private void update_estado(string estado){
+        /*
+        Recibe el estado del reproductor cada vez que este cambia
+        */
+        /*
+        if (estado == "playing"){
+            Idle.add (() => {
+                this.image_button.set_from_stock(
+                Gtk.Stock.MEDIA_STOP, Gtk.IconSize.BUTTON);
+                return false;});
+        }
+        else{
+            Idle.add (() => {
+                this.image_button.set_from_stock(
+                Gtk.Stock.MEDIA_RECORD, Gtk.IconSize.BUTTON);
+                return false;});
+        }
+        */
+    }
+
+    private void play_stop(){
+        /*
+        Cuando se hace click en el botón stop
+        */
+
+        //if (this.player._estado == "playing"){
+        //    this.player.stop();
+        //    }
+
+        //else{
+        //    this.player.play();
+        //    }
+    }
+
+    private void endfile(){
+        /*
+        Cuando termina la reproducción
+        */
+
+        Idle.add (() => {
+            this.image_button.set_from_stock(
+            Gtk.Stock.MEDIA_RECORD, Gtk.IconSize.BUTTON);
             return false;});
     }
 
@@ -277,6 +382,7 @@ public class Lista : Gtk.TreeView {
         3, typeof (string), typeof (string), typeof (string));
 
     public signal void play(string val1, string val2, string val3);
+    public signal void record(string val1, string val2, string val3);
 
     public Lista () {
 
@@ -315,6 +421,7 @@ public class Lista : Gtk.TreeView {
             this.play(val1, val2, val3);
             }
         else if (accion == "record"){
+            this.record(val1, val2, val3);
             }
         else if (accion == "borrar"){
             }
