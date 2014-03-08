@@ -257,7 +257,7 @@ public class ItemRecord : Gtk.Frame {
 
     private Gtk.Button stop_button = new Gtk.Button();
     private Gtk.Image image_button = new Gtk.Image();
-    //private UbuntuRadioPlayer player = new UbuntuRadioPlayer();
+    private UbuntuRadioRecord player = new UbuntuRadioRecord();
     private Gtk.Label infolabel = new Gtk.Label("");
 
     public ItemRecord () {
@@ -281,9 +281,10 @@ public class ItemRecord : Gtk.Frame {
 
         this.show_all();
 
-        //this.player.estado.connect(this.update_estado);
+        this.player.estado.connect(this.update_estado);
+        //this.player.update.connect(this.update_info);
         //FIXME: No parece funcionar
-        //this.player.endfile.connect(this.endfile);
+        this.player.endfile.connect(this.endfile);
         this.stop_button.clicked.connect(this.play_stop);
     }
 
@@ -291,11 +292,10 @@ public class ItemRecord : Gtk.Frame {
         /*
         Se usa para detener el reproductor al cerrar la aplicación
         */
-        /*
+
         if (this.player._estado == "playing"){
             this.player.stop();
             }
-        */
     }
 
     public void load(string bandera, string _name, string uri){
@@ -311,7 +311,7 @@ public class ItemRecord : Gtk.Frame {
         /*
         Recibe el estado del reproductor cada vez que este cambia
         */
-        /*
+
         if (estado == "playing"){
             Idle.add (() => {
                 this.image_button.set_from_stock(
@@ -324,7 +324,6 @@ public class ItemRecord : Gtk.Frame {
                 Gtk.Stock.MEDIA_RECORD, Gtk.IconSize.BUTTON);
                 return false;});
         }
-        */
     }
 
     private void play_stop(){
