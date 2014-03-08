@@ -60,19 +60,8 @@ public class UbuntuRadio : Gtk.Window {
     private void load_list () {
         /* Carga la lista de streamings */
 
-        //Lista compleja
-        Streaming [] streaming_list = new Streaming [3];
-
-        streaming_list[0] = new Streaming(
-            "", "RauteMusik JaM (Alemania)",
-            "http://main-office.rautemusik.fm");
-        streaming_list[1] = new Streaming(
-            "", "Oceano FM 93.9 (Montevideo - Uruguay)",
-            "http://radio1.oceanofm.com:8010/");
-        streaming_list[2] = new Streaming(
-            "", "Azul FM 101.9 (Montevideo - Uruguay)",
-            "http://74.222.5.162:9698/");
-
+        set_listas_default();
+        SList<Streaming> streaming_list = get_streamings();
         this.lista.set_lista(streaming_list);
     }
 

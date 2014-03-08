@@ -2,7 +2,7 @@
 //const string RADIOS = "https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014";
 
 using Soup;     //--pkg libsoup-2.4
-
+using Json;     //--pkg json-glib-1.0
 
 //def set_estilo(dict_colors):
 //def get_estilo():
@@ -17,13 +17,13 @@ public void make_base_directory(){
     try {
         string HOME = GLib.Environment.get_variable("HOME");
 
-        string JAMEDIA = Path.build_filename(
+        string JAMEDIA = GLib.Path.build_filename(
             HOME, "JAMediaDatos2");
 
-        string MIS_ARCHIVOS = Path.build_filename(
+        string MIS_ARCHIVOS = GLib.Path.build_filename(
             HOME, "JAMediaDatos2", "MisArchivos");
 
-        string DATOS = Path.build_filename(
+        string DATOS = GLib.Path.build_filename(
             HOME, "JAMediaDatos2", "Datos");
 
         string [] dirlist = {JAMEDIA, MIS_ARCHIVOS, DATOS};
@@ -47,7 +47,7 @@ public string get_data_directory(){
     try{
         string HOME = GLib.Environment.get_variable("HOME");
 
-        string DATOS = Path.build_filename(
+        string DATOS = GLib.Path.build_filename(
             HOME, "JAMediaDatos2", "Datos");
 
         File file = File.new_for_path(DATOS);
@@ -71,7 +71,7 @@ public string get_my_files_directory(){
     try{
         string HOME = GLib.Environment.get_variable("HOME");
 
-        string MIS_ARCHIVOS = Path.build_filename(
+        string MIS_ARCHIVOS = GLib.Path.build_filename(
             HOME, "JAMediaDatos2", "MisArchivos");
 
         File file = File.new_for_path((string) MIS_ARCHIVOS);
@@ -88,15 +88,37 @@ public string get_my_files_directory(){
 }
 
 
-//def get_streamings(path):
+public SList<Streaming> get_streamings(){
+    /*
+    Devuelve la lista de Streamings
+    */
 
+    SList<Streaming> streaming_list = new SList<Streaming> ();
 
-public SList<Streaming> descarga_lista_de_streamings(string url){
+    string home = GLib.Environment.get_variable("HOME");
+    string radios = GLib.Path.build_filename(
+        home, "JAMediaDatos2", "Datos", "JAMediaRadio.JAMedia");
 
+    Json.Parser parser = new Json.Parser ();
+    parser.load_from_file (radios);
+    Json.Node node = parser.get_root ();
+    unowned Json.Object obj = node.get_object ();
+
+    foreach (unowned string name in obj.get_members ()){
+        unowned Json.Node item = obj.get_member (name);
+        Streaming streaming = new Streaming("", name, item.get_string());
+        streaming_list.append(streaming);
+    }
+
+    return streaming_list;
+}
+
+public SList<Streaming> descarga_lista_de_streamings(){
+
+    string url = "https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014";
     stdout.printf("Conectandose a: %s \n\tDescargando Streamings . . .", url);
 
-    int cont = 0;
-    SList<string> urls = new SList<string> ();
+    //SList<string> urls = new SList<string> ();
     string cabecera = "JAMedia Channels:";
     SList<Streaming> streamings = new SList<Streaming> ();
 
@@ -112,7 +134,6 @@ public SList<Streaming> descarga_lista_de_streamings(string url){
 		    text += line;
 			}
 
-        //FIXME: Verificar "<div>" en version python
         string streamings_text = text.split(cabecera)[1];
         string streamings_text1 = streamings_text.replace(
             "</div>", "").replace("/>", "").replace("<div>", "");
@@ -138,13 +159,11 @@ public SList<Streaming> descarga_lista_de_streamings(string url){
                     //urls.append(direc);
                     Streaming streaming = new Streaming("", name, direc);
                     streamings.append(streaming);
-                    //FIXME: Violación de Segmento.
-                    //cont++;
                 //}
             }
         }
 
-        stdout.printf("\tSe han Descargado: %s Estreamings.\n", (string) cont);
+        stdout.printf("\tSe han Descargado: %s Estreamings.\n", (string) streamings.length);
         }
 
     catch (Error e){
@@ -154,50 +173,66 @@ public SList<Streaming> descarga_lista_de_streamings(string url){
     return streamings;
 }
 
-//def set_listas_default():
-//def clear_lista_de_streamings(path):
-//def guarda_lista_de_streamings(path, items):
+public void set_listas_default(){
+    /*
+    Si la lista de strimings no se encuentra,
+    se descarga.
+    */
+
+    string DIRECTORIO_DATOS = get_data_directory();
+
+    string home = GLib.Environment.get_variable("HOME");
+    string radios = GLib.Path.build_filename(
+        home, "JAMediaDatos2", "Datos", "JAMediaRadio.JAMedia");
+
+    File file = File.new_for_path(radios);
+
+    if(file.query_exists() != true) {
+        get_streaming_default();
+    }
+}
 
 
 public void get_streaming_default(){
+    /*
+    Descarga la lista de streamings de JAMedia
+    */
 
     try{
         string DATOS = get_data_directory();
-        string RADIOS = "https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014";
-        SList<Streaming> lista_radios = descarga_lista_de_streamings(RADIOS);
-        /*
-        clear_lista_de_streamings(
-            os.path.join(
-                DIRECTORIO_DATOS,
-                "JAMediaRadio.JAMedia"))
+        SList<Streaming> lista_radios = descarga_lista_de_streamings();
 
-        guarda_lista_de_streamings(
-            os.path.join(
-                DIRECTORIO_DATOS,
-                "JAMediaRadio.JAMedia"),
-                lista_radios)
-        */
+        Json.Builder builder = new Json.Builder ();
+	    builder.begin_object ();
+
+	    foreach (Streaming s in lista_radios){
+	        builder.set_member_name (s.nombre);
+	        builder.add_string_value (s.url);
+	    }
+
+	    builder.end_object ();
+
+        //FIXME: No se entiende pero está acá :P
+        //https://mail.gnome.org/archives/commits-list/2012-September/msg03363.html
+
+        Json.Generator generator = new Json.Generator ();
+	    Json.Node root = builder.get_root ();
+	    generator.set_root (root);
+	    string str = generator.to_data (null);
+
+        string home = GLib.Environment.get_variable("HOME");
+        string jamedia = GLib.Path.build_filename(
+            home, "JAMediaDatos2", "Datos", "JAMediaRadio.JAMedia");
+
+        var file = File.new_for_path (jamedia);
+        var file_stream = file.create (FileCreateFlags.PRIVATE);
+        var data_stream = new DataOutputStream (file_stream);
+        data_stream.put_string (str);
     }
     catch{
         stdout.printf("Error al descargar Streamings de Radios.");
     }
 }
 
-/*
-public static int main (string[] args) {
-
-    try {
-        //string a = get_data_directory();
-        //string b = get_my_files_directory();
-        //stdout.printf("%s :: %s", a, b);
-        //make_base_directory();
-        get_streaming_default();
-        return 0;
-    }
-    catch {
-        return 1;
-    }
-}
-*/
 //def stream_en_archivo(streaming, path):
 //def eliminar_streaming(url, lista):

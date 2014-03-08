@@ -258,7 +258,7 @@ public class Lista : Gtk.TreeView {
         this.selected((string) val1, (string) val2, (string) val3);
     }
 
-    public void set_lista(Streaming [] list){
+    public void set_lista(SList<Streaming> list){
         /* Agrega elementos a la lista */
 
         this.lista.clear();

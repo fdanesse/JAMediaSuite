@@ -259,8 +259,9 @@ def __descarga_lista_de_streamings(url):
             text = "%s%s" % (text, l)
 
         streamings_text = text.split(cabecera)[1]
-        streamings_text = streamings_text.replace('</div>', "")
-        streamings_text = streamings_text.replace('/>', "")
+        streamings_text = streamings_text.replace(
+            '</div>', "").replace('/>', "").replace("<div>", "")
+
         lista = streamings_text.split('<br')
 
         for s in lista:
