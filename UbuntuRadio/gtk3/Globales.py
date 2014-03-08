@@ -212,6 +212,9 @@ def get_data_directory():
 
 
 def get_my_files_directory():
+    """
+    Devuelve el directorio mis archivos, (donde se guardan las grabaciones).
+    """
 
     import os
 

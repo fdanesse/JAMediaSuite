@@ -106,14 +106,18 @@ public class UbuntuRadio : Gtk.Window {
 
     private void creditos(){
 
-        Creditos credits = new Creditos(this,
-            "Creditos");
+        Creditos credits = new Creditos(this, "");
 
         credits.run();
         credits.destroy();
     }
 
     private void actualizar(){
+
+        Descargas descarga = new Descargas(this, "");
+
+        descarga.run();
+        //descarga.destroy();
     }
 
     private void exit(){

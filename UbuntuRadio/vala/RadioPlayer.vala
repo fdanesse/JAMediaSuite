@@ -45,7 +45,7 @@ public class UbuntuRadioPlayer : GLib.Object{
         this._uri = uri;
         this.player.uri = this._uri;
         //FIXME: activarlo no devuelve el control a Gtk.
-        //this.play();
+        this.play();
     }
 
     public void play(){

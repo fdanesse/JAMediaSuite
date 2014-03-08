@@ -273,6 +273,7 @@ public class Lista : Gtk.TreeView {
 
 }
 
+
 public class Creditos : Gtk.Dialog{
 
     public Creditos (Gtk.Window parent, string title) {
@@ -293,5 +294,42 @@ public class Creditos : Gtk.Dialog{
         Box.show_all();
 
         this.add_button ("Cerrar", Gtk.ResponseType.OK);
+    }
+}
+
+
+public class Descargas : Gtk.Dialog{
+
+    public Descargas (Gtk.Window parent, string title) {
+
+        this.set("title", title);
+        this.set_modal(true);
+        this.set_transient_for(parent);
+        this.set("border_width", 15);
+
+        this.set_decorated(false);
+        this.set_resizable(false);
+
+        Gtk.Label label = new Gtk.Label("*** Descargando Streamings ***");
+
+        Gtk.Box Box = this.get_content_area ();
+        Box.pack_start(label, true, true, 0);
+        Box.show_all();
+
+        this.realize.connect(this.realized);
+    }
+
+    private void realized(){
+
+        GLib.Timeout.add(500, this.descargar);
+    }
+
+    private bool descargar(){
+
+        get_streaming_default();
+
+        this.destroy();
+
+        return false;
     }
 }
