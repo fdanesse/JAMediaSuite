@@ -1,5 +1,4 @@
-//valac --pkg gio-2.0 --pkg libsoup-2.4 Globales.vala
-//const string RADIOS = "https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014";
+//valac --pkg gio-2.0 Necesario.
 
 using Soup;     //--pkg libsoup-2.4
 using Json;     //--pkg json-glib-1.0
@@ -11,7 +10,8 @@ using Json;     //--pkg json-glib-1.0
 
 public void make_base_directory(){
     /*
-    Crea toda la estructura de Directorios de JAMedia.
+    Crea toda la estructura de Directorios necesaria para
+    Ubuntu Radio, en el path de JAMedia.
     */
 
     try {
@@ -36,31 +36,28 @@ public void make_base_directory(){
             }
         }
     }
-    catch{}
+    catch{
+    }
 }
 
 public string get_data_directory(){
     /*
-    Devuelve el Directorio de Datos de JAMedia y JAMediaTube.
+    Devuelve el Directorio de Datos de JAMedia.
     */
 
+    string home = GLib.Environment.get_variable("HOME");
+    string datos = GLib.Path.build_filename(
+        home, "JAMediaDatos2", "Datos");
+
     try{
-        string HOME = GLib.Environment.get_variable("HOME");
-
-        string DATOS = GLib.Path.build_filename(
-            HOME, "JAMediaDatos2", "Datos");
-
-        File file = File.new_for_path(DATOS);
-
+        File file = File.new_for_path(datos);
         if(file.query_exists() != true) {
             make_base_directory();
+            }
         }
+    catch{}
 
-        return DATOS;
-    }
-    catch{
-        return "";
-    }
+    return datos;
 }
 
 public string get_my_files_directory(){
@@ -68,23 +65,19 @@ public string get_my_files_directory(){
     Devuelve el directorio mis archivos, (donde se guardan las grabaciones).
     */
 
+    string home = GLib.Environment.get_variable("HOME");
+    string archivos = GLib.Path.build_filename(
+        home, "JAMediaDatos2", "MisArchivos");
+
     try{
-        string HOME = GLib.Environment.get_variable("HOME");
-
-        string MIS_ARCHIVOS = GLib.Path.build_filename(
-            HOME, "JAMediaDatos2", "MisArchivos");
-
-        File file = File.new_for_path((string) MIS_ARCHIVOS);
-
+        File file = File.new_for_path((string) archivos);
         if(file.query_exists() != true) {
             make_base_directory();
+            }
         }
+    catch{}
 
-        return MIS_ARCHIVOS;
-    }
-    catch{
-        return "";
-    }
+    return archivos;
 }
 
 
@@ -114,6 +107,10 @@ public SList<Streaming> get_streamings(){
 }
 
 public SList<Streaming> descarga_lista_de_streamings(){
+    /*
+    Descarga la lista desde la web de JAMedia.
+    Esta función solo se llama desde get_streaming_default
+    */
 
     string url = "https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014";
     stdout.printf("Conectandose a: %s \n\tDescargando Streamings . . .", url);
@@ -175,18 +172,15 @@ public SList<Streaming> descarga_lista_de_streamings(){
 
 public void set_listas_default(){
     /*
-    Si la lista de strimings no se encuentra,
-    se descarga.
+    Si la lista de strimings no se encuentra, se descarga.
     */
 
-    string DIRECTORIO_DATOS = get_data_directory();
-
+    string datos = get_data_directory();
     string home = GLib.Environment.get_variable("HOME");
     string radios = GLib.Path.build_filename(
         home, "JAMediaDatos2", "Datos", "JAMediaRadio.JAMedia");
 
     File file = File.new_for_path(radios);
-
     if(file.query_exists() != true) {
         get_streaming_default();
     }

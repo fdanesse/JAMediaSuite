@@ -1,6 +1,8 @@
 
 public class MenuUbuntuRadio : Gtk.MenuBar {
-    /* Menú Principal de la aplicación */
+    /*
+    Menú Principal de la aplicación
+    */
 
     public signal void radios();
     public signal void configurar();
@@ -62,12 +64,15 @@ public class MenuUbuntuRadio : Gtk.MenuBar {
 
 
 public class MenuStreamList : Gtk.Menu {
-    /* Menú Principal de la aplicación */
+    /*
+    Menú Contextual para la lista de Streamings
+    */
 
     public signal void accion(string acc, string val1, string val2, string val3);
 
     private Gtk.ListStore lista;
     private Gtk.TreePath path;
+    private Gtk.TreeIter iter;
     private string _val1;
     private string _val2;
     private string _val3;
@@ -77,12 +82,11 @@ public class MenuStreamList : Gtk.Menu {
         this.lista = _model;
         this.path = _path;
 
-        Gtk.TreeIter iter;
 	    GLib.Value val1;
 	    GLib.Value val2;
 	    GLib.Value val3;
 
-	    this.lista.get_iter (out iter, this.path);
+	    this.lista.get_iter (out this.iter, this.path);
 
         this.lista.get_value (iter, 0, out val1);
 	    this.lista.get_value (iter, 1, out val2);
@@ -97,32 +101,49 @@ public class MenuStreamList : Gtk.Menu {
         this.append(item2);
 
         Gtk.MenuItem item3 = new Gtk.MenuItem.with_label ("Quitar de la Lista");
-        //item3.activate.connect(this.configurar);
+        item3.activate.connect(this.remove_item);
         this.append(item3);
 
         Gtk.MenuItem item4 = new Gtk.MenuItem.with_label ("Borrar Streaming");
-        //item4.activate.connect(this.creditos);
+        item4.activate.connect(this.borrar_item);
         this.append(item4);
 
         Gtk.MenuItem item5 = new Gtk.MenuItem.with_label ("Grabar");
-        //item5.activate.connect(this.emit_actualizar);
+        item5.activate.connect(this.emit_record);
         this.append(item5);
 
         this.show_all();
 
         this.attach_to_widget(widget, null);
+    }
 
+    private void borrar_item(){
+
+        this.lista.remove(this.iter);
+    }
+
+    private void remove_item(){
+
+        this.lista.remove(this.iter);
+        this.accion("borrar", this._val1, this._val2, this._val3);
     }
 
     private void emit_play(){
 
         this.accion("play", this._val1, this._val2, this._val3);
     }
+
+    private void emit_record(){
+
+        this.accion("record", this._val1, this._val2, this._val3);
+    }
 }
 
 
 public class ItemPlayer : Gtk.Frame {
-    /* Widget con Reproductor de Streaming */
+    /*
+    Widget con Reproductor de Streaming
+    */
 
     private Gtk.Button stop_button = new Gtk.Button();
     private Gtk.Image image_button = new Gtk.Image();
@@ -164,20 +185,28 @@ public class ItemPlayer : Gtk.Frame {
     }
 
     public void stop(){
-        /* Para detener el reproductor al cerrar la aplicación */
+        /*
+        Se usa para detener el reproductor al cerrar la aplicación
+        */
 
-        this.player.stop();
+        if (this.player._estado == "playing"){
+            this.player.stop();
+            }
     }
 
     public void load(string bandera, string _name, string uri){
-        /* Carga un streaming en el Reproductor. */
+        /*
+        Carga un streaming en el Reproductor.
+        */
 
         this.infolabel.set_text(_name);
         this.player.load(uri);
     }
 
     private void update_estado(string estado){
-        /* Recibe el estado del reproductor cada vez que este cambia */
+        /*
+        Recibe el estado del reproductor cada vez que este cambia
+        */
 
         if (estado == "playing"){
             Idle.add (() => {
@@ -194,7 +223,9 @@ public class ItemPlayer : Gtk.Frame {
     }
 
     private void play_stop(){
-        /* Cuando se hace click en el botón stop */
+        /*
+        Cuando se hace click en el botón stop
+        */
 
         if (this.player._estado == "playing"){
             this.player.stop();
@@ -206,7 +237,9 @@ public class ItemPlayer : Gtk.Frame {
     }
 
     private void endfile(){
-        /* Cuando termina la reproducción */
+        /*
+        Cuando termina la reproducción
+        */
 
         Idle.add (() => {
             this.image_button.set_from_stock(
@@ -239,15 +272,13 @@ public class Streaming : GLib.Object{
 
 
 public class Lista : Gtk.TreeView {
-    /* Lista de Streamings */
 
     private Gtk.ListStore lista = new Gtk.ListStore (
         3, typeof (string), typeof (string), typeof (string));
 
-    public signal void selected(string val1, string val2, string val3);
+    public signal void play(string val1, string val2, string val3);
 
     public Lista () {
-        /* Constructor default */
 
         this.set_model (this.lista);
 
@@ -274,15 +305,22 @@ public class Lista : Gtk.TreeView {
         menu.popup(null, null, null, 1, Gtk.get_current_event_time());
     }
 
-    private void set_accion(string acc, string val1, string val2, string val3){
+    private void set_accion(string accion, string val1, string val2, string val3){
+        /*
+        Responde a selecciones del usuario en el
+        menú contextual de los streamings.
+        */
 
-        if (acc == "play"){
-            this.selected(val1, val2, val3);
-        }
+        if (accion == "play"){
+            this.play(val1, val2, val3);
+            }
+        else if (accion == "record"){
+            }
+        else if (accion == "borrar"){
+            }
     }
 
     public void set_lista(SList<Streaming> list){
-        /* Agrega elementos a la lista */
 
         this.lista.clear();
 

@@ -7,7 +7,9 @@ using Gst;      //--pkg gstreamer-1.0
 
 
 public class UbuntuRadio : Gtk.Window {
-    /* Ventana Principal */
+    /*
+    Ventana Principal
+    */
 
     private MenuUbuntuRadio menu = new MenuUbuntuRadio();
     private ItemPlayer itemplayer = new ItemPlayer();
@@ -15,7 +17,6 @@ public class UbuntuRadio : Gtk.Window {
     private Lista lista = new Lista();
 
     public UbuntuRadio () {
-        /* Constructor default */
 
         this.title = "Ubuntu Radio";
         try {
@@ -49,7 +50,7 @@ public class UbuntuRadio : Gtk.Window {
         this.menu.actualizar.connect (this.actualizar);
         this.menu.salir.connect (this.exit);
 
-        this.lista.selected.connect (this.do_clicked_in_list);
+        this.lista.play.connect (this.do_play_in_list);
         this.destroy.connect (this.exit);
 
         this.show_all();
@@ -58,24 +59,21 @@ public class UbuntuRadio : Gtk.Window {
     }
 
     private void load_list () {
-        /* Carga la lista de streamings */
+        /*
+        Carga la lista de streamings
+        */
 
         set_listas_default();
         SList<Streaming> streaming_list = get_streamings();
         this.lista.set_lista(streaming_list);
     }
 
-    private void do_clicked_in_list(string val1, string val2, string val3){
-        /* Cuando se hace doble click en un elemento de la lista */
+    private void do_play_in_list(string val1, string val2, string val3){
+        /*
+        Cuando se hace reproducir en un elemento de la lista
+        */
 
-        //stdout.printf ("%s %s %s\n", val1, val2, val3);
-
-        //FIXME: Cambiar esto por Dialogo Contextual
         this.itemplayer.load(val1, val2, val3);
-        //this.menuSystem.popup(null, null,
-        //    this.trayicon.position_menu, 2,
-        //    Gtk.get_current_event_time());
-        //MenuStreamList menulist = new MenuStreamList();
     }
 
     private void radios(){
@@ -107,7 +105,6 @@ public class UbuntuRadio : Gtk.Window {
     }
 
     private void exit(){
-        /* Sale de la aplicación */
 
         this.itemplayer.stop();
         Gtk.main_quit();
@@ -117,7 +114,6 @@ public class UbuntuRadio : Gtk.Window {
 
 
 public static int main (string[] args) {
-    /* main de la aplicación */
 
     try {
         Gtk.init (ref args);
