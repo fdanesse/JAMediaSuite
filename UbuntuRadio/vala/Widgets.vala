@@ -66,7 +66,7 @@ public class MenuStreamList : Gtk.Menu {
 
     //public signal void salir();
 
-    public MenuStreamList () {
+    public MenuStreamList (Gtk.Widget widget) {
 
 		Gtk.MenuItem item2 = new Gtk.MenuItem.with_label ("Reproducir");
         //item2.activate.connect(this.listar_radios);
@@ -87,7 +87,9 @@ public class MenuStreamList : Gtk.Menu {
         this.show_all();
 
         //this.popup(null, null, this.trayicon.position_menu, 2, Gtk.get_current_event_time());
-        this.popup(null, null, null, 2, Gtk.get_current_event_time());
+        //this.popup(null, null, null, 2, Gtk.get_current_event_time());
+        this.attach_to_widget(widget, null);
+
     }
 }
 
@@ -231,7 +233,7 @@ public class Lista : Gtk.TreeView {
 
         this.lista.set_sort_column_id(1, Gtk.SortType.DESCENDING);
         this.set("headers_visible", true);
-        //this.set("activate_on_single_click", true);
+        this.set("activate_on_single_click", true);
         this.set("headers_clickable", true);
         this.show_all();
 
@@ -243,7 +245,7 @@ public class Lista : Gtk.TreeView {
         Cuando se hace doble click en un elemento de la lista
         se emite la señal selected
         */
-
+        /*
         Gtk.TreeIter iter;
 	    GLib.Value val1;
 	    GLib.Value val2;
@@ -256,6 +258,9 @@ public class Lista : Gtk.TreeView {
 	    this.lista.get_value (iter, 2, out val3);
 
         this.selected((string) val1, (string) val2, (string) val3);
+        */
+        MenuStreamList menu = new MenuStreamList(this);
+        menu.popup(null, null, null, 1, Gtk.get_current_event_time());
     }
 
     public void set_lista(SList<Streaming> list){

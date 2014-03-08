@@ -26,7 +26,7 @@ public class UbuntuRadio : Gtk.Window {
         }
 		this.window_position = Gtk.WindowPosition.CENTER;
 		this.set_default_size (200, 400);
-		this.set_opacity(0.5);
+		this.set_opacity (0.5);
 		this.set_decorated(false);
 		//this.set_resizable(true);
         this.set("border_width", 5);
