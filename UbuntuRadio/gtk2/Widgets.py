@@ -233,7 +233,6 @@ class ItemPlayer(gtk.Frame):
         gtk.Frame.__init__(self)
 
         self.player_estado = "None"
-        #self._name, self.uri = valor
 
         self.set_label(" Reproduciendo . . . ")
 
@@ -273,7 +272,6 @@ class ItemPlayer(gtk.Frame):
 
         self.player = MyPlayBin()
 
-        #self.player = MyPlayBin(self.uri, 0.10)
         self.player.connect("estado", self.__update_estado)
         self.player.connect("endfile", self.__endfile)
 
@@ -321,13 +319,12 @@ class ItemRecord(gtk.Frame):
 
     __gtype_name__ = 'UbuntuRadioItemRecord'
 
-    def __init__(self, valor, formato):
+    def __init__(self):
 
         gtk.Frame.__init__(self)
 
-        self.tipo = "Grabador"
         self.player_estado = "None"
-        self._name, self.uri = valor
+        self.player = False
 
         self.set_label(" Grabando . . . ")
         self.label_info = gtk.Label("Grabación Detenida")
@@ -343,8 +340,9 @@ class ItemRecord(gtk.Frame):
         self.image_button.set_from_stock(
             gtk.STOCK_MEDIA_RECORD, gtk.ICON_SIZE_BUTTON)
         self.stop_button.set_image(self.image_button)
+        self.label = gtk.Label("Nada para Grabar")
 
-        hbox.pack_start(gtk.Label(self._name),
+        hbox.pack_start(self.label,
             False, True, 0)
         hbox.pack_end(self.stop_button,
             False, True, 0)
@@ -361,14 +359,6 @@ class ItemRecord(gtk.Frame):
 
         self.stop_button.connect(
             "clicked", self.stop)
-
-        from Record import MyPlayBin
-
-        self.player = MyPlayBin(self.uri, formato)
-        self.player.connect("estado", self.__update_estado)
-        self.player.connect("endfile", self.__endfile)
-        self.player.connect("update", self.__update_info)
-        self.player.play(self._name)
 
     def __update_info(self, player, info):
 
@@ -398,7 +388,26 @@ class ItemRecord(gtk.Frame):
 
         #gobject.idle_add(self.get_toplevel().queue_draw)
 
+    def load(self, valor, formato):
+
+        if self.player:
+            self.player.stop()
+
+        nombre, uri = valor
+        self.label.set_text(nombre)
+
+        from Record import MyPlayBin
+
+        self.player = MyPlayBin(uri, formato)
+        self.player.connect("estado", self.__update_estado)
+        self.player.connect("endfile", self.__endfile)
+        self.player.connect("update", self.__update_info)
+        self.player.play(nombre)
+
     def stop(self, widget=False):
+
+        if not self.player:
+            return
 
         if self.player_estado == "playing":
             self.player.stop()

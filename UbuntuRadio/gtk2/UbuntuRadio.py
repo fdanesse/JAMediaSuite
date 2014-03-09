@@ -55,18 +55,18 @@ class UbuntuRadio(gtk.Window):
 
         menu = MenuBar()
         self.itemplayer = ItemPlayer()
-        #self.itemrecord = ItemRecord()
+        self.itemrecord = ItemRecord()
         self.lista = Lista()
-        self.scroll = gtk.ScrolledWindow()
-        self.scroll.set_policy(
+        self.win_scroll = gtk.ScrolledWindow()
+        self.win_scroll.set_policy(
             gtk.POLICY_NEVER,
             gtk.POLICY_AUTOMATIC)
-        self.scroll.add(self.lista)
+        self.win_scroll.add(self.lista)
 
         vbox.pack_start(menu, False, False, 0)
         vbox.pack_start(self.itemplayer, False, False, 0)
-        #vbox.pack_start(self.itemrecord, False, False, 0)
-        vbox.pack_start(self.scroll, True, True, 0)
+        vbox.pack_start(self.itemrecord, False, False, 0)
+        vbox.pack_start(self.win_scroll, True, True, 0)
 
         self.add(vbox)
 
@@ -215,36 +215,25 @@ class UbuntuRadio(gtk.Window):
         """
         Grabar desde un Streaming.
         """
-        '''
-        items = self.inplay.get_children()
 
-        for item in items:
-            if item.tipo == "Grabador":
-                item.stop()
-                self.inplay.remove(item)
-                item.destroy()
-
-        self.inplay.pack_start(
-            ItemRecord(valor, self.config["formato"]),
-            False, False, 0)
-        '''
-        pass
+        self.itemrecord.stop()
+        self.itemrecord.load(valor, self.config["formato"])
 
     def __show_lista(self, widget):
         """
         Muestra u Oculta la Lista de Radios.
         """
 
-        val = self.scroll.get_visible()
+        val = self.win_scroll.get_visible()
 
         if val:
-            self.scroll.hide()
-            a, b, c, d = self.scroll.get_allocation()
+            self.win_scroll.hide()
+            a, b, c, d = self.win_scroll.get_allocation()
             x, y, w, h = self.get_allocation()
             self.set_size_request(-1, h - d)
 
         else:
-            self.scroll.show()
+            self.win_scroll.show()
             self.set_size_request(-1, 400)
 
     def __exit(self, widget=None, event=None):
