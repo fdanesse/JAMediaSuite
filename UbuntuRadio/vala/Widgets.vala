@@ -257,7 +257,7 @@ public class ItemRecord : Gtk.Frame {
 
     private Gtk.Button stop_button = new Gtk.Button();
     private Gtk.Image image_button = new Gtk.Image();
-    private UbuntuRadioRecord player = new UbuntuRadioRecord();
+    private UbuntuRadioRecord player = new UbuntuRadioRecord("", "", "");
     private Gtk.Label infolabel = new Gtk.Label("");
 
     public ItemRecord () {
@@ -276,15 +276,11 @@ public class ItemRecord : Gtk.Frame {
             false, true, 0);
 
         this.image_button.set_from_stock(
-            Gtk.Stock.MEDIA_RECORD, Gtk.IconSize.BUTTON);
+            Gtk.Stock.MEDIA_STOP, Gtk.IconSize.BUTTON);
         this.stop_button.set_image(this.image_button);
 
         this.show_all();
 
-        this.player.estado.connect(this.update_estado);
-        //this.player.update.connect(this.update_info);
-        //FIXME: No parece funcionar
-        this.player.endfile.connect(this.endfile);
         this.stop_button.clicked.connect(this.play_stop);
     }
 
@@ -303,8 +299,17 @@ public class ItemRecord : Gtk.Frame {
         Carga un streaming en el Reproductor.
         */
 
+        //if (this.player._estado == "playing"){
+            this.player.stop();
+            //}
+
+        this.player = null;
+        this.player = new UbuntuRadioRecord(_name, uri, "ogg");
         this.infolabel.set_text(_name);
-        this.player.load(uri);
+        this.player.estado.connect(this.update_estado);
+        //this.player.update.connect(this.update_info);
+        //FIXME: No parece funcionar
+        this.player.endfile.connect(this.endfile);
     }
 
     private void update_estado(string estado){
@@ -312,6 +317,7 @@ public class ItemRecord : Gtk.Frame {
         Recibe el estado del reproductor cada vez que este cambia
         */
 
+        stdout.printf ("%s\n", estado);
         if (estado == "playing"){
             Idle.add (() => {
                 this.image_button.set_from_stock(

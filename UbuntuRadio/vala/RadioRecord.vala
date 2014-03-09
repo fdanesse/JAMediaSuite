@@ -15,6 +15,8 @@ public class UbuntuRadioRecord : GLib.Object{
     private Gst.Element archivo = Gst.ElementFactory.make(
         "filesink", "filesink");
 
+    public string _name = "";
+    public string patharchivo = "";
     public string _uri = "";
     public string _estado = "None";
     public string _formato = "ogg";
@@ -24,7 +26,11 @@ public class UbuntuRadioRecord : GLib.Object{
     public signal void estado(string estado);
     public signal void update(string info);
 
-    public UbuntuRadioRecord (){
+    public UbuntuRadioRecord (string _name, string uri, string formato){
+
+        this._name = _name;
+        this._uri = uri;
+        this._formato = formato;
 
         this.pipeline.add(this.player);
 
@@ -80,6 +86,13 @@ public class UbuntuRadioRecord : GLib.Object{
 
         bus.sync_message.connect(this.sync_message);
         this.player.pad_added.connect(this.on_pad_added);
+
+        if (this._uri != "" && this._name != "" && this._formato != ""){
+            this.load(this._uri);
+            }
+        else{
+            this.stop();
+        }
     }
 
     private void on_pad_added(Gst.Element src, Gst.Pad pad){
@@ -102,7 +115,7 @@ public class UbuntuRadioRecord : GLib.Object{
         }
     }
 
-    public void load(string uri){
+    private void load(string uri){
         /*
         if os.path.exists(uri):
             direccion = Gst.filename_to_uri(uri)
@@ -112,34 +125,19 @@ public class UbuntuRadioRecord : GLib.Object{
             if Gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
         */
-        this.stop();
-        this._uri = uri;
-        this.player.set("uri", this._uri);
-        this.play();
+
+        if (this._estado == "None"){
+            this.player.set("uri", this._uri);
+            this.play();
+        }
+        else{
+            stdout.printf("Grabador activo");
+        }
     }
 
     public void play(){
 
-        string home = GLib.Environment.get_variable("HOME");
-        string path = GLib.Path.build_filename(
-            home, "JAMediaDatos2", "MisArchivos", "0002.ogg");
-
-        this.archivo.set("location", path);
-
-        if (this._uri != ""){
-            Gst.StateChangeReturn ret = this.pipeline.set_state(Gst.State.PLAYING);
-            if (ret == Gst.StateChangeReturn.FAILURE) {
-			    stderr.puts ("No se ha podido Reproducir el streaming.\n");
-		        }
-            else{
-                this.estado("playing");
-                this.new_handle(true);
-                //this.loop.run();
-                }
-        }
-
         /*
-
         import time
         import datetime
 
@@ -153,24 +151,38 @@ public class UbuntuRadioRecord : GLib.Object{
             fecha, hora, self.formato)
         self.patharchivo = os.path.join(
             get_my_files_directory(), archivo)
-
-        self.archivo.set_property(
-            "location", self.patharchivo)
-
-        if not self.estado == Gst.State.PLAYING:
-            self.estado = Gst.State.PLAYING
-            self.emit("estado", "playing")
-            self.pipeline.set_state(Gst.State.PLAYING)
-
-        self.__new_handle(True)
         */
+
+        string _path = this._name.replace(" ", "_") + "." + this._formato;
+        string home = GLib.Environment.get_variable("HOME");
+        this.patharchivo = GLib.Path.build_filename(
+            home, "JAMediaDatos2", "MisArchivos", _path);
+
+        this.archivo.set("location", this.patharchivo);
+        if (this._uri != ""){
+            Gst.StateChangeReturn ret = this.pipeline.set_state(Gst.State.PLAYING);
+            if (ret == Gst.StateChangeReturn.SUCCESS) {
+                this._estado = "playing";
+                this.estado(this._estado);
+                this.new_handle(true);
+                //this.loop.run();
+		            }
+            else{
+                stderr.puts ("No se ha podido Reproducir el streaming.\n");
+                this._estado = "None";
+                this.estado(this._estado);
+                this.new_handle(false);
+                //FIXME: Agregar eliminar el archivo ?
+                }
+            }
     }
 
     public void stop(){
 
-        this.pipeline.set_state(Gst.State.NULL);
-        this.estado("None");
+        this._estado = "None";
+        this.estado(this._estado);
         this.new_handle(false);
+        this.pipeline.set_state(Gst.State.NULL);
         //this.loop.quit();
     }
 
@@ -231,6 +243,8 @@ public class UbuntuRadioRecord : GLib.Object{
                 string debug;
                 message.parse_error(out err, out debug);
                 stdout.printf("Error: %s\n", err.message);
+                this._estado = "None";
+                this.estado(this._estado);
                 this.endfile();
                 this.new_handle(false);
                 //this.stop();
@@ -242,6 +256,8 @@ public class UbuntuRadioRecord : GLib.Object{
                 break;
 
             case Gst.MessageType.EOS:
+                this._estado = "None";
+                this.estado(this._estado);
                 this.endfile();
                 this.new_handle(false);
                 //this.stop();
