@@ -59,7 +59,7 @@ class UbuntuRadio(gtk.Window):
         self.lista = Lista()
         self.win_scroll = gtk.ScrolledWindow()
         self.win_scroll.set_policy(
-            gtk.POLICY_NEVER,
+            gtk.POLICY_AUTOMATIC,
             gtk.POLICY_AUTOMATIC)
         self.win_scroll.add(self.lista)
 

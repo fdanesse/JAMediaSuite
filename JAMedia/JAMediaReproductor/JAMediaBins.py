@@ -26,8 +26,6 @@ from gi.repository import GObject
 from gi.repository import Gst
 from gi.repository import GstVideo  # necesario
 
-GObject.threads_init()
-
 
 class JAMedia_Efecto_bin(Gst.Bin):
     """

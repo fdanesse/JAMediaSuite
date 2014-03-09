@@ -25,7 +25,10 @@ gi.require_version('Gst', '1.0')
 
 from gi.repository import GObject
 from gi.repository import Gst
+from gi.repository import GstVideo
+from gi.repository import GdkX11
 
+GObject.threads_init()
 Gst.init([])
 
 
