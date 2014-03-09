@@ -304,7 +304,7 @@ public class ItemRecord : Gtk.Frame {
         */
 
         this.infolabel.set_text(_name);
-        //this.player.load(uri);
+        this.player.load(uri);
     }
 
     private void update_estado(string estado){

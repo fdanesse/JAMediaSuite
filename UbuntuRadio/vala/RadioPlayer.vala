@@ -1,10 +1,11 @@
+//http://references.valadoc.org/#!api=gstreamer-1.0/Gst.Element
 
 public class UbuntuRadioPlayer : GLib.Object{
     /*
     Reproductor Gstreamer Básico de la Aplicación.
     */
 
-    private GLib.MainLoop loop = new GLib.MainLoop();
+    //private GLib.MainLoop loop = new GLib.MainLoop();
     private dynamic Gst.Element player = Gst.ElementFactory.make(
         "playbin", "play");
 
@@ -44,7 +45,6 @@ public class UbuntuRadioPlayer : GLib.Object{
         this.stop();
         this._uri = uri;
         this.player.uri = this._uri;
-        //FIXME: activarlo no devuelve el control a Gtk.
         this.play();
     }
 
@@ -52,15 +52,22 @@ public class UbuntuRadioPlayer : GLib.Object{
         /* Reproduce un Streaming */
 
         if (this._uri != ""){
-            this.player.set_state(Gst.State.PLAYING);
-            this.loop.run();
+            Gst.StateChangeReturn ret = this.player.set_state(Gst.State.PLAYING);
+            if (ret == Gst.StateChangeReturn.FAILURE) {
+			    stderr.puts ("No se ha podido Reproducir el streaming.\n");
+		        }
+            //else{
+            //    this.loop.run();
+            //    }
+            //this.player.set_state(Gst.State.PLAYING);
+            //this.loop.run();
         }
     }
 
     public void stop(){
 
         this.player.set_state(Gst.State.NULL);
-        this.loop.quit();
+        //this.loop.quit();
     }
 
     private void sync_message (Gst.Message message){
@@ -74,7 +81,7 @@ public class UbuntuRadioPlayer : GLib.Object{
                 message.parse_error(out err, out debug);
                 stdout.printf("Error: %s\n", err.message);
                 this.endfile();
-                this.stop();
+                //this.stop();
                 break;
 
             case Gst.MessageType.LATENCY:
@@ -84,7 +91,7 @@ public class UbuntuRadioPlayer : GLib.Object{
 
             case Gst.MessageType.EOS:
                 this.endfile();
-                this.stop();
+                //this.stop();
                 break;
 
             case Gst.MessageType.STATE_CHANGED:

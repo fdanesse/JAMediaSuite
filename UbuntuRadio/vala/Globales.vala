@@ -15,18 +15,18 @@ public void make_base_directory(){
     */
 
     try {
-        string HOME = GLib.Environment.get_variable("HOME");
+        string home = GLib.Environment.get_variable("HOME");
 
-        string JAMEDIA = GLib.Path.build_filename(
-            HOME, "JAMediaDatos2");
+        string jamedia = GLib.Path.build_filename(
+            home, "JAMediaDatos2");
 
-        string MIS_ARCHIVOS = GLib.Path.build_filename(
-            HOME, "JAMediaDatos2", "MisArchivos");
+        string archivos = GLib.Path.build_filename(
+            home, "JAMediaDatos2", "MisArchivos");
 
-        string DATOS = GLib.Path.build_filename(
-            HOME, "JAMediaDatos2", "Datos");
+        string datos = GLib.Path.build_filename(
+            home, "JAMediaDatos2", "Datos");
 
-        string [] dirlist = {JAMEDIA, MIS_ARCHIVOS, DATOS};
+        string [] dirlist = {jamedia, archivos, datos};
 
         foreach (string dir in dirlist){
             File file = File.new_for_path(dir);

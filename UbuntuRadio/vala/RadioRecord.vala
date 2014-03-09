@@ -1,4 +1,6 @@
 
+//http://references.valadoc.org/#!api=gstreamer-1.0/Gst.Element
+
 public class UbuntuRadioRecord : GLib.Object{
     /*
     Reproductor Gstreamer Básico de la Aplicación.
@@ -7,7 +9,7 @@ public class UbuntuRadioRecord : GLib.Object{
     private GLib.MainLoop loop = new GLib.MainLoop();
 
     private Gst.Pipeline pipeline = new Gst.Pipeline("Record");
-    private Gst.Element player = Gst.ElementFactory.make(
+    private dynamic Gst.Element player = Gst.ElementFactory.make(
         "uridecodebin", "uridecodebin");
     private Gst.Pad audio_sink;
     private Gst.Element archivo = Gst.ElementFactory.make(
@@ -105,18 +107,32 @@ public class UbuntuRadioRecord : GLib.Object{
         */
         this.stop();
         this._uri = uri;
-        //this.player.uri = this._uri;
+        this.player.set("uri", this._uri);
         //FIXME: activarlo no devuelve el control a Gtk.
         this.play();
     }
 
     public void play(){
-        /*
+
+        //string home = GLib.Environment.get_variable("HOME");
+        //string archivos = GLib.Path.build_filename(
+        //    home, "JAMediaDatos2", "MisArchivos");
+        string path = ("file://home/flavio/0002.ogg");
+
+        this.archivo.set("location", path);
+
         if (this._uri != ""){
-            this.player.set_state(Gst.State.PLAYING);
-            this.loop.run();
+            this.estado("playing");
+
+            Gst.StateChangeReturn ret = this.player.set_state(Gst.State.PLAYING);
+            if (ret == Gst.StateChangeReturn.FAILURE) {
+			    stderr.puts ("No se ha podido Reproducir el streaming.\n");
+		        }
+            else{
+                this.loop.run();
+                }
         }
-        */
+
         /*
     def play(self, name):
 
@@ -149,6 +165,7 @@ public class UbuntuRadioRecord : GLib.Object{
     public void stop(){
 
         this.player.set_state(Gst.State.NULL);
+        this.estado("None");
         this.loop.quit();
     }
 
@@ -174,41 +191,6 @@ public class UbuntuRadioRecord : GLib.Object{
             case Gst.MessageType.EOS:
                 this.endfile();
                 this.stop();
-                break;
-
-            case Gst.MessageType.STATE_CHANGED:
-                Gst.State oldstate;
-                Gst.State newstate;
-                Gst.State pending;
-
-                message.parse_state_changed(
-                    out oldstate, out newstate, out pending);
-
-                if (oldstate == Gst.State.PAUSED && newstate == Gst.State.PLAYING){
-                    if (this._estado != "playing"){
-                        this._estado = "playing";
-                        this.estado("playing");
-                        }
-                }
-                else if (oldstate == Gst.State.READY && newstate == Gst.State.PAUSED){
-                    if (this._estado != "paused"){
-                        this._estado = "paused";
-                        this.estado("paused");
-                        }
-                }
-                else if (oldstate == Gst.State.READY && newstate == Gst.State.NULL){
-                    if (this._estado != "None"){
-                        this._estado = "None";
-                        this.estado("None");
-                        }
-                }
-                else if (oldstate == Gst.State.PLAYING && newstate == Gst.State.PAUSED){
-                    if (this._estado != "paused"){
-                        this._estado = "paused";
-                        this.estado("paused");
-                    }
-                }
-
                 break;
 
             default:
