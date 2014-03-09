@@ -299,9 +299,9 @@ public class ItemRecord : Gtk.Frame {
         Carga un streaming en el Reproductor.
         */
 
-        //if (this.player._estado == "playing"){
+        if (this.player._estado == "playing"){
             this.player.stop();
-            //}
+            }
 
         this.player = null;
         this.player = new UbuntuRadioRecord(_name, uri, "ogg");

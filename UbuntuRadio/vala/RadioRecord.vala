@@ -81,10 +81,11 @@ public class UbuntuRadioRecord : GLib.Object{
             audioresample.link(wavenc)
             wavenc.link(self.archivo)
         */
-        Gst.Bus bus = this.player.get_bus();
+        Gst.Bus bus = this.pipeline.get_bus();
         bus.enable_sync_message_emission();
 
         bus.sync_message.connect(this.sync_message);
+
         this.player.pad_added.connect(this.on_pad_added);
 
         if (this._uri != "" && this._name != "" && this._formato != ""){
@@ -234,7 +235,7 @@ public class UbuntuRadioRecord : GLib.Object{
     }
 
     private void sync_message (Gst.Message message){
-        /* Manejo de Señales del Bus */
+        // Manejo de Señales del Bus
 
         switch(message.type){
 
