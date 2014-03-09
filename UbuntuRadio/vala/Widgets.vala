@@ -71,7 +71,7 @@ public class MenuStreamList : Gtk.Menu {
     public signal void accion(string acc, string val1, string val2, string val3);
 
     private Gtk.ListStore lista;
-    private Gtk.TreePath path;
+    private Gtk.TreePath pathstream;
     private Gtk.TreeIter iter;
     private string _val1;
     private string _val2;
@@ -80,13 +80,13 @@ public class MenuStreamList : Gtk.Menu {
     public MenuStreamList (Gtk.Widget widget, Gtk.TreePath _path, Gtk.ListStore _model) {
 
         this.lista = _model;
-        this.path = _path;
+        this.pathstream = _path;
 
 	    GLib.Value val1;
 	    GLib.Value val2;
 	    GLib.Value val3;
 
-	    this.lista.get_iter (out this.iter, this.path);
+	    this.lista.get_iter (out this.iter, this.pathstream);
 
         this.lista.get_value (iter, 0, out val1);
 	    this.lista.get_value (iter, 1, out val2);
@@ -331,13 +331,13 @@ public class ItemRecord : Gtk.Frame {
         Cuando se hace click en el botón stop
         */
 
-        //if (this.player._estado == "playing"){
-        //    this.player.stop();
-        //    }
+        if (this.player._estado == "playing"){
+            this.player.stop();
+            }
 
-        //else{
-        //    this.player.play();
-        //    }
+        else{
+            this.player.play();
+            }
     }
 
     private void endfile(){
@@ -350,7 +350,6 @@ public class ItemRecord : Gtk.Frame {
             Gtk.Stock.MEDIA_RECORD, Gtk.IconSize.BUTTON);
             return false;});
     }
-
 }
 
 
@@ -403,9 +402,9 @@ public class Lista : Gtk.TreeView {
         this.row_activated.connect(this.clicked);
     }
 
-    private void clicked(Gtk.TreePath path, Gtk.TreeViewColumn column){
+    private void clicked(Gtk.TreePath _path, Gtk.TreeViewColumn column){
 
-        MenuStreamList menu = new MenuStreamList(this, path, this.lista);
+        MenuStreamList menu = new MenuStreamList(this, _path, this.lista);
         menu.accion.connect(this.set_accion);
         menu.popup(null, null, null, 1, Gtk.get_current_event_time());
     }

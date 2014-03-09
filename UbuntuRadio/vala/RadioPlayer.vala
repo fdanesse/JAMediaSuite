@@ -44,7 +44,7 @@ public class UbuntuRadioPlayer : GLib.Object{
         */
         this.stop();
         this._uri = uri;
-        this.player.uri = this._uri;
+        this.player.set("uri", this._uri);
         this.play();
     }
 

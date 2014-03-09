@@ -6,7 +6,7 @@ public class UbuntuRadioRecord : GLib.Object{
     Reproductor Gstreamer Básico de la Aplicación.
     */
 
-    private GLib.MainLoop loop = new GLib.MainLoop();
+    //private GLib.MainLoop loop = new GLib.MainLoop();
 
     private Gst.Pipeline pipeline = new Gst.Pipeline("Record");
     private dynamic Gst.Element player = Gst.ElementFactory.make(
@@ -18,6 +18,7 @@ public class UbuntuRadioRecord : GLib.Object{
     public string _uri = "";
     public string _estado = "None";
     public string _formato = "ogg";
+    private uint actualizador = 0;
 
     public signal void endfile();
     public signal void estado(string estado);
@@ -81,18 +82,24 @@ public class UbuntuRadioRecord : GLib.Object{
         this.player.pad_added.connect(this.on_pad_added);
     }
 
-    private void on_pad_added(Gst.Pad pad){
+    private void on_pad_added(Gst.Element src, Gst.Pad pad){
         /*
         Agregar elementos en forma dinámica según
         sean necesarios.
         */
-        /*
-        string = pad.query_caps(None).to_string()
 
-        if string.startswith('audio/'):
-            pad.link(self.audio_sink)
-        */
-        pad.link(this.audio_sink);
+        Gst.Caps new_pad_caps = pad.query_caps (null);
+		weak Gst.Structure new_pad_struct = new_pad_caps.get_structure (0);
+		string new_pad_type = new_pad_struct.get_name ();
+
+		if (new_pad_type.has_prefix ("audio/")){
+            Gst.PadLinkReturn ret = pad.link (this.audio_sink);
+		    if (ret != Gst.PadLinkReturn.OK) {
+			    stdout.printf ("Pad Tipo %s - link ha fallado.\n", new_pad_type);
+		    } else {
+			    stdout.printf ("Linkeado pad de Tipo: %s\n", new_pad_type);
+		    }
+        }
     }
 
     public void load(string uri){
@@ -108,33 +115,30 @@ public class UbuntuRadioRecord : GLib.Object{
         this.stop();
         this._uri = uri;
         this.player.set("uri", this._uri);
-        //FIXME: activarlo no devuelve el control a Gtk.
         this.play();
     }
 
     public void play(){
 
-        //string home = GLib.Environment.get_variable("HOME");
-        //string archivos = GLib.Path.build_filename(
-        //    home, "JAMediaDatos2", "MisArchivos");
-        string path = ("file://home/flavio/0002.ogg");
+        string home = GLib.Environment.get_variable("HOME");
+        string path = GLib.Path.build_filename(
+            home, "JAMediaDatos2", "MisArchivos", "0002.ogg");
 
         this.archivo.set("location", path);
 
         if (this._uri != ""){
-            this.estado("playing");
-
-            Gst.StateChangeReturn ret = this.player.set_state(Gst.State.PLAYING);
+            Gst.StateChangeReturn ret = this.pipeline.set_state(Gst.State.PLAYING);
             if (ret == Gst.StateChangeReturn.FAILURE) {
 			    stderr.puts ("No se ha podido Reproducir el streaming.\n");
 		        }
             else{
-                this.loop.run();
+                this.estado("playing");
+                this.new_handle(true);
+                //this.loop.run();
                 }
         }
 
         /*
-    def play(self, name):
 
         import time
         import datetime
@@ -164,9 +168,57 @@ public class UbuntuRadioRecord : GLib.Object{
 
     public void stop(){
 
-        this.player.set_state(Gst.State.NULL);
+        this.pipeline.set_state(Gst.State.NULL);
         this.estado("None");
-        this.loop.quit();
+        this.new_handle(false);
+        //this.loop.quit();
+    }
+
+    private void new_handle(bool reset){
+
+        if (this.actualizador > 0){
+            GLib.Source.remove(this.actualizador);
+            this.actualizador = 0;
+            }
+
+        if (reset == true){
+            this.actualizador = GLib.Timeout.add(
+                500, this.handle);
+            }
+        }
+
+    private bool handle(){
+        /*
+        Consulta el estado y progreso de
+        la grabacion.
+        */
+        /*
+        if os.path.exists(self.patharchivo):
+            tamanio = float(os.path.getsize(
+                self.patharchivo) / 1024.0 / 1024.0)
+
+            texto = str(self.uri)
+
+            if len(self.uri) > 25:
+                texto = str(self.uri[0:25]) + " . . . "
+
+            info = "Grabando: %s %.2f Mb" % (
+                texto, tamanio)
+
+            if self.info != info:
+                self.control = 0
+                self.info = info
+                self.emit('update', self.info)
+
+            else:
+                self.control += 1
+
+        if self.control > 60:
+            self.stop()
+            #self.emit("endfile")
+            return False
+        */
+        return true;
     }
 
     private void sync_message (Gst.Message message){
@@ -180,7 +232,8 @@ public class UbuntuRadioRecord : GLib.Object{
                 message.parse_error(out err, out debug);
                 stdout.printf("Error: %s\n", err.message);
                 this.endfile();
-                this.stop();
+                this.new_handle(false);
+                //this.stop();
                 break;
 
             case Gst.MessageType.LATENCY:
@@ -190,7 +243,8 @@ public class UbuntuRadioRecord : GLib.Object{
 
             case Gst.MessageType.EOS:
                 this.endfile();
-                this.stop();
+                this.new_handle(false);
+                //this.stop();
                 break;
 
             default:
