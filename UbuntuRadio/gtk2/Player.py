@@ -35,7 +35,7 @@ class MyPlayBin(gobject.GObject):
 
     # Estados: playing, paused, None
 
-    def __init__(self, uri, volumen):
+    def __init__(self):
 
         gobject.GObject.__init__(self)
 
@@ -49,9 +49,6 @@ class MyPlayBin(gobject.GObject):
         self.bus.enable_sync_message_emission()
         self.bus.connect(
             'sync-message', self.__sync_message)
-
-        self.__load(uri)
-        self.set_volumen(volumen)
 
     def __sync_message(self, bus, mensaje):
 
@@ -88,14 +85,15 @@ class MyPlayBin(gobject.GObject):
         elif mensaje.type == gst.MESSAGE_ERROR:
             print "\ngst.MessageType.ERROR:"
             print mensaje.parse_error()
-            self.stop()
             self.emit("endfile")
 
         return True
 
-    def __load(self, uri):
+    def load(self, uri):
 
+        self.stop()
         self.player.set_property("uri", uri)
+        self.play()
 
     def set_volumen(self, valor):
 

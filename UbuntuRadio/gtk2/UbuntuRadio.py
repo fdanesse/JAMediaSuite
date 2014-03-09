@@ -19,7 +19,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
 
 from Widgets import MenuBar
@@ -55,20 +54,18 @@ class UbuntuRadio(gtk.Window):
         vbox = gtk.VBox()
 
         menu = MenuBar()
-        eventbox = gtk.EventBox()
-        self.inplay = gtk.VBox()
-        eventbox.add(self.inplay)
+        self.itemplayer = ItemPlayer()
+        #self.itemrecord = ItemRecord()
         self.lista = Lista()
-
         self.scroll = gtk.ScrolledWindow()
         self.scroll.set_policy(
             gtk.POLICY_NEVER,
             gtk.POLICY_AUTOMATIC)
-
         self.scroll.add(self.lista)
 
         vbox.pack_start(menu, False, False, 0)
-        vbox.pack_start(eventbox, False, False, 0)
+        vbox.pack_start(self.itemplayer, False, False, 0)
+        #vbox.pack_start(self.itemrecord, False, False, 0)
         vbox.pack_start(self.scroll, True, True, 0)
 
         self.add(vbox)
@@ -211,22 +208,14 @@ class UbuntuRadio(gtk.Window):
         Reproduce un streaming.
         """
 
-        items = self.inplay.get_children()
-
-        for item in items:
-            if item.tipo == "Reproductor":
-                item.stop()
-                self.inplay.remove(item)
-                item.destroy()
-
-        self.inplay.pack_start(
-            ItemPlayer(valor), False, False, 0)
+        self.itemplayer.stop()
+        self.itemplayer.load(valor)
 
     def __grabar(self, valor):
         """
         Grabar desde un Streaming.
         """
-
+        '''
         items = self.inplay.get_children()
 
         for item in items:
@@ -238,6 +227,8 @@ class UbuntuRadio(gtk.Window):
         self.inplay.pack_start(
             ItemRecord(valor, self.config["formato"]),
             False, False, 0)
+        '''
+        pass
 
     def __show_lista(self, widget):
         """

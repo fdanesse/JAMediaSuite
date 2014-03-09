@@ -228,13 +228,12 @@ class ItemPlayer(gtk.Frame):
 
     __gtype_name__ = 'UbuntuRadioItemPlayer'
 
-    def __init__(self, valor):
+    def __init__(self):
 
         gtk.Frame.__init__(self)
 
-        self.tipo = "Reproductor"
         self.player_estado = "None"
-        self._name, self.uri = valor
+        #self._name, self.uri = valor
 
         self.set_label(" Reproduciendo . . . ")
 
@@ -249,8 +248,9 @@ class ItemPlayer(gtk.Frame):
         self.image_button.set_from_stock(
             gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
         self.stop_button.set_image(self.image_button)
+        self.label = gtk.Label("Nada para Reproducir")
 
-        hbox.pack_start(gtk.Label(self._name),
+        hbox.pack_start(self.label,
             False, True, 0)
         hbox.pack_end(self.stop_button,
             False, True, 0)
@@ -271,10 +271,11 @@ class ItemPlayer(gtk.Frame):
 
         from Player import MyPlayBin
 
-        self.player = MyPlayBin(self.uri, 0.10)
+        self.player = MyPlayBin()
+
+        #self.player = MyPlayBin(self.uri, 0.10)
         self.player.connect("estado", self.__update_estado)
         self.player.connect("endfile", self.__endfile)
-        self.player.play()
 
     def __endfile(self, player):
 
@@ -300,6 +301,12 @@ class ItemPlayer(gtk.Frame):
     def __set_volume(self, widget, valor):
 
         self.player.set_volumen(valor)
+
+    def load(self, valor):
+
+        nombre, uri = valor
+        self.label.set_text(nombre)
+        self.player.load(uri)
 
     def stop(self, widget=False):
 

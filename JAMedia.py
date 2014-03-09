@@ -33,7 +33,7 @@ JAMediaObjectsPath = JAMediaObjects.__path__[0]
 
 from JAMedia.JAMedia import JAMediaPlayer
 
-#GObject.threads_init()
+GObject.threads_init()
 
 
 class Ventana(Gtk.Window):
