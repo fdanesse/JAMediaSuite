@@ -1,4 +1,31 @@
-//valac --pkg gtk+-3.0 --pkg gdk-x11-3.0 --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10 UbuntuRadio.vala
+/*
+   UbuntuRadio.vala por:
+   Flavio Danesse <fdanesse@gmail.com>
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+Compilar con:
+    valac --pkg glib-2.0 --pkg gio-2.0 --pkg libsoup-2.4 \
+    --pkg gtk+-3.0 --pkg gdk-3.0 --pkg gdk-x11-3.0 --pkg gstreamer-1.0 \
+    --pkg json-glib-1.0 \
+    UbuntuRadio.vala Widgets.vala RadioPlayer.vala \
+    RadioRecord.vala Globales.vala
+
+Para Utilizar gstreamer 0.10 cambiar: --pkg gstreamer-1.0
+por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
+*/
 
 //using GLib;   Se importa siempre por default
 using Gtk;      //--pkg gtk+-3.0
