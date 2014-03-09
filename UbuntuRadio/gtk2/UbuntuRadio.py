@@ -238,7 +238,8 @@ class UbuntuRadio(gtk.Window):
 
     def __exit(self, widget=None, event=None):
 
-        # FIXME: hacer stop en todos los pipes
+        self.itemplayer.stop()
+        self.itemrecord.stop()
         import sys
         sys.exit(0)
 

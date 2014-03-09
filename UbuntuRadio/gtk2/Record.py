@@ -142,7 +142,6 @@ class MyPlayBin(gobject.GObject):
             print "\ngst.MessageType.ERROR:"
             print mensaje.parse_error()
             self.__new_handle(False)
-            self.stop()
             self.emit("endfile")
 
         return True
