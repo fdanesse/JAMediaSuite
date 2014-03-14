@@ -47,6 +47,9 @@ class MenuBar(gtk.MenuBar):
 
         gtk.MenuBar.__init__(self)
 
+        self.modify_bg(0, gdk.color_parse("#c0fcf4"))
+        self.modify_fg(0, gdk.color_parse("#000000"))
+
         item1 = gtk.MenuItem('Menú')
         menu = gtk.Menu()
         item1.set_submenu(menu)
@@ -238,6 +241,7 @@ class ItemPlayer(gtk.Frame):
 
         eventbox = gtk.EventBox()
         eventbox.set_border_width(5)
+        eventbox.modify_bg(0, gdk.color_parse("#8ae234"))
 
         hbox = gtk.HBox()
         self.control_volumen = Volumen()
@@ -331,6 +335,7 @@ class ItemRecord(gtk.Frame):
 
         eventbox = gtk.EventBox()
         eventbox.set_border_width(5)
+        eventbox.modify_bg(0, gdk.color_parse("#8ae234"))
 
         vbox = gtk.VBox()
         hbox = gtk.HBox()

@@ -33,7 +33,7 @@ using Gdk;
 using Gst;      //--pkg gstreamer-1.0
 
 
-public class UbuntuRadio : Gtk.Window {
+public class UbuntuRadio : Gtk.Window{
     /*
     Ventana Principal
     */
@@ -44,7 +44,7 @@ public class UbuntuRadio : Gtk.Window {
     private Gtk.ScrolledWindow scroll_list = new Gtk.ScrolledWindow(null, null);
     private Lista lista = new Lista();
 
-    public UbuntuRadio () {
+    public UbuntuRadio(){
 
         this.title = "Ubuntu Radio";
         try {
@@ -54,41 +54,41 @@ public class UbuntuRadio : Gtk.Window {
         catch{
         }
 		this.window_position = Gtk.WindowPosition.CENTER;
-		this.set_default_size (200, 400);
-		this.set_opacity (0.5);
+		this.set_default_size(200, 400);
+		this.set_opacity(0.5);
 		this.set_decorated(false);
 		//this.set_resizable(true);
         this.set("border_width", 5);
 
-        Gtk.Box box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
+        Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
-        this.scroll_list.set_policy (
+        this.scroll_list.set_policy(
             PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
-        this.scroll_list.add (this.lista);
+        this.scroll_list.add(this.lista);
 
         box.pack_start (this.menu, false, true, 0);
         box.pack_start (this.itemplayer, false, true, 0);
         box.pack_start (this.itemrecord, false, true, 0);
         box.pack_start (this.scroll_list, true, true, 0);
 
-        this.add (box);
+        this.add(box);
 
-        this.menu.radios.connect (this.radios);
-        this.menu.configurar.connect (this.configurar);
-        this.menu.creditos.connect (this.creditos);
-        this.menu.actualizar.connect (this.actualizar);
-        this.menu.salir.connect (this.exit);
+        this.menu.radios.connect(this.radios);
+        this.menu.configurar.connect(this.configurar);
+        this.menu.creditos.connect(this.creditos);
+        this.menu.actualizar.connect(this.actualizar);
+        this.menu.salir.connect(this.exit);
 
-        this.lista.play.connect (this.do_play_in_list);
-        this.lista.record.connect (this.do_record_in_list);
-        this.destroy.connect (this.exit);
+        this.lista.play.connect(this.do_play_in_list);
+        this.lista.record.connect(this.do_record_in_list);
+        this.destroy.connect(this.exit);
 
         this.show_all();
 
-        this.load_list ();
+        this.load_list();
     }
 
-    private void load_list () {
+    private void load_list(){
         /*
         Carga la lista de streamings
         */
@@ -152,7 +152,7 @@ public class UbuntuRadio : Gtk.Window {
 }
 
 
-public static int main (string[] args) {
+public static int main(string[] args){
 
     try {
         Gtk.init (ref args);
@@ -166,8 +166,8 @@ public static int main (string[] args) {
             screen, css_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_USER);
 
-        new UbuntuRadio ();
-        Gtk.main ();
+        new UbuntuRadio();
+        Gtk.main();
         return 0;
     }
     catch {

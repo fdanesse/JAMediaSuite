@@ -50,6 +50,7 @@ class UbuntuRadio(gtk.Window):
         #self.set_decorated(False)
         self.set_resizable(False)
         self.set_opacity(self.config["opacidad"])
+        self.modify_bg(0, gtk.gdk.color_parse("#8ae234"))
 
         vbox = gtk.VBox()
 

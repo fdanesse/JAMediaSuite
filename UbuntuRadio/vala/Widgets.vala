@@ -18,7 +18,7 @@
 */
 
 
-public class MenuUbuntuRadio : Gtk.MenuBar {
+public class MenuUbuntuRadio : Gtk.MenuBar{
     /*
     Menú Principal de la aplicación
     */
@@ -29,30 +29,30 @@ public class MenuUbuntuRadio : Gtk.MenuBar {
     public signal void actualizar();
     public signal void salir();
 
-    public MenuUbuntuRadio () {
+    public MenuUbuntuRadio(){
 
-        Gtk.MenuItem item1 = new Gtk.MenuItem.with_label ("Menú");
+        Gtk.MenuItem item1 = new Gtk.MenuItem.with_label("Menú");
 
 		Gtk.Menu menu = new Gtk.Menu ();
 		item1.set_submenu(menu);
 
-		Gtk.MenuItem item2 = new Gtk.MenuItem.with_label ("Radios");
+		Gtk.MenuItem item2 = new Gtk.MenuItem.with_label("Radios");
         item2.activate.connect(this.emit_listar_radios);
         menu.append(item2);
 
-        Gtk.MenuItem item3 = new Gtk.MenuItem.with_label ("Configurar...");
+        Gtk.MenuItem item3 = new Gtk.MenuItem.with_label("Configurar...");
         item3.activate.connect(this.emit_configurar);
         menu.append(item3);
 
-        Gtk.MenuItem item4 = new Gtk.MenuItem.with_label ("Creditos...");
+        Gtk.MenuItem item4 = new Gtk.MenuItem.with_label("Creditos...");
         item4.activate.connect(this.emit_creditos);
         menu.append(item4);
 
-        Gtk.MenuItem item5 = new Gtk.MenuItem.with_label ("Actualizar Lista");
+        Gtk.MenuItem item5 = new Gtk.MenuItem.with_label("Actualizar Lista");
         item5.activate.connect(this.emit_actualizar);
         menu.append(item5);
 
-        Gtk.MenuItem item6 = new Gtk.MenuItem.with_label ("Salir");
+        Gtk.MenuItem item6 = new Gtk.MenuItem.with_label("Salir");
         item6.activate.connect(this.emit_salir);
         menu.append(item6);
 
@@ -82,12 +82,13 @@ public class MenuUbuntuRadio : Gtk.MenuBar {
 }
 
 
-public class MenuStreamList : Gtk.Menu {
+public class MenuStreamList : Gtk.Menu{
     /*
     Menú Contextual para la lista de Streamings
     */
 
-    public signal void accion(string acc, string val1, string val2, string val3);
+    public signal void accion(string acc, string val1,
+        string val2, string val3);
 
     private Gtk.ListStore lista;
     private Gtk.TreePath pathstream;
@@ -96,7 +97,8 @@ public class MenuStreamList : Gtk.Menu {
     private string _val2;
     private string _val3;
 
-    public MenuStreamList (Gtk.Widget widget, Gtk.TreePath _path, Gtk.ListStore _model) {
+    public MenuStreamList(Gtk.Widget widget, Gtk.TreePath _path,
+        Gtk.ListStore _model){
 
         this.lista = _model;
         this.pathstream = _path;
@@ -105,29 +107,29 @@ public class MenuStreamList : Gtk.Menu {
 	    GLib.Value val2;
 	    GLib.Value val3;
 
-	    this.lista.get_iter (out this.iter, this.pathstream);
+	    this.lista.get_iter(out this.iter, this.pathstream);
 
-        this.lista.get_value (iter, 0, out val1);
-	    this.lista.get_value (iter, 1, out val2);
-	    this.lista.get_value (iter, 2, out val3);
+        this.lista.get_value(iter, 0, out val1);
+	    this.lista.get_value(iter, 1, out val2);
+	    this.lista.get_value(iter, 2, out val3);
 
 	    this._val1 = (string) val1;
 	    this._val2 = (string) val2;
 	    this._val3 = (string) val3;
 
-		Gtk.MenuItem item2 = new Gtk.MenuItem.with_label ("Reproducir");
+		Gtk.MenuItem item2 = new Gtk.MenuItem.with_label("Reproducir");
         item2.activate.connect(this.emit_play);
         this.append(item2);
 
-        Gtk.MenuItem item3 = new Gtk.MenuItem.with_label ("Quitar de la Lista");
+        Gtk.MenuItem item3 = new Gtk.MenuItem.with_label("Quitar de la Lista");
         item3.activate.connect(this.remove_item);
         this.append(item3);
 
-        Gtk.MenuItem item4 = new Gtk.MenuItem.with_label ("Borrar Streaming");
+        Gtk.MenuItem item4 = new Gtk.MenuItem.with_label("Borrar Streaming");
         item4.activate.connect(this.borrar_item);
         this.append(item4);
 
-        Gtk.MenuItem item5 = new Gtk.MenuItem.with_label ("Grabar");
+        Gtk.MenuItem item5 = new Gtk.MenuItem.with_label("Grabar");
         item5.activate.connect(this.emit_record);
         this.append(item5);
 
@@ -159,7 +161,7 @@ public class MenuStreamList : Gtk.Menu {
 }
 
 
-public class ItemPlayer : Gtk.Frame {
+public class ItemPlayer : Gtk.Frame{
     /*
     Widget con Reproductor de Streaming
     */
@@ -169,7 +171,7 @@ public class ItemPlayer : Gtk.Frame {
     private UbuntuRadioPlayer player = new UbuntuRadioPlayer();
     private Gtk.Label label = new Gtk.Label("Nada para Reproducir");
 
-    public ItemPlayer () {
+    public ItemPlayer(){
 
         this.set_label(" Reproduciendo . . . ");
 
@@ -269,7 +271,7 @@ public class ItemPlayer : Gtk.Frame {
 }
 
 
-public class ItemRecord : Gtk.Frame {
+public class ItemRecord : Gtk.Frame{
     /*
     Widget con Grabador de Streaming
     */
@@ -280,7 +282,7 @@ public class ItemRecord : Gtk.Frame {
     private Gtk.Label infolabel = new Gtk.Label("Grabación Detenida");
     private Gtk.Label label = new Gtk.Label("Nada para Grabar");
 
-    public ItemRecord () {
+    public ItemRecord(){
 
         this.set_label(" Grabando . . . ");
 
@@ -343,7 +345,7 @@ public class ItemRecord : Gtk.Frame {
         Recibe el estado del reproductor cada vez que este cambia
         */
 
-        stdout.printf ("%s\n", estado);
+        //stdout.printf ("%s\n", estado);
         if (estado == "playing"){
             Idle.add (() => {
                 this.image_button.set_from_stock(
@@ -398,7 +400,7 @@ public class Streaming : GLib.Object{
     public string nombre;
     public string url;
 
-    public Streaming (string icono, string nombre, string url) {
+    public Streaming(string icono, string nombre, string url){
         this.icono = icono;
         this.nombre = nombre;
         this.url = url;
@@ -406,24 +408,24 @@ public class Streaming : GLib.Object{
 }
 
 
-public class Lista : Gtk.TreeView {
+public class Lista : Gtk.TreeView{
 
-    private Gtk.ListStore lista = new Gtk.ListStore (
+    private Gtk.ListStore lista = new Gtk.ListStore(
         3, typeof (string), typeof (string), typeof (string));
 
     public signal void play(string val1, string val2, string val3);
     public signal void record(string val1, string val2, string val3);
 
-    public Lista () {
+    public Lista(){
 
-        this.set_model (this.lista);
+        this.set_model(this.lista);
 
-        this.insert_column_with_attributes (
-            -1, "", new Gtk.CellRendererText (), "text", 0);
-        this.insert_column_with_attributes (
-            -1, "Emisora", new Gtk.CellRendererText (), "text", 1);
-        this.insert_column_with_attributes (
-            -1, "", new Gtk.CellRendererText (), "text", 2);
+        this.insert_column_with_attributes(
+            -1, "", new Gtk.CellRendererText(), "text", 0);
+        this.insert_column_with_attributes(
+            -1, "Emisora", new Gtk.CellRendererText(), "text", 1);
+        this.insert_column_with_attributes(
+            -1, "", new Gtk.CellRendererText(), "text", 2);
 
         this.lista.set_sort_column_id(1, Gtk.SortType.DESCENDING);
         this.set("headers_visible", true);
@@ -441,7 +443,8 @@ public class Lista : Gtk.TreeView {
         menu.popup(null, null, null, 1, Gtk.get_current_event_time());
     }
 
-    private void set_accion(string accion, string val1, string val2, string val3){
+    private void set_accion(string accion, string val1,
+        string val2, string val3){
         /*
         Responde a selecciones del usuario en el
         menú contextual de los streamings.
@@ -474,7 +477,7 @@ public class Lista : Gtk.TreeView {
 
 public class Creditos : Gtk.Dialog{
 
-    public Creditos (Gtk.Window parent, string title) {
+    public Creditos(Gtk.Window parent, string title){
 
         this.set("title", title);
         this.set_modal(true);
@@ -498,7 +501,7 @@ public class Creditos : Gtk.Dialog{
 
 public class Descargas : Gtk.Dialog{
 
-    public Descargas (Gtk.Window parent, string title) {
+    public Descargas(Gtk.Window parent, string title){
 
         this.set("title", title);
         this.set_modal(true);
@@ -510,7 +513,7 @@ public class Descargas : Gtk.Dialog{
 
         Gtk.Label label = new Gtk.Label("*** Descargando Streamings ***");
 
-        Gtk.Box Box = this.get_content_area ();
+        Gtk.Box Box = this.get_content_area();
         Box.pack_start(label, true, true, 0);
         Box.show_all();
 

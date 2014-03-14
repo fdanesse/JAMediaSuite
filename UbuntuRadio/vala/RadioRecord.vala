@@ -43,7 +43,7 @@ public class UbuntuRadioRecord : GLib.Object{
     public signal void estado(string estado);
     public signal void update(string info);
 
-    public UbuntuRadioRecord (string _name, string uri, string formato){
+    public UbuntuRadioRecord(string _name, string uri, string formato){
 
         this._name = _name;
         this._uri = uri;
@@ -119,14 +119,14 @@ public class UbuntuRadioRecord : GLib.Object{
         sean necesarios.
         */
 
-        Gst.Caps new_pad_caps = pad.query_caps (null);
-		weak Gst.Structure new_pad_struct = new_pad_caps.get_structure (0);
+        Gst.Caps new_pad_caps = pad.query_caps(null);
+		weak Gst.Structure new_pad_struct = new_pad_caps.get_structure(0);
 		string new_pad_type = new_pad_struct.get_name ();
 
-		if (new_pad_type.has_prefix ("audio/")){
-            Gst.PadLinkReturn ret = pad.link (this.audio_sink);
+		if (new_pad_type.has_prefix("audio/")){
+            Gst.PadLinkReturn ret = pad.link(this.audio_sink);
 
-		    if (ret != Gst.PadLinkReturn.OK) {
+		    if (ret != Gst.PadLinkReturn.OK){
 			    //stdout.printf ("Pad Tipo %s - link ha fallado.\n", new_pad_type);
 		    }
 		    else {
@@ -160,26 +160,20 @@ public class UbuntuRadioRecord : GLib.Object{
 
     public void play(){
 
-        /*
-        import time
-        import datetime
+        GLib.DateTime fecha = new GLib.DateTime.now_local();
 
-        hora = time.strftime("%H-%M-%S")
-        fecha = str(datetime.date.today())
+        string _path =
+            fecha.get_day_of_month().to_string()
+             + "-" + fecha.get_month().to_string()
+             + "-" + fecha.get_year().to_string()
+             + "_" + fecha.get_hour().to_string()
+             + "-" + fecha.get_minute().to_string()
+             + "-" + fecha.get_second().to_string()
+             + "_" + this._name.replace(" ", "_")
+             + "." + this._formato;
 
-        from Globales import get_my_files_directory
-
-        archivo = "%s-%s-%s.%s" % (
-            name.replace(" ", "_"),
-            fecha, hora, self.formato)
-        self.patharchivo = os.path.join(
-            get_my_files_directory(), archivo)
-        */
-
-        string _path = this._name.replace(" ", "_") + "." + this._formato;
-        string home = GLib.Environment.get_variable("HOME");
         this.patharchivo = GLib.Path.build_filename(
-            home, "JAMediaDatos2", "MisArchivos", _path);
+            get_my_files_directory(), _path);
 
         this.archivo.set("location", this.patharchivo);
 
@@ -243,7 +237,7 @@ public class UbuntuRadioRecord : GLib.Object{
         return true;
     }
 
-    private void sync_message (Gst.Message message){
+    private void sync_message(Gst.Message message){
 
         switch(message.type){
 

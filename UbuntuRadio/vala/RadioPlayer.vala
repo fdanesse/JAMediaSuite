@@ -25,7 +25,6 @@ public class UbuntuRadioPlayer : GLib.Object{
     Reproductor Gstreamer Básico de la Aplicación.
     */
 
-    //private GLib.MainLoop loop = new GLib.MainLoop();
     private dynamic Gst.Element player = Gst.ElementFactory.make(
         "playbin", "play");
 
@@ -36,7 +35,7 @@ public class UbuntuRadioPlayer : GLib.Object{
     public signal void endfile();
     public signal void estado(string estado);
 
-    public UbuntuRadioPlayer (){
+    public UbuntuRadioPlayer(){
 
         Gst.Bus bus = this.player.get_bus();
         bus.enable_sync_message_emission();
@@ -46,7 +45,7 @@ public class UbuntuRadioPlayer : GLib.Object{
         this.set_volumen(this._volumen);
     }
 
-    public void set_volumen (double valor){
+    public void set_volumen(double valor){
 
         this._volumen = valor;
         this.player.volume = this._volumen;
@@ -69,29 +68,18 @@ public class UbuntuRadioPlayer : GLib.Object{
     }
 
     public void play(){
-        /* Reproduce un Streaming */
 
         if (this._uri != ""){
-            Gst.StateChangeReturn ret = this.player.set_state(Gst.State.PLAYING);
-            if (ret == Gst.StateChangeReturn.FAILURE) {
-			    stderr.puts ("No se ha podido Reproducir el streaming.\n");
-		        }
-            //else{
-            //    this.loop.run();
-            //    }
-            //this.player.set_state(Gst.State.PLAYING);
-            //this.loop.run();
+            this.player.set_state(Gst.State.PLAYING);
         }
     }
 
     public void stop(){
 
         this.player.set_state(Gst.State.NULL);
-        //this.loop.quit();
     }
 
-    private void sync_message (Gst.Message message){
-        /* Manejo de Señales del Bus */
+    private void sync_message(Gst.Message message){
 
         switch(message.type){
 
@@ -101,7 +89,6 @@ public class UbuntuRadioPlayer : GLib.Object{
                 message.parse_error(out err, out debug);
                 stdout.printf("Error: %s\n", err.message);
                 this.endfile();
-                //this.stop();
                 break;
 
             case Gst.MessageType.LATENCY:
@@ -111,7 +98,6 @@ public class UbuntuRadioPlayer : GLib.Object{
 
             case Gst.MessageType.EOS:
                 this.endfile();
-                //this.stop();
                 break;
 
             case Gst.MessageType.STATE_CHANGED:
@@ -122,25 +108,29 @@ public class UbuntuRadioPlayer : GLib.Object{
                 message.parse_state_changed(
                     out oldstate, out newstate, out pending);
 
-                if (oldstate == Gst.State.PAUSED && newstate == Gst.State.PLAYING){
+                if (oldstate == Gst.State.PAUSED &&
+                    newstate == Gst.State.PLAYING){
                     if (this._estado != "playing"){
                         this._estado = "playing";
                         this.estado("playing");
                         }
                 }
-                else if (oldstate == Gst.State.READY && newstate == Gst.State.PAUSED){
+                else if (oldstate == Gst.State.READY &&
+                    newstate == Gst.State.PAUSED){
                     if (this._estado != "paused"){
                         this._estado = "paused";
                         this.estado("paused");
                         }
                 }
-                else if (oldstate == Gst.State.READY && newstate == Gst.State.NULL){
+                else if (oldstate == Gst.State.READY &&
+                    newstate == Gst.State.NULL){
                     if (this._estado != "None"){
                         this._estado = "None";
                         this.estado("None");
                         }
                 }
-                else if (oldstate == Gst.State.PLAYING && newstate == Gst.State.PAUSED){
+                else if (oldstate == Gst.State.PLAYING &&
+                    newstate == Gst.State.PAUSED){
                     if (this._estado != "paused"){
                         this._estado = "paused";
                         this.estado("paused");

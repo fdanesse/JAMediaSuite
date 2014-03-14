@@ -37,13 +37,13 @@ public void make_base_directory(){
         string home = GLib.Environment.get_variable("HOME");
 
         string jamedia = GLib.Path.build_filename(
-            home, "JAMediaDatos2");
+            home, "JAMediaDatos");
 
         string archivos = GLib.Path.build_filename(
-            home, "JAMediaDatos2", "MisArchivos");
+            home, "JAMediaDatos", "MisArchivos");
 
         string datos = GLib.Path.build_filename(
-            home, "JAMediaDatos2", "Datos");
+            home, "JAMediaDatos", "Datos");
 
         string [] dirlist = {jamedia, archivos, datos};
 
@@ -66,11 +66,11 @@ public string get_data_directory(){
 
     string home = GLib.Environment.get_variable("HOME");
     string datos = GLib.Path.build_filename(
-        home, "JAMediaDatos2", "Datos");
+        home, "JAMediaDatos", "Datos");
 
     try{
         File file = File.new_for_path(datos);
-        if(file.query_exists() != true) {
+        if(file.query_exists() != true){
             make_base_directory();
             }
         }
@@ -86,11 +86,11 @@ public string get_my_files_directory(){
 
     string home = GLib.Environment.get_variable("HOME");
     string archivos = GLib.Path.build_filename(
-        home, "JAMediaDatos2", "MisArchivos");
+        home, "JAMediaDatos", "MisArchivos");
 
     try{
         File file = File.new_for_path((string) archivos);
-        if(file.query_exists() != true) {
+        if(file.query_exists() != true){
             make_base_directory();
             }
         }
@@ -109,15 +109,15 @@ public SList<Streaming> get_streamings(){
 
     string home = GLib.Environment.get_variable("HOME");
     string radios = GLib.Path.build_filename(
-        home, "JAMediaDatos2", "Datos", "JAMediaRadio.JAMedia");
+        home, "JAMediaDatos", "Datos", "JAMediaRadio.json");
 
-    Json.Parser parser = new Json.Parser ();
-    parser.load_from_file (radios);
-    Json.Node node = parser.get_root ();
-    unowned Json.Object obj = node.get_object ();
+    Json.Parser parser = new Json.Parser();
+    parser.load_from_file(radios);
+    Json.Node node = parser.get_root();
+    unowned Json.Object obj = node.get_object();
 
-    foreach (unowned string name in obj.get_members ()){
-        unowned Json.Node item = obj.get_member (name);
+    foreach (unowned string name in obj.get_members()){
+        unowned Json.Node item = obj.get_member(name);
         Streaming streaming = new Streaming("", name, item.get_string());
         streaming_list.append(streaming);
     }
@@ -142,11 +142,11 @@ public SList<Streaming> descarga_lista_de_streamings(){
         Soup.SessionSync session = new Soup.SessionSync ();
         Soup.Request request = session.request (url);
         InputStream stream = request.send ();
-        DataInputStream data_stream = new DataInputStream (stream);
+        DataInputStream data_stream = new DataInputStream(stream);
 
         string? line;
         string text = "";
-		while ((line = data_stream.read_line ()) != null) {
+		while ((line = data_stream.read_line()) != null){
 		    text += line;
 			}
 
@@ -159,7 +159,6 @@ public SList<Streaming> descarga_lista_de_streamings(){
             int length = s.split(",").length;
 
             if (length != 2){
-                stdout.printf("\n*** %s\n", (string) length);
                 continue;
             }
 
@@ -179,7 +178,8 @@ public SList<Streaming> descarga_lista_de_streamings(){
             }
         }
 
-        stdout.printf("\tSe han Descargado: %s Estreamings.\n", (string) streamings.length);
+        //stdout.printf("\tSe han Descargado: %s Estreamings.\n",
+        //    (string) streamings.length);
         }
 
     catch (Error e){
@@ -197,10 +197,10 @@ public void set_listas_default(){
     string datos = get_data_directory();
     string home = GLib.Environment.get_variable("HOME");
     string radios = GLib.Path.build_filename(
-        home, "JAMediaDatos2", "Datos", "JAMediaRadio.JAMedia");
+        home, "JAMediaDatos", "Datos", "JAMediaRadio.json");
 
     File file = File.new_for_path(radios);
-    if(file.query_exists() != true) {
+    if(file.query_exists() != true){
         get_streaming_default();
     }
 }
@@ -215,32 +215,32 @@ public void get_streaming_default(){
         string DATOS = get_data_directory();
         SList<Streaming> lista_radios = descarga_lista_de_streamings();
 
-        Json.Builder builder = new Json.Builder ();
+        Json.Builder builder = new Json.Builder();
 	    builder.begin_object ();
 
 	    foreach (Streaming s in lista_radios){
-	        builder.set_member_name (s.nombre);
-	        builder.add_string_value (s.url);
+	        builder.set_member_name(s.nombre);
+	        builder.add_string_value(s.url);
 	    }
 
-	    builder.end_object ();
+	    builder.end_object();
 
         //FIXME: No se entiende pero está acá :P
         //https://mail.gnome.org/archives/commits-list/2012-September/msg03363.html
 
-        Json.Generator generator = new Json.Generator ();
-	    Json.Node root = builder.get_root ();
-	    generator.set_root (root);
-	    string str = generator.to_data (null);
+        Json.Generator generator = new Json.Generator();
+	    Json.Node root = builder.get_root();
+	    generator.set_root(root);
+	    string str = generator.to_data(null);
 
         string home = GLib.Environment.get_variable("HOME");
         string jamedia = GLib.Path.build_filename(
-            home, "JAMediaDatos2", "Datos", "JAMediaRadio.JAMedia");
+            home, "JAMediaDatos", "Datos", "JAMediaRadio.json");
 
-        var file = File.new_for_path (jamedia);
-        var file_stream = file.create (FileCreateFlags.PRIVATE);
-        var data_stream = new DataOutputStream (file_stream);
-        data_stream.put_string (str);
+        var file = File.new_for_path(jamedia);
+        var file_stream = file.create(FileCreateFlags.PRIVATE);
+        var data_stream = new DataOutputStream(file_stream);
+        data_stream.put_string(str);
     }
     catch{
         stdout.printf("Error al descargar Streamings de Radios.");
