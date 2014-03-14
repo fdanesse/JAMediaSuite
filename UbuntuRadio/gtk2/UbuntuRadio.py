@@ -64,9 +64,9 @@ class UbuntuRadio(gtk.Window):
             gtk.POLICY_AUTOMATIC)
         self.win_scroll.add(self.lista)
 
-        vbox.pack_start(menu, False, False, 0)
-        vbox.pack_start(self.itemplayer, False, False, 0)
-        vbox.pack_start(self.itemrecord, False, False, 0)
+        vbox.pack_start(menu, False, False, 3)
+        vbox.pack_start(self.itemplayer, False, False, 3)
+        vbox.pack_start(self.itemrecord, False, False, 3)
         vbox.pack_start(self.win_scroll, True, True, 0)
 
         self.add(vbox)
@@ -239,8 +239,13 @@ class UbuntuRadio(gtk.Window):
 
     def __exit(self, widget=None, event=None):
 
-        self.itemplayer.stop()
-        self.itemrecord.stop()
+        try:
+            self.itemplayer.stop()
+            self.itemrecord.stop()
+
+        except:
+            pass
+
         import sys
         sys.exit(0)
 

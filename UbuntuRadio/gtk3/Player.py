@@ -43,7 +43,7 @@ class MyPlayBin(GObject.Object):
 
     # Estados: playing, paused, None
 
-    def __init__(self, uri, volumen):
+    def __init__(self):
 
         GObject.Object.__init__(self)
         GObject.threads_init()
@@ -58,9 +58,6 @@ class MyPlayBin(GObject.Object):
         self.bus.enable_sync_message_emission()
         self.bus.connect(
             'sync-message', self.__sync_message)
-
-        self.__load(uri)
-        self.set_volumen(volumen)
 
     def __sync_message(self, bus, mensaje):
 
@@ -102,15 +99,19 @@ class MyPlayBin(GObject.Object):
 
         return True
 
-    def __load(self, uri):
+    def load(self, uri):
+
+        self.stop()
 
         if os.path.exists(uri):
             direccion = Gst.filename_to_uri(uri)
             self.player.set_property("uri", direccion)
+            self.play()
 
         else:
             if Gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
+                self.play()
 
     def set_volumen(self, valor):
 

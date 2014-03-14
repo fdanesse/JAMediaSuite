@@ -353,7 +353,7 @@ class ItemRecord(gtk.Frame):
             False, True, 0)
 
         vbox.pack_start(hbox,
-            False, True, 0)
+            False, True, 3)
         vbox.pack_start(self.label_info,
             False, True, 0)
 

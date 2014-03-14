@@ -60,21 +60,19 @@ class UbuntuRadio(Gtk.Window):
         vbox = Gtk.VBox()
 
         menu = MenuBar()
-        eventbox = Gtk.EventBox()
-        self.inplay = Gtk.VBox()
-        eventbox.add(self.inplay)
+        self.itemplayer = ItemPlayer()
+        self.itemrecord = ItemRecord()
         self.lista = Lista()
-
-        self.scroll = Gtk.ScrolledWindow()
-        self.scroll.set_policy(
+        self.win_scroll = Gtk.ScrolledWindow()
+        self.win_scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
+        self.win_scroll.add(self.lista)
 
-        self.scroll.add(self.lista)
-
-        vbox.pack_start(menu, False, False, 0)
-        vbox.pack_start(eventbox, False, False, 0)
-        vbox.pack_start(self.scroll, True, True, 0)
+        vbox.pack_start(menu, False, False, 3)
+        vbox.pack_start(self.itemplayer, False, False, 3)
+        vbox.pack_start(self.itemrecord, False, False, 3)
+        vbox.pack_start(self.win_scroll, True, True, 0)
 
         self.add(vbox)
 
@@ -218,52 +216,45 @@ class UbuntuRadio(Gtk.Window):
         Reproduce un streaming.
         """
 
-        items = self.inplay.get_children()
-
-        for item in items:
-            if item.tipo == "Reproductor":
-                item.stop()
-                self.inplay.remove(item)
-                item.destroy()
-
-        self.inplay.pack_start(
-            ItemPlayer(valor), False, False, 0)
+        self.itemplayer.stop()
+        self.itemplayer.load(valor)
 
     def __grabar(self, valor):
         """
         Grabar desde un Streaming.
         """
 
-        items = self.inplay.get_children()
-
-        for item in items:
-            if item.tipo == "Grabador":
-                item.stop()
-                self.inplay.remove(item)
-                item.destroy()
-
-        self.inplay.pack_start(
-            ItemRecord(valor, self.config["formato"]),
-            False, False, 0)
+        self.itemrecord.stop()
+        self.itemrecord.load(valor, self.config["formato"])
 
     def __show_lista(self, widget):
         """
         Muestra u Oculta la Lista de Radios.
         """
 
-        val = self.scroll.get_visible()
+        val = self.win_scroll.get_visible()
 
         if val:
-            self.scroll.hide()
-            self.set_size_request(200, 10)
+            self.win_scroll.hide()
+            rect = self.win_scroll.get_allocation()
+            a, b, c, d = (rect.x, rect.y, rect.width, rect.height)
+            rect = self.get_allocation()
+            x, y, w, h = (rect.x, rect.y, rect.width, rect.height)
+            self.set_size_request(-1, h - d)
 
         else:
-            self.scroll.show()
-            self.set_size_request(200, 400)
+            self.win_scroll.show()
+            self.set_size_request(-1, 400)
 
     def __exit(self, widget=None, event=None):
 
-        # FIXME: hacer stop en todos los pipes
+        try:
+            self.itemplayer.stop()
+            self.itemrecord.stop()
+
+        except:
+            pass
+
         import sys
         sys.exit(0)
 

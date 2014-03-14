@@ -226,13 +226,11 @@ class ItemPlayer(Gtk.Frame):
 
     __gtype_name__ = 'UbuntuRadioItemPlayer'
 
-    def __init__(self, valor):
+    def __init__(self):
 
         Gtk.Frame.__init__(self)
 
-        self.tipo = "Reproductor"
         self.player_estado = "None"
-        self.name, self.uri = valor
 
         self.set_label(" Reproduciendo . . . ")
 
@@ -247,8 +245,9 @@ class ItemPlayer(Gtk.Frame):
         self.image_button.set_from_stock(
             Gtk.STOCK_MEDIA_PLAY, Gtk.IconSize.BUTTON)
         self.stop_button.set_image(self.image_button)
+        self.label = Gtk.Label("Nada para Reproducir")
 
-        hbox.pack_start(Gtk.Label(self.name),
+        hbox.pack_start(self.label,
             False, True, 0)
         hbox.pack_end(self.stop_button,
             False, True, 0)
@@ -269,10 +268,10 @@ class ItemPlayer(Gtk.Frame):
 
         from Player import MyPlayBin
 
-        self.player = MyPlayBin(self.uri, 0.10)
+        self.player = MyPlayBin()
+
         self.player.connect("estado", self.__update_estado)
         self.player.connect("endfile", self.__endfile)
-        self.player.play()
 
     def __endfile(self, player):
 
@@ -299,6 +298,12 @@ class ItemPlayer(Gtk.Frame):
 
         self.player.set_volumen(valor)
 
+    def load(self, valor):
+
+        nombre, uri = valor
+        self.label.set_text(nombre)
+        self.player.load(uri)
+
     def stop(self, widget=False):
 
         if self.player_estado == "playing":
@@ -312,13 +317,12 @@ class ItemRecord(Gtk.Frame):
 
     __gtype_name__ = 'UbuntuRadioItemRecord'
 
-    def __init__(self, valor, formato):
+    def __init__(self):
 
         Gtk.Frame.__init__(self)
 
-        self.tipo = "Grabador"
         self.player_estado = "None"
-        self.name, self.uri = valor
+        self.player = False
 
         self.set_label(" Grabando . . . ")
         self.label_info = Gtk.Label("Grabación Detenida")
@@ -334,8 +338,9 @@ class ItemRecord(Gtk.Frame):
         self.image_button.set_from_stock(
             Gtk.STOCK_MEDIA_RECORD, Gtk.IconSize.BUTTON)
         self.stop_button.set_image(self.image_button)
+        self.label = Gtk.Label("Nada para Grabar")
 
-        hbox.pack_start(Gtk.Label(self.name),
+        hbox.pack_start(self.label,
             False, True, 0)
         hbox.pack_end(self.stop_button,
             False, True, 0)
@@ -352,14 +357,6 @@ class ItemRecord(Gtk.Frame):
 
         self.stop_button.connect(
             "clicked", self.stop)
-
-        from Record import MyPlayBin
-
-        self.player = MyPlayBin(self.uri, formato)
-        self.player.connect("estado", self.__update_estado)
-        self.player.connect("endfile", self.__endfile)
-        self.player.connect("update", self.__update_info)
-        self.player.play(self.name)
 
     def __update_info(self, player, info):
 
@@ -389,13 +386,32 @@ class ItemRecord(Gtk.Frame):
 
         GLib.idle_add(self.get_toplevel().queue_draw)
 
+    def load(self, valor, formato):
+
+        if self.player:
+            self.player.stop()
+
+        nombre, uri = valor
+        self.label.set_text(nombre)
+
+        from Record import MyPlayBin
+
+        self.player = MyPlayBin(uri, formato)
+        self.player.connect("estado", self.__update_estado)
+        self.player.connect("endfile", self.__endfile)
+        self.player.connect("update", self.__update_info)
+        self.player.play(nombre)
+
     def stop(self, widget=False):
+
+        if not self.player:
+            return
 
         if self.player_estado == "playing":
             self.player.stop()
 
         else:
-            self.player.play(self.name)
+            self.player.play(self._name)
 
 
 class MenuList(Gtk.Menu):
