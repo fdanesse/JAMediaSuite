@@ -22,10 +22,8 @@
 
 public class UbuntuRadioRecord : GLib.Object{
     /*
-    Reproductor Gstreamer Básico de la Aplicación.
+    Grabador Gstreamer de la Aplicación.
     */
-
-    //private GLib.MainLoop loop = new GLib.MainLoop();
 
     private Gst.Pipeline pipeline = new Gst.Pipeline("Record");
     private dynamic Gst.Element player = Gst.ElementFactory.make(
@@ -127,10 +125,15 @@ public class UbuntuRadioRecord : GLib.Object{
 
 		if (new_pad_type.has_prefix ("audio/")){
             Gst.PadLinkReturn ret = pad.link (this.audio_sink);
+
 		    if (ret != Gst.PadLinkReturn.OK) {
-			    stdout.printf ("Pad Tipo %s - link ha fallado.\n", new_pad_type);
-		    } else {
-			    stdout.printf ("Linkeado pad de Tipo: %s\n", new_pad_type);
+			    //stdout.printf ("Pad Tipo %s - link ha fallado.\n", new_pad_type);
+		    }
+		    else {
+			    //stdout.printf ("Linkeado pad de Tipo: %s\n", new_pad_type);
+                this._estado = "playing";
+                this.estado(this._estado);
+                this.new_handle(true);
 		    }
         }
     }
@@ -179,21 +182,9 @@ public class UbuntuRadioRecord : GLib.Object{
             home, "JAMediaDatos2", "MisArchivos", _path);
 
         this.archivo.set("location", this.patharchivo);
+
         if (this._uri != ""){
-            Gst.StateChangeReturn ret = this.pipeline.set_state(Gst.State.PLAYING);
-            if (ret == Gst.StateChangeReturn.SUCCESS) {
-                this._estado = "playing";
-                this.estado(this._estado);
-                this.new_handle(true);
-                //this.loop.run();
-		            }
-            else{
-                stderr.puts ("No se ha podido Reproducir el streaming.\n");
-                this._estado = "None";
-                this.estado(this._estado);
-                this.new_handle(false);
-                //FIXME: Agregar eliminar el archivo ?
-                }
+            this.pipeline.set_state(Gst.State.PLAYING);
             }
     }
 
@@ -203,7 +194,6 @@ public class UbuntuRadioRecord : GLib.Object{
         this.estado(this._estado);
         this.new_handle(false);
         this.pipeline.set_state(Gst.State.NULL);
-        //this.loop.quit();
     }
 
     private void new_handle(bool reset){
@@ -254,7 +244,6 @@ public class UbuntuRadioRecord : GLib.Object{
     }
 
     private void sync_message (Gst.Message message){
-        // Manejo de Señales del Bus
 
         switch(message.type){
 
@@ -267,7 +256,6 @@ public class UbuntuRadioRecord : GLib.Object{
                 this.estado(this._estado);
                 this.endfile();
                 this.new_handle(false);
-                //this.stop();
                 break;
 
             case Gst.MessageType.LATENCY:
@@ -280,7 +268,6 @@ public class UbuntuRadioRecord : GLib.Object{
                 this.estado(this._estado);
                 this.endfile();
                 this.new_handle(false);
-                //this.stop();
                 break;
 
             default:

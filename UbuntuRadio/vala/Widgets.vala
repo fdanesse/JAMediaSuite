@@ -167,7 +167,7 @@ public class ItemPlayer : Gtk.Frame {
     private Gtk.Button stop_button = new Gtk.Button();
     private Gtk.Image image_button = new Gtk.Image();
     private UbuntuRadioPlayer player = new UbuntuRadioPlayer();
-    private Gtk.Label infolabel = new Gtk.Label("");
+    private Gtk.Label label = new Gtk.Label("Nada para Reproducir");
 
     public ItemPlayer () {
 
@@ -181,7 +181,7 @@ public class ItemPlayer : Gtk.Frame {
 
         Gtk.VolumeButton control_volumen = new Gtk.VolumeButton();
 
-        hbox.pack_start(this.infolabel,
+        hbox.pack_start(this.label,
             false, true, 0);
         hbox.pack_end(this.stop_button,
             false, true, 0);
@@ -218,7 +218,7 @@ public class ItemPlayer : Gtk.Frame {
         Carga un streaming en el Reproductor.
         */
 
-        this.infolabel.set_text(_name);
+        this.label.set_text(_name);
         this.player.load(uri);
     }
 
@@ -277,7 +277,8 @@ public class ItemRecord : Gtk.Frame {
     private Gtk.Button stop_button = new Gtk.Button();
     private Gtk.Image image_button = new Gtk.Image();
     private UbuntuRadioRecord player = new UbuntuRadioRecord("", "", "");
-    private Gtk.Label infolabel = new Gtk.Label("");
+    private Gtk.Label infolabel = new Gtk.Label("Grabación Detenida");
+    private Gtk.Label label = new Gtk.Label("Nada para Grabar");
 
     public ItemRecord () {
 
@@ -286,12 +287,18 @@ public class ItemRecord : Gtk.Frame {
         Gtk.EventBox eventbox = new Gtk.EventBox();
         eventbox.set_border_width(5);
         Gtk.Box hbox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
-        eventbox.add(hbox);
+        Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        eventbox.add(vbox);
         this.add(eventbox);
 
-        hbox.pack_start(this.infolabel,
+        hbox.pack_start(this.label,
             false, true, 0);
         hbox.pack_end(this.stop_button,
+            false, true, 0);
+
+        vbox.pack_start(hbox,
+            false, true, 0);
+        vbox.pack_start(this.infolabel,
             false, true, 0);
 
         this.image_button.set_from_stock(
@@ -324,7 +331,7 @@ public class ItemRecord : Gtk.Frame {
 
         this.player = null;
         this.player = new UbuntuRadioRecord(_name, uri, "ogg");
-        this.infolabel.set_text(_name);
+        this.label.set_text(_name);
         this.player.estado.connect(this.update_estado);
         //this.player.update.connect(this.update_info);
         //FIXME: No parece funcionar

@@ -379,77 +379,81 @@ class Notebook_SourceView(Gtk.Notebook):
         para él, con su código.
         """
 
-        paginas = self.get_children()
+        try:
+            paginas = self.get_children()
 
-        for pagina in paginas:
-            view = pagina.get_child()
-
-            # FIXME: No permitir abrir dos veces el mismo archivo?
-            if view.archivo and view.archivo == archivo:
-                return
-
-        sourceview = SourceView(self.config)
-
-        hbox = Gtk.HBox()
-        label = Gtk.Label("Sin Título")
-
-        boton = get_boton(
-            os.path.join(icons, "button-cancel.svg"),
-            pixels=get_pixels(0.5),
-            tooltip_text="Cerrar")
-
-        hbox.pack_start(label, False, False, 0)
-        hbox.pack_start(boton, False, False, 0)
-
-        # Se hace posteriormente
-        # if archivo:
-        #    if os.path.exists(archivo):
-        #        nombre = str(os.path.basename(archivo))
-
-        #        if len(nombre) > 13:
-        #            nombre = nombre[0:13] + " . . . "
-
-        #        label.set_text(nombre)
-
-        sourceview.set_archivo(archivo)
-
-        scroll = Gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-
-        scroll.add(sourceview)
-
-        self.append_page(scroll, hbox)
-
-        label.show()
-        boton.show()
-        self.show_all()
-
-        boton.connect("clicked", self.__cerrar)
-
-        self.set_current_page(-1)
-
-        self.set_tab_reorderable(scroll, True)
-
-        '''
-        # Cuando se abre un archivo, se cierra el vacío por default.
-        if len(paginas) > 1:
             for pagina in paginas:
                 view = pagina.get_child()
 
-                if not view.archivo:
-                    buffer = view.get_buffer()
-                    inicio, fin = buffer.get_bounds()
-                    buf = buffer.get_text(inicio, fin, 0)
+                # FIXME: No permitir abrir dos veces el mismo archivo?
+                if view.archivo and view.archivo == archivo:
+                    return
 
-                    if not buf:
-                        self.remove(pagina)
-                        break
-        '''
+            sourceview = SourceView(self.config)
 
-        sourceview.connect("update", self.__re_emit_update)
+            hbox = Gtk.HBox()
+            label = Gtk.Label("Sin Título")
+
+            boton = get_boton(
+                os.path.join(icons, "button-cancel.svg"),
+                pixels=get_pixels(0.5),
+                tooltip_text="Cerrar")
+
+            hbox.pack_start(label, False, False, 0)
+            hbox.pack_start(boton, False, False, 0)
+
+            # Se hace posteriormente
+            # if archivo:
+            #    if os.path.exists(archivo):
+            #        nombre = str(os.path.basename(archivo))
+
+            #        if len(nombre) > 13:
+            #            nombre = nombre[0:13] + " . . . "
+
+            #        label.set_text(nombre)
+
+            sourceview.set_archivo(archivo)
+
+            scroll = Gtk.ScrolledWindow()
+
+            scroll.set_policy(
+                Gtk.PolicyType.AUTOMATIC,
+                Gtk.PolicyType.AUTOMATIC)
+
+            scroll.add(sourceview)
+
+            self.append_page(scroll, hbox)
+
+            label.show()
+            boton.show()
+            self.show_all()
+
+            boton.connect("clicked", self.__cerrar)
+
+            self.set_current_page(-1)
+
+            self.set_tab_reorderable(scroll, True)
+
+            '''
+            # Cuando se abre un archivo, se cierra el vacío por default.
+            if len(paginas) > 1:
+                for pagina in paginas:
+                    view = pagina.get_child()
+
+                    if not view.archivo:
+                        buffer = view.get_buffer()
+                        inicio, fin = buffer.get_bounds()
+                        buf = buffer.get_text(inicio, fin, 0)
+
+                        if not buf:
+                            self.remove(pagina)
+                            break
+            '''
+
+            sourceview.connect("update", self.__re_emit_update)
+
+        except:
+            pass
 
         return False
 

@@ -780,39 +780,43 @@ class DialogoReemplazar(Gtk.Dialog):
         Busca el texto en el buffer.
         """
 
-        texto = self.buscar_entry.get_text()
-        _buffer = self.view.get_buffer()
-        inicio, fin = _buffer.get_bounds()
+        # FIXME: hay un error, ver en la web
+        try:
+            texto = self.buscar_entry.get_text()
+            _buffer = self.view.get_buffer()
+            inicio, fin = _buffer.get_bounds()
 
-        texto_actual = _buffer.get_text(inicio, fin, 0)
+            texto_actual = _buffer.get_text(inicio, fin, 0)
 
-        posicion = _buffer.get_iter_at_mark(_buffer.get_insert())
+            posicion = _buffer.get_iter_at_mark(_buffer.get_insert())
 
-        if texto:
-            if texto in texto_actual:
-                inicio = posicion
+            if texto:
+                if texto in texto_actual:
+                    inicio = posicion
 
-                if direccion == 'Adelante':
-                    if inicio.get_offset() == _buffer.get_char_count():
-                        inicio = _buffer.get_start_iter()
+                    if direccion == 'Adelante':
+                        if inicio.get_offset() == _buffer.get_char_count():
+                            inicio = _buffer.get_start_iter()
 
-                elif direccion == 'Atras':
-                    if _buffer.get_selection_bounds():
+                    elif direccion == 'Atras':
+                        if _buffer.get_selection_bounds():
 
-                        start, end = _buffer.get_selection_bounds()
-                        contenido = _buffer.get_text(start, end, 0)
-                        numero = len(contenido)
+                            start, end = _buffer.get_selection_bounds()
+                            contenido = _buffer.get_text(start, end, 0)
+                            numero = len(contenido)
 
-                        if end.get_offset() == numero:
-                            inicio = _buffer.get_end_iter()
+                            if end.get_offset() == numero:
+                                inicio = _buffer.get_end_iter()
 
-                        else:
-                            inicio = _buffer.get_selection_bounds()[0]
+                            else:
+                                inicio = _buffer.get_selection_bounds()[0]
 
-                self.__seleccionar_texto(texto, inicio, direccion)
+                    self.__seleccionar_texto(texto, inicio, direccion)
 
-            else:
-                buffer.select_range(posicion, posicion)
+                else:
+                    buffer.select_range(posicion, posicion)
+        except:
+            print "Error en __buscar de DialogoReemplazar"
 
     def __destroy(self, widget=None, event=None):
 
