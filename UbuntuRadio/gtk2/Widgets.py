@@ -30,7 +30,7 @@ gobject.threads_init()
 
 class MenuBar(gtk.MenuBar):
 
-    __gtype_name__ = 'UbuntuRadioMenu'
+    #__gtype_name__ = 'UbuntuRadioMenu'
 
     __gsignals__ = {
     'salir': (gobject.SIGNAL_RUN_FIRST,
@@ -103,7 +103,7 @@ class MenuBar(gtk.MenuBar):
 
 class Lista(gtk.TreeView):
 
-    __gtype_name__ = 'UbuntuRadioLista'
+    #__gtype_name__ = 'UbuntuRadioLista'
 
     def __init__(self):
 
@@ -209,7 +209,7 @@ class Lista(gtk.TreeView):
 
 class Volumen(gtk.VolumeButton):
 
-    __gtype_name__ = 'UbuntuRadioVolumen'
+    #__gtype_name__ = 'UbuntuRadioVolumen'
 
     __gsignals__ = {
     "volumen": (gobject.SIGNAL_RUN_FIRST,
@@ -229,7 +229,7 @@ class Volumen(gtk.VolumeButton):
 
 class ItemPlayer(gtk.Frame):
 
-    __gtype_name__ = 'UbuntuRadioItemPlayer'
+    #__gtype_name__ = 'UbuntuRadioItemPlayer'
 
     def __init__(self):
 
@@ -321,7 +321,7 @@ class ItemPlayer(gtk.Frame):
 
 class ItemRecord(gtk.Frame):
 
-    __gtype_name__ = 'UbuntuRadioItemRecord'
+    #__gtype_name__ = 'UbuntuRadioItemRecord'
 
     def __init__(self):
 
@@ -423,7 +423,7 @@ class ItemRecord(gtk.Frame):
 
 class MenuList(gtk.Menu):
 
-    __gtype_name__ = 'UbuntuRadioMenuList'
+    #__gtype_name__ = 'UbuntuRadioMenuList'
 
     __gsignals__ = {
     'accion': (gobject.SIGNAL_RUN_FIRST,
@@ -469,7 +469,7 @@ class MenuList(gtk.Menu):
 
 class DialogoDescarga(gtk.Dialog):
 
-    __gtype_name__ = 'UbuntuRadioDialogoDescarga'
+    #__gtype_name__ = 'UbuntuRadioDialogoDescarga'
 
     def __init__(self, parent=None):
 
@@ -504,7 +504,7 @@ class DialogoDescarga(gtk.Dialog):
 
 class Creditos(gtk.Dialog):
 
-    __gtype_name__ = 'UbuntuRadioCreditos'
+    #__gtype_name__ = 'UbuntuRadioCreditos'
 
     def __init__(self, parent=None):
 
@@ -528,7 +528,7 @@ class Creditos(gtk.Dialog):
 
 class DialogoConfig(gtk.Dialog):
 
-    __gtype_name__ = 'UbuntuRadioDialogoConfig'
+    #__gtype_name__ = 'UbuntuRadioDialogoConfig'
 
     def __init__(self, parent=None, config={}):
 

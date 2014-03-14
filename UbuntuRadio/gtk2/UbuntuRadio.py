@@ -29,7 +29,7 @@ from Widgets import ItemRecord
 
 class UbuntuRadio(gtk.Window):
 
-    __gtype_name__ = 'UbuntuRadio'
+    #__gtype_name__ = 'UbuntuRadio'
 
     def __init__(self):
 
