@@ -348,12 +348,14 @@ public class ItemRecord : Gtk.Frame{
         //stdout.printf ("%s\n", estado);
         if (estado == "playing"){
             Idle.add (() => {
+                this.infolabel.set_text("Grabando . . .");
                 this.image_button.set_from_stock(
                 Gtk.Stock.MEDIA_STOP, Gtk.IconSize.BUTTON);
                 return false;});
         }
         else{
             Idle.add (() => {
+                this.infolabel.set_text("Grabación Detenida");
                 this.image_button.set_from_stock(
                 Gtk.Stock.MEDIA_RECORD, Gtk.IconSize.BUTTON);
                 return false;});
@@ -380,6 +382,7 @@ public class ItemRecord : Gtk.Frame{
         */
 
         Idle.add (() => {
+            this.infolabel.set_text("Grabación Detenida");
             this.image_button.set_from_stock(
             Gtk.Stock.MEDIA_RECORD, Gtk.IconSize.BUTTON);
             return false;});

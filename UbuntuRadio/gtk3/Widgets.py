@@ -391,8 +391,8 @@ class ItemRecord(Gtk.Frame):
         if self.player:
             self.player.stop()
 
-        nombre, uri = valor
-        self.label.set_text(nombre)
+        self.nombre, uri = valor
+        self.label.set_text(self.nombre)
 
         from Record import MyPlayBin
 
@@ -400,7 +400,7 @@ class ItemRecord(Gtk.Frame):
         self.player.connect("estado", self.__update_estado)
         self.player.connect("endfile", self.__endfile)
         self.player.connect("update", self.__update_info)
-        self.player.play(nombre)
+        self.player.play(self.nombre)
 
     def stop(self, widget=False):
 

@@ -66,10 +66,10 @@ public class UbuntuRadio : Gtk.Window{
             PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
         this.scroll_list.add(this.lista);
 
-        box.pack_start (this.menu, false, true, 0);
-        box.pack_start (this.itemplayer, false, true, 0);
-        box.pack_start (this.itemrecord, false, true, 0);
-        box.pack_start (this.scroll_list, true, true, 0);
+        box.pack_start(this.menu, false, true, 0);
+        box.pack_start(this.itemplayer, false, true, 0);
+        box.pack_start(this.itemrecord, false, true, 0);
+        box.pack_start(this.scroll_list, true, true, 0);
 
         this.add(box);
 

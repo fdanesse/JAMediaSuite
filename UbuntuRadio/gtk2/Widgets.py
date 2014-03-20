@@ -329,6 +329,7 @@ class ItemRecord(gtk.Frame):
 
         self.player_estado = "None"
         self.player = False
+        self.nombre = ""
 
         self.set_label(" Grabando . . . ")
         self.label_info = gtk.Label("Grabación Detenida")
@@ -398,8 +399,8 @@ class ItemRecord(gtk.Frame):
         if self.player:
             self.player.stop()
 
-        nombre, uri = valor
-        self.label.set_text(nombre)
+        self.nombre, uri = valor
+        self.label.set_text(self.nombre)
 
         from Record import MyPlayBin
 
@@ -407,7 +408,7 @@ class ItemRecord(gtk.Frame):
         self.player.connect("estado", self.__update_estado)
         self.player.connect("endfile", self.__endfile)
         self.player.connect("update", self.__update_info)
-        self.player.play(nombre)
+        self.player.play(self.nombre)
 
     def stop(self, widget=False):
 
@@ -418,7 +419,7 @@ class ItemRecord(gtk.Frame):
             self.player.stop()
 
         else:
-            self.player.play(self._name)
+            self.player.play(self.nombre)
 
 
 class MenuList(gtk.Menu):
