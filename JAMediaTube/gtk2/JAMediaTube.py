@@ -25,9 +25,7 @@ import gtk
 from gtk import gdk
 import gobject
 
-#import JAMediaObjects
-
-#JAMediaObjectsPath = JAMediaObjects.__path__[0]
+BASE_PATH = os.path.dirname(__file__)
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
@@ -46,9 +44,10 @@ class JAMediaTube(gtk.Window):
         gtk.Window.__init__(self)
 
         self.set_title("JAMediaTube")
-        #self.set_icon_from_file(
-        #    os.path.join(JAMediaObjectsPath,
-        #    "Iconos", "JAMediaTube.svg"))
+        self.set_icon_from_file(
+            os.path.join(BASE_PATH,
+            "Iconos", "JAMediaTube.svg"))
+        self.modify_bg(0, gdk.color_parse("#ffffff"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)
@@ -77,39 +76,40 @@ class JAMediaTube(gtk.Window):
         Crea y Empaqueta todo.
         """
 
+        from Widgets import Toolbar
+        #from Widgets import Toolbar_Busqueda
+        #from Widgets import Toolbar_Descarga
+        #from Widgets import Alerta_Busqueda
         '''
-        from JAMediaTube.Widgets import Toolbar
-        from JAMediaTube.Widgets import Toolbar_Busqueda
-        from JAMediaTube.Widgets import Toolbar_Descarga
-        from JAMediaTube.Widgets import Alerta_Busqueda
-
         from JAMediaTube.PanelTube import PanelTube
 
         from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+        '''
+        boxbase = gtk.VBox()
 
-        boxbase = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-        self.box_tube = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+        self.box_tube = gtk.VBox()
 
         self.toolbar = Toolbar()
+        '''
         self.toolbar_busqueda = Toolbar_Busqueda()
         self.toolbar_descarga = Toolbar_Descarga()
         self.toolbar_salir = ToolbarSalir()
         self.alerta_busqueda = Alerta_Busqueda()
         self.paneltube = PanelTube()
-
+        '''
         self.box_tube.pack_start(self.toolbar, False, False, 0)
-        self.box_tube.pack_start(self.toolbar_salir, False, False, 0)
-        self.box_tube.pack_start(self.toolbar_busqueda, False, False, 0)
-        self.box_tube.pack_start(self.toolbar_descarga, False, False, 0)
-        self.box_tube.pack_start(self.alerta_busqueda, False, False, 0)
-        self.box_tube.pack_start(self.paneltube, True, True, 0)
+        #self.box_tube.pack_start(self.toolbar_salir, False, False, 0)
+        #self.box_tube.pack_start(self.toolbar_busqueda, False, False, 0)
+        #self.box_tube.pack_start(self.toolbar_descarga, False, False, 0)
+        #self.box_tube.pack_start(self.alerta_busqueda, False, False, 0)
+        #self.box_tube.pack_start(self.paneltube, True, True, 0)
 
         boxbase.pack_start(self.box_tube, True, True, 0)
 
-        boxbase.pack_start(self.socketjamedia, True, True, 0)
+        #boxbase.pack_start(self.socketjamedia, True, True, 0)
 
         self.add(boxbase)
-
+        '''
         from JAMediaTube.Widgets import Tube_Player
 
         self.jamedia = Tube_Player()

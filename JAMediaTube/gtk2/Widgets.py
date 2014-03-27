@@ -21,25 +21,24 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GdkPixbuf
-from gi.repository import GObject
-from gi.repository import GLib
+import gtk
+from gtk import gdk
+from gtk.gdk import Pixbuf
+import gobject
 
+'''
 import JAMediaObjects
 from JAMediaObjects.JAMediaWidgets import JAMediaButton
 
 from JAMedia.JAMedia import JAMediaPlayer
+'''
+from Globales import get_separador
+from Globales import get_boton
+#from Globales import get_color
 
-from JAMediaObjects.JAMediaGlobales import get_separador
-from JAMediaObjects.JAMediaGlobales import get_pixels
-from JAMediaObjects.JAMediaGlobales import get_boton
-from JAMediaObjects.JAMediaGlobales import get_color
+BASE_PATH = os.path.dirname(__file__)
 
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
-
+'''
 class Tube_Player(JAMediaPlayer):
     """
     JAMedia con pequeñas adaptaciones.
@@ -66,59 +65,61 @@ class Tube_Player(JAMediaPlayer):
 
         if objeto.get_visible():
             objeto.hide()
+'''
 
-
-class Toolbar(Gtk.Toolbar):
+class Toolbar(gtk.Toolbar):
     """
     Toolbar principal de JAMediaTube.
     """
 
     __gsignals__ = {
-    'salir': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    'switch': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    'salir': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    'switch': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
+
+        self.modify_bg(0, gdk.color_parse("#000000"))
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "JAMediaTube.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(1))
-        boton.set_tooltip_text("Autor.")
-        boton.connect("clicked", self.__show_credits)
+            pixels=24)
+        boton.set_tooltip_text("Autor")
+        #boton.connect("clicked", self.__show_credits)
         self.insert(boton, -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg")
         self.jamedia = get_boton(archivo, flip=False,
-            pixels=get_pixels(1.2))
-        self.jamedia.set_tooltip_text("Cambiar a JAMedia.")
-        self.jamedia.connect("clicked", self.__emit_switch)
+            pixels=24)
+        self.jamedia.set_tooltip_text("Cambiar a JAMedia")
+        #self.jamedia.connect("clicked", self.__emit_switch)
         self.insert(self.jamedia, -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "JAMedia-help.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(1))
-        boton.set_tooltip_text("Ayuda.")
-        boton.connect("clicked", self.__show_help)
+            pixels=24)
+        boton.set_tooltip_text("Ayuda")
+        #boton.connect("clicked", self.__show_help)
         self.insert(boton, -1)
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "salir.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(1))
+            pixels=24)
         boton.set_tooltip_text("Salir")
-        boton.connect("clicked", self.__salir)
+        #boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
 
         self.insert(get_separador(draw=False,
@@ -152,26 +153,26 @@ class Toolbar(Gtk.Toolbar):
 
         self.emit('salir')
 
-
-class Toolbar_Videos_Izquierda(Gtk.Toolbar):
+'''
+class Toolbar_Videos_Izquierda(gtk.Toolbar):
     """
     toolbar inferior izquierda para videos encontrados.
     """
 
     __gsignals__ = {
-    "borrar": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    "mover_videos": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    "borrar": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    "mover_videos": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "alejar.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
@@ -179,7 +180,7 @@ class Toolbar_Videos_Izquierda(Gtk.Toolbar):
         boton.connect("clicked", self.__emit_borrar)
         self.insert(boton, -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
@@ -205,24 +206,24 @@ class Toolbar_Videos_Izquierda(Gtk.Toolbar):
         self.emit('borrar')
 
 
-class Toolbar_Videos_Derecha(Gtk.Toolbar):
+class Toolbar_Videos_Derecha(gtk.Toolbar):
     """
     toolbar inferior derecha para videos en descarga.
     """
 
     __gsignals__ = {
-    "borrar": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    "mover_videos": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    'comenzar_descarga': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    "borrar": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    "mover_videos": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    'comenzar_descarga': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         boton = get_boton(archivo, flip=True,
             pixels=get_pixels(0.8))
@@ -230,7 +231,7 @@ class Toolbar_Videos_Derecha(Gtk.Toolbar):
         boton.connect("clicked", self.__emit_aencontrados)
         self.insert(boton, -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "alejar.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
@@ -241,7 +242,7 @@ class Toolbar_Videos_Derecha(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8),
@@ -276,29 +277,29 @@ class Toolbar_Videos_Derecha(Gtk.Toolbar):
         self.emit('borrar')
 
 
-class Mini_Toolbar(Gtk.Toolbar):
+class Mini_Toolbar(gtk.Toolbar):
     """
     Mini toolbars Superior izquierda y derecha.
     """
 
     __gsignals__ = {
-    "guardar": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    "abrir": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "menu_activo": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    "guardar": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    "abrir": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "menu_activo": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self, text):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.label = None
         self.texto = text
         self.numero = 0
 
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("%s: %s" % (text, self.numero))
+        item = gtk.ToolItem()
+        self.label = gtk.Label("%s: %s" % (text, self.numero))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -306,7 +307,7 @@ class Mini_Toolbar(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "lista.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
@@ -314,7 +315,7 @@ class Mini_Toolbar(Gtk.Toolbar):
         boton.connect("clicked", self.__get_menu)
         self.insert(boton, -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "play.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8),
@@ -361,21 +362,21 @@ class Mini_Toolbar(Gtk.Toolbar):
         if keys:
             self.emit("menu_activo")
 
-            menu = Gtk.Menu()
+            menu = gtk.Menu()
 
-            administrar = Gtk.MenuItem('Administrar')
+            administrar = gtk.MenuItem('Administrar')
             administrar.connect_object("activate", self.__administrar, None)
-            cargar = Gtk.MenuItem('Cargar')
+            cargar = gtk.MenuItem('Cargar')
 
             menu.append(administrar)
             menu.append(cargar)
 
-            menu_listas = Gtk.Menu()
+            menu_listas = gtk.Menu()
 
             cargar.set_submenu(menu_listas)
 
             for key in keys:
-                item = Gtk.MenuItem(key)
+                item = gtk.MenuItem(key)
                 menu_listas.append(item)
                 item.connect_object("activate", self.__emit_abrir, key)
 
@@ -403,24 +404,24 @@ class Mini_Toolbar(Gtk.Toolbar):
             self.label.set_text(text)
 
 
-class Toolbar_Busqueda(Gtk.Toolbar):
+class Toolbar_Busqueda(gtk.Toolbar):
     """
     Toolbar con widgets de busqueda.
     """
 
     __gsignals__ = {
-    "comenzar_busqueda": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+    "comenzar_busqueda": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
-        item = Gtk.ToolItem()
-        label = Gtk.Label("Buscar por: ")
+        item = gtk.ToolItem()
+        label = gtk.Label("Buscar por: ")
         label.show()
         item.add(label)
         self.insert(item, -1)
@@ -428,8 +429,8 @@ class Toolbar_Busqueda(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
-        self.entrytext = Gtk.Entry()
+        item = gtk.ToolItem()
+        self.entrytext = gtk.Entry()
         self.entrytext.set_size_request(400, -1)
         self.entrytext.set_max_length(50)
         self.entrytext.set_tooltip_text("Escribe lo que Buscas.")
@@ -441,7 +442,7 @@ class Toolbar_Busqueda(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8),
@@ -471,36 +472,36 @@ class Toolbar_Busqueda(Gtk.Toolbar):
         self.__emit_buscar()
 
 
-class Alerta_Busqueda(Gtk.Toolbar):
+class Alerta_Busqueda(gtk.Toolbar):
     """
     Para informar que se está buscando con JAMediaTube.
     """
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        imagen = Gtk.Image()
-        icono = os.path.join(JAMediaObjectsPath,
+        imagen = gtk.Image()
+        icono = os.path.join(BASE_PATH,
             "Iconos", "yt_videos_black.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
             -1, get_pixels(0.8))
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         item.set_expand(True)
-        self.label = Gtk.Label("")
-        self.label.set_justify(Gtk.Justification.LEFT)
+        self.label = gtk.Label("")
+        self.label.set_justify(gtk.Justification.LEFT)
         #self.label.set_line_wrap(True)
         self.label.show()
         item.add(self.label)
@@ -521,13 +522,13 @@ class WidgetVideoItem(JAMediaButton):
 
         self.imagen.destroy()
 
-        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+        vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 
         keys = self.videodict.keys()
 
         if "previews" in keys:
-            imagen = Gtk.Image()
+            imagen = gtk.Image()
             hbox.pack_start(imagen, False, False, 3)
 
             if type(self.videodict["previews"]) == list:
@@ -567,13 +568,13 @@ class WidgetVideoItem(JAMediaButton):
                 pixbuf = loader.get_pixbuf()
                 imagen.set_from_pixbuf(pixbuf)
 
-        vbox.pack_start(Gtk.Label("%s: %s" % ("id",
+        vbox.pack_start(gtk.Label("%s: %s" % ("id",
             self.videodict["id"])), True, True, 0)
 
-        vbox.pack_start(Gtk.Label("%s: %s" % ("Título",
+        vbox.pack_start(gtk.Label("%s: %s" % ("Título",
             self.videodict["titulo"])), True, True, 0)
 
-        vbox.pack_start(Gtk.Label("%s: %s" % ("Categoría",
+        vbox.pack_start(gtk.Label("%s: %s" % ("Categoría",
             self.videodict["categoria"])), True, True, 0)
 
         #vbox.pack_start(gtk.Label("%s: %s" % ("Etiquetas",
@@ -582,14 +583,14 @@ class WidgetVideoItem(JAMediaButton):
         #vbox.pack_start(gtk.Label("%s: %s" % ("Descripción",
         #   self.videodict["descripcion"])), True, True, 0)
 
-        vbox.pack_start(Gtk.Label("%s: %s %s" % ("Duración",
+        vbox.pack_start(gtk.Label("%s: %s %s" % ("Duración",
             int(float(self.videodict["duracion"]) / 60.0), "Minutos")),
             True, True, 0)
 
         #vbox.pack_start(gtk.Label("%s: %s" % ("Reproducción en la Web",
         #   self.videodict["flash player"])), True, True, 0)
 
-        vbox.pack_start(Gtk.Label("%s: %s" % ("url",
+        vbox.pack_start(gtk.Label("%s: %s" % ("url",
             self.videodict["url"])), True, True, 0)
 
         for label in vbox.get_children():
@@ -611,26 +612,26 @@ class WidgetVideoItem(JAMediaButton):
             self.emit("click_derecho", event)
 
 
-class ToolbarAccionListasVideos(Gtk.Toolbar):
+class ToolbarAccionListasVideos(gtk.Toolbar):
     """
     Toolbar para que el usuario confirme "borrar"
     lista de video de JAMediaTube.
     """
 
     __gsignals__ = {
-    "ok": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+    "ok": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.objetos = None
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "alejar.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
@@ -641,8 +642,8 @@ class ToolbarAccionListasVideos(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("")
+        item = gtk.ToolItem()
+        self.label = gtk.Label("")
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -650,7 +651,7 @@ class ToolbarAccionListasVideos(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "acercar.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
@@ -671,7 +672,7 @@ class ToolbarAccionListasVideos(Gtk.Toolbar):
         objetos = self.objetos
         self.cancelar()
 
-        GLib.idle_add(self.__emit_ok, objetos)
+        gobject.idle_add(self.__emit_ok, objetos)
 
     def __emit_ok(self, objetos):
 
@@ -696,17 +697,17 @@ class ToolbarAccionListasVideos(Gtk.Toolbar):
         self.hide()
 
 
-class Toolbar_Descarga(Gtk.Box):
+class Toolbar_Descarga(gtk.Box):
 
     __gsignals__ = {
-    'end': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    'end': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
+        gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 
-        self.toolbar = Gtk.Toolbar()
+        self.toolbar = gtk.Toolbar()
 
         self.label_titulo = None
         self.label_progreso = None
@@ -731,8 +732,8 @@ class Toolbar_Descarga(Gtk.Box):
             get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
-        self.label_titulo = Gtk.Label("")
+        item = gtk.ToolItem()
+        self.label_titulo = gtk.Label("")
         self.label_titulo.show()
         item.add(self.label_titulo)
         self.toolbar.insert(item, -1)
@@ -740,8 +741,8 @@ class Toolbar_Descarga(Gtk.Box):
         self.toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
-        self.label_progreso = Gtk.Label("")
+        item = gtk.ToolItem()
+        self.label_progreso = gtk.Label("")
         self.label_progreso.show()
         item.add(self.label_progreso)
         self.toolbar.insert(item, -1)
@@ -750,7 +751,7 @@ class Toolbar_Descarga(Gtk.Box):
         #    ancho = 0, expand = True), -1)
 
         # FIXME: BUG. Las descargas no se cancelan.
-        #archivo = os.path.join(JAMediaObjectsPath,
+        #archivo = os.path.join(BASE_PATH,
         #    "Iconos","stop.png")
         #boton = G.get_boton(archivo, flip = False,
         #    pixels = G.get_pixels(1))
@@ -796,9 +797,9 @@ class Toolbar_Descarga(Gtk.Box):
         self.jamediayoutube.download(self.url, self.titulo)
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
 
-        self.actualizador = GLib.timeout_add(
+        self.actualizador = gobject.timeout_add(
             1000, self.__handle)
 
         self.show_all()
@@ -878,7 +879,7 @@ class Toolbar_Descarga(Gtk.Box):
 
         # No funciona correctamente, la descarga continúa.
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
             self.actualizador = False
 
         try:
@@ -899,17 +900,17 @@ class Toolbar_Descarga(Gtk.Box):
         return False
 
 
-class Progreso_Descarga(Gtk.EventBox):
+class Progreso_Descarga(gtk.EventBox):
     """
     Barra de progreso para mostrar estado de descarga.
     """
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        gtk.EventBox.__init__(self)
 
         self.escala = ProgressBar(
-            Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
+            gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
 
         self.valor = 0
 
@@ -930,14 +931,14 @@ class Progreso_Descarga(Gtk.EventBox):
             self.escala.queue_draw()
 
 
-class ProgressBar(Gtk.Scale):
+class ProgressBar(gtk.Scale):
     """
     Escala de Progreso_Descarga.
     """
 
     def __init__(self, ajuste):
 
-        Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+        gtk.Scale.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -983,20 +984,20 @@ class ProgressBar(Gtk.Scale):
         return True
 
 
-class Toolbar_Guardar(Gtk.Toolbar):
+class Toolbar_Guardar(gtk.Toolbar):
     """
     Toolbar con widgets para guardar una lista de videos.
     """
 
     __gsignals__ = {
-    "ok": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+    "ok": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "alejar.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
@@ -1004,14 +1005,14 @@ class Toolbar_Guardar(Gtk.Toolbar):
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
 
-        item = Gtk.ToolItem()
-        label = Gtk.Label("Nombre: ")
+        item = gtk.ToolItem()
+        label = gtk.Label("Nombre: ")
         label.show()
         item.add(label)
         self.insert(item, -1)
 
-        item = Gtk.ToolItem()
-        self.entrytext = Gtk.Entry()
+        item = gtk.ToolItem()
+        self.entrytext = gtk.Entry()
         self.entrytext.set_size_request(20, -1)
         self.entrytext.set_max_length(10)
         self.entrytext.set_tooltip_text("Nombre de Archivo.")
@@ -1020,7 +1021,7 @@ class Toolbar_Guardar(Gtk.Toolbar):
         item.add(self.entrytext)
         self.insert(item, -1)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "acercar.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
@@ -1047,45 +1048,45 @@ class Toolbar_Guardar(Gtk.Toolbar):
         self.hide()
 
 
-class Credits(Gtk.Dialog):
+class Credits(gtk.Dialog):
 
     __gtype_name__ = 'TubeCredits'
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
+        gtk.Dialog.__init__(self,
             parent=parent,
-            flags=Gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
+            flags=gtk.DialogFlags.MODAL,
+            buttons=["Cerrar", gtk.ResponseType.ACCEPT])
 
         self.set_border_width(15)
 
-        imagen = Gtk.Image()
+        imagen = gtk.Image()
         imagen.set_from_file(
-            os.path.join(JAMediaObjectsPath,
+            os.path.join(BASE_PATH,
                 "Iconos", "JAMediaTubeCredits.svg"))
 
         self.vbox.pack_start(imagen, True, True, 0)
         self.vbox.show_all()
 
 
-class Help(Gtk.Dialog):
+class Help(gtk.Dialog):
 
     __gtype_name__ = 'TubeHelp'
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
+        gtk.Dialog.__init__(self,
             parent=parent,
-            flags=Gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
+            flags=gtk.DialogFlags.MODAL,
+            buttons=["Cerrar", gtk.ResponseType.ACCEPT])
 
         self.set_border_width(15)
 
-        tabla1 = Gtk.Table(columns=5, rows=2, homogeneous=False)
+        tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)
 
-        vbox = Gtk.HBox()
-        archivo = os.path.join(JAMediaObjectsPath,
+        vbox = gtk.HBox()
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "play.svg")
         self.anterior = get_boton(
             archivo, flip=True,
@@ -1095,7 +1096,7 @@ class Help(Gtk.Dialog):
         self.anterior.show()
         vbox.pack_start(self.anterior, False, False, 0)
 
-        archivo = os.path.join(JAMediaObjectsPath,
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "play.svg")
         self.siguiente = get_boton(
             archivo,
@@ -1110,9 +1111,9 @@ class Help(Gtk.Dialog):
         self.helps = []
 
         for x in range(1, 3):
-            help = Gtk.Image()
+            help = gtk.Image()
             help.set_from_file(
-                os.path.join(JAMediaObjectsPath,
+                os.path.join(BASE_PATH,
                     "Iconos", "JAMediaTube-help%s.png" % x))
             tabla1.attach_defaults(help, 0, 5, 1, 2)
 
@@ -1171,16 +1172,16 @@ class Help(Gtk.Dialog):
                 return self.helps.index(help)
 
 
-class TubeListDialog(Gtk.Dialog):
+class TubeListDialog(gtk.Dialog):
 
     __gtype_name__ = 'TubeListDialog'
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
+        gtk.Dialog.__init__(self,
             parent=parent,
-            flags=Gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
+            flags=gtk.DialogFlags.MODAL,
+            buttons=["Cerrar", gtk.ResponseType.ACCEPT])
 
         self.set_border_width(15)
         rect = parent.get_allocation()
@@ -1188,17 +1189,17 @@ class TubeListDialog(Gtk.Dialog):
 
         self.actualizando = False
 
-        self.panel = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
+        self.panel = gtk.Paned(orientation=gtk.Orientation.HORIZONTAL)
 
         from JAMediaObjects.JAMediaWidgets import Lista
 
         self.listas = Lista()
-        self.videos = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.videos = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 
         scroll = self.__get_scroll()
         scroll.set_policy(
-            Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC)
+            gtk.PolicyType.NEVER,
+            gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(self.listas)
         self.panel.pack1(scroll, resize=False, shrink=True)
 
@@ -1206,7 +1207,7 @@ class TubeListDialog(Gtk.Dialog):
         scroll.add_with_viewport(self.videos)
         self.panel.pack2(scroll, resize=True, shrink=False)
 
-        self.label = Gtk.Label("")
+        self.label = gtk.Label("")
         self.vbox.pack_start(self.label, False, False, 0)
         self.vbox.pack_start(self.panel, True, True, 0)
         self.vbox.show_all()
@@ -1239,8 +1240,8 @@ class TubeListDialog(Gtk.Dialog):
             return
 
         elif boton == 3:
-            menu = Gtk.Menu()
-            borrar = Gtk.MenuItem("Eliminar")
+            menu = gtk.Menu()
+            borrar = gtk.MenuItem("Eliminar")
             menu.append(borrar)
 
             borrar.connect_object(
@@ -1270,7 +1271,7 @@ class TubeListDialog(Gtk.Dialog):
             self.videos.remove(child)
             child.destroy()
 
-        new_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        new_box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
         new_box.show_all()
         self.videos.pack_start(
             new_box,
@@ -1295,14 +1296,14 @@ class TubeListDialog(Gtk.Dialog):
         widget.get_model().remove(iter)
 
         if not keys:
-            dialog = Gtk.Dialog(
+            dialog = gtk.Dialog(
                 parent=self.get_toplevel(),
-                flags=Gtk.DialogFlags.MODAL,
-                buttons=["OK", Gtk.ResponseType.ACCEPT])
+                flags=gtk.DialogFlags.MODAL,
+                buttons=["OK", gtk.ResponseType.ACCEPT])
 
             dialog.set_border_width(15)
 
-            label = Gtk.Label("Todas las Listas han sido Eliminadas.")
+            label = gtk.Label("Todas las Listas han sido Eliminadas.")
             dialog.vbox.pack_start(label, True, True, 0)
             dialog.vbox.show_all()
 
@@ -1326,7 +1327,7 @@ class TubeListDialog(Gtk.Dialog):
             self.videos.remove(child)
             child.destroy()
 
-        new_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        new_box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
         new_box.show_all()
         self.videos.pack_start(
             new_box,
@@ -1345,7 +1346,7 @@ class TubeListDialog(Gtk.Dialog):
 
         dict_tube.close()
 
-        GLib.idle_add(self.__add_videos, videos)
+        gobject.idle_add(self.__add_videos, videos)
 
     def __add_videos(self, videos):
         """
@@ -1366,7 +1367,7 @@ class TubeListDialog(Gtk.Dialog):
 
         videowidget = WidgetVideoItem(video)
         videowidget.connect("click_derecho", self.__clicked_videowidget)
-        '''
+        """
         text = TipEncontrados
 
         if destino == self.paneltube.encontrados:
@@ -1375,13 +1376,13 @@ class TubeListDialog(Gtk.Dialog):
         elif destino == self.paneltube.descargar:
             text = TipDescargas
 
-        videowidget.set_tooltip_text(text)'''
+        videowidget.set_tooltip_text(text)"""
         videowidget.show_all()
-        '''
+        """
         videowidget.drag_source_set(
             Gdk.ModifierType.BUTTON1_MASK,
             target,
-            Gdk.DragAction.MOVE)'''
+            Gdk.DragAction.MOVE)"""
 
         videos.remove(video)
 
@@ -1392,7 +1393,7 @@ class TubeListDialog(Gtk.Dialog):
         except:
             return False
 
-        GLib.idle_add(self.__add_videos, videos)
+        gobject.idle_add(self.__add_videos, videos)
 
     def __clicked_videowidget(self, widget, event):
         """
@@ -1403,8 +1404,8 @@ class TubeListDialog(Gtk.Dialog):
         #pos = (event.x, event.y)
         tiempo = event.time
 
-        menu = Gtk.Menu()
-        borrar = Gtk.MenuItem("Eliminar")
+        menu = gtk.Menu()
+        borrar = gtk.MenuItem("Eliminar")
         menu.append(borrar)
 
         borrar.connect_object(
@@ -1468,10 +1469,11 @@ class TubeListDialog(Gtk.Dialog):
 
     def __get_scroll(self):
 
-        scroll = Gtk.ScrolledWindow()
+        scroll = gtk.ScrolledWindow()
 
         scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
+            gtk.PolicyType.AUTOMATIC,
+            gtk.PolicyType.AUTOMATIC)
 
         return scroll
+'''

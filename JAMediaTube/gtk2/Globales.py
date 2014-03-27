@@ -132,3 +132,51 @@ def get_tube_directory():
         make_base_directory()
 
     return DIRECTORIO_YOUTUBE
+
+
+def get_separador(draw=False, ancho=0, expand=False):
+    """
+    Devuelve un separador generico.
+    """
+
+    import gtk
+
+    separador = gtk.SeparatorToolItem()
+    separador.props.draw = draw
+    separador.set_size_request(ancho, -1)
+    separador.set_expand(expand)
+
+    return separador
+
+
+def get_boton(archivo, flip=False, rotacion=None, pixels=16, tooltip_text=None):
+    """
+    Devuelve un toolbutton generico.
+    """
+
+    import gtk
+    from gtk import gdk
+
+    boton = gtk.ToolButton()
+
+    imagen = gtk.Image()
+    pixbuf = gdk.pixbuf_new_from_file_at_size(
+        archivo, pixels, pixels)
+
+    if flip:
+        pixbuf = pixbuf.flip(True)
+
+    if rotacion:
+        pixbuf = pixbuf.rotate_simple(rotacion)
+
+    imagen.set_from_pixbuf(pixbuf)
+    boton.set_icon_widget(imagen)
+
+    imagen.show()
+    boton.show()
+
+    if tooltip_text:
+        boton.set_tooltip_text(tooltip_text)
+        boton.TOOLTIP = tooltip_text
+
+    return boton
