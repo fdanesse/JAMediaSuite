@@ -108,7 +108,7 @@ class Toolbar(gtk.Toolbar):
         boton = get_boton(archivo, flip=False,
             pixels=24)
         boton.set_tooltip_text("Ayuda")
-        #boton.connect("clicked", self.__show_help)
+        boton.connect("clicked", self.__show_help)
         self.insert(boton, -1)
 
         self.insert(get_separador(draw=False,
@@ -1071,7 +1071,7 @@ class Credits(gtk.Dialog):
         self.vbox.pack_start(imagen, True, True, 0)
         self.vbox.show_all()
 
-'''
+
 class Help(gtk.Dialog):
 
     __gtype_name__ = 'TubeHelp'
@@ -1080,9 +1080,11 @@ class Help(gtk.Dialog):
 
         gtk.Dialog.__init__(self,
             parent=parent,
-            flags=gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", gtk.ResponseType.ACCEPT])
+            #flags=gtk.DialogFlags.MODAL,
+            title="",
+            buttons=("Cerrar", gtk.RESPONSE_OK))
 
+        self.modify_bg(0, gdk.color_parse("#000000"))
         self.set_border_width(15)
 
         tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)
@@ -1092,7 +1094,7 @@ class Help(gtk.Dialog):
             "Iconos", "play.svg")
         self.anterior = get_boton(
             archivo, flip=True,
-            pixels=get_pixels(0.8),
+            pixels=24,
             tooltip_text="Anterior")
         self.anterior.connect("clicked", self.__switch)
         self.anterior.show()
@@ -1102,7 +1104,7 @@ class Help(gtk.Dialog):
             "Iconos", "play.svg")
         self.siguiente = get_boton(
             archivo,
-            pixels=get_pixels(0.8),
+            pixels=24,
             tooltip_text="Siguiente")
         self.siguiente.connect("clicked", self.__switch)
         self.siguiente.show()
@@ -1173,7 +1175,7 @@ class Help(gtk.Dialog):
             if help.get_visible():
                 return self.helps.index(help)
 
-
+'''
 class TubeListDialog(gtk.Dialog):
 
     __gtype_name__ = 'TubeListDialog'
