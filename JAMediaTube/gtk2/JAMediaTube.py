@@ -77,9 +77,9 @@ class JAMediaTube(gtk.Window):
         """
 
         from Widgets import Toolbar
-        #from Widgets import Toolbar_Busqueda
+        from Widgets import Toolbar_Busqueda
         #from Widgets import Toolbar_Descarga
-        #from Widgets import Alerta_Busqueda
+        from Widgets import Alerta_Busqueda
         '''
         from JAMediaTube.PanelTube import PanelTube
 
@@ -90,18 +90,21 @@ class JAMediaTube(gtk.Window):
         self.box_tube = gtk.VBox()
 
         self.toolbar = Toolbar()
-        '''
+
         self.toolbar_busqueda = Toolbar_Busqueda()
-        self.toolbar_descarga = Toolbar_Descarga()
-        self.toolbar_salir = ToolbarSalir()
+        #self.toolbar_descarga = Toolbar_Descarga()
+        #self.toolbar_salir = ToolbarSalir()
         self.alerta_busqueda = Alerta_Busqueda()
-        self.paneltube = PanelTube()
-        '''
-        self.box_tube.pack_start(self.toolbar, False, False, 0)
+        #self.paneltube = PanelTube()
+
+        self.box_tube.pack_start(
+            self.toolbar, False, False, 0)
         #self.box_tube.pack_start(self.toolbar_salir, False, False, 0)
-        #self.box_tube.pack_start(self.toolbar_busqueda, False, False, 0)
+        self.box_tube.pack_start(
+            self.toolbar_busqueda, False, False, 0)
         #self.box_tube.pack_start(self.toolbar_descarga, False, False, 0)
-        #self.box_tube.pack_start(self.alerta_busqueda, False, False, 0)
+        self.box_tube.pack_start(
+            self.alerta_busqueda, False, False, 0)
         #self.box_tube.pack_start(self.paneltube, True, True, 0)
 
         boxbase.pack_start(self.box_tube, True, True, 0)
@@ -132,14 +135,14 @@ class JAMediaTube(gtk.Window):
         self.jamedia.pack_efectos()
         self.jamedia.switch_reproductor(
             None, "JAMediaReproductor")
-
-        self.__cancel_toolbar()
-        self.paneltube.cancel_toolbars_flotantes()
+        '''
+        #self.__cancel_toolbar()
+        #self.paneltube.cancel_toolbars_flotantes()
 
         map(self.__ocultar, [
-            self.toolbar_descarga,
+            #self.toolbar_descarga,
             self.alerta_busqueda])
-
+        '''
         if self.pistas:
             self.jamedia.set_nueva_lista(self.pistas)
             self.__switch(None, 'jamedia')
@@ -165,30 +168,30 @@ class JAMediaTube(gtk.Window):
             "drag-drop", self.__drag_drop)
         self.paneltube.descargar.drag_dest_add_uri_targets()
         '''
-        self.connect("delete-event", self.__salir)
-        '''
-        self.toolbar.connect('salir', self.__confirmar_salir)
-        self.toolbar_salir.connect(
-            'salir', self.__salir)
-        self.toolbar.connect(
-            'switch', self.__switch, 'jamedia')
-        self.jamedia.connect(
-            'salir', self.__switch, 'jamediatube')
+        self.connect("delete-event",
+            self.__salir)
+        #self.toolbar.connect('salir',
+        #    self.__confirmar_salir)
+        #self.toolbar_salir.connect(
+        #    'salir', self.__salir)
+        #self.toolbar.connect(
+        #    'switch', self.__switch, 'jamedia')
+        #self.jamedia.connect(
+        #    'salir', self.__switch, 'jamediatube')
         self.toolbar_busqueda.connect(
             "comenzar_busqueda", self.__comenzar_busqueda)
-        self.paneltube.connect('download',
-            self.__run_download)
-        self.paneltube.connect('open_shelve_list',
-            self.__open_shelve_list)
-        self.toolbar_descarga.connect('end',
-            self.__run_download)
-        self.paneltube.connect("cancel_toolbar",
-            self.__cancel_toolbar)
-        '''
+        #self.paneltube.connect('download',
+        #    self.__run_download)
+        #self.paneltube.connect('open_shelve_list',
+        #    self.__open_shelve_list)
+        #self.toolbar_descarga.connect('end',
+        #    self.__run_download)
+        #self.paneltube.connect("cancel_toolbar",
+        #    self.__cancel_toolbar)
 
-    def __cancel_toolbar(self, widget=None):
+    #def __cancel_toolbar(self, widget=None):
 
-        self.toolbar_salir.cancelar()
+    #    self.toolbar_salir.cancelar()
 
     def __open_shelve_list(self, widget, shelve_list, toolbarwidget):
         """
@@ -268,22 +271,22 @@ class JAMediaTube(gtk.Window):
         secuencia de busqueda y agregado de videos al panel.
         """
 
-        self.paneltube.set_sensitive(False)
-        self.toolbar_busqueda.set_sensitive(False)
+        #self.paneltube.set_sensitive(False)
+        #self.toolbar_busqueda.set_sensitive(False)
 
-        self.__cancel_toolbar()
-        self.paneltube.cancel_toolbars_flotantes()
+        #self.__cancel_toolbar()
+        #self.paneltube.cancel_toolbars_flotantes()
         map(self.__mostrar, [self.alerta_busqueda])
         self.alerta_busqueda.label.set_text(
             "Buscando: %s" % (palabras))
 
-        objetos = self.paneltube.encontrados.get_children()
+        #objetos = self.paneltube.encontrados.get_children()
 
-        for objeto in objetos:
-            objeto.get_parent().remove(objeto)
-            objeto.destroy()
+        #for objeto in objetos:
+        #    objeto.get_parent().remove(objeto)
+        #    objeto.destroy()
 
-        gobject.timeout_add(300, self.__lanzar_busqueda, palabras)
+        #gobject.timeout_add(300, self.__lanzar_busqueda, palabras)
 
     def __lanzar_busqueda(self, palabras):
         """

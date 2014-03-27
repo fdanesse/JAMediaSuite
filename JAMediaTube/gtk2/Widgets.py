@@ -100,7 +100,7 @@ class Toolbar(gtk.Toolbar):
         self.jamedia = get_boton(archivo, flip=False,
             pixels=24)
         self.jamedia.set_tooltip_text("Cambiar a JAMedia")
-        #self.jamedia.connect("clicked", self.__emit_switch)
+        self.jamedia.connect("clicked", self.__emit_switch)
         self.insert(self.jamedia, -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -119,7 +119,7 @@ class Toolbar(gtk.Toolbar):
         boton = get_boton(archivo, flip=False,
             pixels=24)
         boton.set_tooltip_text("Salir")
-        #boton.connect("clicked", self.__salir)
+        boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
 
         self.insert(get_separador(draw=False,
@@ -402,7 +402,7 @@ class Mini_Toolbar(gtk.Toolbar):
             self.numero = valor
             text = "%s: %s" % (self.texto, str(self.numero))
             self.label.set_text(text)
-
+'''
 
 class Toolbar_Busqueda(gtk.Toolbar):
     """
@@ -433,9 +433,11 @@ class Toolbar_Busqueda(gtk.Toolbar):
         self.entrytext = gtk.Entry()
         self.entrytext.set_size_request(400, -1)
         self.entrytext.set_max_length(50)
-        self.entrytext.set_tooltip_text("Escribe lo que Buscas.")
+        self.entrytext.set_tooltip_text(
+            "Escribe lo que Buscas.")
         self.entrytext.show()
-        self.entrytext.connect('activate', self.__activate_entrytext)
+        self.entrytext.connect('activate',
+            self.__activate_entrytext)
         item.add(self.entrytext)
         self.insert(item, -1)
 
@@ -445,8 +447,8 @@ class Toolbar_Busqueda(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8),
-            rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE)
+            pixels=24,
+            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
         boton.set_tooltip_text("Comenzar Búsqueda")
         boton.connect("clicked", self.__emit_buscar)
         self.insert(boton, -1)
@@ -481,14 +483,16 @@ class Alerta_Busqueda(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
+        self.modify_bg(0, gdk.color_parse("#ffffff"))
+
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         imagen = gtk.Image()
         icono = os.path.join(BASE_PATH,
             "Iconos", "yt_videos_black.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
+        pixbuf = gdk.pixbuf_new_from_file_at_size(
+            icono, -1, 24)
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
         item = gtk.ToolItem()
@@ -501,7 +505,7 @@ class Alerta_Busqueda(gtk.Toolbar):
         item = gtk.ToolItem()
         item.set_expand(True)
         self.label = gtk.Label("")
-        self.label.set_justify(gtk.Justification.LEFT)
+        self.label.set_justify(gtk.JUSTIFY_LEFT)
         #self.label.set_line_wrap(True)
         self.label.show()
         item.add(self.label)
@@ -509,7 +513,7 @@ class Alerta_Busqueda(gtk.Toolbar):
 
         self.show_all()
 
-
+'''
 class WidgetVideoItem(JAMediaButton):
 
     def __init__(self, videodict):
