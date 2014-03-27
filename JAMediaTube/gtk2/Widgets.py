@@ -92,7 +92,7 @@ class Toolbar(gtk.Toolbar):
         boton = get_boton(archivo, flip=False,
             pixels=24)
         boton.set_tooltip_text("Autor")
-        #boton.connect("clicked", self.__show_credits)
+        boton.connect("clicked", self.__show_credits)
         self.insert(boton, -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -1046,7 +1046,7 @@ class Toolbar_Guardar(gtk.Toolbar):
 
         self.entrytext.set_text("")
         self.hide()
-
+'''
 
 class Credits(gtk.Dialog):
 
@@ -1056,20 +1056,22 @@ class Credits(gtk.Dialog):
 
         gtk.Dialog.__init__(self,
             parent=parent,
-            flags=gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", gtk.ResponseType.ACCEPT])
+            #flags=gtk.DialogFlags.MODAL,
+            title="",
+            buttons=("Cerrar", gtk.RESPONSE_OK))
 
+        self.modify_bg(0, gdk.color_parse("#ffffff"))
         self.set_border_width(15)
 
         imagen = gtk.Image()
         imagen.set_from_file(
             os.path.join(BASE_PATH,
-                "Iconos", "JAMediaTubeCredits.svg"))
+            "Iconos", "JAMediaTubeCredits.svg"))
 
         self.vbox.pack_start(imagen, True, True, 0)
         self.vbox.show_all()
 
-
+'''
 class Help(gtk.Dialog):
 
     __gtype_name__ = 'TubeHelp'
