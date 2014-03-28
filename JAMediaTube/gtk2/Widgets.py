@@ -286,7 +286,7 @@ class WidgetVideoItem(gtk.EventBox):
             hbox.pack_start(imagen, False, False, 3)
 
             if type(self.videodict["previews"]) == list:
-                # FIXME: siempre hay 4 previews.
+                # siempre hay 4 previews.
                 url = self.videodict["previews"][0][0]
                 import time
                 archivo = "/dev/shm/preview%d" % time.time()

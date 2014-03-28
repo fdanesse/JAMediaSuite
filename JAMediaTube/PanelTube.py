@@ -287,7 +287,7 @@ class PanelTube(Gtk.Paned):
         Pasa todos los videos de una lista a otra.
         """
 
-        self.get_toplevel().paneltube.set_sensitive(False)
+        self.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
 
         map(self.__cancel_toolbars, self.toolbars_flotantes)
@@ -317,7 +317,7 @@ class PanelTube(Gtk.Paned):
         """
 
         if not elementos:
-            self.get_toplevel().paneltube.set_sensitive(True)
+            self.set_sensitive(True)
             self.get_toplevel().toolbar_busqueda.set_sensitive(True)
             return False
 
@@ -347,7 +347,7 @@ class PanelTube(Gtk.Paned):
         Elimina una lista de videos.
         """
 
-        self.get_toplevel().paneltube.set_sensitive(False)
+        self.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
 
         GLib.idle_add(self.__run_borrar, objetos)
@@ -357,7 +357,7 @@ class PanelTube(Gtk.Paned):
         for objeto in objetos:
             objeto.destroy()
 
-        self.get_toplevel().paneltube.set_sensitive(True)
+        self.set_sensitive(True)
         self.get_toplevel().toolbar_busqueda.set_sensitive(True)
 
     def __set_borrar(self, widget, objetos=None):

@@ -286,8 +286,7 @@ class PanelTube(gtk.HPaned):
         Pasa todos los videos de una lista a otra.
         """
 
-        # FIXME: Verificar esto . . .
-        self.get_toplevel().paneltube.set_sensitive(False)
+        self.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
 
         map(self.__cancel_toolbars, self.toolbars_flotantes)
@@ -317,7 +316,7 @@ class PanelTube(gtk.HPaned):
         """
 
         if not elementos:
-            self.get_toplevel().paneltube.set_sensitive(True)
+            self.set_sensitive(True)
             self.get_toplevel().toolbar_busqueda.set_sensitive(True)
             return False
 
@@ -340,7 +339,7 @@ class PanelTube(gtk.HPaned):
         Elimina una lista de videos.
         """
 
-        self.get_toplevel().paneltube.set_sensitive(False)
+        self.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
 
         gobject.idle_add(self.__run_borrar, objetos)
@@ -350,7 +349,7 @@ class PanelTube(gtk.HPaned):
         for objeto in objetos:
             objeto.destroy()
 
-        self.get_toplevel().paneltube.set_sensitive(True)
+        self.set_sensitive(True)
         self.get_toplevel().toolbar_busqueda.set_sensitive(True)
 
     def __set_borrar(self, widget, objetos=None):
