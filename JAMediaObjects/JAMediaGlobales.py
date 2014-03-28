@@ -3,7 +3,7 @@
 
 #   JAMediaGlobals.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -130,7 +130,7 @@ def get_boton(archivo, flip=False, rotacion=None, pixels=0, tooltip_text=None):
 
     return boton
 '''
-
+'''
 def get_togle_boton(archivo, flip=False,
     color=get_color("GRIS"), pixels=0):
     # Gdk.Color(65000, 65000, 65000)
@@ -158,14 +158,14 @@ def get_togle_boton(archivo, flip=False,
     boton.show()
 
     return boton
-
+'''
 
 # >>> JAMediaVideo
     # clockoverlay
     # circle
     # fpsdisplaysink
     # InputSelector
-
+'''
 def get_widget_config_efecto(nombre):
     """
     Devulve el widget de configuración de un
@@ -182,8 +182,8 @@ def get_widget_config_efecto(nombre):
 
     else:
         return False
-
-
+'''
+'''
 def get_video_efectos():
 
     VIDEOEFECTOS = [
@@ -293,8 +293,8 @@ def get_video_efectos():
         ]
 
     return VIDEOEFECTOS
-
-
+'''
+'''
 def get_visualizadores():
 
     AUDIOVISUALIZADORES = [
@@ -316,7 +316,7 @@ def get_visualizadores():
         ]
 
     return AUDIOVISUALIZADORES
-
+'''
 
 # <<< JAMediaVideo
 

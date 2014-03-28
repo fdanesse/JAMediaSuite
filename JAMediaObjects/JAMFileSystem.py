@@ -3,7 +3,7 @@
 
 #   JAMFileSystem.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM - Uruguay
+#   Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import os
 
 from gi.repository import GObject
 
-
+'''
 def describe_uri(uri):
     """
     Explica de que se trata el uri, si existe.
@@ -51,8 +51,8 @@ def describe_uri(uri):
 
     else:
         return False
-
-
+'''
+'''
 def describe_acceso_uri(uri):
     """
     Devuelve los permisos de acceso sobre una uri.
@@ -74,8 +74,8 @@ def describe_acceso_uri(uri):
 
     else:
         return False
-
-
+'''
+'''
 def describe_archivo(archivo):
     """
     Devuelve el tipo de un archivo (imagen, video, texto).
@@ -91,24 +91,24 @@ def describe_archivo(archivo):
         retorno += " %s" % (dat)
 
     return retorno
-
-
+'''
+'''
 def get_path_link(link):
     """
     Devuelve el path al que apunta un link.
     """
 
     return os.readlink(link)
-
-
+'''
+'''
 def get_tamanio(path):
     """
     Devuelve tamaño en bytes.
     """
 
     return os.path.getsize(path)
-
-
+'''
+'''
 def borrar(origen):
 
     try:
@@ -128,8 +128,8 @@ def borrar(origen):
     except:
         print "ERROR Al Intentar Borrar un Archivo"
         return False
-
-
+'''
+'''
 def mover(origen, destino):
 
     try:
@@ -146,8 +146,8 @@ def mover(origen, destino):
     except:
         print "ERROR Al Intentar Mover un Archivo"
         return False
-
-
+'''
+'''
 def copiar(origen, destino):
 
     try:
@@ -164,8 +164,8 @@ def copiar(origen, destino):
     except:
         print "ERROR Al Intentar Copiar un Archivo"
         return False
-
-
+'''
+'''
 def crear_directorio(origen, directorionuevo):
 
     try:
@@ -181,8 +181,8 @@ def crear_directorio(origen, directorionuevo):
     except:
         print "ERROR Al Intentar Crear un Directorio"
         return False
-
-
+'''
+'''
 def get_programa(programa):
     """
     Devuelve true si programa se encuentra
@@ -204,8 +204,8 @@ def get_programa(programa):
 
     # print programa, "Instalado en el sistema:", presente
     return presente
-
-
+'''
+'''
 def verificar_Gstreamer():
 
     presente = False
@@ -219,8 +219,8 @@ def verificar_Gstreamer():
         presente = False
 
     return presente
-
-
+'''
+'''
 class DeviceManager(GObject.GObject):
     """
     Demonio para unidades de montaje.
@@ -277,3 +277,4 @@ class DeviceManager(GObject.GObject):
 
         self.__set_unidades()
         self.emit('update')
+'''

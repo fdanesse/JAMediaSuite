@@ -3,7 +3,7 @@
 
 #   JAMediaWidgets.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM - Uruguay
+#   Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,14 +27,14 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import GLib
 
-from JAMediaGlobales import get_pixels
-from JAMediaGlobales import get_separador
-from JAMediaGlobales import get_boton
-from JAMediaGlobales import get_color
+#from JAMediaGlobales import get_pixels
+#from JAMediaGlobales import get_separador
+#from JAMediaGlobales import get_boton
+#from JAMediaGlobales import get_color
 
-JAMediaWidgetsBASE = os.path.dirname(__file__)
+#JAMediaWidgetsBASE = os.path.dirname(__file__)
 
-
+'''
 class JAMediaToolButton(Gtk.ToolButton):
     """
     Toolbutton con drawingarea donde se
@@ -72,8 +72,8 @@ class JAMediaToolButton(Gtk.ToolButton):
                 pixbuf = pixbuf.rotate_simple(rotacion)
 
         self.imagen.set_imagen(pixbuf)
-
-
+'''
+'''
 class Imagen_Button(Gtk.DrawingArea):
     """
     DrawingArea de JAMediaToolButton.
@@ -114,8 +114,8 @@ class Imagen_Button(Gtk.DrawingArea):
 
         self.pixbuf = pixbuf
         self.queue_draw()
-
-
+'''
+'''
 class JAMediaButton(Gtk.EventBox):
     """
     Un Boton a medida.
@@ -252,8 +252,8 @@ class JAMediaButton(Gtk.EventBox):
     def set_tamanio(self, w, h):
 
         self.set_size_request(w, h)
-
-
+'''
+'''
 class Visor(Gtk.DrawingArea):
     """
     Visor generico para utilizar como area de
@@ -302,8 +302,8 @@ class Visor(Gtk.DrawingArea):
         else:
             self.emit("ocultar_controles", True)
             return
-
-
+'''
+'''
 class Lista(Gtk.TreeView):
     """
     Lista generica.
@@ -338,7 +338,7 @@ class Lista(Gtk.TreeView):
         self.set_model(self.modelo)
         self.show_all()
 
-    '''
+    """
     def keypress(self, widget, event):
         # derecha 114 izquierda 113 suprimir 119
         # backspace 22 (en xo no existe suprimir)
@@ -360,7 +360,8 @@ class Lista(Gtk.TreeView):
             print valor, path
         else:
             pass
-        return False'''
+        return False
+        """
 
     def __selecciones(self, treeselection,
         model, path, is_selected, listore):
@@ -537,7 +538,7 @@ class Lista(Gtk.TreeView):
         if _iter:
             self.treeselection.select_iter(_iter)
             #path = model.get_path(iter)
-
+'''
 '''
 class ToolbarReproduccion(Gtk.Box):
     """
@@ -640,7 +641,7 @@ class ToolbarReproduccion(Gtk.Box):
 
         self.emit("activar", "siguiente")
 '''
-
+'''
 class BarraProgreso(Gtk.EventBox):
     """
     Barra de progreso para mostrar estado de reproduccion.
@@ -687,8 +688,8 @@ class BarraProgreso(Gtk.EventBox):
         if self.valor != valor:
             self.valor = valor
             self.emit("user-set-value", valor)
-
-
+'''
+'''
 class ProgressBar(Gtk.Scale):
     """
     Escala de BarraProgreso.
@@ -788,8 +789,8 @@ class ProgressBar(Gtk.Scale):
         contexto.paint()
 
         return True
-
-
+'''
+'''
 class ControlVolumen(Gtk.VolumeButton):
     """
     Botón con escala para controlar el volúmen
@@ -813,8 +814,8 @@ class ControlVolumen(Gtk.VolumeButton):
         """
 
         self.emit('volumen', valor)
-
-
+'''
+'''
 class ToolbarBalanceConfig(Gtk.Table):
     """
     Toolbar de Configuración de Balance
@@ -878,8 +879,8 @@ class ToolbarBalanceConfig(Gtk.Table):
 
         if gamma != None:
             self.gamma.set_progress(gamma)
-
-
+'''
+'''
 class ToolbarcontrolValores(Gtk.Toolbar):
     """
     Toolbar con escala para modificar
@@ -930,8 +931,8 @@ class ToolbarcontrolValores(Gtk.Toolbar):
 
         self.escala.set_progress(valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
-
-
+'''
+'''
 class SlicerBalance(Gtk.EventBox):
     """
     Barra deslizable para cambiar valores de Balance en Video.
@@ -968,8 +969,8 @@ class SlicerBalance(Gtk.EventBox):
         """
 
         self.emit("user-set-value", valor)
-
-
+'''
+'''
 class BalanceBar(Gtk.Scale):
     """
     Escala de SlicerBalance.
@@ -1056,8 +1057,8 @@ class BalanceBar(Gtk.Scale):
         contexto.paint()
 
         return True
-
-
+'''
+'''
 class ItemSwitch(Gtk.Frame):
 
     __gsignals__ = {
@@ -1083,7 +1084,7 @@ class ItemSwitch(Gtk.Frame):
         """
 
         self.emit("switch", not widget.get_active())
-
+'''
 '''
 class ToolbarSalir(Gtk.Toolbar):
     """
@@ -1161,7 +1162,7 @@ class ToolbarSalir(Gtk.Toolbar):
         self.label.set_text("")
         self.hide()
 '''
-
+'''
 class WidgetsGstreamerEfectos(Gtk.Frame):
     """
     Frame exterior de Contenedor de widgets que
@@ -1212,8 +1213,8 @@ class WidgetsGstreamerEfectos(Gtk.Frame):
     def seleccionar_efecto(self, nombre):
 
         self.gstreamer_efectos.seleccionar_efecto(nombre)
-
-
+'''
+'''
 class GstreamerVideoEfectos(Gtk.Box):
     """
     Contenedor de widgets que representan
@@ -1276,12 +1277,13 @@ class GstreamerVideoEfectos(Gtk.Box):
 
         self.emit('agregar_efecto', nombre_efecto)
 
-    '''
+    """
     def efecto_click_derecho(self, widget, void):
 
         #print "Click", widget.get_tooltip_text(),
             "Select", widget.estado_select
-        pass'''
+        pass
+    """
 
     def des_seleccionar_efecto(self, nombre):
 
@@ -1302,8 +1304,8 @@ class GstreamerVideoEfectos(Gtk.Box):
             if efecto.botonefecto.get_tooltip_text() == nombre:
                 efecto.seleccionar()
                 return
-
-
+'''
+'''
 class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
     """
     Frame exterior de Contenedor de widgets que
@@ -1364,8 +1366,8 @@ class WidgetsGstreamerAudioVisualizador(Gtk.Frame):
     def seleccionar_efecto(self, nombre):
 
         self.gstreamer_efectos.seleccionar_efecto(nombre)
-
-
+'''
+'''
 class GstreamerAudioVisualizador(GstreamerVideoEfectos):
     """
     Contenedor de widgets que representan
@@ -1404,8 +1406,8 @@ class GstreamerAudioVisualizador(GstreamerVideoEfectos):
         self.show_all()
         elementos.remove(elementos[0])
         GLib.idle_add(self.cargar_efectos, elementos)
-
-
+'''
+'''
 class Efecto_widget_Config(Gtk.Box):
     """
     Contiene el botón para el efecto y los
@@ -1482,12 +1484,13 @@ class Efecto_widget_Config(Gtk.Box):
 
         self.emit('agregar_efecto', widget.get_tooltip_text())
 
-    '''
+    """
     def efecto_click_derecho(self, widget, void):
 
         #print "Click", widget.get_tooltip_text(),
             "Select", widget.estado_select
-        pass'''
+        pass
+    """
 
     def seleccionar(self):
         """
@@ -1504,8 +1507,8 @@ class Efecto_widget_Config(Gtk.Box):
 
         self.botonefecto.des_seleccionar()
         #y ocultar configuracion
-
-
+'''
+'''
 class Acelerometro(GObject.GObject):
     """
     Acelerómetro.
@@ -1602,8 +1605,8 @@ class Acelerometro(GObject.GObject):
 
         if self.acelerometro:
             self.acelerometro.close()
-
-
+'''
+'''
 class MouseSpeedDetector(GObject.GObject):
     """
     Verifica posición y moviemiento del mouse.
@@ -1657,3 +1660,4 @@ class MouseSpeedDetector(GObject.GObject):
 
         if reset:
             self.actualizador = GLib.timeout_add(1000, self.__handler)
+'''

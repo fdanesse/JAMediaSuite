@@ -41,6 +41,7 @@ class TubeListDialog(Gtk.Dialog):
             flags=Gtk.DialogFlags.MODAL,
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
+        self.set_decorated(False)
         self.set_border_width(15)
         rect = parent.get_allocation()
         self.set_size_request(rect.width - 15, rect.height - 25)

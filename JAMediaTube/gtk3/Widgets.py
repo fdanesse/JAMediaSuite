@@ -662,6 +662,7 @@ class Credits(Gtk.Dialog):
             flags=Gtk.DialogFlags.MODAL,
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
+        self.set_decorated(False)
         self.set_border_width(15)
 
         imagen = Gtk.Image()
@@ -684,6 +685,7 @@ class Help(Gtk.Dialog):
             flags=Gtk.DialogFlags.MODAL,
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
+        self.set_decorated(False)
         self.set_border_width(15)
 
         tabla1 = Gtk.Table(columns=5, rows=2, homogeneous=False)
