@@ -3,7 +3,7 @@
 
 #   Globals.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -149,7 +149,8 @@ def get_separador(draw=False, ancho=0, expand=False):
     return separador
 
 
-def get_boton(archivo, flip=False, rotacion=None, pixels=16, tooltip_text=None):
+def get_boton(archivo, flip=False, rotacion=None,
+    pixels=16, tooltip_text=None):
     """
     Devuelve un toolbutton generico.
     """

@@ -3,7 +3,7 @@
 
 #   JAMediaTube.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@ class JAMediaTube(gtk.Window):
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)
+        #self.set_decorated(False)
         self.set_position(gtk.WIN_POS_CENTER)
 
         self.box_tube = None
@@ -83,7 +84,7 @@ class JAMediaTube(gtk.Window):
 
         from PanelTube import PanelTube
 
-        #from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+        from Widgets import ToolbarSalir
 
         boxbase = gtk.VBox()
 
@@ -93,13 +94,14 @@ class JAMediaTube(gtk.Window):
 
         self.toolbar_busqueda = Toolbar_Busqueda()
         self.toolbar_descarga = Toolbar_Descarga()
-        #self.toolbar_salir = ToolbarSalir()
+        self.toolbar_salir = ToolbarSalir()
         self.alerta_busqueda = Alerta_Busqueda()
         self.paneltube = PanelTube()
 
         self.box_tube.pack_start(
             self.toolbar, False, False, 0)
-        #self.box_tube.pack_start(self.toolbar_salir, False, False, 0)
+        self.box_tube.pack_start(
+            self.toolbar_salir, False, False, 0)
         self.box_tube.pack_start(
             self.toolbar_busqueda, False, False, 0)
         self.box_tube.pack_start(
@@ -138,7 +140,7 @@ class JAMediaTube(gtk.Window):
         self.jamedia.switch_reproductor(
             None, "JAMediaReproductor")
         '''
-        #self.__cancel_toolbar()
+        self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
 
         map(self.__ocultar, [
@@ -172,10 +174,10 @@ class JAMediaTube(gtk.Window):
 
         self.connect("delete-event",
             self.__salir)
-        #self.toolbar.connect('salir',
-        #    self.__confirmar_salir)
-        #self.toolbar_salir.connect(
-        #    'salir', self.__salir)
+        self.toolbar.connect('salir',
+            self.__confirmar_salir)
+        self.toolbar_salir.connect(
+            'salir', self.__salir)
         #self.toolbar.connect(
         #    'switch', self.__switch, 'jamedia')
         #self.jamedia.connect(
@@ -188,12 +190,12 @@ class JAMediaTube(gtk.Window):
             self.__open_shelve_list)
         self.toolbar_descarga.connect('end',
             self.__run_download)
-        #self.paneltube.connect("cancel_toolbar",
-        #    self.__cancel_toolbar)
+        self.paneltube.connect("cancel_toolbar",
+            self.__cancel_toolbar)
 
-    #def __cancel_toolbar(self, widget=None):
+    def __cancel_toolbar(self, widget=None):
 
-    #    self.toolbar_salir.cancelar()
+        self.toolbar_salir.cancelar()
 
     def __open_shelve_list(self, widget, shelve_list, toolbarwidget):
         """
@@ -276,7 +278,7 @@ class JAMediaTube(gtk.Window):
         self.paneltube.set_sensitive(False)
         self.toolbar_busqueda.set_sensitive(False)
 
-        #self.__cancel_toolbar()
+        self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
         map(self.__mostrar, [self.alerta_busqueda])
         self.alerta_busqueda.label.set_text(
@@ -345,15 +347,6 @@ class JAMediaTube(gtk.Window):
             target,
             gtk.gdk.ACTION_MOVE)
 
-        # FIXME: Enlentece la aplicación ya que exige procesamiento.
-        #archivo = "/tmp/preview%d" % time.time()
-        #fileimage, headers = urllib.urlretrieve(
-        #   video["previews"][0][0], archivo)
-        #pixbuf = gdkPixbuf.Pixbuf.new_from_file_at_size(fileimage,
-        #    50, 50)
-        #videowidget.drag_source_set_icon_pixbuf(pixbuf)
-        #commands.getoutput('rm %s' % (archivo))
-
         videos.remove(video)
         destino.pack_start(videowidget, False, False, 1)
 
@@ -362,11 +355,6 @@ class JAMediaTube(gtk.Window):
             texto = str(texto[0:50]) + " . . . "
 
         self.alerta_busqueda.label.set_text(texto)
-        #self.alerta_busqueda.label.set_text(
-        #   "Encontrado: %s" % (video["titulo"]))
-        #self.get_property('window').invalidate_rect(
-        #   self.get_allocation(), True)
-        #self.get_property('window').process_updates(True)
 
         gobject.idle_add(self.__add_videos, videos, destino)
 

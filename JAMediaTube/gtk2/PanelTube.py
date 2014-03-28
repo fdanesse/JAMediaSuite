@@ -3,7 +3,7 @@
 
 #   Widgets.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -67,11 +67,11 @@ class PanelTube(gtk.HPaned):
         Crea y Empaqueta todo.
         """
 
-        from Widgets import Mini_Toolbar
-        from Widgets import ToolbarAccionListasVideos
-        from Widgets import Toolbar_Videos_Izquierda
-        from Widgets import Toolbar_Videos_Derecha
-        from Widgets import Toolbar_Guardar
+        from PanelTubeWidgets import Mini_Toolbar
+        from PanelTubeWidgets import ToolbarAccionListasVideos
+        from PanelTubeWidgets import Toolbar_Videos_Izquierda
+        from PanelTubeWidgets import Toolbar_Videos_Derecha
+        from PanelTubeWidgets import Toolbar_Guardar
 
         self.toolbar_encontrados = Mini_Toolbar("Videos Encontrados")
         self.toolbar_guardar_encontrados = Toolbar_Guardar()

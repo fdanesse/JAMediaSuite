@@ -3,7 +3,7 @@
 
 #   Widgets.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ import os
 
 import gtk
 from gtk import gdk
-from gtk.gdk import Pixbuf
 import gobject
 
 '''
@@ -62,6 +61,7 @@ class Tube_Player(JAMediaPlayer):
         if objeto.get_visible():
             objeto.hide()
 '''
+
 
 class Toolbar(gtk.Toolbar):
     """
@@ -150,256 +150,6 @@ class Toolbar(gtk.Toolbar):
         self.emit('salir')
 
 
-class Toolbar_Videos_Izquierda(gtk.Toolbar):
-    """
-    toolbar inferior izquierda para videos encontrados.
-    """
-
-    __gsignals__ = {
-    "borrar": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
-    "mover_videos": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
-
-    def __init__(self):
-
-        gtk.Toolbar.__init__(self)
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "alejar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Borrar Lista.")
-        boton.connect("clicked", self.__emit_borrar)
-        self.insert(boton, -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Enviar a Descargas.")
-        boton.connect("clicked", self.__emit_adescargas)
-        self.insert(boton, -1)
-
-        self.show_all()
-
-    def __emit_adescargas(self, widget):
-        """
-        Para pasar los videos encontrados a la
-        lista de descargas.
-        """
-
-        self.emit('mover_videos')
-
-    def __emit_borrar(self, widget):
-        """
-        Para borrar todos los videos de la lista.
-        """
-
-        self.emit('borrar')
-
-
-class Toolbar_Videos_Derecha(gtk.Toolbar):
-    """
-    toolbar inferior derecha para videos en descarga.
-    """
-
-    __gsignals__ = {
-    "borrar": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
-    "mover_videos": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
-    'comenzar_descarga': (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
-
-    def __init__(self):
-
-        gtk.Toolbar.__init__(self)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        boton = get_boton(archivo, flip=True,
-            pixels=24)
-        boton.set_tooltip_text("Quitar de Descargas.")
-        boton.connect("clicked", self.__emit_aencontrados)
-        self.insert(boton, -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "alejar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Borrar Lista.")
-        boton.connect("clicked", self.__emit_borrar)
-        self.insert(boton, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24,
-            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
-        boton.set_tooltip_text("Descargar.")
-        boton.connect("clicked", self.__emit_comenzar_descarga)
-        self.insert(boton, -1)
-
-        self.show_all()
-
-    def __emit_comenzar_descarga(self, widget):
-        """
-        Emite la señal para comenzar a descargar
-        los videos en la lista de descargas.
-        """
-
-        self.emit('comenzar_descarga')
-
-    def __emit_aencontrados(self, widget):
-        """
-        Para pasar los videos en descarga a la
-        lista de encontrados.
-        """
-
-        self.emit('mover_videos')
-
-    def __emit_borrar(self, widget):
-        """
-        Para borrar todos los videos de la lista.
-        """
-
-        self.emit('borrar')
-
-
-class Mini_Toolbar(gtk.Toolbar):
-    """
-    Mini toolbars Superior izquierda y derecha.
-    """
-
-    __gsignals__ = {
-    "guardar": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
-    "abrir": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "menu_activo": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
-
-    def __init__(self, text):
-
-        gtk.Toolbar.__init__(self)
-
-        self.label = None
-        self.texto = text
-        self.numero = 0
-
-        item = gtk.ToolItem()
-        self.label = gtk.Label("%s: %s" % (text, self.numero))
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "lista.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Lista de Búsquedas.")
-        boton.connect("clicked", self.__get_menu)
-        self.insert(boton, -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "play.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24,
-            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
-        boton.set_tooltip_text("Guardar Lista.")
-        boton.connect("clicked", self.__emit_guardar)
-        self.insert(boton, -1)
-
-        self.show_all()
-
-    def __emit_guardar(self, widget):
-        """
-        Emite guardar, para que se guarden todos
-        los videos en un archivo shelve.
-        """
-
-        self.emit('guardar')
-
-    def __emit_abrir(self, key):
-        """
-        Emite abrir, para que se carguen todos
-        los videos desde un archivo shelve.
-        """
-
-        self.emit('abrir', key)
-
-    def __get_menu(self, widget):
-        """
-        El menu con las listas de videos
-        almacenadas en archivos shelve.
-        """
-
-        from Globales import get_data_directory
-        import shelve
-
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
-            "List.tube"))
-
-        keys = dict_tube.keys()
-
-        dict_tube.close()
-
-        if keys:
-            self.emit("menu_activo")
-
-            menu = gtk.Menu()
-
-            administrar = gtk.MenuItem('Administrar')
-            administrar.connect_object("activate", self.__administrar, None)
-            cargar = gtk.MenuItem('Cargar')
-
-            menu.append(administrar)
-            menu.append(cargar)
-
-            menu_listas = gtk.Menu()
-
-            cargar.set_submenu(menu_listas)
-
-            for key in keys:
-                item = gtk.MenuItem(key)
-                menu_listas.append(item)
-                item.connect_object("activate", self.__emit_abrir, key)
-
-            menu.show_all()
-            menu.attach_to_widget(widget, self.__null)
-            gtk.Menu.popup(menu, None, None, None, 1, 0)
-
-    def __administrar(self, widget):
-
-        dialogo = TubeListDialog(parent=self.get_toplevel())
-        dialogo.run()
-        dialogo.destroy()
-
-    def __null(self):
-        pass
-
-    def set_info(self, valor):
-        """
-        Recibe un entero y actualiza la información.
-        """
-
-        if valor != self.numero:
-            self.numero = valor
-            text = "%s: %s" % (self.texto, str(self.numero))
-            self.label.set_text(text)
-
-
 class Toolbar_Busqueda(gtk.Toolbar):
     """
     Toolbar con widgets de busqueda.
@@ -430,7 +180,7 @@ class Toolbar_Busqueda(gtk.Toolbar):
         self.entrytext.set_size_request(400, -1)
         self.entrytext.set_max_length(50)
         self.entrytext.set_tooltip_text(
-            "Escribe lo que Buscas.")
+            "Escribe lo que Buscas")
         self.entrytext.show()
         self.entrytext.connect('activate',
             self.__activate_entrytext)
@@ -441,10 +191,9 @@ class Toolbar_Busqueda(gtk.Toolbar):
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
+            "Iconos", "dialog-ok.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=24,
-            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
+            pixels=24)
         boton.set_tooltip_text("Comenzar Búsqueda")
         boton.connect("clicked", self.__emit_buscar)
         self.insert(boton, -1)
@@ -512,16 +261,17 @@ class Alerta_Busqueda(gtk.Toolbar):
 
 class WidgetVideoItem(gtk.EventBox):
 
-    #__gsignals__ = {
+    __gsignals__ = {
     #"clicked": (gobject.SIGNAL_RUN_FIRST,
     #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-    #"click_derecho": (gobject.SIGNAL_RUN_FIRST,
-    #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
+    "click_derecho": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
 
     def __init__(self, videodict):
 
         gtk.EventBox.__init__(self)
 
+        self.modify_bg(0, gdk.color_parse("#ffffff"))
         self.set_border_width(2)
 
         self.videodict = videodict
@@ -549,7 +299,7 @@ class WidgetVideoItem(gtk.EventBox):
                         fileimage, 200, 150)
                     imagen.set_from_pixbuf(pixbuf)
 
-                    ### Convertir imagen a string por si se quiere guardar.
+                    # Convertir imagen a string por si se quiere guardar.
                     import base64
                     pixbuf_file = open(fileimage, 'rb')
                     image_string = base64.b64encode(pixbuf_file.read())
@@ -605,7 +355,9 @@ class WidgetVideoItem(gtk.EventBox):
 
         self.show_all()
 
-    #def button_press(self, widget, event):
+        self.connect("button_press_event", self.__button_press)
+
+    def __button_press(self, widget, event):
 
     #    self.modify_bg(0, self.colorclicked)
 
@@ -613,92 +365,7 @@ class WidgetVideoItem(gtk.EventBox):
     #        self.emit("clicked", event)
 
     #    elif event.button == 3:
-    #        self.emit("click_derecho", event)
-
-
-class ToolbarAccionListasVideos(gtk.Toolbar):
-    """
-    Toolbar para que el usuario confirme "borrar"
-    lista de video de JAMediaTube.
-    """
-
-    __gsignals__ = {
-    "ok": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
-
-    def __init__(self):
-
-        gtk.Toolbar.__init__(self)
-
-        self.objetos = None
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "alejar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.cancelar)
-        self.insert(boton, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        item = gtk.ToolItem()
-        self.label = gtk.Label("")
-        self.label.show()
-        item.add(self.label)
-        self.insert(item, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "acercar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Aceptar")
-        boton.connect("clicked", self.__realizar_accion)
-        self.insert(boton, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        self.show_all()
-
-    def __realizar_accion(self, widget):
-        """
-        Confirma borrar.
-        """
-
-        objetos = self.objetos
-        self.cancelar()
-
-        gobject.idle_add(self.__emit_ok, objetos)
-
-    def __emit_ok(self, objetos):
-
-        self.emit('ok', objetos)
-
-    def set_accion(self, objetos):
-        """
-        Configura borrar.
-        """
-
-        self.objetos = objetos
-        self.label.set_text("¿Eliminar?")
-        self.show_all()
-
-    def cancelar(self, widget=None):
-        """
-        Cancela borrar.
-        """
-
-        self.objetos = None
-        self.label.set_text("")
-        self.hide()
+            self.emit("click_derecho", event)
 
 
 class Toolbar_Descarga(gtk.VBox):
@@ -1003,70 +670,6 @@ class ProgressBar(gtk.HScale):
         return False
 
 
-class Toolbar_Guardar(gtk.Toolbar):
-    """
-    Toolbar con widgets para guardar una lista de videos.
-    """
-
-    __gsignals__ = {
-    "ok": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
-
-    def __init__(self):
-
-        gtk.Toolbar.__init__(self)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "alejar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.cancelar)
-        self.insert(boton, -1)
-
-        item = gtk.ToolItem()
-        label = gtk.Label("Nombre: ")
-        label.show()
-        item.add(label)
-        self.insert(item, -1)
-
-        item = gtk.ToolItem()
-        self.entrytext = gtk.Entry()
-        self.entrytext.set_size_request(20, -1)
-        self.entrytext.set_max_length(10)
-        self.entrytext.set_tooltip_text("Nombre de Archivo.")
-        self.entrytext.show()
-        self.entrytext.connect('activate', self.__emit_ok)
-        item.add(self.entrytext)
-        self.insert(item, -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "acercar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Aceptar")
-        boton.connect("clicked", self.__emit_ok)
-        self.insert(boton, -1)
-
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        self.show_all()
-
-    def __emit_ok(self, widget):
-
-        texto = self.entrytext.get_text()
-        self.cancelar()
-
-        if texto:
-            self.emit("ok", texto)
-
-    def cancelar(self, widget=None):
-
-        self.entrytext.set_text("")
-        self.hide()
-
-
 class Credits(gtk.Dialog):
 
     __gtype_name__ = 'TubeCredits'
@@ -1079,6 +682,7 @@ class Credits(gtk.Dialog):
             title="",
             buttons=("Cerrar", gtk.RESPONSE_OK))
 
+        self.set_decorated(False)
         self.modify_bg(0, gdk.color_parse("#ffffff"))
         self.set_border_width(15)
 
@@ -1103,6 +707,7 @@ class Help(gtk.Dialog):
             title="",
             buttons=("Cerrar", gtk.RESPONSE_OK))
 
+        self.set_decorated(False)
         self.modify_bg(0, gdk.color_parse("#000000"))
         self.set_border_width(15)
 
@@ -1195,527 +800,80 @@ class Help(gtk.Dialog):
                 return self.helps.index(help)
 
 
-class TubeListDialog(gtk.Dialog):
-
-    __gtype_name__ = 'TubeListDialog'
-
-    def __init__(self, parent=None):
-
-        gtk.Dialog.__init__(self,
-            parent=parent,
-            #flags=gtk.DialogFlags.MODAL,
-            title="",
-            buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
-
-        self.set_border_width(15)
-        rect = parent.get_allocation()
-        self.set_size_request(rect.width - 15, rect.height - 25)
-
-        self.actualizando = False
-
-        self.panel = gtk.HPaned()
-
-        self.listas = Lista()
-        self.videos = gtk.VBox()
-
-        scroll = self.__get_scroll()
-        scroll.set_policy(
-            gtk.POLICY_NEVER,
-            gtk.POLICY_AUTOMATIC)
-        scroll.add_with_viewport(self.listas)
-        self.panel.pack1(scroll, resize=False, shrink=True)
-
-        scroll = self.__get_scroll()
-        scroll.add_with_viewport(self.videos)
-        self.panel.pack2(scroll, resize=True, shrink=False)
-
-        self.label = gtk.Label("")
-        self.vbox.pack_start(self.label, False, False, 0)
-        self.vbox.pack_start(self.panel, True, True, 0)
-        self.vbox.show_all()
-
-        self.listas.connect("nueva-seleccion", self.__select_list)
-        self.listas.connect("button-press-event",
-            self.__click_derecho_en_lista)
-        self.connect("realize", self.__do_realize)
-
-    def __click_derecho_en_lista(self, widget, event):
-        """
-        Esto es para abrir un menu de opciones cuando
-        el usuario hace click derecho sobre un elemento en
-        la lista.
-        """
-
-        boton = event.button
-        pos = (event.x, event.y)
-        tiempo = event.time
-        path, columna, xdefondo, ydefondo = (None, None, None, None)
-
-        try:
-            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
-                int(pos[0]), int(pos[1]))
-
-        except:
-            return
-
-        if boton == 1:
-            return
-
-        elif boton == 3:
-            menu = gtk.Menu()
-            borrar = gtk.MenuItem("Eliminar")
-            menu.append(borrar)
-
-            borrar.connect_object(
-                "activate", self.__eliminar,
-                widget, path)
-
-            menu.show_all()
-            menu.attach_to_widget(widget, self.__null)
-
-            gtk.Menu.popup(menu, None, None, None, 1, 0)
-
-        elif boton == 2:
-            return
-
-    def __null(self):
-        pass
-
-    def __eliminar(self, widget, path):
-        """
-        Elimina una lista del archivo shelve.
-        """
-
-        if self.actualizando:
-            return
-
-        for child in self.videos.get_children():
-            self.videos.remove(child)
-            child.destroy()
-
-        new_box = gtk.VBox()
-        new_box.show_all()
-        self.videos.pack_start(
-            new_box,
-            True, True, 0)
-
-        iter = widget.get_model().get_iter(path)
-        key = widget.get_model().get_value(iter, 2)
-
-        from Globales import get_data_directory
-        import shelve
-
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
-            "List.tube"))
-
-        del(dict_tube[key])
-
-        keys = dict_tube.keys()
-
-        dict_tube.close()
-
-        widget.get_model().remove(iter)
-
-        if not keys:
-            dialog = gtk.Dialog(
-                parent=self.get_toplevel(),
-                #flags=gtk.DialogFlags.MODAL,
-                title="",
-                buttons=("OK", gtk.RESPONSE_ACCEPT))
-
-            dialog.set_border_width(15)
-
-            label = gtk.Label("Todas las Listas han sido Eliminadas.")
-            dialog.vbox.pack_start(label, True, True, 0)
-            dialog.vbox.show_all()
-
-            dialog.run()
-
-            dialog.destroy()
-
-            self.destroy()
-
-    def __select_list(self, widget, valor):
-        """
-        Cuando se selecciona una lista, se cargan
-        los videos que contiene en self.videos.
-        """
-
-        self.actualizando = True
-
-        self.panel.set_sensitive(False)
-
-        for child in self.videos.get_children():
-            self.videos.remove(child)
-            child.destroy()
-
-        new_box = gtk.VBox()
-        new_box.show_all()
-        self.videos.pack_start(
-            new_box,
-            True, True, 0)
-
-        from Globales import get_data_directory
-        import shelve
-
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
-            "List.tube"))
-
-        videos = []
-        for item in dict_tube[valor].keys():
-            videos.append(dict_tube[valor][item])
-
-        dict_tube.close()
-
-        gobject.idle_add(self.__add_videos, videos)
-
-    def __add_videos(self, videos):
-        """
-        Se crean los video_widgets de videos y
-        se agregan al panel, segun destino.
-        """
-
-        if not videos:
-            self.label.set_text("%s Videos Listados." % len(
-                self.videos.get_children()[0].get_children()))
-            self.panel.set_sensitive(True)
-            self.actualizando = False
-            return False
-
-        self.label.set_text("Listando Videos . . .  Quedan %s" % len(videos))
-
-        video = videos[0]
-
-        videowidget = WidgetVideoItem(video)
-        # FIXME: Agregar Click Derecho
-        #videowidget.connect("click_derecho", self.__clicked_videowidget)
-        """
-        text = TipEncontrados
-
-        if destino == self.paneltube.encontrados:
-            text = TipEncontrados
-
-        elif destino == self.paneltube.descargar:
-            text = TipDescargas
-
-        videowidget.set_tooltip_text(text)"""
-        videowidget.show_all()
-        """
-        videowidget.drag_source_set(
-            Gdk.ModifierType.BUTTON1_MASK,
-            target,
-            Gdk.DragAction.MOVE)"""
-
-        videos.remove(video)
-
-        try:
-            self.videos.get_children()[0].pack_start(
-                videowidget, False, False, 1)
-
-        except:
-            return False
-
-        gobject.idle_add(self.__add_videos, videos)
-
-    def __clicked_videowidget(self, widget, event):
-        """
-        Cuando se hace click derecho sobre un video item.
-        """
-
-        boton = event.button
-        #pos = (event.x, event.y)
-        tiempo = event.time
-
-        menu = gtk.Menu()
-        borrar = gtk.MenuItem("Eliminar")
-        menu.append(borrar)
-
-        borrar.connect_object(
-            "activate", self.__eliminar_video,
-            widget)
-
-        menu.show_all()
-        menu.attach_to_widget(widget, self.__null)
-
-        menu.popup(None, None, None, None, boton, tiempo)
-
-    def __eliminar_video(self, widget):
-
-        from Globales import get_data_directory
-        import shelve
-
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
-            "List.tube"))
-
-        if len(dict_tube[self.listas.valor_select].keys()) == 1:
-            modelo, iter = self.listas.treeselection.get_selected()
-            path = modelo.get_path(iter)
-            self.__eliminar(self.listas, path)
-
-        else:
-            videos = {}
-            for id in dict_tube[self.listas.valor_select].keys():
-                if id != widget.videodict["id"]:
-                    videos[id] = dict_tube[self.listas.valor_select][id]
-
-            dict_tube[self.listas.valor_select] = videos
-
-            widget.destroy()
-            self.label.set_text("%s Videos Listados." % len(
-                self.videos.get_children()[0].get_children()))
-
-        dict_tube.close()
-
-    def __do_realize(self, widget):
-        """
-        Carga la lista de Albums de Descargas en self.listas.
-        """
-
-        from Globales import get_data_directory
-        import shelve
-
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
-            "List.tube"))
-
-        keys = dict_tube.keys()
-
-        dict_tube.close()
-
-        lista = []
-        for key in keys:
-            lista.append([key, key])
-
-        self.listas.agregar_items(lista)
-
-    def __get_scroll(self):
-
-        scroll = gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            gtk.POLICY_AUTOMATIC,
-            gtk.POLICY_AUTOMATIC)
-
-        return scroll
-
-
-class Lista(gtk.TreeView):
+class ToolbarSalir(gtk.Toolbar):
     """
-    Lista generica.
+    Toolbar para confirmar salir de la aplicación.
     """
+
+    __gtype_name__ = 'ToolbarSalir'
 
     __gsignals__ = {
-    "nueva-seleccion": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
+    "salir": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.TreeView.__init__(self)
+        gtk.Toolbar.__init__(self)
 
-        self.set_property("rules-hint", True)
-        self.set_headers_clickable(True)
-        self.set_headers_visible(True)
+        self.modify_bg(0, gdk.color_parse("#ffffff"))
 
-        self.permitir_select = True
-        self.valor_select = None
+        self.insert(get_separador(draw=False,
+            ancho=0, expand=True), -1)
 
-        self.modelo = gtk.ListStore(
-            gdk.Pixbuf,
-            gobject.TYPE_STRING,
-            gobject.TYPE_STRING)
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "button-cancel.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Cancelar")
+        boton.connect("clicked", self.cancelar)
+        self.insert(boton, -1)
 
-        self.__setear_columnas()
+        self.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
 
-        self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(
-            self.__selecciones, self.modelo)
+        item = gtk.ToolItem()
+        self.label = gtk.Label("")
+        self.label.show()
+        item.add(self.label)
+        self.insert(item, -1)
 
-        self.set_model(self.modelo)
+        self.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "dialog-ok.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Aceptar")
+        boton.connect("clicked", self.__emit_salir)
+        self.insert(boton, -1)
+
+        self.insert(get_separador(draw=False,
+            ancho=0, expand=True), -1)
+
         self.show_all()
 
-    '''
-    def keypress(self, widget, event):
-        # derecha 114 izquierda 113 suprimir 119
-        # backspace 22 (en xo no existe suprimir)
-        tecla = event.get_keycode()[1]
-        model, iter = self.treeselection.get_selected()
-        valor = self.modelo.get_value(iter, 2)
-        path = self.modelo.get_path(iter)
-        if tecla == 22:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-        elif tecla == 113:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-        elif tecla == 114:
-            if not self.row_expanded(path):
-                self.expand_to_path(path)
-        elif tecla == 119:
-            # suprimir
-            print valor, path
-        else:
-            pass
-        return False'''
-
-    def __selecciones(self, path, column):
+    def run(self, nombre_aplicacion):
         """
-        Cuando se selecciona un item en la lista.
+        La toolbar se muestra y espera confirmación
+        del usuario.
         """
 
-        if not self.permitir_select:
-            return True
+        self.label.set_text("¿Salir de %s?" % (nombre_aplicacion))
+        self.show()
 
-        # model y listore son ==
-        _iter = self.get_model().get_iter(path)
-        valor = self.get_model().get_value(_iter, 2)
-
-        if self.valor_select != valor:
-            #self.scroll_to_cell(self.get_model().get_path(iter))
-            self.valor_select = valor
-            self.emit('nueva-seleccion', self.valor_select)
-
-        return True
-
-    def __setear_columnas(self):
-
-        self.append_column(self.__construir_columa_icono('', 0, True))
-        self.append_column(self.__construir_columa('Nombre', 1, True))
-        self.append_column(self.__construir_columa('', 2, False))
-
-    def __construir_columa(self, text, index, visible):
-
-        render = gtk.CellRendererText()
-
-        columna = gtk.TreeViewColumn(text, render, text=index)
-        columna.set_sort_column_id(index)
-        columna.set_property('visible', visible)
-        columna.set_property('resizable', False)
-        columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
-
-        return columna
-
-    def __construir_columa_icono(self, text, index, visible):
-
-        render = gtk.CellRendererPixbuf()
-
-        columna = gtk.TreeViewColumn(text, render, pixbuf=index)
-        columna.set_property('visible', visible)
-        columna.set_property('resizable', False)
-        columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
-
-        return columna
-
-    def limpiar(self):
-
-        self.permitir_select = False
-        self.modelo.clear()
-        self.permitir_select = True
-
-    def agregar_items(self, elementos):
+    def __emit_salir(self, widget):
         """
-        Recibe lista de: [texto para mostrar, path oculto] y
-        Comienza secuencia de agregado a la lista.
+        Confirma Salir de la aplicación.
         """
 
-        self.get_toplevel().set_sensitive(False)
-        self.permitir_select = False
+        self.cancelar()
+        self.emit('salir')
 
-        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
-
-    def __ejecutar_agregar_elemento(self, elementos):
+    def cancelar(self, widget=None):
         """
-        Agrega los items a la lista, uno a uno, actualizando.
+        Cancela salir de la aplicación.
         """
 
-        if not elementos:
-            self.permitir_select = True
-            self.seleccionar_primero()
-            self.get_toplevel().set_sensitive(True)
-            return False
-
-        texto, path = elementos[0]
-
-        from Globales import describe_uri
-        from Globales import describe_archivo
-
-        descripcion = describe_uri(path)
-
-        icono = None
-        if descripcion:
-            if descripcion[2]:
-                # Es un Archivo
-                tipo = describe_archivo(path)
-
-                if 'video' in tipo or 'application/ogg' in tipo or \
-                    'application/octet-stream' in tipo:
-                    icono = os.path.join(BASE_PATH,
-                        "Iconos", "video.svg")
-
-                elif 'audio' in tipo:
-                    icono = os.path.join(BASE_PATH,
-                        "Iconos", "sonido.svg")
-
-        else:
-            icono = os.path.join(BASE_PATH,
-                "Iconos", "video.svg")
-
-        try:
-            pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-                24, -1)
-            self.modelo.append([pixbuf, texto, path])
-
-        except:
-            pass
-
-        elementos.remove(elementos[0])
-
-        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
-
-        return False
-    '''
-    def seleccionar_siguiente(self, widget=None):
-
-        modelo, _iter = self.treeselection.get_selected()
-
-        try:
-            self.treeselection.select_iter(modelo.iter_next(_iter))
-
-        except:
-            self.seleccionar_primero()
-
-        return False
-
-    def seleccionar_anterior(self, widget=None):
-
-        modelo, _iter = self.treeselection.get_selected()
-
-        try:
-            self.treeselection.select_iter(modelo.iter_previous(_iter))
-
-        except:
-            self.seleccionar_ultimo()
-
-        return False
-    '''
-    def seleccionar_primero(self, widget=None):
-
-        self.treeselection.select_path(0)
-    '''
-    def seleccionar_ultimo(self, widget=None):
-
-        model = self.get_model()
-        item = model.get_iter_first()
-
-        _iter = None
-
-        while item:
-            _iter = item
-            item = model.iter_next(item)
-
-        if _iter:
-            self.treeselection.select_iter(_iter)
-            #path = model.get_path(iter)
-    '''
+        self.label.set_text("")
+        self.hide()

@@ -996,14 +996,6 @@ class Toolbar_Guardar(Gtk.Toolbar):
 
         Gtk.Toolbar.__init__(self)
 
-        archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "alejar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
-        boton.set_tooltip_text("Cancelar")
-        boton.connect("clicked", self.cancelar)
-        self.insert(boton, -1)
-
         item = Gtk.ToolItem()
         label = Gtk.Label("Nombre: ")
         label.show()
@@ -1011,8 +1003,9 @@ class Toolbar_Guardar(Gtk.Toolbar):
         self.insert(item, -1)
 
         item = Gtk.ToolItem()
+        item.set_expand(True)
         self.entrytext = Gtk.Entry()
-        self.entrytext.set_size_request(20, -1)
+        self.entrytext.set_size_request(50, -1)
         self.entrytext.set_max_length(10)
         self.entrytext.set_tooltip_text("Nombre de Archivo.")
         self.entrytext.show()
@@ -1020,22 +1013,30 @@ class Toolbar_Guardar(Gtk.Toolbar):
         item.add(self.entrytext)
         self.insert(item, -1)
 
+        self.insert(get_separador(draw=False,
+            ancho=0, expand=True), -1)
+
         archivo = os.path.join(JAMediaObjectsPath,
-            "Iconos", "acercar.svg")
+            "Iconos", "button-cancel.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=get_pixels(0.8))
+        boton.set_tooltip_text("Cancelar")
+        boton.connect("clicked", self.cancelar)
+        self.insert(boton, -1)
+
+        archivo = os.path.join(JAMediaObjectsPath,
+            "Iconos", "dialog-ok.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(0.8))
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__emit_ok)
         self.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
         self.show_all()
 
     def __emit_ok(self, widget):
 
-        texto = self.entrytext.get_text()
+        texto = self.entrytext.get_text().replace(" ", "_")
         self.cancelar()
 
         if texto:
