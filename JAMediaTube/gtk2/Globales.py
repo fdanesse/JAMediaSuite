@@ -180,3 +180,46 @@ def get_boton(archivo, flip=False, rotacion=None, pixels=16, tooltip_text=None):
         boton.TOOLTIP = tooltip_text
 
     return boton
+
+
+def describe_uri(uri):
+    """
+    Explica de que se trata el uri, si existe.
+    """
+
+    import os
+
+    existe = False
+
+    try:
+        existe = os.path.exists(uri)
+
+    except:
+        return False
+
+    if existe:
+        unidad = os.path.ismount(uri)
+        directorio = os.path.isdir(uri)
+        archivo = os.path.isfile(uri)
+        enlace = os.path.islink(uri)
+        return [unidad, directorio, archivo, enlace]
+
+    else:
+        return False
+
+
+def describe_archivo(archivo):
+    """
+    Devuelve el tipo de un archivo (imagen, video, texto).
+    -z, --uncompress para ver dentro de los zip.
+    """
+
+    import commands
+
+    datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
+    retorno = ""
+
+    for dat in datos.split(":")[1:]:
+        retorno += " %s" % (dat)
+
+    return retorno

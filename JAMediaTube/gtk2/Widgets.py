@@ -27,14 +27,10 @@ from gtk.gdk import Pixbuf
 import gobject
 
 '''
-import JAMediaObjects
-from JAMediaObjects.JAMediaWidgets import JAMediaButton
-
 from JAMedia.JAMedia import JAMediaPlayer
 '''
 from Globales import get_separador
 from Globales import get_boton
-#from Globales import get_color
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -153,7 +149,7 @@ class Toolbar(gtk.Toolbar):
 
         self.emit('salir')
 
-'''
+
 class Toolbar_Videos_Izquierda(gtk.Toolbar):
     """
     toolbar inferior izquierda para videos encontrados.
@@ -175,7 +171,7 @@ class Toolbar_Videos_Izquierda(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "alejar.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Borrar Lista.")
         boton.connect("clicked", self.__emit_borrar)
         self.insert(boton, -1)
@@ -183,7 +179,7 @@ class Toolbar_Videos_Izquierda(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Enviar a Descargas.")
         boton.connect("clicked", self.__emit_adescargas)
         self.insert(boton, -1)
@@ -226,7 +222,7 @@ class Toolbar_Videos_Derecha(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         boton = get_boton(archivo, flip=True,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Quitar de Descargas.")
         boton.connect("clicked", self.__emit_aencontrados)
         self.insert(boton, -1)
@@ -234,7 +230,7 @@ class Toolbar_Videos_Derecha(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "alejar.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Borrar Lista.")
         boton.connect("clicked", self.__emit_borrar)
         self.insert(boton, -1)
@@ -245,8 +241,8 @@ class Toolbar_Videos_Derecha(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8),
-            rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE)
+            pixels=24,
+            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
         boton.set_tooltip_text("Descargar.")
         boton.connect("clicked", self.__emit_comenzar_descarga)
         self.insert(boton, -1)
@@ -310,7 +306,7 @@ class Mini_Toolbar(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "lista.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Lista de Búsquedas.")
         boton.connect("clicked", self.__get_menu)
         self.insert(boton, -1)
@@ -318,8 +314,8 @@ class Mini_Toolbar(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "play.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8),
-            rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE)
+            pixels=24,
+            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
         boton.set_tooltip_text("Guardar Lista.")
         boton.connect("clicked", self.__emit_guardar)
         self.insert(boton, -1)
@@ -382,7 +378,7 @@ class Mini_Toolbar(gtk.Toolbar):
 
             menu.show_all()
             menu.attach_to_widget(widget, self.__null)
-            menu.popup(None, None, None, None, 1, 0)
+            gtk.Menu.popup(menu, None, None, None, 1, 0)
 
     def __administrar(self, widget):
 
@@ -402,7 +398,7 @@ class Mini_Toolbar(gtk.Toolbar):
             self.numero = valor
             text = "%s: %s" % (self.texto, str(self.numero))
             self.label.set_text(text)
-'''
+
 
 class Toolbar_Busqueda(gtk.Toolbar):
     """
@@ -513,21 +509,25 @@ class Alerta_Busqueda(gtk.Toolbar):
 
         self.show_all()
 
-'''
-class WidgetVideoItem(JAMediaButton):
+
+class WidgetVideoItem(gtk.EventBox):
+
+    #__gsignals__ = {
+    #"clicked": (gobject.SIGNAL_RUN_FIRST,
+    #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+    #"click_derecho": (gobject.SIGNAL_RUN_FIRST,
+    #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
 
     def __init__(self, videodict):
 
-        JAMediaButton.__init__(self)
+        gtk.EventBox.__init__(self)
 
         self.set_border_width(2)
 
         self.videodict = videodict
 
-        self.imagen.destroy()
-
-        hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
-        vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+        hbox = gtk.HBox()
+        vbox = gtk.VBox()
 
         keys = self.videodict.keys()
 
@@ -545,7 +545,7 @@ class WidgetVideoItem(JAMediaButton):
                     # FIXME: Porque Falla si no hay Conexión.
                     import urllib
                     fileimage, headers = urllib.urlretrieve(url, archivo)
-                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                    pixbuf = gdk.pixbuf_new_from_file_at_size(
                         fileimage, 200, 150)
                     imagen.set_from_pixbuf(pixbuf)
 
@@ -563,7 +563,7 @@ class WidgetVideoItem(JAMediaButton):
 
             else:
                 import base64
-                loader = GdkPixbuf.PixbufLoader()
+                loader = gdk.PixbufLoader()
                 loader.set_size(200, 150)
                 image_string = base64.b64decode(self.videodict["previews"])
                 loader.write(image_string)
@@ -605,15 +605,15 @@ class WidgetVideoItem(JAMediaButton):
 
         self.show_all()
 
-    def button_press(self, widget, event):
+    #def button_press(self, widget, event):
 
-        self.modify_bg(0, self.colorclicked)
+    #    self.modify_bg(0, self.colorclicked)
 
-        if event.button == 1:
-            self.emit("clicked", event)
+    #    if event.button == 1:
+    #        self.emit("clicked", event)
 
-        elif event.button == 3:
-            self.emit("click_derecho", event)
+    #    elif event.button == 3:
+    #        self.emit("click_derecho", event)
 
 
 class ToolbarAccionListasVideos(gtk.Toolbar):
@@ -638,7 +638,7 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "alejar.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
@@ -658,7 +658,7 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "acercar.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__realizar_accion)
         self.insert(boton, -1)
@@ -701,7 +701,7 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
         self.hide()
 
 
-class Toolbar_Descarga(gtk.Box):
+class Toolbar_Descarga(gtk.VBox):
 
     __gsignals__ = {
     'end': (gobject.SIGNAL_RUN_FIRST,
@@ -709,7 +709,7 @@ class Toolbar_Descarga(gtk.Box):
 
     def __init__(self):
 
-        gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
+        gtk.VBox.__init__(self)
 
         self.toolbar = gtk.Toolbar()
 
@@ -881,7 +881,7 @@ class Toolbar_Descarga(gtk.Box):
         Cancela la descarga actual.
         """
 
-        # No funciona correctamente, la descarga continúa.
+        # FIXME: No funciona correctamente, la descarga continúa.
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
@@ -921,7 +921,7 @@ class Progreso_Descarga(gtk.EventBox):
         self.add(self.escala)
         self.show_all()
 
-        self.set_size_request(-1, get_pixels(1.2))
+        self.set_size_request(-1, 28)
         self.set_progress(0)
 
     def set_progress(self, valor=0):
@@ -935,57 +935,72 @@ class Progreso_Descarga(gtk.EventBox):
             self.escala.queue_draw()
 
 
-class ProgressBar(gtk.Scale):
-    """
-    Escala de Progreso_Descarga.
-    """
+class ProgressBar(gtk.HScale):
+
+    __gsignals__ = {
+    "user-set-value": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
 
-        gtk.Scale.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+        gtk.HScale.__init__(self, ajuste)
 
         self.ajuste = ajuste
         self.set_digits(0)
+        #self.modify_bg(gtk.STATE_NORMAL, G.BLANCO)
         self.set_draw_value(False)
 
-        self.borde = get_pixels(0.5)
+        self.x, self.y, self.w, self.h = (0, 0, 200, 40)
+        self.borde, self.ancho = (15, 10)
 
-        self.show_all()
+        icono = os.path.join(BASE_PATH,
+            "Iconos", "iconplay.svg")
+        pixbuf = gdk.pixbuf_new_from_file_at_size(
+            icono, 24, 24)
+        self.pixbuf = pixbuf.rotate_simple(
+            gdk.PIXBUF_ROTATE_COUNTERCLOCKWISE)
 
-    def do_draw(self, contexto):
-        """
-        Dibuja el estado de la barra de progreso.
-        """
+        self.connect("expose_event", self.expose)
+        self.connect("size-allocate", self.size_allocate)
 
-        rect = self.get_allocation()
-        w, h = (rect.width, rect.height)
+    def expose(self, widget, event):
 
-        # Fondo
-        #Gdk.cairo_set_source_color(contexto, G.BLANCO)
-        #contexto.paint()
+        x, y, w, h = (self.x, self.y, self.w, self.h)
+        ancho, borde = (self.ancho, self.borde)
 
-        # Relleno de la barra
-        ww = w - self.borde * 2
-        hh = h - self.borde * 2
-        Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
-        rect = Gdk.Rectangle()
-        rect.x, rect.y, rect.width, rect.height = (
-            self.borde, self.borde, ww, hh)
-        Gdk.cairo_rectangle(contexto, rect)
-        contexto.fill()
+        gc = gtk.gdk.Drawable.new_gc(self.window)
 
-        # Relleno de la barra segun progreso
-        Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
-        rect = Gdk.Rectangle()
+        #gc.set_rgb_fg_color(gdk.Color(65535, 65535, 65535))
+        self.window.draw_rectangle(gc, True, x, y, w, h)
 
-        ximage = int(self.ajuste.get_value() * ww / 100)
-        rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
-            ximage, hh)
+        gc.set_rgb_fg_color(gdk.Color(65000, 65000, 40275))
+        ww = w - borde * 2
+        xx = x + w / 2 - ww / 2
+        hh = ancho
+        yy = y + h / 2 - ancho / 2
+        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
 
-        Gdk.cairo_rectangle(contexto, rect)
-        contexto.fill()
+        anchoimagen, altoimagen = (self.pixbuf.get_width(),
+            self.pixbuf.get_height())
+        ximagen = int((xx - anchoimagen / 2) + self.get_value() * (
+            ww / (self.ajuste.upper - self.ajuste.lower)))
+        yimagen = yy + hh / 2 - altoimagen / 2
+
+        gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
+        self.window.draw_rectangle(gc, True, xx, yy, ximagen, hh)
+
+        gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
+        self.window.draw_rectangle(gc, False, xx, yy, ww, hh)
+
+        self.window.draw_pixbuf(gc, self.pixbuf, 0, 0, ximagen, yimagen,
+            anchoimagen, altoimagen, gdk.RGB_DITHER_NORMAL, 0, 0)
 
         return True
+
+    def size_allocate(self, widget, allocation):
+
+        self.x, self.y, self.w, self.h = allocation
+        return False
 
 
 class Toolbar_Guardar(gtk.Toolbar):
@@ -1004,7 +1019,7 @@ class Toolbar_Guardar(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "alejar.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
@@ -1028,7 +1043,7 @@ class Toolbar_Guardar(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "acercar.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__emit_ok)
         self.insert(boton, -1)
@@ -1050,7 +1065,7 @@ class Toolbar_Guardar(gtk.Toolbar):
 
         self.entrytext.set_text("")
         self.hide()
-'''
+
 
 class Credits(gtk.Dialog):
 
@@ -1179,7 +1194,7 @@ class Help(gtk.Dialog):
             if help.get_visible():
                 return self.helps.index(help)
 
-'''
+
 class TubeListDialog(gtk.Dialog):
 
     __gtype_name__ = 'TubeListDialog'
@@ -1188,8 +1203,9 @@ class TubeListDialog(gtk.Dialog):
 
         gtk.Dialog.__init__(self,
             parent=parent,
-            flags=gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", gtk.ResponseType.ACCEPT])
+            #flags=gtk.DialogFlags.MODAL,
+            title="",
+            buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_border_width(15)
         rect = parent.get_allocation()
@@ -1197,17 +1213,15 @@ class TubeListDialog(gtk.Dialog):
 
         self.actualizando = False
 
-        self.panel = gtk.Paned(orientation=gtk.Orientation.HORIZONTAL)
-
-        from JAMediaObjects.JAMediaWidgets import Lista
+        self.panel = gtk.HPaned()
 
         self.listas = Lista()
-        self.videos = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+        self.videos = gtk.VBox()
 
         scroll = self.__get_scroll()
         scroll.set_policy(
-            gtk.PolicyType.NEVER,
-            gtk.PolicyType.AUTOMATIC)
+            gtk.POLICY_NEVER,
+            gtk.POLICY_AUTOMATIC)
         scroll.add_with_viewport(self.listas)
         self.panel.pack1(scroll, resize=False, shrink=True)
 
@@ -1259,7 +1273,7 @@ class TubeListDialog(gtk.Dialog):
             menu.show_all()
             menu.attach_to_widget(widget, self.__null)
 
-            menu.popup(None, None, None, None, boton, tiempo)
+            gtk.Menu.popup(menu, None, None, None, 1, 0)
 
         elif boton == 2:
             return
@@ -1279,7 +1293,7 @@ class TubeListDialog(gtk.Dialog):
             self.videos.remove(child)
             child.destroy()
 
-        new_box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+        new_box = gtk.VBox()
         new_box.show_all()
         self.videos.pack_start(
             new_box,
@@ -1306,8 +1320,9 @@ class TubeListDialog(gtk.Dialog):
         if not keys:
             dialog = gtk.Dialog(
                 parent=self.get_toplevel(),
-                flags=gtk.DialogFlags.MODAL,
-                buttons=["OK", gtk.ResponseType.ACCEPT])
+                #flags=gtk.DialogFlags.MODAL,
+                title="",
+                buttons=("OK", gtk.RESPONSE_ACCEPT))
 
             dialog.set_border_width(15)
 
@@ -1335,7 +1350,7 @@ class TubeListDialog(gtk.Dialog):
             self.videos.remove(child)
             child.destroy()
 
-        new_box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+        new_box = gtk.VBox()
         new_box.show_all()
         self.videos.pack_start(
             new_box,
@@ -1374,7 +1389,8 @@ class TubeListDialog(gtk.Dialog):
         video = videos[0]
 
         videowidget = WidgetVideoItem(video)
-        videowidget.connect("click_derecho", self.__clicked_videowidget)
+        # FIXME: Agregar Click Derecho
+        #videowidget.connect("click_derecho", self.__clicked_videowidget)
         """
         text = TipEncontrados
 
@@ -1480,8 +1496,226 @@ class TubeListDialog(gtk.Dialog):
         scroll = gtk.ScrolledWindow()
 
         scroll.set_policy(
-            gtk.PolicyType.AUTOMATIC,
-            gtk.PolicyType.AUTOMATIC)
+            gtk.POLICY_AUTOMATIC,
+            gtk.POLICY_AUTOMATIC)
 
         return scroll
-'''
+
+
+class Lista(gtk.TreeView):
+    """
+    Lista generica.
+    """
+
+    __gsignals__ = {
+    "nueva-seleccion": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
+
+    def __init__(self):
+
+        gtk.TreeView.__init__(self)
+
+        self.set_property("rules-hint", True)
+        self.set_headers_clickable(True)
+        self.set_headers_visible(True)
+
+        self.permitir_select = True
+        self.valor_select = None
+
+        self.modelo = gtk.ListStore(
+            gdk.Pixbuf,
+            gobject.TYPE_STRING,
+            gobject.TYPE_STRING)
+
+        self.__setear_columnas()
+
+        self.treeselection = self.get_selection()
+        self.treeselection.set_select_function(
+            self.__selecciones, self.modelo)
+
+        self.set_model(self.modelo)
+        self.show_all()
+
+    '''
+    def keypress(self, widget, event):
+        # derecha 114 izquierda 113 suprimir 119
+        # backspace 22 (en xo no existe suprimir)
+        tecla = event.get_keycode()[1]
+        model, iter = self.treeselection.get_selected()
+        valor = self.modelo.get_value(iter, 2)
+        path = self.modelo.get_path(iter)
+        if tecla == 22:
+            if self.row_expanded(path):
+                self.collapse_row(path)
+        elif tecla == 113:
+            if self.row_expanded(path):
+                self.collapse_row(path)
+        elif tecla == 114:
+            if not self.row_expanded(path):
+                self.expand_to_path(path)
+        elif tecla == 119:
+            # suprimir
+            print valor, path
+        else:
+            pass
+        return False'''
+
+    def __selecciones(self, path, column):
+        """
+        Cuando se selecciona un item en la lista.
+        """
+
+        if not self.permitir_select:
+            return True
+
+        # model y listore son ==
+        _iter = self.get_model().get_iter(path)
+        valor = self.get_model().get_value(_iter, 2)
+
+        if self.valor_select != valor:
+            #self.scroll_to_cell(self.get_model().get_path(iter))
+            self.valor_select = valor
+            self.emit('nueva-seleccion', self.valor_select)
+
+        return True
+
+    def __setear_columnas(self):
+
+        self.append_column(self.__construir_columa_icono('', 0, True))
+        self.append_column(self.__construir_columa('Nombre', 1, True))
+        self.append_column(self.__construir_columa('', 2, False))
+
+    def __construir_columa(self, text, index, visible):
+
+        render = gtk.CellRendererText()
+
+        columna = gtk.TreeViewColumn(text, render, text=index)
+        columna.set_sort_column_id(index)
+        columna.set_property('visible', visible)
+        columna.set_property('resizable', False)
+        columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
+
+        return columna
+
+    def __construir_columa_icono(self, text, index, visible):
+
+        render = gtk.CellRendererPixbuf()
+
+        columna = gtk.TreeViewColumn(text, render, pixbuf=index)
+        columna.set_property('visible', visible)
+        columna.set_property('resizable', False)
+        columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
+
+        return columna
+
+    def limpiar(self):
+
+        self.permitir_select = False
+        self.modelo.clear()
+        self.permitir_select = True
+
+    def agregar_items(self, elementos):
+        """
+        Recibe lista de: [texto para mostrar, path oculto] y
+        Comienza secuencia de agregado a la lista.
+        """
+
+        self.get_toplevel().set_sensitive(False)
+        self.permitir_select = False
+
+        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
+
+    def __ejecutar_agregar_elemento(self, elementos):
+        """
+        Agrega los items a la lista, uno a uno, actualizando.
+        """
+
+        if not elementos:
+            self.permitir_select = True
+            self.seleccionar_primero()
+            self.get_toplevel().set_sensitive(True)
+            return False
+
+        texto, path = elementos[0]
+
+        from Globales import describe_uri
+        from Globales import describe_archivo
+
+        descripcion = describe_uri(path)
+
+        icono = None
+        if descripcion:
+            if descripcion[2]:
+                # Es un Archivo
+                tipo = describe_archivo(path)
+
+                if 'video' in tipo or 'application/ogg' in tipo or \
+                    'application/octet-stream' in tipo:
+                    icono = os.path.join(BASE_PATH,
+                        "Iconos", "video.svg")
+
+                elif 'audio' in tipo:
+                    icono = os.path.join(BASE_PATH,
+                        "Iconos", "sonido.svg")
+
+        else:
+            icono = os.path.join(BASE_PATH,
+                "Iconos", "video.svg")
+
+        try:
+            pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+                24, -1)
+            self.modelo.append([pixbuf, texto, path])
+
+        except:
+            pass
+
+        elementos.remove(elementos[0])
+
+        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
+
+        return False
+    '''
+    def seleccionar_siguiente(self, widget=None):
+
+        modelo, _iter = self.treeselection.get_selected()
+
+        try:
+            self.treeselection.select_iter(modelo.iter_next(_iter))
+
+        except:
+            self.seleccionar_primero()
+
+        return False
+
+    def seleccionar_anterior(self, widget=None):
+
+        modelo, _iter = self.treeselection.get_selected()
+
+        try:
+            self.treeselection.select_iter(modelo.iter_previous(_iter))
+
+        except:
+            self.seleccionar_ultimo()
+
+        return False
+    '''
+    def seleccionar_primero(self, widget=None):
+
+        self.treeselection.select_path(0)
+    '''
+    def seleccionar_ultimo(self, widget=None):
+
+        model = self.get_model()
+        item = model.get_iter_first()
+
+        _iter = None
+
+        while item:
+            _iter = item
+            item = model.iter_next(item)
+
+        if _iter:
+            self.treeselection.select_iter(_iter)
+            #path = model.get_path(iter)
+    '''

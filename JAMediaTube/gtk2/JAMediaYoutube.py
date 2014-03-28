@@ -24,14 +24,15 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import GObject
-from gi.repository import GLib
+import gtk
+import gobject
+
+BASE_PATH = os.path.dirname(__file__)
 
 YOUTUBE = "gdata.youtube.com"
 
 STDERR = "/dev/null"
-youtubedl = os.path.join(os.path.dirname(__file__), "youtube-dl")
+youtubedl = os.path.join(BASE_PATH, "youtube-dl")
 
 
 def Buscar(palabras):
@@ -111,18 +112,18 @@ def DetalleVideo(entry):
     return video
 
 
-class JAMediaYoutube(Gtk.Widget):
+class JAMediaYoutube(gtk.Widget):
     """
     Widget para descarga de videos a través de youtube_dl.
     """
 
     __gsignals__ = {
-    'progress_download': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+    'progress_download': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
 
-        Gtk.Widget.__init__(self)
+        gtk.Widget.__init__(self)
 
         self.ultimosdatos = False
         self.contador = 0
@@ -226,17 +227,17 @@ class JAMediaYoutube(Gtk.Widget):
 
         self.youtubedl = subprocess.Popen(
             estructura, shell=True,
-            stdout = open(self.STDOUT, "w+b"),
-            stderr = open(self.STDOUT, "r+b"),
+            stdout=open(self.STDOUT, "w+b"),
+            stderr=open(self.STDOUT, "r+b"),
             universal_newlines=True)
 
         self.salida = open(self.STDOUT, "r")
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
             self.actualizador = False
 
-        self.actualizador = GLib.timeout_add(
+        self.actualizador = gobject.timeout_add(
             500, self.__get_progress)
 
     def __get_progress(self):
@@ -252,7 +253,7 @@ class JAMediaYoutube(Gtk.Widget):
 
             self.emit("progress_download", progress)
 
-        ### control switch codec.
+        # control switch codec.
         if self.ultimosdatos != progress:
             self.ultimosdatos = progress
             self.contador = 0
@@ -278,7 +279,7 @@ class JAMediaYoutube(Gtk.Widget):
     def end(self):
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
             self.actualizador = False
 
         self.youtubedl.kill()

@@ -21,33 +21,30 @@
 
 import os
 
-from gi.repository import Gtk
-#from gi.repository import Gdk
-from gi.repository import GObject
-from gi.repository import GLib
+import gtk
+import gobject
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
 
 
-class PanelTube(Gtk.Paned):
+class PanelTube(gtk.HPaned):
     """
     Panel de JAMediaTube.
     """
 
     __gsignals__ = {
-    'download': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    'open_shelve_list': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_PYOBJECT)),
-    'cancel_toolbar': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    'download': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    'open_shelve_list': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
+        gobject.TYPE_PYOBJECT)),
+    'cancel_toolbar': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Paned.__init__(self,
-            orientation=Gtk.Orientation.HORIZONTAL)
+        gtk.HPaned.__init__(self)
 
         self.toolbar_encontrados = None
         self.encontrados = None
@@ -78,20 +75,20 @@ class PanelTube(Gtk.Paned):
 
         self.toolbar_encontrados = Mini_Toolbar("Videos Encontrados")
         self.toolbar_guardar_encontrados = Toolbar_Guardar()
-        self.encontrados = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.encontrados = gtk.VBox()
         self.toolbar_accion_izquierda = ToolbarAccionListasVideos()
         self.toolbar_videos_izquierda = Toolbar_Videos_Izquierda()
 
         self.toolbar_descargar = Mini_Toolbar("Videos Para Descargar")
         self.toolbar_guardar_descargar = Toolbar_Guardar()
-        self.descargar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.descargar = gtk.VBox()
         self.toolbar_accion_derecha = ToolbarAccionListasVideos()
         self.toolbar_videos_derecha = Toolbar_Videos_Derecha()
 
         # Izquierda
         scroll = self.__get_scroll()
         scroll.add_with_viewport(self.encontrados)
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        box = gtk.VBox()
         box.pack_start(self.toolbar_encontrados, False, False, 0)
         box.pack_start(self.toolbar_guardar_encontrados, False, False, 0)
         box.pack_start(scroll, True, True, 0)
@@ -102,7 +99,7 @@ class PanelTube(Gtk.Paned):
         # Derecha
         scroll = self.__get_scroll()
         scroll.add_with_viewport(self.descargar)
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        box = gtk.VBox()
         box.pack_start(self.toolbar_descargar, False, False, 0)
         box.pack_start(self.toolbar_guardar_descargar, False, False, 0)
         box.pack_start(scroll, True, True, 0)
@@ -149,7 +146,7 @@ class PanelTube(Gtk.Paned):
             self.toolbar_accion_izquierda,
             self.toolbar_accion_derecha]
 
-        GLib.timeout_add(300, self.__update)
+        gobject.timeout_add(300, self.__update)
 
     def __ejecutar_cancel_toolbars(self, widget):
 
@@ -227,20 +224,21 @@ class PanelTube(Gtk.Paned):
             for elemento in videos:
                 dict[elemento["id"]] = elemento
 
-            ### Alerta de Sobre Escritura.
+            # Alerta de Sobre Escritura.
             if key_name in dict_tube.keys():
-                dialog = Gtk.Dialog(
+                dialog = gtk.Dialog(
                 parent=self.get_toplevel(),
-                flags=Gtk.DialogFlags.MODAL,
-                buttons=[
-                    "Suplantar", Gtk.ResponseType.ACCEPT,
-                    "Cancelar", Gtk.ResponseType.CANCEL])
+                #flags=gtk.DialogFlags.MODAL,
+                title="",
+                buttons=(
+                    "Suplantar", gtk.RESPONSE_ACCEPT,
+                    "Cancelar", gtk.RESPONSE_CANCEL))
 
                 dialog.set_border_width(15)
 
                 text = "Ya Existe un Album de Búsquedas con Este Nombre.\n"
                 text = "%s%s" % (text, "¿Deseas Suplantarlo?")
-                label = Gtk.Label(text)
+                label = gtk.Label(text)
                 dialog.vbox.pack_start(label, True, True, 0)
                 dialog.vbox.show_all()
 
@@ -248,7 +246,7 @@ class PanelTube(Gtk.Paned):
 
                 dialog.destroy()
 
-                if response == Gtk.ResponseType.CANCEL:
+                if response == gtk.RESPONSE_CANCEL:
                     dict_tube.close()
                     return
 
@@ -256,14 +254,15 @@ class PanelTube(Gtk.Paned):
 
             dict_tube.close()
 
-            dialog = Gtk.Dialog(
+            dialog = gtk.Dialog(
                 parent=self.get_toplevel(),
-                flags=Gtk.DialogFlags.MODAL,
-                buttons=["OK", Gtk.ResponseType.ACCEPT])
+                #flags=gtk.DialogFlags.MODAL,
+                title="",
+                buttons=("OK", gtk.RESPONSE_CANCEL))
 
             dialog.set_border_width(15)
 
-            label = Gtk.Label("Videos Almacenados.")
+            label = gtk.Label("Videos Almacenados.")
             dialog.vbox.pack_start(label, True, True, 0)
             dialog.vbox.show_all()
 
@@ -287,6 +286,7 @@ class PanelTube(Gtk.Paned):
         Pasa todos los videos de una lista a otra.
         """
 
+        # FIXME: Verificar esto . . .
         self.get_toplevel().paneltube.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
 
@@ -304,7 +304,7 @@ class PanelTube(Gtk.Paned):
 
         elementos = origen.get_children()
 
-        GLib.idle_add(
+        gobject.idle_add(
             self.__ejecutar_mover_videos,
             origen,
             destino,
@@ -328,19 +328,12 @@ class PanelTube(Gtk.Paned):
 
         elementos.remove(elementos[0])
 
-        GLib.idle_add(
+        gobject.idle_add(
             self.__ejecutar_mover_videos,
             origen,
             destino,
             text,
             elementos)
-
-    def set_vista_inicial(self):
-        """
-        Las toolbar accion deben estar ocultas inicialmente.
-        """
-
-        map(self.__cancel_toolbars, self.toolbars_flotantes)
 
     def __ejecutar_borrar(self, widget, objetos):
         """
@@ -350,7 +343,7 @@ class PanelTube(Gtk.Paned):
         self.get_toplevel().paneltube.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
 
-        GLib.idle_add(self.__run_borrar, objetos)
+        gobject.idle_add(self.__run_borrar, objetos)
 
     def __run_borrar(self, objetos):
 
@@ -404,11 +397,11 @@ class PanelTube(Gtk.Paned):
 
     def __get_scroll(self):
 
-        scroll = Gtk.ScrolledWindow()
+        scroll = gtk.ScrolledWindow()
 
         scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
+            gtk.POLICY_AUTOMATIC,
+            gtk.POLICY_AUTOMATIC)
 
         return scroll
 
@@ -433,3 +426,10 @@ class PanelTube(Gtk.Paned):
 
         for toolbar in self.toolbars_flotantes:
             toolbar.cancelar()
+
+    def set_vista_inicial(self):
+        """
+        Las toolbar accion deben estar ocultas inicialmente.
+        """
+
+        map(self.__cancel_toolbars, self.toolbars_flotantes)

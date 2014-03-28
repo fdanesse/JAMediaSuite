@@ -78,13 +78,13 @@ class JAMediaTube(gtk.Window):
 
         from Widgets import Toolbar
         from Widgets import Toolbar_Busqueda
-        #from Widgets import Toolbar_Descarga
+        from Widgets import Toolbar_Descarga
         from Widgets import Alerta_Busqueda
-        '''
-        from JAMediaTube.PanelTube import PanelTube
 
-        from JAMediaObjects.JAMediaWidgets import ToolbarSalir
-        '''
+        from PanelTube import PanelTube
+
+        #from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+
         boxbase = gtk.VBox()
 
         self.box_tube = gtk.VBox()
@@ -92,20 +92,22 @@ class JAMediaTube(gtk.Window):
         self.toolbar = Toolbar()
 
         self.toolbar_busqueda = Toolbar_Busqueda()
-        #self.toolbar_descarga = Toolbar_Descarga()
+        self.toolbar_descarga = Toolbar_Descarga()
         #self.toolbar_salir = ToolbarSalir()
         self.alerta_busqueda = Alerta_Busqueda()
-        #self.paneltube = PanelTube()
+        self.paneltube = PanelTube()
 
         self.box_tube.pack_start(
             self.toolbar, False, False, 0)
         #self.box_tube.pack_start(self.toolbar_salir, False, False, 0)
         self.box_tube.pack_start(
             self.toolbar_busqueda, False, False, 0)
-        #self.box_tube.pack_start(self.toolbar_descarga, False, False, 0)
+        self.box_tube.pack_start(
+            self.toolbar_descarga, False, False, 0)
         self.box_tube.pack_start(
             self.alerta_busqueda, False, False, 0)
-        #self.box_tube.pack_start(self.paneltube, True, True, 0)
+        self.box_tube.pack_start(
+            self.paneltube, True, True, 0)
 
         boxbase.pack_start(self.box_tube, True, True, 0)
 
@@ -120,9 +122,9 @@ class JAMediaTube(gtk.Window):
         '''
         self.show_all()
         self.realize()
-        '''
+
         self.paneltube.set_vista_inicial()  # oculta las toolbarsaccion
-        '''
+
         gobject.idle_add(self.__setup_init2)
 
     def __setup_init2(self):
@@ -137,10 +139,10 @@ class JAMediaTube(gtk.Window):
             None, "JAMediaReproductor")
         '''
         #self.__cancel_toolbar()
-        #self.paneltube.cancel_toolbars_flotantes()
+        self.paneltube.cancel_toolbars_flotantes()
 
         map(self.__ocultar, [
-            #self.toolbar_descarga,
+            self.toolbar_descarga,
             self.alerta_busqueda])
         '''
         if self.pistas:
@@ -149,25 +151,25 @@ class JAMediaTube(gtk.Window):
 
         else:
             self.__switch(None, 'jamediatube')
-
+        '''
         self.paneltube.encontrados.drag_dest_set(
-            gtk.DestDefaults.ALL,
+            gtk.DEST_DEFAULT_ALL,
             target,
-            gdk.DragAction.MOVE)
+            gtk.gdk.ACTION_MOVE)
 
         self.paneltube.encontrados.connect(
             "drag-drop", self.__drag_drop)
         self.paneltube.encontrados.drag_dest_add_uri_targets()
 
         self.paneltube.descargar.drag_dest_set(
-            gtk.DestDefaults.ALL,
+            gtk.DEST_DEFAULT_ALL,
             target,
-            gdk.DragAction.MOVE)
+            gtk.gdk.ACTION_MOVE)
 
         self.paneltube.descargar.connect(
             "drag-drop", self.__drag_drop)
         self.paneltube.descargar.drag_dest_add_uri_targets()
-        '''
+
         self.connect("delete-event",
             self.__salir)
         #self.toolbar.connect('salir',
@@ -180,12 +182,12 @@ class JAMediaTube(gtk.Window):
         #    'salir', self.__switch, 'jamediatube')
         self.toolbar_busqueda.connect(
             "comenzar_busqueda", self.__comenzar_busqueda)
-        #self.paneltube.connect('download',
-        #    self.__run_download)
-        #self.paneltube.connect('open_shelve_list',
-        #    self.__open_shelve_list)
-        #self.toolbar_descarga.connect('end',
-        #    self.__run_download)
+        self.paneltube.connect('download',
+            self.__run_download)
+        self.paneltube.connect('open_shelve_list',
+            self.__open_shelve_list)
+        self.toolbar_descarga.connect('end',
+            self.__run_download)
         #self.paneltube.connect("cancel_toolbar",
         #    self.__cancel_toolbar)
 
@@ -271,22 +273,22 @@ class JAMediaTube(gtk.Window):
         secuencia de busqueda y agregado de videos al panel.
         """
 
-        #self.paneltube.set_sensitive(False)
-        #self.toolbar_busqueda.set_sensitive(False)
+        self.paneltube.set_sensitive(False)
+        self.toolbar_busqueda.set_sensitive(False)
 
         #self.__cancel_toolbar()
-        #self.paneltube.cancel_toolbars_flotantes()
+        self.paneltube.cancel_toolbars_flotantes()
         map(self.__mostrar, [self.alerta_busqueda])
         self.alerta_busqueda.label.set_text(
             "Buscando: %s" % (palabras))
 
-        #objetos = self.paneltube.encontrados.get_children()
+        objetos = self.paneltube.encontrados.get_children()
 
-        #for objeto in objetos:
-        #    objeto.get_parent().remove(objeto)
-        #    objeto.destroy()
+        for objeto in objetos:
+            objeto.get_parent().remove(objeto)
+            objeto.destroy()
 
-        #gobject.timeout_add(300, self.__lanzar_busqueda, palabras)
+        gobject.timeout_add(300, self.__lanzar_busqueda, palabras)
 
     def __lanzar_busqueda(self, palabras):
         """
@@ -295,9 +297,9 @@ class JAMediaTube(gtk.Window):
         """
 
         # FIXME: Reparar (Si no hay conexión)
-        import JAMediaTube.JAMediaYoutube as YT
+        from JAMediaYoutube import Buscar
 
-        for video in YT.Buscar(palabras):
+        for video in Buscar(palabras):
             self.videos_temp.append(video)
 
         gobject.idle_add(self.__add_videos, self.videos_temp,
@@ -324,7 +326,7 @@ class JAMediaTube(gtk.Window):
 
         video = videos[0]
 
-        from JAMediaTube.Widgets import WidgetVideoItem
+        from Widgets import WidgetVideoItem
 
         videowidget = WidgetVideoItem(video)
         text = TipEncontrados
@@ -339,9 +341,9 @@ class JAMediaTube(gtk.Window):
         videowidget.show_all()
 
         videowidget.drag_source_set(
-            gdk.ModifierType.BUTTON1_MASK,
+            gtk.gdk.BUTTON1_MASK,
             target,
-            gdk.DragAction.MOVE)
+            gtk.gdk.ACTION_MOVE)
 
         # FIXME: Enlentece la aplicación ya que exige procesamiento.
         #archivo = "/tmp/preview%d" % time.time()
@@ -417,7 +419,7 @@ class JAMediaTube(gtk.Window):
 
         self.pistas = pistas
 
-#target = [gtk.TargetEntry.new('Mover', gtk.TargetFlags.SAME_APP, 0)]
+target = [('Mover', gtk.TARGET_SAME_APP, 1)]
 
 
 def get_item_list(path):
