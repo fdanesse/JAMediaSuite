@@ -271,7 +271,7 @@ class WidgetVideoItem(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.modify_bg(0, gdk.color_parse("#fffafa"))
         self.set_border_width(2)
 
         self.videodict = videodict
@@ -379,6 +379,7 @@ class Toolbar_Descarga(gtk.VBox):
         gtk.VBox.__init__(self)
 
         self.toolbar = gtk.Toolbar()
+        self.toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
 
         self.label_titulo = None
         self.label_progreso = None
@@ -614,7 +615,7 @@ class ProgressBar(gtk.HScale):
 
         self.ajuste = ajuste
         self.set_digits(0)
-        #self.modify_bg(gtk.STATE_NORMAL, G.BLANCO)
+
         self.set_draw_value(False)
 
         self.x, self.y, self.w, self.h = (0, 0, 200, 40)

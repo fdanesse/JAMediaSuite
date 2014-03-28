@@ -22,6 +22,7 @@
 import os
 
 import gtk
+from gtk import gdk
 import gobject
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
@@ -45,6 +46,8 @@ class PanelTube(gtk.HPaned):
     def __init__(self):
 
         gtk.HPaned.__init__(self)
+
+        self.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
 
         self.toolbar_encontrados = None
         self.encontrados = None
@@ -87,7 +90,14 @@ class PanelTube(gtk.HPaned):
 
         # Izquierda
         scroll = self.__get_scroll()
-        scroll.add_with_viewport(self.encontrados)
+        event = gtk.EventBox()
+        event.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        event.add(self.encontrados)
+        scroll.add_with_viewport(event)
+        scroll.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        scroll.get_child().modify_bg(
+            gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        #scroll.add_with_viewport(self.encontrados)
         box = gtk.VBox()
         box.pack_start(self.toolbar_encontrados, False, False, 0)
         box.pack_start(self.toolbar_guardar_encontrados, False, False, 0)
@@ -98,7 +108,14 @@ class PanelTube(gtk.HPaned):
 
         # Derecha
         scroll = self.__get_scroll()
-        scroll.add_with_viewport(self.descargar)
+        event = gtk.EventBox()
+        event.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        event.add(self.descargar)
+        scroll.add_with_viewport(event)
+        scroll.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        scroll.get_child().modify_bg(
+            gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        #scroll.add_with_viewport(self.descargar)
         box = gtk.VBox()
         box.pack_start(self.toolbar_descargar, False, False, 0)
         box.pack_start(self.toolbar_guardar_descargar, False, False, 0)
