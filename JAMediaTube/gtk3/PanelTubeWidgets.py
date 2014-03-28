@@ -21,9 +21,10 @@
 
 import os
 
-import gtk
-from gtk import gdk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GdkPixbuf
+from gi.repository import GObject
+from gi.repository import GLib
 
 from Globales import get_separador
 from Globales import get_boton
@@ -31,32 +32,29 @@ from Globales import get_boton
 BASE_PATH = os.path.dirname(__file__)
 
 
-class Mini_Toolbar(gtk.Toolbar):
+class Mini_Toolbar(Gtk.Toolbar):
     """
     Mini toolbars Superior izquierda y derecha.
     """
 
     __gsignals__ = {
-    "guardar": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
-    "abrir": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "menu_activo": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
+    "guardar": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
+    "abrir": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "menu_activo": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self, text):
 
-        gtk.Toolbar.__init__(self)
-
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        Gtk.Toolbar.__init__(self)
 
         self.label = None
         self.texto = text
         self.numero = 0
 
-        item = gtk.ToolItem()
-        self.label = gtk.Label("%s: %s" % (text, self.numero))
-        self.label.modify_fg(0, gdk.color_parse("#ffffff"))
+        item = Gtk.ToolItem()
+        self.label = Gtk.Label("%s: %s" % (text, self.numero))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -76,7 +74,7 @@ class Mini_Toolbar(gtk.Toolbar):
             "Iconos", "play.svg")
         boton = get_boton(archivo, flip=False,
             pixels=24,
-            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
+            rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE)
         boton.set_tooltip_text("Guardar Lista")
         boton.connect("clicked", self.__emit_guardar)
         self.insert(boton, -1)
@@ -119,27 +117,27 @@ class Mini_Toolbar(gtk.Toolbar):
         if keys:
             self.emit("menu_activo")
 
-            menu = gtk.Menu()
+            menu = Gtk.Menu()
 
-            administrar = gtk.MenuItem('Administrar')
+            administrar = Gtk.MenuItem('Administrar')
             administrar.connect_object("activate", self.__administrar, None)
-            cargar = gtk.MenuItem('Cargar')
+            cargar = Gtk.MenuItem('Cargar')
 
             menu.append(administrar)
             menu.append(cargar)
 
-            menu_listas = gtk.Menu()
+            menu_listas = Gtk.Menu()
 
             cargar.set_submenu(menu_listas)
 
             for key in keys:
-                item = gtk.MenuItem(key)
+                item = Gtk.MenuItem(key)
                 menu_listas.append(item)
                 item.connect_object("activate", self.__emit_abrir, key)
 
             menu.show_all()
             menu.attach_to_widget(widget, self.__null)
-            gtk.Menu.popup(menu, None, None, None, 1, 0)
+            menu.popup(None, None, None, None, 1, 0)
 
     def __administrar(self, widget):
 
@@ -162,21 +160,19 @@ class Mini_Toolbar(gtk.Toolbar):
             self.label.set_text(text)
 
 
-class ToolbarAccionListasVideos(gtk.Toolbar):
+class ToolbarAccionListasVideos(Gtk.Toolbar):
     """
     Toolbar para que el usuario confirme "borrar"
     lista de video de JAMediaTube.
     """
 
     __gsignals__ = {
-    "ok": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
+    "ok": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
-
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        Gtk.Toolbar.__init__(self)
 
         self.objetos = None
 
@@ -194,9 +190,8 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = gtk.ToolItem()
-        self.label = gtk.Label("")
-        self.label.modify_fg(0, gdk.color_parse("#ffffff"))
+        item = Gtk.ToolItem()
+        self.label = Gtk.Label("")
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -225,7 +220,7 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
         objetos = self.objetos
         self.cancelar()
 
-        gobject.idle_add(self.__emit_ok, objetos)
+        GLib.idle_add(self.__emit_ok, objetos)
 
     def __emit_ok(self, objetos):
 
@@ -250,22 +245,20 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
         self.hide()
 
 
-class Toolbar_Videos_Izquierda(gtk.Toolbar):
+class Toolbar_Videos_Izquierda(Gtk.Toolbar):
     """
     toolbar inferior izquierda para videos encontrados.
     """
 
     __gsignals__ = {
-    "borrar": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
-    "mover_videos": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
+    "borrar": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
+    "mover_videos": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
-
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        Gtk.Toolbar.__init__(self)
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
@@ -304,24 +297,22 @@ class Toolbar_Videos_Izquierda(gtk.Toolbar):
         self.emit('borrar')
 
 
-class Toolbar_Videos_Derecha(gtk.Toolbar):
+class Toolbar_Videos_Derecha(Gtk.Toolbar):
     """
     toolbar inferior derecha para videos en descarga.
     """
 
     __gsignals__ = {
-    "borrar": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
-    "mover_videos": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
-    'comenzar_descarga': (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
+    "borrar": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
+    "mover_videos": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
+    'comenzar_descarga': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
-
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        Gtk.Toolbar.__init__(self)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
@@ -346,7 +337,7 @@ class Toolbar_Videos_Derecha(gtk.Toolbar):
             "Iconos", "iconplay.svg")
         boton = get_boton(archivo, flip=False,
             pixels=24,
-            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
+            rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE)
         boton.set_tooltip_text("Descargar")
         boton.connect("clicked", self.__emit_comenzar_descarga)
         self.insert(boton, -1)
@@ -377,34 +368,31 @@ class Toolbar_Videos_Derecha(gtk.Toolbar):
         self.emit('borrar')
 
 
-class Toolbar_Guardar(gtk.Toolbar):
+class Toolbar_Guardar(Gtk.Toolbar):
     """
     Toolbar con widgets para guardar una lista de videos.
     """
 
     __gsignals__ = {
-    "ok": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
+    "ok": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
+        Gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#000000"))
-
-        item = gtk.ToolItem()
-        label = gtk.Label("Nombre: ")
-        label.modify_fg(0, gdk.color_parse("#ffffff"))
+        item = Gtk.ToolItem()
+        label = Gtk.Label("Nombre: ")
         label.show()
         item.add(label)
         self.insert(item, -1)
 
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         item.set_expand(True)
-        self.entrytext = gtk.Entry()
+        self.entrytext = Gtk.Entry()
         self.entrytext.set_size_request(50, -1)
         self.entrytext.set_max_length(10)
-        self.entrytext.set_tooltip_text("Nombre para Esta Lista")
+        self.entrytext.set_tooltip_text("Nombre de Archivo")
         self.entrytext.show()
         self.entrytext.connect('activate', self.__emit_ok)
         item.add(self.entrytext)
@@ -425,7 +413,7 @@ class Toolbar_Guardar(gtk.Toolbar):
             "Iconos", "dialog-ok.svg")
         boton = get_boton(archivo, flip=False,
             pixels=24)
-        boton.set_tooltip_text("Guardar")
+        boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__emit_ok)
         self.insert(boton, -1)
 

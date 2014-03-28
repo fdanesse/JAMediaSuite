@@ -21,15 +21,17 @@
 
 import os
 
-import gtk
-from gtk import gdk
-import gobject
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GdkPixbuf
+from gi.repository import GObject
+from gi.repository import GLib
 
-'''
-from JAMedia.JAMedia import JAMediaPlayer
-'''
+#from JAMedia.JAMedia import JAMediaPlayer
+
 from Globales import get_separador
 from Globales import get_boton
+from Globales import get_color
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -63,22 +65,20 @@ class Tube_Player(JAMediaPlayer):
 '''
 
 
-class Toolbar(gtk.Toolbar):
+class Toolbar(Gtk.Toolbar):
     """
     Toolbar principal de JAMediaTube.
     """
 
     __gsignals__ = {
-    'salir': (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
-    'switch': (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
+    'salir': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, []),
+    'switch': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
-
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        Gtk.Toolbar.__init__(self)
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
@@ -150,24 +150,24 @@ class Toolbar(gtk.Toolbar):
         self.emit('salir')
 
 
-class Toolbar_Busqueda(gtk.Toolbar):
+class Toolbar_Busqueda(Gtk.Toolbar):
     """
     Toolbar con widgets de busqueda.
     """
 
     __gsignals__ = {
-    "comenzar_busqueda": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
+    "comenzar_busqueda": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
+        Gtk.Toolbar.__init__(self)
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
-        item = gtk.ToolItem()
-        label = gtk.Label("Buscar por: ")
+        item = Gtk.ToolItem()
+        label = Gtk.Label("Buscar por: ")
         label.show()
         item.add(label)
         self.insert(item, -1)
@@ -175,15 +175,13 @@ class Toolbar_Busqueda(gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = gtk.ToolItem()
-        self.entrytext = gtk.Entry()
+        item = Gtk.ToolItem()
+        self.entrytext = Gtk.Entry()
         self.entrytext.set_size_request(400, -1)
         self.entrytext.set_max_length(50)
-        self.entrytext.set_tooltip_text(
-            "Escribe lo que Buscas")
+        self.entrytext.set_tooltip_text("Escribe lo que Buscas")
         self.entrytext.show()
-        self.entrytext.connect('activate',
-            self.__activate_entrytext)
+        self.entrytext.connect('activate', self.__activate_entrytext)
         item.add(self.entrytext)
         self.insert(item, -1)
 
@@ -219,38 +217,36 @@ class Toolbar_Busqueda(gtk.Toolbar):
         self.__emit_buscar()
 
 
-class Alerta_Busqueda(gtk.Toolbar):
+class Alerta_Busqueda(Gtk.Toolbar):
     """
     Para informar que se está buscando con JAMediaTube.
     """
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
-
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        Gtk.Toolbar.__init__(self)
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        imagen = gtk.Image()
+        imagen = Gtk.Image()
         icono = os.path.join(BASE_PATH,
             "Iconos", "yt_videos_black.png")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(
-            icono, -1, 24)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, 24)
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         item.set_expand(True)
-        self.label = gtk.Label("")
-        self.label.set_justify(gtk.JUSTIFY_LEFT)
+        self.label = Gtk.Label("")
+        self.label.set_justify(Gtk.Justification.LEFT)
         #self.label.set_line_wrap(True)
         self.label.show()
         item.add(self.label)
@@ -259,34 +255,33 @@ class Alerta_Busqueda(gtk.Toolbar):
         self.show_all()
 
 
-class WidgetVideoItem(gtk.EventBox):
+class WidgetVideoItem(Gtk.EventBox):
 
     __gsignals__ = {
     #"clicked": (gobject.SIGNAL_RUN_FIRST,
     #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-    "click_derecho": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
+    "click_derecho": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
 
     def __init__(self, videodict):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#fffafa"))
         self.set_border_width(2)
 
         self.videodict = videodict
 
-        hbox = gtk.HBox()
-        vbox = gtk.VBox()
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         keys = self.videodict.keys()
 
         if "previews" in keys:
-            imagen = gtk.Image()
+            imagen = Gtk.Image()
             hbox.pack_start(imagen, False, False, 3)
 
             if type(self.videodict["previews"]) == list:
-                # siempre hay 4 previews.
+                # FIXME: siempre hay 4 previews.
                 url = self.videodict["previews"][0][0]
                 import time
                 archivo = "/dev/shm/preview%d" % time.time()
@@ -295,11 +290,11 @@ class WidgetVideoItem(gtk.EventBox):
                     # FIXME: Porque Falla si no hay Conexión.
                     import urllib
                     fileimage, headers = urllib.urlretrieve(url, archivo)
-                    pixbuf = gdk.pixbuf_new_from_file_at_size(
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
                         fileimage, 200, 150)
                     imagen.set_from_pixbuf(pixbuf)
 
-                    # Convertir imagen a string por si se quiere guardar.
+                    ### Convertir imagen a string por si se quiere guardar.
                     import base64
                     pixbuf_file = open(fileimage, 'rb')
                     image_string = base64.b64encode(pixbuf_file.read())
@@ -314,7 +309,7 @@ class WidgetVideoItem(gtk.EventBox):
 
             else:
                 import base64
-                loader = gdk.PixbufLoader()
+                loader = GdkPixbuf.PixbufLoader()
                 loader.set_size(200, 150)
                 image_string = base64.b64decode(self.videodict["previews"])
                 loader.write(image_string)
@@ -323,13 +318,13 @@ class WidgetVideoItem(gtk.EventBox):
                 pixbuf = loader.get_pixbuf()
                 imagen.set_from_pixbuf(pixbuf)
 
-        vbox.pack_start(gtk.Label("%s: %s" % ("id",
+        vbox.pack_start(Gtk.Label("%s: %s" % ("id",
             self.videodict["id"])), True, True, 0)
 
-        vbox.pack_start(gtk.Label("%s: %s" % ("Título",
+        vbox.pack_start(Gtk.Label("%s: %s" % ("Título",
             self.videodict["titulo"])), True, True, 0)
 
-        vbox.pack_start(gtk.Label("%s: %s" % ("Categoría",
+        vbox.pack_start(Gtk.Label("%s: %s" % ("Categoría",
             self.videodict["categoria"])), True, True, 0)
 
         #vbox.pack_start(gtk.Label("%s: %s" % ("Etiquetas",
@@ -338,14 +333,14 @@ class WidgetVideoItem(gtk.EventBox):
         #vbox.pack_start(gtk.Label("%s: %s" % ("Descripción",
         #   self.videodict["descripcion"])), True, True, 0)
 
-        vbox.pack_start(gtk.Label("%s: %s %s" % ("Duración",
+        vbox.pack_start(Gtk.Label("%s: %s %s" % ("Duración",
             int(float(self.videodict["duracion"]) / 60.0), "Minutos")),
             True, True, 0)
 
         #vbox.pack_start(gtk.Label("%s: %s" % ("Reproducción en la Web",
         #   self.videodict["flash player"])), True, True, 0)
 
-        vbox.pack_start(gtk.Label("%s: %s" % ("url",
+        vbox.pack_start(Gtk.Label("%s: %s" % ("url",
             self.videodict["url"])), True, True, 0)
 
         for label in vbox.get_children():
@@ -369,18 +364,17 @@ class WidgetVideoItem(gtk.EventBox):
             self.emit("click_derecho", event)
 
 
-class Toolbar_Descarga(gtk.VBox):
+class Toolbar_Descarga(Gtk.Box):
 
     __gsignals__ = {
-    'end': (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
+    'end': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.VBox.__init__(self)
+        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
 
-        self.toolbar = gtk.Toolbar()
-        self.toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.toolbar = Gtk.Toolbar()
 
         self.label_titulo = None
         self.label_progreso = None
@@ -405,8 +399,8 @@ class Toolbar_Descarga(gtk.VBox):
             get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = gtk.ToolItem()
-        self.label_titulo = gtk.Label("")
+        item = Gtk.ToolItem()
+        self.label_titulo = Gtk.Label("")
         self.label_titulo.show()
         item.add(self.label_titulo)
         self.toolbar.insert(item, -1)
@@ -414,8 +408,8 @@ class Toolbar_Descarga(gtk.VBox):
         self.toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = gtk.ToolItem()
-        self.label_progreso = gtk.Label("")
+        item = Gtk.ToolItem()
+        self.label_progreso = Gtk.Label("")
         self.label_progreso.show()
         item.add(self.label_progreso)
         self.toolbar.insert(item, -1)
@@ -427,7 +421,7 @@ class Toolbar_Descarga(gtk.VBox):
         #archivo = os.path.join(BASE_PATH,
         #    "Iconos","stop.png")
         #boton = G.get_boton(archivo, flip = False,
-        #    pixels = G.get_pixels(1))
+        #    pixels = 24)
         #boton.set_tooltip_text("Cancelar")
         #boton.connect("clicked", self.cancel_download)
         #self.toolbar.insert(boton, -1)
@@ -470,9 +464,9 @@ class Toolbar_Descarga(gtk.VBox):
         self.jamediayoutube.download(self.url, self.titulo)
 
         if self.actualizador:
-            gobject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
 
-        self.actualizador = gobject.timeout_add(
+        self.actualizador = GLib.timeout_add(
             1000, self.__handle)
 
         self.show_all()
@@ -550,9 +544,9 @@ class Toolbar_Descarga(gtk.VBox):
         Cancela la descarga actual.
         """
 
-        # FIXME: No funciona correctamente, la descarga continúa.
+        # No funciona correctamente, la descarga continúa.
         if self.actualizador:
-            gobject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
 
         try:
@@ -573,24 +567,24 @@ class Toolbar_Descarga(gtk.VBox):
         return False
 
 
-class Progreso_Descarga(gtk.EventBox):
+class Progreso_Descarga(Gtk.EventBox):
     """
     Barra de progreso para mostrar estado de descarga.
     """
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
         self.escala = ProgressBar(
-            gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
+            Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
 
         self.valor = 0
 
         self.add(self.escala)
         self.show_all()
 
-        self.set_size_request(-1, 28)
+        self.set_size_request(-1, 24)
         self.set_progress(0)
 
     def set_progress(self, valor=0):
@@ -604,100 +598,97 @@ class Progreso_Descarga(gtk.EventBox):
             self.escala.queue_draw()
 
 
-class ProgressBar(gtk.HScale):
-
-    __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
+class ProgressBar(Gtk.Scale):
+    """
+    Escala de Progreso_Descarga.
+    """
 
     def __init__(self, ajuste):
 
-        gtk.HScale.__init__(self, ajuste)
+        Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
         self.ajuste = ajuste
         self.set_digits(0)
-
         self.set_draw_value(False)
 
-        self.x, self.y, self.w, self.h = (0, 0, 200, 40)
-        self.borde, self.ancho = (15, 10)
+        self.borde = 10
 
-        self.connect("expose_event", self.expose)
-        self.connect("size-allocate", self.size_allocate)
+        self.show_all()
 
-    def expose(self, widget, event):
+    def do_draw(self, contexto):
+        """
+        Dibuja el estado de la barra de progreso.
+        """
 
-        x, y, w, h = (self.x, self.y, self.w, self.h)
-        ancho, borde = (self.ancho, self.borde)
+        rect = self.get_allocation()
+        w, h = (rect.width, rect.height)
 
-        gc = gtk.gdk.Drawable.new_gc(self.window)
+        # Fondo
+        #Gdk.cairo_set_source_color(contexto, G.BLANCO)
+        #contexto.paint()
 
-        gc.set_rgb_fg_color(gdk.Color(65535, 65535, 65535))
-        self.window.draw_rectangle(gc, True, x, y, w, h)
+        # Relleno de la barra
+        ww = w - self.borde * 2
+        hh = h - self.borde * 2
+        Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, self.borde, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
 
-        gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
-        ww = w - borde * 2
-        xx = x + w / 2 - ww / 2
-        hh = ancho
-        yy = y + h / 2 - ancho / 2
-        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
+        # Relleno de la barra segun progreso
+        Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
+        rect = Gdk.Rectangle()
 
         ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
-        self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
+        rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
+            ximage, hh)
+
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
 
         return True
 
-    def size_allocate(self, widget, allocation):
 
-        self.x, self.y, self.w, self.h = allocation
-        return False
-
-
-class Credits(gtk.Dialog):
+class Credits(Gtk.Dialog):
 
     __gtype_name__ = 'TubeCredits'
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self,
+        Gtk.Dialog.__init__(self,
             parent=parent,
-            #flags=gtk.DialogFlags.MODAL,
-            title="",
-            buttons=("Cerrar", gtk.RESPONSE_OK))
+            flags=Gtk.DialogFlags.MODAL,
+            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
-        self.set_decorated(False)
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
         self.set_border_width(15)
 
-        imagen = gtk.Image()
+        imagen = Gtk.Image()
         imagen.set_from_file(
             os.path.join(BASE_PATH,
-            "Iconos", "JAMediaTubeCredits.svg"))
+                "Iconos", "JAMediaTubeCredits.svg"))
 
         self.vbox.pack_start(imagen, True, True, 0)
         self.vbox.show_all()
 
 
-class Help(gtk.Dialog):
+class Help(Gtk.Dialog):
 
     __gtype_name__ = 'TubeHelp'
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self,
+        Gtk.Dialog.__init__(self,
             parent=parent,
-            #flags=gtk.DialogFlags.MODAL,
-            title="",
-            buttons=("Cerrar", gtk.RESPONSE_OK))
+            flags=Gtk.DialogFlags.MODAL,
+            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
-        self.set_decorated(False)
-        self.modify_bg(0, gdk.color_parse("#000000"))
         self.set_border_width(15)
 
-        tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)
+        tabla1 = Gtk.Table(columns=5, rows=2, homogeneous=False)
 
-        vbox = gtk.HBox()
+        vbox = Gtk.HBox()
         archivo = os.path.join(BASE_PATH,
             "Iconos", "play.svg")
         self.anterior = get_boton(
@@ -723,7 +714,7 @@ class Help(gtk.Dialog):
         self.helps = []
 
         for x in range(1, 3):
-            help = gtk.Image()
+            help = Gtk.Image()
             help.set_from_file(
                 os.path.join(BASE_PATH,
                     "Iconos", "JAMediaTube-help%s.png" % x))
@@ -784,7 +775,7 @@ class Help(gtk.Dialog):
                 return self.helps.index(help)
 
 
-class ToolbarSalir(gtk.Toolbar):
+class ToolbarSalir(Gtk.Toolbar):
     """
     Toolbar para confirmar salir de la aplicación.
     """
@@ -792,14 +783,12 @@ class ToolbarSalir(gtk.Toolbar):
     __gtype_name__ = 'ToolbarSalir'
 
     __gsignals__ = {
-    "salir": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
+    "salir": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
-
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        Gtk.Toolbar.__init__(self)
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
@@ -815,8 +804,8 @@ class ToolbarSalir(gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = gtk.ToolItem()
-        self.label = gtk.Label("")
+        item = Gtk.ToolItem()
+        self.label = Gtk.Label("")
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)

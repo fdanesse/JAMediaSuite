@@ -116,12 +116,12 @@ class JAMediaTube(gtk.Window):
         #boxbase.pack_start(self.socketjamedia, True, True, 0)
 
         self.add(boxbase)
-        '''
-        from JAMediaTube.Widgets import Tube_Player
 
-        self.jamedia = Tube_Player()
-        self.socketjamedia.add_id(self.jamedia.get_id())
-        '''
+        #from JAMediaTube.Widgets import Tube_Player
+
+        #self.jamedia = Tube_Player()
+        #self.socketjamedia.add_id(self.jamedia.get_id())
+
         self.show_all()
         self.realize()
 
@@ -133,27 +133,27 @@ class JAMediaTube(gtk.Window):
         """
         Inicializa la aplicación a su estado fundamental.
         """
-        '''
-        self.jamedia.setup_init()
-        self.jamedia.pack_standar()
-        self.jamedia.pack_efectos()
-        self.jamedia.switch_reproductor(
-            None, "JAMediaReproductor")
-        '''
+
+        #self.jamedia.setup_init()
+        #self.jamedia.pack_standar()
+        #self.jamedia.pack_efectos()
+        #self.jamedia.switch_reproductor(
+        #    None, "JAMediaReproductor")
+
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
 
         map(self.__ocultar, [
             self.toolbar_descarga,
             self.alerta_busqueda])
-        '''
-        if self.pistas:
-            self.jamedia.set_nueva_lista(self.pistas)
-            self.__switch(None, 'jamedia')
 
-        else:
-            self.__switch(None, 'jamediatube')
-        '''
+        #if self.pistas:
+        #    self.jamedia.set_nueva_lista(self.pistas)
+        #    self.__switch(None, 'jamedia')
+
+        #else:
+        #    self.__switch(None, 'jamediatube')
+
         self.paneltube.encontrados.drag_dest_set(
             gtk.DEST_DEFAULT_ALL,
             target,

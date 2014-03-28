@@ -538,7 +538,7 @@ class Lista(Gtk.TreeView):
             self.treeselection.select_iter(_iter)
             #path = model.get_path(iter)
 
-
+'''
 class ToolbarReproduccion(Gtk.Box):
     """
     Controles de reproduccion: play/pausa, stop, siguiente, atras.
@@ -639,7 +639,7 @@ class ToolbarReproduccion(Gtk.Box):
     def __clickensiguiente(self, widget=None, event=None):
 
         self.emit("activar", "siguiente")
-
+'''
 
 class BarraProgreso(Gtk.EventBox):
     """
@@ -1084,7 +1084,7 @@ class ItemSwitch(Gtk.Frame):
 
         self.emit("switch", not widget.get_active())
 
-
+'''
 class ToolbarSalir(Gtk.Toolbar):
     """
     Toolbar para confirmar salir de la aplicación.
@@ -1160,7 +1160,7 @@ class ToolbarSalir(Gtk.Toolbar):
 
         self.label.set_text("")
         self.hide()
-
+'''
 
 class WidgetsGstreamerEfectos(Gtk.Frame):
     """

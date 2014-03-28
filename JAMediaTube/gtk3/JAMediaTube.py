@@ -3,7 +3,7 @@
 
 #   JAMediaTube.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,12 +26,22 @@ from gi.repository import Gdk
 #from gi.repository import GObject
 from gi.repository import GLib
 
-import JAMediaObjects
-
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
+BASE_PATH = os.path.dirname(__file__)
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
+
+screen = Gdk.Screen.get_default()
+css_provider = Gtk.CssProvider()
+style_path = os.path.join(
+    BASE_PATH, "Estilo.css")
+css_provider.load_from_path(style_path)
+context = Gtk.StyleContext()
+
+context.add_provider_for_screen(
+    screen,
+    css_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
 #GObject.threads_init()
 #Gdk.threads_init()
@@ -48,7 +58,7 @@ class Ventana(Gtk.Window):
 
         self.set_title("JAMediaTube")
         self.set_icon_from_file(
-            os.path.join(JAMediaObjectsPath,
+            os.path.join(BASE_PATH,
             "Iconos", "JAMediaTube.svg"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
@@ -64,8 +74,8 @@ class Ventana(Gtk.Window):
         self.alerta_busqueda = None
         self.paneltube = None
 
-        self.socketjamedia = Gtk.Socket()
-        self.jamedia = None
+        #self.socketjamedia = Gtk.Socket()
+        #self.jamedia = None
 
         self.pistas = []
 
@@ -78,14 +88,14 @@ class Ventana(Gtk.Window):
         Crea y Empaqueta todo.
         """
 
-        from JAMediaTube.Widgets import Toolbar
-        from JAMediaTube.Widgets import Toolbar_Busqueda
-        from JAMediaTube.Widgets import Toolbar_Descarga
-        from JAMediaTube.Widgets import Alerta_Busqueda
+        from Widgets import Toolbar
+        from Widgets import Toolbar_Busqueda
+        from Widgets import Toolbar_Descarga
+        from Widgets import Alerta_Busqueda
 
-        from JAMediaTube.PanelTube import PanelTube
+        from PanelTube import PanelTube
 
-        from JAMediaObjects.JAMediaWidgets import ToolbarSalir
+        from Widgets import ToolbarSalir
 
         boxbase = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.box_tube = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -106,14 +116,14 @@ class Ventana(Gtk.Window):
 
         boxbase.pack_start(self.box_tube, True, True, 0)
 
-        boxbase.pack_start(self.socketjamedia, True, True, 0)
+        #boxbase.pack_start(self.socketjamedia, True, True, 0)
 
         self.add(boxbase)
 
-        from JAMediaTube.Widgets import Tube_Player
+        #from JAMediaTube.Widgets import Tube_Player
 
-        self.jamedia = Tube_Player()
-        self.socketjamedia.add_id(self.jamedia.get_id())
+        #self.jamedia = Tube_Player()
+        #self.socketjamedia.add_id(self.jamedia.get_id())
 
         self.show_all()
         self.realize()
@@ -127,11 +137,11 @@ class Ventana(Gtk.Window):
         Inicializa la aplicación a su estado fundamental.
         """
 
-        self.jamedia.setup_init()
-        self.jamedia.pack_standar()
-        self.jamedia.pack_efectos()
-        self.jamedia.switch_reproductor(
-            None, "JAMediaReproductor")
+        #self.jamedia.setup_init()
+        #self.jamedia.pack_standar()
+        #self.jamedia.pack_efectos()
+        #self.jamedia.switch_reproductor(
+        #    None, "JAMediaReproductor")
 
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
@@ -140,12 +150,12 @@ class Ventana(Gtk.Window):
             self.toolbar_descarga,
             self.alerta_busqueda])
 
-        if self.pistas:
-            self.jamedia.set_nueva_lista(self.pistas)
-            self.__switch(None, 'jamedia')
+        #if self.pistas:
+        #    self.jamedia.set_nueva_lista(self.pistas)
+        #    self.__switch(None, 'jamedia')
 
-        else:
-            self.__switch(None, 'jamediatube')
+        #else:
+        #    self.__switch(None, 'jamediatube')
 
         self.paneltube.encontrados.drag_dest_set(
             Gtk.DestDefaults.ALL,
@@ -169,10 +179,10 @@ class Ventana(Gtk.Window):
         self.toolbar.connect('salir', self.__confirmar_salir)
         self.toolbar_salir.connect(
             'salir', self.__salir)
-        self.toolbar.connect(
-            'switch', self.__switch, 'jamedia')
-        self.jamedia.connect(
-            'salir', self.__switch, 'jamediatube')
+        #self.toolbar.connect(
+        #    'switch', self.__switch, 'jamedia')
+        #self.jamedia.connect(
+        #    'salir', self.__switch, 'jamediatube')
         self.toolbar_busqueda.connect(
             "comenzar_busqueda", self.__comenzar_busqueda)
         self.paneltube.connect('download',
@@ -290,9 +300,9 @@ class Ventana(Gtk.Window):
         """
 
         # FIXME: Reparar (Si no hay conexión)
-        import JAMediaTube.JAMediaYoutube as YT
+        from JAMediaYoutube import Buscar
 
-        for video in YT.Buscar(palabras):
+        for video in Buscar(palabras):
             self.videos_temp.append(video)
 
         GLib.idle_add(self.__add_videos, self.videos_temp,
@@ -319,7 +329,7 @@ class Ventana(Gtk.Window):
 
         video = videos[0]
 
-        from JAMediaTube.Widgets import WidgetVideoItem
+        from Widgets import WidgetVideoItem
 
         videowidget = WidgetVideoItem(video)
         text = TipEncontrados

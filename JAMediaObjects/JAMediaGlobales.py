@@ -19,7 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
+'''
 def get_color(color):
     """
     Devuelve Colores predefinidos.
@@ -39,8 +39,8 @@ def get_color(color):
         }
 
     return colors.get(color, None)
-
-
+'''
+'''
 def get_pixels(centimetros):
     """
     Recibe un tamaño en centimetros y
@@ -50,7 +50,7 @@ def get_pixels(centimetros):
     # 1 px = 0.026458333 cm #int(centimetros/0.026458333)
     # 1 Pixel = 0.03 Centimetros = 0.01 Pulgadas.
     """
-    '''
+    """
     from gi.repository import GdkX11
 
     screen = GdkX11.X11Screen()
@@ -64,7 +64,7 @@ def get_pixels(centimetros):
     ancho = int (float(res_w) / float(mm_w) * 10.0 * centimetros)
     alto = int (float(res_h) / float(mm_h) * 10.0 * centimetros)
     if centimetros == 5.0: print ">>>>", centimetros, int(min([ancho, alto]))
-    return int(min([ancho, alto]))'''
+    return int(min([ancho, alto]))"""
 
     res = {
         1.0: 37,
@@ -78,8 +78,8 @@ def get_pixels(centimetros):
         }
 
     return res[centimetros]
-
-
+'''
+'''
 def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
@@ -93,8 +93,8 @@ def get_separador(draw=False, ancho=0, expand=False):
     separador.set_expand(expand)
 
     return separador
-
-
+'''
+'''
 def get_boton(archivo, flip=False, rotacion=None, pixels=0, tooltip_text=None):
     """
     Devuelve un toolbutton generico.
@@ -129,7 +129,7 @@ def get_boton(archivo, flip=False, rotacion=None, pixels=0, tooltip_text=None):
         boton.TOOLTIP = tooltip_text
 
     return boton
-
+'''
 
 def get_togle_boton(archivo, flip=False,
     color=get_color("GRIS"), pixels=0):
