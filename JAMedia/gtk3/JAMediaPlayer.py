@@ -177,9 +177,9 @@ class JAMediaPlayer(Gtk.EventBox):
         from Widgets import Toolbar
         from Widgets import ToolbarAccion
         #from Widgets import ToolbarConfig
-        #from Widgets import ToolbarGrabar
-        #from Widgets import ToolbarInfo
-        #from Widgets import ToolbarAddStream
+        from Widgets import ToolbarGrabar
+        from Widgets import ToolbarInfo
+        from Widgets import ToolbarAddStream
 
         #self.pantalla = Visor()
         #self.barradeprogreso = BarraProgreso()
@@ -190,9 +190,9 @@ class JAMediaPlayer(Gtk.EventBox):
         #self.toolbar_config = ToolbarConfig()
         #self.widget_efectos = WidgetsGstreamerEfectos()
         self.toolbar_accion = ToolbarAccion()
-        #self.toolbar_grabar = ToolbarGrabar()
-        #self.toolbar_info = ToolbarInfo()
-        #self.toolbaraddstream = ToolbarAddStream()
+        self.toolbar_grabar = ToolbarGrabar()
+        self.toolbar_info = ToolbarInfo()
+        self.toolbaraddstream = ToolbarAddStream()
         self.toolbar_salir = ToolbarSalir()
 
         basebox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -201,7 +201,7 @@ class JAMediaPlayer(Gtk.EventBox):
         basebox.pack_start(self.toolbar, False, False, 0)
         basebox.pack_start(self.toolbar_salir, False, False, 0)
         basebox.pack_start(self.toolbar_accion, False, False, 0)
-        #basebox.pack_start(self.toolbaraddstream, False, False, 0)
+        basebox.pack_start(self.toolbaraddstream, False, False, 0)
 
         basebox.pack_start(hpanel, True, True, 0)
 
@@ -234,10 +234,10 @@ class JAMediaPlayer(Gtk.EventBox):
 
         ### Todo
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        #vbox.pack_start(self.toolbar_grabar, False, False, 0)
+        vbox.pack_start(self.toolbar_grabar, False, False, 0)
         #vbox.pack_start(self.pantalla, True, True, 0)
         #vbox.pack_start(scroll, False, False, 0)
-        #vbox.pack_start(self.toolbar_info, False, False, 0)
+        vbox.pack_start(self.toolbar_info, False, False, 0)
         #vbox.pack_start(ev_box, False, True, 0)
 
         hpanel.pack1(vbox, resize=True, shrink=True)
@@ -372,21 +372,21 @@ class JAMediaPlayer(Gtk.EventBox):
         #    'reproductor', self.switch_reproductor)
         #self.toolbar_config.connect(
         #    'valor', self.__set_balance)
-        #self.toolbar_info.connect(
-        #    'rotar', self.__set_rotacion)
-        #self.toolbar_info.connect(
-        #    'actualizar_streamings',
-        #    self.__actualizar_streamings)
+        self.toolbar_info.connect(
+            'rotar', self.__set_rotacion)
+        self.toolbar_info.connect(
+            'actualizar_streamings',
+            self.__actualizar_streamings)
         self.toolbar_accion.connect(
             "Grabar", self.__grabar_streaming)
         self.toolbar_accion.connect(
             "accion-stream", self.__accion_stream)
-        #self.toolbar_grabar.connect(
-        #    "stop", self.__detener_grabacion)
+        self.toolbar_grabar.connect(
+            "stop", self.__detener_grabacion)
         #self.volumen.connect(
         #    "volumen", self.__set_volumen)
-        #self.toolbaraddstream.connect(
-        #    "add-stream", self.__ejecutar_add_stream)
+        self.toolbaraddstream.connect(
+            "add-stream", self.__ejecutar_add_stream)
 
         #self.widget_efectos.connect(
         #    "click_efecto", self.__click_efecto)

@@ -31,8 +31,7 @@ BASE_PATH = os.path.dirname(__file__)
 #import JAMediaObjects
 #from JAMediaObjects.JAMediaWidgets import JAMediaButton
 
-#from JAMediaObjects.JAMediaGlobales import get_color
-#from JAMediaObjects.JAMediaGlobales import get_pixels
+from Globales import get_color
 from Globales import get_separador
 from Globales import get_boton
 
@@ -210,15 +209,14 @@ class ToolbarGrabar(Gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "stop.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
-        boton.set_tooltip_text("Detener.")
+            pixels=24)
+        boton.set_tooltip_text("Detener")
         self.insert(boton, -1)
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         item = Gtk.ToolItem()
-        item.set_expand(True)
         self.label = Gtk.Label("Grabador Detenido.")
         self.label.show()
         item.add(self.label)
@@ -270,6 +268,7 @@ class ToolbarGrabar(Gtk.Toolbar):
             self.color = self.colors[0]
 
         self.label.modify_fg(0, self.color)
+
         if not self.get_visible():
             self.show()
 
@@ -727,7 +726,7 @@ class ToolbarInfo(Gtk.Toolbar):
         icono = os.path.join(BASE_PATH,
             "Iconos", "mplayer.png")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
+            -1, 24)
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
         self.mplayer = Gtk.ToolItem()
@@ -738,7 +737,7 @@ class ToolbarInfo(Gtk.Toolbar):
         icono = os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, get_pixels(0.8))
+            -1, 38)
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
         self.jamedia = Gtk.ToolItem()
@@ -751,7 +750,7 @@ class ToolbarInfo(Gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "rotar.svg")
         self.boton_izquierda = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         self.boton_izquierda.set_tooltip_text("Izquierda")
         self.boton_izquierda.connect("clicked", self.__emit_rotar)
         self.insert(self.boton_izquierda, -1)
@@ -759,7 +758,7 @@ class ToolbarInfo(Gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "rotar.svg")
         self.boton_derecha = get_boton(archivo, flip=True,
-            pixels=get_pixels(0.8))
+            pixels=24)
         self.boton_derecha.set_tooltip_text("Derecha")
         self.boton_derecha.connect("clicked", self.__emit_rotar)
         self.insert(self.boton_derecha, -1)
@@ -786,7 +785,7 @@ class ToolbarInfo(Gtk.Toolbar):
             "Iconos", "iconplay.svg")
         self.descarga = get_boton(archivo, flip=False,
             rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE,
-            pixels=get_pixels(0.8))
+            pixels=24)
         self.descarga.set_tooltip_text("Actualizar Streamings")
         self.descarga.connect("clicked", self.__emit_actualizar_streamings)
         self.insert(self.descarga, -1)
@@ -984,9 +983,9 @@ class ToolbarAddStream(Gtk.Toolbar):
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH,
-            "Iconos", "alejar.svg")
+            "Iconos", "button-cancel.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
@@ -1020,9 +1019,9 @@ class ToolbarAddStream(Gtk.Toolbar):
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
-            "Iconos", "acercar.svg")
+            "Iconos", "dialog-ok.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=get_pixels(0.8))
+            pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__emit_add_stream)
         self.insert(boton, -1)
