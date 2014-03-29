@@ -134,6 +134,23 @@ def get_tube_directory():
     return DIRECTORIO_YOUTUBE
 
 
+def describe_archivo(archivo):
+    """
+    Devuelve el tipo de un archivo (imagen, video, texto).
+    -z, --uncompress para ver dentro de los zip.
+    """
+
+    import commands
+
+    datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
+    retorno = ""
+
+    for dat in datos.split(":")[1:]:
+        retorno += " %s" % (dat)
+
+    return retorno
+
+
 def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.

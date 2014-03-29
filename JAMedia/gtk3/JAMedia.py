@@ -27,25 +27,21 @@ from gi.repository import GObject
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
-import JAMediaObjects
+BASE_PATH = os.path.dirname(__file__)
 
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
-from JAMedia.JAMedia import JAMediaPlayer
+#from JAMedia.JAMedia import JAMediaPlayer
 
 
-class Ventana(Gtk.Window):
-
-    __gtype_name__ = 'Ventana'
+class JAMedia(Gtk.Window):
 
     def __init__(self):
 
-        super(Ventana, self).__init__()
+        Gtk.Window.__init__(self)
 
         self.set_title("JAMedia")
 
         self.set_icon_from_file(
-            os.path.join(JAMediaObjectsPath,
+            os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg"))
 
         self.set_resizable(True)
@@ -55,19 +51,19 @@ class Ventana(Gtk.Window):
 
         self.pistas = ""
 
-        self.socket = Gtk.Socket()
-        self.add(self.socket)
+        #self.socket = Gtk.Socket()
+        #self.add(self.socket)
 
-        self.jamediaplayer = JAMediaPlayer()
-        self.socket.add_id(self.jamediaplayer.get_id())
+        #self.jamediaplayer = JAMediaPlayer()
+        #self.socket.add_id(self.jamediaplayer.get_id())
 
         self.show_all()
         self.realize()
 
         self.connect("delete-event", self.__salir)
-        self.jamediaplayer.connect('salir', self.__salir)
+        #self.jamediaplayer.connect('salir', self.__salir)
 
-        GLib.idle_add(self.__setup_init)
+        #GLib.idle_add(self.__setup_init)
 
     def set_pistas(self, pistas):
         """
@@ -92,9 +88,9 @@ class Ventana(Gtk.Window):
     def __salir(self, widget=None, senial=None):
 
         import sys
-        import commands
+        #import commands
 
-        commands.getoutput('killall mplayer')
+        #commands.getoutput('killall mplayer')
         sys.exit(0)
 
 
@@ -104,7 +100,7 @@ def get_item_list(path):
         if os.path.isfile(path):
             archivo = os.path.basename(path)
 
-            from JAMediaObjects.JAMFileSystem import describe_archivo
+            from Globales import describe_archivo
 
             datos = describe_archivo(path)
 
@@ -145,13 +141,13 @@ if __name__ == "__main__":
                             items.append(item)
 
         if items:
-            jamedia = Ventana()
+            jamedia = JAMedia()
             jamedia.set_pistas(items)
 
         else:
-            jamedia = Ventana()
+            jamedia = JAMedia()
 
     else:
-        jamedia = Ventana()
+        jamedia = JAMedia()
 
     Gtk.main()

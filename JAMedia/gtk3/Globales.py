@@ -3,7 +3,7 @@
 
 #   Globals.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,6 +24,23 @@ canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/list
 #radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/radios'
 radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014'
 webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
+
+
+def describe_archivo(archivo):
+    """
+    Devuelve el tipo de un archivo (imagen, video, texto).
+    -z, --uncompress para ver dentro de los zip.
+    """
+
+    import commands
+
+    datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
+    retorno = ""
+
+    for dat in datos.split(":")[1:]:
+        retorno += " %s" % (dat)
+
+    return retorno
 
 
 def make_base_directory():

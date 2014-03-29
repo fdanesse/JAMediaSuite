@@ -47,14 +47,14 @@ context.add_provider_for_screen(
 #Gdk.threads_init()
 
 
-class Ventana(Gtk.Window):
+class JAMediaTube(Gtk.Window):
     """
     JAMediaTube.
     """
 
     def __init__(self):
 
-        super(Ventana, self).__init__()
+        Gtk.Window.__init__(self)
 
         self.set_title("JAMediaTube")
         self.set_icon_from_file(
@@ -431,7 +431,7 @@ def get_item_list(path):
         if os.path.isfile(path):
             archivo = os.path.basename(path)
 
-            from JAMediaObjects.JAMFileSystem import describe_archivo
+            from Globales import describe_archivo
 
             datos = describe_archivo(path)
 
@@ -472,13 +472,13 @@ if __name__ == "__main__":
                             items.append(item)
 
         if items:
-            jamediatube = Ventana()
+            jamediatube = JAMediaTube()
             jamediatube.set_pistas(items)
 
         else:
-            jamediatube = Ventana()
+            jamediatube = JAMediaTube()
 
     else:
-        jamediatube = Ventana()
+        jamediatube = JAMediaTube()
 
     Gtk.main()

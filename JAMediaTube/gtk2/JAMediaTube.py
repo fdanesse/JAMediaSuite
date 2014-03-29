@@ -416,7 +416,7 @@ def get_item_list(path):
         if os.path.isfile(path):
             archivo = os.path.basename(path)
 
-            from JAMediaObjects.JAMFileSystem import describe_archivo
+            from Globales import describe_archivo
 
             datos = describe_archivo(path)
 
