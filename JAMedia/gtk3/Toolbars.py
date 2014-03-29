@@ -27,12 +27,12 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import GLib
 
-BASE_PATH = os.path.dirname(__file__)
-
 from Globales import get_color
 from Globales import get_separador
 from Globales import get_boton
 from Globales import get_togle_boton
+
+BASE_PATH = os.path.dirname(__file__)
 
 
 class ToolbarAccion(Gtk.Toolbar):

@@ -30,6 +30,21 @@ from gi.repository import GLib
 BASE_PATH = os.path.dirname(__file__)
 
 
+def get_separador(draw=False, ancho=0, expand=False):
+    """
+    Devuelve un separador generico.
+    """
+
+    from gi.repository import Gtk
+
+    separador = Gtk.SeparatorToolItem()
+    separador.props.draw = draw
+    separador.set_size_request(ancho, -1)
+    separador.set_expand(expand)
+
+    return separador
+
+
 def get_color(color):
     """
     Devuelve Colores predefinidos.
@@ -49,6 +64,144 @@ def get_color(color):
         }
 
     return colors.get(color, None)
+
+
+class JAMediaButton(Gtk.EventBox):
+    """
+    Un Boton a medida.
+    """
+
+    __gsignals__ = {
+    "clicked": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
+    "click_derecho": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+
+    def __init__(self):
+
+        Gtk.EventBox.__init__(self)
+
+        self.cn = get_color("BLANCO")
+        self.cs = get_color("AMARILLO")
+        self.cc = get_color("NARANJA")
+        self.text_color = get_color("NEGRO")
+        self.colornormal = self.cn
+        self.colorselect = self.cs
+        self.colorclicked = self.cc
+
+        self.set_visible_window(True)
+        self.modify_bg(0, self.colornormal)
+        self.modify_fg(0, self.text_color)
+        self.set_border_width(1)
+
+        self.estado_select = False
+
+        self.add_events(
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.POINTER_MOTION_MASK |
+            Gdk.EventMask.ENTER_NOTIFY_MASK |
+            Gdk.EventMask.LEAVE_NOTIFY_MASK)
+
+        self.connect("button_press_event", self.button_press)
+        self.connect("button_release_event", self.__button_release)
+        self.connect("enter-notify-event", self.__enter_notify_event)
+        self.connect("leave-notify-event", self.__leave_notify_event)
+
+        self.imagen = Gtk.Image()
+        self.add(self.imagen)
+
+        self.show_all()
+
+    def set_colores(self, colornormal=False,
+        colorselect=False, colorclicked=False):
+
+        if colornormal:
+            self.cn = colornormal
+
+        if colorselect:
+            self.cs = colorselect
+
+        if colorclicked:
+            self.cc = colorclicked
+
+        self.colornormal = self.cn
+        self.colorselect = self.cs
+        self.colorclicked = self.cc
+
+        if self.estado_select:
+            self.seleccionar()
+
+        else:
+            self.des_seleccionar()
+
+    def seleccionar(self):
+        """
+        Marca como seleccionado
+        """
+
+        self.estado_select = True
+        self.colornormal = self.cc
+        self.colorselect = self.cc
+        self.colorclicked = self.cc
+
+        self.modify_bg(0, self.colornormal)
+
+    def des_seleccionar(self):
+        """
+        Desmarca como seleccionado
+        """
+
+        self.estado_select = False
+
+        self.colornormal = self.cn
+        self.colorselect = self.cs
+        self.colorclicked = self.cc
+
+        self.modify_bg(0, self.colornormal)
+
+    def __button_release(self, widget, event):
+
+        self.modify_bg(0, self.colorselect)
+
+    def __leave_notify_event(self, widget, event):
+
+        self.modify_bg(0, self.colornormal)
+
+    def __enter_notify_event(self, widget, event):
+
+        self.modify_bg(0, self.colorselect)
+
+    def button_press(self, widget, event):
+
+        self.seleccionar()
+
+        if event.button == 1:
+            self.emit("clicked", event)
+
+        elif event.button == 3:
+            self.emit("click_derecho", event)
+
+    def set_tooltip(self, texto):
+
+        self.set_tooltip_text(texto)
+
+    def set_label(self, texto):
+
+        for child in self.get_children():
+            child.destroy()
+
+        label = Gtk.Label(texto)
+        label.show()
+        self.add(label)
+
+    def set_imagen(self, archivo):
+
+        self.imagen.set_from_file(archivo)
+
+    def set_tamanio(self, w, h):
+
+        self.set_size_request(w, h)
 
 
 class WidgetsGstreamerEfectos(Gtk.Frame):
@@ -218,7 +371,11 @@ class Efecto_widget_Config(Gtk.EventBox):
         self.set_border_width(4)
 
         frame = Gtk.Frame()
-        frame.set_label(nombre)
+        text = nombre
+        if "-" in nombre:
+            text = nombre.split("-")[-1]
+
+        frame.set_label(text)
         #frame.set_label_align(0.5, 1.0)
         box = Gtk.VBox()
         frame.add(box)
@@ -228,9 +385,9 @@ class Efecto_widget_Config(Gtk.EventBox):
         self.botonefecto.connect('clicked', self.__efecto_click)
         #self.botonefecto.connect('click_derecho', self.__efecto_click_derecho)
         self.botonefecto.set_tooltip(nombre)
-        self.botonefecto.set_tamanio(24, 24)
+        self.botonefecto.set_tamanio(150, 24)
 
-        box.pack_start(self.botonefecto, False, True, 0)
+        box.pack_start(self.botonefecto, False, False, 0)
         #path = os.path.dirname(BASE_PATH)
         #archivo = os.path.join(path,
         #    "Iconos", 'configurar.svg')
@@ -285,144 +442,6 @@ class Efecto_widget_Config(Gtk.EventBox):
 
         self.botonefecto.des_seleccionar()
         #y ocultar configuracion
-
-
-class JAMediaButton(Gtk.EventBox):
-    """
-    Un Boton a medida.
-    """
-
-    __gsignals__ = {
-    "clicked": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
-    "click_derecho": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
-
-    def __init__(self):
-
-        Gtk.EventBox.__init__(self)
-
-        self.cn = get_color("BLANCO")
-        self.cs = get_color("AMARILLO")
-        self.cc = get_color("NARANJA")
-        self.text_color = get_color("NEGRO")
-        self.colornormal = self.cn
-        self.colorselect = self.cs
-        self.colorclicked = self.cc
-
-        self.set_visible_window(True)
-        self.modify_bg(0, self.colornormal)
-        self.modify_fg(0, self.text_color)
-        self.set_border_width(1)
-
-        self.estado_select = False
-
-        self.add_events(
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.BUTTON_RELEASE_MASK |
-            Gdk.EventMask.POINTER_MOTION_MASK |
-            Gdk.EventMask.ENTER_NOTIFY_MASK |
-            Gdk.EventMask.LEAVE_NOTIFY_MASK)
-
-        self.connect("button_press_event", self.button_press)
-        self.connect("button_release_event", self.__button_release)
-        self.connect("enter-notify-event", self.__enter_notify_event)
-        self.connect("leave-notify-event", self.__leave_notify_event)
-
-        self.imagen = Gtk.Image()
-        self.add(self.imagen)
-
-        self.show_all()
-
-    def set_colores(self, colornormal=False,
-        colorselect=False, colorclicked=False):
-
-        if colornormal:
-            self.cn = colornormal
-
-        if colorselect:
-            self.cs = colorselect
-
-        if colorclicked:
-            self.cc = colorclicked
-
-        self.colornormal = self.cn
-        self.colorselect = self.cs
-        self.colorclicked = self.cc
-
-        if self.estado_select:
-            self.seleccionar()
-
-        else:
-            self.des_seleccionar()
-
-    def seleccionar(self):
-        """
-        Marca como seleccionado
-        """
-
-        self.estado_select = True
-        self.colornormal = self.cc
-        self.colorselect = self.cc
-        self.colorclicked = self.cc
-
-        self.modify_bg(0, self.colornormal)
-
-    def des_seleccionar(self):
-        """
-        Desmarca como seleccionado
-        """
-
-        self.estado_select = False
-
-        self.colornormal = self.cn
-        self.colorselect = self.cs
-        self.colorclicked = self.cc
-
-        self.modify_bg(0, self.colornormal)
-
-    def __button_release(self, widget, event):
-
-        self.modify_bg(0, self.colorselect)
-
-    def __leave_notify_event(self, widget, event):
-
-        self.modify_bg(0, self.colornormal)
-
-    def __enter_notify_event(self, widget, event):
-
-        self.modify_bg(0, self.colorselect)
-
-    def button_press(self, widget, event):
-
-        self.seleccionar()
-
-        if event.button == 1:
-            self.emit("clicked", event)
-
-        elif event.button == 3:
-            self.emit("click_derecho", event)
-
-    def set_tooltip(self, texto):
-
-        self.set_tooltip_text(texto)
-
-    def set_label(self, texto):
-
-        for child in self.get_children():
-            child.destroy()
-
-        label = Gtk.Label(texto)
-        label.show()
-        self.add(label)
-
-    def set_imagen(self, archivo):
-
-        self.imagen.set_from_file(archivo)
-
-    def set_tamanio(self, w, h):
-
-        self.set_size_request(w, h)
 
 
 def get_widget_config_efecto(nombre):
