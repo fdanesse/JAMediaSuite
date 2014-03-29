@@ -23,13 +23,11 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import GLib
-from gi.repository import GObject
+#from gi.repository import GObject
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
 BASE_PATH = os.path.dirname(__file__)
-
-#from JAMedia.JAMedia import JAMediaPlayer
 
 
 class JAMedia(Gtk.Window):
@@ -49,21 +47,20 @@ class JAMedia(Gtk.Window):
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
 
-        self.pistas = ""
+        self.pistas = []
 
-        #self.socket = Gtk.Socket()
-        #self.add(self.socket)
+        from JAMediaPlayer import JAMediaPlayer
+        self.jamediaplayer = JAMediaPlayer()
 
-        #self.jamediaplayer = JAMediaPlayer()
-        #self.socket.add_id(self.jamediaplayer.get_id())
+        self.add(self.jamediaplayer)
 
         self.show_all()
         self.realize()
 
         self.connect("delete-event", self.__salir)
-        #self.jamediaplayer.connect('salir', self.__salir)
+        self.jamediaplayer.connect('salir', self.__salir)
 
-        #GLib.idle_add(self.__setup_init)
+        GLib.idle_add(self.__setup_init)
 
     def set_pistas(self, pistas):
         """
@@ -75,13 +72,13 @@ class JAMedia(Gtk.Window):
     def __setup_init(self):
 
         self.jamediaplayer.setup_init()
-        self.jamediaplayer.pack_standar()
-        self.jamediaplayer.pack_efectos()
+        #self.jamediaplayer.pack_standar()
+        #self.jamediaplayer.pack_efectos()
 
-        if self.pistas:
-            GLib.idle_add(
-                self.jamediaplayer.set_nueva_lista,
-                self.pistas)
+        #if self.pistas:
+        #    GLib.idle_add(
+        #        self.jamediaplayer.set_nueva_lista,
+        #        self.pistas)
 
         return False
 
