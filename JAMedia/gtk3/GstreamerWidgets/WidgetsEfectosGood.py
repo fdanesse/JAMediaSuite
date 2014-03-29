@@ -212,8 +212,8 @@ class Radioactv(Gtk.VBox):
 
         toolbar = Gtk.Toolbar()
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        #toolbar.insert(get_separador(draw=False,
+        #    ancho=0, expand=True), -1)
 
         item = Gtk.ToolItem()
         label = Gtk.Label("on:")
@@ -226,6 +226,7 @@ class Radioactv(Gtk.VBox):
 
         self.switch = Gtk.Switch()
         self.switch.set_active(True)
+        self.switch.show()
         item = Gtk.ToolItem()
         item.set_expand(False)
         item.add(self.switch)
@@ -329,8 +330,8 @@ class Agingtv(Gtk.VBox):
 
         toolbar = Gtk.Toolbar()
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        #toolbar.insert(get_separador(draw=False,
+        #    ancho=0, expand=True), -1)
 
         item = Gtk.ToolItem()
         label = Gtk.Label("dusts:")
@@ -343,6 +344,7 @@ class Agingtv(Gtk.VBox):
 
         switch = Gtk.Switch()
         switch.set_active(True)
+        switch.show()
         item = Gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)
@@ -356,8 +358,8 @@ class Agingtv(Gtk.VBox):
 
         toolbar = Gtk.Toolbar()
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        #toolbar.insert(get_separador(draw=False,
+        #    ancho=0, expand=True), -1)
 
         item = Gtk.ToolItem()
         label = Gtk.Label("pits:")
@@ -370,6 +372,7 @@ class Agingtv(Gtk.VBox):
 
         switch = Gtk.Switch()
         switch.set_active(True)
+        switch.show()
         item = Gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)
@@ -383,8 +386,8 @@ class Agingtv(Gtk.VBox):
 
         toolbar = Gtk.Toolbar()
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        #toolbar.insert(get_separador(draw=False,
+        #    ancho=0, expand=True), -1)
 
         item = Gtk.ToolItem()
         label = Gtk.Label("color-aging:")
@@ -397,6 +400,7 @@ class Agingtv(Gtk.VBox):
 
         switch = Gtk.Switch()
         switch.set_active(True)
+        switch.show()
         item = Gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)
