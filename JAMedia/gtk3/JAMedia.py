@@ -85,9 +85,9 @@ class JAMedia(Gtk.Window):
     def __salir(self, widget=None, senial=None):
 
         import sys
-        #import commands
+        import commands
 
-        #commands.getoutput('killall mplayer')
+        commands.getoutput('killall mplayer')
         sys.exit(0)
 
 

@@ -29,6 +29,8 @@ from gi.repository import GLib
 
 from Globales import get_programa
 from Globales import verificar_Gstreamer
+
+BASE_PATH = os.path.dirname(__file__)
 '''
 # HACK: La aplicación nunca debe explotar :P
 if get_programa("mplayer"):
@@ -72,33 +74,6 @@ class JAMediaPlayer(Gtk.EventBox):
 
         Implementado sobre:
             python 2.7.3 y Gtk 3
-
-        Es un Gtk.Plug para embeber todo el reproductor
-        en cualquier contenedor dentro de otra aplicacion.
-
-    Para ello, es necesario crear en la aplicacion donde
-    sera enbebida JAMedia, un socket:
-
-    import JAMedia
-    from JAMedia.JAMedia import JAMediaPlayer
-
-        self.socket = Gtk.Socket()
-        self.add(self.socket)
-        self.jamediaplayer = JAMediaPlayer()
-        socket.add_id(self.jamediaplayer.get_id()
-
-    y luego proceder de la siguiente forma:
-
-    GLib.idle_add(self.setup_init)
-
-    def setup_init(self):
-        self.jamediaplayer.setup_init()
-        # Empaqueta las listas standar de JAMedia
-        # self.jamediaplayer.pack_standar()
-        # self.jamediaplayer.pack_efectos()
-
-    NOTA: Tambien se puede ejecutar JAMedia directamente
-    mediante python JAMedia.py
     """
 
     __gsignals__ = {
@@ -106,9 +81,6 @@ class JAMediaPlayer(Gtk.EventBox):
         GObject.TYPE_NONE, [])}
 
     def __init__(self):
-        """
-        JAMedia: Gtk.Plug para embeber en otra aplicacion.
-        """
 
         Gtk.EventBox.__init__(self)
 
@@ -164,11 +136,12 @@ class JAMediaPlayer(Gtk.EventBox):
         from Widgets import Visor
         from Widgets import BarraProgreso
         from Widgets import ControlVolumen
+
         from PlayerList import Lista
         from PlayerControls import PlayerControl
         from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
-        from Toolbars import ToolbarSalir
 
+        from Toolbars import ToolbarSalir
         from Toolbars import Toolbar
         from Toolbars import ToolbarAccion
         from Toolbars import ToolbarConfig
@@ -246,7 +219,7 @@ class JAMediaPlayer(Gtk.EventBox):
             orientation=Gtk.Orientation.VERTICAL)
         self.scroll_config = Gtk.ScrolledWindow()
         self.scroll_config.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.NEVER,
             Gtk.PolicyType.AUTOMATIC)
         self.scroll_config.add_with_viewport(self.vbox_config)
         self.vbox_config.pack_start(
@@ -315,8 +288,8 @@ class JAMediaPlayer(Gtk.EventBox):
         #else:
         #    self.jamediareproductor = JAMediaReproductor(self.pantalla)
 
-        #self.switch_reproductor(
-        #    None, "JAMediaReproductor")  # default Gst.
+        self.switch_reproductor(
+            None, "JAMediaReproductor")  # default Gst.
 
         #self.mplayerreproductor.connect(
         #    "endfile", self.__endfile)
@@ -388,27 +361,27 @@ class JAMediaPlayer(Gtk.EventBox):
             'configurar_efecto', self.__configurar_efecto)
 
         ### Controlador del mouse.
-        #icono = os.path.join(JAMediaObjectsPath,
-        #    "Iconos", "jamedia_cursor.svg")
-        #pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-        #    -1, get_pixels(0.8))
-        #self.jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
-        #    Gdk.Display.get_default(), pixbuf, 0, 0)
+        icono = os.path.join(BASE_PATH,
+            "Iconos", "jamedia_cursor.svg")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            -1, 24)
+        self.jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
+            Gdk.Display.get_default(), pixbuf, 0, 0)
 
-        #self.cursor_root = self.get_parent_window().get_cursor()
-        #self.get_parent_window().set_cursor(self.jamedia_cursor)
+        self.cursor_root = self.get_parent_window().get_cursor()
+        self.get_parent_window().set_cursor(self.jamedia_cursor)
 
-        #from JAMediaObjects.JAMediaWidgets import MouseSpeedDetector
+        from Widgets import MouseSpeedDetector
 
-        #self.mouse_listener = MouseSpeedDetector(self)
-        #self.mouse_listener.connect(
-        #    "estado", self.__set_mouse)
-        #self.mouse_listener.new_handler(True)
+        self.mouse_listener = MouseSpeedDetector(self)
+        self.mouse_listener.connect(
+            "estado", self.__set_mouse)
+        self.mouse_listener.new_handler(True)
 
-        #self.get_parent().connect(
-        #    "hide", self.__hide_show_parent)
-        #self.get_parent().connect(
-        #    "show", self.__hide_show_parent)
+        self.get_parent().connect(
+            "hide", self.__hide_show_parent)
+        self.get_parent().connect(
+            "show", self.__hide_show_parent)
 
         self.hbox_efectos_en_pipe.get_parent().get_parent(
             ).get_parent().hide()
@@ -910,7 +883,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
         else:
             rect = self.evnt_box_lista_reproduccion.get_allocation()
-            self.scroll_config.set_size_request(rect.width, -1)
+            #self.scroll_config.set_size_request(rect.width, -1)
             self.evnt_box_lista_reproduccion.hide()
             self.scroll_config.show_all()
             GLib.idle_add(self.__update_balance_toolbars)

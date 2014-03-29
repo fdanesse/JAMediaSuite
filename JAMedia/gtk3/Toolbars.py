@@ -532,7 +532,7 @@ class ToolbarInfo(Gtk.Toolbar):
         icono = os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            -1, 38)
+            -1, 35)
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
         self.jamedia = Gtk.ToolItem()
@@ -653,22 +653,13 @@ class ToolbarConfig(Gtk.Table):
         self.hue = ToolbarcontrolValores("Matíz")
         self.gamma = ToolbarcontrolValores("Gamma")
 
-        self.attach(self.brillo, 0, 1, 0, 1)
-        self.attach(self.contraste, 0, 1, 1, 2)
-        self.attach(self.saturacion, 0, 1, 2, 3)
-        self.attach(self.hue, 0, 1, 3, 4)
-        self.attach(self.gamma, 0, 1, 4, 5)
-
-        toolbar = Gtk.Toolbar()
-
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
-
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("Utilizar: ")
-        self.label.show()
-        item.add(self.label)
-        toolbar.insert(item, -1)
+        frame = Gtk.Frame()
+        frame.set_label(" Reproductor: ")
+        box = Gtk.HBox()
+        event = Gtk.EventBox()
+        event.set_border_width(4)
+        event.add(box)
+        frame.add(event)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "mplayer.png")
@@ -678,7 +669,6 @@ class ToolbarConfig(Gtk.Table):
         self.mplayer_boton.set_tooltip_text("MplayerReproductor")
         self.mplayer_boton.connect("toggled",
             self.__emit_reproductor, "MplayerReproductor")
-        toolbar.insert(self.mplayer_boton, -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg")
@@ -688,12 +678,17 @@ class ToolbarConfig(Gtk.Table):
         self.jamedia_boton.set_tooltip_text("JAMediaReproductor")
         self.jamedia_boton.connect("toggled",
             self.__emit_reproductor, "JAMediaReproductor")
-        toolbar.insert(self.jamedia_boton, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        box.pack_start(self.jamedia_boton, False, True, 0)
+        box.pack_start(self.mplayer_boton, False, True, 0)
 
-        self.attach(toolbar, 0, 1, 5, 6)
+        self.attach(frame, 0, 1, 0, 1)
+
+        self.attach(self.brillo, 0, 1, 1, 2)
+        self.attach(self.contraste, 0, 1, 2, 3)
+        self.attach(self.saturacion, 0, 1, 3, 4)
+        self.attach(self.hue, 0, 1, 4, 5)
+        self.attach(self.gamma, 0, 1, 5, 6)
 
         self.show_all()
 
@@ -778,8 +773,11 @@ class ToolbarcontrolValores(Gtk.Toolbar):
         self.frame = Gtk.Frame()
         self.frame.set_label(self.titulo)
         self.frame.set_label_align(0.5, 1.0)
-        self.frame.add(self.escala)
-        self.frame.show()
+        event = Gtk.EventBox()
+        event.set_border_width(4)
+        event.add(self.escala)
+        self.frame.add(event)
+        self.frame.show_all()
         item.add(self.frame)
         self.insert(item, -1)
 
@@ -860,7 +858,7 @@ class BalanceBar(Gtk.Scale):
         self.set_digits(0)
         self.set_draw_value(False)
 
-        self.borde = 10
+        self.borde = 12
 
         icono = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
@@ -923,7 +921,7 @@ class BalanceBar(Gtk.Scale):
 
         # La Imagen
         imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        imgx = ximage - imgw / 2
+        imgx = (ximage - imgw / 2) + self.borde
         imgy = float(self.get_allocation().height / 2 - imgh / 2)
         Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
         contexto.paint()
