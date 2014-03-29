@@ -475,3 +475,152 @@ class Visor(Gtk.DrawingArea):
         else:
             self.emit("ocultar_controles", True)
             return
+
+
+class BarraProgreso(Gtk.EventBox):
+    """
+    Barra de progreso para mostrar estado de reproduccion.
+    """
+
+    __gsignals__ = {
+    "user-set-value": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+
+    def __init__(self):
+
+        Gtk.EventBox.__init__(self)
+
+        self.modify_bg(0, get_color("BLANCO"))
+        self.escala = ProgressBar(
+            Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
+
+        self.valor = 0
+
+        self.add(self.escala)
+        self.show_all()
+
+        self.escala.connect('user-set-value', self.__emit_valor)
+        self.set_size_request(-1, 24)
+
+    def set_progress(self, valor=0):
+        """
+        El reproductor modifica la escala.
+        """
+
+        if self.escala.presed:
+            return
+
+        if self.valor != valor:
+            self.valor = valor
+            self.escala.get_adjustment().set_value(valor)
+            self.escala.queue_draw()
+
+    def __emit_valor(self, widget, valor):
+        """
+        El usuario modifica la escala.
+        """
+
+        if self.valor != valor:
+            self.valor = valor
+            self.emit("user-set-value", valor)
+
+
+class ProgressBar(Gtk.Scale):
+    """
+    Escala de BarraProgreso.
+    """
+
+    __gsignals__ = {
+    "user-set-value": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+
+    def __init__(self, ajuste):
+
+        Gtk.Scale.__init__(self,
+            orientation=Gtk.Orientation.HORIZONTAL)
+
+        self.set_adjustment(ajuste)
+        self.set_digits(0)
+        self.set_draw_value(False)
+
+        self.presed = False
+        self.borde = 10
+
+        icono = os.path.join(BASE_PATH,
+            "Iconos", "iconplay.svg")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            24, 24)
+        self.pixbuf = pixbuf.rotate_simple(
+            GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE)
+
+        self.show_all()
+
+    def do_button_press_event(self, event):
+
+        self.presed = True
+
+    def do_button_release_event(self, event):
+
+        self.presed = False
+
+    def do_motion_notify_event(self, event):
+        """
+        Cuando el usuario se desplaza por la barra de progreso.
+        """
+
+        if event.state == Gdk.ModifierType.MOD2_MASK | \
+            Gdk.ModifierType.BUTTON1_MASK:
+
+            rect = self.get_allocation()
+            x, y = (self.borde, self.borde)
+            w, h = (rect.width - (
+                self.borde * 2), rect.height - (self.borde * 2))
+            eventx, eventy = (int(event.x) - x, int(event.y) - y)
+
+            if (eventx > int(x) and eventx < int(w)):
+                valor = float(eventx * 100 / w)
+                self.get_adjustment().set_value(valor)
+                self.queue_draw()
+                self.emit("user-set-value", valor)
+
+    def do_draw(self, contexto):
+        """
+        Dibuja el estado de la barra de progreso.
+        """
+
+        rect = self.get_allocation()
+        w, h = (rect.width, rect.height)
+
+        # Fondo
+        #Gdk.cairo_set_source_color(contexto, G.BLANCO)
+        #contexto.paint()
+
+        # Relleno de la barra
+        ww = w - self.borde * 2
+        hh = h - self.borde * 2
+        Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, self.borde, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
+
+        # Relleno de la barra segun progreso
+        Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
+        rect = Gdk.Rectangle()
+
+        ximage = int(self.get_adjustment().get_value() * ww / 100)
+        rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
+            ximage, hh)
+
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
+
+        # La Imagen
+        imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
+        imgx = ximage
+        imgy = float(self.borde + hh / 2 - imgh / 2)
+        Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        contexto.paint()
+
+        return True

@@ -52,10 +52,10 @@ if verificar_Gstreamer():
 else:
     from JAMediaReproductor.PlayerNull import JAMediaReproductor
     from JAMediaReproductor.PlayerNull import JAMediaGrabador
+'''
+from Globales import get_color
 
-from JAMediaObjects.JAMediaGlobales import get_color
-from JAMediaObjects.JAMediaGlobales import get_pixels
-
+'''
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
 style_path = os.path.join(
@@ -168,7 +168,7 @@ class JAMediaPlayer(Gtk.EventBox):
         self.get_toplevel().set_sensitive(False)
 
         from Widgets import Visor
-        #from JAMediaObjects.JAMediaWidgets import BarraProgreso
+        from Widgets import BarraProgreso
         #from JAMediaObjects.JAMediaWidgets import ControlVolumen
         from PlayerList import Lista
         from PlayerControls import PlayerControl
@@ -183,7 +183,7 @@ class JAMediaPlayer(Gtk.EventBox):
         from Toolbars import ToolbarAddStream
 
         self.pantalla = Visor()
-        #self.barradeprogreso = BarraProgreso()
+        self.barradeprogreso = BarraProgreso()
         #self.volumen = ControlVolumen()
         self.lista_de_reproduccion = Lista()
         self.controlesrepro = PlayerControl()
@@ -223,15 +223,15 @@ class JAMediaPlayer(Gtk.EventBox):
 
         ### Barra de Progreso + Volúmen
         # FIXME: Para poder pintar el fondo
-        #ev_box = Gtk.EventBox()
-        #ev_box.modify_bg(0, get_color("BLANCO"))
-        #hbox_barra_progreso = Gtk.Box(
-        #    orientation=Gtk.Orientation.HORIZONTAL)
-        #hbox_barra_progreso.pack_start(
-        #    self.barradeprogreso, True, True, 0)
+        ev_box = Gtk.EventBox()
+        ev_box.modify_bg(0, get_color("BLANCO"))
+        hbox_barra_progreso = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL)
+        hbox_barra_progreso.pack_start(
+            self.barradeprogreso, True, True, 0)
         #hbox_barra_progreso.pack_start(
         #    self.volumen, False, False, 0)
-        #ev_box.add(hbox_barra_progreso)
+        ev_box.add(hbox_barra_progreso)
 
         ### Todo
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -239,7 +239,7 @@ class JAMediaPlayer(Gtk.EventBox):
         vbox.pack_start(self.pantalla, True, True, 0)
         #vbox.pack_start(scroll, False, False, 0)
         vbox.pack_start(self.toolbar_info, False, False, 0)
-        #vbox.pack_start(ev_box, False, True, 0)
+        vbox.pack_start(ev_box, False, True, 0)
 
         hpanel.pack1(vbox, resize=True, shrink=True)
 
@@ -355,8 +355,8 @@ class JAMediaPlayer(Gtk.EventBox):
 
         self.controlesrepro.connect(
             "activar", self.__activar)
-        #self.barradeprogreso.connect(
-        #    "user-set-value", self.__user_set_value)
+        self.barradeprogreso.connect(
+            "user-set-value", self.__user_set_value)
         self.pantalla.connect(
             "ocultar_controles", self.__ocultar_controles)
         self.pantalla.connect(
