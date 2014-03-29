@@ -73,12 +73,12 @@ class JAMedia(Gtk.Window):
 
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
-        #self.jamediaplayer.pack_efectos()
+        self.jamediaplayer.pack_efectos()
 
-        #if self.pistas:
-        #    GLib.idle_add(
-        #        self.jamediaplayer.set_nueva_lista,
-        #        self.pistas)
+        if self.pistas:
+            GLib.idle_add(
+                self.jamediaplayer.set_nueva_lista,
+                self.pistas)
 
         return False
 

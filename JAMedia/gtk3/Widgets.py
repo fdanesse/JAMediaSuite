@@ -29,9 +29,6 @@ from gi.repository import GLib
 
 BASE_PATH = os.path.dirname(__file__)
 
-#import JAMediaObjects
-#from JAMediaObjects.JAMediaWidgets import JAMediaButton
-
 from Globales import get_color
 from Globales import get_separador
 from Globales import get_boton
@@ -162,7 +159,7 @@ class MenuList(Gtk.Menu):
         quitar.connect_object("activate", self.__set_accion,
             widget, path, "Quitar")
 
-        from JAMediaObjects.JAMFileSystem import describe_acceso_uri
+        from Globales import describe_acceso_uri
         from Globales import get_my_files_directory
         from Globales import get_data_directory
         from Globales import stream_en_archivo
@@ -239,10 +236,148 @@ class MenuList(Gtk.Menu):
         confirmacion al usuario sobre la accion a realizar.
         """
 
-        iter = widget.modelo.get_iter(path)
+        iter = widget.get_model().get_iter(path)
         self.emit('accion', widget, accion, iter)
 
-'''
+
+class JAMediaButton(Gtk.EventBox):
+    """
+    Un Boton a medida.
+    """
+
+    __gsignals__ = {
+    "clicked": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
+    "click_derecho": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+
+    def __init__(self):
+
+        Gtk.EventBox.__init__(self)
+
+        self.cn = get_color("BLANCO")
+        self.cs = get_color("AMARILLO")
+        self.cc = get_color("NARANJA")
+        self.text_color = get_color("NEGRO")
+        self.colornormal = self.cn
+        self.colorselect = self.cs
+        self.colorclicked = self.cc
+
+        self.set_visible_window(True)
+        self.modify_bg(0, self.colornormal)
+        self.modify_fg(0, self.text_color)
+        self.set_border_width(1)
+
+        self.estado_select = False
+
+        self.add_events(
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.POINTER_MOTION_MASK |
+            Gdk.EventMask.ENTER_NOTIFY_MASK |
+            Gdk.EventMask.LEAVE_NOTIFY_MASK)
+
+        self.connect("button_press_event", self.button_press)
+        self.connect("button_release_event", self.__button_release)
+        self.connect("enter-notify-event", self.__enter_notify_event)
+        self.connect("leave-notify-event", self.__leave_notify_event)
+
+        self.imagen = Gtk.Image()
+        self.add(self.imagen)
+
+        self.show_all()
+
+    def set_colores(self, colornormal=False,
+        colorselect=False, colorclicked=False):
+
+        if colornormal:
+            self.cn = colornormal
+
+        if colorselect:
+            self.cs = colorselect
+
+        if colorclicked:
+            self.cc = colorclicked
+
+        self.colornormal = self.cn
+        self.colorselect = self.cs
+        self.colorclicked = self.cc
+
+        if self.estado_select:
+            self.seleccionar()
+
+        else:
+            self.des_seleccionar()
+
+    def seleccionar(self):
+        """
+        Marca como seleccionado
+        """
+
+        self.estado_select = True
+        self.colornormal = self.cc
+        self.colorselect = self.cc
+        self.colorclicked = self.cc
+
+        self.modify_bg(0, self.colornormal)
+
+    def des_seleccionar(self):
+        """
+        Desmarca como seleccionado
+        """
+
+        self.estado_select = False
+
+        self.colornormal = self.cn
+        self.colorselect = self.cs
+        self.colorclicked = self.cc
+
+        self.modify_bg(0, self.colornormal)
+
+    def __button_release(self, widget, event):
+
+        self.modify_bg(0, self.colorselect)
+
+    def __leave_notify_event(self, widget, event):
+
+        self.modify_bg(0, self.colornormal)
+
+    def __enter_notify_event(self, widget, event):
+
+        self.modify_bg(0, self.colorselect)
+
+    def button_press(self, widget, event):
+
+        self.seleccionar()
+
+        if event.button == 1:
+            self.emit("clicked", event)
+
+        elif event.button == 3:
+            self.emit("click_derecho", event)
+
+    def set_tooltip(self, texto):
+
+        self.set_tooltip_text(texto)
+
+    def set_label(self, texto):
+
+        for child in self.get_children():
+            child.destroy()
+
+        label = Gtk.Label(texto)
+        label.show()
+        self.add(label)
+
+    def set_imagen(self, archivo):
+
+        self.imagen.set_from_file(archivo)
+
+    def set_tamanio(self, w, h):
+
+        self.set_size_request(w, h)
+
+
 class WidgetEfecto_en_Pipe(JAMediaButton):
     """
     Representa un efecto agregado al pipe de JAMediaVideo.
@@ -271,7 +406,7 @@ class WidgetEfecto_en_Pipe(JAMediaButton):
 
     def des_seleccionar(self):
         pass
-'''
+
 
 class DialogoDescarga(Gtk.Dialog):
 
@@ -624,3 +759,28 @@ class ProgressBar(Gtk.Scale):
         contexto.paint()
 
         return True
+
+
+class ControlVolumen(Gtk.VolumeButton):
+    """
+    Botón con escala para controlar el volúmen
+    de reproducción en los reproductores.
+    """
+
+    __gsignals__ = {
+    "volumen": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+
+    def __init__(self):
+
+        Gtk.VolumeButton.__init__(self)
+
+        self.show_all()
+
+    def do_value_changed(self, valor):
+        """
+        Cuando el usuario desplaza la escala
+        emite el valor en float de 0.0 a 1.0.
+        """
+
+        self.emit('volumen', valor)

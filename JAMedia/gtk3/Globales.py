@@ -26,6 +26,46 @@ radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista
 webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
 
 
+def get_programa(programa):
+    """
+    Devuelve true si programa se encuentra
+    instaldo y false si no lo está.
+    """
+
+    import os
+
+    paths = os.environ['PATH'].split(":")
+    presente = False
+
+    for directorio in paths:
+        if os.path.exists(directorio):
+            datos = os.listdir(directorio)
+            if programa in datos:
+                presente = True
+                break
+
+        else:
+            print "Directorio Inexistente en el path", directorio
+
+    # print programa, "Instalado en el sistema:", presente
+    return presente
+
+
+def verificar_Gstreamer():
+
+    presente = False
+
+    try:
+        import gi
+        gi.require_version('Gst', '1.0')
+        presente = True
+
+    except:
+        presente = False
+
+    return presente
+
+
 def describe_archivo(archivo):
     """
     Devuelve el tipo de un archivo (imagen, video, texto).
@@ -66,6 +106,91 @@ def describe_uri(uri):
         return [unidad, directorio, archivo, enlace]
 
     else:
+        return False
+
+
+def describe_acceso_uri(uri):
+    """
+    Devuelve los permisos de acceso sobre una uri.
+    """
+
+    import os
+
+    existe = False
+
+    try:
+        existe = os.access(uri, os.F_OK)
+
+    except:
+        return False
+
+    if existe:
+        lectura = os.access(uri, os.R_OK)
+        escritura = os.access(uri, os.W_OK)
+        ejecucion = os.access(uri, os.X_OK)
+        return [lectura, escritura, ejecucion]
+
+    else:
+        return False
+
+
+def borrar(origen):
+
+    try:
+        import os
+        import shutil
+
+        if os.path.isdir(origen):
+            shutil.rmtree("%s" % (os.path.join(origen)))
+
+        elif os.path.isfile(origen):
+            os.remove("%s" % (os.path.join(origen)))
+
+        else:
+            return False
+
+        return True
+
+    except:
+        print "ERROR Al Intentar Borrar un Archivo"
+        return False
+
+
+def mover(origen, destino):
+
+    try:
+        import os
+        if os.path.isdir(origen):
+            copiar(origen, destino)
+            borrar(origen)
+            return True
+
+        elif os.path.isfile(origen):
+            expresion = "mv \"" + origen + "\" \"" + destino + "\""
+            os.system(expresion)
+            return True
+
+    except:
+        print "ERROR Al Intentar Mover un Archivo"
+        return False
+
+
+def copiar(origen, destino):
+
+    try:
+        import os
+        if os.path.isdir(origen):
+            expresion = "cp -r \"" + origen + "\" \"" + destino + "\""
+
+        elif os.path.isfile(origen):
+            expresion = "cp \"" + origen + "\" \"" + destino + "\""
+
+        os.system(expresion)
+
+        return True
+
+    except:
+        print "ERROR Al Intentar Copiar un Archivo"
         return False
 
 
@@ -601,6 +726,27 @@ def stream_en_archivo(streaming, path):
     return False
 
 
+def get_color(color):
+    """
+    Devuelve Colores predefinidos.
+    """
+
+    from gi.repository import Gdk
+
+    colors = {
+        "GRIS": Gdk.Color(60156, 60156, 60156),
+        "AMARILLO": Gdk.Color(65000, 65000, 40275),
+        "NARANJA": Gdk.Color(65000, 26000, 0),
+        "BLANCO": Gdk.Color(65535, 65535, 65535),
+        "NEGRO": Gdk.Color(0, 0, 0),
+        "ROJO": Gdk.Color(65000, 0, 0),
+        "VERDE": Gdk.Color(0, 65000, 0),
+        "AZUL": Gdk.Color(0, 0, 65000),
+        }
+
+    return colors.get(color, None)
+
+
 def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
@@ -614,6 +760,33 @@ def get_separador(draw=False, ancho=0, expand=False):
     separador.set_expand(expand)
 
     return separador
+
+
+def get_togle_boton(archivo, flip=False,
+    color=get_color("GRIS"), pixels=24):
+    # Gdk.Color(65000, 65000, 65000)
+    """
+    Devuelve un toggletoolbutton generico.
+    """
+
+    from gi.repository import Gtk
+    from gi.repository import GdkPixbuf
+
+    boton = Gtk.ToggleToolButton()
+    imagen = Gtk.Image()
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+        archivo, pixels, pixels)
+
+    if flip:
+        pixbuf = pixbuf.flip(True)
+
+    imagen.set_from_pixbuf(pixbuf)
+    boton.set_icon_widget(imagen)
+
+    imagen.show()
+    boton.show()
+
+    return boton
 
 
 def get_boton(archivo, flip=False, rotacion=None,

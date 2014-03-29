@@ -78,8 +78,8 @@ def get_pixels(centimetros):
         }
 
     return res[centimetros]
-'''
-'''
+
+
 def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
@@ -93,8 +93,8 @@ def get_separador(draw=False, ancho=0, expand=False):
     separador.set_expand(expand)
 
     return separador
-'''
-'''
+
+
 def get_boton(archivo, flip=False, rotacion=None, pixels=0, tooltip_text=None):
     """
     Devuelve un toolbutton generico.

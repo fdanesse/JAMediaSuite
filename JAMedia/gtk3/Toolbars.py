@@ -22,18 +22,17 @@
 import os
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import GLib
 
 BASE_PATH = os.path.dirname(__file__)
 
-#import JAMediaObjects
-#from JAMediaObjects.JAMediaWidgets import JAMediaButton
-
 from Globales import get_color
 from Globales import get_separador
 from Globales import get_boton
+from Globales import get_togle_boton
 
 
 class ToolbarAccion(Gtk.Toolbar):
@@ -98,16 +97,16 @@ class ToolbarAccion(Gtk.Toolbar):
 
         from Globales import get_my_files_directory
 
-        from JAMediaObjects.JAMFileSystem import describe_acceso_uri
-        from JAMediaObjects.JAMFileSystem import copiar
-        from JAMediaObjects.JAMFileSystem import borrar
-        from JAMediaObjects.JAMFileSystem import mover
+        from Globales import describe_acceso_uri
+        from Globales import copiar
+        from Globales import borrar
+        from Globales import mover
 
-        uri = self.lista.modelo.get_value(self.iter, 2)
+        uri = self.lista.get_model().get_value(self.iter, 2)
 
         if describe_acceso_uri(uri):
             if self.accion == "Quitar":
-                self.lista.modelo.remove(self.iter)
+                self.lista.get_model().remove(self.iter)
 
             elif self.accion == "Copiar":
                 if os.path.isfile(uri):
@@ -116,26 +115,26 @@ class ToolbarAccion(Gtk.Toolbar):
             elif self.accion == "Borrar":
                 if os.path.isfile(uri):
                     if borrar(uri):
-                        self.lista.modelo.remove(self.iter)
+                        self.lista.get_model().remove(self.iter)
 
             elif self.accion == "Mover":
                 if os.path.isfile(uri):
                     if mover(uri, get_my_files_directory()):
-                        self.lista.modelo.remove(self.iter)
+                        self.lista.get_model().remove(self.iter)
         else:
             if self.accion == "Quitar":
-                self.lista.modelo.remove(self.iter)
+                self.lista.get_model().remove(self.iter)
 
             elif self.accion == "Borrar":
                 self.emit("accion-stream", "Borrar", uri)
-                self.lista.modelo.remove(self.iter)
+                self.lista.get_model().remove(self.iter)
 
             elif self.accion == "Copiar":
                 self.emit("accion-stream", "Copiar", uri)
 
             elif self.accion == "Mover":
                 self.emit("accion-stream", "Mover", uri)
-                self.lista.modelo.remove(self.iter)
+                self.lista.get_model().remove(self.iter)
 
             elif self.accion == "Grabar":
                 self.emit("Grabar", uri)
@@ -158,7 +157,7 @@ class ToolbarAccion(Gtk.Toolbar):
         self.iter = iter
 
         if self.lista and self.accion and self.iter:
-            uri = self.lista.modelo.get_value(self.iter, 2)
+            uri = self.lista.get_model().get_value(self.iter, 2)
             texto = uri
 
             if os.path.exists(uri):
@@ -464,12 +463,14 @@ class Toolbar(Gtk.Toolbar):
 
     def __show_credits(self, widget):
 
+        from Widgets import Credits
         dialog = Credits(parent=self.get_toplevel())
         dialog.run()
         dialog.destroy()
 
     def __show_help(self, widget):
 
+        from Widgets import Help
         dialog = Help(parent=self.get_toplevel())
         dialog.run()
         dialog.destroy()
@@ -646,9 +647,6 @@ class ToolbarConfig(Gtk.Table):
 
         Gtk.Table.__init__(self, rows=6, columns=1, homogeneous=True)
 
-        from JAMediaObjects.JAMediaWidgets import ToolbarcontrolValores
-        from JAMediaObjects.JAMediaGlobales import get_togle_boton
-
         self.brillo = ToolbarcontrolValores("Brillo")
         self.contraste = ToolbarcontrolValores("Contraste")
         self.saturacion = ToolbarcontrolValores("Saturación")
@@ -676,7 +674,7 @@ class ToolbarConfig(Gtk.Table):
             "Iconos", "mplayer.png")
         self.mplayer_boton = get_togle_boton(archivo,
             flip=False,
-            pixels=get_pixels(1))
+            pixels=24)
         self.mplayer_boton.set_tooltip_text("MplayerReproductor")
         self.mplayer_boton.connect("toggled",
             self.__emit_reproductor, "MplayerReproductor")
@@ -686,7 +684,7 @@ class ToolbarConfig(Gtk.Table):
             "Iconos", "JAMedia.svg")
         self.jamedia_boton = get_togle_boton(archivo,
             flip=False,
-            pixels=get_pixels(1))
+            pixels=24)
         self.jamedia_boton.set_tooltip_text("JAMediaReproductor")
         self.jamedia_boton.connect("toggled",
             self.__emit_reproductor, "JAMediaReproductor")
@@ -753,6 +751,184 @@ class ToolbarConfig(Gtk.Table):
         if not self.mplayer_boton.get_active() and \
             not self.jamedia_boton.get_active():
                 widget.set_active(True)
+
+
+class ToolbarcontrolValores(Gtk.Toolbar):
+    """
+    Toolbar con escala para modificar
+    valores de balance en video, utilizada
+    por ToolbarBalanceConfig.
+    """
+
+    __gsignals__ = {
+    'valor': (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+
+    def __init__(self, label):
+
+        Gtk.Toolbar.__init__(self)
+
+        self.titulo = label
+
+        self.escala = SlicerBalance()
+
+        item = Gtk.ToolItem()
+        item.set_expand(True)
+
+        self.frame = Gtk.Frame()
+        self.frame.set_label(self.titulo)
+        self.frame.set_label_align(0.5, 1.0)
+        self.frame.add(self.escala)
+        self.frame.show()
+        item.add(self.frame)
+        self.insert(item, -1)
+
+        self.show_all()
+
+        self.escala.connect("user-set-value", self.__user_set_value)
+
+    def __user_set_value(self, widget=None, valor=None):
+        """
+        Recibe la posicion en la barra de
+        progreso (en % float), y re emite los valores.
+        """
+
+        self.emit('valor', valor)
+        self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
+
+    def set_progress(self, valor):
+        """
+        Establece valores en la escala.
+        """
+
+        self.escala.set_progress(valor)
+        self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
+
+
+class SlicerBalance(Gtk.EventBox):
+    """
+    Barra deslizable para cambiar valores de Balance en Video.
+    """
+
+    __gsignals__ = {
+    "user-set-value": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+
+    def __init__(self):
+
+        Gtk.EventBox.__init__(self)
+
+        self.escala = BalanceBar(Gtk.Adjustment(0.0, 0.0,
+            101.0, 0.1, 1.0, 1.0))
+
+        self.add(self.escala)
+        self.show_all()
+
+        self.escala.connect('user-set-value', self.__emit_valor)
+
+    def set_progress(self, valor=0.0):
+        """
+        El reproductor modifica la escala.
+        """
+
+        self.escala.ajuste.set_value(valor)
+        self.escala.queue_draw()
+
+    def __emit_valor(self, widget, valor):
+        """
+        El usuario modifica la escala.
+        Y se emite la señal con el valor (% float).
+        """
+
+        self.emit("user-set-value", valor)
+
+
+class BalanceBar(Gtk.Scale):
+    """
+    Escala de SlicerBalance.
+    """
+
+    __gsignals__ = {
+    "user-set-value": (GObject.SIGNAL_RUN_FIRST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+
+    def __init__(self, ajuste):
+
+        Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+
+        self.ajuste = ajuste
+        self.set_digits(0)
+        self.set_draw_value(False)
+
+        self.borde = 10
+
+        icono = os.path.join(BASE_PATH,
+            "Iconos", "iconplay.svg")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            16, 16)
+        self.pixbuf = pixbuf.rotate_simple(
+            GdkPixbuf.PixbufRotation.CLOCKWISE)
+
+        self.show_all()
+
+    def do_motion_notify_event(self, event):
+        """
+        Cuando el usuario se desplaza por la barra de progreso.
+        Se emite el valor en % (float).
+        """
+
+        if event.state == Gdk.ModifierType.MOD2_MASK | \
+            Gdk.ModifierType.BUTTON1_MASK:
+
+            rect = self.get_allocation()
+            valor = float(event.x * 100 / rect.width)
+            if valor >= 0.0 and valor <= 100.0:
+                self.ajuste.set_value(valor)
+                self.queue_draw()
+                self.emit("user-set-value", valor)
+
+    def do_draw(self, contexto):
+        """
+        Dibuja el estado de la barra de progreso.
+        """
+
+        rect = self.get_allocation()
+        w, h = (rect.width, rect.height)
+
+        # Fondo
+        Gdk.cairo_set_source_color(contexto, get_color("BLANCO"))
+        contexto.paint()
+
+        # Relleno de la barra
+        ww = w - self.borde * 2
+        hh = h / 5
+
+        Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
+        rect = Gdk.Rectangle()
+
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, h / 5 * 2, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
+
+        # Relleno de la barra segun progreso
+        Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
+        rect = Gdk.Rectangle()
+
+        ximage = int(self.ajuste.get_value() * ww / 100)
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, h / 5 * 2, ximage, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
+
+        # La Imagen
+        imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
+        imgx = ximage - imgw / 2
+        imgy = float(self.get_allocation().height / 2 - imgh / 2)
+        Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        contexto.paint()
+
+        return True
 
 
 class ToolbarAddStream(Gtk.Toolbar):

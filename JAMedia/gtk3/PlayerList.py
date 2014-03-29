@@ -47,7 +47,10 @@ class Lista(Gtk.TreeView):
 
     def __init__(self):
 
-        Gtk.TreeView.__init__(self)
+        Gtk.TreeView.__init__(self, Gtk.ListStore(
+            GdkPixbuf.Pixbuf,
+            GObject.TYPE_STRING,
+            GObject.TYPE_STRING))
 
         self.set_property("rules-hint", True)
         self.set_headers_clickable(True)
@@ -56,18 +59,11 @@ class Lista(Gtk.TreeView):
         self.permitir_select = True
         self.valor_select = None
 
-        self.modelo = Gtk.ListStore(
-            GdkPixbuf.Pixbuf,
-            GObject.TYPE_STRING,
-            GObject.TYPE_STRING)
-
         self.__setear_columnas()
 
-        self.treeselection = self.get_selection()
-        self.treeselection.set_select_function(
-            self.__selecciones, self.modelo)
+        self.get_selection().set_select_function(
+            self.__selecciones, self.get_model())
 
-        self.set_model(self.modelo)
         self.show_all()
 
     """
@@ -75,7 +71,7 @@ class Lista(Gtk.TreeView):
         # derecha 114 izquierda 113 suprimir 119
         # backspace 22 (en xo no existe suprimir)
         tecla = event.get_keycode()[1]
-        model, iter = self.treeselection.get_selected()
+        model, iter = self.get_selection().get_selected()
         valor = self.modelo.get_value(iter, 2)
         path = self.modelo.get_path(iter)
         if tecla == 22:
@@ -147,7 +143,7 @@ class Lista(Gtk.TreeView):
     def limpiar(self):
 
         self.permitir_select = False
-        self.modelo.clear()
+        self.get_model().clear()
         self.permitir_select = True
 
     def agregar_items(self, elementos):
@@ -187,40 +183,27 @@ class Lista(Gtk.TreeView):
 
                 if 'video' in tipo or 'application/ogg' in tipo or \
                     'application/octet-stream' in tipo:
-                    icono = os.path.join(JAMediaWidgetsBASE,
+                    icono = os.path.join(BASE_PATH,
                         "Iconos", "video.svg")
 
                 elif 'audio' in tipo:
-                    icono = os.path.join(JAMediaWidgetsBASE,
+                    icono = os.path.join(BASE_PATH,
                         "Iconos", "sonido.svg")
 
-                elif 'image' in tipo and not 'iso' in tipo:
-                    icono = os.path.join(path)  # exige rendimiento
-                    #icono = os.path.join(JAMediaWidgetsBASE,
-                    #    "Iconos", "imagen.png")
-
-                elif 'pdf' in tipo:
-                    icono = os.path.join(JAMediaWidgetsBASE,
-                        "Iconos", "pdf.svg")
-
-                elif 'zip' in tipo or 'rar' in tipo:
-                    icono = os.path.join(JAMediaWidgetsBASE,
-                        "Iconos", "edit-select-all.svg")
-
                 else:
-                    icono = os.path.join(JAMediaWidgetsBASE,
-                        "Iconos", "edit-select-all.svg")
+                    icono = os.path.join(BASE_PATH,
+                        "Iconos", "sonido.svg")
         else:
-            icono = os.path.join(JAMediaWidgetsBASE,
-                "Iconos", "edit-select-all.svg")
+            icono = os.path.join(BASE_PATH,
+                "Iconos", "sonido.svg")
 
-        try:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-                get_pixels(0.8), -1)
-            self.modelo.append([pixbuf, texto, path])
+        #try:
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+            24, -1)
+        self.get_model().append([pixbuf, texto, path])
 
-        except:
-            pass
+        #except:
+        #    pass
 
         elementos.remove(elementos[0])
 
@@ -230,10 +213,10 @@ class Lista(Gtk.TreeView):
 
     def seleccionar_siguiente(self, widget=None):
 
-        modelo, _iter = self.treeselection.get_selected()
+        modelo, _iter = self.get_selection().get_selected()
 
         try:
-            self.treeselection.select_iter(modelo.iter_next(_iter))
+            self.get_selection().select_iter(modelo.iter_next(_iter))
 
         except:
             self.seleccionar_primero()
@@ -242,10 +225,10 @@ class Lista(Gtk.TreeView):
 
     def seleccionar_anterior(self, widget=None):
 
-        modelo, _iter = self.treeselection.get_selected()
+        modelo, _iter = self.get_selection().get_selected()
 
         try:
-            self.treeselection.select_iter(modelo.iter_previous(_iter))
+            self.get_selection().select_iter(modelo.iter_previous(_iter))
 
         except:
             self.seleccionar_ultimo()
@@ -254,7 +237,7 @@ class Lista(Gtk.TreeView):
 
     def seleccionar_primero(self, widget=None):
 
-        self.treeselection.select_path(0)
+        self.get_selection().select_path(0)
 
     def seleccionar_ultimo(self, widget=None):
 
@@ -268,5 +251,5 @@ class Lista(Gtk.TreeView):
             item = model.iter_next(item)
 
         if _iter:
-            self.treeselection.select_iter(_iter)
+            self.get_selection().select_iter(_iter)
             #path = model.get_path(iter)
