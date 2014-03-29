@@ -43,6 +43,32 @@ def describe_archivo(archivo):
     return retorno
 
 
+def describe_uri(uri):
+    """
+    Explica de que se trata el uri, si existe.
+    """
+
+    import os
+
+    existe = False
+
+    try:
+        existe = os.path.exists(uri)
+
+    except:
+        return False
+
+    if existe:
+        unidad = os.path.ismount(uri)
+        directorio = os.path.isdir(uri)
+        archivo = os.path.isfile(uri)
+        enlace = os.path.islink(uri)
+        return [unidad, directorio, archivo, enlace]
+
+    else:
+        return False
+
+
 def make_base_directory():
     """
     Crea toda la estructura de Directorios de JAMedia.

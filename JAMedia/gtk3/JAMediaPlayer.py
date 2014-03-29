@@ -169,23 +169,23 @@ class JAMediaPlayer(Gtk.EventBox):
         #from JAMediaObjects.JAMediaWidgets import Visor
         #from JAMediaObjects.JAMediaWidgets import BarraProgreso
         #from JAMediaObjects.JAMediaWidgets import ControlVolumen
-        #from JAMediaObjects.JAMediaWidgets import Lista
-        #from JAMediaObjects.JAMediaWidgets import ToolbarReproduccion
+        from PlayerList import Lista
+        from PlayerControls import PlayerControl
         #from JAMediaObjects.JAMediaWidgets import WidgetsGstreamerEfectos
-        from Widgets import ToolbarSalir
+        from Toolbars import ToolbarSalir
 
-        from Widgets import Toolbar
-        from Widgets import ToolbarAccion
+        from Toolbars import Toolbar
+        from Toolbars import ToolbarAccion
         #from Widgets import ToolbarConfig
-        from Widgets import ToolbarGrabar
-        from Widgets import ToolbarInfo
-        from Widgets import ToolbarAddStream
+        from Toolbars import ToolbarGrabar
+        from Toolbars import ToolbarInfo
+        from Toolbars import ToolbarAddStream
 
         #self.pantalla = Visor()
         #self.barradeprogreso = BarraProgreso()
         #self.volumen = ControlVolumen()
-        #self.lista_de_reproduccion = Lista()
-        #self.controlesrepro = ToolbarReproduccion()
+        self.lista_de_reproduccion = Lista()
+        self.controlesrepro = PlayerControl()
         self.toolbar = Toolbar()
         #self.toolbar_config = ToolbarConfig()
         #self.widget_efectos = WidgetsGstreamerEfectos()
@@ -243,8 +243,8 @@ class JAMediaPlayer(Gtk.EventBox):
         hpanel.pack1(vbox, resize=True, shrink=True)
 
         ### Area Derecha del Panel
-        #self.derecha_vbox = Gtk.Box(
-        #    orientation=Gtk.Orientation.VERTICAL)
+        self.derecha_vbox = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL)
 
         ### Configuración de balanace y efectos
         #self.vbox_config = Gtk.Box(
@@ -260,27 +260,27 @@ class JAMediaPlayer(Gtk.EventBox):
 
         ### Lista de Reproducción
         # FIXME: Para poder pintar el fondo
-        #self.evnt_box_lista_reproduccion = Gtk.EventBox()
-        #self.vbox_lista_reproduccion = Gtk.Box(
-        #    orientation=Gtk.Orientation.VERTICAL)
-        #self.scroll_list = Gtk.ScrolledWindow()
-        #self.scroll_list.set_policy(
-        #    Gtk.PolicyType.AUTOMATIC,
-        #    Gtk.PolicyType.AUTOMATIC)
-        #self.scroll_list.add(self.lista_de_reproduccion)
+        self.evnt_box_lista_reproduccion = Gtk.EventBox()
+        self.vbox_lista_reproduccion = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL)
+        self.scroll_list = Gtk.ScrolledWindow()
+        self.scroll_list.set_policy(
+            Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+        self.scroll_list.add(self.lista_de_reproduccion)
 
         # Lista + Controles de Reproducción
         #self.__pack_vbox_lista_reproduccion()
-        #self.evnt_box_lista_reproduccion.add(
-        #    self.vbox_lista_reproduccion)
+        self.evnt_box_lista_reproduccion.add(
+            self.vbox_lista_reproduccion)
 
         ### Configuración + Lista de Reproducción.
         #self.derecha_vbox.pack_start(
         #    self.scroll_config, True, True, 0)
-        #self.derecha_vbox.pack_start(
-        #    self.evnt_box_lista_reproduccion, True, True, 0)
+        self.derecha_vbox.pack_start(
+            self.evnt_box_lista_reproduccion, True, True, 0)
 
-        #hpanel.pack2(self.derecha_vbox, resize=False, shrink=True)
+        hpanel.pack2(self.derecha_vbox, resize=False, shrink=True)
 
         #self.controles_dinamicos = [
         #    hbox_barra_progreso,
@@ -352,8 +352,8 @@ class JAMediaPlayer(Gtk.EventBox):
         #    "button-press-event",
         #    self.__click_derecho_en_lista)
 
-        #self.controlesrepro.connect(
-        #    "activar", self.__activar)
+        self.controlesrepro.connect(
+            "activar", self.__activar)
         #self.barradeprogreso.connect(
         #    "user-set-value", self.__user_set_value)
         #self.pantalla.connect(
@@ -1010,7 +1010,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
         set_listas_default()
 
-        from Widgets import ToolbarLista
+        from Toolbars import ToolbarLista
 
         self.toolbar_list = ToolbarLista()
         self.toolbar_list.connect(
@@ -1123,7 +1123,7 @@ class JAMediaPlayer(Gtk.EventBox):
         Es pública para sobre escritura.
         """
 
-        #self.__cancel_toolbars_flotantes()
+        self.__cancel_toolbars_flotantes()
 
         self.toolbar_salir.run("JAMedia")
 
