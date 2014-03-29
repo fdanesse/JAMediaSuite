@@ -23,6 +23,7 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import GdkX11
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import GLib
@@ -166,7 +167,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
         self.get_toplevel().set_sensitive(False)
 
-        #from JAMediaObjects.JAMediaWidgets import Visor
+        from Widgets import Visor
         #from JAMediaObjects.JAMediaWidgets import BarraProgreso
         #from JAMediaObjects.JAMediaWidgets import ControlVolumen
         from PlayerList import Lista
@@ -181,7 +182,7 @@ class JAMediaPlayer(Gtk.EventBox):
         from Toolbars import ToolbarInfo
         from Toolbars import ToolbarAddStream
 
-        #self.pantalla = Visor()
+        self.pantalla = Visor()
         #self.barradeprogreso = BarraProgreso()
         #self.volumen = ControlVolumen()
         self.lista_de_reproduccion = Lista()
@@ -235,7 +236,7 @@ class JAMediaPlayer(Gtk.EventBox):
         ### Todo
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         vbox.pack_start(self.toolbar_grabar, False, False, 0)
-        #vbox.pack_start(self.pantalla, True, True, 0)
+        vbox.pack_start(self.pantalla, True, True, 0)
         #vbox.pack_start(scroll, False, False, 0)
         vbox.pack_start(self.toolbar_info, False, False, 0)
         #vbox.pack_start(ev_box, False, True, 0)
@@ -304,7 +305,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
         #from gi.repository import GdkX11
 
-        #xid = self.pantalla.get_property('window').get_xid()
+        xid = self.pantalla.get_property('window').get_xid()
 
         # HACK: La aplicación nunca debe explotar :P
         #if get_programa("mplayer"):
@@ -356,11 +357,10 @@ class JAMediaPlayer(Gtk.EventBox):
             "activar", self.__activar)
         #self.barradeprogreso.connect(
         #    "user-set-value", self.__user_set_value)
-        #self.pantalla.connect(
-        #    "ocultar_controles", self.__ocultar_controles)
-        #self.pantalla.connect(
-        #    "button_press_event", self.__clicks_en_pantalla)
-        #self.pantalla.connect('expose-event', self.paint_pantalla)
+        self.pantalla.connect(
+            "ocultar_controles", self.__ocultar_controles)
+        self.pantalla.connect(
+            "button_press_event", self.__clicks_en_pantalla)
 
         self.toolbar.connect('salir', self.confirmar_salir)
         #self.toolbar.connect('capturar', self.fotografiar)
