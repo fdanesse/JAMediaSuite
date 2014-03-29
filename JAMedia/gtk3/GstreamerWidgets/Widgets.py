@@ -148,7 +148,7 @@ class GstreamerVideoEfectos(Gtk.Box):
                 'agregar_efecto', self.agregar_efecto)
             botonefecto.connect(
                 'configurar_efecto', self.__configurar_efecto)
-            self.pack_start(botonefecto, False, False, 10)
+            self.pack_start(botonefecto, False, False, 0)
 
         self.show_all()
         elementos.remove(elementos[0])
@@ -198,7 +198,7 @@ class GstreamerVideoEfectos(Gtk.Box):
                 return
 
 
-class Efecto_widget_Config(Gtk.Box):
+class Efecto_widget_Config(Gtk.EventBox):
     """
     Contiene el botón para el efecto y los
     controles de configuración del mismo.
@@ -213,45 +213,38 @@ class Efecto_widget_Config(Gtk.Box):
 
     def __init__(self, nombre):
 
-        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
+        Gtk.EventBox.__init__(self)
 
-        self.botonefecto = JAMediaButton()
-        self.botonefecto.connect('clicked', self.__efecto_click)
-        #self.botonefecto.connect('click_derecho', self.__efecto_click_derecho)
-        self.botonefecto.set_tooltip(nombre)
-        lado = 24
-        self.botonefecto.set_tamanio(lado, lado)
-
-        path = os.path.dirname(BASE_PATH)
-        archivo = os.path.join(path,
-            "Iconos", 'configurar.svg')
-
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
-        self.botonefecto.imagen.set_from_pixbuf(pixbuf)
+        self.set_border_width(4)
 
         frame = Gtk.Frame()
         frame.set_label(nombre)
-        frame.set_label_align(0.5, 1.0)
-        frame.add(self.botonefecto)
+        #frame.set_label_align(0.5, 1.0)
+        box = Gtk.VBox()
+        frame.add(box)
 
-        self.pack_start(frame, False, False, 1)
+        self.botonefecto = JAMediaButton()
+        self.botonefecto.set_border_width(4)
+        self.botonefecto.connect('clicked', self.__efecto_click)
+        #self.botonefecto.connect('click_derecho', self.__efecto_click_derecho)
+        self.botonefecto.set_tooltip(nombre)
+        self.botonefecto.set_tamanio(24, 24)
+
+        box.pack_start(self.botonefecto, False, True, 0)
+        #path = os.path.dirname(BASE_PATH)
+        #archivo = os.path.join(path,
+        #    "Iconos", 'configurar.svg')
+
+        #pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
+        #self.botonefecto.imagen.set_from_pixbuf(pixbuf)
 
         self.widget_config = get_widget_config_efecto(nombre)
 
         if self.widget_config:
+            box.pack_start(self.widget_config, False, True, 0)
             self.widget_config.connect('propiedad', self.__set_efecto)
-            frame = Gtk.Frame()
-            frame.set_label("Configuración")
-            frame.set_label_align(0.5, 1.0)
-            frame.add(self.widget_config)
 
-            box = Gtk.EventBox()
-            box.modify_bg(0, get_color("NEGRO"))
-            box.modify_fg(0, get_color("BLANCO"))
-            box.add(frame)
-
-            self.pack_start(box, False, False, 1)
-
+        self.add(frame)
         self.show_all()
         # y ocultar configuraciones.
 

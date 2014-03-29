@@ -134,11 +134,13 @@ class Radioactv(Gtk.VBox):
 
         frame1 = Gtk.Frame()
         frame1.set_label("Color:")
+        frame1.set_border_width(4)
         frame1.set_label_align(0.5, 1.0)
         frame1.add(self.__get_widgets_colors())
 
         frame2 = Gtk.Frame()
         frame2.set_label("Modo:")
+        frame2.set_border_width(4)
         frame2.set_label_align(0.5, 1.0)
         frame2.add(self.__get_widgets_modo())
 
@@ -187,7 +189,8 @@ class Radioactv(Gtk.VBox):
 
         for button in self.botones_colores:
             button.set_tamanio(24, 24)
-            color_widgets.pack_start(button, True, True, 1)
+            button.set_border_width(4)
+            color_widgets.pack_start(button, True, True, 0)
             button.connect('clicked', self.__clicked_color)
 
         return color_widgets
@@ -227,7 +230,8 @@ class Radioactv(Gtk.VBox):
 
         for button in self.botones_modo:
             button.set_tamanio(24, 24)
-            modo_widgets.pack_start(button, True, True, 1)
+            button.set_border_width(4)
+            modo_widgets.pack_start(button, True, True, 0)
             button.connect('clicked', self.__clicked_modo)
 
         return modo_widgets
@@ -626,7 +630,7 @@ class BalanceBar(Gtk.Scale):
 
         # La Imagen
         imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        imgx = ximage - imgw / 2
+        imgx = (ximage - imgw / 2) + self.borde
         imgy = float(self.get_allocation().height / 2 - imgh / 2)
         Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
         contexto.paint()
