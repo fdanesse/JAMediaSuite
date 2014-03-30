@@ -26,6 +26,27 @@ radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista
 webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
 
 
+def get_color(color):
+    """
+    Devuelve Colores predefinidos.
+    """
+
+    from gi.repository import Gdk
+
+    colors = {
+        "GRIS": Gdk.Color(60156, 60156, 60156),
+        "AMARILLO": Gdk.Color(65000, 65000, 40275),
+        "NARANJA": Gdk.Color(65000, 26000, 0),
+        "BLANCO": Gdk.Color(65535, 65535, 65535),
+        "NEGRO": Gdk.Color(0, 0, 0),
+        "ROJO": Gdk.Color(65000, 0, 0),
+        "VERDE": Gdk.Color(0, 65000, 0),
+        "AZUL": Gdk.Color(0, 0, 65000),
+        }
+
+    return colors.get(color, None)
+
+
 def get_colors(key):
 
     from gi.repository import Gdk
@@ -739,27 +760,6 @@ def stream_en_archivo(streaming, path):
     return False
 
 
-def get_color(color):
-    """
-    Devuelve Colores predefinidos.
-    """
-
-    from gi.repository import Gdk
-
-    colors = {
-        "GRIS": Gdk.Color(60156, 60156, 60156),
-        "AMARILLO": Gdk.Color(65000, 65000, 40275),
-        "NARANJA": Gdk.Color(65000, 26000, 0),
-        "BLANCO": Gdk.Color(65535, 65535, 65535),
-        "NEGRO": Gdk.Color(0, 0, 0),
-        "ROJO": Gdk.Color(65000, 0, 0),
-        "VERDE": Gdk.Color(0, 65000, 0),
-        "AZUL": Gdk.Color(0, 0, 65000),
-        }
-
-    return colors.get(color, None)
-
-
 def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
@@ -834,24 +834,3 @@ def get_boton(archivo, flip=False, rotacion=None,
         boton.TOOLTIP = tooltip_text
 
     return boton
-
-
-def get_color(color):
-    """
-    Devuelve Colores predefinidos.
-    """
-
-    from gi.repository import Gdk
-
-    colors = {
-        "GRIS": Gdk.Color(60156, 60156, 60156),
-        "AMARILLO": Gdk.Color(65000, 65000, 40275),
-        "NARANJA": Gdk.Color(65000, 26000, 0),
-        "BLANCO": Gdk.Color(65535, 65535, 65535),
-        "NEGRO": Gdk.Color(0, 0, 0),
-        "ROJO": Gdk.Color(65000, 0, 0),
-        "VERDE": Gdk.Color(0, 65000, 0),
-        "AZUL": Gdk.Color(0, 0, 65000),
-        }
-
-    return colors.get(color, None)

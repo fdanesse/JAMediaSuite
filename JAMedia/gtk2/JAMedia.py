@@ -21,8 +21,8 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import GLib
+import gtk
+import gobject
 
 from Globales import get_colors
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
@@ -30,11 +30,11 @@ from Globales import get_colors
 BASE_PATH = os.path.dirname(__file__)
 
 
-class JAMedia(Gtk.Window):
+class JAMedia(gtk.Window):
 
     def __init__(self):
 
-        Gtk.Window.__init__(self)
+        gtk.Window.__init__(self)
 
         self.set_title("JAMedia")
 
@@ -46,22 +46,22 @@ class JAMedia(Gtk.Window):
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)
-        self.set_position(Gtk.WindowPosition.CENTER)
+        #self.set_position(Gtk.WindowPosition.CENTER)
 
         self.pistas = []
 
-        from JAMediaPlayer import JAMediaPlayer
-        self.jamediaplayer = JAMediaPlayer()
+        #from JAMediaPlayer import JAMediaPlayer
+        #self.jamediaplayer = JAMediaPlayer()
 
-        self.add(self.jamediaplayer)
+        #self.add(self.jamediaplayer)
 
         self.show_all()
         self.realize()
 
         self.connect("delete-event", self.__salir)
-        self.jamediaplayer.connect('salir', self.__salir)
+        #self.jamediaplayer.connect('salir', self.__salir)
 
-        GLib.idle_add(self.__setup_init)
+        gobject.idle_add(self.__setup_init)
 
     def set_pistas(self, pistas):
         """
@@ -72,14 +72,14 @@ class JAMedia(Gtk.Window):
 
     def __setup_init(self):
 
-        self.jamediaplayer.setup_init()
-        self.jamediaplayer.pack_standar()
-        self.jamediaplayer.pack_efectos()
+        #self.jamediaplayer.setup_init()
+        #self.jamediaplayer.pack_standar()
+        #self.jamediaplayer.pack_efectos()
 
-        if self.pistas:
-            GLib.idle_add(
-                self.jamediaplayer.set_nueva_lista,
-                self.pistas)
+        #if self.pistas:
+        #    gobject.idle_add(
+        #        self.jamediaplayer.set_nueva_lista,
+        #        self.pistas)
 
         return False
 
@@ -148,4 +148,4 @@ if __name__ == "__main__":
     else:
         jamedia = JAMedia()
 
-    Gtk.main()
+    gtk.main()

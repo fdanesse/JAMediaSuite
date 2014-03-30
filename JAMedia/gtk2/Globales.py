@@ -26,9 +26,30 @@ radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista
 webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
 
 
+def get_color(color):
+    """
+    Devuelve Colores predefinidos.
+    """
+
+    from gtk import gdk
+
+    colors = {
+        "GRIS": gdk.Color(60156, 60156, 60156),
+        "AMARILLO": gdk.Color(65000, 65000, 40275),
+        "NARANJA": gdk.Color(65000, 26000, 0),
+        "BLANCO": gdk.Color(65535, 65535, 65535),
+        "NEGRO": gdk.Color(0, 0, 0),
+        "ROJO": gdk.Color(65000, 0, 0),
+        "VERDE": gdk.Color(0, 65000, 0),
+        "AZUL": gdk.Color(0, 0, 65000),
+        }
+
+    return colors.get(color, None)
+
+
 def get_colors(key):
 
-    from gi.repository import Gdk
+    from gtk import gdk
 
     _dict = {
         "window": "#ffffff",
@@ -36,7 +57,7 @@ def get_colors(key):
         "drawingplayer": "#000000",
         }
 
-    return Gdk.color_parse(_dict.get(key, "#ffffff"))
+    return gdk.color_parse(_dict.get(key, "#ffffff"))
 
 
 def get_programa(programa):
@@ -69,8 +90,7 @@ def verificar_Gstreamer():
     presente = False
 
     try:
-        import gi
-        gi.require_version('Gst', '1.0')
+        import gst
         presente = True
 
     except:
@@ -739,35 +759,14 @@ def stream_en_archivo(streaming, path):
     return False
 
 
-def get_color(color):
-    """
-    Devuelve Colores predefinidos.
-    """
-
-    from gi.repository import Gdk
-
-    colors = {
-        "GRIS": Gdk.Color(60156, 60156, 60156),
-        "AMARILLO": Gdk.Color(65000, 65000, 40275),
-        "NARANJA": Gdk.Color(65000, 26000, 0),
-        "BLANCO": Gdk.Color(65535, 65535, 65535),
-        "NEGRO": Gdk.Color(0, 0, 0),
-        "ROJO": Gdk.Color(65000, 0, 0),
-        "VERDE": Gdk.Color(0, 65000, 0),
-        "AZUL": Gdk.Color(0, 0, 65000),
-        }
-
-    return colors.get(color, None)
-
-
 def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
     """
 
-    from gi.repository import Gtk
+    import gtk
 
-    separador = Gtk.SeparatorToolItem()
+    separador = gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
@@ -782,12 +781,11 @@ def get_togle_boton(archivo, flip=False,
     Devuelve un toggletoolbutton generico.
     """
 
-    from gi.repository import Gtk
-    from gi.repository import GdkPixbuf
+    import gtk
 
-    boton = Gtk.ToggleToolButton()
-    imagen = Gtk.Image()
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+    boton = gtk.ToggleToolButton()
+    imagen = gtk.Image()
+    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
         archivo, pixels, pixels)
 
     if flip:
@@ -808,13 +806,12 @@ def get_boton(archivo, flip=False, rotacion=None,
     Devuelve un toolbutton generico.
     """
 
-    from gi.repository import Gtk
-    from gi.repository import GdkPixbuf
+    import gtk
 
-    boton = Gtk.ToolButton()
+    boton = gtk.ToolButton()
 
-    imagen = Gtk.Image()
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+    imagen = gtk.Image()
+    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
         archivo, pixels, pixels)
 
     if flip:
@@ -834,24 +831,3 @@ def get_boton(archivo, flip=False, rotacion=None,
         boton.TOOLTIP = tooltip_text
 
     return boton
-
-
-def get_color(color):
-    """
-    Devuelve Colores predefinidos.
-    """
-
-    from gi.repository import Gdk
-
-    colors = {
-        "GRIS": Gdk.Color(60156, 60156, 60156),
-        "AMARILLO": Gdk.Color(65000, 65000, 40275),
-        "NARANJA": Gdk.Color(65000, 26000, 0),
-        "BLANCO": Gdk.Color(65535, 65535, 65535),
-        "NEGRO": Gdk.Color(0, 0, 0),
-        "ROJO": Gdk.Color(65000, 0, 0),
-        "VERDE": Gdk.Color(0, 65000, 0),
-        "AZUL": Gdk.Color(0, 0, 65000),
-        }
-
-    return colors.get(color, None)
