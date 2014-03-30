@@ -146,7 +146,7 @@ class JAMediaPlayer(gtk.EventBox):
         from Toolbars import Toolbar
         from Toolbars import ToolbarAccion
         #from Toolbars import ToolbarConfig
-        #from Toolbars import ToolbarGrabar
+        from Toolbars import ToolbarGrabar
         #from Toolbars import ToolbarInfo
         from Toolbars import ToolbarAddStream
 
@@ -159,7 +159,7 @@ class JAMediaPlayer(gtk.EventBox):
         #self.toolbar_config = ToolbarConfig()
         #self.widget_efectos = WidgetsGstreamerEfectos()
         self.toolbar_accion = ToolbarAccion()
-        #self.toolbar_grabar = ToolbarGrabar()
+        self.toolbar_grabar = ToolbarGrabar()
         #self.toolbar_info = ToolbarInfo()
         self.toolbaraddstream = ToolbarAddStream()
         self.toolbar_salir = ToolbarSalir()
@@ -200,14 +200,14 @@ class JAMediaPlayer(gtk.EventBox):
         #ev_box.add(hbox_barra_progreso)
 
         # Todo
-        #vbox = gtk.VBox()
-        #vbox.pack_start(self.toolbar_grabar, False, False, 0)
+        vbox = gtk.VBox()
+        vbox.pack_start(self.toolbar_grabar, False, False, 0)
         #vbox.pack_start(self.pantalla, True, True, 0)
         #vbox.pack_start(scroll, False, False, 0)
         #vbox.pack_start(self.toolbar_info, False, False, 3)
         #vbox.pack_start(ev_box, False, True, 0)
 
-        #hpanel.pack1(vbox, resize=True, shrink=True)
+        hpanel.pack1(vbox, resize=True, shrink=True)
 
         # Area Derecha del Panel
         #self.derecha_vbox = gtk.VBox()
@@ -346,8 +346,8 @@ class JAMediaPlayer(gtk.EventBox):
             "Grabar", self.__grabar_streaming)
         self.toolbar_accion.connect(
             "accion-stream", self.__accion_stream)
-        #self.toolbar_grabar.connect(
-        #    "stop", self.__detener_grabacion)
+        self.toolbar_grabar.connect(
+            "stop", self.__detener_grabacion)
         #self.volumen.connect(
         #    "volumen", self.__set_volumen)
         self.toolbaraddstream.connect(
