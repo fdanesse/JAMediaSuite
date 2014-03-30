@@ -446,7 +446,7 @@ class JAMediaPlayer(Gtk.EventBox):
         GLib.idle_add(self.__cargar_efectos,
             list(get_jamedia_video_efectos()))
 
-        self.get_toplevel().set_sensitive(True)
+        #self.get_toplevel().set_sensitive(True)
 
     def set_nueva_lista(self, lista):
         """

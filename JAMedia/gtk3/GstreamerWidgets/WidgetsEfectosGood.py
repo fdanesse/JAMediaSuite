@@ -330,24 +330,21 @@ class Agingtv(Gtk.VBox):
 
         toolbar = Gtk.Toolbar()
 
-        #toolbar.insert(get_separador(draw=False,
-        #    ancho=0, expand=True), -1)
-
-        item = Gtk.ToolItem()
-        label = Gtk.Label("dusts:")
-        label.show()
-        item.add(label)
-        toolbar.insert(item, -1)
-
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
         switch = Gtk.Switch()
         switch.set_active(True)
         switch.show()
         item = Gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)
+        toolbar.insert(item, -1)
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
+
+        item = Gtk.ToolItem()
+        label = Gtk.Label("dusts")
+        label.show()
+        item.add(label)
         toolbar.insert(item, -1)
 
         switch.connect('button-press-event', self.__set_dusts)
@@ -358,18 +355,6 @@ class Agingtv(Gtk.VBox):
 
         toolbar = Gtk.Toolbar()
 
-        #toolbar.insert(get_separador(draw=False,
-        #    ancho=0, expand=True), -1)
-
-        item = Gtk.ToolItem()
-        label = Gtk.Label("pits:")
-        label.show()
-        item.add(label)
-        toolbar.insert(item, -1)
-
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
         switch = Gtk.Switch()
         switch.set_active(True)
         switch.show()
@@ -378,16 +363,22 @@ class Agingtv(Gtk.VBox):
         item.add(switch)
         toolbar.insert(item, -1)
 
+        toolbar.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
+
+        item = Gtk.ToolItem()
+        label = Gtk.Label("pits")
+        label.show()
+        item.add(label)
+        toolbar.insert(item, -1)
+
         switch.connect('button-press-event', self.__set_pits)
 
         return toolbar
-
+    '''
     def __get_toolbar_color_aging(self):
 
         toolbar = Gtk.Toolbar()
-
-        #toolbar.insert(get_separador(draw=False,
-        #    ancho=0, expand=True), -1)
 
         item = Gtk.ToolItem()
         label = Gtk.Label("color-aging:")
@@ -409,6 +400,7 @@ class Agingtv(Gtk.VBox):
         switch.connect('button-press-event', self.__set_color_aging)
 
         return toolbar
+        '''
 
     def __set_scratch_lines(self, widget, valor):
         """

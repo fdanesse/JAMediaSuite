@@ -409,7 +409,7 @@ class Toolbar(Gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=24)
+            pixels=35)
         boton.set_tooltip_text("Autor")
         boton.connect("clicked", self.__show_credits)
         self.insert(boton, -1)
