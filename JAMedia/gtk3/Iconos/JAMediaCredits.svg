@@ -10,8 +10,8 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="380.3143"
-   height="293.02087"
+   width="377.90778"
+   height="290.61435"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
@@ -26,10 +26,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="182.07031"
-     inkscape:cy="107.37399"
+     inkscape:cx="180.86706"
+     inkscape:cy="106.17398"
      inkscape:document-units="px"
-     inkscape:current-layer="g5829"
+     inkscape:current-layer="g4541"
      showgrid="false"
      inkscape:window-width="1366"
      inkscape:window-height="713"
@@ -56,7 +56,7 @@
      inkscape:label="Capa 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(12.585715,-695.35173)">
+     transform="translate(11.382461,-696.55824)">
     <g
        id="g6470"
        transform="matrix(0.83136594,0,0,0.83136594,-12.811371,109.89967)">
@@ -66,7 +66,7 @@
          height="347.85715"
          width="452.85715"
          id="rect6373"
-         style="fill:#fffafa;stroke:#ff4500;stroke-width:4.59999990000000025;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1" />
+         style="fill:#fffafa;fill-opacity:1;stroke:#ff4500;stroke-width:1.71284378;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
       <g
          transform="translate(0.42857146,-0.14285714)"
          id="g6412">
@@ -81,13 +81,13 @@
                xml:space="preserve"
                style="font-size:17.86697006px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#fffafa;fill-opacity:1;stroke:none;font-family:Sans"
                x="-19.810898"
-               y="1033.3396"
+               y="1038.616"
                id="text4222"
                sodipodi:linespacing="125%"><tspan
                  sodipodi:role="line"
                  id="tspan4224"
                  x="-19.810898"
-                 y="1033.3396"
+                 y="1038.616"
                  style="font-size:15.26931095px;fill:#000000">https://sites.google.com/site/sugaractivities/jamediaobjects</tspan></text>
             <text
                xml:space="preserve"
