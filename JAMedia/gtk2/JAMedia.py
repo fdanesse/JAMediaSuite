@@ -46,20 +46,20 @@ class JAMedia(gtk.Window):
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)
-        #self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_position(gtk.WIN_POS_CENTER)
 
         self.pistas = []
 
-        #from JAMediaPlayer import JAMediaPlayer
-        #self.jamediaplayer = JAMediaPlayer()
+        from JAMediaPlayer import JAMediaPlayer
+        self.jamediaplayer = JAMediaPlayer()
 
-        #self.add(self.jamediaplayer)
+        self.add(self.jamediaplayer)
 
         self.show_all()
         self.realize()
 
         self.connect("delete-event", self.__salir)
-        #self.jamediaplayer.connect('salir', self.__salir)
+        self.jamediaplayer.connect('salir', self.__salir)
 
         gobject.idle_add(self.__setup_init)
 
@@ -76,10 +76,10 @@ class JAMedia(gtk.Window):
         #self.jamediaplayer.pack_standar()
         #self.jamediaplayer.pack_efectos()
 
-        #if self.pistas:
-        #    gobject.idle_add(
-        #        self.jamediaplayer.set_nueva_lista,
-        #        self.pistas)
+        if self.pistas:
+            gobject.idle_add(
+                self.jamediaplayer.set_nueva_lista,
+                self.pistas)
 
         return False
 

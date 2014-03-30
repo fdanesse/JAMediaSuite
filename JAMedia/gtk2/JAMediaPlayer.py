@@ -21,11 +21,9 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GdkPixbuf
-from gi.repository import GObject
-from gi.repository import GLib
+import gtk
+from gtk import gdk
+import gobject
 
 from Globales import get_programa
 from Globales import verificar_Gstreamer
@@ -51,39 +49,39 @@ BASE_PATH = os.path.dirname(__file__)
 #    from JAMediaReproductor.PlayerNull import JAMediaReproductor
 #    from JAMediaReproductor.PlayerNull import JAMediaGrabador
 '''
-screen = Gdk.Screen.get_default()
-css_provider = Gtk.CssProvider()
+screen = gdk.Screen.get_default()
+css_provider = gtk.CssProvider()
 style_path = os.path.join(
     os.path.dirname(__file__), "Estilo.css")
 css_provider.load_from_path(style_path)
-context = Gtk.StyleContext()
+context = gtk.StyleContext()
 
 context.add_provider_for_screen(
     screen,
     css_provider,
-    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    gtk.STYLE_PROVIDER_PRIORITY_USER)
 '''
-#GObject.threads_init()
-#Gdk.threads_init()
+#gobject.threads_init()
+#gdk.threads_init()
 
 
-class JAMediaPlayer(Gtk.EventBox):
+class JAMediaPlayer(gtk.EventBox):
     """
     JAMedia:
         Interfaz grafica de:
             JAMediaReproductor y MplayerReproductor.
 
         Implementado sobre:
-            python 2.7.3 y Gtk 3
+            python 2.7.3 y gtk 3
     """
 
     __gsignals__ = {
-    "salir": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+    "salir": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        gtk.EventBox.__init__(self)
 
         self.modify_bg(0, get_colors("window"))
 
@@ -166,8 +164,8 @@ class JAMediaPlayer(Gtk.EventBox):
         self.toolbaraddstream = ToolbarAddStream()
         self.toolbar_salir = ToolbarSalir()
 
-        basebox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        hpanel = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
+        basebox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+        hpanel = gtk.Paned(orientation=gtk.Orientation.HORIZONTAL)
         hpanel.modify_bg(0, get_colors("window"))
 
         basebox.pack_start(self.toolbar, False, False, 3)
@@ -180,23 +178,23 @@ class JAMediaPlayer(Gtk.EventBox):
         # Area Izquierda del Panel
 
         # Efectos que se están aplicando.
-        eventbox = Gtk.EventBox()  # FIXME: Para poder pintar el fondo
+        eventbox = gtk.EventBox()  # FIXME: Para poder pintar el fondo
         eventbox.modify_bg(0, get_colors("drawingplayer"))
-        self.hbox_efectos_en_pipe = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL)
+        self.hbox_efectos_en_pipe = gtk.Box(
+            orientation=gtk.Orientation.HORIZONTAL)
         self.hbox_efectos_en_pipe.set_size_request(-1, 24)
         eventbox.add(self.hbox_efectos_en_pipe)
-        scroll = Gtk.ScrolledWindow()
+        scroll = gtk.ScrolledWindow()
         scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.NEVER)
+            gtk.PolicyType.AUTOMATIC,
+            gtk.PolicyType.NEVER)
         scroll.add_with_viewport(eventbox)
 
         # Barra de Progreso + Volúmen
-        ev_box = Gtk.EventBox()  # FIXME: Para poder pintar el fondo
+        ev_box = gtk.EventBox()  # FIXME: Para poder pintar el fondo
         ev_box.modify_bg(0, get_colors("barradeprogreso"))
-        hbox_barra_progreso = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL)
+        hbox_barra_progreso = gtk.Box(
+            orientation=gtk.Orientation.HORIZONTAL)
         hbox_barra_progreso.pack_start(
             self.barradeprogreso, True, True, 0)
         hbox_barra_progreso.pack_start(
@@ -204,7 +202,7 @@ class JAMediaPlayer(Gtk.EventBox):
         ev_box.add(hbox_barra_progreso)
 
         # Todo
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
         vbox.pack_start(self.toolbar_grabar, False, False, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
         vbox.pack_start(scroll, False, False, 0)
@@ -214,16 +212,16 @@ class JAMediaPlayer(Gtk.EventBox):
         hpanel.pack1(vbox, resize=True, shrink=True)
 
         # Area Derecha del Panel
-        self.derecha_vbox = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL)
+        self.derecha_vbox = gtk.Box(
+            orientation=gtk.Orientation.VERTICAL)
 
         # Configuración de balanace y efectos
-        self.vbox_config = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL)
-        self.scroll_config = Gtk.ScrolledWindow()
+        self.vbox_config = gtk.Box(
+            orientation=gtk.Orientation.VERTICAL)
+        self.scroll_config = gtk.ScrolledWindow()
         self.scroll_config.set_policy(
-            Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC)
+            gtk.PolicyType.NEVER,
+            gtk.PolicyType.AUTOMATIC)
         self.scroll_config.add_with_viewport(self.vbox_config)
         self.vbox_config.pack_start(
             self.toolbar_config, False, False, 0)
@@ -231,15 +229,15 @@ class JAMediaPlayer(Gtk.EventBox):
 
         # Lista de Reproducción
         # FIXME: Para poder pintar el fondo
-        self.evnt_box_lista_reproduccion = Gtk.EventBox()
+        self.evnt_box_lista_reproduccion = gtk.EventBox()
         self.evnt_box_lista_reproduccion.modify_bg(
             0, get_colors("barradeprogreso"))
-        self.vbox_lista_reproduccion = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL)
-        self.scroll_list = Gtk.ScrolledWindow()
+        self.vbox_lista_reproduccion = gtk.Box(
+            orientation=gtk.Orientation.VERTICAL)
+        self.scroll_list = gtk.ScrolledWindow()
         self.scroll_list.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
+            gtk.PolicyType.AUTOMATIC,
+            gtk.PolicyType.AUTOMATIC)
         self.scroll_list.add(self.lista_de_reproduccion)
 
         # Lista + Controles de Reproducción
@@ -275,7 +273,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
         self.add(basebox)
 
-        from gi.repository import GdkX11
+        from gi.repository import gdkX11
 
         xid = self.pantalla.get_property('window').get_xid()
 
@@ -368,10 +366,10 @@ class JAMediaPlayer(Gtk.EventBox):
         # Controlador del mouse.
         icono = os.path.join(BASE_PATH,
             "Iconos", "jamedia_cursor.svg")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
             -1, 24)
-        self.jamedia_cursor = Gdk.Cursor.new_from_pixbuf(
-            Gdk.Display.get_default(), pixbuf, 0, 0)
+        self.jamedia_cursor = gdk.Cursor.new_from_pixbuf(
+            gdk.Display.get_default(), pixbuf, 0, 0)
 
         self.cursor_root = self.get_parent_window().get_cursor()
         self.get_parent_window().set_cursor(self.jamedia_cursor)
@@ -447,7 +445,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
         from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
 
-        GLib.idle_add(self.__cargar_efectos,
+        gobject.idle_add(self.__cargar_efectos,
             list(get_jamedia_video_efectos()))
 
         #self.get_toplevel().set_sensitive(True)
@@ -470,7 +468,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
         self.lista_de_reproduccion.limpiar()
 
-        GLib.idle_add(self.lista_de_reproduccion.agregar_items, lista)
+        gobject.idle_add(self.lista_de_reproduccion.agregar_items, lista)
 
         return False
 
@@ -565,9 +563,9 @@ class JAMediaPlayer(Gtk.EventBox):
                     return
 
             elif estado == "detenido":
-                if self.get_parent_window().get_cursor() != Gdk.CursorType.BLANK_CURSOR:
+                if self.get_parent_window().get_cursor() != gdk.CursorType.BLANK_CURSOR:
                     self.get_parent_window().set_cursor(
-                        Gdk.Cursor(Gdk.CursorType.BLANK_CURSOR))
+                        gdk.Cursor(gdk.CursorType.BLANK_CURSOR))
                     return
 
             elif estado == "fuera":
@@ -663,7 +661,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
             archivo = os.path.join(JAMediaObjectsPath,
                 "Iconos", 'configurar.svg')
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+            pixbuf = gdk.pixbuf_new_from_file_at_size(
                 archivo, lado, lado)
             botonefecto.imagen.set_from_pixbuf(pixbuf)
 
@@ -858,11 +856,11 @@ class JAMediaPlayer(Gtk.EventBox):
 
             if ww == w and hh == h:
                 ventana.set_border_width(2)
-                GLib.idle_add(ventana.unfullscreen)
+                gobject.idle_add(ventana.unfullscreen)
 
             else:
                 ventana.set_border_width(0)
-                GLib.idle_add(ventana.fullscreen)
+                gobject.idle_add(ventana.fullscreen)
 
             self.get_toplevel().set_sensitive(True)
 
@@ -888,7 +886,7 @@ class JAMediaPlayer(Gtk.EventBox):
             #self.scroll_config.set_size_request(rect.width, -1)
             self.evnt_box_lista_reproduccion.hide()
             self.scroll_config.show_all()
-            GLib.idle_add(self.__update_balance_toolbars)
+            gobject.idle_add(self.__update_balance_toolbars)
 
         self.get_toplevel().set_sensitive(True)
 
@@ -1013,7 +1011,7 @@ class JAMediaPlayer(Gtk.EventBox):
         """
 
         self.controlesrepro.set_paused()
-        GLib.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
+        gobject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
 
     def __cambioestadoreproductor(self, widget=None, valor=None):
         """
@@ -1030,7 +1028,7 @@ class JAMediaPlayer(Gtk.EventBox):
         else:
             print "Estado del Reproductor desconocido:", valor
 
-        GLib.idle_add(self.__update_balance_toolbars)
+        gobject.idle_add(self.__update_balance_toolbars)
 
     def __update_balance_toolbars(self):
         """
@@ -1250,7 +1248,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
             selector = My_FileChooser(
                 parent=self.get_toplevel(),
-                action=Gtk.FileChooserAction.OPEN,
+                action=gtk.FileChooserAction.OPEN,
                 mime=["audio/*", "video/*"],
                 title="Abrir Archivos.",
                 path=directorio,
@@ -1308,7 +1306,7 @@ class JAMediaPlayer(Gtk.EventBox):
         self.toolbar_list.label.set_text(titulo)
         self.lista_de_reproduccion.limpiar()
 
-        GLib.idle_add(self.lista_de_reproduccion.agregar_items, lista)
+        gobject.idle_add(self.lista_de_reproduccion.agregar_items, lista)
 
     def __seleccionar_lista_de_stream(self, archivo, titulo):
         """
@@ -1333,7 +1331,7 @@ class JAMediaPlayer(Gtk.EventBox):
         self.toolbar_list.label.set_text(titulo)
         self.lista_de_reproduccion.limpiar()
 
-        GLib.idle_add(
+        gobject.idle_add(
             self.lista_de_reproduccion.agregar_items, items)
 
     def __click_derecho_en_lista(self, widget, event):
