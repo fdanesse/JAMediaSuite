@@ -134,148 +134,143 @@ class JAMediaPlayer(gtk.EventBox):
 
         #from Globales import get_color
 
-        from Widgets import Visor
-        from Widgets import BarraProgreso
-        from Widgets import ControlVolumen
+        #from Widgets import Visor
+        #from Widgets import BarraProgreso
+        #from Widgets import ControlVolumen
 
-        from PlayerList import Lista
-        from PlayerControls import PlayerControl
-        from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
+        #from PlayerList import Lista
+        #from PlayerControls import PlayerControl
+        #from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
 
-        from Toolbars import ToolbarSalir
+        #from Toolbars import ToolbarSalir
         from Toolbars import Toolbar
-        from Toolbars import ToolbarAccion
-        from Toolbars import ToolbarConfig
-        from Toolbars import ToolbarGrabar
-        from Toolbars import ToolbarInfo
-        from Toolbars import ToolbarAddStream
+        #from Toolbars import ToolbarAccion
+        #from Toolbars import ToolbarConfig
+        #from Toolbars import ToolbarGrabar
+        #from Toolbars import ToolbarInfo
+        #from Toolbars import ToolbarAddStream
 
-        self.pantalla = Visor()
-        self.barradeprogreso = BarraProgreso()
-        self.volumen = ControlVolumen()
-        self.lista_de_reproduccion = Lista()
-        self.controlesrepro = PlayerControl()
+        #self.pantalla = Visor()
+        #self.barradeprogreso = BarraProgreso()
+        #self.volumen = ControlVolumen()
+        #self.lista_de_reproduccion = Lista()
+        #self.controlesrepro = PlayerControl()
         self.toolbar = Toolbar()
-        self.toolbar_config = ToolbarConfig()
-        self.widget_efectos = WidgetsGstreamerEfectos()
-        self.toolbar_accion = ToolbarAccion()
-        self.toolbar_grabar = ToolbarGrabar()
-        self.toolbar_info = ToolbarInfo()
-        self.toolbaraddstream = ToolbarAddStream()
-        self.toolbar_salir = ToolbarSalir()
+        #self.toolbar_config = ToolbarConfig()
+        #self.widget_efectos = WidgetsGstreamerEfectos()
+        #self.toolbar_accion = ToolbarAccion()
+        #self.toolbar_grabar = ToolbarGrabar()
+        #self.toolbar_info = ToolbarInfo()
+        #self.toolbaraddstream = ToolbarAddStream()
+        #self.toolbar_salir = ToolbarSalir()
 
-        basebox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-        hpanel = gtk.Paned(orientation=gtk.Orientation.HORIZONTAL)
+        basebox = gtk.VBox()
+        hpanel = gtk.HPaned()
         hpanel.modify_bg(0, get_colors("window"))
 
         basebox.pack_start(self.toolbar, False, False, 3)
-        basebox.pack_start(self.toolbar_salir, False, False, 0)
-        basebox.pack_start(self.toolbar_accion, False, False, 0)
-        basebox.pack_start(self.toolbaraddstream, False, False, 0)
+        #basebox.pack_start(self.toolbar_salir, False, False, 0)
+        #basebox.pack_start(self.toolbar_accion, False, False, 0)
+        #basebox.pack_start(self.toolbaraddstream, False, False, 0)
 
         basebox.pack_start(hpanel, True, True, 0)
 
         # Area Izquierda del Panel
 
         # Efectos que se están aplicando.
-        eventbox = gtk.EventBox()  # FIXME: Para poder pintar el fondo
-        eventbox.modify_bg(0, get_colors("drawingplayer"))
-        self.hbox_efectos_en_pipe = gtk.Box(
-            orientation=gtk.Orientation.HORIZONTAL)
-        self.hbox_efectos_en_pipe.set_size_request(-1, 24)
-        eventbox.add(self.hbox_efectos_en_pipe)
-        scroll = gtk.ScrolledWindow()
-        scroll.set_policy(
-            gtk.PolicyType.AUTOMATIC,
-            gtk.PolicyType.NEVER)
-        scroll.add_with_viewport(eventbox)
+        #eventbox = gtk.EventBox()  # FIXME: Para poder pintar el fondo
+        #eventbox.modify_bg(0, get_colors("drawingplayer"))
+        #self.hbox_efectos_en_pipe = gtk.HBox()
+        #self.hbox_efectos_en_pipe.set_size_request(-1, 24)
+        #eventbox.add(self.hbox_efectos_en_pipe)
+        #scroll = gtk.ScrolledWindow()
+        #scroll.set_policy(
+        #    gtk.POLICY_AUTOMATIC,
+        #    gtk.POLICY_NEVER)
+        #scroll.add_with_viewport(eventbox)
 
         # Barra de Progreso + Volúmen
-        ev_box = gtk.EventBox()  # FIXME: Para poder pintar el fondo
-        ev_box.modify_bg(0, get_colors("barradeprogreso"))
-        hbox_barra_progreso = gtk.Box(
-            orientation=gtk.Orientation.HORIZONTAL)
-        hbox_barra_progreso.pack_start(
-            self.barradeprogreso, True, True, 0)
-        hbox_barra_progreso.pack_start(
-            self.volumen, False, False, 0)
-        ev_box.add(hbox_barra_progreso)
+        #ev_box = gtk.EventBox()  # FIXME: Para poder pintar el fondo
+        #ev_box.modify_bg(0, get_colors("barradeprogreso"))
+        #hbox_barra_progreso = gtk.HBox()
+        #hbox_barra_progreso.pack_start(
+        #    self.barradeprogreso, True, True, 0)
+        #hbox_barra_progreso.pack_start(
+        #    self.volumen, False, False, 0)
+        #ev_box.add(hbox_barra_progreso)
 
         # Todo
-        vbox = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-        vbox.pack_start(self.toolbar_grabar, False, False, 0)
-        vbox.pack_start(self.pantalla, True, True, 0)
-        vbox.pack_start(scroll, False, False, 0)
-        vbox.pack_start(self.toolbar_info, False, False, 3)
-        vbox.pack_start(ev_box, False, True, 0)
+        #vbox = gtk.VBox()
+        #vbox.pack_start(self.toolbar_grabar, False, False, 0)
+        #vbox.pack_start(self.pantalla, True, True, 0)
+        #vbox.pack_start(scroll, False, False, 0)
+        #vbox.pack_start(self.toolbar_info, False, False, 3)
+        #vbox.pack_start(ev_box, False, True, 0)
 
-        hpanel.pack1(vbox, resize=True, shrink=True)
+        #hpanel.pack1(vbox, resize=True, shrink=True)
 
         # Area Derecha del Panel
-        self.derecha_vbox = gtk.Box(
-            orientation=gtk.Orientation.VERTICAL)
+        #self.derecha_vbox = gtk.VBox()
 
         # Configuración de balanace y efectos
-        self.vbox_config = gtk.Box(
-            orientation=gtk.Orientation.VERTICAL)
-        self.scroll_config = gtk.ScrolledWindow()
-        self.scroll_config.set_policy(
-            gtk.PolicyType.NEVER,
-            gtk.PolicyType.AUTOMATIC)
-        self.scroll_config.add_with_viewport(self.vbox_config)
-        self.vbox_config.pack_start(
-            self.toolbar_config, False, False, 0)
-        self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
+        #self.vbox_config = gtk.VBox()
+        #self.scroll_config = gtk.ScrolledWindow()
+        #self.scroll_config.set_policy(
+        #    gtk.POLICY_NEVER,
+        #    gtk.POLICY_AUTOMATIC)
+        #self.scroll_config.add_with_viewport(self.vbox_config)
+        #self.vbox_config.pack_start(
+        #    self.toolbar_config, False, False, 0)
+        #self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
 
         # Lista de Reproducción
         # FIXME: Para poder pintar el fondo
-        self.evnt_box_lista_reproduccion = gtk.EventBox()
-        self.evnt_box_lista_reproduccion.modify_bg(
-            0, get_colors("barradeprogreso"))
-        self.vbox_lista_reproduccion = gtk.Box(
-            orientation=gtk.Orientation.VERTICAL)
-        self.scroll_list = gtk.ScrolledWindow()
-        self.scroll_list.set_policy(
-            gtk.PolicyType.AUTOMATIC,
-            gtk.PolicyType.AUTOMATIC)
-        self.scroll_list.add(self.lista_de_reproduccion)
+        #self.evnt_box_lista_reproduccion = gtk.EventBox()
+        #self.evnt_box_lista_reproduccion.modify_bg(
+        #    0, get_colors("barradeprogreso"))
+        #self.vbox_lista_reproduccion = gtk.VBox()
+        #self.scroll_list = gtk.ScrolledWindow()
+        #self.scroll_list.set_policy(
+        #    gtk.POLICY_AUTOMATIC,
+        #    gtk.POLICY_AUTOMATIC)
+        #self.scroll_list.add(self.lista_de_reproduccion)
 
         # Lista + Controles de Reproducción
-        self.__pack_vbox_lista_reproduccion()
-        self.evnt_box_lista_reproduccion.add(
-            self.vbox_lista_reproduccion)
+        #self.__pack_vbox_lista_reproduccion()
+        #self.evnt_box_lista_reproduccion.add(
+        #    self.vbox_lista_reproduccion)
 
         # Configuración + Lista de Reproducción.
-        self.derecha_vbox.pack_start(
-            self.scroll_config, True, True, 0)
-        self.derecha_vbox.pack_start(
-            self.evnt_box_lista_reproduccion, True, True, 0)
+        #self.derecha_vbox.pack_start(
+        #    self.scroll_config, True, True, 0)
+        #self.derecha_vbox.pack_start(
+        #    self.evnt_box_lista_reproduccion, True, True, 0)
 
-        hpanel.pack2(self.derecha_vbox, resize=False, shrink=True)
+        #hpanel.pack2(self.derecha_vbox, resize=False, shrink=True)
 
-        self.controles_dinamicos = [
-            hbox_barra_progreso,
-            self.derecha_vbox,
-            self.toolbar,
-            self.toolbar_info,
-            self.hbox_efectos_en_pipe.get_parent().get_parent(
-                ).get_parent()]
+        #self.controles_dinamicos = [
+        #    hbox_barra_progreso,
+        #    self.derecha_vbox,
+        #    self.toolbar,
+        #    self.toolbar_info,
+        #    self.hbox_efectos_en_pipe.get_parent().get_parent(
+        #        ).get_parent()]
 
         basebox.show_all()
 
-        map(self.__ocultar,
-            [self.toolbar_salir,
-            self.scroll_config,
-            self.toolbar_accion,
-            self.toolbar_grabar,
-            self.toolbaraddstream,
-            self.toolbar_info.descarga])
+        #map(self.__ocultar,
+        #    [self.toolbar_salir,
+        #    self.scroll_config,
+        #    self.toolbar_accion,
+        #    self.toolbar_grabar,
+        #    self.toolbaraddstream,
+        #    self.toolbar_info.descarga])
 
         self.add(basebox)
 
-        from gi.repository import gdkX11
+        #from gi.repository import gdkX11
 
-        xid = self.pantalla.get_property('window').get_xid()
+        #xid = self.pantalla.get_property('window').get_xid()
 
         # HACK: La aplicación nunca debe explotar :P
         #if get_programa("mplayer"):
@@ -291,8 +286,8 @@ class JAMediaPlayer(gtk.EventBox):
         #else:
         #    self.jamediareproductor = JAMediaReproductor(self.pantalla)
 
-        self.switch_reproductor(
-            None, "JAMediaReproductor")  # default Gst.
+        #self.switch_reproductor(
+        #    None, "JAMediaReproductor")  # default Gst.
 
         #self.mplayerreproductor.connect(
         #    "endfile", self.__endfile)
@@ -316,80 +311,80 @@ class JAMediaPlayer(gtk.EventBox):
         #self.jamediareproductor.connect(
         #    "video", self.__set_video)
 
-        self.lista_de_reproduccion.connect(
-            "nueva-seleccion",
-            self.__cargar_reproducir)
-        self.lista_de_reproduccion.connect(
-            "button-press-event",
-            self.__click_derecho_en_lista)
+        #self.lista_de_reproduccion.connect(
+        #    "nueva-seleccion",
+        #    self.__cargar_reproducir)
+        #self.lista_de_reproduccion.connect(
+        #    "button-press-event",
+        #    self.__click_derecho_en_lista)
 
-        self.controlesrepro.connect(
-            "activar", self.__activar)
-        self.barradeprogreso.connect(
-            "user-set-value", self.__user_set_value)
-        self.pantalla.connect(
-            "ocultar_controles", self.__ocultar_controles)
-        self.pantalla.connect(
-            "button_press_event", self.__clicks_en_pantalla)
+        #self.controlesrepro.connect(
+        #    "activar", self.__activar)
+        #self.barradeprogreso.connect(
+        #    "user-set-value", self.__user_set_value)
+        #self.pantalla.connect(
+        #    "ocultar_controles", self.__ocultar_controles)
+        #self.pantalla.connect(
+        #    "button_press_event", self.__clicks_en_pantalla)
 
-        self.toolbar.connect('salir', self.confirmar_salir)
+        #self.toolbar.connect('salir', self.confirmar_salir)
         #self.toolbar.connect('capturar', self.fotografiar)
-        self.toolbar.connect('config', self.__mostrar_config)
+        #self.toolbar.connect('config', self.__mostrar_config)
 
-        self.toolbar_salir.connect(
-            'salir', self.__emit_salir)
-        self.toolbar_config.connect(
-            'reproductor', self.switch_reproductor)
-        self.toolbar_config.connect(
-            'valor', self.__set_balance)
-        self.toolbar_info.connect(
-            'rotar', self.__set_rotacion)
-        self.toolbar_info.connect(
-            'actualizar_streamings',
-            self.__actualizar_streamings)
-        self.toolbar_accion.connect(
-            "Grabar", self.__grabar_streaming)
-        self.toolbar_accion.connect(
-            "accion-stream", self.__accion_stream)
-        self.toolbar_grabar.connect(
-            "stop", self.__detener_grabacion)
-        self.volumen.connect(
-            "volumen", self.__set_volumen)
-        self.toolbaraddstream.connect(
-            "add-stream", self.__ejecutar_add_stream)
+        #self.toolbar_salir.connect(
+        #    'salir', self.__emit_salir)
+        #self.toolbar_config.connect(
+        #    'reproductor', self.switch_reproductor)
+        #self.toolbar_config.connect(
+        #    'valor', self.__set_balance)
+        #self.toolbar_info.connect(
+        #    'rotar', self.__set_rotacion)
+        #self.toolbar_info.connect(
+        #    'actualizar_streamings',
+        #    self.__actualizar_streamings)
+        #self.toolbar_accion.connect(
+        #    "Grabar", self.__grabar_streaming)
+        #self.toolbar_accion.connect(
+        #    "accion-stream", self.__accion_stream)
+        #self.toolbar_grabar.connect(
+        #    "stop", self.__detener_grabacion)
+        #self.volumen.connect(
+        #    "volumen", self.__set_volumen)
+        #self.toolbaraddstream.connect(
+        #    "add-stream", self.__ejecutar_add_stream)
 
-        self.widget_efectos.connect(
-            "click_efecto", self.__click_efecto)
-        self.widget_efectos.connect(
-            'configurar_efecto', self.__configurar_efecto)
+        #self.widget_efectos.connect(
+        #    "click_efecto", self.__click_efecto)
+        #self.widget_efectos.connect(
+        #    'configurar_efecto', self.__configurar_efecto)
 
         # Controlador del mouse.
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "jamedia_cursor.svg")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            -1, 24)
-        self.jamedia_cursor = gdk.Cursor.new_from_pixbuf(
-            gdk.Display.get_default(), pixbuf, 0, 0)
+        #icono = os.path.join(BASE_PATH,
+        #    "Iconos", "jamedia_cursor.svg")
+        #pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+        #    -1, 24)
+        #self.jamedia_cursor = gdk.Cursor.new_from_pixbuf(
+        #    gdk.Display.get_default(), pixbuf, 0, 0)
 
-        self.cursor_root = self.get_parent_window().get_cursor()
-        self.get_parent_window().set_cursor(self.jamedia_cursor)
+        #self.cursor_root = self.get_parent_window().get_cursor()
+        #self.get_parent_window().set_cursor(self.jamedia_cursor)
 
-        from Widgets import MouseSpeedDetector
+        #from Widgets import MouseSpeedDetector
 
-        self.mouse_listener = MouseSpeedDetector(self)
-        self.mouse_listener.connect(
-            "estado", self.__set_mouse)
-        self.mouse_listener.new_handler(True)
+        #self.mouse_listener = MouseSpeedDetector(self)
+        #self.mouse_listener.connect(
+        #    "estado", self.__set_mouse)
+        #self.mouse_listener.new_handler(True)
 
-        self.get_parent().connect(
-            "hide", self.__hide_show_parent)
-        self.get_parent().connect(
-            "show", self.__hide_show_parent)
+        #self.get_parent().connect(
+        #    "hide", self.__hide_show_parent)
+        #self.get_parent().connect(
+        #    "show", self.__hide_show_parent)
 
-        self.hbox_efectos_en_pipe.get_parent().get_parent(
-            ).get_parent().hide()
+        #self.hbox_efectos_en_pipe.get_parent().get_parent(
+        #    ).get_parent().hide()
 
-        self.get_toplevel().set_sensitive(True)
+        #self.get_toplevel().set_sensitive(True)
 
     # FIXME: La idea es utilizar gdkpixbufsink en el pipe.
     #def fotografiar(self, widget):

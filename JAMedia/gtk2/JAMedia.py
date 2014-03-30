@@ -72,7 +72,7 @@ class JAMedia(gtk.Window):
 
     def __setup_init(self):
 
-        #self.jamediaplayer.setup_init()
+        self.jamediaplayer.setup_init()
         #self.jamediaplayer.pack_standar()
         #self.jamediaplayer.pack_efectos()
 

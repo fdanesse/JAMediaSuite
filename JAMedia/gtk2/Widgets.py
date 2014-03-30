@@ -21,11 +21,9 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GdkPixbuf
-from gi.repository import GObject
-from gi.repository import GLib
+import gtk
+from gi.repository import gdk
+import gobject
 
 from Globales import get_color
 from Globales import get_colors
@@ -35,7 +33,7 @@ from Globales import get_boton
 BASE_PATH = os.path.dirname(__file__)
 
 
-class My_FileChooser(Gtk.FileChooserDialog):
+class My_FileChooser(gtk.FileChooserDialog):
     """
     Selector de Archivos para poder cargar archivos
     desde cualquier dispositivo o directorio.
@@ -44,17 +42,18 @@ class My_FileChooser(Gtk.FileChooserDialog):
     __gtype_name__ = 'My_FileChooser'
 
     __gsignals__ = {
-    'archivos-seleccionados': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+    'archivos-seleccionados': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self, parent=None, action=None,
         filter=[], title=None, path=None, mime=[]):
 
-        Gtk.FileChooserDialog.__init__(self,
+        gtk.FileChooserDialog.__init__(self,
             title=title,
             parent=parent,
             action=action,
-            flags=Gtk.DialogFlags.MODAL)
+            #flags=gtk.DialogFlags.MODAL,
+            )
 
         self.modify_bg(0, get_colors("window"))
 
@@ -65,11 +64,11 @@ class My_FileChooser(Gtk.FileChooserDialog):
 
         self.set_select_multiple(True)
 
-        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        hbox = gtk.HBox()
 
-        boton_abrir_directorio = Gtk.Button("Abrir")
-        boton_seleccionar_todo = Gtk.Button("Seleccionar Todos")
-        boton_salir = Gtk.Button("Salir")
+        boton_abrir_directorio = gtk.Button("Abrir")
+        boton_seleccionar_todo = gtk.Button("Seleccionar Todos")
+        boton_salir = gtk.Button("Salir")
 
         boton_salir.connect("clicked", self.__salir)
         boton_abrir_directorio.connect("clicked",
@@ -86,7 +85,7 @@ class My_FileChooser(Gtk.FileChooserDialog):
         hbox.show_all()
 
         if filter:
-            filtro = Gtk.FileFilter()
+            filtro = gtk.FileFilter()
             filtro.set_name("Filtro")
 
             for fil in filter:
@@ -95,7 +94,7 @@ class My_FileChooser(Gtk.FileChooserDialog):
             self.add_filter(filtro)
 
         elif mime:
-            filtro = Gtk.FileFilter()
+            filtro = gtk.FileFilter()
             filtro.set_name("Filtro")
 
             for mi in mime:
@@ -136,7 +135,7 @@ class My_FileChooser(Gtk.FileChooserDialog):
         self.destroy()
 
 
-class MenuList(Gtk.Menu):
+class MenuList(gtk.Menu):
     """
     Menu con opciones para operar sobre el archivo o
     el streaming seleccionado en la lista de reproduccion
@@ -146,18 +145,18 @@ class MenuList(Gtk.Menu):
     __gtype_name__ = 'MenuList'
 
     __gsignals__ = {
-    'accion': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+    'accion': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
     def __init__(self, widget, boton, pos, tiempo, path, modelo):
 
-        Gtk.Menu.__init__(self)
+        gtk.Menu.__init__(self)
 
         iter = modelo.get_iter(path)
         uri = modelo.get_value(iter, 2)
 
-        quitar = Gtk.MenuItem("Quitar de la Lista")
+        quitar = gtk.MenuItem("Quitar de la Lista")
         self.append(quitar)
         quitar.connect_object("activate", self.__set_accion,
             widget, path, "Quitar")
@@ -171,25 +170,25 @@ class MenuList(Gtk.Menu):
             lectura, escritura, ejecucion = describe_acceso_uri(uri)
 
             if lectura and os.path.dirname(uri) != get_my_files_directory():
-                copiar = Gtk.MenuItem("Copiar a JAMedia")
+                copiar = gtk.MenuItem("Copiar a JAMedia")
                 self.append(copiar)
                 copiar.connect_object("activate", self.__set_accion,
                     widget, path, "Copiar")
 
             if escritura and os.path.dirname(uri) != get_my_files_directory():
-                mover = Gtk.MenuItem("Mover a JAMedia")
+                mover = gtk.MenuItem("Mover a JAMedia")
                 self.append(mover)
                 mover.connect_object("activate", self.__set_accion,
                     widget, path, "Mover")
 
             if escritura:
-                borrar = Gtk.MenuItem("Borrar el Archivo")
+                borrar = gtk.MenuItem("Borrar el Archivo")
                 self.append(borrar)
                 borrar.connect_object("activate", self.__set_accion,
                     widget, path, "Borrar")
 
         else:
-            borrar = Gtk.MenuItem("Borrar Streaming")
+            borrar = gtk.MenuItem("Borrar Streaming")
             self.append(borrar)
             borrar.connect_object("activate", self.__set_accion,
                 widget, path, "Borrar")
@@ -206,17 +205,17 @@ class MenuList(Gtk.Menu):
                 (stream_en_archivo(uri, listas[1]) and \
                 not stream_en_archivo(uri, listas[2])):
 
-                copiar = Gtk.MenuItem("Copiar a JAMedia")
+                copiar = gtk.MenuItem("Copiar a JAMedia")
                 self.append(copiar)
                 copiar.connect_object("activate", self.__set_accion,
                     widget, path, "Copiar")
 
-                mover = Gtk.MenuItem("Mover a JAMedia")
+                mover = gtk.MenuItem("Mover a JAMedia")
                 self.append(mover)
                 mover.connect_object("activate", self.__set_accion,
                     widget, path, "Mover")
 
-            grabar = Gtk.MenuItem("Grabar")
+            grabar = gtk.MenuItem("Grabar")
             self.append(grabar)
             grabar.connect_object("activate", self.__set_accion,
                 widget, path, "Grabar")
@@ -243,20 +242,20 @@ class MenuList(Gtk.Menu):
         self.emit('accion', widget, accion, iter)
 
 
-class JAMediaButton(Gtk.EventBox):
+class JAMediaButton(gtk.EventBox):
     """
     Un Boton a medida.
     """
 
     __gsignals__ = {
-    "clicked": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
-    "click_derecho": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+    "clicked": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+    "click_derecho": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        gtk.EventBox.__init__(self)
 
         self.cn = get_color("BLANCO")
         self.cs = get_color("AMARILLO")
@@ -273,19 +272,19 @@ class JAMediaButton(Gtk.EventBox):
 
         self.estado_select = False
 
-        self.add_events(
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.BUTTON_RELEASE_MASK |
-            Gdk.EventMask.POINTER_MOTION_MASK |
-            Gdk.EventMask.ENTER_NOTIFY_MASK |
-            Gdk.EventMask.LEAVE_NOTIFY_MASK)
+        #self.add_events(
+        #    gdk.EventMask.BUTTON_PRESS_MASK |
+        #    gdk.EventMask.BUTTON_RELEASE_MASK |
+        #    gdk.EventMask.POINTER_MOTION_MASK |
+        #    gdk.EventMask.ENTER_NOTIFY_MASK |
+        #    gdk.EventMask.LEAVE_NOTIFY_MASK)
 
         self.connect("button_press_event", self.button_press)
         self.connect("button_release_event", self.__button_release)
         self.connect("enter-notify-event", self.__enter_notify_event)
         self.connect("leave-notify-event", self.__leave_notify_event)
 
-        self.imagen = Gtk.Image()
+        self.imagen = gtk.Image()
         self.add(self.imagen)
 
         self.show_all()
@@ -368,7 +367,7 @@ class JAMediaButton(Gtk.EventBox):
         for child in self.get_children():
             child.destroy()
 
-        label = Gtk.Label(texto)
+        label = gtk.Label(texto)
         label.show()
         self.add(label)
 
@@ -411,21 +410,22 @@ class WidgetEfecto_en_Pipe(JAMediaButton):
         pass
 
 
-class DialogoDescarga(Gtk.Dialog):
+class DialogoDescarga(gtk.Dialog):
 
     __gtype_name__ = 'DialogoDescarga'
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
+        gtk.Dialog.__init__(self,
             parent=parent,
-            flags=Gtk.DialogFlags.MODAL)
+            #flags=gtk.DialogFlags.MODAL,
+            )
 
         self.set_decorated(False)
         self.modify_bg(0, get_colors("window"))
         self.set_border_width(15)
 
-        label = Gtk.Label("*** Descargando Streamings de JAMedia ***")
+        label = gtk.Label("*** Descargando Streamings de JAMedia ***")
         label.show()
 
         self.vbox.pack_start(label, True, True, 5)
@@ -434,7 +434,7 @@ class DialogoDescarga(Gtk.Dialog):
 
     def __do_realize(self, widget):
 
-        GLib.timeout_add(500, self.__descargar)
+        gobject.timeout_add(500, self.__descargar)
 
     def __descargar(self):
 
@@ -445,20 +445,20 @@ class DialogoDescarga(Gtk.Dialog):
         self.destroy()
 
 
-class Credits(Gtk.Dialog):
+class Credits(gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
+        gtk.Dialog.__init__(self,
             parent=parent,
-            flags=Gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
+            #flags=gtk.DialogFlags.MODAL,
+            buttons=("Cerrar", gtk.ResponseType.ACCEPT))
 
         self.set_decorated(False)
         self.modify_bg(0, get_colors("window"))
         self.set_border_width(15)
 
-        imagen = Gtk.Image()
+        imagen = gtk.Image()
         imagen.set_from_file(
             os.path.join(BASE_PATH,
                 "Iconos", "JAMediaCredits.svg"))
@@ -467,22 +467,22 @@ class Credits(Gtk.Dialog):
         self.vbox.show_all()
 
 
-class Help(Gtk.Dialog):
+class Help(gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
+        gtk.Dialog.__init__(self,
             parent=parent,
-            flags=Gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
+            #flags=gtk.DialogFlags.MODAL,
+            buttons=("Cerrar", gtk.ResponseType.ACCEPT))
 
         self.set_decorated(False)
         self.modify_bg(0, get_colors("window"))
         self.set_border_width(15)
 
-        tabla1 = Gtk.Table(columns=5, rows=2, homogeneous=False)
+        tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)
 
-        vbox = Gtk.HBox()
+        vbox = gtk.HBox()
         archivo = os.path.join(BASE_PATH,
             "Iconos", "play.svg")
         self.anterior = get_boton(
@@ -508,7 +508,7 @@ class Help(Gtk.Dialog):
         self.helps = []
 
         for x in range(1, 5):
-            help = Gtk.Image()
+            help = gtk.Image()
             help.set_from_file(
                 os.path.join(BASE_PATH,
                     "Iconos", "JAMedia-help%s.png" % x))
@@ -569,7 +569,7 @@ class Help(Gtk.Dialog):
                 return self.helps.index(help)
 
 
-class Visor(Gtk.DrawingArea):
+class Visor(gtk.DrawingArea):
     """
     Visor generico para utilizar como area de
     reproduccion de videos o dibujar.
@@ -578,24 +578,24 @@ class Visor(Gtk.DrawingArea):
     __gtype_name__ = 'Visor'
 
     __gsignals__ = {
-    "ocultar_controles": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
+    "ocultar_controles": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
 
     def __init__(self):
 
-        Gtk.DrawingArea.__init__(self)
+        gtk.DrawingArea.__init__(self)
 
         self.modify_bg(0, get_colors("drawingplayer"))
 
-        self.add_events(
-            Gdk.EventMask.KEY_PRESS_MASK |
-            Gdk.EventMask.KEY_RELEASE_MASK |
-            Gdk.EventMask.POINTER_MOTION_MASK |
-            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
-            Gdk.EventMask.BUTTON_MOTION_MASK |
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.BUTTON_RELEASE_MASK
-        )
+        #self.add_events(
+        #    gdk.EventMask.KEY_PRESS_MASK |
+        #    gdk.EventMask.KEY_RELEASE_MASK |
+        #    gdk.EventMask.POINTER_MOTION_MASK |
+        #    gdk.EventMask.POINTER_MOTION_HINT_MASK |
+        #    gdk.EventMask.BUTTON_MOTION_MASK |
+        #    gdk.EventMask.BUTTON_PRESS_MASK |
+        #    gdk.EventMask.BUTTON_RELEASE_MASK
+        #)
 
         self.show_all()
 
@@ -621,24 +621,24 @@ class Visor(Gtk.DrawingArea):
             return
 
 
-class BarraProgreso(Gtk.EventBox):
+class BarraProgreso(gtk.EventBox):
     """
     Barra de progreso para mostrar estado de reproduccion.
     """
 
     __gsignals__ = {
-    "user-set-value": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        gtk.EventBox.__init__(self)
 
         #self.modify_bg(0, get_color("BLANCO"))
         self.modify_bg(0, get_colors("barradeprogreso"))
 
         self.escala = ProgressBar(
-            Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
+            gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
 
         self.valor = 0
 
@@ -671,19 +671,19 @@ class BarraProgreso(Gtk.EventBox):
             self.emit("user-set-value", valor)
 
 
-class ProgressBar(Gtk.Scale):
+class ProgressBar(gtk.Scale):
     """
     Escala de BarraProgreso.
     """
 
     __gsignals__ = {
-    "user-set-value": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+    "user-set-value": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self, ajuste):
 
-        Gtk.Scale.__init__(self,
-            orientation=Gtk.Orientation.HORIZONTAL)
+        gtk.Scale.__init__(self,
+            orientation=gtk.Orientation.HORIZONTAL)
 
         self.set_adjustment(ajuste)
         self.set_digits(0)
@@ -694,10 +694,10 @@ class ProgressBar(Gtk.Scale):
 
         icono = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
             24, 24)
         self.pixbuf = pixbuf.rotate_simple(
-            GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE)
+            gdk.PIXBUF_ROTATE_CLOCKWISE)
 
         self.show_all()
 
@@ -714,8 +714,8 @@ class ProgressBar(Gtk.Scale):
         Cuando el usuario se desplaza por la barra de progreso.
         """
 
-        if event.state == Gdk.ModifierType.MOD2_MASK | \
-            Gdk.ModifierType.BUTTON1_MASK:
+        if event.state == gdk.ModifierType.MOD2_MASK | \
+            gdk.ModifierType.BUTTON1_MASK:
 
             rect = self.get_allocation()
             x, y = (self.borde, self.borde)
@@ -738,53 +738,53 @@ class ProgressBar(Gtk.Scale):
         w, h = (rect.width, rect.height)
 
         # Fondo
-        #Gdk.cairo_set_source_color(contexto, G.BLANCO)
+        #gdk.cairo_set_source_color(contexto, G.BLANCO)
         #contexto.paint()
 
         # Relleno de la barra
         ww = w - self.borde * 2
         hh = h - self.borde * 2
-        Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
-        rect = Gdk.Rectangle()
+        gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
+        rect = gdk.Rectangle()
         rect.x, rect.y, rect.width, rect.height = (
             self.borde, self.borde, ww, hh)
-        Gdk.cairo_rectangle(contexto, rect)
+        gdk.cairo_rectangle(contexto, rect)
         contexto.fill()
 
         # Relleno de la barra segun progreso
-        Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
-        rect = Gdk.Rectangle()
+        gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
+        rect = gdk.Rectangle()
 
         ximage = int(self.get_adjustment().get_value() * ww / 100)
         rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
             ximage, hh)
 
-        Gdk.cairo_rectangle(contexto, rect)
+        gdk.cairo_rectangle(contexto, rect)
         contexto.fill()
 
         # La Imagen
         imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
         imgx = ximage
         imgy = float(self.borde + hh / 2 - imgh / 2)
-        Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
         contexto.paint()
 
         return True
 
 
-class ControlVolumen(Gtk.VolumeButton):
+class ControlVolumen(gtk.VolumeButton):
     """
     Botón con escala para controlar el volúmen
     de reproducción en los reproductores.
     """
 
     __gsignals__ = {
-    "volumen": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+    "volumen": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self):
 
-        Gtk.VolumeButton.__init__(self)
+        gtk.VolumeButton.__init__(self)
 
         self.show_all()
 
@@ -797,7 +797,7 @@ class ControlVolumen(Gtk.VolumeButton):
         self.emit('volumen', valor)
 
 
-class MouseSpeedDetector(GObject.GObject):
+class MouseSpeedDetector(gobject.gobject):
     """
     Verifica posición y moviemiento del mouse.
     estado puede ser:
@@ -807,12 +807,12 @@ class MouseSpeedDetector(GObject.GObject):
     """
 
     __gsignals__ = {
-        'estado': (GObject.SignalFlags.RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        'estado': (gobject.SignalFlags.RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, parent):
 
-        GObject.GObject.__init__(self)
+        gobject.gobject.__init__(self)
 
         self.parent = parent
 
@@ -845,8 +845,8 @@ class MouseSpeedDetector(GObject.GObject):
         """
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(1000, self.__handler)
+            self.actualizador = gobject.timeout_add(1000, self.__handler)

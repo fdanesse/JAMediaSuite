@@ -21,11 +21,9 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GdkPixbuf
-from gi.repository import GObject
-from gi.repository import GLib
+import gtk
+from gtk import gdk
+import gobject
 
 from Globales import get_color
 from Globales import get_colors
@@ -36,7 +34,7 @@ from Globales import get_togle_boton
 BASE_PATH = os.path.dirname(__file__)
 
 
-class ToolbarAccion(Gtk.Toolbar):
+class ToolbarAccion(gtk.Toolbar):
     """
     Toolbar para que el usuario confirme las
     acciones que se realizan sobre items que se
@@ -45,15 +43,15 @@ class ToolbarAccion(Gtk.Toolbar):
     """
 
     __gsignals__ = {
-    "Grabar": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "accion-stream": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_STRING))}
+    "Grabar": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "accion-stream": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING))}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.modify_bg(0, get_colors("window"))
 
@@ -72,9 +70,9 @@ class ToolbarAccion(Gtk.Toolbar):
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
 
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         #item.set_expand(True)
-        self.label = Gtk.Label("")
+        self.label = gtk.Label("")
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -186,7 +184,7 @@ class ToolbarAccion(Gtk.Toolbar):
         self.hide()
 
 
-class ToolbarGrabar(Gtk.Toolbar):
+class ToolbarGrabar(gtk.Toolbar):
     """
     Informa al usuario cuando se está grabando
     desde un streaming.
@@ -195,12 +193,12 @@ class ToolbarGrabar(Gtk.Toolbar):
     __gtype_name__ = 'ToolbarGrabar'
 
     __gsignals__ = {
-    "stop": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    "stop": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.modify_bg(0, get_colors("drawingplayer"))
 
@@ -220,8 +218,8 @@ class ToolbarGrabar(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("Grabador Detenido.")
+        item = gtk.ToolItem()
+        self.label = gtk.Label("Grabador Detenido.")
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -277,7 +275,7 @@ class ToolbarGrabar(Gtk.Toolbar):
             self.show()
 
 
-class ToolbarLista(Gtk.Toolbar):
+class ToolbarLista(gtk.Toolbar):
     """
     Toolbar de la lista de reproduccion, que contiene
     un menu con las listas standar de JAMedia:
@@ -287,16 +285,16 @@ class ToolbarLista(Gtk.Toolbar):
     __gtype_name__ = 'ToolbarLista'
 
     __gsignals__ = {
-    "cargar_lista": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_INT,)),
-    "add_stream": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    "menu_activo": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    "cargar_lista": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_INT,)),
+    "add_stream": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    "menu_activo": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.modify_bg(0, get_colors("barradeprogreso"))
 
@@ -311,8 +309,8 @@ class ToolbarLista(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("")
+        item = gtk.ToolItem()
+        self.label = gtk.Label("")
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -337,45 +335,45 @@ class ToolbarLista(Gtk.Toolbar):
 
         self.emit("menu_activo")
 
-        menu = Gtk.Menu()
+        menu = gtk.Menu()
 
-        item = Gtk.MenuItem("JAMedia Radio")
+        item = gtk.MenuItem("JAMedia Radio")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 0)
 
-        item = Gtk.MenuItem("JAMedia TV")
+        item = gtk.MenuItem("JAMedia TV")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 1)
 
-        item = Gtk.MenuItem("Mis Emisoras")
+        item = gtk.MenuItem("Mis Emisoras")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 2)
 
-        item = Gtk.MenuItem("Mis Canales")
+        item = gtk.MenuItem("Mis Canales")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 3)
 
-        item = Gtk.MenuItem("Web Cams")
+        item = gtk.MenuItem("Web Cams")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 4)
 
-        item = Gtk.MenuItem("Mis Archivos")
+        item = gtk.MenuItem("Mis Archivos")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 5)
 
-        item = Gtk.MenuItem("JAMediaTube")
+        item = gtk.MenuItem("JAMediaTube")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 6)
 
-        item = Gtk.MenuItem("Audio-JAMediaVideo")
+        item = gtk.MenuItem("Audio-JAMediaVideo")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 7)
 
-        item = Gtk.MenuItem("Video-JAMediaVideo")
+        item = gtk.MenuItem("Video-JAMediaVideo")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 8)
 
-        item = Gtk.MenuItem("Archivos Externos")
+        item = gtk.MenuItem("Archivos Externos")
         menu.append(item)
         item.connect_object("activate", self.__emit_load_list, 9)
 
@@ -393,22 +391,22 @@ class ToolbarLista(Gtk.Toolbar):
         self.emit("add_stream")
 
 
-class Toolbar(Gtk.Toolbar):
+class Toolbar(gtk.Toolbar):
     """
     Toolbar principal de JAMedia.
     """
 
     __gsignals__ = {
-    'salir': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    'config': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    'capturar': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    'salir': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    'config': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    'capturar': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.modify_bg(0, get_colors("barradeprogreso"))
 
@@ -501,7 +499,7 @@ class Toolbar(Gtk.Toolbar):
         self.emit('salir')
 
 
-class ToolbarInfo(Gtk.Toolbar):
+class ToolbarInfo(gtk.Toolbar):
     """
     Informa al usuario sobre el reproductor
     que se esta utilizando.
@@ -512,14 +510,14 @@ class ToolbarInfo(Gtk.Toolbar):
     __gtype_name__ = 'ToolbarInfo'
 
     __gsignals__ = {
-    'rotar': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    'actualizar_streamings': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    'rotar': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    'actualizar_streamings': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.modify_bg(0, get_colors("barradeprogreso"))
 
@@ -528,25 +526,25 @@ class ToolbarInfo(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        imagen = Gtk.Image()
+        imagen = gtk.Image()
         icono = os.path.join(BASE_PATH,
             "Iconos", "mplayer.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
             -1, 24)
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
-        self.mplayer = Gtk.ToolItem()
+        self.mplayer = gtk.ToolItem()
         self.mplayer.add(imagen)
         self.insert(self.mplayer, -1)
 
-        imagen = Gtk.Image()
+        imagen = gtk.Image()
         icono = os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
             -1, 35)
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
-        self.jamedia = Gtk.ToolItem()
+        self.jamedia = gtk.ToolItem()
         self.jamedia.add(imagen)
         self.insert(self.jamedia, -1)
 
@@ -572,8 +570,8 @@ class ToolbarInfo(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
-        item = Gtk.ToolItem()
-        label = Gtk.Label("Ocultar Controles:")
+        item = gtk.ToolItem()
+        label = gtk.Label("Ocultar Controles:")
         label.show()
         item.add(label)
         self.insert(item, -1)
@@ -581,8 +579,8 @@ class ToolbarInfo(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        switch = Gtk.Switch()
-        item = Gtk.ToolItem()
+        switch = gtk.Switch()
+        item = gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)
         self.insert(item, -1)
@@ -590,7 +588,7 @@ class ToolbarInfo(Gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         self.descarga = get_boton(archivo, flip=False,
-            rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE,
+            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE,
             pixels=24)
         self.descarga.set_tooltip_text("Actualizar Streamings")
         self.descarga.connect("clicked", self.__emit_actualizar_streamings)
@@ -640,7 +638,7 @@ class ToolbarInfo(Gtk.Toolbar):
         self.ocultar_controles = not widget.get_active()
 
 
-class ToolbarConfig(Gtk.Table):
+class ToolbarConfig(gtk.Table):
     """
     Toolbar para intercambiar reproductores (mplayer gst) y
     modificar valores de balance en video.
@@ -649,14 +647,14 @@ class ToolbarConfig(Gtk.Table):
     __gtype_name__ = 'ToolbarConfig'
 
     __gsignals__ = {
-    "reproductor": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    'valor': (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_FLOAT, GObject.TYPE_STRING))}
+    "reproductor": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    'valor': (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,
+        (gobject.TYPE_FLOAT, gobject.TYPE_STRING))}
 
     def __init__(self):
 
-        Gtk.Table.__init__(self, rows=6, columns=1, homogeneous=True)
+        gtk.Table.__init__(self, rows=6, columns=1, homogeneous=True)
 
         self.modify_bg(0, get_colors("window"))
 
@@ -666,10 +664,10 @@ class ToolbarConfig(Gtk.Table):
         self.hue = ToolbarcontrolValores("Matíz")
         self.gamma = ToolbarcontrolValores("Gamma")
 
-        frame = Gtk.Frame()
+        frame = gtk.Frame()
         frame.set_label(" Reproductor: ")
-        box = Gtk.HBox()
-        event = Gtk.EventBox()
+        box = gtk.HBox()
+        event = gtk.EventBox()
         event.set_border_width(4)
         event.add(box)
         frame.add(event)
@@ -761,7 +759,7 @@ class ToolbarConfig(Gtk.Table):
                 widget.set_active(True)
 
 
-class ToolbarcontrolValores(Gtk.Toolbar):
+class ToolbarcontrolValores(gtk.Toolbar):
     """
     Toolbar con escala para modificar
     valores de balance en video, utilizada
@@ -769,12 +767,12 @@ class ToolbarcontrolValores(Gtk.Toolbar):
     """
 
     __gsignals__ = {
-    'valor': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+    'valor': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self, label):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.modify_bg(0, get_colors("window"))
 
@@ -782,13 +780,13 @@ class ToolbarcontrolValores(Gtk.Toolbar):
 
         self.escala = SlicerBalance()
 
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         item.set_expand(True)
 
-        self.frame = Gtk.Frame()
+        self.frame = gtk.Frame()
         self.frame.set_label(self.titulo)
         self.frame.set_label_align(0.5, 1.0)
-        event = Gtk.EventBox()
+        event = gtk.EventBox()
         event.set_border_width(4)
         event.add(self.escala)
         self.frame.add(event)
@@ -818,22 +816,22 @@ class ToolbarcontrolValores(Gtk.Toolbar):
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
 
-class SlicerBalance(Gtk.EventBox):
+class SlicerBalance(gtk.EventBox):
     """
     Barra deslizable para cambiar valores de Balance en Video.
     """
 
     __gsignals__ = {
-    "user-set-value": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+    "user-set-value": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        gtk.EventBox.__init__(self)
 
         self.modify_bg(0, get_colors("window"))
 
-        self.escala = BalanceBar(Gtk.Adjustment(0.0, 0.0,
+        self.escala = BalanceBar(gtk.Adjustment(0.0, 0.0,
             101.0, 0.1, 1.0, 1.0))
 
         self.add(self.escala)
@@ -858,18 +856,18 @@ class SlicerBalance(Gtk.EventBox):
         self.emit("user-set-value", valor)
 
 
-class BalanceBar(Gtk.Scale):
+class BalanceBar(gtk.Scale):
     """
     Escala de SlicerBalance.
     """
 
     __gsignals__ = {
-    "user-set-value": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+    "user-set-value": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
 
-        Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+        gtk.Scale.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 
         self.modify_bg(0, get_colors("window"))
 
@@ -881,10 +879,10 @@ class BalanceBar(Gtk.Scale):
 
         icono = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
             16, 16)
         self.pixbuf = pixbuf.rotate_simple(
-            GdkPixbuf.PixbufRotation.CLOCKWISE)
+            gdk.PIXBUF_ROTATE_CLOCKWISE)
 
         self.show_all()
 
@@ -894,8 +892,8 @@ class BalanceBar(Gtk.Scale):
         Se emite el valor en % (float).
         """
 
-        if event.state == Gdk.ModifierType.MOD2_MASK | \
-            Gdk.ModifierType.BUTTON1_MASK:
+        if event.state == gdk.ModifierType.MOD2_MASK | \
+            gdk.ModifierType.BUTTON1_MASK:
 
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
@@ -913,42 +911,42 @@ class BalanceBar(Gtk.Scale):
         w, h = (rect.width, rect.height)
 
         # Fondo
-        Gdk.cairo_set_source_color(contexto, get_color("BLANCO"))
+        gdk.cairo_set_source_color(contexto, get_color("BLANCO"))
         contexto.paint()
 
         # Relleno de la barra
         ww = w - self.borde * 2
         hh = h / 5
 
-        Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
-        rect = Gdk.Rectangle()
+        gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
+        rect = gdk.Rectangle()
 
         rect.x, rect.y, rect.width, rect.height = (
             self.borde, h / 5 * 2, ww, hh)
-        Gdk.cairo_rectangle(contexto, rect)
+        gdk.cairo_rectangle(contexto, rect)
         contexto.fill()
 
         # Relleno de la barra segun progreso
-        Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
-        rect = Gdk.Rectangle()
+        gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
+        rect = gdk.Rectangle()
 
         ximage = int(self.ajuste.get_value() * ww / 100)
         rect.x, rect.y, rect.width, rect.height = (
             self.borde, h / 5 * 2, ximage, hh)
-        Gdk.cairo_rectangle(contexto, rect)
+        gdk.cairo_rectangle(contexto, rect)
         contexto.fill()
 
         # La Imagen
         imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
         imgx = (ximage - imgw / 2) + self.borde
         imgy = float(self.get_allocation().height / 2 - imgh / 2)
-        Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
         contexto.paint()
 
         return True
 
 
-class ToolbarAddStream(Gtk.Toolbar):
+class ToolbarAddStream(gtk.Toolbar):
     """
     Toolbar para agregar streamings.
     """
@@ -956,13 +954,13 @@ class ToolbarAddStream(Gtk.Toolbar):
     __gtype_name__ = 'ToolbarAddStream'
 
     __gsignals__ = {
-    "add-stream": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_STRING, GObject.TYPE_STRING))}
+    "add-stream": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING, gobject.TYPE_STRING))}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.modify_bg(0, get_colors("window"))
 
@@ -982,32 +980,32 @@ class ToolbarAddStream(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        frame = Gtk.Frame()
+        frame = gtk.Frame()
         frame.set_label('Nombre')
-        self.nombre = Gtk.Entry()
-        event = Gtk.EventBox()
+        self.nombre = gtk.Entry()
+        event = gtk.EventBox()
         event.modify_bg(0, get_colors("window"))
         event.set_border_width(4)
         event.add(self.nombre)
         frame.add(event)
         frame.show_all()
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         item.add(frame)
         self.insert(item, -1)
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        frame = Gtk.Frame()
+        frame = gtk.Frame()
         frame.set_label('URL')
-        self.url = Gtk.Entry()
-        event = Gtk.EventBox()
+        self.url = gtk.Entry()
+        event = gtk.EventBox()
         event.modify_bg(0, get_colors("window"))
         event.set_border_width(4)
         event.add(self.url)
         frame.add(event)
         frame.show_all()
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         self.url.show()
         item.add(frame)
         self.insert(item, -1)
@@ -1067,18 +1065,18 @@ class ToolbarAddStream(Gtk.Toolbar):
         self.hide()
 
 
-class ToolbarSalir(Gtk.Toolbar):
+class ToolbarSalir(gtk.Toolbar):
     """
     Toolbar para confirmar salir de la aplicación.
     """
 
     __gsignals__ = {
-    "salir": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, [])}
+    "salir": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
         self.modify_bg(0, get_colors("window"))
 
@@ -1096,8 +1094,8 @@ class ToolbarSalir(Gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
-        self.label = Gtk.Label("")
+        item = gtk.ToolItem()
+        self.label = gtk.Label("")
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
