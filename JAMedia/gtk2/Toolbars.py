@@ -579,7 +579,7 @@ class ToolbarInfo(gtk.Toolbar):
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        switch = gtk.Switch()
+        switch = gtk.CheckButton()
         item = gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)

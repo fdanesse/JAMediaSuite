@@ -147,7 +147,7 @@ class JAMediaPlayer(gtk.EventBox):
         from Toolbars import ToolbarAccion
         #from Toolbars import ToolbarConfig
         from Toolbars import ToolbarGrabar
-        #from Toolbars import ToolbarInfo
+        from Toolbars import ToolbarInfo
         from Toolbars import ToolbarAddStream
 
         #self.pantalla = Visor()
@@ -160,7 +160,7 @@ class JAMediaPlayer(gtk.EventBox):
         #self.widget_efectos = WidgetsGstreamerEfectos()
         self.toolbar_accion = ToolbarAccion()
         self.toolbar_grabar = ToolbarGrabar()
-        #self.toolbar_info = ToolbarInfo()
+        self.toolbar_info = ToolbarInfo()
         self.toolbaraddstream = ToolbarAddStream()
         self.toolbar_salir = ToolbarSalir()
 
@@ -204,7 +204,7 @@ class JAMediaPlayer(gtk.EventBox):
         vbox.pack_start(self.toolbar_grabar, False, False, 0)
         #vbox.pack_start(self.pantalla, True, True, 0)
         #vbox.pack_start(scroll, False, False, 0)
-        #vbox.pack_start(self.toolbar_info, False, False, 3)
+        vbox.pack_start(self.toolbar_info, False, False, 3)
         #vbox.pack_start(ev_box, False, True, 0)
 
         hpanel.pack1(vbox, resize=True, shrink=True)
@@ -337,11 +337,11 @@ class JAMediaPlayer(gtk.EventBox):
         #    'reproductor', self.switch_reproductor)
         #self.toolbar_config.connect(
         #    'valor', self.__set_balance)
-        #self.toolbar_info.connect(
-        #    'rotar', self.__set_rotacion)
-        #self.toolbar_info.connect(
-        #    'actualizar_streamings',
-        #    self.__actualizar_streamings)
+        self.toolbar_info.connect(
+            'rotar', self.__set_rotacion)
+        self.toolbar_info.connect(
+            'actualizar_streamings',
+            self.__actualizar_streamings)
         self.toolbar_accion.connect(
             "Grabar", self.__grabar_streaming)
         self.toolbar_accion.connect(
