@@ -144,11 +144,11 @@ class JAMediaPlayer(gtk.EventBox):
 
         from Toolbars import ToolbarSalir
         from Toolbars import Toolbar
-        #from Toolbars import ToolbarAccion
+        from Toolbars import ToolbarAccion
         #from Toolbars import ToolbarConfig
         #from Toolbars import ToolbarGrabar
         #from Toolbars import ToolbarInfo
-        #from Toolbars import ToolbarAddStream
+        from Toolbars import ToolbarAddStream
 
         #self.pantalla = Visor()
         #self.barradeprogreso = BarraProgreso()
@@ -158,10 +158,10 @@ class JAMediaPlayer(gtk.EventBox):
         self.toolbar = Toolbar()
         #self.toolbar_config = ToolbarConfig()
         #self.widget_efectos = WidgetsGstreamerEfectos()
-        #self.toolbar_accion = ToolbarAccion()
+        self.toolbar_accion = ToolbarAccion()
         #self.toolbar_grabar = ToolbarGrabar()
         #self.toolbar_info = ToolbarInfo()
-        #self.toolbaraddstream = ToolbarAddStream()
+        self.toolbaraddstream = ToolbarAddStream()
         self.toolbar_salir = ToolbarSalir()
 
         basebox = gtk.VBox()
@@ -170,8 +170,8 @@ class JAMediaPlayer(gtk.EventBox):
 
         basebox.pack_start(self.toolbar, False, False, 3)
         basebox.pack_start(self.toolbar_salir, False, False, 0)
-        #basebox.pack_start(self.toolbar_accion, False, False, 0)
-        #basebox.pack_start(self.toolbaraddstream, False, False, 0)
+        basebox.pack_start(self.toolbar_accion, False, False, 0)
+        basebox.pack_start(self.toolbaraddstream, False, False, 0)
 
         basebox.pack_start(hpanel, True, True, 0)
 
@@ -342,16 +342,16 @@ class JAMediaPlayer(gtk.EventBox):
         #self.toolbar_info.connect(
         #    'actualizar_streamings',
         #    self.__actualizar_streamings)
-        #self.toolbar_accion.connect(
-        #    "Grabar", self.__grabar_streaming)
-        #self.toolbar_accion.connect(
-        #    "accion-stream", self.__accion_stream)
+        self.toolbar_accion.connect(
+            "Grabar", self.__grabar_streaming)
+        self.toolbar_accion.connect(
+            "accion-stream", self.__accion_stream)
         #self.toolbar_grabar.connect(
         #    "stop", self.__detener_grabacion)
         #self.volumen.connect(
         #    "volumen", self.__set_volumen)
-        #self.toolbaraddstream.connect(
-        #    "add-stream", self.__ejecutar_add_stream)
+        self.toolbaraddstream.connect(
+            "add-stream", self.__ejecutar_add_stream)
 
         #self.widget_efectos.connect(
         #    "click_efecto", self.__click_efecto)
