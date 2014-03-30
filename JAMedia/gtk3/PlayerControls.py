@@ -28,6 +28,7 @@ from gi.repository import GObject
 from gi.repository import GLib
 
 from Globales import get_color
+from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 
@@ -145,6 +146,8 @@ class JAMediaToolButton(Gtk.ToolButton):
     def __init__(self, pixels=24):
 
         Gtk.ToolButton.__init__(self)
+
+        self.modify_bg(0, get_colors("barradeprogreso"))
 
         self.imagen = Imagen_Button()
         self.set_icon_widget(self.imagen)

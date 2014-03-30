@@ -28,6 +28,7 @@ from gi.repository import GObject
 from gi.repository import GLib
 
 from Globales import get_color
+from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 
@@ -54,6 +55,8 @@ class My_FileChooser(Gtk.FileChooserDialog):
             parent=parent,
             action=action,
             flags=Gtk.DialogFlags.MODAL)
+
+        self.modify_bg(0, get_colors("window"))
 
         if not path:
             path = "file:///media"
@@ -418,6 +421,8 @@ class DialogoDescarga(Gtk.Dialog):
             parent=parent,
             flags=Gtk.DialogFlags.MODAL)
 
+        self.set_decorated(False)
+        self.modify_bg(0, get_colors("window"))
         self.set_border_width(15)
 
         label = Gtk.Label("*** Descargando Streamings de JAMedia ***")
@@ -450,6 +455,7 @@ class Credits(Gtk.Dialog):
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
         self.set_decorated(False)
+        self.modify_bg(0, get_colors("window"))
         self.set_border_width(15)
 
         imagen = Gtk.Image()
@@ -471,6 +477,7 @@ class Help(Gtk.Dialog):
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
         self.set_decorated(False)
+        self.modify_bg(0, get_colors("window"))
         self.set_border_width(15)
 
         tabla1 = Gtk.Table(columns=5, rows=2, homogeneous=False)
@@ -578,6 +585,8 @@ class Visor(Gtk.DrawingArea):
 
         Gtk.DrawingArea.__init__(self)
 
+        self.modify_bg(0, get_colors("drawingplayer"))
+
         self.add_events(
             Gdk.EventMask.KEY_PRESS_MASK |
             Gdk.EventMask.KEY_RELEASE_MASK |
@@ -625,7 +634,9 @@ class BarraProgreso(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, get_color("BLANCO"))
+        #self.modify_bg(0, get_color("BLANCO"))
+        self.modify_bg(0, get_colors("barradeprogreso"))
+
         self.escala = ProgressBar(
             Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
 

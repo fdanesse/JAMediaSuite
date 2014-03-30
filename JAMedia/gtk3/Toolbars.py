@@ -28,6 +28,7 @@ from gi.repository import GObject
 from gi.repository import GLib
 
 from Globales import get_color
+from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 from Globales import get_togle_boton
@@ -54,6 +55,8 @@ class ToolbarAccion(Gtk.Toolbar):
 
         Gtk.Toolbar.__init__(self)
 
+        self.modify_bg(0, get_colors("window"))
+
         self.lista = None
         self.accion = None
         self.iter = None
@@ -70,7 +73,7 @@ class ToolbarAccion(Gtk.Toolbar):
         self.insert(boton, -1)
 
         item = Gtk.ToolItem()
-        item.set_expand(True)
+        #item.set_expand(True)
         self.label = Gtk.Label("")
         self.label.show()
         item.add(self.label)
@@ -199,6 +202,8 @@ class ToolbarGrabar(Gtk.Toolbar):
 
         Gtk.Toolbar.__init__(self)
 
+        self.modify_bg(0, get_colors("drawingplayer"))
+
         self.colors = [get_color("BLANCO"), get_color("NARANJA")]
         self.color = self.colors[0]
 
@@ -292,6 +297,8 @@ class ToolbarLista(Gtk.Toolbar):
     def __init__(self):
 
         Gtk.Toolbar.__init__(self)
+
+        self.modify_bg(0, get_colors("barradeprogreso"))
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "lista.svg")
@@ -403,6 +410,8 @@ class Toolbar(Gtk.Toolbar):
 
         Gtk.Toolbar.__init__(self)
 
+        self.modify_bg(0, get_colors("barradeprogreso"))
+
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
@@ -511,6 +520,8 @@ class ToolbarInfo(Gtk.Toolbar):
     def __init__(self):
 
         Gtk.Toolbar.__init__(self)
+
+        self.modify_bg(0, get_colors("barradeprogreso"))
 
         self.ocultar_controles = False
 
@@ -647,6 +658,8 @@ class ToolbarConfig(Gtk.Table):
 
         Gtk.Table.__init__(self, rows=6, columns=1, homogeneous=True)
 
+        self.modify_bg(0, get_colors("window"))
+
         self.brillo = ToolbarcontrolValores("Brillo")
         self.contraste = ToolbarcontrolValores("Contraste")
         self.saturacion = ToolbarcontrolValores("Saturación")
@@ -763,6 +776,8 @@ class ToolbarcontrolValores(Gtk.Toolbar):
 
         Gtk.Toolbar.__init__(self)
 
+        self.modify_bg(0, get_colors("window"))
+
         self.titulo = label
 
         self.escala = SlicerBalance()
@@ -816,6 +831,8 @@ class SlicerBalance(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
+        self.modify_bg(0, get_colors("window"))
+
         self.escala = BalanceBar(Gtk.Adjustment(0.0, 0.0,
             101.0, 0.1, 1.0, 1.0))
 
@@ -853,6 +870,8 @@ class BalanceBar(Gtk.Scale):
     def __init__(self, ajuste):
 
         Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+
+        self.modify_bg(0, get_colors("window"))
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -945,6 +964,8 @@ class ToolbarAddStream(Gtk.Toolbar):
 
         Gtk.Toolbar.__init__(self)
 
+        self.modify_bg(0, get_colors("window"))
+
         self.tipo = None
 
         self.insert(get_separador(draw=False,
@@ -964,7 +985,11 @@ class ToolbarAddStream(Gtk.Toolbar):
         frame = Gtk.Frame()
         frame.set_label('Nombre')
         self.nombre = Gtk.Entry()
-        frame.add(self.nombre)
+        event = Gtk.EventBox()
+        event.modify_bg(0, get_colors("window"))
+        event.set_border_width(4)
+        event.add(self.nombre)
+        frame.add(event)
         frame.show_all()
         item = Gtk.ToolItem()
         item.add(frame)
@@ -976,7 +1001,11 @@ class ToolbarAddStream(Gtk.Toolbar):
         frame = Gtk.Frame()
         frame.set_label('URL')
         self.url = Gtk.Entry()
-        frame.add(self.url)
+        event = Gtk.EventBox()
+        event.modify_bg(0, get_colors("window"))
+        event.set_border_width(4)
+        event.add(self.url)
+        frame.add(event)
         frame.show_all()
         item = Gtk.ToolItem()
         self.url.show()
@@ -1050,6 +1079,8 @@ class ToolbarSalir(Gtk.Toolbar):
     def __init__(self):
 
         Gtk.Toolbar.__init__(self)
+
+        self.modify_bg(0, get_colors("window"))
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)

@@ -29,6 +29,7 @@ from gi.repository import GLib
 
 from Globales import get_programa
 from Globales import verificar_Gstreamer
+from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
 '''
@@ -84,6 +85,8 @@ class JAMediaPlayer(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
+        self.modify_bg(0, get_colors("window"))
+
         self.pantalla = None
         self.barradeprogreso = None
         self.volumen = None
@@ -131,7 +134,7 @@ class JAMediaPlayer(Gtk.EventBox):
 
         self.get_toplevel().set_sensitive(False)
 
-        from Globales import get_color
+        #from Globales import get_color
 
         from Widgets import Visor
         from Widgets import BarraProgreso
@@ -165,8 +168,9 @@ class JAMediaPlayer(Gtk.EventBox):
 
         basebox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         hpanel = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
+        hpanel.modify_bg(0, get_colors("window"))
 
-        basebox.pack_start(self.toolbar, False, False, 0)
+        basebox.pack_start(self.toolbar, False, False, 3)
         basebox.pack_start(self.toolbar_salir, False, False, 0)
         basebox.pack_start(self.toolbar_accion, False, False, 0)
         basebox.pack_start(self.toolbaraddstream, False, False, 0)
@@ -177,7 +181,8 @@ class JAMediaPlayer(Gtk.EventBox):
 
         ### Efectos que se están aplicando.
         eventbox = Gtk.EventBox()  # FIXME: Mantiene el fondo negro
-        eventbox.modify_bg(0, get_color("NEGRO"))
+        #eventbox.modify_bg(0, get_color("NEGRO"))
+        eventbox.modify_bg(0, get_colors("drawingplayer"))
         self.hbox_efectos_en_pipe = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL)
         self.hbox_efectos_en_pipe.set_size_request(-1, 24)
@@ -191,7 +196,8 @@ class JAMediaPlayer(Gtk.EventBox):
         ### Barra de Progreso + Volúmen
         # FIXME: Para poder pintar el fondo
         ev_box = Gtk.EventBox()
-        ev_box.modify_bg(0, get_color("BLANCO"))
+        #ev_box.modify_bg(0, get_color("BLANCO"))
+        ev_box.modify_bg(0, get_colors("barradeprogreso"))
         hbox_barra_progreso = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL)
         hbox_barra_progreso.pack_start(
@@ -205,7 +211,7 @@ class JAMediaPlayer(Gtk.EventBox):
         vbox.pack_start(self.toolbar_grabar, False, False, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
         vbox.pack_start(scroll, False, False, 0)
-        vbox.pack_start(self.toolbar_info, False, False, 0)
+        vbox.pack_start(self.toolbar_info, False, False, 3)
         vbox.pack_start(ev_box, False, True, 0)
 
         hpanel.pack1(vbox, resize=True, shrink=True)
@@ -229,6 +235,8 @@ class JAMediaPlayer(Gtk.EventBox):
         ### Lista de Reproducción
         # FIXME: Para poder pintar el fondo
         self.evnt_box_lista_reproduccion = Gtk.EventBox()
+        self.evnt_box_lista_reproduccion.modify_bg(
+            0, get_colors("barradeprogreso"))
         self.vbox_lista_reproduccion = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL)
         self.scroll_list = Gtk.ScrolledWindow()
@@ -655,12 +663,10 @@ class JAMediaPlayer(Gtk.EventBox):
             botonefecto.set_tooltip(nombre_efecto)
             botonefecto.connect(
                 'clicked', self.__clicked_mini_efecto)
-            lado = get_pixels(0.5)
-            botonefecto.set_tamanio(lado, lado)
+            botonefecto.set_tamanio(16, 16)
 
             archivo = os.path.join(JAMediaObjectsPath,
                 "Iconos", 'configurar.svg')
-
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
                 archivo, lado, lado)
             botonefecto.imagen.set_from_pixbuf(pixbuf)

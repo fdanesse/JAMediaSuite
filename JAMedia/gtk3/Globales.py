@@ -26,6 +26,19 @@ radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista
 webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
 
 
+def get_colors(key):
+
+    from gi.repository import Gdk
+
+    _dict = {
+        "window": "#ffffff",
+        "barradeprogreso": "#778899",
+        "drawingplayer": "#000000",
+        }
+
+    return Gdk.color_parse(_dict.get(key, "#ffffff"))
+
+
 def get_programa(programa):
     """
     Devuelve true si programa se encuentra

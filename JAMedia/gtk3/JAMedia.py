@@ -22,9 +22,11 @@
 import os
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GLib
 #from gi.repository import GObject
 
+from Globales import get_colors
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
 BASE_PATH = os.path.dirname(__file__)
@@ -42,6 +44,7 @@ class JAMedia(Gtk.Window):
             os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg"))
 
+        self.modify_bg(0, get_colors("window"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)

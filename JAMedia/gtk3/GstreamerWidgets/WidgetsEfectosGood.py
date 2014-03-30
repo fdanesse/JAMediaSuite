@@ -212,6 +212,8 @@ class Radioactv(Gtk.VBox):
 
         toolbar = Gtk.Toolbar()
 
+        toolbar.modify_bg(0, Gdk.color_parse("#ffffff"))
+
         #toolbar.insert(get_separador(draw=False,
         #    ancho=0, expand=True), -1)
 
@@ -329,6 +331,7 @@ class Agingtv(Gtk.VBox):
     def __get_toolbar_dusts(self):
 
         toolbar = Gtk.Toolbar()
+        toolbar.modify_bg(0, Gdk.color_parse("#ffffff"))
 
         switch = Gtk.Switch()
         switch.set_active(True)
@@ -354,6 +357,7 @@ class Agingtv(Gtk.VBox):
     def __get_toolbar_pits(self):
 
         toolbar = Gtk.Toolbar()
+        toolbar.modify_bg(0, Gdk.color_parse("#ffffff"))
 
         switch = Gtk.Switch()
         switch.set_active(True)
@@ -375,32 +379,6 @@ class Agingtv(Gtk.VBox):
         switch.connect('button-press-event', self.__set_pits)
 
         return toolbar
-    '''
-    def __get_toolbar_color_aging(self):
-
-        toolbar = Gtk.Toolbar()
-
-        item = Gtk.ToolItem()
-        label = Gtk.Label("color-aging:")
-        label.show()
-        item.add(label)
-        toolbar.insert(item, -1)
-
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        switch = Gtk.Switch()
-        switch.set_active(True)
-        switch.show()
-        item = Gtk.ToolItem()
-        item.set_expand(False)
-        item.add(switch)
-        toolbar.insert(item, -1)
-
-        switch.connect('button-press-event', self.__set_color_aging)
-
-        return toolbar
-        '''
 
     def __set_scratch_lines(self, widget, valor):
         """
@@ -437,6 +415,8 @@ class ToolbarcontrolValores(Gtk.Toolbar):
     def __init__(self, label):
 
         Gtk.Toolbar.__init__(self)
+
+        self.modify_bg(0, Gdk.color_parse("#ffffff"))
 
         self.titulo = label
 
@@ -488,6 +468,8 @@ class SlicerBalance(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
+        self.modify_bg(0, Gdk.color_parse("#ffffff"))
+
         self.escala = BalanceBar(Gtk.Adjustment(0.0, 0.0,
             101.0, 0.1, 1.0, 1.0))
 
@@ -525,6 +507,8 @@ class BalanceBar(Gtk.Scale):
     def __init__(self, ajuste):
 
         Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+
+        self.modify_bg(0, Gdk.color_parse("#ffffff"))
 
         self.ajuste = ajuste
         self.set_digits(0)
