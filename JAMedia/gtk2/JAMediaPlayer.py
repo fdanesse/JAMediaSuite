@@ -142,7 +142,7 @@ class JAMediaPlayer(gtk.EventBox):
         #from PlayerControls import PlayerControl
         #from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
 
-        #from Toolbars import ToolbarSalir
+        from Toolbars import ToolbarSalir
         from Toolbars import Toolbar
         #from Toolbars import ToolbarAccion
         #from Toolbars import ToolbarConfig
@@ -162,14 +162,14 @@ class JAMediaPlayer(gtk.EventBox):
         #self.toolbar_grabar = ToolbarGrabar()
         #self.toolbar_info = ToolbarInfo()
         #self.toolbaraddstream = ToolbarAddStream()
-        #self.toolbar_salir = ToolbarSalir()
+        self.toolbar_salir = ToolbarSalir()
 
         basebox = gtk.VBox()
         hpanel = gtk.HPaned()
         hpanel.modify_bg(0, get_colors("window"))
 
         basebox.pack_start(self.toolbar, False, False, 3)
-        #basebox.pack_start(self.toolbar_salir, False, False, 0)
+        basebox.pack_start(self.toolbar_salir, False, False, 0)
         #basebox.pack_start(self.toolbar_accion, False, False, 0)
         #basebox.pack_start(self.toolbaraddstream, False, False, 0)
 
@@ -327,12 +327,12 @@ class JAMediaPlayer(gtk.EventBox):
         #self.pantalla.connect(
         #    "button_press_event", self.__clicks_en_pantalla)
 
-        #self.toolbar.connect('salir', self.confirmar_salir)
+        self.toolbar.connect('salir', self.confirmar_salir)
         #self.toolbar.connect('capturar', self.fotografiar)
         #self.toolbar.connect('config', self.__mostrar_config)
 
-        #self.toolbar_salir.connect(
-        #    'salir', self.__emit_salir)
+        self.toolbar_salir.connect(
+            'salir', self.__emit_salir)
         #self.toolbar_config.connect(
         #    'reproductor', self.switch_reproductor)
         #self.toolbar_config.connect(
