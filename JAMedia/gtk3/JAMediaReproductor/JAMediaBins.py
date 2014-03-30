@@ -22,7 +22,6 @@
 import gi
 gi.require_version('Gst', '1.0')
 
-from gi.repository import GObject
 from gi.repository import Gst
 from gi.repository import GstVideo  # necesario
 

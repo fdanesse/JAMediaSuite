@@ -32,7 +32,7 @@ from Globales import verificar_Gstreamer
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
-'''
+
 # HACK: La aplicación nunca debe explotar :P
 if get_programa("mplayer"):
     from JAMediaReproductor.MplayerReproductor import MplayerReproductor
@@ -50,7 +50,7 @@ if verificar_Gstreamer():
 else:
     from JAMediaReproductor.PlayerNull import JAMediaReproductor
     from JAMediaReproductor.PlayerNull import JAMediaGrabador
-
+'''
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
 style_path = os.path.join(
@@ -177,11 +177,10 @@ class JAMediaPlayer(Gtk.EventBox):
 
         basebox.pack_start(hpanel, True, True, 0)
 
-        ### Area Izquierda del Panel
+        # Area Izquierda del Panel
 
-        ### Efectos que se están aplicando.
-        eventbox = Gtk.EventBox()  # FIXME: Mantiene el fondo negro
-        #eventbox.modify_bg(0, get_color("NEGRO"))
+        # Efectos que se están aplicando.
+        eventbox = Gtk.EventBox()  # FIXME: Para poder pintar el fondo
         eventbox.modify_bg(0, get_colors("drawingplayer"))
         self.hbox_efectos_en_pipe = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL)
@@ -193,10 +192,8 @@ class JAMediaPlayer(Gtk.EventBox):
             Gtk.PolicyType.NEVER)
         scroll.add_with_viewport(eventbox)
 
-        ### Barra de Progreso + Volúmen
-        # FIXME: Para poder pintar el fondo
-        ev_box = Gtk.EventBox()
-        #ev_box.modify_bg(0, get_color("BLANCO"))
+        # Barra de Progreso + Volúmen
+        ev_box = Gtk.EventBox()  # FIXME: Para poder pintar el fondo
         ev_box.modify_bg(0, get_colors("barradeprogreso"))
         hbox_barra_progreso = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL)
@@ -206,7 +203,7 @@ class JAMediaPlayer(Gtk.EventBox):
             self.volumen, False, False, 0)
         ev_box.add(hbox_barra_progreso)
 
-        ### Todo
+        # Todo
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         vbox.pack_start(self.toolbar_grabar, False, False, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
@@ -216,11 +213,11 @@ class JAMediaPlayer(Gtk.EventBox):
 
         hpanel.pack1(vbox, resize=True, shrink=True)
 
-        ### Area Derecha del Panel
+        # Area Derecha del Panel
         self.derecha_vbox = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL)
 
-        ### Configuración de balanace y efectos
+        # Configuración de balanace y efectos
         self.vbox_config = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL)
         self.scroll_config = Gtk.ScrolledWindow()
@@ -232,7 +229,7 @@ class JAMediaPlayer(Gtk.EventBox):
             self.toolbar_config, False, False, 0)
         self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
 
-        ### Lista de Reproducción
+        # Lista de Reproducción
         # FIXME: Para poder pintar el fondo
         self.evnt_box_lista_reproduccion = Gtk.EventBox()
         self.evnt_box_lista_reproduccion.modify_bg(
@@ -250,7 +247,7 @@ class JAMediaPlayer(Gtk.EventBox):
         self.evnt_box_lista_reproduccion.add(
             self.vbox_lista_reproduccion)
 
-        ### Configuración + Lista de Reproducción.
+        # Configuración + Lista de Reproducción.
         self.derecha_vbox.pack_start(
             self.scroll_config, True, True, 0)
         self.derecha_vbox.pack_start(
@@ -283,43 +280,43 @@ class JAMediaPlayer(Gtk.EventBox):
         xid = self.pantalla.get_property('window').get_xid()
 
         # HACK: La aplicación nunca debe explotar :P
-        #if get_programa("mplayer"):
-        #    self.mplayerreproductor = MplayerReproductor(xid)
+        if get_programa("mplayer"):
+            self.mplayerreproductor = MplayerReproductor(xid)
 
-        #else:
-        #    self.mplayerreproductor = MplayerReproductor(self.pantalla)
+        else:
+            self.mplayerreproductor = MplayerReproductor(self.pantalla)
 
         # HACK: La aplicación nunca debe explotar :P
-        #if verificar_Gstreamer():
-        #    self.jamediareproductor = JAMediaReproductor(xid)
+        if verificar_Gstreamer():
+            self.jamediareproductor = JAMediaReproductor(xid)
 
-        #else:
-        #    self.jamediareproductor = JAMediaReproductor(self.pantalla)
+        else:
+            self.jamediareproductor = JAMediaReproductor(self.pantalla)
 
         self.switch_reproductor(
             None, "JAMediaReproductor")  # default Gst.
 
-        #self.mplayerreproductor.connect(
-        #    "endfile", self.__endfile)
-        #self.mplayerreproductor.connect(
-        #    "estado", self.__cambioestadoreproductor)
-        #self.mplayerreproductor.connect(
-        #    "newposicion", self.__update_progress)
-        #self.mplayerreproductor.connect(
-        #    "volumen", self.__get_volumen)
-        #self.mplayerreproductor.connect(
-        #    "video", self.__set_video)
+        self.mplayerreproductor.connect(
+            "endfile", self.__endfile)
+        self.mplayerreproductor.connect(
+            "estado", self.__cambioestadoreproductor)
+        self.mplayerreproductor.connect(
+            "newposicion", self.__update_progress)
+        self.mplayerreproductor.connect(
+            "volumen", self.__get_volumen)
+        self.mplayerreproductor.connect(
+            "video", self.__set_video)
 
-        #self.jamediareproductor.connect(
-        #    "endfile", self.__endfile)
-        #self.jamediareproductor.connect(
-        #    "estado", self.__cambioestadoreproductor)
-        #self.jamediareproductor.connect(
-        #    "newposicion", self.__update_progress)
-        #self.jamediareproductor.connect(
-        #    "volumen", self.__get_volumen)
-        #self.jamediareproductor.connect(
-        #    "video", self.__set_video)
+        self.jamediareproductor.connect(
+            "endfile", self.__endfile)
+        self.jamediareproductor.connect(
+            "estado", self.__cambioestadoreproductor)
+        self.jamediareproductor.connect(
+            "newposicion", self.__update_progress)
+        self.jamediareproductor.connect(
+            "volumen", self.__get_volumen)
+        self.jamediareproductor.connect(
+            "video", self.__set_video)
 
         self.lista_de_reproduccion.connect(
             "nueva-seleccion",
@@ -368,7 +365,7 @@ class JAMediaPlayer(Gtk.EventBox):
         self.widget_efectos.connect(
             'configurar_efecto', self.__configurar_efecto)
 
-        ### Controlador del mouse.
+        # Controlador del mouse.
         icono = os.path.join(BASE_PATH,
             "Iconos", "jamedia_cursor.svg")
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
@@ -403,7 +400,6 @@ class JAMediaPlayer(Gtk.EventBox):
     #    """
 
     #    self.player.fotografiar()
-
 
     def pack_standar(self):
         """
@@ -914,7 +910,7 @@ class JAMediaPlayer(Gtk.EventBox):
             abajo = range(hh - self.controlesrepro.get_allocation().height, hh)
             derecha = range(ww - self.derecha_vbox.get_allocation().width, ww)
 
-            ###Arriba    ###Derecha     ###Abajo
+            #Arriba    #Derecha     #Abajo
             if y in arriba or x in derecha or y in abajo:
                 map(self.mostrar, self.controles_dinamicos)
 
@@ -1479,7 +1475,6 @@ class JAMediaPlayer(Gtk.EventBox):
         Si hay video o no en la fuente . . .
         """
 
-        pass
         # FIXME: La idea es iniciar visualizador de audio.
-        #print "Video en la Fuente:", valor
+        print "Video en la Fuente:", valor
         #if not valor: self.player.link_visualizador()

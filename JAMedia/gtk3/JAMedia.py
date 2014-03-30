@@ -22,9 +22,7 @@
 import os
 
 from gi.repository import Gtk
-from gi.repository import Gdk
 from gi.repository import GLib
-#from gi.repository import GObject
 
 from Globales import get_colors
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
