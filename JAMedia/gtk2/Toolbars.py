@@ -878,14 +878,14 @@ class BalanceBar(gtk.HScale):
         self.set_digits(0)
         self.set_draw_value(False)
 
-        self.ancho, self.borde = (15, 10)
+        self.ancho, self.borde = (7, 10)
 
-        #icono = os.path.join(BASE_PATH,
-        #    "Iconos", "iconplay.svg")
-        #pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-        #    16, 16)
-        #self.pixbuf = pixbuf.rotate_simple(
-        #    gdk.PIXBUF_ROTATE_CLOCKWISE)
+        icono = os.path.join(BASE_PATH,
+            "Iconos", "iconplay.svg")
+        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+            16, 16)
+        self.pixbuf = pixbuf.rotate_simple(
+            gdk.PIXBUF_ROTATE_CLOCKWISE)
 
         self.connect("expose_event", self.__expose)
 
@@ -917,7 +917,7 @@ class BalanceBar(gtk.HScale):
 
         gc = gtk.gdk.Drawable.new_gc(self.window)
 
-        gc.set_rgb_fg_color(get_colors("window"))
+        gc.set_rgb_fg_color(gdk.color_parse("#ffffff"))
         self.window.draw_rectangle(gc, True, x, y, w, h)
 
         gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
@@ -931,15 +931,12 @@ class BalanceBar(gtk.HScale):
         gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
         self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
 
-        #gdk.cairo_rectangle(contexto, rect)
-        #contexto.fill()
-
         # La Imagen
-        #imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        #imgx = ximage
-        #imgy = float(self.borde + hh / 2 - imgh / 2)
-        #gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
-        #contexto.paint()
+        imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
+        yimage = yy + hh / 2 - imgh / 2
+
+        self.window.draw_pixbuf(gc, self.pixbuf, 0, 0, ximage, yimage,
+            imgw, imgh, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
         return True
 

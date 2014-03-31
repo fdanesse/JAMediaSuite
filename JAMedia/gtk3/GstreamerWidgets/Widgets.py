@@ -369,7 +369,7 @@ class Efecto_widget_Config(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.modify_bg(0, Gdk.color_parse("#ffffff"))
         self.set_border_width(4)
 
         frame = Gtk.Frame()
