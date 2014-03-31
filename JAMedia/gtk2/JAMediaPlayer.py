@@ -138,8 +138,8 @@ class JAMediaPlayer(gtk.EventBox):
         #from Widgets import BarraProgreso
         from Widgets import ControlVolumen
 
-        #from PlayerList import Lista
-        #from PlayerControls import PlayerControl
+        from PlayerList import Lista
+        from PlayerControls import PlayerControl
         #from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
 
         from Toolbars import ToolbarSalir
@@ -153,8 +153,8 @@ class JAMediaPlayer(gtk.EventBox):
         #self.pantalla = Visor()
         #self.barradeprogreso = BarraProgreso()
         self.volumen = ControlVolumen()
-        #self.lista_de_reproduccion = Lista()
-        #self.controlesrepro = PlayerControl()
+        self.lista_de_reproduccion = Lista()
+        self.controlesrepro = PlayerControl()
         self.toolbar = Toolbar()
         #self.toolbar_config = ToolbarConfig()
         #self.widget_efectos = WidgetsGstreamerEfectos()
@@ -210,7 +210,7 @@ class JAMediaPlayer(gtk.EventBox):
         hpanel.pack1(vbox, resize=True, shrink=True)
 
         # Area Derecha del Panel
-        #self.derecha_vbox = gtk.VBox()
+        self.derecha_vbox = gtk.VBox()
 
         # Configuración de balanace y efectos
         #self.vbox_config = gtk.VBox()
@@ -225,28 +225,28 @@ class JAMediaPlayer(gtk.EventBox):
 
         # Lista de Reproducción
         # FIXME: Para poder pintar el fondo
-        #self.evnt_box_lista_reproduccion = gtk.EventBox()
-        #self.evnt_box_lista_reproduccion.modify_bg(
-        #    0, get_colors("barradeprogreso"))
-        #self.vbox_lista_reproduccion = gtk.VBox()
-        #self.scroll_list = gtk.ScrolledWindow()
-        #self.scroll_list.set_policy(
-        #    gtk.POLICY_AUTOMATIC,
-        #    gtk.POLICY_AUTOMATIC)
-        #self.scroll_list.add(self.lista_de_reproduccion)
+        self.evnt_box_lista_reproduccion = gtk.EventBox()
+        self.evnt_box_lista_reproduccion.modify_bg(
+            0, get_colors("barradeprogreso"))
+        self.vbox_lista_reproduccion = gtk.VBox()
+        self.scroll_list = gtk.ScrolledWindow()
+        self.scroll_list.set_policy(
+            gtk.POLICY_AUTOMATIC,
+            gtk.POLICY_AUTOMATIC)
+        self.scroll_list.add(self.lista_de_reproduccion)
 
         # Lista + Controles de Reproducción
-        #self.__pack_vbox_lista_reproduccion()
-        #self.evnt_box_lista_reproduccion.add(
-        #    self.vbox_lista_reproduccion)
+        self.__pack_vbox_lista_reproduccion()
+        self.evnt_box_lista_reproduccion.add(
+            self.vbox_lista_reproduccion)
 
         # Configuración + Lista de Reproducción.
         #self.derecha_vbox.pack_start(
         #    self.scroll_config, True, True, 0)
-        #self.derecha_vbox.pack_start(
-        #    self.evnt_box_lista_reproduccion, True, True, 0)
+        self.derecha_vbox.pack_start(
+            self.evnt_box_lista_reproduccion, True, True, 0)
 
-        #hpanel.pack2(self.derecha_vbox, resize=False, shrink=True)
+        hpanel.pack2(self.derecha_vbox, resize=False, shrink=True)
 
         #self.controles_dinamicos = [
         #    hbox_barra_progreso,
@@ -318,8 +318,8 @@ class JAMediaPlayer(gtk.EventBox):
         #    "button-press-event",
         #    self.__click_derecho_en_lista)
 
-        #self.controlesrepro.connect(
-        #    "activar", self.__activar)
+        self.controlesrepro.connect(
+            "activar", self.__activar)
         #self.barradeprogreso.connect(
         #    "user-set-value", self.__user_set_value)
         #self.pantalla.connect(

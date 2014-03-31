@@ -21,10 +21,9 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import GdkPixbuf
-from gi.repository import GObject
-from gi.repository import GLib
+import gtk
+from gtk import gdk
+import gobject
 
 from Globales import get_color
 from Globales import get_separador
@@ -33,21 +32,21 @@ from Globales import get_boton
 BASE_PATH = os.path.dirname(__file__)
 
 
-class Lista(Gtk.TreeView):
+class Lista(gtk.TreeView):
     """
     Lista generica.
     """
 
     __gsignals__ = {
-    "nueva-seleccion": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+    "nueva-seleccion": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
 
-        Gtk.TreeView.__init__(self, Gtk.ListStore(
-            GdkPixbuf.Pixbuf,
-            GObject.TYPE_STRING,
-            GObject.TYPE_STRING))
+        gtk.TreeView.__init__(self, gtk.ListStore(
+            gdk.Pixbuf,
+            gobject.TYPE_STRING,
+            gobject.TYPE_STRING))
 
         self.set_property("rules-hint", True)
         self.set_headers_clickable(True)
@@ -88,8 +87,7 @@ class Lista(Gtk.TreeView):
         return False
         """
 
-    def __selecciones(self, treeselection,
-        model, path, is_selected, listore):
+    def __selecciones(self, path, column):
         """
         Cuando se selecciona un item en la lista.
         """
@@ -101,8 +99,8 @@ class Lista(Gtk.TreeView):
         _iter = model.get_iter(path)
         valor = model.get_value(_iter, 2)
 
-        if not is_selected and self.valor_select != valor:
-            self.scroll_to_cell(model.get_path(_iter))
+        if self.valor_select != valor:
+            #self.scroll_to_cell(model.get_path(_iter))
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
 
@@ -116,24 +114,24 @@ class Lista(Gtk.TreeView):
 
     def __construir_columa(self, text, index, visible):
 
-        render = Gtk.CellRendererText()
+        render = gtk.CellRendererText()
 
-        columna = Gtk.TreeViewColumn(text, render, text=index)
+        columna = gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
 
         return columna
 
     def __construir_columa_icono(self, text, index, visible):
 
-        render = Gtk.CellRendererPixbuf()
+        render = gtk.CellRendererPixbuf()
 
-        columna = Gtk.TreeViewColumn(text, render, pixbuf=index)
+        columna = gtk.TreeViewColumn(text, render, pixbuf=index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
 
         return columna
 
@@ -152,7 +150,7 @@ class Lista(Gtk.TreeView):
         self.get_toplevel().set_sensitive(False)
         self.permitir_select = False
 
-        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
 
     def __ejecutar_agregar_elemento(self, elementos):
         """
@@ -195,7 +193,7 @@ class Lista(Gtk.TreeView):
                 "Iconos", "sonido.svg")
 
         #try:
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
+        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
             24, -1)
         self.get_model().append([pixbuf, texto, path])
 
@@ -204,7 +202,7 @@ class Lista(Gtk.TreeView):
 
         elementos.remove(elementos[0])
 
-        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
 
         return False
 

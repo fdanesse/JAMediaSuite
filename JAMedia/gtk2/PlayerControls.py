@@ -21,11 +21,9 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GdkPixbuf
-from gi.repository import GObject
-from gi.repository import GLib
+import gtk
+from gtk import gdk
+import gobject
 
 from Globales import get_color
 from Globales import get_colors
@@ -35,18 +33,18 @@ from Globales import get_boton
 BASE_PATH = os.path.dirname(__file__)
 
 
-class PlayerControl(Gtk.Box):
+class PlayerControl(gtk.HBox):
     """
     Controles de reproduccion: play/pausa, stop, siguiente, atras.
     """
 
     __gsignals__ = {
-    "activar": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+    "activar": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
 
-        Gtk.Box.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+        gtk.HBox.__init__(self)
 
         self.botonatras = JAMediaToolButton(pixels=24)
 
@@ -137,7 +135,7 @@ class PlayerControl(Gtk.Box):
         self.emit("activar", "siguiente")
 
 
-class JAMediaToolButton(Gtk.ToolButton):
+class JAMediaToolButton(gtk.ToolButton):
     """
     Toolbutton con drawingarea donde se
     dibuja una imagen con cairo.
@@ -145,7 +143,7 @@ class JAMediaToolButton(Gtk.ToolButton):
 
     def __init__(self, pixels=24):
 
-        Gtk.ToolButton.__init__(self)
+        gtk.ToolButton.__init__(self)
 
         self.modify_bg(0, get_colors("barradeprogreso"))
 
@@ -164,7 +162,7 @@ class JAMediaToolButton(Gtk.ToolButton):
             pixbuf = None
 
         else:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file(os.path.join(archivo))
+            pixbuf = gdk.pixbuf_new_from_file(os.path.join(archivo))
 
             if flip:
                 pixbuf = pixbuf.flip(True)
@@ -175,14 +173,14 @@ class JAMediaToolButton(Gtk.ToolButton):
         self.imagen.set_imagen(pixbuf)
 
 
-class Imagen_Button(Gtk.DrawingArea):
+class Imagen_Button(gtk.DrawingArea):
     """
     DrawingArea de JAMediaToolButton.
     """
 
     def __init__(self):
 
-        Gtk.DrawingArea.__init__(self)
+        gtk.DrawingArea.__init__(self)
 
         self.pixbuf = None
 
@@ -196,7 +194,7 @@ class Imagen_Button(Gtk.DrawingArea):
             ww, hh = self.pixbuf.get_width(), self.pixbuf.get_height()
 
             scaledPixbuf = self.pixbuf.scale_simple(
-                w, h, GdkPixbuf.InterpType.BILINEAR)
+                w, h, gdkPixbuf.InterpType.BILINEAR)
 
             import cairo
 
@@ -206,7 +204,7 @@ class Imagen_Button(Gtk.DrawingArea):
                 scaledPixbuf.get_height())
 
             tmpcontext = cairo.Context(surface)
-            Gdk.cairo_set_source_pixbuf(tmpcontext, scaledPixbuf, 0, 0)
+            gdk.cairo_set_source_pixbuf(tmpcontext, scaledPixbuf, 0, 0)
             tmpcontext.paint()
             context.set_source_surface(surface)
             context.paint()
