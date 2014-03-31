@@ -136,7 +136,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         #from Widgets import Visor
         #from Widgets import BarraProgreso
-        #from Widgets import ControlVolumen
+        from Widgets import ControlVolumen
 
         #from PlayerList import Lista
         #from PlayerControls import PlayerControl
@@ -152,7 +152,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         #self.pantalla = Visor()
         #self.barradeprogreso = BarraProgreso()
-        #self.volumen = ControlVolumen()
+        self.volumen = ControlVolumen()
         #self.lista_de_reproduccion = Lista()
         #self.controlesrepro = PlayerControl()
         self.toolbar = Toolbar()
@@ -190,14 +190,14 @@ class JAMediaPlayer(gtk.EventBox):
         #scroll.add_with_viewport(eventbox)
 
         # Barra de Progreso + Volúmen
-        #ev_box = gtk.EventBox()  # FIXME: Para poder pintar el fondo
-        #ev_box.modify_bg(0, get_colors("barradeprogreso"))
-        #hbox_barra_progreso = gtk.HBox()
+        ev_box = gtk.EventBox()  # FIXME: Para poder pintar el fondo
+        ev_box.modify_bg(0, get_colors("barradeprogreso"))
+        hbox_barra_progreso = gtk.HBox()
         #hbox_barra_progreso.pack_start(
         #    self.barradeprogreso, True, True, 0)
-        #hbox_barra_progreso.pack_start(
-        #    self.volumen, False, False, 0)
-        #ev_box.add(hbox_barra_progreso)
+        hbox_barra_progreso.pack_start(
+            self.volumen, False, False, 0)
+        ev_box.add(hbox_barra_progreso)
 
         # Todo
         vbox = gtk.VBox()
@@ -205,7 +205,7 @@ class JAMediaPlayer(gtk.EventBox):
         #vbox.pack_start(self.pantalla, True, True, 0)
         #vbox.pack_start(scroll, False, False, 0)
         vbox.pack_start(self.toolbar_info, False, False, 3)
-        #vbox.pack_start(ev_box, False, True, 0)
+        vbox.pack_start(ev_box, False, True, 0)
 
         hpanel.pack1(vbox, resize=True, shrink=True)
 
@@ -348,8 +348,8 @@ class JAMediaPlayer(gtk.EventBox):
             "accion-stream", self.__accion_stream)
         self.toolbar_grabar.connect(
             "stop", self.__detener_grabacion)
-        #self.volumen.connect(
-        #    "volumen", self.__set_volumen)
+        self.volumen.connect(
+            "volumen", self.__set_volumen)
         self.toolbaraddstream.connect(
             "add-stream", self.__ejecutar_add_stream)
 

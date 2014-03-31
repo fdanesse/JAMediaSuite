@@ -22,7 +22,7 @@
 import os
 
 import gtk
-from gi.repository import gdk
+from gtk import gdk
 import gobject
 
 from Globales import get_color
@@ -797,7 +797,7 @@ class ControlVolumen(gtk.VolumeButton):
         self.emit('volumen', valor)
 
 
-class MouseSpeedDetector(gobject.gobject):
+class MouseSpeedDetector(gobject.GObject):
     """
     Verifica posición y moviemiento del mouse.
     estado puede ser:
@@ -807,12 +807,12 @@ class MouseSpeedDetector(gobject.gobject):
     """
 
     __gsignals__ = {
-        'estado': (gobject.SignalFlags.RUN_FIRST,
+        'estado': (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, parent):
 
-        gobject.gobject.__init__(self)
+        gobject.GObject.__init__(self)
 
         self.parent = parent
 
