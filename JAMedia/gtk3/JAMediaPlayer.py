@@ -662,10 +662,10 @@ class JAMediaPlayer(Gtk.EventBox):
                 'clicked', self.__clicked_mini_efecto)
             botonefecto.set_tamanio(16, 16)
 
-            archivo = os.path.join(JAMediaObjectsPath,
+            archivo = os.path.join(BASE_PATH,
                 "Iconos", 'configurar.svg')
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                archivo, lado, lado)
+                archivo, 16, 16)
             botonefecto.imagen.set_from_pixbuf(pixbuf)
 
             self.hbox_efectos_en_pipe.pack_start(

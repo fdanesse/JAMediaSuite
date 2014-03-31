@@ -690,7 +690,7 @@ class ProgressBar(gtk.HScale):
         self.set_digits(0)
         self.set_draw_value(False)
 
-        self.ancho, self.borde = (15, 10)
+        self.ancho, self.borde = (10, 10)
 
         icono = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
@@ -805,7 +805,11 @@ class MouseSpeedDetector(gobject.GObject):
         Emite la señal de estado cada 60 segundos.
         """
 
-        display, posx, posy = self.parent.get_display().get_window_at_pointer()
+        try:
+            display, posx, posy = gdk.display_get_default().get_window_at_pointer()
+
+        except:
+            return True
 
         if posx > 0 and posy > 0:
             if posx != self.mouse_pos[0] or posy != self.mouse_pos[1]:

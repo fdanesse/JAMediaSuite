@@ -360,27 +360,28 @@ class JAMediaPlayer(gtk.EventBox):
             'configurar_efecto', self.__configurar_efecto)
 
         # Controlador del mouse.
-        #icono = os.path.join(BASE_PATH,
-        #    "Iconos", "jamedia_cursor.svg")
-        #pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-        #    -1, 24)
-        #self.jamedia_cursor = gdk.Cursor.new_from_pixbuf(
-        #    gdk.Display.get_default(), pixbuf, 0, 0)
+        # http://www.pygtk.org/pygtk2reference/class-gdkdisplay.html#function-gdk--display-get-default
+        icono = os.path.join(BASE_PATH,
+            "Iconos", "jamedia_cursor.svg")
+        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+            -1, 24)
+        self.jamedia_cursor = gdk.Cursor(
+            gdk.display_get_default(), pixbuf, 0, 0)
 
-        #self.cursor_root = self.get_parent_window().get_cursor()
-        #self.get_parent_window().set_cursor(self.jamedia_cursor)
+        self.cursor_root = self.get_parent_window().get_cursor()
+        self.get_parent_window().set_cursor(self.jamedia_cursor)
 
-        #from Widgets import MouseSpeedDetector
+        from Widgets import MouseSpeedDetector
 
-        #self.mouse_listener = MouseSpeedDetector(self)
-        #self.mouse_listener.connect(
-        #    "estado", self.__set_mouse)
-        #self.mouse_listener.new_handler(True)
+        self.mouse_listener = MouseSpeedDetector(self)
+        self.mouse_listener.connect(
+            "estado", self.__set_mouse)
+        self.mouse_listener.new_handler(True)
 
-        #self.get_parent().connect(
-        #    "hide", self.__hide_show_parent)
-        #self.get_parent().connect(
-        #    "show", self.__hide_show_parent)
+        self.get_parent().connect(
+            "hide", self.__hide_show_parent)
+        self.get_parent().connect(
+            "show", self.__hide_show_parent)
 
         self.hbox_efectos_en_pipe.get_parent().get_parent(
             ).get_parent().hide()
@@ -559,9 +560,9 @@ class JAMediaPlayer(gtk.EventBox):
                     return
 
             elif estado == "detenido":
-                if self.get_parent_window().get_cursor() != gdk.CursorType.BLANK_CURSOR:
+                if self.get_parent_window().get_cursor() != gdk.BLANK_CURSOR:
                     self.get_parent_window().set_cursor(
-                        gdk.Cursor(gdk.CursorType.BLANK_CURSOR))
+                        gdk.Cursor(gdk.BLANK_CURSOR))
                     return
 
             elif estado == "fuera":
@@ -655,10 +656,10 @@ class JAMediaPlayer(gtk.EventBox):
                 'clicked', self.__clicked_mini_efecto)
             botonefecto.set_tamanio(16, 16)
 
-            archivo = os.path.join(JAMediaObjectsPath,
+            archivo = os.path.join(BASE_PATH,
                 "Iconos", 'configurar.svg')
             pixbuf = gdk.pixbuf_new_from_file_at_size(
-                archivo, lado, lado)
+                archivo, 16, 16)
             botonefecto.imagen.set_from_pixbuf(pixbuf)
 
             self.hbox_efectos_en_pipe.pack_start(

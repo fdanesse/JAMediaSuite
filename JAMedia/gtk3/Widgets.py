@@ -737,13 +737,9 @@ class ProgressBar(Gtk.Scale):
         rect = self.get_allocation()
         w, h = (rect.width, rect.height)
 
-        # Fondo
-        #Gdk.cairo_set_source_color(contexto, G.BLANCO)
-        #contexto.paint()
-
         # Relleno de la barra
         ww = w - self.borde * 2
-        hh = h - self.borde * 2
+        hh = 10 #h - self.borde * 2
         Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
         rect = Gdk.Rectangle()
         rect.x, rect.y, rect.width, rect.height = (
