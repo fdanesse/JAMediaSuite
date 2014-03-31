@@ -272,12 +272,12 @@ class JAMediaButton(gtk.EventBox):
 
         self.estado_select = False
 
-        #self.add_events(
-        #    gdk.EventMask.BUTTON_PRESS_MASK |
-        #    gdk.EventMask.BUTTON_RELEASE_MASK |
-        #    gdk.EventMask.POINTER_MOTION_MASK |
-        #    gdk.EventMask.ENTER_NOTIFY_MASK |
-        #    gdk.EventMask.LEAVE_NOTIFY_MASK)
+        self.add_events(
+            gdk.BUTTON_PRESS_MASK |
+            gdk.BUTTON_RELEASE_MASK |
+            gdk.POINTER_MOTION_MASK |
+            gdk.ENTER_NOTIFY_MASK |
+            gdk.LEAVE_NOTIFY_MASK)
 
         self.connect("button_press_event", self.button_press)
         self.connect("button_release_event", self.__button_release)
@@ -452,7 +452,7 @@ class Credits(gtk.Dialog):
         gtk.Dialog.__init__(self,
             parent=parent,
             #flags=gtk.DialogFlags.MODAL,
-            buttons=("Cerrar", gtk.ResponseType.ACCEPT))
+            buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)
         self.modify_bg(0, get_colors("window"))
@@ -474,7 +474,7 @@ class Help(gtk.Dialog):
         gtk.Dialog.__init__(self,
             parent=parent,
             #flags=gtk.DialogFlags.MODAL,
-            buttons=("Cerrar", gtk.ResponseType.ACCEPT))
+            buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)
         self.modify_bg(0, get_colors("window"))
@@ -587,15 +587,15 @@ class Visor(gtk.DrawingArea):
 
         self.modify_bg(0, get_colors("drawingplayer"))
 
-        #self.add_events(
-        #    gdk.EventMask.KEY_PRESS_MASK |
-        #    gdk.EventMask.KEY_RELEASE_MASK |
-        #    gdk.EventMask.POINTER_MOTION_MASK |
-        #    gdk.EventMask.POINTER_MOTION_HINT_MASK |
-        #    gdk.EventMask.BUTTON_MOTION_MASK |
-        #    gdk.EventMask.BUTTON_PRESS_MASK |
-        #    gdk.EventMask.BUTTON_RELEASE_MASK
-        #)
+        self.add_events(
+            gdk.KEY_PRESS_MASK |
+            gdk.KEY_RELEASE_MASK |
+            gdk.POINTER_MOTION_MASK |
+            gdk.POINTER_MOTION_HINT_MASK |
+            gdk.BUTTON_MOTION_MASK |
+            gdk.BUTTON_PRESS_MASK |
+            gdk.BUTTON_RELEASE_MASK
+        )
 
         self.show_all()
 
@@ -671,103 +671,87 @@ class BarraProgreso(gtk.EventBox):
             self.emit("user-set-value", valor)
 
 
-class ProgressBar(gtk.Scale):
+class ProgressBar(gtk.HScale):
     """
-    Escala de BarraProgreso.
+    Escala de SlicerBalance.
     """
 
     __gsignals__ = {
     "user-set-value": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
 
-        gtk.Scale.__init__(self,
-            orientation=gtk.Orientation.HORIZONTAL)
+        gtk.HScale.__init__(self)
 
-        self.set_adjustment(ajuste)
+        self.modify_bg(0, get_colors("barradeprogreso"))
+
+        self.ajuste = ajuste
         self.set_digits(0)
         self.set_draw_value(False)
 
-        self.presed = False
-        self.borde = 10
+        self.ancho, self.borde = (15, 10)
 
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            24, 24)
-        self.pixbuf = pixbuf.rotate_simple(
-            gdk.PIXBUF_ROTATE_CLOCKWISE)
+        #icono = os.path.join(BASE_PATH,
+        #    "Iconos", "iconplay.svg")
+        #pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+        #    16, 16)
+        #self.pixbuf = pixbuf.rotate_simple(
+        #    gdk.PIXBUF_ROTATE_CLOCKWISE)
+
+        self.connect("expose_event", self.__expose)
 
         self.show_all()
-
-    def do_button_press_event(self, event):
-
-        self.presed = True
-
-    def do_button_release_event(self, event):
-
-        self.presed = False
 
     def do_motion_notify_event(self, event):
         """
         Cuando el usuario se desplaza por la barra de progreso.
+        Se emite el valor en % (float).
         """
 
-        if event.state == gdk.ModifierType.MOD2_MASK | \
-            gdk.ModifierType.BUTTON1_MASK:
+        if event.state == gdk.MOD2_MASK | \
+            gdk.BUTTON1_MASK:
 
             rect = self.get_allocation()
-            x, y = (self.borde, self.borde)
-            w, h = (rect.width - (
-                self.borde * 2), rect.height - (self.borde * 2))
-            eventx, eventy = (int(event.x) - x, int(event.y) - y)
-
-            if (eventx > int(x) and eventx < int(w)):
-                valor = float(eventx * 100 / w)
-                self.get_adjustment().set_value(valor)
+            valor = float(event.x * 100 / rect.width)
+            if valor >= 0.0 and valor <= 100.0:
+                self.ajuste.set_value(valor)
                 self.queue_draw()
                 self.emit("user-set-value", valor)
 
-    def do_draw(self, contexto):
+    def __expose(self, widget, event):
         """
         Dibuja el estado de la barra de progreso.
         """
 
-        rect = self.get_allocation()
-        w, h = (rect.width, rect.height)
+        x, y, w, h = self.get_allocation()
+        ancho, borde = (self.ancho, self.borde)
 
-        # Fondo
-        #gdk.cairo_set_source_color(contexto, G.BLANCO)
-        #contexto.paint()
+        gc = gtk.gdk.Drawable.new_gc(self.window)
 
-        # Relleno de la barra
-        ww = w - self.borde * 2
-        hh = h - self.borde * 2
-        gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
-        rect = gdk.Rectangle()
-        rect.x, rect.y, rect.width, rect.height = (
-            self.borde, self.borde, ww, hh)
-        gdk.cairo_rectangle(contexto, rect)
-        contexto.fill()
+        gc.set_rgb_fg_color(get_colors("barradeprogreso"))
+        self.window.draw_rectangle(gc, True, x, y, w, h)
 
-        # Relleno de la barra segun progreso
-        gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
-        rect = gdk.Rectangle()
+        gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
+        ww = w - borde * 2
+        xx = x + w / 2 - ww / 2
+        hh = ancho
+        yy = y + h / 2 - ancho / 2
+        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
 
-        ximage = int(self.get_adjustment().get_value() * ww / 100)
-        rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
-            ximage, hh)
+        ximage = int(self.ajuste.get_value() * ww / 100)
+        gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
+        self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
 
-        gdk.cairo_rectangle(contexto, rect)
-        contexto.fill()
+        #gdk.cairo_rectangle(contexto, rect)
+        #contexto.fill()
 
         # La Imagen
-        imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        imgx = ximage
-        imgy = float(self.borde + hh / 2 - imgh / 2)
-        gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
-        contexto.paint()
+        #imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
+        #imgx = ximage
+        #imgy = float(self.borde + hh / 2 - imgh / 2)
+        #gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        #contexto.paint()
 
         return True
 

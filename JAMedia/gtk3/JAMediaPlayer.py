@@ -225,6 +225,7 @@ class JAMediaPlayer(Gtk.EventBox):
             Gtk.PolicyType.NEVER,
             Gtk.PolicyType.AUTOMATIC)
         self.scroll_config.add_with_viewport(self.vbox_config)
+        self.scroll_config.get_child().modify_bg(0, get_colors("window"))
         self.vbox_config.pack_start(
             self.toolbar_config, False, False, 0)
         self.vbox_config.pack_start(self.widget_efectos, False, False, 0)

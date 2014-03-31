@@ -668,6 +668,7 @@ class ToolbarConfig(Gtk.Table):
 
         frame = Gtk.Frame()
         frame.set_label(" Reproductor: ")
+        frame.set_border_width(4)
         box = Gtk.HBox()
         event = Gtk.EventBox()
         event.set_border_width(4)

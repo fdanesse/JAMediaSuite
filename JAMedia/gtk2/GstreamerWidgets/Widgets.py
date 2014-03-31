@@ -21,11 +21,9 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GdkPixbuf
-from gi.repository import GObject
-from gi.repository import GLib
+import gtk
+from gtk import gdk
+import gobject
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -35,9 +33,7 @@ def get_separador(draw=False, ancho=0, expand=False):
     Devuelve un separador generico.
     """
 
-    from gi.repository import Gtk
-
-    separador = Gtk.SeparatorToolItem()
+    separador = gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
@@ -50,36 +46,36 @@ def get_color(color):
     Devuelve Colores predefinidos.
     """
 
-    from gi.repository import Gdk
+    from gtk import gdk
 
     colors = {
-        "GRIS": Gdk.Color(60156, 60156, 60156),
-        "AMARILLO": Gdk.Color(65000, 65000, 40275),
-        "NARANJA": Gdk.Color(65000, 26000, 0),
-        "BLANCO": Gdk.Color(65535, 65535, 65535),
-        "NEGRO": Gdk.Color(0, 0, 0),
-        "ROJO": Gdk.Color(65000, 0, 0),
-        "VERDE": Gdk.Color(0, 65000, 0),
-        "AZUL": Gdk.Color(0, 0, 65000),
+        "GRIS": gdk.Color(60156, 60156, 60156),
+        "AMARILLO": gdk.Color(65000, 65000, 40275),
+        "NARANJA": gdk.Color(65000, 26000, 0),
+        "BLANCO": gdk.Color(65535, 65535, 65535),
+        "NEGRO": gdk.Color(0, 0, 0),
+        "ROJO": gdk.Color(65000, 0, 0),
+        "VERDE": gdk.Color(0, 65000, 0),
+        "AZUL": gdk.Color(0, 0, 65000),
         }
 
     return colors.get(color, None)
 
 
-class JAMediaButton(Gtk.EventBox):
+class JAMediaButton(gtk.EventBox):
     """
     Un Boton a medida.
     """
 
     __gsignals__ = {
-    "clicked": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
-    "click_derecho": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+    "clicked": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+    "click_derecho": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        gtk.EventBox.__init__(self)
 
         self.cn = get_color("BLANCO")
         self.cs = get_color("AMARILLO")
@@ -97,18 +93,18 @@ class JAMediaButton(Gtk.EventBox):
         self.estado_select = False
 
         self.add_events(
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.BUTTON_RELEASE_MASK |
-            Gdk.EventMask.POINTER_MOTION_MASK |
-            Gdk.EventMask.ENTER_NOTIFY_MASK |
-            Gdk.EventMask.LEAVE_NOTIFY_MASK)
+            gdk.BUTTON_PRESS_MASK |
+            gdk.BUTTON_RELEASE_MASK |
+            gdk.POINTER_MOTION_MASK |
+            gdk.ENTER_NOTIFY_MASK |
+            gdk.LEAVE_NOTIFY_MASK)
 
         self.connect("button_press_event", self.button_press)
         self.connect("button_release_event", self.__button_release)
         self.connect("enter-notify-event", self.__enter_notify_event)
         self.connect("leave-notify-event", self.__leave_notify_event)
 
-        self.imagen = Gtk.Image()
+        self.imagen = gtk.Image()
         self.add(self.imagen)
 
         self.show_all()
@@ -191,7 +187,7 @@ class JAMediaButton(Gtk.EventBox):
         for child in self.get_children():
             child.destroy()
 
-        label = Gtk.Label(texto)
+        label = gtk.Label(texto)
         label.show()
         self.add(label)
 
@@ -204,22 +200,22 @@ class JAMediaButton(Gtk.EventBox):
         self.set_size_request(w, h)
 
 
-class WidgetsGstreamerEfectos(Gtk.Frame):
+class WidgetsGstreamerEfectos(gtk.Frame):
     """
     Frame exterior de Contenedor de widgets que
     representan efectos de video para gstreamer.
     """
 
     __gsignals__ = {
-    "click_efecto": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    'configurar_efecto': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+    "click_efecto": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
     def __init__(self):
 
-        Gtk.Frame.__init__(self)
+        gtk.Frame.__init__(self)
 
         self.set_label(" Efectos: ")
         self.set_label_align(0.0, 0.5)
@@ -257,23 +253,22 @@ class WidgetsGstreamerEfectos(Gtk.Frame):
         self.gstreamer_efectos.seleccionar_efecto(nombre)
 
 
-class GstreamerVideoEfectos(Gtk.Box):
+class GstreamerVideoEfectos(gtk.VBox):
     """
     Contenedor de widgets que representan
     efectos de video para gstreamer.
     """
 
     __gsignals__ = {
-    'agregar_efecto': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    'configurar_efecto': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+    'agregar_efecto': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
     def __init__(self):
 
-        Gtk.Box.__init__(self,
-            orientation=Gtk.Orientation.VERTICAL)
+        gtk.VBox.__init__(self)
 
         self.show_all()
 
@@ -307,7 +302,7 @@ class GstreamerVideoEfectos(Gtk.Box):
         self.show_all()
         elementos.remove(elementos[0])
 
-        GLib.idle_add(self.cargar_efectos, elementos)
+        gobject.idle_add(self.cargar_efectos, elementos)
 
         return False
 
@@ -352,33 +347,34 @@ class GstreamerVideoEfectos(Gtk.Box):
                 return
 
 
-class Efecto_widget_Config(Gtk.EventBox):
+class Efecto_widget_Config(gtk.EventBox):
     """
     Contiene el botón para el efecto y los
     controles de configuración del mismo.
     """
 
     __gsignals__ = {
-    'agregar_efecto': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    'configurar_efecto': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
+    'agregar_efecto': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    'configurar_efecto': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
     def __init__(self, nombre):
 
-        Gtk.EventBox.__init__(self)
+        gtk.EventBox.__init__(self)
 
+        self.modify_bg(0, gdk.color_parse("#ffffff"))
         self.set_border_width(4)
 
-        frame = Gtk.Frame()
+        frame = gtk.Frame()
         text = nombre
         if "-" in nombre:
             text = nombre.split("-")[-1]
 
         frame.set_label(text)
         #frame.set_label_align(0.5, 1.0)
-        box = Gtk.VBox()
+        box = gtk.VBox()
         frame.add(box)
 
         self.botonefecto = JAMediaButton()
@@ -393,7 +389,7 @@ class Efecto_widget_Config(Gtk.EventBox):
         #archivo = os.path.join(path,
         #    "Iconos", 'configurar.svg')
 
-        #pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, lado, lado)
+        #pixbuf = gdk.pixbuf_new_from_file_at_size(archivo, lado, lado)
         #self.botonefecto.imagen.set_from_pixbuf(pixbuf)
 
         self.widget_config = get_widget_config_efecto(nombre)

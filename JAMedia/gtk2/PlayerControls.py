@@ -141,7 +141,7 @@ class JAMediaToolButton(gtk.ToolButton):
     dibuja una imagen con cairo.
     """
 
-    def __init__(self, pixels=24):
+    def __init__(self, pixels=34):
 
         gtk.ToolButton.__init__(self)
 
@@ -151,7 +151,7 @@ class JAMediaToolButton(gtk.ToolButton):
         self.set_icon_widget(self.imagen)
         self.imagen.show()
 
-        self.set_size_request(pixels, pixels)
+        #self.set_size_request(pixels + 10, pixels + 10)
         self.imagen.set_size_request(pixels, pixels)
 
         self.show_all()
@@ -182,32 +182,30 @@ class Imagen_Button(gtk.DrawingArea):
 
         gtk.DrawingArea.__init__(self)
 
+        self.modify_bg(0, get_colors("barradeprogreso"))
+
         self.pixbuf = None
+
+        self.connect("expose-event", self.__expose_event)
 
         self.show_all()
 
-    def do_draw(self, context):
+    def __expose_event(self, widget, event):
 
-        if self.pixbuf != None:
-            rect = self.get_allocation()
-            x, y, w, h = (rect.x, rect.y, rect.width, rect.height)
-            ww, hh = self.pixbuf.get_width(), self.pixbuf.get_height()
+        if not self.pixbuf:
+            return True
 
-            scaledPixbuf = self.pixbuf.scale_simple(
-                w, h, gdkPixbuf.InterpType.BILINEAR)
 
-            import cairo
+        rect = self.get_allocation()
+        x, y, w, h = (rect.x, rect.y, rect.width, rect.height)
 
-            surface = cairo.ImageSurface(
-                cairo.FORMAT_ARGB32,
-                scaledPixbuf.get_width(),
-                scaledPixbuf.get_height())
+        scaledPixbuf = self.pixbuf.scale_simple(
+            w, h, gtk.gdk.INTERP_BILINEAR)
 
-            tmpcontext = cairo.Context(surface)
-            gdk.cairo_set_source_pixbuf(tmpcontext, scaledPixbuf, 0, 0)
-            tmpcontext.paint()
-            context.set_source_surface(surface)
-            context.paint()
+        gc = gtk.gdk.Drawable.new_gc(self.window)
+        self.window.draw_pixbuf(gc, scaledPixbuf, 0, 0, 0, 0)
+
+        return True
 
     def set_imagen(self, pixbuf):
 

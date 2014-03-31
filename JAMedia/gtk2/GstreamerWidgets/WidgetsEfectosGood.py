@@ -26,10 +26,9 @@
 
 import os
 
-from gi.repository import Gtk
-from gi.repository import GObject
-from gi.repository import GdkPixbuf
-from gi.repository import Gdk
+import gtk
+import gobject
+from gtk import gdk
 
 from Widgets import JAMediaButton
 from Widgets import get_color
@@ -57,7 +56,7 @@ No Contiene (Debido a que no son configurables):
 """
 
 
-class Radioactv(Gtk.VBox):
+class Radioactv(gtk.VBox):
     """
     Element Properties:
         name                : The name of the object
@@ -92,21 +91,22 @@ class Radioactv(Gtk.VBox):
     """
 
     __gsignals__ = {
-    "propiedad": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_PYOBJECT))}
+    "propiedad": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_PYOBJECT))}
 
     def __init__(self):
 
-        Gtk.VBox.__init__(self)
+        gtk.VBox.__init__(self)
 
-        frame1 = Gtk.Frame()
+        frame1 = gtk.Frame()
         frame1.set_label("Color:")
         frame1.set_border_width(4)
+        frame1.modify_bg(0, gdk.color_parse("#ffffff"))
         frame1.set_label_align(0.5, 1.0)
         frame1.add(self.__get_widgets_colors())
 
-        frame2 = Gtk.Frame()
+        frame2 = gtk.Frame()
         frame2.set_label("Modo:")
         frame2.set_border_width(4)
         frame2.set_label_align(0.5, 1.0)
@@ -127,7 +127,7 @@ class Radioactv(Gtk.VBox):
         Cuatro botones para seleccionar el color.
         """
 
-        color_widgets = Gtk.HBox()
+        color_widgets = gtk.HBox()
 
         white = JAMediaButton()
         white.connect('clicked', self.__set_color, 3)
@@ -168,7 +168,7 @@ class Radioactv(Gtk.VBox):
         Cuatro botones para seleccinar el modo.
         """
 
-        modo_widgets = Gtk.HBox()
+        modo_widgets = gtk.HBox()
 
         white = JAMediaButton()
         white.connect('clicked', self.__set_modo, 0)
@@ -210,15 +210,15 @@ class Radioactv(Gtk.VBox):
         switch activa y desactiva el efecto si modo == 3.
         """
 
-        toolbar = Gtk.Toolbar()
+        toolbar = gtk.Toolbar()
 
-        toolbar.modify_bg(0, Gdk.color_parse("#ffffff"))
+        toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
 
         #toolbar.insert(get_separador(draw=False,
         #    ancho=0, expand=True), -1)
 
-        item = Gtk.ToolItem()
-        label = Gtk.Label("on:")
+        item = gtk.ToolItem()
+        label = gtk.Label("on:")
         label.show()
         item.add(label)
         toolbar.insert(item, -1)
@@ -226,10 +226,10 @@ class Radioactv(Gtk.VBox):
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        self.switch = Gtk.Switch()
+        self.switch = gtk.CheckButton()
         self.switch.set_active(True)
         self.switch.show()
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         item.set_expand(False)
         item.add(self.switch)
         toolbar.insert(item, -1)
@@ -262,14 +262,14 @@ class Radioactv(Gtk.VBox):
 
     def __set_color(self, widget, void, color):
         """
-        void = <class 'gi.overrides.Gdk.EventButton'>
+        void = <class 'gi.overrides.gdk.EventButton'>
         """
 
         self.emit('propiedad', 'color', color)
 
     def __set_modo(self, widget, void, valor):
         """
-        void = <class 'gi.overrides.Gdk.EventButton'>
+        void = <class 'gi.overrides.gdk.EventButton'>
         """
 
         self.emit('propiedad', 'mode', valor)
@@ -282,7 +282,7 @@ class Radioactv(Gtk.VBox):
         self.emit("propiedad", 'trigger', not widget.get_active())
 
 
-class Agingtv(Gtk.VBox):
+class Agingtv(gtk.VBox):
     """
     Element Properties:
           name                : The name of the object
@@ -309,13 +309,13 @@ class Agingtv(Gtk.VBox):
     """
 
     __gsignals__ = {
-    "propiedad": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_PYOBJECT))}
+    "propiedad": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_PYOBJECT))}
 
     def __init__(self):
 
-        Gtk.VBox.__init__(self)
+        gtk.VBox.__init__(self)
 
         interval = ToolbarcontrolValores('scratch-lines')
         interval.connect('valor', self.__set_scratch_lines)
@@ -330,13 +330,13 @@ class Agingtv(Gtk.VBox):
 
     def __get_toolbar_dusts(self):
 
-        toolbar = Gtk.Toolbar()
-        toolbar.modify_bg(0, Gdk.color_parse("#ffffff"))
+        toolbar = gtk.Toolbar()
+        toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
 
-        switch = Gtk.Switch()
+        switch = gtk.CheckButton()
         switch.set_active(True)
         switch.show()
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)
         toolbar.insert(item, -1)
@@ -344,8 +344,8 @@ class Agingtv(Gtk.VBox):
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
-        label = Gtk.Label("dusts")
+        item = gtk.ToolItem()
+        label = gtk.Label("dusts")
         label.show()
         item.add(label)
         toolbar.insert(item, -1)
@@ -356,13 +356,13 @@ class Agingtv(Gtk.VBox):
 
     def __get_toolbar_pits(self):
 
-        toolbar = Gtk.Toolbar()
-        toolbar.modify_bg(0, Gdk.color_parse("#ffffff"))
+        toolbar = gtk.Toolbar()
+        toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
 
-        switch = Gtk.Switch()
+        switch = gtk.CheckButton()
         switch.set_active(True)
         switch.show()
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)
         toolbar.insert(item, -1)
@@ -370,8 +370,8 @@ class Agingtv(Gtk.VBox):
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = Gtk.ToolItem()
-        label = Gtk.Label("pits")
+        item = gtk.ToolItem()
+        label = gtk.Label("pits")
         label.show()
         item.add(label)
         toolbar.insert(item, -1)
@@ -401,7 +401,7 @@ class Agingtv(Gtk.VBox):
         self.emit("propiedad", 'dusts', not widget.get_active())
 
 
-class ToolbarcontrolValores(Gtk.Toolbar):
+class ToolbarcontrolValores(gtk.Toolbar):
     """
     Toolbar con escala para modificar
     valores de balance en video, utilizada
@@ -409,24 +409,26 @@ class ToolbarcontrolValores(Gtk.Toolbar):
     """
 
     __gsignals__ = {
-    'valor': (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
+    'valor': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self, label):
 
-        Gtk.Toolbar.__init__(self)
+        gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, Gdk.color_parse("#ffffff"))
+        self.modify_bg(0, gdk.color_parse("#ffffff"))
 
         self.titulo = label
 
         self.escala = SlicerBalance()
 
-        item = Gtk.ToolItem()
+        item = gtk.ToolItem()
         item.set_expand(True)
 
-        self.frame = Gtk.Frame()
+        self.frame = gtk.Frame()
         self.frame.set_label(self.titulo)
+        self.frame.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.frame.set_border_width(4)
         self.frame.set_label_align(0.5, 1.0)
         self.frame.add(self.escala)
         self.frame.show()
@@ -455,22 +457,22 @@ class ToolbarcontrolValores(Gtk.Toolbar):
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
 
-class SlicerBalance(Gtk.EventBox):
+class SlicerBalance(gtk.EventBox):
     """
     Barra deslizable para cambiar valores de Balance en Video.
     """
 
     __gsignals__ = {
-    "user-set-value": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+    "user-set-value": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, Gdk.color_parse("#ffffff"))
+        self.modify_bg(0, gdk.color_parse("#ffffff"))
 
-        self.escala = BalanceBar(Gtk.Adjustment(0.0, 0.0,
+        self.escala = BalanceBar(gtk.Adjustment(0.0, 0.0,
             101.0, 0.1, 1.0, 1.0))
 
         self.add(self.escala)
@@ -495,34 +497,35 @@ class SlicerBalance(Gtk.EventBox):
         self.emit("user-set-value", valor)
 
 
-class BalanceBar(Gtk.Scale):
+class BalanceBar(gtk.HScale):
     """
     Escala de SlicerBalance.
     """
 
     __gsignals__ = {
-    "user-set-value": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
+    "user-set-value": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
 
-        Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+        gtk.HScale.__init__(self)
 
-        self.modify_bg(0, Gdk.color_parse("#ffffff"))
+        self.modify_bg(0, gdk.color_parse("#ffffff"))
 
         self.ajuste = ajuste
         self.set_digits(0)
         self.set_draw_value(False)
 
-        self.borde = 10
+        self.ancho, self.borde = (15, 10)
 
-        path = os.path.dirname(BASE_PATH)
-        icono = os.path.join(path,
-            "Iconos", "iconplay.svg")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            16, 16)
-        self.pixbuf = pixbuf.rotate_simple(
-            GdkPixbuf.PixbufRotation.CLOCKWISE)
+        #icono = os.path.join(BASE_PATH,
+        #    "Iconos", "iconplay.svg")
+        #pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+        #    16, 16)
+        #self.pixbuf = pixbuf.rotate_simple(
+        #    gdk.PIXBUF_ROTATE_CLOCKWISE)
+
+        self.connect("expose_event", self.__expose)
 
         self.show_all()
 
@@ -532,8 +535,8 @@ class BalanceBar(Gtk.Scale):
         Se emite el valor en % (float).
         """
 
-        if event.state == Gdk.ModifierType.MOD2_MASK | \
-            Gdk.ModifierType.BUTTON1_MASK:
+        if event.state == gdk.MOD2_MASK | \
+            gdk.BUTTON1_MASK:
 
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
@@ -542,45 +545,38 @@ class BalanceBar(Gtk.Scale):
                 self.queue_draw()
                 self.emit("user-set-value", valor)
 
-    def do_draw(self, contexto):
+    def __expose(self, widget, event):
         """
         Dibuja el estado de la barra de progreso.
         """
 
-        rect = self.get_allocation()
-        w, h = (rect.width, rect.height)
+        x, y, w, h = self.get_allocation()
+        ancho, borde = (self.ancho, self.borde)
 
-        # Fondo
-        Gdk.cairo_set_source_color(contexto, get_color("BLANCO"))
-        contexto.paint()
+        gc = gtk.gdk.Drawable.new_gc(self.window)
 
-        # Relleno de la barra
-        ww = w - self.borde * 2
-        hh = h / 5
+        gc.set_rgb_fg_color(gdk.Color(65535, 65535, 65535))
+        self.window.draw_rectangle(gc, True, x, y, w, h)
 
-        Gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
-        rect = Gdk.Rectangle()
-
-        rect.x, rect.y, rect.width, rect.height = (
-            self.borde, h / 5 * 2, ww, hh)
-        Gdk.cairo_rectangle(contexto, rect)
-        contexto.fill()
-
-        # Relleno de la barra segun progreso
-        Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
-        rect = Gdk.Rectangle()
+        gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
+        ww = w - borde * 2
+        xx = x + w / 2 - ww / 2
+        hh = ancho
+        yy = y + h / 2 - ancho / 2
+        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
 
         ximage = int(self.ajuste.get_value() * ww / 100)
-        rect.x, rect.y, rect.width, rect.height = (
-            self.borde, h / 5 * 2, ximage, hh)
-        Gdk.cairo_rectangle(contexto, rect)
-        contexto.fill()
+        gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
+        self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
+
+        #gdk.cairo_rectangle(contexto, rect)
+        #contexto.fill()
 
         # La Imagen
-        imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        imgx = (ximage - imgw / 2) + self.borde
-        imgy = float(self.get_allocation().height / 2 - imgh / 2)
-        Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
-        contexto.paint()
+        #imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
+        #imgx = ximage
+        #imgy = float(self.borde + hh / 2 - imgh / 2)
+        #gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        #contexto.paint()
 
         return True

@@ -379,7 +379,7 @@ class ToolbarLista(gtk.Toolbar):
 
         menu.show_all()
         menu.attach_to_widget(widget, self.__null)
-        menu.popup(None, None, None, None, 1, 0)
+        gtk.Menu.popup(menu, None, None, None, 1, 0)
 
     def __null(self):
         pass
@@ -666,9 +666,11 @@ class ToolbarConfig(gtk.Table):
 
         frame = gtk.Frame()
         frame.set_label(" Reproductor: ")
+        frame.set_border_width(4)
         box = gtk.HBox()
         event = gtk.EventBox()
-        event.set_border_width(4)
+        event.modify_bg(0, get_colors("window"))
+        #event.set_border_width(4)
         event.add(box)
         frame.add(event)
 
@@ -784,6 +786,7 @@ class ToolbarcontrolValores(gtk.Toolbar):
         item.set_expand(True)
 
         self.frame = gtk.Frame()
+        self.frame.set_border_width(4)
         self.frame.set_label(self.titulo)
         self.frame.set_label_align(0.5, 1.0)
         event = gtk.EventBox()
@@ -856,7 +859,7 @@ class SlicerBalance(gtk.EventBox):
         self.emit("user-set-value", valor)
 
 
-class BalanceBar(gtk.Scale):
+class BalanceBar(gtk.HScale):
     """
     Escala de SlicerBalance.
     """
@@ -867,7 +870,7 @@ class BalanceBar(gtk.Scale):
 
     def __init__(self, ajuste):
 
-        gtk.Scale.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+        gtk.HScale.__init__(self)
 
         self.modify_bg(0, get_colors("window"))
 
@@ -875,14 +878,16 @@ class BalanceBar(gtk.Scale):
         self.set_digits(0)
         self.set_draw_value(False)
 
-        self.borde = 12
+        self.ancho, self.borde = (15, 10)
 
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            16, 16)
-        self.pixbuf = pixbuf.rotate_simple(
-            gdk.PIXBUF_ROTATE_CLOCKWISE)
+        #icono = os.path.join(BASE_PATH,
+        #    "Iconos", "iconplay.svg")
+        #pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+        #    16, 16)
+        #self.pixbuf = pixbuf.rotate_simple(
+        #    gdk.PIXBUF_ROTATE_CLOCKWISE)
+
+        self.connect("expose_event", self.__expose)
 
         self.show_all()
 
@@ -892,8 +897,8 @@ class BalanceBar(gtk.Scale):
         Se emite el valor en % (float).
         """
 
-        if event.state == gdk.ModifierType.MOD2_MASK | \
-            gdk.ModifierType.BUTTON1_MASK:
+        if event.state == gdk.MOD2_MASK | \
+            gdk.BUTTON1_MASK:
 
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
@@ -902,46 +907,39 @@ class BalanceBar(gtk.Scale):
                 self.queue_draw()
                 self.emit("user-set-value", valor)
 
-    def do_draw(self, contexto):
+    def __expose(self, widget, event):
         """
         Dibuja el estado de la barra de progreso.
         """
 
-        rect = self.get_allocation()
-        w, h = (rect.width, rect.height)
+        x, y, w, h = self.get_allocation()
+        ancho, borde = (self.ancho, self.borde)
 
-        # Fondo
-        gdk.cairo_set_source_color(contexto, get_color("BLANCO"))
-        contexto.paint()
+        gc = gtk.gdk.Drawable.new_gc(self.window)
 
-        # Relleno de la barra
-        ww = w - self.borde * 2
-        hh = h / 5
+        gc.set_rgb_fg_color(get_colors("window"))
+        self.window.draw_rectangle(gc, True, x, y, w, h)
 
-        gdk.cairo_set_source_color(contexto, get_color("NEGRO"))
-        rect = gdk.Rectangle()
-
-        rect.x, rect.y, rect.width, rect.height = (
-            self.borde, h / 5 * 2, ww, hh)
-        gdk.cairo_rectangle(contexto, rect)
-        contexto.fill()
-
-        # Relleno de la barra segun progreso
-        gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
-        rect = gdk.Rectangle()
+        gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
+        ww = w - borde * 2
+        xx = x + w / 2 - ww / 2
+        hh = ancho
+        yy = y + h / 2 - ancho / 2
+        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
 
         ximage = int(self.ajuste.get_value() * ww / 100)
-        rect.x, rect.y, rect.width, rect.height = (
-            self.borde, h / 5 * 2, ximage, hh)
-        gdk.cairo_rectangle(contexto, rect)
-        contexto.fill()
+        gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
+        self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
+
+        #gdk.cairo_rectangle(contexto, rect)
+        #contexto.fill()
 
         # La Imagen
-        imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        imgx = (ximage - imgw / 2) + self.borde
-        imgy = float(self.get_allocation().height / 2 - imgh / 2)
-        gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
-        contexto.paint()
+        #imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
+        #imgx = ximage
+        #imgy = float(self.borde + hh / 2 - imgh / 2)
+        #gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        #contexto.paint()
 
         return True
 

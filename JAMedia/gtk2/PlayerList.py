@@ -96,8 +96,8 @@ class Lista(gtk.TreeView):
             return True
 
         # model y listore son ==
-        _iter = model.get_iter(path)
-        valor = model.get_value(_iter, 2)
+        _iter = self.get_model().get_iter(path)
+        valor = self.get_model().get_value(_iter, 2)
 
         if self.valor_select != valor:
             #self.scroll_to_cell(model.get_path(_iter))

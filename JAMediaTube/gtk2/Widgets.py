@@ -619,15 +619,13 @@ class ProgressBar(gtk.HScale):
 
         self.set_draw_value(False)
 
-        self.x, self.y, self.w, self.h = (0, 0, 200, 40)
         self.borde, self.ancho = (15, 10)
 
         self.connect("expose_event", self.expose)
-        self.connect("size-allocate", self.size_allocate)
 
     def expose(self, widget, event):
 
-        x, y, w, h = (self.x, self.y, self.w, self.h)
+        x, y, w, h = self.get_allocation()
         ancho, borde = (self.ancho, self.borde)
 
         gc = gtk.gdk.Drawable.new_gc(self.window)
@@ -647,11 +645,6 @@ class ProgressBar(gtk.HScale):
         self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
 
         return True
-
-    def size_allocate(self, widget, allocation):
-
-        self.x, self.y, self.w, self.h = allocation
-        return False
 
 
 class Credits(gtk.Dialog):
