@@ -51,7 +51,7 @@ class My_FileChooser(gtk.FileChooserDialog):
             title=title,
             parent=parent,
             action=action,
-            flags=gtk.DIALOG_MODAL,
+            #flags=gtk.DIALOG_MODAL,
             )
 
         self.modify_bg(0, get_colors("window"))
@@ -417,7 +417,7 @@ class DialogoDescarga(gtk.Dialog):
 
         gtk.Dialog.__init__(self,
             parent=parent,
-            flags=gtk.DIALOG_MODAL,
+            #flags=gtk.DIALOG_MODAL,
             )
 
         self.set_decorated(False)
@@ -450,7 +450,7 @@ class Credits(gtk.Dialog):
 
         gtk.Dialog.__init__(self,
             parent=parent,
-            flags=gtk.DIALOG_MODAL,
+            #flags=gtk.DIALOG_MODAL,
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)
@@ -472,7 +472,7 @@ class Help(gtk.Dialog):
 
         gtk.Dialog.__init__(self,
             parent=parent,
-            flags=gtk.DIALOG_MODAL,
+            #flags=gtk.DIALOG_MODAL,
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)

@@ -750,13 +750,19 @@ class ProgressBar(Gtk.Scale):
         # Relleno de la barra segun progreso
         Gdk.cairo_set_source_color(contexto, get_color("NARANJA"))
         rect = Gdk.Rectangle()
-
         ximage = int(self.get_adjustment().get_value() * ww / 100)
         rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
             ximage, hh)
-
         Gdk.cairo_rectangle(contexto, rect)
         contexto.fill()
+
+        # borde del progreso
+        Gdk.cairo_set_source_color(contexto, get_color("BLANCO"))
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, self.borde, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.stroke()
 
         # La Imagen
         imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
