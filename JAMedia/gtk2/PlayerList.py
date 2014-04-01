@@ -25,9 +25,6 @@ import gtk
 from gtk import gdk
 import gobject
 
-from Globales import get_color
-from Globales import get_separador
-from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -62,31 +59,6 @@ class Lista(gtk.TreeView):
 
         self.show_all()
 
-    """
-    def keypress(self, widget, event):
-        # derecha 114 izquierda 113 suprimir 119
-        # backspace 22 (en xo no existe suprimir)
-        tecla = event.get_keycode()[1]
-        model, iter = self.get_selection().get_selected()
-        valor = self.modelo.get_value(iter, 2)
-        path = self.modelo.get_path(iter)
-        if tecla == 22:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-        elif tecla == 113:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-        elif tecla == 114:
-            if not self.row_expanded(path):
-                self.expand_to_path(path)
-        elif tecla == 119:
-            # suprimir
-            print valor, path
-        else:
-            pass
-        return False
-        """
-
     def __selecciones(self, path, column):
         """
         Cuando se selecciona un item en la lista.
@@ -100,7 +72,7 @@ class Lista(gtk.TreeView):
         valor = self.get_model().get_value(_iter, 2)
 
         if self.valor_select != valor:
-            #self.scroll_to_cell(model.get_path(_iter))
+            self.scroll_to_cell(self.get_model().get_path(_iter))
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
 
@@ -192,13 +164,9 @@ class Lista(gtk.TreeView):
             icono = os.path.join(BASE_PATH,
                 "Iconos", "sonido.svg")
 
-        #try:
         pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
             24, -1)
         self.get_model().append([pixbuf, texto, path])
-
-        #except:
-        #    pass
 
         elementos.remove(elementos[0])
 
@@ -211,7 +179,8 @@ class Lista(gtk.TreeView):
         modelo, _iter = self.get_selection().get_selected()
 
         try:
-            self.get_selection().select_iter(modelo.iter_next(_iter))
+            self.get_selection().select_iter(
+                self.get_model().iter_next(_iter))
 
         except:
             self.seleccionar_primero()
@@ -223,7 +192,14 @@ class Lista(gtk.TreeView):
         modelo, _iter = self.get_selection().get_selected()
 
         try:
-            self.get_selection().select_iter(modelo.iter_previous(_iter))
+            # HACK porque: model no tiene iter_previous
+            #self.get_selection().select_iter(
+            #    self.get_model().iter_previous(_iter))
+            path = self.get_model().get_path(_iter)
+            path = (path[0] - 1, )
+
+            self.get_selection().select_iter(
+                self.get_model().get_iter(path))
 
         except:
             self.seleccionar_ultimo()

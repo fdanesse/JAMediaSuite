@@ -20,7 +20,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import gst
+import gobject
 #from gi.repository import gstVideo  # necesario
+gobject.threads_init()
 
 
 class JAMedia_Efecto_bin(gst.Bin):
@@ -330,6 +332,8 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
 
         self.pantalla_bin = gst.element_factory_make(
             'xvimagesink', "pantalla")
+        self.pantalla_bin.set_property(
+            "force-aspect-ratio", True)
 
         self.videorate = gst.element_factory_make(
             'videorate', 'videorate')

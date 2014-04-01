@@ -22,8 +22,11 @@
 import gi
 gi.require_version('Gst', '1.0')
 
+from gi.repository import GObject
 from gi.repository import Gst
 from gi.repository import GstVideo  # necesario
+
+GObject.threads_init()
 
 
 class JAMedia_Efecto_bin(Gst.Bin):
@@ -333,6 +336,8 @@ class JAMedia_Video_Pipeline(Gst.Pipeline):
 
         self.pantalla_bin = Gst.ElementFactory.make(
             'xvimagesink', "pantalla")
+        #self.pantalla_bin.set_property(
+        #    "force-aspect-ratio", True)
 
         self.videorate = Gst.ElementFactory.make(
             'videorate', 'videorate')

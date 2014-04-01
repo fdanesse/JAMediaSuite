@@ -22,6 +22,8 @@
 import cairo
 from gi.repository import GObject
 
+GObject.threads_init()
+
 
 def paint_text(contexto, texto, rect):
     contexto.set_source_rgba(0, 0, 0, 1)

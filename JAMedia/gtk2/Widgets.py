@@ -27,7 +27,6 @@ import gobject
 
 from Globales import get_color
 from Globales import get_colors
-from Globales import get_separador
 from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
@@ -52,7 +51,7 @@ class My_FileChooser(gtk.FileChooserDialog):
             title=title,
             parent=parent,
             action=action,
-            #flags=gtk.DialogFlags.MODAL,
+            flags=gtk.DIALOG_MODAL,
             )
 
         self.modify_bg(0, get_colors("window"))
@@ -418,7 +417,7 @@ class DialogoDescarga(gtk.Dialog):
 
         gtk.Dialog.__init__(self,
             parent=parent,
-            #flags=gtk.DialogFlags.MODAL,
+            flags=gtk.DIALOG_MODAL,
             )
 
         self.set_decorated(False)
@@ -451,7 +450,7 @@ class Credits(gtk.Dialog):
 
         gtk.Dialog.__init__(self,
             parent=parent,
-            #flags=gtk.DialogFlags.MODAL,
+            flags=gtk.DIALOG_MODAL,
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)
@@ -473,7 +472,7 @@ class Help(gtk.Dialog):
 
         gtk.Dialog.__init__(self,
             parent=parent,
-            #flags=gtk.DialogFlags.MODAL,
+            flags=gtk.DIALOG_MODAL,
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)
@@ -599,8 +598,6 @@ class Visor(gtk.DrawingArea):
 
         self.show_all()
 
-        #self.connect("touch-event", self.__touch)
-
     def do_motion_notify_event(self, event):
         """
         Cuando se mueve el mouse sobre el visor.
@@ -634,7 +631,6 @@ class BarraProgreso(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
-        #self.modify_bg(0, get_color("BLANCO"))
         self.modify_bg(0, get_colors("barradeprogreso"))
 
         self.escala = ProgressBar(
@@ -658,7 +654,7 @@ class BarraProgreso(gtk.EventBox):
 
         if self.valor != valor:
             self.valor = valor
-            self.escala.get_adjustment().set_value(valor)
+            self.escala.ajuste.set_value(valor)
             self.escala.queue_draw()
 
     def __emit_valor(self, widget, valor):
@@ -690,6 +686,8 @@ class ProgressBar(gtk.HScale):
         self.set_digits(0)
         self.set_draw_value(False)
 
+        # FIXME: Verificar
+        self.presed = False
         self.ancho, self.borde = (10, 10)
 
         icono = os.path.join(BASE_PATH,
@@ -699,11 +697,22 @@ class ProgressBar(gtk.HScale):
         self.pixbuf = pixbuf.rotate_simple(
             gdk.PIXBUF_ROTATE_CLOCKWISE)
 
+        self.connect("button-press-event", self.__button_press_event)
+        self.connect("button-release-event", self.__button_release_event)
+        self.connect("motion-notify-event", self.__motion_notify_event)
         self.connect("expose_event", self.__expose)
 
         self.show_all()
 
-    def do_motion_notify_event(self, event):
+    def __button_press_event(self, widget, event):
+
+        self.presed = True
+
+    def __button_release_event(self, widget, event):
+
+        self.presed = False
+
+    def __motion_notify_event(self, widget, event):
         """
         Cuando el usuario se desplaza por la barra de progreso.
         Se emite el valor en % (float).
@@ -714,6 +723,7 @@ class ProgressBar(gtk.HScale):
 
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
+
             if valor >= 0.0 and valor <= 100.0:
                 self.ajuste.set_value(valor)
                 self.queue_draw()
@@ -729,9 +739,11 @@ class ProgressBar(gtk.HScale):
 
         gc = gtk.gdk.Drawable.new_gc(self.window)
 
+        # todo el widget
         gc.set_rgb_fg_color(get_colors("barradeprogreso"))
         self.window.draw_rectangle(gc, True, x, y, w, h)
 
+        # vacio
         gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
         ww = w - borde * 2
         xx = x + w / 2 - ww / 2
@@ -739,9 +751,14 @@ class ProgressBar(gtk.HScale):
         yy = y + h / 2 - ancho / 2
         self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
 
+        # progreso
         ximage = int(self.ajuste.get_value() * ww / 100)
         gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
         self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
+
+        # borde de progreso
+        gc.set_rgb_fg_color(get_colors("window"))
+        self.window.draw_rectangle(gc, False, xx, yy, ww, hh)
 
         # La Imagen
         imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
@@ -767,9 +784,10 @@ class ControlVolumen(gtk.VolumeButton):
 
         gtk.VolumeButton.__init__(self)
 
+        self.connect("value-changed", self.__value_changed)
         self.show_all()
 
-    def do_value_changed(self, valor):
+    def __value_changed(self, widget, valor):
         """
         Cuando el usuario desplaza la escala
         emite el valor en float de 0.0 a 1.0.
@@ -806,7 +824,8 @@ class MouseSpeedDetector(gobject.GObject):
         """
 
         try:
-            display, posx, posy = gdk.display_get_default().get_window_at_pointer()
+            display, posx, posy = gdk.display_get_default(
+                ).get_window_at_pointer()
 
         except:
             return True

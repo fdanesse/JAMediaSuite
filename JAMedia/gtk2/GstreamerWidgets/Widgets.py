@@ -278,7 +278,7 @@ class GstreamerVideoEfectos(gtk.VBox):
         """
 
         if not elementos:
-            self.get_toplevel().set_sensitive(True)
+            #self.get_toplevel().set_sensitive(True)
             return False
 
         nombre = elementos[0]

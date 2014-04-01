@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
+import time
 import gtk
 from gtk import gdk
 import gobject
@@ -48,21 +48,6 @@ if verificar_Gstreamer():
 else:
     from JAMediaReproductor.PlayerNull import JAMediaReproductor
     from JAMediaReproductor.PlayerNull import JAMediaGrabador
-'''
-screen = gdk.Screen.get_default()
-css_provider = gtk.CssProvider()
-style_path = os.path.join(
-    os.path.dirname(__file__), "Estilo.css")
-css_provider.load_from_path(style_path)
-context = gtk.StyleContext()
-
-context.add_provider_for_screen(
-    screen,
-    css_provider,
-    gtk.STYLE_PROVIDER_PRIORITY_USER)
-'''
-#gobject.threads_init()
-#gdk.threads_init()
 
 
 class JAMediaPlayer(gtk.EventBox):
@@ -85,6 +70,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.modify_bg(0, get_colors("window"))
 
+        self.timer_next_play = float("{:.1f}".format(time.time()))
         self.pantalla = None
         self.barradeprogreso = None
         self.volumen = None
@@ -105,7 +91,6 @@ class JAMediaPlayer(gtk.EventBox):
         self.hbox_efectos_en_pipe = None
         self.vbox_config = None
         self.scroll_config = None
-        # FIXME: solo mantiene el gris de fondo
         self.evnt_box_lista_reproduccion = None
         self.scroll_list = None
 
@@ -131,8 +116,6 @@ class JAMediaPlayer(gtk.EventBox):
         """
 
         self.get_toplevel().set_sensitive(False)
-
-        #from Globales import get_color
 
         from Widgets import Visor
         from Widgets import BarraProgreso
@@ -268,8 +251,6 @@ class JAMediaPlayer(gtk.EventBox):
             self.toolbar_info.descarga])
 
         self.add(basebox)
-
-        #from gi.repository import gdkX11
 
         xid = self.pantalla.get_property('window').xid
 
@@ -435,8 +416,6 @@ class JAMediaPlayer(gtk.EventBox):
         Empaqueta los widgets de efectos gstreamer.
         """
 
-        self.get_toplevel().set_sensitive(False)
-
         self.vbox_config.pack_start(
             self.widget_efectos, False, False, 0)
 
@@ -444,8 +423,6 @@ class JAMediaPlayer(gtk.EventBox):
 
         gobject.idle_add(self.__cargar_efectos,
             list(get_jamedia_video_efectos()))
-
-        #self.get_toplevel().set_sensitive(True)
 
     def set_nueva_lista(self, lista):
         """
@@ -879,47 +856,11 @@ class JAMediaPlayer(gtk.EventBox):
             self.evnt_box_lista_reproduccion.show()
 
         else:
-            rect = self.evnt_box_lista_reproduccion.get_allocation()
-            #self.scroll_config.set_size_request(rect.width, -1)
             self.evnt_box_lista_reproduccion.hide()
             self.scroll_config.show_all()
             gobject.idle_add(self.__update_balance_toolbars)
 
         self.get_toplevel().set_sensitive(True)
-
-
-    '''
-    # FIXME: Nueva metodología Según JAMediaLector, esto reemplaza
-    # self.pantalla.connect("ocultar_controles", self.ocultar_controles)
-    def do_motion_notify_event(self, event):
-        """
-        Cuando se mueve el mouse sobre la ventana.
-        """
-
-        if self.toolbar_info.ocultar_controles:
-            x, y = (int(event.x), int(event.y))
-            rect = self.get_allocation()
-            xx, yy, ww, hh = (rect.x, rect.y, rect.width, rect.height)
-
-            arriba = range(0, self.toolbar.get_allocation().height)
-            abajo = range(hh - self.controlesrepro.get_allocation().height, hh)
-            derecha = range(ww - self.derecha_vbox.get_allocation().width, ww)
-
-            #Arriba    #Derecha     #Abajo
-            if y in arriba or x in derecha or y in abajo:
-                map(self.mostrar, self.controles_dinamicos)
-
-            else:
-                map(self.ocultar, [
-                    #self.scroll_config,
-                    self.toolbar_accion,
-                    self.toolbaraddstream,
-                    self.toolbar_salir])
-
-                map(self.ocultar, self.controles_dinamicos)
-
-        else:
-            map(self.mostrar, self.controles_dinamicos)'''
 
     def __ocultar_controles(self, widget, valor):
         """
@@ -933,7 +874,6 @@ class JAMediaPlayer(gtk.EventBox):
         if zona and ocultar:
 
             map(self.__ocultar, [
-                #self.scroll_config,
                 self.toolbar_accion,
                 self.toolbaraddstream,
                 self.toolbar_salir])
@@ -944,7 +884,6 @@ class JAMediaPlayer(gtk.EventBox):
             pass
 
         elif not zona and ocultar:
-            #self.scroll_config.hide()
             map(self.__mostrar, self.controles_dinamicos)
             if not self.hbox_efectos_en_pipe.get_children():
                 self.hbox_efectos_en_pipe.get_parent().get_parent(
@@ -1007,8 +946,14 @@ class JAMediaPlayer(gtk.EventBox):
         y llama a seleccionar_siguiente en la lista de reproduccion.
         """
 
-        self.controlesrepro.set_paused()
-        gobject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
+        t = float("{:.1f}".format(time.time()))
+        dif = t - self.timer_next_play
+
+        if dif:
+            self.timer_next_play = t
+
+            self.controlesrepro.set_paused()
+            gobject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
 
     def __cambioestadoreproductor(self, widget=None, valor=None):
         """
@@ -1065,7 +1010,6 @@ class JAMediaPlayer(gtk.EventBox):
         if self.player:
             self.player.set_position(valor)
 
-
     def __add_stream(self, widget):
         """
         Recibe la señal add_stream desde toolbarlist
@@ -1085,7 +1029,6 @@ class JAMediaPlayer(gtk.EventBox):
 
         else:
             self.toolbaraddstream.hide()
-
 
     def __cargar_reproducir(self, widget, path):
         """
@@ -1245,7 +1188,7 @@ class JAMediaPlayer(gtk.EventBox):
 
             selector = My_FileChooser(
                 parent=self.get_toplevel(),
-                action=gtk.FileChooserAction.OPEN,
+                action=gtk.FILE_CHOOSER_ACTION_OPEN,
                 mime=["audio/*", "video/*"],
                 title="Abrir Archivos.",
                 path=directorio,
@@ -1350,7 +1293,8 @@ class JAMediaPlayer(gtk.EventBox):
         path, columna, xdefondo, ydefondo = (None, None, None, None)
 
         try:
-            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(int(pos[0]), int(pos[1]))
+            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
+                int(pos[0]), int(pos[1]))
 
         except:
             return
@@ -1375,7 +1319,7 @@ class JAMediaPlayer(gtk.EventBox):
         elif boton == 2:
             return
 
-    def __set_accion(self, widget, lista, accion, iter):
+    def __set_accion(self, widget, lista, accion, _iter):
         """
         Responde a la seleccion del usuario sobre el menu
         que se despliega al hacer click derecho sobre un elemento
@@ -1387,7 +1331,7 @@ class JAMediaPlayer(gtk.EventBox):
         confirmacion al usuario sobre la accion a realizar.
         """
 
-        self.toolbar_accion.set_accion(lista, accion, iter)
+        self.toolbar_accion.set_accion(lista, accion, _iter)
 
     def __grabar_streaming(self, widget, uri):
         """
@@ -1469,7 +1413,7 @@ class JAMediaPlayer(gtk.EventBox):
         """
         Si hay video o no en la fuente . . .
         """
-
+        pass
         # FIXME: La idea es iniciar visualizador de audio.
-        print "Video en la Fuente:", valor
+        #print "Video en la Fuente:", valor
         #if not valor: self.player.link_visualizador()

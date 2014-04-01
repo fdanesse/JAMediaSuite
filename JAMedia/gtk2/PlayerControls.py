@@ -25,10 +25,7 @@ import gtk
 from gtk import gdk
 import gobject
 
-from Globales import get_color
 from Globales import get_colors
-from Globales import get_separador
-from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -151,7 +148,6 @@ class JAMediaToolButton(gtk.ToolButton):
         self.set_icon_widget(self.imagen)
         self.imagen.show()
 
-        #self.set_size_request(pixels + 10, pixels + 10)
         self.imagen.set_size_request(pixels, pixels)
 
         self.show_all()
@@ -194,7 +190,6 @@ class Imagen_Button(gtk.DrawingArea):
 
         if not self.pixbuf:
             return True
-
 
         rect = self.get_allocation()
         x, y, w, h = (rect.x, rect.y, rect.width, rect.height)

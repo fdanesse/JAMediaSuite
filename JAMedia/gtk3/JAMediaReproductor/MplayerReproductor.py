@@ -29,6 +29,8 @@ from gi.repository import GLib
 STDOUT = "/tmp/mplayerout%d" % time.time()
 MPLAYER = "mplayer"
 
+GObject.threads_init()
+
 
 class MplayerReproductor(GObject.Object):
     """

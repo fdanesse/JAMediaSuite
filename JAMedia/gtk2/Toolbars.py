@@ -71,7 +71,6 @@ class ToolbarAccion(gtk.Toolbar):
         self.insert(boton, -1)
 
         item = gtk.ToolItem()
-        #item.set_expand(True)
         self.label = gtk.Label("")
         self.label.show()
         item.add(self.label)
@@ -107,7 +106,17 @@ class ToolbarAccion(gtk.Toolbar):
 
         if describe_acceso_uri(uri):
             if self.accion == "Quitar":
+                path = self.lista.get_model().get_path(self.iter)
+                path = (path[0] - 1, )
+
                 self.lista.get_model().remove(self.iter)
+
+                try:
+                    self.lista.get_selection().select_iter(
+                        self.lista.get_model().get_iter(path))
+
+                except:
+                    self.lista.seleccionar_primero()
 
             elif self.accion == "Copiar":
                 if os.path.isfile(uri):
@@ -116,26 +125,76 @@ class ToolbarAccion(gtk.Toolbar):
             elif self.accion == "Borrar":
                 if os.path.isfile(uri):
                     if borrar(uri):
+                        path = self.lista.get_model().get_path(self.iter)
+                        path = (path[0] - 1, )
+
                         self.lista.get_model().remove(self.iter)
+
+                        try:
+                            self.lista.get_selection().select_iter(
+                                self.lista.get_model().get_iter(path))
+
+                        except:
+                            self.lista.seleccionar_primero()
 
             elif self.accion == "Mover":
                 if os.path.isfile(uri):
                     if mover(uri, get_my_files_directory()):
+                        path = self.lista.get_model().get_path(self.iter)
+                        path = (path[0] - 1, )
+
                         self.lista.get_model().remove(self.iter)
+
+                        try:
+                            self.lista.get_selection().select_iter(
+                                self.lista.get_model().get_iter(path))
+
+                        except:
+                            self.lista.seleccionar_primero()
         else:
             if self.accion == "Quitar":
+                path = self.lista.get_model().get_path(self.iter)
+                path = (path[0] - 1, )
+
                 self.lista.get_model().remove(self.iter)
+
+                try:
+                    self.lista.get_selection().select_iter(
+                        self.lista.get_model().get_iter(path))
+
+                except:
+                    self.lista.seleccionar_primero()
 
             elif self.accion == "Borrar":
                 self.emit("accion-stream", "Borrar", uri)
+                path = self.lista.get_model().get_path(self.iter)
+                path = (path[0] - 1, )
+
                 self.lista.get_model().remove(self.iter)
+
+                try:
+                    self.lista.get_selection().select_iter(
+                        self.lista.get_model().get_iter(path))
+
+                except:
+                    self.lista.seleccionar_primero()
 
             elif self.accion == "Copiar":
                 self.emit("accion-stream", "Copiar", uri)
 
             elif self.accion == "Mover":
                 self.emit("accion-stream", "Mover", uri)
+                path = self.lista.get_model().get_path(self.iter)
+                path = (path[0] - 1, )
+
                 self.lista.get_model().remove(self.iter)
+
+                try:
+                    self.lista.get_selection().select_iter(
+                        self.lista.get_model().get_iter(path))
+
+                except:
+                    self.lista.seleccionar_primero()
 
             elif self.accion == "Grabar":
                 self.emit("Grabar", uri)
@@ -670,7 +729,6 @@ class ToolbarConfig(gtk.Table):
         box = gtk.HBox()
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("window"))
-        #event.set_border_width(4)
         event.add(box)
         frame.add(event)
 

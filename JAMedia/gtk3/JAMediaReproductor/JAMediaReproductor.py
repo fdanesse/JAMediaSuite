@@ -29,8 +29,8 @@ from gi.repository import GLib
 from gi.repository import Gst
 from gi.repository import GstVideo
 
-GObject.threads_init()
 Gst.init([])
+GObject.threads_init()
 
 # Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html
 # Manual: http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/index.html
@@ -506,6 +506,10 @@ class JAMediaReproductor(GObject.Object):
 
         self.stop()
         self.__reset()
+
+        GLib.idle_add(self.__load, uri)
+
+    def __load(self, uri):
 
         if os.path.exists(uri):
             # Archivo

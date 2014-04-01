@@ -23,9 +23,8 @@ import os
 
 import gobject
 import gst
-#from gi.repository import gstVideo
 
-#gobject.threads_init()
+#from gi.repository import gstVideo
 #gst.init([])
 
 # Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html
@@ -44,15 +43,15 @@ class JAMediaReproductor(gobject.GObject):
     """
 
     __gsignals__ = {
-    "endfile": (gobject.SIGNAL_RUN_LAST,
+    "endfile": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, []),
-    "estado": (gobject.SIGNAL_RUN_LAST,
+    "estado": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "newposicion": (gobject.SIGNAL_RUN_LAST,
+    "newposicion": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_INT,)),
-    "volumen": (gobject.SIGNAL_RUN_LAST,
+    "volumen": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,)),
-    "video": (gobject.SIGNAL_RUN_LAST,
+    "video": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
 
     # Estados: playing, paused, None
@@ -107,17 +106,11 @@ class JAMediaReproductor(gobject.GObject):
         # Reproductor.
         self.player = gst.element_factory_make(
             "playbin2", "player")
-        # FIXME: Verificar
-        #self.player.set_property(
-        #    'force-aspect-ratio', True)
 
         # Si no se establecen los valores al original, se produce un error.
         self.video_pipeline.reset_balance()
         self.player.set_property('volume', self.volumen)
 
-        # elif mensaje.type == gst.MESSAGE_ELEMENT:
-        #    mensaje.src.set_xwindow_id(self.ventana_id)
-        #self.player.set_window_handle(self.ventana_id)
         self.player.set_property('video-sink', self.video_pipeline)
         self.player.set_property('audio-sink', self.audio_pipelin)
 
@@ -182,53 +175,30 @@ class JAMediaReproductor(gobject.GObject):
         """
 
         try:
-            nanosecs, f = self.player.query_duration(gst.FORMAT_TIME)
-            nanosecs = float(nanosecs)
-            self.duracion= nanosecs
+            valor1, bool1 = self.player.query_duration(gst.FORMAT_TIME)
+            valor2, bool2 = self.player.query_position(gst.FORMAT_TIME)
 
-            nanosecs, f = self.player.query_position(gst.FORMAT_TIME)
-            nanosecs = float(nanosecs)
-            pos = int(nanosecs * 100 / self.duracion)
+            duracion = float(valor1)
+            posicion = float(valor2)
+
+            pos = int(posicion * 100 / duracion)
 
             if pos < 0 or pos > self.duracion:
                 return True
 
+            if self.duracion != duracion:
+                self.duracion = duracion
+
             if pos != self.posicion:
                 self.posicion = pos
                 self.emit("newposicion", self.posicion)
+                # print "***", gst.video_convert_frame(
+                #   self.player.get_property("frame"))
 
         except:
             pass
 
         return True
-        '''
-        bool1, valor1 = self.player.query_duration(gst.FORMAT_TIME)
-        bool2, valor2 = self.player.query_position(gst.FORMAT_TIME)
-
-        duracion = float(valor1)
-        posicion = float(valor2)
-
-        pos = 0
-        try:
-            pos = int(posicion * 100 / duracion)
-
-        except:
-            pass
-
-        if pos < 0 or pos > self.duracion:
-            return True
-
-        if self.duracion != duracion:
-            self.duracion = duracion
-
-        if pos != self.posicion:
-            self.posicion = pos
-            self.emit("newposicion", self.posicion)
-            # print "***", gst.video_convert_frame(
-            #   self.player.get_property("frame"))
-
-        return True
-        '''
 
     def __sync_message(self, bus, mensaje):
         """
@@ -388,7 +358,7 @@ class JAMediaReproductor(gobject.GObject):
         #    pass
 
         elif mensaje.type == gst.MESSAGE_ELEMENT:
-            print "\n gst.MESSAGE_ELEMENT:"
+            #print "\n gst.MESSAGE_ELEMENT:"
             try:
                 mensaje.src.set_xwindow_id(self.ventana_id)
 
@@ -440,10 +410,10 @@ class JAMediaReproductor(gobject.GObject):
         #    #print "\n gst.MESSAGE_NEED_CONTEXT:"
         #    pass
 
-        elif mensaje.type == gst.MESSAGE_EOS:
+        elif mensaje.type == gst.MESSAGE_QOS:
             #self.video_pipeline.seek_simple(gst.FORMAT_TIME,
             #gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
-            print "\n gst.MESSAGE_EOS:"
+            #print "\n gst.MESSAGE_QOS:"
             self.__new_handle(False)
             self.emit("endfile")
 
@@ -452,8 +422,8 @@ class JAMediaReproductor(gobject.GObject):
             print mensaje.parse_error()
             self.__new_handle(False)
 
-        else:
-            print mensaje.type
+        #else:
+        #    print mensaje.type
 
         return True
 
@@ -531,6 +501,10 @@ class JAMediaReproductor(gobject.GObject):
 
         self.stop()
         self.__reset()
+
+        gobject.idle_add(self.__load, uri)
+
+    def __load(self, uri):
 
         if os.path.exists(uri):
             # Archivo
@@ -623,9 +597,9 @@ class JAMediaGrabador(gobject.GObject):
     """
 
     __gsignals__ = {
-    "update": (gobject.SIGNAL_RUN_LAST,
+    "update": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "endfile": (gobject.SIGNAL_RUN_LAST,
+    "endfile": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, [])}
 
     def __init__(self, uri, archivo, tipo):
