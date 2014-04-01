@@ -3,7 +3,7 @@
 
 #   MplayerReproductor.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,14 +23,13 @@ import time
 import os
 import subprocess
 
-from gi.repository import GObject
-from gi.repository import GLib
+import gobject
 
 STDOUT = "/tmp/mplayerout%d" % time.time()
 MPLAYER = "mplayer"
 
 
-class MplayerReproductor(GObject.Object):
+class MplayerReproductor(gobject.GObject):
     """
     Reproductor de Audio, Video y Streaming de
     Radio y Television. Implementado sobre:
@@ -41,16 +40,16 @@ class MplayerReproductor(GObject.Object):
     """
 
     __gsignals__ = {
-    "endfile": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, []),
-    "estado": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "newposicion": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_INT,)),
-    "volumen": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,)),
-    "video": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
+    "endfile": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, []),
+    "estado": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "newposicion": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_INT,)),
+    "volumen": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,)),
+    "video": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
 
     # Estados: playing, paused, None
 
@@ -60,7 +59,7 @@ class MplayerReproductor(GObject.Object):
         para mostrar el video.
         """
 
-        GObject.Object.__init__(self)
+        gobject.GObject.__init__(self)
 
         self.name = "MplayerReproductor"
         self.ventana_id = ventana_id
@@ -386,11 +385,11 @@ class MplayerReproductor(GObject.Object):
         """
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(500, self.__handle)
+            self.actualizador = gobject.timeout_add(500, self.__handle)
 
     def set_position(self, posicion):
         """
@@ -525,20 +524,20 @@ class MplayerReproductor(GObject.Object):
 REC = "/tmp/mplayerrec%d" % time.time()
 
 
-class MplayerGrabador(GObject.Object):
+class MplayerGrabador(gobject.GObject):
     """
     Graba desde un streaming de radio o tv.
     """
 
     __gsignals__ = {
-    "update": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "endfile": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+    "update": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "endfile": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self, uri, archivo, tipo):
 
-        GObject.Object.__init__(self)
+        gobject.GObject.__init__(self)
 
         if tipo == "video":
             archivo = "%s%s" % (archivo, ".avi")
@@ -578,11 +577,11 @@ class MplayerGrabador(GObject.Object):
         """
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(500, self.__handle)
+            self.actualizador = gobject.timeout_add(500, self.__handle)
 
     def __handle(self):
         """

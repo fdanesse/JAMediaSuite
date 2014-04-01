@@ -32,22 +32,22 @@ from Globales import get_colors
 BASE_PATH = os.path.dirname(__file__)
 
 # HACK: La aplicación nunca debe explotar :P
-#if get_programa("mplayer"):
-#    from JAMediaReproductor.MplayerReproductor import MplayerReproductor
-#    from JAMediaReproductor.MplayerReproductor import MplayerGrabador
+if get_programa("mplayer"):
+    from JAMediaReproductor.MplayerReproductor import MplayerReproductor
+    from JAMediaReproductor.MplayerReproductor import MplayerGrabador
 
-#else:
-#    from JAMediaReproductor.PlayerNull import MplayerReproductor
-#    from JAMediaReproductor.PlayerNull import MplayerGrabador
+else:
+    from JAMediaReproductor.PlayerNull import MplayerReproductor
+    from JAMediaReproductor.PlayerNull import MplayerGrabador
 
 # HACK: La aplicación nunca debe explotar :P
-#if verificar_Gstreamer():
-#    from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
-#    from JAMediaReproductor.JAMediaReproductor import JAMediaGrabador
+if verificar_Gstreamer():
+    from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
+    from JAMediaReproductor.JAMediaReproductor import JAMediaGrabador
 
-#else:
-#    from JAMediaReproductor.PlayerNull import JAMediaReproductor
-#    from JAMediaReproductor.PlayerNull import JAMediaGrabador
+else:
+    from JAMediaReproductor.PlayerNull import JAMediaReproductor
+    from JAMediaReproductor.PlayerNull import JAMediaGrabador
 '''
 screen = gdk.Screen.get_default()
 css_provider = gtk.CssProvider()
@@ -274,43 +274,43 @@ class JAMediaPlayer(gtk.EventBox):
         xid = self.pantalla.get_property('window').xid
 
         # HACK: La aplicación nunca debe explotar :P
-        #if get_programa("mplayer"):
-        #    self.mplayerreproductor = MplayerReproductor(xid)
+        if get_programa("mplayer"):
+            self.mplayerreproductor = MplayerReproductor(xid)
 
-        #else:
-        #    self.mplayerreproductor = MplayerReproductor(self.pantalla)
+        else:
+            self.mplayerreproductor = MplayerReproductor(self.pantalla)
 
         # HACK: La aplicación nunca debe explotar :P
-        #if verificar_Gstreamer():
-        #    self.jamediareproductor = JAMediaReproductor(xid)
+        if verificar_Gstreamer():
+            self.jamediareproductor = JAMediaReproductor(xid)
 
-        #else:
-        #    self.jamediareproductor = JAMediaReproductor(self.pantalla)
+        else:
+            self.jamediareproductor = JAMediaReproductor(self.pantalla)
 
         self.switch_reproductor(
             None, "JAMediaReproductor")  # default Gst.
 
-        #self.mplayerreproductor.connect(
-        #    "endfile", self.__endfile)
-        #self.mplayerreproductor.connect(
-        #    "estado", self.__cambioestadoreproductor)
-        #self.mplayerreproductor.connect(
-        #    "newposicion", self.__update_progress)
-        #self.mplayerreproductor.connect(
-        #    "volumen", self.__get_volumen)
-        #self.mplayerreproductor.connect(
-        #    "video", self.__set_video)
+        self.mplayerreproductor.connect(
+            "endfile", self.__endfile)
+        self.mplayerreproductor.connect(
+            "estado", self.__cambioestadoreproductor)
+        self.mplayerreproductor.connect(
+            "newposicion", self.__update_progress)
+        self.mplayerreproductor.connect(
+            "volumen", self.__get_volumen)
+        self.mplayerreproductor.connect(
+            "video", self.__set_video)
 
-        #self.jamediareproductor.connect(
-        #    "endfile", self.__endfile)
-        #self.jamediareproductor.connect(
-        #    "estado", self.__cambioestadoreproductor)
-        #self.jamediareproductor.connect(
-        #    "newposicion", self.__update_progress)
-        #self.jamediareproductor.connect(
-        #    "volumen", self.__get_volumen)
-        #self.jamediareproductor.connect(
-        #    "video", self.__set_video)
+        self.jamediareproductor.connect(
+            "endfile", self.__endfile)
+        self.jamediareproductor.connect(
+            "estado", self.__cambioestadoreproductor)
+        self.jamediareproductor.connect(
+            "newposicion", self.__update_progress)
+        self.jamediareproductor.connect(
+            "volumen", self.__get_volumen)
+        self.jamediareproductor.connect(
+            "video", self.__set_video)
 
         self.lista_de_reproduccion.connect(
             "nueva-seleccion",

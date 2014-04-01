@@ -3,7 +3,7 @@
 
 #   JAMediaReproductor.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -626,6 +626,7 @@ class JAMediaGrabador(GObject.Object):
         self.__reset()
 
         if os.path.exists(uri):
+            # FIXME: Analizar
             uri = Gst.filename_to_uri(uri)
 
         if Gst.uri_is_valid(uri):

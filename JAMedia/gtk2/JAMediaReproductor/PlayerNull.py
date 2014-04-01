@@ -3,7 +3,7 @@
 
 #   PlayerNull.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import cairo
-from gi.repository import GObject
+from gi.repository import gobject
 
 
 def paint_text(contexto, texto, rect):
@@ -69,23 +69,23 @@ def get_text_path(contexto, texto, rect):
     paint_text(contexto, lineas, rect)
 
 
-class Player(GObject.Object):
+class Player(gobject.GObject):
 
     __gsignals__ = {
-    "endfile": (GObject.SIGNAL_RUN_FIRST,
-        GObject.TYPE_NONE, []),
-    "estado": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_STRING,)),
-    "newposicion": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_INT,)),
-    "volumen": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_FLOAT,)),
-    "video": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,
-        (GObject.TYPE_BOOLEAN,))}
+    "endfile": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    "estado": (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,
+        (gobject.TYPE_STRING,)),
+    "newposicion": (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,
+        (gobject.TYPE_INT,)),
+    "volumen": (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,
+        (gobject.TYPE_FLOAT,)),
+    "video": (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,
+        (gobject.TYPE_BOOLEAN,))}
 
     def __init__(self, ventana):
 
-        GObject.Object.__init__(self)
+        gobject.GObject.__init__(self)
 
         self.name = "PlayerNull"
         self.ventana = ventana
@@ -201,17 +201,17 @@ class Player(GObject.Object):
         pass
 
 
-class Grabador(GObject.Object):
+class Grabador(gobject.GObject):
 
     __gsignals__ = {
-    "update": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "endfile": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+    "update": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "endfile": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        GObject.Object.__init__(self)
+        gobject.GObject.__init__(self)
 
         self.emit('update', "No Tienes un Grabador Instalado Actualmente.")
 

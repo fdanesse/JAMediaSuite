@@ -3,7 +3,7 @@
 
 #   JAMediaReproductor.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,43 +21,39 @@
 
 import os
 
-import gi
-gi.require_version('Gst', '1.0')
+import gobject
+import gst
+#from gi.repository import gstVideo
 
-from gi.repository import GObject
-from gi.repository import GLib
-from gi.repository import Gst
-from gi.repository import GstVideo
-
-GObject.threads_init()
-Gst.init([])
+#gobject.threads_init()
+#gst.init([])
 
 # Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html
 # Manual: http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/index.html
 # https://wiki.ubuntu.com/Novacut/GStreamer1.0
 
 
-class JAMediaReproductor(GObject.Object):
+class JAMediaReproductor(gobject.GObject):
     """
     Reproductor de Audio, Video y Streaming de
     Radio y Television. Implementado sobre:
 
         python 2.7.3
         Gtk 3
-        Gstreamer 1.0
+        gstreamer 1.0
     """
 
     __gsignals__ = {
-    "endfile": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, []),
-    "estado": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "newposicion": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_INT,)),
-    "volumen": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,)),
-    "video": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
+    "endfile": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, []),
+    "estado": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "newposicion": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_INT,)),
+    "volumen": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,)),
+    "video": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
 
     # Estados: playing, paused, None
 
@@ -67,7 +63,7 @@ class JAMediaReproductor(GObject.Object):
         para mostrar el video.
         """
 
-        GObject.Object.__init__(self)
+        gobject.GObject.__init__(self)
 
         self.name = "JAMediaReproductor"
         self.ventana_id = ventana_id
@@ -109,16 +105,19 @@ class JAMediaReproductor(GObject.Object):
     def __reset(self):
 
         # Reproductor.
-        self.player = Gst.ElementFactory.make(
-            "playbin", "player")
-        self.player.set_property(
-            'force-aspect-ratio', True)
+        self.player = gst.element_factory_make(
+            "playbin2", "player")
+        # FIXME: Verificar
+        #self.player.set_property(
+        #    'force-aspect-ratio', True)
 
         # Si no se establecen los valores al original, se produce un error.
         self.video_pipeline.reset_balance()
         self.player.set_property('volume', self.volumen)
 
-        self.player.set_window_handle(self.ventana_id)
+        # elif mensaje.type == gst.MESSAGE_ELEMENT:
+        #    mensaje.src.set_xwindow_id(self.ventana_id)
+        #self.player.set_window_handle(self.ventana_id)
         self.player.set_property('video-sink', self.video_pipeline)
         self.player.set_property('audio-sink', self.audio_pipelin)
 
@@ -150,17 +149,17 @@ class JAMediaReproductor(GObject.Object):
 
     def __play(self):
         """
-        Pone el pipe de Gst en Gst.State.PLAYING
+        Pone el pipe de gst en gst.STATE_PLAYING
         """
 
-        self.player.set_state(Gst.State.PLAYING)
+        self.player.set_state(gst.STATE_PLAYING)
 
     def __pause(self):
         """
-        Pone el pipe de Gst en Gst.State.PAUSED
+        Pone el pipe de gst en gst.STATE_PAUSED
         """
 
-        self.player.set_state(Gst.State.PAUSED)
+        self.player.set_state(gst.STATE_PAUSED)
 
     def __new_handle(self, reset):
         """
@@ -170,11 +169,11 @@ class JAMediaReproductor(GObject.Object):
         """
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(500, self.__handle)
+            self.actualizador = gobject.timeout_add(500, self.__handle)
 
     def __handle(self):
         """
@@ -182,8 +181,29 @@ class JAMediaReproductor(GObject.Object):
         la barra de progreso del reproductor.
         """
 
-        bool1, valor1 = self.player.query_duration(Gst.Format.TIME)
-        bool2, valor2 = self.player.query_position(Gst.Format.TIME)
+        try:
+            nanosecs, f = self.player.query_duration(gst.FORMAT_TIME)
+            nanosecs = float(nanosecs)
+            self.duracion= nanosecs
+
+            nanosecs, f = self.player.query_position(gst.FORMAT_TIME)
+            nanosecs = float(nanosecs)
+            pos = int(nanosecs * 100 / self.duracion)
+
+            if pos < 0 or pos > self.duracion:
+                return True
+
+            if pos != self.posicion:
+                self.posicion = pos
+                self.emit("newposicion", self.posicion)
+
+        except:
+            pass
+
+        return True
+        '''
+        bool1, valor1 = self.player.query_duration(gst.FORMAT_TIME)
+        bool2, valor2 = self.player.query_position(gst.FORMAT_TIME)
 
         duracion = float(valor1)
         posicion = float(valor2)
@@ -208,10 +228,11 @@ class JAMediaReproductor(GObject.Object):
             #   self.player.get_property("frame"))
 
         return True
+        '''
 
     def __sync_message(self, bus, mensaje):
         """
-        Captura los mensajes en el bus del pipe Gst.
+        Captura los mensajes en el bus del pipe gst.
         """
 
         """
@@ -225,48 +246,47 @@ class JAMediaReproductor(GObject.Object):
         except:
             pass"""
 
-        if mensaje.type == Gst.MessageType.STATE_CHANGED:
+        if mensaje.type == gst.MESSAGE_STATE_CHANGED:
             old, new, pending = mensaje.parse_state_changed()
 
-            if old == Gst.State.PAUSED and new == Gst.State.PLAYING:
+            if old == gst.STATE_PAUSED and new == gst.STATE_PLAYING:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "playing")
                     self.__new_handle(True)
                     # Si se llama enseguida falla.
-                    GLib.idle_add(self.__re_config)
+                    gobject.idle_add(self.__re_config)
 
-            elif old == Gst.State.READY and new == Gst.State.PAUSED:
+            elif old == gst.STATE_READY and new == gst.STATE_PAUSED:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
                     self.__new_handle(False)
 
-            elif old == Gst.State.READY and new == Gst.State.NULL:
+            elif old == gst.STATE_READY and new == gst.STATE_NULL:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "None")
                     self.__new_handle(False)
 
-            elif old == Gst.State.PLAYING and new == Gst.State.PAUSED:
+            elif old == gst.STATE_PLAYING and new == gst.STATE_PAUSED:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
                     self.__new_handle(False)
 
-            """
-            elif old == Gst.State.NULL and new == Gst.State.READY:
-                pass
+            #elif old == gst.STATE_NULL and new == gst.STATE_READY:
+            #    pass
 
-            elif old == Gst.State.PAUSED and new == Gst.State.READY:
-                pass
+            #elif old == gst.STATE_PAUSED and new == gst.STATE_READY:
+            #    pass
 
-            else:
-                pass"""
+            #else:
+            #    pass
 
-        elif mensaje.type == Gst.MessageType.TAG:
+        elif mensaje.type == gst.MESSAGE_TAG:
             taglist = mensaje.parse_tag()
-            datos = taglist.to_string()
+            datos = taglist.keys()
 
             if 'audio-codec' in datos and not 'video-codec' in datos:
                 if self.video_in_stream == True or \
@@ -293,137 +313,142 @@ class JAMediaReproductor(GObject.Object):
                 # video-codec=(string)H.264,
                 # audio-codec=(string)"MPEG-4\ AAC"
 
-        elif mensaje.type == Gst.MessageType.WARNING:
-            print "\n Gst.MessageType.WARNING:"
-            print mensaje.parse_warning()
+        #elif mensaje.type == gst.MESSAGE_WARNING:
+        #    print "\n gst.MESSAGE_WARNING:"
+        #    print mensaje.parse_warning()
 
-        elif mensaje.type == Gst.MessageType.LATENCY:
-            # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
-            print "\n Gst.MessageType.LATENCY"
-            self.player.recalculate_latency()
+        #elif mensaje.type == gst.MESSAGE_LATENCY:
+        #    # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
+        #    print "\n gst.MESSAGE_LATENCY"
+        #    self.player.recalculate_latency()
 
-        elif mensaje.type == Gst.MessageType.STREAM_START:
-            #print "\n Gst.MessageType.STREAM_START:"
-            #print mensaje.parse_stream_status()
-            pass
+        #elif mensaje.type == gst.MESSAGE_STREAM_START:
+        #    #print "\n gst.MESSAGE_STREAM_START:"
+        #    #print mensaje.parse_stream_status()
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.STREAM_STATUS:
-            #print "\n Gst.MessageType.STREAM_STATUS:"
-            #print mensaje.parse_stream_status()
-            pass
+        #elif mensaje.type == gst.MESSAGE_STREAM_STATUS:
+        #    #print "\n gst.MESSAGE_STREAM_STATUS:"
+        #    #print mensaje.parse_stream_status()
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.STRUCTURE_CHANGE:
-            #print "\n Gst.MessageType.STRUCTURE_CHANGE:"
-            #print mensaje.parse_structure_change()
-            pass
+        #elif mensaje.type == gst.MESSAGE_STRUCTURE_CHANGE:
+        #    #print "\n gst.MESSAGE_STRUCTURE_CHANGE:"
+        #    #print mensaje.parse_structure_change()
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.TOC:
-            #print "\n Gst.MessageType.TOC:"
-            #print mensaje.parse_toc()
-            pass
+        #elif mensaje.type == gst.MESSAGE_TOC:
+        #    #print "\n gst.MESSAGE_TOC:"
+        #    #print mensaje.parse_toc()
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.UNKNOWN:
-            #print "\n Gst.MessageType.UNKNOWN:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_UNKNOWN:
+        #    #print "\n gst.MESSAGE_UNKNOWN:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.DURATION_CHANGED:
-            print "\n Gst.MessageType.DURATION_CHANGED:"
+        #elif mensaje.type == gst.MESSAGE_DURATION_CHANGED:
+        #    print "\n gst.MESSAGE_DURATION_CHANGED:"
 
-        elif mensaje.type == Gst.MessageType.ASYNC_DONE:
-            #print "\n Gst.MessageType.ASYNC_DONE:"
-            #print mensaje.parse_async_done()
-            pass
+        #elif mensaje.type == gst.MESSAGE_ASYNC_DONE:
+        #    #print "\n gst.MESSAGE_ASYNC_DONE:"
+        #    #print mensaje.parse_async_done()
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.ASYNC_START:
-            #print "\n Gst.MessageType.ASYNC_START:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_ASYNC_START:
+        #    #print "\n gst.MESSAGE_ASYNC_START:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.NEW_CLOCK:
-            #print "\n Gst.MessageType.NEW_CLOCK:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_NEW_CLOCK:
+        #    #print "\n gst.MESSAGE_NEW_CLOCK:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.CLOCK_PROVIDE:
-            #print "\n Gst.MessageType.CLOCK_PROVIDE:"
-            #print mensaje.parse_clock_provide()
-            pass
+        #elif mensaje.type == gst.MESSAGE_CLOCK_PROVIDE:
+        #    #print "\n gst.MESSAGE_CLOCK_PROVIDE:"
+        #    #print mensaje.parse_clock_provide()
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.CLOCK_LOST:
-            #print "\n Gst.MessageType.CLOCK_LOST:"
-            #print mensaje.parse_clock_lost()
-            pass
+        #elif mensaje.type == gst.MESSAGE_CLOCK_LOST:
+        #    #print "\n gst.MESSAGE_CLOCK_LOST:"
+        #    #print mensaje.parse_clock_lost()
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.QOS:
-            print "\n Gst.MessageType.QOS:"
-            #print mensaje.parse_qos()
-            #print mensaje.parse_qos_stats()
-            #print mensaje.parse_qos_values()
+        #elif mensaje.type == gst.MESSAGE_QOS:
+        #    print "\n gst.MESSAGE_QOS:"
+        #    #print mensaje.parse_qos()
+        #    #print mensaje.parse_qos_stats()
+        #    #print mensaje.parse_qos_values()
 
-        elif mensaje.type == Gst.MessageType.BUFFERING:
-            print "\n Gst.MessageType.BUFFERING:"
-            print mensaje.parse_buffering()
-            print mensaje.parse_buffering_stats()
+        #elif mensaje.type == gst.MESSAGE_BUFFERING:
+        #    print "\n gst.MESSAGE_BUFFERING:"
+        #    print mensaje.parse_buffering()
+        #    print mensaje.parse_buffering_stats()
 
-        elif mensaje.type == Gst.MessageType.RESET_TIME:
-            #print "\n Gst.MessageType.RESET_TIME:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_RESET_TIME:
+        #    #print "\n gst.MESSAGE_RESET_TIME:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.ELEMENT:
-            print "\n Gst.MessageType.ELEMENT:"
+        elif mensaje.type == gst.MESSAGE_ELEMENT:
+            print "\n gst.MESSAGE_ELEMENT:"
+            try:
+                mensaje.src.set_xwindow_id(self.ventana_id)
 
-        elif mensaje.type == Gst.MessageType.INFO:
-            print "\n Gst.MessageType.INFO:"
+            except:
+                pass
 
-        elif mensaje.type == Gst.MessageType.PROGRESS:
-            print "\n Gst.MessageType.PROGRESS:"
+        #elif mensaje.type == gst.MESSAGE_INFO:
+        #    print "\n gst.MESSAGE_INFO:"
 
-        elif mensaje.type == Gst.MessageType.REQUEST_STATE:
-            print "\n Gst.MessageType.REQUEST_STATE:"
+        #elif mensaje.type == gst.MESSAGE_PROGRESS:
+        #    print "\n gst.MESSAGE_PROGRESS:"
 
-        elif mensaje.type == Gst.MessageType.SEGMENT_DONE:
-            #print "\n Gst.MessageType.SEGMENT_DONE:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_REQUEST_STATE:
+        #    print "\n gst.MESSAGE_REQUEST_STATE:"
 
-        elif mensaje.type == Gst.MessageType.SEGMENT_START:
-            #print "\n Gst.MessageType.SEGMENT_START:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_SEGMENT_DONE:
+        #    #print "\n gst.MESSAGE_SEGMENT_DONE:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.STATE_DIRTY:
-            #print "\n Gst.MessageType.STATE_DIRTY:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_SEGMENT_START:
+        #    #print "\n gst.MESSAGE_SEGMENT_START:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.STEP_DONE:
-            #print "\n Gst.MessageType.STEP_DONE:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_STATE_DIRTY:
+        #    #print "\n gst.MESSAGE_STATE_DIRTY:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.STEP_START:
-            #print "\n Gst.MessageType.STEP_START:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_STEP_DONE:
+        #    #print "\n gst.MESSAGE_STEP_DONE:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.ANY:
-            #print "\n Gst.MessageType.ANY:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_STEP_START:
+        #    #print "\n gst.MESSAGE_STEP_START:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.APPLICATION:
-            #print "\n Gst.MessageType.APPLICATION:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_ANY:
+        #    #print "\n gst.MESSAGE_ANY:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.HAVE_CONTEXT:
-            #print "\n Gst.MessageType.HAVE_CONTEXT:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_APPLICATION:
+        #    #print "\n gst.MESSAGE_APPLICATION:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.NEED_CONTEXT:
-            #print "\n Gst.MessageType.NEED_CONTEXT:"
-            pass
+        #elif mensaje.type == gst.MESSAGE_HAVE_CONTEXT:
+        #    #print "\n gst.MESSAGE_HAVE_CONTEXT:"
+        #    pass
 
-        elif mensaje.type == Gst.MessageType.EOS:
-            #self.video_pipeline.seek_simple(Gst.Format.TIME,
-            #Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0)
-            print "\n Gst.MessageType.EOS:"
+        #elif mensaje.type == gst.MESSAGE_NEED_CONTEXT:
+        #    #print "\n gst.MESSAGE_NEED_CONTEXT:"
+        #    pass
+
+        elif mensaje.type == gst.MESSAGE_EOS:
+            #self.video_pipeline.seek_simple(gst.FORMAT_TIME,
+            #gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
+            print "\n gst.MESSAGE_EOS:"
             self.__new_handle(False)
             self.emit("endfile")
 
-        elif mensaje.type == Gst.MessageType.ERROR:
-            print "\n Gst.MessageType.ERROR:"
+        elif mensaje.type == gst.MESSAGE_ERROR:
+            print "\n gst.MESSAGE_ERROR:"
             print mensaje.parse_error()
             self.__new_handle(False)
 
@@ -435,15 +460,15 @@ class JAMediaReproductor(GObject.Object):
     def pause_play(self):
         """
         Llama a play() o pause()
-        segun el estado actual del pipe de Gst.
+        segun el estado actual del pipe de gst.
         """
 
-        if self.estado == Gst.State.PAUSED \
-            or self.estado == Gst.State.NULL \
-            or self.estado == Gst.State.READY:
+        if self.estado == gst.STATE_PAUSED \
+            or self.estado == gst.STATE_NULL \
+            or self.estado == gst.STATE_READY:
             self.__play()
 
-        elif self.estado == Gst.State.PLAYING:
+        elif self.estado == gst.STATE_PLAYING:
             self.__pause()
 
     def rotar(self, valor):
@@ -494,14 +519,14 @@ class JAMediaReproductor(GObject.Object):
 
     def stop(self):
         """
-        Pone el pipe de Gst en Gst.State.NULL
+        Pone el pipe de gst en gst.STATE_NULL
         """
 
-        self.player.set_state(Gst.State.NULL)
+        self.player.set_state(gst.STATE_NULL)
 
     def load(self, uri):
         """
-        Carga un archivo o stream en el pipe de Gst.
+        Carga un archivo o stream en el pipe de gst.
         """
 
         self.stop()
@@ -509,13 +534,14 @@ class JAMediaReproductor(GObject.Object):
 
         if os.path.exists(uri):
             # Archivo
-            direccion = Gst.filename_to_uri(uri)
+            #direccion = gst.filename_to_uri(uri)
+            direccion = "file://" + uri
             self.player.set_property("uri", direccion)
             self.__play()
 
         else:
             # Streaming
-            if Gst.uri_is_valid(uri):
+            if gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
                 self.__play()
 
@@ -532,9 +558,9 @@ class JAMediaReproductor(GObject.Object):
         posicion = self.duracion * posicion / 100
 
         self.player.seek_simple(
-            Gst.Format.TIME,
-            Gst.SeekFlags.FLUSH |
-            Gst.SeekFlags.KEY_UNIT,
+            gst.FORMAT_TIME,
+            gst.SEEK_FLAG_FLUSH |
+            gst.SEEK_FLAG_KEY_UNIT,
             posicion)
 
     def set_volumen(self, valor):
@@ -590,21 +616,21 @@ class JAMediaReproductor(GObject.Object):
         self.video_pipeline.configurar_efecto(nombre_efecto, propiedad, valor)
 
 
-class JAMediaGrabador(GObject.Object):
+class JAMediaGrabador(gobject.GObject):
     """
     Graba en formato ogg desde un streaming de radio o tv.
     Convierte un archivo de audio o video a ogg.
     """
 
     __gsignals__ = {
-    "update": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "endfile": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+    "update": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "endfile": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self, uri, archivo, tipo):
 
-        GObject.Object.__init__(self)
+        gobject.GObject.__init__(self)
 
         self.tipo = tipo
 
@@ -626,9 +652,11 @@ class JAMediaGrabador(GObject.Object):
         self.__reset()
 
         if os.path.exists(uri):
-            uri = Gst.filename_to_uri(uri)
+            # FIXME: Analizar
+            #uri = gst.filename_to_uri(uri)
+            uri = "file://" + uri
 
-        if Gst.uri_is_valid(uri):
+        if gst.uri_is_valid(uri):
             self.archivo.set_property("location", self.patharchivo)
             self.player.set_property("uri", uri)
             self.__play()
@@ -639,25 +667,25 @@ class JAMediaGrabador(GObject.Object):
 
     def __reset(self):
         """
-        Crea el pipe de Gst. (playbin)
+        Crea el pipe de gst. (playbin)
         """
 
-        self.pipeline = Gst.Pipeline()
+        self.pipeline = gst.Pipeline()
 
-        self.player = Gst.ElementFactory.make(
+        self.player = gst.element_factory_make(
             "uridecodebin", "uridecodebin")
 
         self.pipeline.add(self.player)
 
         # AUDIO
-        audioconvert = Gst.ElementFactory.make(
+        audioconvert = gst.element_factory_make(
             'audioconvert', 'audioconvert')
 
-        audioresample = Gst.ElementFactory.make(
+        audioresample = gst.element_factory_make(
             'audioresample', 'audioresample')
         audioresample.set_property('quality', 10)
 
-        vorbisenc = Gst.ElementFactory.make(
+        vorbisenc = gst.element_factory_make(
             'vorbisenc', 'vorbisenc')
 
         self.pipeline.add(audioconvert)
@@ -670,14 +698,14 @@ class JAMediaGrabador(GObject.Object):
         self.audio_sink = audioconvert.get_static_pad('sink')
 
         # VIDEO
-        videoconvert = Gst.ElementFactory.make(
-            'videoconvert', 'videoconvert')
+        videoconvert = gst.element_factory_make(
+            'ffmpegcolorspace', 'videoconvert')
 
-        videorate = Gst.ElementFactory.make(
+        videorate = gst.element_factory_make(
             'videorate', 'videorate')
         videorate.set_property('max-rate', 30)
 
-        theoraenc = Gst.ElementFactory.make(
+        theoraenc = gst.element_factory_make(
             'theoraenc', 'theoraenc')
 
         if self.tipo == "video":
@@ -691,9 +719,9 @@ class JAMediaGrabador(GObject.Object):
         self.video_sink = videoconvert.get_static_pad('sink')
 
         # MUXOR y ARCHIVO
-        oggmux = Gst.ElementFactory.make(
+        oggmux = gst.element_factory_make(
             'oggmux', "oggmux")
-        self.archivo = Gst.ElementFactory.make(
+        self.archivo = gst.element_factory_make(
             'filesink', "filesink")
 
         self.pipeline.add(oggmux)
@@ -720,6 +748,25 @@ class JAMediaGrabador(GObject.Object):
         sean necesarios. https://wiki.ubuntu.com/Novacut/GStreamer1.0
         """
 
+        try:
+            apad = self.audio_sink.get_compatible_pad(pad)
+
+            if apad:
+                pad.link(apad)
+
+        except:
+            pass
+
+        try:
+            vpad = self.video_sink.get_compatible_pad(pad)
+
+            if vpad:
+                pad.link(vpad)
+
+        except:
+            pass
+
+        '''
         string = pad.query_caps(None).to_string()
         # print "Agregando:", string
 
@@ -728,18 +775,19 @@ class JAMediaGrabador(GObject.Object):
 
         elif string.startswith('video/'):
             pad.link(self.video_sink)
+        '''
 
     def __play(self, widget=None, event=None):
 
-        self.pipeline.set_state(Gst.State.PLAYING)
+        self.pipeline.set_state(gst.STATE_PLAYING)
 
     def stop(self, widget=None, event=None):
         """
         Detiene y limpia el pipe.
         """
 
-        self.pipeline.set_state(Gst.State.PAUSED)
-        self.pipeline.set_state(Gst.State.NULL)
+        self.pipeline.set_state(gst.STATE_PAUSED)
+        self.pipeline.set_state(gst.STATE_NULL)
         self.__new_handle(False)
 
         if os.path.exists(self.patharchivo):
@@ -747,25 +795,25 @@ class JAMediaGrabador(GObject.Object):
 
     def __sync_message(self, bus, mensaje):
         """
-        Captura los mensajes en el bus del pipe Gst.
+        Captura los mensajes en el bus del pipe gst.
         """
 
-        if mensaje.type == Gst.MessageType.EOS:
-            # self.video_pipeline.seek_simple(Gst.Format.TIME,
-            # Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0)
-            print "\n Gst.MessageType.EOS:"
+        if mensaje.type == gst.MESSAGE_EOS:
+            # self.video_pipeline.seek_simple(gst.FORMAT_TIME,
+            # gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
+            print "\n gst.MESSAGE_EOS:"
             print mensaje.parse_error()
             self.__new_handle(False)
             self.stop()
             self.emit("endfile")
 
-        elif mensaje.type == Gst.MessageType.LATENCY:
+        elif mensaje.type == gst.MESSAGE_LATENCY:
             # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
-            print "\n Gst.MessageType.LATENCY"
+            print "\n gst.MESSAGE_LATENCY"
             self.player.recalculate_latency()
 
-        elif mensaje.type == Gst.MessageType.ERROR:
-            print "\n Gst.MessageType.ERROR:"
+        elif mensaje.type == gst.MESSAGE_ERROR:
+            print "\n gst.MESSAGE_ERROR:"
             print mensaje.parse_error()
             self.__new_handle(False)
             self.stop()
@@ -778,11 +826,11 @@ class JAMediaGrabador(GObject.Object):
         """
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            gobject.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(
+            self.actualizador = gobject.timeout_add(
                 500, self.__handle)
 
     def __handle(self):
@@ -839,18 +887,18 @@ class JAMediaGrabador(GObject.Object):
         Grabar audio mp3
         """
 
-        self.player = Gst.ElementFactory.make("playbin", "player")
+        self.player = gst.element_factory_make("playbin", "player")
 
-        audioconvert = Gst.ElementFactory.make('audioconvert', "audioconvert")
-        mp3enc = Gst.ElementFactory.make('lamemp3enc', "lamemp3enc")
+        audioconvert = gst.element_factory_make('audioconvert', "audioconvert")
+        mp3enc = gst.element_factory_make('lamemp3enc', "lamemp3enc")
 
-        self.archivo = Gst.ElementFactory.make('filesink', "archivo")
+        self.archivo = gst.element_factory_make('filesink', "archivo")
 
-        jamedia_sink = Gst.Bin()
+        jamedia_sink = gst.Bin()
         jamedia_sink.add(audioconvert)
 
         pad = audioconvert.get_static_pad('sink')
-        ghostpad = Gst.GhostPad.new('sink', pad)
+        ghostpad = gst.GhostPad.new('sink', pad)
         jamedia_sink.add_pad(ghostpad)
 
         jamedia_sink.add(mp3enc)

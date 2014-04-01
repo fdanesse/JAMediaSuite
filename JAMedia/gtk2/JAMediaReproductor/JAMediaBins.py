@@ -3,7 +3,7 @@
 
 #   JAMediaBins.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,14 +19,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import gi
-gi.require_version('Gst', '1.0')
-
-from gi.repository import Gst
-from gi.repository import GstVideo  # necesario
+import gst
+#from gi.repository import gstVideo  # necesario
 
 
-class JAMedia_Efecto_bin(Gst.Bin):
+class JAMedia_Efecto_bin(gst.Bin):
     """
     Bin para efecto de video individual.
         videoconvert ! efecto
@@ -34,15 +31,15 @@ class JAMedia_Efecto_bin(Gst.Bin):
 
     def __init__(self, efecto):
 
-        Gst.Bin.__init__(self)
+        gst.Bin.__init__(self)
 
         self.set_name(efecto)
 
-        self.videoconvert = Gst.ElementFactory.make(
-            "videoconvert",
+        self.videoconvert = gst.element_factory_make(
+            "ffmpegcolorspace",
             "videoconvert_%s" % (efecto))
 
-        self.efecto = Gst.ElementFactory.make(
+        self.efecto = gst.element_factory_make(
             efecto, efecto)
 
         self.add(self.videoconvert)
@@ -50,13 +47,13 @@ class JAMedia_Efecto_bin(Gst.Bin):
 
         self.videoconvert.link(self.efecto)
 
-        self.add_pad(Gst.GhostPad.new(
+        self.add_pad(gst.GhostPad(
             "sink", self.videoconvert.get_static_pad("sink")))
-        self.add_pad(Gst.GhostPad.new(
+        self.add_pad(gst.GhostPad(
             "src", self.efecto.get_static_pad("src")))
 
 
-class Efectos_Video_bin(Gst.Bin):
+class Efectos_Video_bin(gst.Bin):
     """
     Bin para agregar efectos de video.
         queue ! [ efecto=videoconvert ! efecto, . . .] ! videoconvert
@@ -64,21 +61,21 @@ class Efectos_Video_bin(Gst.Bin):
 
     def __init__(self, efectos, config_efectos):
 
-        Gst.Bin.__init__(self)
+        gst.Bin.__init__(self)
 
         self.set_name('efectos_bin')
 
         self.efectos = efectos
         self.config_efectos = config_efectos
 
-        self.queue = Gst.ElementFactory.make('queue', "queue")
+        self.queue = gst.element_factory_make('queue', "queue")
         #self.queue.set_property('leaky', 2)
         #queue.set_property('max-size-buffers', 1000)
         #self.queue.set_property('max-size-bytes', 0)
         #self.queue.set_property('max-size-time', 0)
 
-        self.videoconvert = Gst.ElementFactory.make(
-            'videoconvert',
+        self.videoconvert = gst.element_factory_make(
+            'ffmpegcolorspace',
             "videoconvert_efectos")
 
         self.add(self.queue)
@@ -120,13 +117,13 @@ class Efectos_Video_bin(Gst.Bin):
                 elemento.set_property(prop,
                     self.config_efectos[efecto][prop])
 
-        self.add_pad(Gst.GhostPad.new(
+        self.add_pad(gst.GhostPad(
             "sink", self.queue.get_static_pad("sink")))
-        self.add_pad(Gst.GhostPad.new(
+        self.add_pad(gst.GhostPad(
             "src", self.videoconvert.get_static_pad("src")))
 
 
-class Video_Balance_Bin(Gst.Bin):
+class Video_Balance_Bin(gst.Bin):
     """
     Gestor de Video Intermedio para controlar:
         brillo,
@@ -139,7 +136,7 @@ class Video_Balance_Bin(Gst.Bin):
 
     def __init__(self):
 
-        Gst.Bin.__init__(self)
+        gst.Bin.__init__(self)
 
         self.set_name('video_balance_bin')
 
@@ -158,15 +155,15 @@ class Video_Balance_Bin(Gst.Bin):
         self.config['hue'] = self.config_default['hue']
         self.config['gamma'] = self.config_default['gamma']
 
-        self.videobalance = Gst.ElementFactory.make(
+        self.videobalance = gst.element_factory_make(
             'videobalance',
             "videobalance")
 
-        self.gamma = Gst.ElementFactory.make(
+        self.gamma = gst.element_factory_make(
             'gamma',
             "gamma")
 
-        self.videoflip = Gst.ElementFactory.make(
+        self.videoflip = gst.element_factory_make(
             'videoflip',
             "videoflip")
 
@@ -178,10 +175,10 @@ class Video_Balance_Bin(Gst.Bin):
         self.gamma.link(self.videoflip)
 
         pad = self.videobalance.get_static_pad("sink")
-        self.add_pad(Gst.GhostPad.new("sink", pad))
+        self.add_pad(gst.GhostPad("sink", pad))
 
         pad = self.videoflip.get_static_pad("src")
-        self.add_pad(Gst.GhostPad.new("src", pad))
+        self.add_pad(gst.GhostPad("src", pad))
 
     def reset(self):
         """
@@ -280,24 +277,24 @@ class Video_Balance_Bin(Gst.Bin):
         return self.videoflip.set_property('method', valor)
 
 
-class JAMedia_Audio_Pipeline(Gst.Pipeline):
+class JAMedia_Audio_Pipeline(gst.Pipeline):
     """
     Gestor de Audio de JAMedia.
     """
 
     def __init__(self):
 
-        Gst.Pipeline.__init__(self)
+        gst.Pipeline.__init__(self)
 
         self.set_name('jamedia_audio_pipeline')
 
-        self.queue = Gst.ElementFactory.make(
+        self.queue = gst.element_factory_make(
             'queue', "queue")
 
-        self.audioconvert = Gst.ElementFactory.make(
+        self.audioconvert = gst.element_factory_make(
             "audioconvert", "audioconvert")
 
-        self.autoaudiosink = Gst.ElementFactory.make(
+        self.autoaudiosink = gst.element_factory_make(
             "autoaudiosink", "autoaudiosink")
 
         self.add(self.queue)
@@ -308,19 +305,19 @@ class JAMedia_Audio_Pipeline(Gst.Pipeline):
         self.audioconvert.link(self.autoaudiosink)
 
         self.add_pad(
-            Gst.GhostPad.new(
+            gst.GhostPad(
                 "sink",
                 self.queue.get_static_pad("sink")))
 
 
-class JAMedia_Video_Pipeline(Gst.Pipeline):
+class JAMedia_Video_Pipeline(gst.Pipeline):
     """
     Gestor de Video de JAMedia.
     """
 
     def __init__(self):
 
-        Gst.Pipeline.__init__(self)
+        gst.Pipeline.__init__(self)
 
         self.set_name('jamedia_video_pipeline')
 
@@ -331,10 +328,10 @@ class JAMedia_Video_Pipeline(Gst.Pipeline):
             self.efectos, self.config_efectos)
         self.video_balance_bin = Video_Balance_Bin()
 
-        self.pantalla_bin = Gst.ElementFactory.make(
+        self.pantalla_bin = gst.element_factory_make(
             'xvimagesink', "pantalla")
 
-        self.videorate = Gst.ElementFactory.make(
+        self.videorate = gst.element_factory_make(
             'videorate', 'videorate')
         self.videorate.set_property('max-rate', 30)
 
@@ -347,7 +344,7 @@ class JAMedia_Video_Pipeline(Gst.Pipeline):
         self.videorate.link(self.video_balance_bin)
         self.video_balance_bin.link(self.pantalla_bin)
 
-        self.ghost_pad = Gst.GhostPad.new(
+        self.ghost_pad = gst.GhostPad(
             "sink", self.efectos_bin.get_static_pad("sink"))
 
         self.ghost_pad.set_target(
