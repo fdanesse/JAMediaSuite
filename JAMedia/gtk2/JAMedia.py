@@ -29,6 +29,17 @@ from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
 
+"""
+Necesita:
+    gstreamer0.10-ffmpeg
+    gstreamer0.10-plugins-base
+    gstreamer0.10-plugins-good
+    gstreamer0.10-plugins-ugly
+    gstreamer0.10-plugins-bad
+    gstreamer0.10-tools
+    mplayer
+"""
+
 
 class JAMedia(gtk.Window):
 

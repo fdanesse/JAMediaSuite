@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import cairo
-from gi.repository import gobject
+import gobject
 
 
 def paint_text(contexto, texto, rect):
@@ -90,7 +90,8 @@ class Player(gobject.GObject):
         self.name = "PlayerNull"
         self.ventana = ventana
 
-        self.ventana.connect('draw', self.paint)
+        # FIXME: Corregir o eliminar
+        #self.ventana.connect('draw', self.paint)
 
         self.config = {
             'saturacion': 1.0,

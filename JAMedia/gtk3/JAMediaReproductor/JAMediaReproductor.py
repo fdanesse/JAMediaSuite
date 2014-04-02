@@ -759,7 +759,6 @@ class JAMediaGrabador(GObject.Object):
             # self.video_pipeline.seek_simple(Gst.Format.TIME,
             # Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0)
             print "\n Gst.MessageType.EOS:"
-            print mensaje.parse_error()
             self.__new_handle(False)
             self.stop()
             self.emit("endfile")

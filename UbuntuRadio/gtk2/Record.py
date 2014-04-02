@@ -131,10 +131,11 @@ class MyPlayBin(gobject.GObject):
     def __sync_message(self, bus, mensaje):
 
         if mensaje.type == gst.MESSAGE_LATENCY:
-            self.player.recalculate_latency()
+            #self.player.recalculate_latency()
+            pass
 
-        elif mensaje.type == gst.MESSAGE_EOS:
-            print "\ngst.MessageType.EOS:"
+        elif mensaje.type == gst.MESSAGE_QOS:
+            print "\ngst.MessageType.QOS:"
             self.__new_handle(False)
             self.emit("endfile")
 

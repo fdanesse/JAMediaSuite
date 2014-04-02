@@ -24,12 +24,7 @@ import os
 import gobject
 import gst
 
-#from gi.repository import gstVideo
-#gst.init([])
-
-# Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html
-# Manual: http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/index.html
-# https://wiki.ubuntu.com/Novacut/GStreamer1.0
+gobject.threads_init()
 
 
 class JAMediaReproductor(gobject.GObject):
@@ -597,9 +592,9 @@ class JAMediaGrabador(gobject.GObject):
     """
 
     __gsignals__ = {
-    "update": (gobject.SIGNAL_RUN_FIRST,
+    "update": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "endfile": (gobject.SIGNAL_RUN_FIRST,
+    "endfile": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, [])}
 
     def __init__(self, uri, archivo, tipo):
@@ -632,7 +627,8 @@ class JAMediaGrabador(gobject.GObject):
 
         if gst.uri_is_valid(uri):
             self.archivo.set_property("location", self.patharchivo)
-            self.player.set_property("uri", uri)
+            self.uri = uri
+            self.player.set_property("uri", self.uri)
             self.__play()
             self.__new_handle(True)
 
@@ -714,13 +710,24 @@ class JAMediaGrabador(gobject.GObject):
         self.bus.connect('sync-message', self.__sync_message)
 
         self.player.connect('pad-added', self.__on_pad_added)
-        self.player.connect("source-setup", self.__source_setup)
+        #self.player.connect("source-setup", self.__source_setup)
 
     def __on_pad_added(self, uridecodebin, pad):
         """
         Agregar elementos en forma dinámica según
         sean necesarios. https://wiki.ubuntu.com/Novacut/GStreamer1.0
         """
+
+        #caps = pad.get_caps()
+        #string = pad.query_caps(None).to_string()
+
+        #if string.startswith('audio/'):
+        #    if not self.audio.is_linked():
+        #        pad.link(self.audio_sink)
+
+        #elif string.startswith('video/'):
+        #    if not self.audio.is_linked():
+        #        pad.link(self.video_sink)
 
         try:
             apad = self.audio_sink.get_compatible_pad(pad)
@@ -740,17 +747,6 @@ class JAMediaGrabador(gobject.GObject):
         except:
             pass
 
-        '''
-        string = pad.query_caps(None).to_string()
-        # print "Agregando:", string
-
-        if string.startswith('audio/'):
-            pad.link(self.audio_sink)
-
-        elif string.startswith('video/'):
-            pad.link(self.video_sink)
-        '''
-
     def __play(self, widget=None, event=None):
 
         self.pipeline.set_state(gst.STATE_PLAYING)
@@ -760,7 +756,7 @@ class JAMediaGrabador(gobject.GObject):
         Detiene y limpia el pipe.
         """
 
-        self.pipeline.set_state(gst.STATE_PAUSED)
+        #self.pipeline.set_state(gst.STATE_PAUSED)
         self.pipeline.set_state(gst.STATE_NULL)
         self.__new_handle(False)
 
@@ -772,19 +768,18 @@ class JAMediaGrabador(gobject.GObject):
         Captura los mensajes en el bus del pipe gst.
         """
 
-        if mensaje.type == gst.MESSAGE_EOS:
+        if mensaje.type == gst.MESSAGE_QOS:
             # self.video_pipeline.seek_simple(gst.FORMAT_TIME,
             # gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
-            print "\n gst.MESSAGE_EOS:"
-            print mensaje.parse_error()
+            print "\n gst.MESSAGE_QOS:"
             self.__new_handle(False)
             self.stop()
             self.emit("endfile")
 
-        elif mensaje.type == gst.MESSAGE_LATENCY:
-            # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
-            print "\n gst.MESSAGE_LATENCY"
-            self.player.recalculate_latency()
+        #elif mensaje.type == gst.MESSAGE_LATENCY:
+        #    # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
+        #    print "\n gst.MESSAGE_LATENCY"
+        #    self.player.recalculate_latency()
 
         elif mensaje.type == gst.MESSAGE_ERROR:
             print "\n gst.MESSAGE_ERROR:"
@@ -840,10 +835,10 @@ class JAMediaGrabador(gobject.GObject):
 
         return True
 
-    def __source_setup(self, player, source):
+    #def __source_setup(self, player, source):
 
-        self.uri = source.get_property('location')
-        # print "Grabando:", self.uri
+    #    self.uri = source.get_property('location')
+    #    # print "Grabando:", self.uri
 
     #def __about_to_finish(self, player):
 
@@ -908,6 +903,8 @@ def end(grabador):
 if __name__ == "__main__":
 
     import sys
+
+    print "Iniciando Grabador . . ."
 
     if not len(sys.argv) == 4:
         print "Debes pasar tres parámetros:"

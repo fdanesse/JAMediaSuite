@@ -170,7 +170,11 @@ class JAMediaPlayer(Gtk.EventBox):
         hpanel = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
         hpanel.modify_bg(0, get_colors("window"))
 
-        basebox.pack_start(self.toolbar, False, False, 3)
+        eventbox = Gtk.EventBox()  # FIXME: Para poder pintar el fondo
+        eventbox.modify_bg(0, get_colors("barradeprogreso"))
+        eventbox.add(self.toolbar)
+
+        basebox.pack_start(eventbox, False, False, 3)
         basebox.pack_start(self.toolbar_salir, False, False, 0)
         basebox.pack_start(self.toolbar_accion, False, False, 0)
         basebox.pack_start(self.toolbaraddstream, False, False, 0)
@@ -208,7 +212,11 @@ class JAMediaPlayer(Gtk.EventBox):
         vbox.pack_start(self.toolbar_grabar, False, False, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
         vbox.pack_start(scroll, False, False, 0)
-        vbox.pack_start(self.toolbar_info, False, False, 3)
+
+        eventbox = Gtk.EventBox()  # FIXME: Para poder pintar el fondo
+        eventbox.modify_bg(0, get_colors("barradeprogreso"))
+        eventbox.add(self.toolbar_info)
+        vbox.pack_start(eventbox, False, False, 3)
         vbox.pack_start(ev_box, False, True, 0)
 
         hpanel.pack1(vbox, resize=True, shrink=True)
@@ -228,7 +236,7 @@ class JAMediaPlayer(Gtk.EventBox):
         self.scroll_config.get_child().modify_bg(0, get_colors("window"))
         self.vbox_config.pack_start(
             self.toolbar_config, False, False, 0)
-        self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
+        #self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
 
         # Lista de Reproducción
         # FIXME: Para poder pintar el fondo

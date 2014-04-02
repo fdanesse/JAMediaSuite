@@ -285,7 +285,7 @@ class GstreamerVideoEfectos(gtk.VBox):
         # Los efectos se definen en globales
         # pero hay que ver si están instalados.
         import commands
-        datos = commands.getoutput('gst-inspect-1.0 %s' % (nombre))
+        datos = commands.getoutput('gst-inspect-0.10 %s' % (nombre))
 
         #if 'gst-plugins-good' in datos and \
         #    ('Filter/Effect/Video' in datos or \
