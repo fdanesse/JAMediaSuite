@@ -953,15 +953,15 @@ class JAMediaPlayer(gtk.EventBox):
         Recibe la señal de fin de archivo desde el reproductor
         y llama a seleccionar_siguiente en la lista de reproduccion.
         """
-
+        '''
         t = float("{:.1f}".format(time.time()))
         dif = t - self.timer_next_play
 
-        if dif:
+        if dif > 0.9:
             self.timer_next_play = t
-
-            self.controlesrepro.set_paused()
-            gobject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
+        '''
+        self.controlesrepro.set_paused()
+        gobject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
 
     def __cambioestadoreproductor(self, widget=None, valor=None):
         """

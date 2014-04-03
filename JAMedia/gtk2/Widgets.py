@@ -38,7 +38,7 @@ class My_FileChooser(gtk.FileChooserDialog):
     desde cualquier dispositivo o directorio.
     """
 
-    __gtype_name__ = 'My_FileChooser'
+    #__gtype_name__ = 'My_FileChooser'
 
     __gsignals__ = {
     'archivos-seleccionados': (gobject.SIGNAL_RUN_FIRST,
@@ -141,7 +141,7 @@ class MenuList(gtk.Menu):
     al hacer click derecho sobre él.
     """
 
-    __gtype_name__ = 'MenuList'
+    #__gtype_name__ = 'MenuList'
 
     __gsignals__ = {
     'accion': (gobject.SIGNAL_RUN_FIRST,
@@ -387,7 +387,7 @@ class WidgetEfecto_en_Pipe(JAMediaButton):
     los efectos que ha agregado y en que orden se encuentran.
     """
 
-    __gtype_name__ = 'WidgetEfecto_en_Pipe'
+    #__gtype_name__ = 'WidgetEfecto_en_Pipe'
 
     def __init__(self):
 
@@ -411,7 +411,7 @@ class WidgetEfecto_en_Pipe(JAMediaButton):
 
 class DialogoDescarga(gtk.Dialog):
 
-    __gtype_name__ = 'DialogoDescarga'
+    #__gtype_name__ = 'DialogoDescarga'
 
     def __init__(self, parent=None):
 
@@ -574,7 +574,7 @@ class Visor(gtk.DrawingArea):
     reproduccion de videos o dibujar.
     """
 
-    __gtype_name__ = 'Visor'
+    #__gtype_name__ = 'Visor'
 
     __gsignals__ = {
     "ocultar_controles": (gobject.SIGNAL_RUN_FIRST,

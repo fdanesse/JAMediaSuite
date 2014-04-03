@@ -22,11 +22,8 @@
 import os
 import gobject
 import gst
-#import pygst
-#import gtk
 
 gobject.threads_init()
-#gtk.gdk.threads_init()
 
 
 class JAMediaReproductor(gobject.GObject):
@@ -151,12 +148,15 @@ class JAMediaReproductor(gobject.GObject):
 
         self.player.set_state(gst.STATE_PAUSED)
 
-    def __new_handle(self, reset):
+    def __new_handle(self, reset, data):
         """
         Elimina o reinicia la funcion que
         envia los datos de actualizacion para
         la barra de progreso del reproductor.
         """
+
+        import time
+        print time.time(), reset, data
 
         if self.actualizador:
             gobject.source_remove(self.actualizador)
@@ -193,7 +193,7 @@ class JAMediaReproductor(gobject.GObject):
                 #   self.player.get_property("frame"))
 
         except:
-            pass
+            print "ERROR en HANDLER"
 
         return True
 
@@ -220,7 +220,7 @@ class JAMediaReproductor(gobject.GObject):
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "playing")
-                    self.__new_handle(True)
+                    self.__new_handle(True, [new])
                     # Si se llama enseguida falla.
                     gobject.idle_add(self.__re_config)
 
@@ -228,19 +228,19 @@ class JAMediaReproductor(gobject.GObject):
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
-                    self.__new_handle(False)
+                    self.__new_handle(False, [new])
 
             elif old == gst.STATE_READY and new == gst.STATE_NULL:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "None")
-                    self.__new_handle(False)
+                    self.__new_handle(False, [new])
 
             elif old == gst.STATE_PLAYING and new == gst.STATE_PAUSED:
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
-                    self.__new_handle(False)
+                    self.__new_handle(False, [new])
 
             #elif old == gst.STATE_NULL and new == gst.STATE_READY:
             #    pass
@@ -407,17 +407,17 @@ class JAMediaReproductor(gobject.GObject):
         #    #print "\n gst.MESSAGE_NEED_CONTEXT:"
         #    pass
 
-        elif mensaje.type == gst.MESSAGE_QOS:
+        elif mensaje.type == gst.MESSAGE_EOS:
             #self.video_pipeline.seek_simple(gst.FORMAT_TIME,
             #gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
-            #print "\n gst.MESSAGE_QOS:"
-            self.__new_handle(False)
+            #print "\n gst.MESSAGE_EOS:"
+            self.__new_handle(False, [gst.MESSAGE_EOS])
             self.emit("endfile")
 
         elif mensaje.type == gst.MESSAGE_ERROR:
             print "\n gst.MESSAGE_ERROR:"
             print mensaje.parse_error()
-            self.__new_handle(False)
+            self.__new_handle(False, [gst.MESSAGE_ERROR])
 
         #else:
         #    print mensaje.type
@@ -752,10 +752,10 @@ class JAMediaGrabador(gobject.GObject):
         Captura los mensajes en el bus del pipe gst.
         """
 
-        if mensaje.type == gst.MESSAGE_QOS:
+        if mensaje.type == gst.MESSAGE_EOS:
             # self.video_pipeline.seek_simple(gst.FORMAT_TIME,
             # gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
-            print "\n gst.MESSAGE_QOS:"
+            print "\n gst.MESSAGE_EOS:"
             self.__new_handle(False)
             self.stop()
             self.emit("endfile")

@@ -249,7 +249,7 @@ class ToolbarGrabar(gtk.Toolbar):
     desde un streaming.
     """
 
-    __gtype_name__ = 'ToolbarGrabar'
+    #__gtype_name__ = 'ToolbarGrabar'
 
     __gsignals__ = {
     "stop": (gobject.SIGNAL_RUN_FIRST,
@@ -341,7 +341,7 @@ class ToolbarLista(gtk.Toolbar):
     Radios, Tv, etc . . .
     """
 
-    __gtype_name__ = 'ToolbarLista'
+    #__gtype_name__ = 'ToolbarLista'
 
     __gsignals__ = {
     "cargar_lista": (gobject.SIGNAL_RUN_FIRST,
@@ -566,7 +566,7 @@ class ToolbarInfo(gtk.Toolbar):
     Permite configurar ocultar controles automáticamente.
     """
 
-    __gtype_name__ = 'ToolbarInfo'
+    #__gtype_name__ = 'ToolbarInfo'
 
     __gsignals__ = {
     'rotar': (gobject.SIGNAL_RUN_FIRST,
@@ -703,7 +703,7 @@ class ToolbarConfig(gtk.Table):
     modificar valores de balance en video.
     """
 
-    __gtype_name__ = 'ToolbarConfig'
+    #__gtype_name__ = 'ToolbarConfig'
 
     __gsignals__ = {
     "reproductor": (gobject.SIGNAL_RUN_FIRST,
@@ -1004,7 +1004,7 @@ class ToolbarAddStream(gtk.Toolbar):
     Toolbar para agregar streamings.
     """
 
-    __gtype_name__ = 'ToolbarAddStream'
+    #__gtype_name__ = 'ToolbarAddStream'
 
     __gsignals__ = {
     "add-stream": (gobject.SIGNAL_RUN_FIRST,
