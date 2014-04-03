@@ -20,11 +20,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gobject
 import gst
+#import pygst
+#import gtk
 
 gobject.threads_init()
+#gtk.gdk.threads_init()
 
 
 class JAMediaReproductor(gobject.GObject):
@@ -610,7 +612,7 @@ class JAMediaGrabador(gobject.GObject):
         self.patharchivo = archivo
         self.actualizador = False
         self.control = 0
-        self.info = ""
+        self.tamanio = 0
         self.uri = ""
 
         self.pipeline = None
@@ -709,43 +711,25 @@ class JAMediaGrabador(gobject.GObject):
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.__sync_message)
 
-        self.player.connect('pad-added', self.__on_pad_added)
+        self.player.connect('pad-added', self.__pad_added)
         #self.player.connect("source-setup", self.__source_setup)
 
-    def __on_pad_added(self, uridecodebin, pad):
+    def __pad_added(self, uridecodebin, pad):
         """
         Agregar elementos en forma dinámica según
         sean necesarios. https://wiki.ubuntu.com/Novacut/GStreamer1.0
         """
 
-        #caps = pad.get_caps()
-        #string = pad.query_caps(None).to_string()
+        caps = pad.get_caps()
+        string = caps.to_string()
 
-        #if string.startswith('audio/'):
-        #    if not self.audio.is_linked():
-        #        pad.link(self.audio_sink)
+        if string.startswith('audio'):
+            if not self.audio_sink.is_linked():
+                pad.link(self.audio_sink)
 
-        #elif string.startswith('video/'):
-        #    if not self.audio.is_linked():
-        #        pad.link(self.video_sink)
-
-        try:
-            apad = self.audio_sink.get_compatible_pad(pad)
-
-            if apad:
-                pad.link(apad)
-
-        except:
-            pass
-
-        try:
-            vpad = self.video_sink.get_compatible_pad(pad)
-
-            if vpad:
-                pad.link(vpad)
-
-        except:
-            pass
+        elif string.startswith('video'):
+            if not self.audio_sink.is_linked():
+                pad.link(self.video_sink)
 
     def __play(self, widget=None, event=None):
 
@@ -809,21 +793,21 @@ class JAMediaGrabador(gobject.GObject):
         """
 
         if os.path.exists(self.patharchivo):
-            tamanio = int(os.path.getsize(
-                self.patharchivo) / 1024.0 / 1024.0)
+            tamanio = os.path.getsize(self.patharchivo)
+            tam = int(tamanio) / 1024.0 / 1024.0
 
-            texto = str(self.uri)
-
-            if len(self.uri) > 25:
-                texto = str(self.uri[0:25]) + " . . . "
-
-            info = "Grabando: %s %.2f Mb" % (
-                texto, tamanio)
-
-            if self.info != info:
+            if self.tamanio != tamanio:
                 self.control = 0
-                self.info = info
-                self.emit('update', self.info)
+                self.tamanio = tamanio
+
+                texto = str(self.uri)
+
+                if len(self.uri) > 25:
+                    texto = str(self.uri[0:25]) + " . . . "
+
+                info = "Grabando: %s %.2f Mb" % (texto, tam)
+
+                self.emit('update', info)
 
             else:
                 self.control += 1

@@ -29,8 +29,8 @@ from gi.repository import GLib
 from gi.repository import Gst
 from gi.repository import GstVideo
 
-Gst.init([])
 GObject.threads_init()
+Gst.init([])
 
 # Guia: http://developer.gnome.org/gstreamer/stable/libgstreamer.html
 # Manual: http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/index.html
@@ -619,7 +619,7 @@ class JAMediaGrabador(GObject.Object):
         self.patharchivo = archivo
         self.actualizador = False
         self.control = 0
-        self.info = ""
+        self.tamanio = 0
         self.uri = ""
 
         self.pipeline = None
@@ -796,21 +796,21 @@ class JAMediaGrabador(GObject.Object):
         """
 
         if os.path.exists(self.patharchivo):
-            tamanio = int(os.path.getsize(
-                self.patharchivo) / 1024.0 / 1024.0)
+            tamanio = os.path.getsize(self.patharchivo)
+            tam = int(tamanio) / 1024.0 / 1024.0
 
-            texto = str(self.uri)
-
-            if len(self.uri) > 25:
-                texto = str(self.uri[0:25]) + " . . . "
-
-            info = "Grabando: %s %.2f Mb" % (
-                texto, tamanio)
-
-            if self.info != info:
+            if self.tamanio != tamanio:
                 self.control = 0
-                self.info = info
-                self.emit('update', self.info)
+                self.tamanio = tamanio
+
+                texto = str(self.uri)
+
+                if len(self.uri) > 25:
+                    texto = str(self.uri[0:25]) + " . . . "
+
+                info = "Grabando: %s %.2f Mb" % (texto, tam)
+
+                self.emit('update', info)
 
             else:
                 self.control += 1
