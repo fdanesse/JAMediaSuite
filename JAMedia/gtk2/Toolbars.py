@@ -243,7 +243,7 @@ class ToolbarAccion(gtk.Toolbar):
         self.hide()
 
 
-class ToolbarGrabar(gtk.Toolbar):
+class ToolbarGrabar(gtk.EventBox):
     """
     Informa al usuario cuando se está grabando
     desde un streaming.
@@ -257,14 +257,17 @@ class ToolbarGrabar(gtk.Toolbar):
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
+        gtk.EventBox.__init__(self)
 
         self.modify_bg(0, get_colors("drawingplayer"))
 
         self.colors = [get_color("BLANCO"), get_color("NARANJA")]
         self.color = self.colors[0]
 
-        self.insert(get_separador(draw=False,
+        self.toolbar = gtk.Toolbar()
+        self.toolbar.modify_bg(0, get_colors("drawingplayer"))
+
+        self.toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -272,16 +275,18 @@ class ToolbarGrabar(gtk.Toolbar):
         boton = get_boton(archivo, flip=False,
             pixels=24)
         boton.set_tooltip_text("Detener")
-        self.insert(boton, -1)
+        self.toolbar.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
+        self.toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
         self.label = gtk.Label("Grabador Detenido.")
         self.label.show()
         item.add(self.label)
-        self.insert(item, -1)
+        self.toolbar.insert(item, -1)
+
+        self.add(self.toolbar)
 
         self.show_all()
 

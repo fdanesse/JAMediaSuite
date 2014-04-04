@@ -142,7 +142,7 @@ class JAMediaTube(gtk.Window):
 
         self.jamedia.setup_init()
         self.jamedia.pack_standar()
-        self.jamedia.pack_efectos()
+        #self.jamedia.pack_efectos()
         self.jamedia.switch_reproductor(
             None, "JAMediaReproductor")
 

@@ -85,7 +85,7 @@ class JAMedia(gtk.Window):
 
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
-        self.jamediaplayer.pack_efectos()
+        #self.jamediaplayer.pack_efectos()
 
         if self.pistas:
             gobject.idle_add(
@@ -99,7 +99,13 @@ class JAMedia(gtk.Window):
         import sys
         import commands
 
-        commands.getoutput('killall mplayer')
+        try:
+            commands.getoutput('killall mplayer')
+
+        except:
+            pass
+
+        gtk.main_quit()
         sys.exit(0)
 
 

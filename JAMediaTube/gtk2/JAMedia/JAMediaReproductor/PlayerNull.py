@@ -87,7 +87,7 @@ class Player(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
-        self.name = "PlayerNull"
+        self.nombre = "PlayerNull"
         self.ventana = ventana
 
         # FIXME: Corregir o eliminar
