@@ -99,7 +99,13 @@ class JAMedia(gtk.Window):
         import sys
         import commands
 
-        commands.getoutput('killall mplayer')
+        try:
+            commands.getoutput('killall mplayer')
+
+        except:
+            pass
+
+        gtk.main_quit()
         sys.exit(0)
 
 

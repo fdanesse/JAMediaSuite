@@ -61,7 +61,7 @@ class MplayerReproductor(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
-        self.name = "MplayerReproductor"
+        self.nombre = "MplayerReproductor"
         self.ventana_id = ventana_id
         self.mplayer = False
         self.salida = False

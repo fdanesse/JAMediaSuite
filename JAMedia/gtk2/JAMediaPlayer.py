@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
+import time
 import gtk
 from gtk import gdk
 import gobject
@@ -70,7 +70,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.modify_bg(0, get_colors("window"))
 
-        #self.timer_next_play = float("{:.1f}".format(time.time()))
+        self.timer_next_play = float("{:.1f}".format(time.time()))
         self.pantalla = None
         self.barradeprogreso = None
         self.volumen = None
@@ -508,7 +508,7 @@ class JAMediaPlayer(gtk.EventBox):
                 pass
 
             self.player = reproductor
-            print "Reproduciendo con:", self.player.name
+            print "Reproduciendo con:", self.player.nombre
 
             try:
                 model, iter = self.lista_de_reproduccion.get_selection(
@@ -954,8 +954,17 @@ class JAMediaPlayer(gtk.EventBox):
         y llama a seleccionar_siguiente en la lista de reproduccion.
         """
 
-        self.controlesrepro.set_paused()
-        gobject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
+        # FIXME: HACK: A veces no se llega al final del archivo y no
+        # se produce EOS.
+        t = float("{:.1f}".format(time.time()))
+        dif = t - self.timer_next_play
+
+        if dif > 2:
+            self.timer_next_play = t
+
+            self.controlesrepro.set_paused()
+            gobject.idle_add(
+                self.lista_de_reproduccion.seleccionar_siguiente)
 
     def __cambioestadoreproductor(self, widget=None, valor=None):
         """

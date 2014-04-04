@@ -59,9 +59,10 @@ class JAMediaReproductor(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
-        self.name = "JAMediaReproductor"
+        self.nombre = "JAMediaReproductor"
         self.ventana_id = ventana_id
 
+        self.progressbar = True
         self.estado = None
         self.volumen = 0.10
         self.config = {
@@ -100,7 +101,9 @@ class JAMediaReproductor(gobject.GObject):
 
         self.posicion = 0
         self.duracion = 0
+
         self.__new_handle(False, [self.__reset])
+        self.progressbar = True
 
         if self.player:
             del(self.player)
@@ -178,13 +181,16 @@ class JAMediaReproductor(gobject.GObject):
         la barra de progreso del reproductor.
         """
 
+        if not self.progressbar:
+            return True
+
         valor1 = None
         valor2 = None
         pos = None
         duracion = None
 
         #import time
-        #print time.time()
+        #print time.time(), self.duracion, self.posicion
 
         try:
             valor1, bool1 = self.player.query_duration(gst.FORMAT_TIME)
@@ -274,6 +280,8 @@ class JAMediaReproductor(gobject.GObject):
             #else:
             #    pass
 
+            return True
+
         elif mensaje.type == gst.MESSAGE_TAG:
             taglist = mensaje.parse_tag()
             datos = taglist.keys()
@@ -294,6 +302,7 @@ class JAMediaReproductor(gobject.GObject):
                     self.emit("video", True)
                     #self.audio_pipelin.quitar_visualizador()
 
+            return True
             #self.duracion = int(taglist.to_string().split(
             #   "duration=(guint64)")[1].split(',')[0])
 
@@ -307,10 +316,11 @@ class JAMediaReproductor(gobject.GObject):
         #    print "\n gst.MESSAGE_WARNING:"
         #    print mensaje.parse_warning()
 
-        #elif mensaje.type == gst.MESSAGE_LATENCY:
+        elif mensaje.type == gst.MESSAGE_LATENCY:
         #    # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
         #    print "\n gst.MESSAGE_LATENCY"
-        #    self.player.recalculate_latency()
+            self.player.recalculate_latency()
+            return True
 
         #elif mensaje.type == gst.MESSAGE_STREAM_START:
         #    #print "\n gst.MESSAGE_STREAM_START:"
@@ -378,6 +388,7 @@ class JAMediaReproductor(gobject.GObject):
             #print "\n gst.MESSAGE_ELEMENT:"
             try:
                 mensaje.src.set_xwindow_id(self.ventana_id)
+                return True
 
             except:
                 pass
@@ -432,9 +443,25 @@ class JAMediaReproductor(gobject.GObject):
             #    gst.FORMAT_TIME,
             #    gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
             # print "\n gst.MESSAGE_EOS:"
+            self.bus.disable_sync_message_emission()
+            self.posicion = 0
             self.__new_handle(False, [gst.MESSAGE_EOS])
             self.emit("endfile")
             return False
+
+        #elif mensaje.type == gst.MESSAGE_QOS:
+        #    # FIXME: HACK: A veces no se llega al final del archivo y no
+        #    # se produce EOS.
+        #    self.bus.disable_sync_message_emission()
+        #    self.posicion = 0
+        #    #print mensaje.parse_qos()
+        #    #print mensaje.parse_qos_stats()
+        #    #print mensaje.parse_qos_values()
+        #    #(False, 125000000L, 125000000L, 125000000L, 18446744073709551615L)
+        #    #(<enum GST_FORMAT_BUFFERS of type GstFormat>, 3L, 1L)
+        #    self.__new_handle(False, [gst.MESSAGE_QOS])
+        #    self.emit("endfile")
+        #    return False
 
         elif mensaje.type == gst.MESSAGE_ERROR:
             print "\n gst.MESSAGE_ERROR:"
@@ -531,12 +558,14 @@ class JAMediaReproductor(gobject.GObject):
             #direccion = gst.filename_to_uri(uri)
             direccion = "file://" + uri
             self.player.set_property("uri", direccion)
+            self.progressbar = True
             self.__play()
 
         else:
             # Streaming
             if gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
+                self.progressbar = False
                 self.__play()
 
         return False
