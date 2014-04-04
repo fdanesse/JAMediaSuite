@@ -454,7 +454,7 @@ class Credits(gtk.Dialog):
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)
-        self.modify_bg(0, get_colors("window"))
+        self.modify_bg(0, get_colors("widgetvideoitem"))
         self.set_border_width(15)
 
         imagen = gtk.Image()
@@ -476,7 +476,7 @@ class Help(gtk.Dialog):
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)
-        self.modify_bg(0, get_colors("window"))
+        self.modify_bg(0, get_colors("widgetvideoitem"))
         self.set_border_width(15)
 
         tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)

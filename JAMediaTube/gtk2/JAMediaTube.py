@@ -25,6 +25,8 @@ import gtk
 from gtk import gdk
 import gobject
 
+from Globales import get_colors
+
 BASE_PATH = os.path.dirname(__file__)
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
@@ -47,7 +49,7 @@ class JAMediaTube(gtk.Window):
         self.set_icon_from_file(
             os.path.join(BASE_PATH,
             "Iconos", "JAMediaTube.svg"))
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)
@@ -81,17 +83,13 @@ class JAMediaTube(gtk.Window):
         from Widgets import Toolbar_Busqueda
         from Widgets import Toolbar_Descarga
         from Widgets import Alerta_Busqueda
-
         from PanelTube import PanelTube
-
         from Widgets import ToolbarSalir
 
         boxbase = gtk.VBox()
 
         self.box_tube = gtk.VBox()
-
         self.toolbar = Toolbar()
-
         self.toolbar_busqueda = Toolbar_Busqueda()
         self.toolbar_descarga = Toolbar_Descarga()
         self.toolbar_salir = ToolbarSalir()

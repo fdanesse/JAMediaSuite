@@ -25,6 +25,8 @@ import gtk
 from gtk import gdk
 import gobject
 
+from Globales import get_colors
+
 BASE_PATH = os.path.dirname(__file__)
 
 
@@ -40,7 +42,7 @@ class TubeListDialog(gtk.Dialog):
             title="",
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
-        #self.modify_bg(0, gdk.color_parse("#696969"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("widgetvideoitem"))
         self.set_decorated(False)
         self.set_border_width(15)
         rect = parent.get_allocation()
@@ -49,6 +51,8 @@ class TubeListDialog(gtk.Dialog):
         self.actualizando = False
 
         self.panel = gtk.HPaned()
+        self.panel.modify_bg(gtk.STATE_NORMAL,
+            get_colors("widgetvideoitem"))
 
         self.listas = Lista()
         self.videos = gtk.VBox()
@@ -58,10 +62,14 @@ class TubeListDialog(gtk.Dialog):
             gtk.POLICY_NEVER,
             gtk.POLICY_AUTOMATIC)
         scroll.add_with_viewport(self.listas)
+        scroll.get_child().modify_bg(gtk.STATE_NORMAL,
+            get_colors("window"))
         self.panel.pack1(scroll, resize=False, shrink=True)
 
         scroll = self.__get_scroll()
         scroll.add_with_viewport(self.videos)
+        scroll.get_child().modify_bg(gtk.STATE_NORMAL,
+            get_colors("window"))
         self.panel.pack2(scroll, resize=True, shrink=False)
 
         self.label = gtk.Label("")

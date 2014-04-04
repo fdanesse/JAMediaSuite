@@ -52,6 +52,7 @@ def get_colors(key):
     _dict = {
         "window": "#ffffff",
         "barradeprogreso": "#778899",
+        "widgetvideoitem": "#f0e6aa",
         "drawingplayer": "#000000",
         }
 

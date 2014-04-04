@@ -28,6 +28,7 @@ import gobject
 '''
 from JAMedia.JAMedia import JAMediaPlayer
 '''
+from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 
@@ -78,7 +79,7 @@ class Toolbar(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        self.modify_bg(0, get_colors("drawingplayer"))
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
@@ -86,7 +87,7 @@ class Toolbar(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "JAMediaTube.svg")
         boton = get_boton(archivo, flip=False,
-            pixels=24)
+            pixels=35)
         boton.set_tooltip_text("Autor")
         boton.connect("clicked", self.__show_credits)
         self.insert(boton, -1)
@@ -94,7 +95,7 @@ class Toolbar(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg")
         self.jamedia = get_boton(archivo, flip=False,
-            pixels=24)
+            pixels=35)
         self.jamedia.set_tooltip_text("Cambiar a JAMedia")
         self.jamedia.connect("clicked", self.__emit_switch)
         self.insert(self.jamedia, -1)
@@ -163,6 +164,8 @@ class Toolbar_Busqueda(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
+        self.modify_bg(0, get_colors("window"))
+
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
@@ -228,7 +231,7 @@ class Alerta_Busqueda(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.modify_bg(0, get_colors("window"))
 
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
@@ -271,7 +274,7 @@ class WidgetVideoItem(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#fffafa"))
+        self.modify_bg(0, get_colors("widgetvideoitem"))
         self.set_border_width(2)
 
         self.videodict = videodict
@@ -380,7 +383,7 @@ class Toolbar_Descarga(gtk.VBox):
         gtk.VBox.__init__(self)
 
         self.toolbar = gtk.Toolbar()
-        self.toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.toolbar.modify_bg(0, get_colors("widgetvideoitem"))
 
         self.label_titulo = None
         self.label_progreso = None
@@ -582,6 +585,8 @@ class Progreso_Descarga(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
+        self.modify_bg(0, get_colors("widgetvideoitem"))
+
         self.escala = ProgressBar(
             gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
 
@@ -614,11 +619,11 @@ class ProgressBar(gtk.HScale):
 
         gtk.HScale.__init__(self, ajuste)
 
+        self.modify_bg(0, get_colors("widgetvideoitem"))
+
         self.ajuste = ajuste
         self.set_digits(0)
-
         self.set_draw_value(False)
-
         self.borde, self.ancho = (15, 10)
 
         self.connect("expose_event", self.expose)
@@ -660,7 +665,7 @@ class Credits(gtk.Dialog):
             buttons=("Cerrar", gtk.RESPONSE_OK))
 
         self.set_decorated(False)
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("widgetvideoitem"))
         self.set_border_width(15)
 
         imagen = gtk.Image()
@@ -685,7 +690,7 @@ class Help(gtk.Dialog):
             buttons=("Cerrar", gtk.RESPONSE_OK))
 
         self.set_decorated(False)
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("widgetvideoitem"))
         self.set_border_width(15)
 
         tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)
@@ -792,7 +797,7 @@ class ToolbarSalir(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)

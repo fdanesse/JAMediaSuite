@@ -25,6 +25,7 @@ import gtk
 from gtk import gdk
 import gobject
 
+from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 
@@ -48,7 +49,7 @@ class Mini_Toolbar(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
 
         self.label = None
         self.texto = text
@@ -56,7 +57,7 @@ class Mini_Toolbar(gtk.Toolbar):
 
         item = gtk.ToolItem()
         self.label = gtk.Label("%s: %s" % (text, self.numero))
-        self.label.modify_fg(0, gdk.color_parse("#ffffff"))
+        self.label.modify_fg(gtk.STATE_NORMAL, get_colors("window"))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -176,7 +177,7 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
 
         self.objetos = None
 
@@ -196,7 +197,7 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
 
         item = gtk.ToolItem()
         self.label = gtk.Label("")
-        self.label.modify_fg(0, gdk.color_parse("#ffffff"))
+        self.label.modify_fg(gtk.STATE_NORMAL, get_colors("window"))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -265,7 +266,7 @@ class Toolbar_Videos_Izquierda(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
@@ -321,7 +322,7 @@ class Toolbar_Videos_Derecha(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
@@ -390,11 +391,11 @@ class Toolbar_Guardar(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#000000"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
 
         item = gtk.ToolItem()
         label = gtk.Label("Nombre: ")
-        label.modify_fg(0, gdk.color_parse("#ffffff"))
+        label.modify_fg(gtk.STATE_NORMAL, get_colors("window"))
         label.show()
         item.add(label)
         self.insert(item, -1)

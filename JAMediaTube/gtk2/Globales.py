@@ -20,6 +20,19 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
+def get_colors(key):
+
+    from gtk import gdk
+
+    _dict = {
+        "window": "#ffffff",
+        "widgetvideoitem": "#f0e6aa",
+        "drawingplayer": "#000000",
+        }
+
+    return gdk.color_parse(_dict.get(key, "#ffffff"))
+
+
 def make_base_directory():
     """
     Crea toda la estructura de Directorios de JAMedia.

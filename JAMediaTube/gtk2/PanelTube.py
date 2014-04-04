@@ -25,6 +25,8 @@ import gtk
 from gtk import gdk
 import gobject
 
+from Globales import get_colors
+
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
 
@@ -47,7 +49,7 @@ class PanelTube(gtk.HPaned):
 
         gtk.HPaned.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
         self.toolbar_encontrados = None
         self.encontrados = None
@@ -91,12 +93,12 @@ class PanelTube(gtk.HPaned):
         # Izquierda
         scroll = self.__get_scroll()
         event = gtk.EventBox()
-        event.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        event.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         event.add(self.encontrados)
         scroll.add_with_viewport(event)
-        scroll.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        scroll.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         scroll.get_child().modify_bg(
-            gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+            gtk.STATE_NORMAL, get_colors("window"))
         #scroll.add_with_viewport(self.encontrados)
         box = gtk.VBox()
         box.pack_start(self.toolbar_encontrados, False, False, 0)
@@ -109,12 +111,12 @@ class PanelTube(gtk.HPaned):
         # Derecha
         scroll = self.__get_scroll()
         event = gtk.EventBox()
-        event.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        event.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         event.add(self.descargar)
         scroll.add_with_viewport(event)
-        scroll.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+        scroll.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         scroll.get_child().modify_bg(
-            gtk.STATE_NORMAL, gdk.color_parse("#ffffff"))
+            gtk.STATE_NORMAL, get_colors("window"))
         #scroll.add_with_viewport(self.descargar)
         box = gtk.VBox()
         box.pack_start(self.toolbar_descargar, False, False, 0)
