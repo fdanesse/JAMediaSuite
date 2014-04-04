@@ -101,11 +101,33 @@ class PanelTube(gtk.HPaned):
             gtk.STATE_NORMAL, get_colors("window"))
         #scroll.add_with_viewport(self.encontrados)
         box = gtk.VBox()
-        box.pack_start(self.toolbar_encontrados, False, False, 0)
-        box.pack_start(self.toolbar_guardar_encontrados, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("drawingplayer"))
+        event.add(self.toolbar_encontrados)
+        box.pack_start(
+            event, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("drawingplayer"))
+        event.add(self.toolbar_guardar_encontrados)
+        box.pack_start(
+            event, False, False, 0)
+
         box.pack_start(scroll, True, True, 0)
-        box.pack_start(self.toolbar_accion_izquierda, False, False, 0)
-        box.pack_end(self.toolbar_videos_izquierda, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("drawingplayer"))
+        event.add(self.toolbar_accion_izquierda)
+        box.pack_start(
+            event, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("drawingplayer"))
+        event.add(self.toolbar_videos_izquierda)
+        box.pack_start(
+            event, False, False, 0)
+
         self.pack1(box, resize=False, shrink=False)
 
         # Derecha
@@ -119,11 +141,33 @@ class PanelTube(gtk.HPaned):
             gtk.STATE_NORMAL, get_colors("window"))
         #scroll.add_with_viewport(self.descargar)
         box = gtk.VBox()
-        box.pack_start(self.toolbar_descargar, False, False, 0)
-        box.pack_start(self.toolbar_guardar_descargar, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("drawingplayer"))
+        event.add(self.toolbar_descargar)
+        box.pack_start(
+            event, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("drawingplayer"))
+        event.add(self.toolbar_guardar_descargar)
+        box.pack_start(
+            event, False, False, 0)
+
         box.pack_start(scroll, True, True, 0)
-        box.pack_start(self.toolbar_accion_derecha, False, False, 0)
-        box.pack_end(self.toolbar_videos_derecha, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("drawingplayer"))
+        event.add(self.toolbar_accion_derecha)
+        box.pack_start(
+            event, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("drawingplayer"))
+        event.add(self.toolbar_videos_derecha)
+        box.pack_start(
+            event, False, False, 0)
+
         self.pack2(box, resize=False, shrink=False)
 
         self.show_all()

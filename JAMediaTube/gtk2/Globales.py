@@ -25,9 +25,10 @@ def get_colors(key):
     from gtk import gdk
 
     _dict = {
-        "window": "#ffffff",
-        "widgetvideoitem": "#f0e6aa",
-        "drawingplayer": "#000000",
+        "window": "#f0e6aa",
+        "download": "#e9b96e",
+        "widgetvideoitem": "#ffffff",
+        "drawingplayer": "#778899",
         }
 
     return gdk.color_parse(_dict.get(key, "#ffffff"))

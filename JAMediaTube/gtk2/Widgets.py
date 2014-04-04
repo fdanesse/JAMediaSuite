@@ -25,16 +25,15 @@ import gtk
 from gtk import gdk
 import gobject
 
-'''
-from JAMedia.JAMedia import JAMediaPlayer
-'''
+from JAMedia.JAMediaPlayer import JAMediaPlayer
+
 from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
 
-'''
+
 class Tube_Player(JAMediaPlayer):
     """
     JAMedia con pequeñas adaptaciones.
@@ -61,7 +60,6 @@ class Tube_Player(JAMediaPlayer):
 
         if objeto.get_visible():
             objeto.hide()
-'''
 
 
 class Toolbar(gtk.Toolbar):
@@ -383,7 +381,7 @@ class Toolbar_Descarga(gtk.VBox):
         gtk.VBox.__init__(self)
 
         self.toolbar = gtk.Toolbar()
-        self.toolbar.modify_bg(0, get_colors("widgetvideoitem"))
+        self.toolbar.modify_bg(0, get_colors("download"))
 
         self.label_titulo = None
         self.label_progreso = None
@@ -585,7 +583,7 @@ class Progreso_Descarga(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, get_colors("widgetvideoitem"))
+        self.modify_bg(0, get_colors("download"))
 
         self.escala = ProgressBar(
             gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
@@ -619,7 +617,7 @@ class ProgressBar(gtk.HScale):
 
         gtk.HScale.__init__(self, ajuste)
 
-        self.modify_bg(0, get_colors("widgetvideoitem"))
+        self.modify_bg(0, get_colors("Toolbar_Descarga"))
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -635,9 +633,11 @@ class ProgressBar(gtk.HScale):
 
         gc = gtk.gdk.Drawable.new_gc(self.window)
 
-        gc.set_rgb_fg_color(gdk.Color(65535, 65535, 65535))
+        # todo el widget
+        gc.set_rgb_fg_color(get_colors("window"))
         self.window.draw_rectangle(gc, True, x, y, w, h)
 
+        # vacio
         gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
         ww = w - borde * 2
         xx = x + w / 2 - ww / 2
@@ -645,9 +645,14 @@ class ProgressBar(gtk.HScale):
         yy = y + h / 2 - ancho / 2
         self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
 
+        # progreso
         ximage = int(self.ajuste.get_value() * ww / 100)
         gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
         self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
+
+        # borde de progreso
+        gc.set_rgb_fg_color(get_colors("drawingplayer"))
+        self.window.draw_rectangle(gc, False, xx, yy, ww, hh)
 
         return True
 
@@ -665,7 +670,7 @@ class Credits(gtk.Dialog):
             buttons=("Cerrar", gtk.RESPONSE_OK))
 
         self.set_decorated(False)
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("widgetvideoitem"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_border_width(15)
 
         imagen = gtk.Image()
@@ -690,7 +695,7 @@ class Help(gtk.Dialog):
             buttons=("Cerrar", gtk.RESPONSE_OK))
 
         self.set_decorated(False)
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("widgetvideoitem"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_border_width(15)
 
         tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)
@@ -797,7 +802,7 @@ class ToolbarSalir(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("download"))
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)

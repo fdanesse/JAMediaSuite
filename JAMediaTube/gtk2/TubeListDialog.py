@@ -42,7 +42,7 @@ class TubeListDialog(gtk.Dialog):
             title="",
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("widgetvideoitem"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_decorated(False)
         self.set_border_width(15)
         rect = parent.get_allocation()
@@ -63,13 +63,13 @@ class TubeListDialog(gtk.Dialog):
             gtk.POLICY_AUTOMATIC)
         scroll.add_with_viewport(self.listas)
         scroll.get_child().modify_bg(gtk.STATE_NORMAL,
-            get_colors("window"))
+            get_colors("download"))
         self.panel.pack1(scroll, resize=False, shrink=True)
 
         scroll = self.__get_scroll()
         scroll.add_with_viewport(self.videos)
         scroll.get_child().modify_bg(gtk.STATE_NORMAL,
-            get_colors("window"))
+            get_colors("download"))
         self.panel.pack2(scroll, resize=True, shrink=False)
 
         self.label = gtk.Label("")

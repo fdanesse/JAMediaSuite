@@ -65,8 +65,7 @@ class JAMediaTube(gtk.Window):
         self.alerta_busqueda = None
         self.paneltube = None
 
-        #self.socketjamedia = gtk.Socket()
-        #self.jamedia = None
+        self.jamedia = None
 
         self.pistas = []
 
@@ -96,29 +95,38 @@ class JAMediaTube(gtk.Window):
         self.alerta_busqueda = Alerta_Busqueda()
         self.paneltube = PanelTube()
 
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("drawingplayer"))
+        event.add(self.toolbar)
         self.box_tube.pack_start(
-            self.toolbar, False, False, 0)
+            event, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("download"))
+        event.add(self.toolbar_salir)
         self.box_tube.pack_start(
-            self.toolbar_salir, False, False, 0)
+            event, False, False, 0)
+
         self.box_tube.pack_start(
             self.toolbar_busqueda, False, False, 0)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("download"))
+        event.add(self.toolbar_descarga)
         self.box_tube.pack_start(
-            self.toolbar_descarga, False, False, 0)
+            event, False, False, 0)
+
         self.box_tube.pack_start(
             self.alerta_busqueda, False, False, 0)
         self.box_tube.pack_start(
             self.paneltube, True, True, 0)
 
+        from Widgets import Tube_Player
+        self.jamedia = Tube_Player()
+
         boxbase.pack_start(self.box_tube, True, True, 0)
-
-        #boxbase.pack_start(self.socketjamedia, True, True, 0)
-
+        boxbase.pack_start(self.jamedia, True, True, 0)
         self.add(boxbase)
-
-        #from JAMediaTube.Widgets import Tube_Player
-
-        #self.jamedia = Tube_Player()
-        #self.socketjamedia.add_id(self.jamedia.get_id())
 
         self.show_all()
         self.realize()
@@ -132,11 +140,11 @@ class JAMediaTube(gtk.Window):
         Inicializa la aplicación a su estado fundamental.
         """
 
-        #self.jamedia.setup_init()
-        #self.jamedia.pack_standar()
-        #self.jamedia.pack_efectos()
-        #self.jamedia.switch_reproductor(
-        #    None, "JAMediaReproductor")
+        self.jamedia.setup_init()
+        self.jamedia.pack_standar()
+        self.jamedia.pack_efectos()
+        self.jamedia.switch_reproductor(
+            None, "JAMediaReproductor")
 
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
@@ -145,12 +153,12 @@ class JAMediaTube(gtk.Window):
             self.toolbar_descarga,
             self.alerta_busqueda])
 
-        #if self.pistas:
-        #    self.jamedia.set_nueva_lista(self.pistas)
-        #    self.__switch(None, 'jamedia')
+        if self.pistas:
+            self.jamedia.set_nueva_lista(self.pistas)
+            self.__switch(None, 'jamedia')
 
-        #else:
-        #    self.__switch(None, 'jamediatube')
+        else:
+            self.__switch(None, 'jamediatube')
 
         self.paneltube.encontrados.drag_dest_set(
             gtk.DEST_DEFAULT_ALL,
@@ -176,10 +184,10 @@ class JAMediaTube(gtk.Window):
             self.__confirmar_salir)
         self.toolbar_salir.connect(
             'salir', self.__salir)
-        #self.toolbar.connect(
-        #    'switch', self.__switch, 'jamedia')
-        #self.jamedia.connect(
-        #    'salir', self.__switch, 'jamediatube')
+        self.toolbar.connect(
+            'switch', self.__switch, 'jamedia')
+        self.jamedia.connect(
+            'salir', self.__switch, 'jamediatube')
         self.toolbar_busqueda.connect(
             "comenzar_busqueda", self.__comenzar_busqueda)
         self.paneltube.connect('download',
@@ -363,12 +371,12 @@ class JAMediaTube(gtk.Window):
         """
 
         if valor == 'jamediatube':
-            map(self.__ocultar, [self.socketjamedia])
+            map(self.__ocultar, [self.jamedia])
             map(self.__mostrar, [self.box_tube])
 
         elif valor == 'jamedia':
             map(self.__ocultar, [self.box_tube])
-            map(self.__mostrar, [self.socketjamedia])
+            map(self.__mostrar, [self.jamedia])
 
     def __ocultar(self, objeto):
 

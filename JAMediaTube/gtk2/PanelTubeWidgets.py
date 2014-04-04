@@ -57,7 +57,7 @@ class Mini_Toolbar(gtk.Toolbar):
 
         item = gtk.ToolItem()
         self.label = gtk.Label("%s: %s" % (text, self.numero))
-        self.label.modify_fg(gtk.STATE_NORMAL, get_colors("window"))
+        #self.label.modify_fg(gtk.STATE_NORMAL, get_colors("window"))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -197,7 +197,7 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
 
         item = gtk.ToolItem()
         self.label = gtk.Label("")
-        self.label.modify_fg(gtk.STATE_NORMAL, get_colors("window"))
+        #self.label.modify_fg(gtk.STATE_NORMAL, get_colors("window"))
         self.label.show()
         item.add(self.label)
         self.insert(item, -1)
@@ -395,7 +395,7 @@ class Toolbar_Guardar(gtk.Toolbar):
 
         item = gtk.ToolItem()
         label = gtk.Label("Nombre: ")
-        label.modify_fg(gtk.STATE_NORMAL, get_colors("window"))
+        #label.modify_fg(gtk.STATE_NORMAL, get_colors("window"))
         label.show()
         item.add(label)
         self.insert(item, -1)
