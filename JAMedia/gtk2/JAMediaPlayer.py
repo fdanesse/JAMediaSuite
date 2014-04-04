@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import time
+
 import gtk
 from gtk import gdk
 import gobject
@@ -70,7 +70,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.modify_bg(0, get_colors("window"))
 
-        self.timer_next_play = float("{:.1f}".format(time.time()))
+        #self.timer_next_play = float("{:.1f}".format(time.time()))
         self.pantalla = None
         self.barradeprogreso = None
         self.volumen = None
@@ -953,13 +953,7 @@ class JAMediaPlayer(gtk.EventBox):
         Recibe la señal de fin de archivo desde el reproductor
         y llama a seleccionar_siguiente en la lista de reproduccion.
         """
-        '''
-        t = float("{:.1f}".format(time.time()))
-        dif = t - self.timer_next_play
 
-        if dif > 0.9:
-            self.timer_next_play = t
-        '''
         self.controlesrepro.set_paused()
         gobject.idle_add(self.lista_de_reproduccion.seleccionar_siguiente)
 

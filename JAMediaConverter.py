@@ -86,7 +86,7 @@ class Ventana(Gtk.Window):
         self.set_position(Gtk.WindowPosition.CENTER)
 
         from JAMediaConverter.Widgets import Toolbar
-        from JAMediaObjects.JAMediaWidgets import Lista
+        from JAMediaConverter.Widgets import Lista
         from JAMediaConverter.WidgetTareas import WidgetTareas
 
         vbox = Gtk.VBox()

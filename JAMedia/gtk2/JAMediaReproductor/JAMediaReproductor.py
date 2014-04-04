@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+
 import gobject
 import gst
 
@@ -97,6 +98,13 @@ class JAMediaReproductor(gobject.GObject):
 
     def __reset(self):
 
+        self.posicion = 0
+        self.duracion = 0
+        self.__new_handle(False, [self.__reset])
+
+        if self.player:
+            del(self.player)
+
         # Reproductor.
         self.player = gst.element_factory_make(
             "playbin2", "player")
@@ -148,22 +156,21 @@ class JAMediaReproductor(gobject.GObject):
 
         self.player.set_state(gst.STATE_PAUSED)
 
-    def __new_handle(self, reset, data):
+    def __new_handle(self, reset, func):
         """
         Elimina o reinicia la funcion que
         envia los datos de actualizacion para
         la barra de progreso del reproductor.
         """
 
-        import time
-        print time.time(), reset, data
+        #print time.time(), reset, func
 
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = gobject.timeout_add(500, self.__handle)
+            self.actualizador = gobject.timeout_add(150, self.__handle)
 
     def __handle(self):
         """
@@ -171,29 +178,44 @@ class JAMediaReproductor(gobject.GObject):
         la barra de progreso del reproductor.
         """
 
+        valor1 = None
+        valor2 = None
+        pos = None
+        duracion = None
+
+        #import time
+        #print time.time()
+
         try:
             valor1, bool1 = self.player.query_duration(gst.FORMAT_TIME)
             valor2, bool2 = self.player.query_position(gst.FORMAT_TIME)
 
-            duracion = float(valor1)
-            posicion = float(valor2)
-
-            pos = int(posicion * 100 / duracion)
-
-            if pos < 0 or pos > self.duracion:
-                return True
-
-            if self.duracion != duracion:
-                self.duracion = duracion
-
-            if pos != self.posicion:
-                self.posicion = pos
-                self.emit("newposicion", self.posicion)
-                # print "***", gst.video_convert_frame(
-                #   self.player.get_property("frame"))
-
         except:
             print "ERROR en HANDLER"
+            return True
+
+        if valor1 != None:
+            duracion = valor1 / 1000000000
+
+        if valor2 != None:
+            posicion = valor2 / 1000000000
+
+        if duracion == 0 or duracion == None:
+            return True
+
+        pos = int(posicion * 100 / duracion)
+
+        if pos < 0 or pos > self.duracion:
+            return True
+
+        if self.duracion != duracion:
+            self.duracion = duracion
+
+        if pos != self.posicion:
+            self.posicion = pos
+            self.emit("newposicion", self.posicion)
+            # print "***", gst.video_convert_frame(
+            #   self.player.get_property("frame"))
 
         return True
 
@@ -228,9 +250,10 @@ class JAMediaReproductor(gobject.GObject):
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "paused")
-                    self.__new_handle(False, [new])
+                    self.__new_handle(False, [old, new])
 
             elif old == gst.STATE_READY and new == gst.STATE_NULL:
+                # Cuando se hace stop
                 if self.estado != new:
                     self.estado = new
                     self.emit("estado", "None")
@@ -339,11 +362,8 @@ class JAMediaReproductor(gobject.GObject):
         #    #print mensaje.parse_clock_lost()
         #    pass
 
-        #elif mensaje.type == gst.MESSAGE_QOS:
-        #    print "\n gst.MESSAGE_QOS:"
-        #    #print mensaje.parse_qos()
-        #    #print mensaje.parse_qos_stats()
-        #    #print mensaje.parse_qos_values()
+            #print mensaje.parse_qos_stats()
+            #print mensaje.parse_qos_values()
 
         #elif mensaje.type == gst.MESSAGE_BUFFERING:
         #    print "\n gst.MESSAGE_BUFFERING:"
@@ -408,16 +428,19 @@ class JAMediaReproductor(gobject.GObject):
         #    pass
 
         elif mensaje.type == gst.MESSAGE_EOS:
-            #self.video_pipeline.seek_simple(gst.FORMAT_TIME,
-            #gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
-            #print "\n gst.MESSAGE_EOS:"
+            #self.video_pipeline.seek_simple(
+            #    gst.FORMAT_TIME,
+            #    gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
+            # print "\n gst.MESSAGE_EOS:"
             self.__new_handle(False, [gst.MESSAGE_EOS])
             self.emit("endfile")
+            return False
 
         elif mensaje.type == gst.MESSAGE_ERROR:
             print "\n gst.MESSAGE_ERROR:"
             print mensaje.parse_error()
             self.__new_handle(False, [gst.MESSAGE_ERROR])
+            return False
 
         #else:
         #    print mensaje.type
@@ -516,6 +539,8 @@ class JAMediaReproductor(gobject.GObject):
                 self.player.set_property("uri", uri)
                 self.__play()
 
+        return False
+
     def set_position(self, posicion):
         """
         Permite desplazarse por
@@ -523,16 +548,36 @@ class JAMediaReproductor(gobject.GObject):
         """
 
         if self.duracion < posicion:
-            self.emit("newposicion", self.posicion)
+            #self.emit("newposicion", self.posicion)
+            print "Duracion menor que posicion", self.duracion, posicion
+            return
+
+        if self.duracion == 0 or posicion == 0:
             return
 
         posicion = self.duracion * posicion / 100
 
-        self.player.seek_simple(
-            gst.FORMAT_TIME,
-            gst.SEEK_FLAG_FLUSH |
-            gst.SEEK_FLAG_KEY_UNIT,
-            posicion)
+        # http://pygstdocs.berlios.de/pygst-reference/gst-constants.html
+        self.player.set_state(gst.STATE_PAUSED)
+        # http://nullege.com/codes/show/src@d@b@dbr-HEAD@trunk@src@reproductor.py/72/gst.SEEK_TYPE_SET
+        #self.player.seek(
+        #    1.0,
+        #    gst.FORMAT_TIME,
+        #    gst.SEEK_FLAG_FLUSH,
+        #    gst.SEEK_TYPE_SET,
+        #    posicion,
+        #    gst.SEEK_TYPE_SET,
+        #    self.duracion)
+
+        # http://nullege.com/codes/show/src@c@o@congabonga-HEAD@congaplayer@congalib@engines@gstplay.py/104/gst.SEEK_FLAG_ACCURATE
+        event = gst.event_new_seek(
+            1.0, gst.FORMAT_TIME,
+            gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_ACCURATE,
+            gst.SEEK_TYPE_SET, posicion * 1000000000,
+            gst.SEEK_TYPE_NONE, self.duracion * 1000000000)
+
+        self.player.send_event(event)
+        self.player.set_state(gst.STATE_PLAYING)
 
     def set_volumen(self, valor):
         """
@@ -544,7 +589,7 @@ class JAMediaReproductor(gobject.GObject):
 
     def agregar_efecto(self, nombre_efecto):
 
-        self.__new_handle(False)
+        self.__new_handle(False, [])
         self.stop()
 
         self.efectos.append(nombre_efecto)
@@ -554,7 +599,7 @@ class JAMediaReproductor(gobject.GObject):
         self.__play()
         # FIXME: Verificar. self.__new_handle(True) solo debiera
         # estar en los mensajes del bus.
-        self.__new_handle(True)
+        self.__new_handle(True, [])
 
     def quitar_efecto(self, indice_efecto):
 
@@ -571,13 +616,13 @@ class JAMediaReproductor(gobject.GObject):
                     #    del (self.config_efectos[efecto])
                     #break
 
-        self.__new_handle(False)
+        self.__new_handle(False, [])
         self.stop()
 
         self.video_pipeline.quitar_efecto(indice_efecto)
 
         self.__play()
-        self.__new_handle(True)
+        self.__new_handle(True, [])
 
     def configurar_efecto(self, nombre_efecto, propiedad, valor):
         """
@@ -632,7 +677,7 @@ class JAMediaGrabador(gobject.GObject):
             self.uri = uri
             self.player.set_property("uri", self.uri)
             self.__play()
-            self.__new_handle(True)
+            self.__new_handle(True, [])
 
         else:
             self.emit("endfile")
@@ -740,9 +785,8 @@ class JAMediaGrabador(gobject.GObject):
         Detiene y limpia el pipe.
         """
 
-        #self.pipeline.set_state(gst.STATE_PAUSED)
         self.pipeline.set_state(gst.STATE_NULL)
-        self.__new_handle(False)
+        self.__new_handle(False, [])
 
         if os.path.exists(self.patharchivo):
             os.chmod(self.patharchivo, 0755)
@@ -756,7 +800,7 @@ class JAMediaGrabador(gobject.GObject):
             # self.video_pipeline.seek_simple(gst.FORMAT_TIME,
             # gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
             print "\n gst.MESSAGE_EOS:"
-            self.__new_handle(False)
+            self.__new_handle(False, [])
             self.stop()
             self.emit("endfile")
 
@@ -768,11 +812,11 @@ class JAMediaGrabador(gobject.GObject):
         elif mensaje.type == gst.MESSAGE_ERROR:
             print "\n gst.MESSAGE_ERROR:"
             print mensaje.parse_error()
-            self.__new_handle(False)
+            self.__new_handle(False, [])
             self.stop()
             self.emit("endfile")
 
-    def __new_handle(self, reset):
+    def __new_handle(self, reset, data):
         """
         Elimina o reinicia la funcion que
         envia los datos de actualizacion.
