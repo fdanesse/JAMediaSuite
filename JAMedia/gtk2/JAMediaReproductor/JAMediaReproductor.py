@@ -121,10 +121,86 @@ class JAMediaReproductor(gobject.GObject):
 
         self.bus = self.player.get_bus()
 
-        self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message', self.__sync_message)
+        #self.bus.add_signal_watch()
+        #self.bus.enable_sync_message_emission()
+        #self.bus.connect('sync-message', self.__sync_message)
+
+        self.bus.set_sync_handler(self.__bus_handler)
 
         #self.video_in_stream = False
+
+    def __bus_handler(self, bus, message):
+
+        if message.type == gst.MESSAGE_ELEMENT:
+            if message.structure.get_name() == 'prepare-xwindow-id':
+                message.src.set_xwindow_id(self.ventana_id)
+
+        elif message.type == gst.MESSAGE_STATE_CHANGED:
+            old, new, pending = message.parse_state_changed()
+
+            if self.estado != new:
+                self.estado = new
+
+                if new == gst.STATE_PLAYING:
+                    self.emit("estado", "playing")
+                    self.__new_handle(True, [old, new])
+
+                    # FIXME: Si se llama enseguida falla.
+                    gobject.idle_add(self.__re_config)
+
+                elif new == gst.STATE_PAUSED:
+                    self.emit("estado", "paused")
+                    self.__new_handle(False, [old, new])
+
+                elif new == gst.STATE_NULL:
+                    self.emit("estado", "None")
+                    self.__new_handle(False, [old, new])
+
+                else:
+                    self.emit("estado", "paused")
+                    self.__new_handle(False, [old, new])
+
+        elif message.type == gst.MESSAGE_EOS:
+            self.__new_handle(False, [gst.MESSAGE_EOS])
+            self.emit("endfile")
+
+        elif message.type == gst.MESSAGE_ERROR:
+            print "\n gst.MESSAGE_ERROR:"
+            print message.parse_error()
+            self.__new_handle(False, [gst.MESSAGE_ERROR])
+
+        elif message.type == gst.MESSAGE_LATENCY:
+        #    # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
+        #    print "\n gst.MESSAGE_LATENCY"
+            self.player.recalculate_latency()
+
+        elif message.type == gst.MESSAGE_TAG:
+            taglist = message.parse_tag()
+            datos = taglist.keys()
+
+            #for dato in datos:
+            #    print dato, taglist[dato]
+
+            if 'audio-codec' in datos and not 'video-codec' in datos:
+                if self.video_in_stream == True or \
+                    self.video_in_stream == None:
+
+                    self.video_in_stream = False
+                    self.emit("video", False)
+                    #self.audio_pipelin.agregar_visualizador('monoscope')
+
+            elif 'video-codec' in datos:
+                if self.video_in_stream == False or \
+                    self.video_in_stream == None:
+
+                    self.video_in_stream = True
+                    self.emit("video", True)
+                    #self.audio_pipelin.quitar_visualizador()
+
+        #else:
+        #    print message.type, message.src
+
+        return gst.BUS_PASS
 
     def __re_config(self):
         """
@@ -222,255 +298,6 @@ class JAMediaReproductor(gobject.GObject):
             self.emit("newposicion", self.posicion)
             # print "***", gst.video_convert_frame(
             #   self.player.get_property("frame"))
-
-        return True
-
-    def __sync_message(self, bus, mensaje):
-        """
-        Captura los mensajes en el bus del pipe gst.
-        """
-
-        """
-        # Esto no es necesario si:
-        # self.player.set_window_handle(self.ventana_id)
-        try:
-            if mensaje.get_structure().get_name() == 'prepare-window-handle':
-                mensaje.src.set_window_handle(self.ventana_id)
-                return
-
-        except:
-            pass"""
-
-        if mensaje.type == gst.MESSAGE_STATE_CHANGED:
-            old, new, pending = mensaje.parse_state_changed()
-
-            if old == gst.STATE_PAUSED and new == gst.STATE_PLAYING:
-                if self.estado != new:
-                    self.estado = new
-                    self.emit("estado", "playing")
-                    self.__new_handle(True, [new])
-                    # Si se llama enseguida falla.
-                    gobject.idle_add(self.__re_config)
-
-            elif old == gst.STATE_READY and new == gst.STATE_PAUSED:
-                if self.estado != new:
-                    self.estado = new
-                    self.emit("estado", "paused")
-                    self.__new_handle(False, [old, new])
-
-            elif old == gst.STATE_READY and new == gst.STATE_NULL:
-                # Cuando se hace stop
-                if self.estado != new:
-                    self.estado = new
-                    self.emit("estado", "None")
-                    self.__new_handle(False, [new])
-
-            elif old == gst.STATE_PLAYING and new == gst.STATE_PAUSED:
-                if self.estado != new:
-                    self.estado = new
-                    self.emit("estado", "paused")
-                    self.__new_handle(False, [new])
-
-            #elif old == gst.STATE_NULL and new == gst.STATE_READY:
-            #    pass
-
-            #elif old == gst.STATE_PAUSED and new == gst.STATE_READY:
-            #    pass
-
-            #else:
-            #    pass
-
-            return True
-
-        elif mensaje.type == gst.MESSAGE_TAG:
-            taglist = mensaje.parse_tag()
-            datos = taglist.keys()
-
-            if 'audio-codec' in datos and not 'video-codec' in datos:
-                if self.video_in_stream == True or \
-                    self.video_in_stream == None:
-
-                    self.video_in_stream = False
-                    self.emit("video", False)
-                    #self.audio_pipelin.agregar_visualizador('monoscope')
-
-            elif 'video-codec' in datos:
-                if self.video_in_stream == False or \
-                    self.video_in_stream == None:
-
-                    self.video_in_stream = True
-                    self.emit("video", True)
-                    #self.audio_pipelin.quitar_visualizador()
-
-            return True
-            #self.duracion = int(taglist.to_string().split(
-            #   "duration=(guint64)")[1].split(',')[0])
-
-            #Ejemplo:
-                # taglist,
-                # duration=(guint64)780633000000,
-                # video-codec=(string)H.264,
-                # audio-codec=(string)"MPEG-4\ AAC"
-
-        #elif mensaje.type == gst.MESSAGE_WARNING:
-        #    print "\n gst.MESSAGE_WARNING:"
-        #    print mensaje.parse_warning()
-
-        elif mensaje.type == gst.MESSAGE_LATENCY:
-        #    # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
-        #    print "\n gst.MESSAGE_LATENCY"
-            self.player.recalculate_latency()
-            return True
-
-        #elif mensaje.type == gst.MESSAGE_STREAM_START:
-        #    #print "\n gst.MESSAGE_STREAM_START:"
-        #    #print mensaje.parse_stream_status()
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_STREAM_STATUS:
-        #    #print "\n gst.MESSAGE_STREAM_STATUS:"
-        #    #print mensaje.parse_stream_status()
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_STRUCTURE_CHANGE:
-        #    #print "\n gst.MESSAGE_STRUCTURE_CHANGE:"
-        #    #print mensaje.parse_structure_change()
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_TOC:
-        #    #print "\n gst.MESSAGE_TOC:"
-        #    #print mensaje.parse_toc()
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_UNKNOWN:
-        #    #print "\n gst.MESSAGE_UNKNOWN:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_DURATION_CHANGED:
-        #    print "\n gst.MESSAGE_DURATION_CHANGED:"
-
-        #elif mensaje.type == gst.MESSAGE_ASYNC_DONE:
-        #    #print "\n gst.MESSAGE_ASYNC_DONE:"
-        #    #print mensaje.parse_async_done()
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_ASYNC_START:
-        #    #print "\n gst.MESSAGE_ASYNC_START:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_NEW_CLOCK:
-        #    #print "\n gst.MESSAGE_NEW_CLOCK:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_CLOCK_PROVIDE:
-        #    #print "\n gst.MESSAGE_CLOCK_PROVIDE:"
-        #    #print mensaje.parse_clock_provide()
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_CLOCK_LOST:
-        #    #print "\n gst.MESSAGE_CLOCK_LOST:"
-        #    #print mensaje.parse_clock_lost()
-        #    pass
-
-            #print mensaje.parse_qos_stats()
-            #print mensaje.parse_qos_values()
-
-        #elif mensaje.type == gst.MESSAGE_BUFFERING:
-        #    print "\n gst.MESSAGE_BUFFERING:"
-        #    print mensaje.parse_buffering()
-        #    print mensaje.parse_buffering_stats()
-
-        #elif mensaje.type == gst.MESSAGE_RESET_TIME:
-        #    #print "\n gst.MESSAGE_RESET_TIME:"
-        #    pass
-
-        elif mensaje.type == gst.MESSAGE_ELEMENT:
-            #print "\n gst.MESSAGE_ELEMENT:"
-            try:
-                mensaje.src.set_xwindow_id(self.ventana_id)
-                return True
-
-            except:
-                pass
-
-        #elif mensaje.type == gst.MESSAGE_INFO:
-        #    print "\n gst.MESSAGE_INFO:"
-
-        #elif mensaje.type == gst.MESSAGE_PROGRESS:
-        #    print "\n gst.MESSAGE_PROGRESS:"
-
-        #elif mensaje.type == gst.MESSAGE_REQUEST_STATE:
-        #    print "\n gst.MESSAGE_REQUEST_STATE:"
-
-        #elif mensaje.type == gst.MESSAGE_SEGMENT_DONE:
-        #    #print "\n gst.MESSAGE_SEGMENT_DONE:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_SEGMENT_START:
-        #    #print "\n gst.MESSAGE_SEGMENT_START:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_STATE_DIRTY:
-        #    #print "\n gst.MESSAGE_STATE_DIRTY:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_STEP_DONE:
-        #    #print "\n gst.MESSAGE_STEP_DONE:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_STEP_START:
-        #    #print "\n gst.MESSAGE_STEP_START:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_ANY:
-        #    #print "\n gst.MESSAGE_ANY:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_APPLICATION:
-        #    #print "\n gst.MESSAGE_APPLICATION:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_HAVE_CONTEXT:
-        #    #print "\n gst.MESSAGE_HAVE_CONTEXT:"
-        #    pass
-
-        #elif mensaje.type == gst.MESSAGE_NEED_CONTEXT:
-        #    #print "\n gst.MESSAGE_NEED_CONTEXT:"
-        #    pass
-
-        elif mensaje.type == gst.MESSAGE_EOS:
-            #self.video_pipeline.seek_simple(
-            #    gst.FORMAT_TIME,
-            #    gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
-            # print "\n gst.MESSAGE_EOS:"
-            self.bus.disable_sync_message_emission()
-            self.posicion = 0
-            self.__new_handle(False, [gst.MESSAGE_EOS])
-            self.emit("endfile")
-            return False
-
-        #elif mensaje.type == gst.MESSAGE_QOS:
-        #    # FIXME: HACK: A veces no se llega al final del archivo y no
-        #    # se produce EOS.
-        #    self.bus.disable_sync_message_emission()
-        #    self.posicion = 0
-        #    #print mensaje.parse_qos()
-        #    #print mensaje.parse_qos_stats()
-        #    #print mensaje.parse_qos_values()
-        #    #(False, 125000000L, 125000000L, 125000000L, 18446744073709551615L)
-        #    #(<enum GST_FORMAT_BUFFERS of type GstFormat>, 3L, 1L)
-        #    self.__new_handle(False, [gst.MESSAGE_QOS])
-        #    self.emit("endfile")
-        #    return False
-
-        elif mensaje.type == gst.MESSAGE_ERROR:
-            print "\n gst.MESSAGE_ERROR:"
-            print mensaje.parse_error()
-            self.__new_handle(False, [gst.MESSAGE_ERROR])
-            return False
-
-        #else:
-        #    print mensaje.type
 
         return True
 
@@ -587,7 +414,7 @@ class JAMediaReproductor(gobject.GObject):
         posicion = self.duracion * posicion / 100
 
         # http://pygstdocs.berlios.de/pygst-reference/gst-constants.html
-        self.player.set_state(gst.STATE_PAUSED)
+        #self.player.set_state(gst.STATE_PAUSED)
         # http://nullege.com/codes/show/src@d@b@dbr-HEAD@trunk@src@reproductor.py/72/gst.SEEK_TYPE_SET
         #self.player.seek(
         #    1.0,
@@ -606,7 +433,7 @@ class JAMediaReproductor(gobject.GObject):
             gst.SEEK_TYPE_NONE, self.duracion * 1000000000)
 
         self.player.send_event(event)
-        self.player.set_state(gst.STATE_PLAYING)
+        #self.player.set_state(gst.STATE_PLAYING)
 
     def set_volumen(self, valor):
         """
@@ -627,7 +454,7 @@ class JAMediaReproductor(gobject.GObject):
 
         self.__play()
         # FIXME: Verificar. self.__new_handle(True) solo debiera
-        # estar en los mensajes del bus.
+        # estar en los messages del bus.
         self.__new_handle(True, [])
 
     def quitar_efecto(self, indice_efecto):
@@ -820,12 +647,12 @@ class JAMediaGrabador(gobject.GObject):
         if os.path.exists(self.patharchivo):
             os.chmod(self.patharchivo, 0755)
 
-    def __sync_message(self, bus, mensaje):
+    def __sync_message(self, bus, message):
         """
-        Captura los mensajes en el bus del pipe gst.
+        Captura los messages en el bus del pipe gst.
         """
 
-        if mensaje.type == gst.MESSAGE_EOS:
+        if message.type == gst.MESSAGE_EOS:
             # self.video_pipeline.seek_simple(gst.FORMAT_TIME,
             # gst.SeekFlags.FLUSH | gst.SeekFlags.KEY_UNIT, 0)
             print "\n gst.MESSAGE_EOS:"
@@ -833,14 +660,14 @@ class JAMediaGrabador(gobject.GObject):
             self.stop()
             self.emit("endfile")
 
-        #elif mensaje.type == gst.MESSAGE_LATENCY:
+        #elif message.type == gst.MESSAGE_LATENCY:
         #    # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
         #    print "\n gst.MESSAGE_LATENCY"
         #    self.player.recalculate_latency()
 
-        elif mensaje.type == gst.MESSAGE_ERROR:
+        elif message.type == gst.MESSAGE_ERROR:
             print "\n gst.MESSAGE_ERROR:"
-            print mensaje.parse_error()
+            print message.parse_error()
             self.__new_handle(False, [])
             self.stop()
             self.emit("endfile")
@@ -937,7 +764,7 @@ class JAMediaGrabador(gobject.GObject):
 
         self.bus = self.player.get_bus()
         self.bus.add_signal_watch()
-        self.bus.connect('message', self.__on_mensaje)
+        self.bus.connect('message', self.__on_message)
 
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message', self.__sync_message)

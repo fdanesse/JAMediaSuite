@@ -337,7 +337,12 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
 
         self.videorate = gst.element_factory_make(
             'videorate', 'videorate')
-        self.videorate.set_property('max-rate', 30)
+
+        try: # FIXME: xo no posee esta propiedad
+            self.videorate.set_property('max-rate', 30)
+
+        except:
+            pass
 
         #self.add(self.efectos_bin)
         self.add(self.videorate)
