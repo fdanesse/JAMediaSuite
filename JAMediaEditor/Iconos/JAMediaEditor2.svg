@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="46.681084"
-   height="26.799721"
+   width="44.166866"
+   height="24.658871"
    id="svg3471"
    version="1.1"
    inkscape:version="0.48.4 r9939"
@@ -25,10 +25,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="15.839192"
-     inkscape:cx="23.430612"
-     inkscape:cy="12.037219"
+     inkscape:cx="21.849103"
+     inkscape:cy="11.057555"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g5306"
      showgrid="false"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -55,14 +55,7 @@
      inkscape:label="Capa 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-1.5136781,-1012.6216)">
-    <path
-       style="fill:#ffffff;stroke:none"
-       d="m 2.3660714,27.616931 0.063134,-11.494878 2.9311097,0.04781 -1.163887,-2.34758 L 8.1696429,11.902645 7.1875,9.7151454 2.9955583,13.545457 0.48023926,6.1743548 13.169643,1.0544311 l 1.25,2.7678571 1.875,-2.9910714 5.491071,1.4732143 0.357143,1.5178571 2.723214,-2.7232143 4.151786,2.3660715 0,1.0714285 L 30,4.0901454 33.928571,4.2687168 33.771664,7.6877252 c 1.704013,-0.5440692 2.675695,0.8888872 1.76405,1.9381345 l 0.985316,0.4464283 -0.0032,6.919643 c 0.624729,0.645772 1.840636,1.338434 2.249321,2.124365 1.625096,-0.860541 2.153046,-0.689744 3.911393,-0.561865 1.494931,-0.373389 3.234338,-0.422364 4.482778,0.05679 l -0.01532,3.239123 c -1.50646,-0.340103 -2.106393,-0.563637 -3.195793,0.372462 l -0.08163,5.408131 z"
-       id="path3780"
-       inkscape:connector-curvature="0"
-       transform="translate(1.0334388,1011.7904)"
-       sodipodi:nodetypes="ccccccccccccccccccccccccccccc" />
+     transform="translate(-3.0951876,-1013.7828)">
     <g
        id="g5306"
        transform="matrix(0.66566328,0,0,0.66566328,-8.1553427,542.66645)">
@@ -205,9 +198,9 @@
          id="text3057-0-1-0"
          y="828.0108"
          x="15.466623"
-         style="font-size:20.00089073px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#00ff00;fill-opacity:1;stroke:#00ff00;stroke-width:0.3788985;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans"
+         style="font-size:20.00089072999999829px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:0.37889850000000003;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans"
          xml:space="preserve"><tspan
-           style="fill:#00ff00;fill-opacity:1;stroke:#00ff00;stroke-width:0.3788985"
+           style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:0.37889850000000003"
            y="828.0108"
            x="15.466623"
            id="tspan3059-7-0-2"
