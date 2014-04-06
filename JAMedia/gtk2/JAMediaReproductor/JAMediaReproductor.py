@@ -629,7 +629,7 @@ class JAMediaGrabador(gobject.GObject):
                 pad.link(self.audio_sink)
 
         elif string.startswith('video'):
-            if not self.audio_sink.is_linked():
+            if not self.video_sink.is_linked():
                 pad.link(self.video_sink)
 
     def __play(self, widget=None, event=None):

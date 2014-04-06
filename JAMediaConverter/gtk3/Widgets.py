@@ -3,7 +3,7 @@
 
 #   Widgets.py por:
 #       Flavio Danesse <fdanesse@gmail.com>
-#       CeibalJAM! - Uruguay
+#       Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,146 +26,15 @@ from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import GdkPixbuf
 
-#from JAMediaObjects.JAMediaGlobales import get_boton
-#from JAMediaObjects.JAMediaGlobales import get_separador
-#from JAMediaObjects.JAMediaGlobales import get_pixels
+from Globales import get_separador
+from Globales import get_pixels
+from Globales import describe_archivo
+from Globales import describe_uri
+from Globales import get_colors
 
+BASEPATH = os.path.dirname(__file__)
 
-def describe_archivo(archivo):
-    """
-    Devuelve el tipo de un archivo (imagen, video, texto).
-    -z, --uncompress para ver dentro de los zip.
-    """
-
-    import commands
-
-    datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
-    retorno = ""
-
-    for dat in datos.split(":")[1:]:
-        retorno += " %s" % (dat)
-
-    return retorno
-
-
-def describe_uri(uri):
-    """
-    Explica de que se trata el uri, si existe.
-    """
-
-    existe = False
-
-    try:
-        existe = os.path.exists(uri)
-
-    except:
-        return False
-
-    if existe:
-        unidad = os.path.ismount(uri)
-        directorio = os.path.isdir(uri)
-        archivo = os.path.isfile(uri)
-        enlace = os.path.islink(uri)
-        return [unidad, directorio, archivo, enlace]
-
-    else:
-        return False
-
-
-def get_pixels(centimetros):
-    """
-    Recibe un tamaño en centimetros y
-    devuelve el tamaño en pixels que le corresponde,
-    según tamaño del monitor que se está utilizando.
-
-    # 1 px = 0.026458333 cm #int(centimetros/0.026458333)
-    # 1 Pixel = 0.03 Centimetros = 0.01 Pulgadas.
-    """
-    """
-    from gi.repository import GdkX11
-
-    screen = GdkX11.X11Screen()
-
-    res_w = screen.width()
-    res_h = screen.height()
-
-    mm_w = screen.width_mm()
-    mm_h = screen.height_mm()
-
-    ancho = int (float(res_w) / float(mm_w) * 10.0 * centimetros)
-    alto = int (float(res_h) / float(mm_h) * 10.0 * centimetros)
-    if centimetros == 5.0: print ">>>>", centimetros, int(min([ancho, alto]))
-    return int(min([ancho, alto]))"""
-
-    res = {
-        1.0: 37,
-        1.2: 45,
-        0.5: 18,
-        0.2: 7,
-        0.5: 18,
-        0.6: 22,
-        0.8: 30,
-        5.0: 189,
-        }
-
-    return res[centimetros]
-
-
-def get_separador(draw=False, ancho=0, expand=False):
-    """
-    Devuelve un separador generico.
-    """
-
-    from gi.repository import Gtk
-
-    separador = Gtk.SeparatorToolItem()
-    separador.props.draw = draw
-    separador.set_size_request(ancho, -1)
-    separador.set_expand(expand)
-
-    return separador
-
-
-def get_boton(archivo, flip=False, rotacion=None, pixels=0, tooltip_text=None):
-    """
-    Devuelve un toolbutton generico.
-    """
-
-    from gi.repository import Gtk
-    from gi.repository import GdkPixbuf
-
-    if not pixels:
-        pixels = get_pixels(1)
-
-    boton = Gtk.ToolButton()
-
-    imagen = Gtk.Image()
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-        archivo, pixels, pixels)
-
-    if flip:
-        pixbuf = pixbuf.flip(True)
-
-    if rotacion:
-        pixbuf = pixbuf.rotate_simple(rotacion)
-
-    imagen.set_from_pixbuf(pixbuf)
-    boton.set_icon_widget(imagen)
-
-    imagen.show()
-    boton.show()
-
-    if tooltip_text:
-        boton.set_tooltip_text(tooltip_text)
-        boton.TOOLTIP = tooltip_text
-
-    return boton
-
-
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
-GObject.threads_init()
+#GObject.threads_init()
 
 
 class Toolbar(Gtk.Toolbar):
@@ -182,6 +51,8 @@ class Toolbar(Gtk.Toolbar):
 
         Gtk.Toolbar.__init__(self)
 
+        self.modify_bg(0, get_colors("window"))
+
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
@@ -191,15 +62,15 @@ class Toolbar(Gtk.Toolbar):
         self.menu.show()
         item.add(self.menu)
         self.insert(item, -1)
-
-        archivo = os.path.join(JAMediaObjectsPath,
+        '''
+        archivo = os.path.join(BASEPATH,
             "Iconos", "salir.svg")
         boton = get_boton(archivo, flip=False,
             pixels=get_pixels(1))
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
-
+        '''
         self.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
@@ -307,6 +178,7 @@ class FileChooser(Gtk.FileChooserDialog):
 
         self.action = action
         self.set_default_size(640, 480)
+        self.modify_bg(0, get_colors("window"))
 
         #if os.path.isfile(path):
         #    self.set_filename(path)
@@ -424,31 +296,6 @@ class Lista(Gtk.TreeView):
         self.set_model(self.modelo)
         self.show_all()
 
-    """
-    def keypress(self, widget, event):
-        # derecha 114 izquierda 113 suprimir 119
-        # backspace 22 (en xo no existe suprimir)
-        tecla = event.get_keycode()[1]
-        model, iter = self.treeselection.get_selected()
-        valor = self.modelo.get_value(iter, 2)
-        path = self.modelo.get_path(iter)
-        if tecla == 22:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-        elif tecla == 113:
-            if self.row_expanded(path):
-                self.collapse_row(path)
-        elif tecla == 114:
-            if not self.row_expanded(path):
-                self.expand_to_path(path)
-        elif tecla == 119:
-            # suprimir
-            print valor, path
-        else:
-            pass
-        return False
-        """
-
     def __selecciones(self, treeselection,
         model, path, is_selected, listore):
         """
@@ -538,29 +385,20 @@ class Lista(Gtk.TreeView):
 
                 if 'video' in tipo or 'application/ogg' in tipo or \
                     'application/octet-stream' in tipo:
-                    icono = os.path.join(JAMediaObjectsPath,
+                    icono = os.path.join(BASEPATH,
                         "Iconos", "video.svg")
-                    pass
 
                 elif 'audio' in tipo:
-                    #icono = os.path.join(JAMediaObjects,
-                    #    "Iconos", "sonido.svg")
-                    pass
-
-                elif 'image' in tipo and not 'iso' in tipo:
-                    #icono = os.path.join(path)  # exige rendimiento
-                    #icono = os.path.join(JAMediaObjects,
-                    #    "Iconos", "imagen.png")
-                    pass
+                    icono = os.path.join(BASEPATH,
+                        "Iconos", "sonido.svg")
 
                 else:
-                    #icono = os.path.join(JAMediaObjects,
-                    #    "Iconos", "edit-select-all.svg")
-                    pass
+                    icono = os.path.join(BASEPATH,
+                        "Iconos", "sonido.svg")
+
         else:
-            #icono = os.path.join(JAMediaObjects,
-            #    "Iconos", "edit-select-all.svg")
-            pass
+            icono = os.path.join(BASEPATH,
+                "Iconos", "sonido.svg")
 
         try:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,

@@ -3,7 +3,7 @@
 
 #   PipelineConverter.py por:
 #       Flavio Danesse <fdanesse@gmail.com>
-#       CeibalJAM! - Uruguay
+#       Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 from gi.repository import Gst
 from gi.repository import GObject
-from gi.repository import GLib
+#from gi.repository import GLib
 
 Gst.init([])
 GObject.threads_init()
@@ -288,12 +288,15 @@ class PipelineConverter(Gst.Pipeline):
         """
 
         if self.actualizador:
-            GLib.source_remove(self.actualizador)
+            GObject.source_remove(self.actualizador)
+            #GLib.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(
+            self.actualizador = GObject.timeout_add(
                 250, self.__handle)
+            #self.actualizador = GLib.timeout_add(
+            #    250, self.__handle)
 
     def __handle(self):
         """

@@ -323,11 +323,11 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
 
         self.set_name('jamedia_video_pipeline')
 
-        #self.efectos = []
-        #self.config_efectos = {}
+        self.efectos = []
+        self.config_efectos = {}
 
-        #self.efectos_bin = Efectos_Video_bin(
-        #    self.efectos, self.config_efectos)
+        self.efectos_bin = Efectos_Video_bin(
+            self.efectos, self.config_efectos)
         self.video_balance_bin = Video_Balance_Bin()
 
         self.pantalla_bin = gst.element_factory_make(
@@ -344,20 +344,20 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
         except:
             pass
 
-        #self.add(self.efectos_bin)
+        self.add(self.efectos_bin)
         self.add(self.videorate)
         self.add(self.video_balance_bin)
         self.add(self.pantalla_bin)
 
-        #self.efectos_bin.link(self.videorate)
+        self.efectos_bin.link(self.videorate)
         self.videorate.link(self.video_balance_bin)
         self.video_balance_bin.link(self.pantalla_bin)
 
         self.ghost_pad = gst.GhostPad(
-            "sink", self.videorate.get_static_pad("sink"))
+            "sink", self.efectos_bin.get_static_pad("sink"))
 
         self.ghost_pad.set_target(
-            self.videorate.get_static_pad("sink"))
+            self.efectos_bin.get_static_pad("sink"))
 
         self.add_pad(self.ghost_pad)
 

@@ -3,7 +3,7 @@
 
 #   WidgetConverter.py por:
 #       Flavio Danesse <fdanesse@gmail.com>
-#       CeibalJAM! - Uruguay
+#       Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,10 +26,21 @@ from gi.repository import Pango
 from gi.repository import GObject
 from gi.repository import GLib
 
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
+#GObject.threads_init()
 
-GObject.threads_init()
+
+def get_colors(key):
+
+    from gi.repository import Gdk
+
+    _dict = {
+        "window": "#ffffff",
+        "barradeprogreso": "#778899",
+        "widgetvideoitem": "#f0e6aa",
+        "drawingplayer": "#000000",
+        }
+
+    return Gdk.color_parse(_dict.get(key, "#ffffff"))
 
 
 def get_data(archivo):
@@ -70,6 +81,7 @@ class WidgetConverter(Gtk.Frame):
 
         self.set_border_width(5)
         self.set_label(os.path.basename(path))
+        self.modify_bg(0, get_colors("window"))
 
         self.path = path
         self.estado = False
@@ -91,27 +103,40 @@ class WidgetConverter(Gtk.Frame):
             "Ejecutar Esta Tarea")
         self.boton_ejecutar.connect(
             "clicked", self.__ejecutar_tarea)
-        vbox.pack_start(
-            self.boton_ejecutar, False, False, 5)
+        event = Gtk.EventBox()
+        event.set_border_width(4)
+        event.modify_bg(0, get_colors("window"))
+        event.add(self.boton_ejecutar)
+        vbox.pack_start(event, False, False, 5)
 
         boton = Gtk.Button("Copiar a Toda la Lista")
         boton.connect("clicked", self.__emit_copy)
-        vbox.pack_start(boton, False, False, 5)
+        event = Gtk.EventBox()
+        event.set_border_width(4)
+        event.modify_bg(0, get_colors("window"))
+        event.add(boton)
+        vbox.pack_start(event, False, False, 5)
 
         boton = Gtk.Button("Borrar Tarea")
         boton.connect("clicked", self.__detener_eliminar)
-        vbox.pack_start(boton, False, False, 5)
+        event = Gtk.EventBox()
+        event.set_border_width(4)
+        event.modify_bg(0, get_colors("window"))
+        event.add(boton)
+        vbox.pack_start(event, False, False, 5)
 
         frame = Gtk.Frame()
+        frame.modify_bg(0, get_colors("window"))
         frame.set_label(" Acciones: ")
         frame.set_border_width(5)
         frame.add(vbox)
         hbox.pack_start(frame, False, False, 5)
-
+        '''
         frame = Gtk.Frame()
+        frame.modify_bg(0, get_colors("window"))
         frame.set_label(" Estado: ")
         frame.set_border_width(5)
-        '''
+
         self.infowidget = Gtk.TextView()
         self.infowidget.set_editable(False)
         self.infowidget.set_border_width(10)
@@ -220,6 +245,10 @@ class Tareas(Gtk.Frame):
 
         Gtk.Frame.__init__(self)
 
+        self.set_border_width(5)
+        self.set_label(" Archivos de Salida: ")
+        self.modify_bg(0, get_colors("window"))
+
         self.path = path
         self.tarea = {
             'mp3': False,
@@ -233,9 +262,6 @@ class Tareas(Gtk.Frame):
 
         extension = os.path.splitext(
             os.path.split(self.path)[1])[1].replace('.', "")
-
-        self.set_border_width(5)
-        self.set_label(" Archivos de Salida: ")
 
         vbox = Gtk.VBox()
 
@@ -436,6 +462,7 @@ class BarraProgreso(Gtk.ProgressBar):
         Gtk.ProgressBar.__init__(self)
 
         self.set_size_request(200, 5)
+        self.modify_bg(0, get_colors("window"))
 
         self.valor = 0.0
 

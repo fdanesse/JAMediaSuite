@@ -3,7 +3,7 @@
 
 #   WidgetTareas.py por:
 #       Flavio Danesse <fdanesse@gmail.com>
-#       CeibalJAM! - Uruguay
+#       Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,10 +22,11 @@
 from gi.repository import Gtk
 from gi.repository import GObject
 
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
+from Converter.WidgetConverter import WidgetConverter
 
-GObject.threads_init()
+from Globales import get_colors
+
+#GObject.threads_init()
 
 
 class WidgetTareas(Gtk.Frame):
@@ -44,6 +45,7 @@ class WidgetTareas(Gtk.Frame):
 
         self.set_label("  Tareas:  ")
         self.set_border_width(5)
+        self.modify_bg(0, get_colors("window"))
 
         self.base_box = Gtk.VBox()
 
@@ -52,6 +54,7 @@ class WidgetTareas(Gtk.Frame):
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(self.base_box)
+        scroll.get_child().modify_bg(0, get_colors("window"))
 
         self.add(scroll)
         self.show_all()
@@ -82,8 +85,6 @@ class WidgetTareas(Gtk.Frame):
         """
 
         if not self.tareas.get(path, False):
-            from Converter.WidgetConverter import WidgetConverter
-
             self.tareas[path] = WidgetConverter(path)
             self.tareas[path].connect(
                 'copy_tarea', self.__emit_copy_tarea)

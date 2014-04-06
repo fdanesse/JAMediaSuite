@@ -3,7 +3,7 @@
 
 #   JAMedia.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM! - Uruguay
+#   Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,27 +25,17 @@ import gi
 gi.require_version('Gst', '1.0')
 
 from gi.repository import Gtk
-from gi.repository import Gdk
 from gi.repository import GObject
 
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
+from Widgets import Toolbar
+from Widgets import Lista
+from WidgetTareas import WidgetTareas
 
-PATH = os.path.dirname(__file__)
+from Globales import get_colors
 
-screen = Gdk.Screen.get_default()
-css_provider = Gtk.CssProvider()
-style_path = os.path.join(
-    PATH, "JAMediaConverter", "Estilo.css")
-css_provider.load_from_path(style_path)
-context = Gtk.StyleContext()
+BASEPATH = os.path.dirname(__file__)
 
-context.add_provider_for_screen(
-    screen,
-    css_provider,
-    Gtk.STYLE_PROVIDER_PRIORITY_USER)
-
-GObject.threads_init()
+#GObject.threads_init()
 
 
 def get_data(archivo):
@@ -77,21 +67,18 @@ class Ventana(Gtk.Window):
         self.set_title("JAMedia Converter")
 
         self.set_icon_from_file(
-            os.path.join(JAMediaObjectsPath,
+            os.path.join(BASEPATH,
             "Iconos", "JAMediaConvert.svg"))
 
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
-
-        from JAMediaConverter.Widgets import Toolbar
-        from JAMediaConverter.Widgets import Lista
-        from JAMediaConverter.WidgetTareas import WidgetTareas
+        self.modify_bg(0, get_colors("window"))
 
         vbox = Gtk.VBox()
         base_panel = Gtk.HPaned()
-        vbox2 = Gtk.VBox()
+        base_panel.modify_bg(0, get_colors("window"))
 
         self.toolbar = Toolbar()
         self.lista = Lista()
@@ -104,14 +91,12 @@ class Ventana(Gtk.Window):
         scroll.add(self.lista)
 
         base_panel.pack1(scroll, resize=False, shrink=False)
-        base_panel.pack2(vbox2, resize=False, shrink=False)
+        base_panel.pack2(self.widgettareas, resize=False, shrink=False)
 
         vbox.pack_start(
             self.toolbar, False, False, 0)
         vbox.pack_start(
             base_panel, True, True, 0)
-
-        vbox2.pack_start(self.widgettareas, True, True, 0)
 
         self.add(vbox)
 

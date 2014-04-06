@@ -85,7 +85,7 @@ class JAMedia(gtk.Window):
 
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
-        #self.jamediaplayer.pack_efectos()
+        self.jamediaplayer.pack_efectos()
 
         if self.pistas:
             gobject.idle_add(
