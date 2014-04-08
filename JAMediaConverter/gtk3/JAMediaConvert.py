@@ -35,7 +35,7 @@ from Globales import get_colors
 
 BASEPATH = os.path.dirname(__file__)
 
-#GObject.threads_init()
+GObject.threads_init()
 
 
 def get_data(archivo):

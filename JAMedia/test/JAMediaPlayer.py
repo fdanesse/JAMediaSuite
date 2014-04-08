@@ -30,7 +30,7 @@ from Globales import verificar_Gstreamer
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
-
+'''
 # HACK: La aplicación nunca debe explotar :P
 if get_programa("mplayer"):
     from JAMediaReproductor.MplayerReproductor import MplayerReproductor
@@ -48,6 +48,8 @@ if verificar_Gstreamer():
 else:
     from JAMediaReproductor.PlayerNull import JAMediaReproductor
     from JAMediaReproductor.PlayerNull import JAMediaGrabador
+'''
+from JAMediaReproductor.JAMediaReproductor2 import JAMediaReproductor
 
 
 class JAMediaPlayer(gtk.EventBox):
@@ -123,7 +125,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         from PlayerList import Lista
         from PlayerControls import PlayerControl
-        from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
+        #from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
 
         from Toolbars import ToolbarSalir
         from Toolbars import Toolbar
@@ -140,7 +142,7 @@ class JAMediaPlayer(gtk.EventBox):
         self.controlesrepro = PlayerControl()
         self.toolbar = Toolbar()
         self.toolbar_config = ToolbarConfig()
-        self.widget_efectos = WidgetsGstreamerEfectos()
+        #self.widget_efectos = WidgetsGstreamerEfectos()
         self.toolbar_accion = ToolbarAccion()
         self.toolbar_grabar = ToolbarGrabar()
         self.toolbar_info = ToolbarInfo()
@@ -260,6 +262,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.add(basebox)
 
+        '''
         xid = self.pantalla.get_property('window').xid
 
         # HACK: La aplicación nunca debe explotar :P
@@ -275,31 +278,31 @@ class JAMediaPlayer(gtk.EventBox):
 
         else:
             self.jamediareproductor = JAMediaReproductor(self.pantalla)
-
+        '''
         self.switch_reproductor(
             None, "JAMediaReproductor")  # default Gst.
 
-        self.mplayerreproductor.connect(
-            "endfile", self.__endfile)
-        self.mplayerreproductor.connect(
-            "estado", self.__cambioestadoreproductor)
-        self.mplayerreproductor.connect(
-            "newposicion", self.__update_progress)
-        self.mplayerreproductor.connect(
-            "volumen", self.__get_volumen)
-        self.mplayerreproductor.connect(
-            "video", self.__set_video)
+        #self.mplayerreproductor.connect(
+        #    "endfile", self.__endfile)
+        #self.mplayerreproductor.connect(
+        #    "estado", self.__cambioestadoreproductor)
+        #self.mplayerreproductor.connect(
+        #    "newposicion", self.__update_progress)
+        #self.mplayerreproductor.connect(
+        #    "volumen", self.__get_volumen)
+        #self.mplayerreproductor.connect(
+        #    "video", self.__set_video)
 
-        self.jamediareproductor.connect(
-            "endfile", self.__endfile)
-        self.jamediareproductor.connect(
-            "estado", self.__cambioestadoreproductor)
-        self.jamediareproductor.connect(
-            "newposicion", self.__update_progress)
-        self.jamediareproductor.connect(
-            "volumen", self.__get_volumen)
-        self.jamediareproductor.connect(
-            "video", self.__set_video)
+        #self.jamediareproductor.connect(
+        #    "endfile", self.__endfile)
+        #self.jamediareproductor.connect(
+        #    "estado", self.__cambioestadoreproductor)
+        #self.jamediareproductor.connect(
+        #    "newposicion", self.__update_progress)
+        #self.jamediareproductor.connect(
+        #    "volumen", self.__get_volumen)
+        #self.jamediareproductor.connect(
+        #    "video", self.__set_video)
 
         self.lista_de_reproduccion.connect(
             "nueva-seleccion",
@@ -343,10 +346,10 @@ class JAMediaPlayer(gtk.EventBox):
         self.toolbaraddstream.connect(
             "add-stream", self.__ejecutar_add_stream)
 
-        self.widget_efectos.connect(
-            "click_efecto", self.__click_efecto)
-        self.widget_efectos.connect(
-            'configurar_efecto', self.__configurar_efecto)
+        #self.widget_efectos.connect(
+        #    "click_efecto", self.__click_efecto)
+        #self.widget_efectos.connect(
+        #    'configurar_efecto', self.__configurar_efecto)
 
         # Controlador del mouse.
         # http://www.pygtk.org/pygtk2reference/class-gdkdisplay.html#function-gdk--display-get-default
@@ -419,6 +422,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.get_toplevel().set_sensitive(True)
 
+    '''
     def pack_efectos(self):
         """
         Empaqueta los widgets de efectos gstreamer.
@@ -431,7 +435,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         gobject.idle_add(self.__cargar_efectos,
             list(get_jamedia_video_efectos()))
-
+    '''
     def set_nueva_lista(self, lista):
         """
         Carga una lista de archivos directamente, sin
@@ -474,6 +478,9 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.get_toplevel().set_sensitive(False)
 
+        self.toolbar_info.set_reproductor("JAMediaReproductor")
+        self.toolbar_config.jamedia_boton.set_active(True)
+        '''
         reproductor = self.player
 
         # HACK: JAMediaReproductor no funciona con Tv.
@@ -520,7 +527,7 @@ class JAMediaPlayer(gtk.EventBox):
 
             except:
                 pass
-
+        '''
         self.get_toplevel().set_sensitive(True)
 
     def __hide_show_parent(self, widget):
@@ -981,7 +988,8 @@ class JAMediaPlayer(gtk.EventBox):
         else:
             print "Estado del Reproductor desconocido:", valor
 
-        gobject.idle_add(self.__update_balance_toolbars)
+        # FIXME: NULL
+        #gobject.idle_add(self.__update_balance_toolbars)
 
     def __update_balance_toolbars(self):
         """
@@ -1060,8 +1068,28 @@ class JAMediaPlayer(gtk.EventBox):
         if visible:
             self.scroll_config.hide()
 
+        volumen = 1
         if self.player:
-            self.player.load(path)
+            volumen = self.player.get_volumen()
+            self.player.stop()
+            del(self.player)
+
+        xid = self.pantalla.get_property('window').xid
+        self.player = JAMediaReproductor(xid)
+
+        self.player.connect(
+            "endfile", self.__endfile)
+        self.player.connect(
+            "estado", self.__cambioestadoreproductor)
+        self.player.connect(
+            "newposicion", self.__update_progress)
+        self.player.connect(
+            "volumen", self.__get_volumen)
+        self.player.connect(
+            "video", self.__set_video)
+
+        self.player.set_volumen(volumen)
+        self.player.load(path)
 
         if visible:
             self.scroll_config.show()
@@ -1409,7 +1437,6 @@ class JAMediaPlayer(gtk.EventBox):
         Cuando el usuario cambia el volumen.
         """
 
-        valor = valor * 100
         if self.player:
             self.player.set_volumen(valor)
 

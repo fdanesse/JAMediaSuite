@@ -789,10 +789,10 @@ class ControlVolumen(gtk.VolumeButton):
 
     def __value_changed(self, widget, valor):
         """
-        Cuando el usuario desplaza la escala
-        emite el valor en float de 0.0 a 1.0.
+        Cuando el usuario desplaza la escala.
         """
 
+        valor = int(valor * 10)
         self.emit('volumen', valor)
 
 

@@ -87,7 +87,7 @@ class JAMediaReproductor(gobject.GObject):
         self.video_pipeline = JAMedia_Video_Pipeline()
 
         # Gestor de salida de Audio del reproductor.
-        self.audio_pipelin = JAMedia_Audio_Pipeline()
+        self.audio_pipeline = JAMedia_Audio_Pipeline()
 
         # Debe iniciarse como None (ver señal video)
         self.video_in_stream = None
@@ -105,8 +105,8 @@ class JAMediaReproductor(gobject.GObject):
         self.__new_handle(False, [self.__reset])
         self.progressbar = True
 
-        if self.player:
-            del(self.player)
+        #if self.player:
+        #    del(self.player)
 
         # Reproductor.
         self.player = gst.element_factory_make(
@@ -117,13 +117,9 @@ class JAMediaReproductor(gobject.GObject):
         self.player.set_property('volume', self.volumen)
 
         self.player.set_property('video-sink', self.video_pipeline)
-        self.player.set_property('audio-sink', self.audio_pipelin)
+        self.player.set_property('audio-sink', self.audio_pipeline)
 
         self.bus = self.player.get_bus()
-
-        #self.bus.add_signal_watch()
-        #self.bus.enable_sync_message_emission()
-        #self.bus.connect('sync-message', self.__sync_message)
 
         self.bus.set_sync_handler(self.__bus_handler)
 
@@ -187,7 +183,7 @@ class JAMediaReproductor(gobject.GObject):
 
                     self.video_in_stream = False
                     self.emit("video", False)
-                    #self.audio_pipelin.agregar_visualizador('monoscope')
+                    #self.audio_pipeline.agregar_visualizador('monoscope')
 
             elif 'video-codec' in datos:
                 if self.video_in_stream == False or \
@@ -195,7 +191,7 @@ class JAMediaReproductor(gobject.GObject):
 
                     self.video_in_stream = True
                     self.emit("video", True)
-                    #self.audio_pipelin.quitar_visualizador()
+                    #self.audio_pipeline.quitar_visualizador()
 
         #else:
         #    print message.type, message.src
