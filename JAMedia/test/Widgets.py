@@ -55,12 +55,13 @@ class My_FileChooser(gtk.FileChooserDialog):
             )
 
         self.modify_bg(0, get_colors("window"))
+        self.set_resizable(True)
+        self.set_size_request(320, 240)
 
         if not path:
             path = "file:///media"
 
         self.set_current_folder_uri(path)
-
         self.set_select_multiple(True)
 
         hbox = gtk.HBox()
@@ -102,9 +103,6 @@ class My_FileChooser(gtk.FileChooserDialog):
             self.add_filter(filtro)
 
         self.add_shortcut_folder_uri("file:///media/")
-
-        self.resize(400, 300)
-
         self.connect("file-activated", self.__file_activated)
 
     def __file_activated(self, widget):
