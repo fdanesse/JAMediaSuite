@@ -72,7 +72,7 @@ class JAMediaReproductor(gst.Pipeline):
         self.bus = None
 
         # BIN
-        self.player = gst.element_factory_make(
+        player = gst.element_factory_make(
             "uridecodebin", "uridecodebin")
 
         # AUDIO
@@ -81,7 +81,7 @@ class JAMediaReproductor(gst.Pipeline):
         audioresample = gst.element_factory_make(
             'audioresample', 'audioresample')
         audioresample.set_property('quality', 10)
-        self.volume_element = gst.element_factory_make(
+        volume = gst.element_factory_make(
             'volume', 'volume')
         autoaudiosink = gst.element_factory_make(
             "autoaudiosink", "autoaudiosink")
@@ -91,26 +91,38 @@ class JAMediaReproductor(gst.Pipeline):
             'ffmpegcolorspace', 'videoconvert')
         videorate = gst.element_factory_make(
             'videorate', 'videorate')
+        videobalance = gst.element_factory_make(
+            'videobalance', "videobalance")
+        gamma = gst.element_factory_make(
+            'gamma', "gamma")
+        videoflip = gst.element_factory_make(
+            'videoflip', "videoflip")
         pantalla = gst.element_factory_make(
             'xvimagesink', "pantalla")
         pantalla.set_property(
             "force-aspect-ratio", True)
 
-        self.add(self.player)
+        self.add(player)
         self.add(audioconvert)
         self.add(audioresample)
-        self.add(self.volume_element)
+        self.add(volume)
         self.add(autoaudiosink)
         self.add(videoconvert)
         self.add(videorate)
+        self.add(videobalance)
+        self.add(gamma)
+        self.add(videoflip)
         self.add(pantalla)
 
         audioconvert.link(audioresample)
-        audioresample.link(self.volume_element)
-        self.volume_element.link(autoaudiosink)
+        audioresample.link(volume)
+        volume.link(autoaudiosink)
 
         videoconvert.link(videorate)
-        videorate.link(pantalla)
+        videorate.link(videobalance)
+        videobalance.link(gamma)
+        gamma.link(videoflip)
+        videoflip.link(pantalla)
 
         self.audio_sink = audioconvert.get_static_pad('sink')
         self.video_sink = videoconvert.get_static_pad('sink')
@@ -118,7 +130,7 @@ class JAMediaReproductor(gst.Pipeline):
         self.bus = self.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
 
-        self.player.connect('pad-added', self.__pad_added)
+        player.connect('pad-added', self.__pad_added)
 
         #self.video_in_stream = False
 
@@ -319,15 +331,32 @@ class JAMediaReproductor(gst.Pipeline):
 
         elif self.estado == gst.STATE_PLAYING:
             self.__pause()
-    '''
+
     def rotar(self, valor):
         """
         Rota el Video.
         """
 
-        self.video_pipeline.rotar(valor)
-        self.config['rotacion'] = self.video_pipeline.get_rotacion()
+        videoflip = self.get_by_name("videoflip")
+        rot = videoflip.get_property('method')
 
+        if valor == "Derecha":
+            if rot < 3:
+                rot += 1
+
+            else:
+                rot = 0
+
+        elif valor == "Izquierda":
+            if rot > 0:
+                rot -= 1
+
+            else:
+                rot = 3
+
+        videoflip.set_property('method', rot)
+
+    '''
     def set_balance(self, brillo=None, contraste=None,
         saturacion=None, hue=None, gamma=None):
         """
@@ -381,13 +410,13 @@ class JAMediaReproductor(gst.Pipeline):
         if os.path.exists(uri):
             #direccion = gst.filename_to_uri(uri)
             direccion = "file://" + uri
-            self.player.set_property("uri", direccion)
+            self.get_by_name("uridecodebin").set_property("uri", direccion)
             self.progressbar = True
             self.__play()
 
         else:
             if gst.uri_is_valid(uri):
-                self.player.set_property("uri", uri)
+                self.get_by_name("uridecodebin").set_property("uri", uri)
                 self.progressbar = False
                 self.__play()
 
@@ -434,11 +463,11 @@ class JAMediaReproductor(gst.Pipeline):
         Cambia el volúmen de Reproducción.
         """
 
-        self.volume_element.set_property('volume', volumen)
+        self.get_by_name("volume").set_property('volume', volumen)
 
     def get_volumen(self):
 
-        return self.volume_element.get_property('volume')
+        return self.get_by_name("volume").get_property('volume')
 
 
 def exit(win=False, event=False):

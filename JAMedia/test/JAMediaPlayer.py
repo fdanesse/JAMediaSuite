@@ -1068,6 +1068,12 @@ class JAMediaPlayer(gtk.EventBox):
         if visible:
             self.scroll_config.hide()
 
+        # FIXME: Analizar mantener los siguientes valores:
+        # Efectos
+        # balanace
+        # Gamma
+        # Rotacion
+        # Volumen
         volumen = 1
         if self.player:
             volumen = self.player.get_volumen()
