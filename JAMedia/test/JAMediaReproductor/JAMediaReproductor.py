@@ -198,7 +198,6 @@ class JAMediaReproductor(gst.Pipeline):
         elif message.type == gst.MESSAGE_ERROR:
             print "\n gst.MESSAGE_ERROR:"
             print message.parse_error()
-            self.stop()
             self.__new_handle(False, [gst.MESSAGE_ERROR])
 
         elif message.type == gst.MESSAGE_LATENCY:
@@ -413,9 +412,10 @@ class JAMediaReproductor(gst.Pipeline):
 
         else:
             if gst.uri_is_valid(uri):
-                self.get_by_name("uridecodebin").set_property("uri", uri)
-                self.progressbar = False
-                self.__play()
+                #self.get_by_name("uridecodebin").set_property("uri", uri)
+                #self.progressbar = False
+                #self.__play()
+                print uri
 
         return False
 
