@@ -62,7 +62,7 @@ class JAMediaGrabador(gobject.GObject):
 
         self.__reset()
 
-        print "JAMediaGrabador:" uri
+        print "JAMediaGrabador:", uri
 
         if os.path.exists(uri):
             # FIXME: Analizar
@@ -77,6 +77,7 @@ class JAMediaGrabador(gobject.GObject):
             self.__new_handle(True, [])
 
         else:
+            print "JAMediaGrabador: uri inválida"
             self.emit("endfile")
 
     def __reset(self):
@@ -205,9 +206,10 @@ class JAMediaGrabador(gobject.GObject):
             self.player.recalculate_latency()
 
         elif message.type == gst.MESSAGE_ERROR:
-            print "\n gst.MESSAGE_ERROR:"
+            print "JAMediaGrabador ERROR:"
             print message.parse_error()
-            self.__new_handle(False, [])
+            print
+            #self.__new_handle(False, [])
 
     def __new_handle(self, reset, data):
         """

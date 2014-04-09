@@ -70,8 +70,8 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.controles_dinamicos = None
 
-        self.player = None
-        self.grabador = None
+        self.player = False
+        self.grabador = False
 
         self.cursor_root = None
         self.jamedia_cursor = None
@@ -908,6 +908,8 @@ class JAMediaPlayer(gtk.EventBox):
         # Gamma
         # Rotacion
         # Volumen
+
+        # FIXME: Verificar Volumenes de Reproductores no son iguales
         volumen = 1
         if self.player:
             volumen = self.player.get_volumen()
@@ -946,6 +948,7 @@ class JAMediaPlayer(gtk.EventBox):
         JAMedia.
         """
 
+        # FIXME: Verificar no detener nada para caso embebido
         if self.grabador:
             self.grabador.stop()
 
@@ -1221,9 +1224,6 @@ class JAMediaPlayer(gtk.EventBox):
         la toolbar_accion.
         """
 
-        if not self.player:
-            return
-
         self.get_toplevel().set_sensitive(False)
 
         self.__detener_grabacion()
@@ -1268,8 +1268,10 @@ class JAMediaPlayer(gtk.EventBox):
         Detiene la Grabación en Proceso.
         """
 
-        if self.grabador != None:
+        if self.grabador:
             self.grabador.stop()
+            del(self.grabador)
+            self.grabador = False
 
         self.toolbar_grabar.stop()
 

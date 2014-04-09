@@ -110,8 +110,9 @@ class JAMediaStreamingReproductor(gobject.GObject):
             self.emit("endfile")
 
         elif message.type == gst.MESSAGE_ERROR:
-            print "\n gst.MESSAGE_ERROR:"
+            print "JAMediaStreamingReproductor ERROR:"
             print message.parse_error()
+            print
             self.__new_handle(False, [gst.MESSAGE_ERROR])
 
         elif message.type == gst.MESSAGE_LATENCY:
@@ -273,7 +274,7 @@ class JAMediaStreamingReproductor(gobject.GObject):
         Carga un archivo o stream en el pipe de gst.
         """
 
-        print "JAMediaStreamingReproductor:" uri
+        print "JAMediaStreamingReproductor:", uri
 
         if os.path.exists(uri):
             #direccion = gst.filename_to_uri(uri)
