@@ -27,19 +27,13 @@ import gobject
 
 from Globales import get_colors
 from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
+from JAMediaReproductor.JAMediaStreamingReproductor import JAMediaStreamingReproductor
+from JAMediaReproductor.JAMediaGrabador import JAMediaGrabador
 
 BASE_PATH = os.path.dirname(__file__)
 
 
 class JAMediaPlayer(gtk.EventBox):
-    """
-    JAMedia:
-        Interfaz grafica de:
-            JAMediaReproductor y MplayerReproductor.
-
-        Implementado sobre:
-            python 2.7.3 y gtk 3
-    """
 
     __gsignals__ = {
     "salir": (gobject.SIGNAL_RUN_CLEANUP,
@@ -921,7 +915,12 @@ class JAMediaPlayer(gtk.EventBox):
             del(self.player)
 
         xid = self.pantalla.get_property('window').xid
-        self.player = JAMediaReproductor(xid)
+
+        if os.path.exists(path):
+            self.player = JAMediaReproductor(xid)
+
+        else:
+            self.player = JAMediaStreamingReproductor(xid)
 
         self.player.connect(
             "endfile", self.__endfile)
@@ -1222,60 +1221,57 @@ class JAMediaPlayer(gtk.EventBox):
         la toolbar_accion.
         """
 
-        pass
-        #if not self.player:
-        #    return
+        if not self.player:
+            return
 
-        #self.get_toplevel().set_sensitive(False)
+        self.get_toplevel().set_sensitive(False)
 
-        #self.__detener_grabacion()
+        self.__detener_grabacion()
 
-        #tipo = "video"
-        #if "TV" in self.toolbar_list.label.get_text() or \
-        #    "Tv" in self.toolbar_list.label.get_text():
-        #        tipo = "video"
+        tipo = "video"
+        label = self.toolbar_list.label.get_text()
+        if label == "JAM-TV" or \
+            label == "TVs" or \
+            label == "WebCams":
+                tipo = "video"
 
-        #else:
-        #    tipo = "audio"
+        else:
+            tipo = "audio"
 
-        #import time
-        #import datetime
+        import time
+        import datetime
 
-        #hora = time.strftime("%H-%M-%S")
-        #fecha = str(datetime.date.today())
+        hora = time.strftime("%H-%M-%S")
+        fecha = str(datetime.date.today())
 
-        #from Globales import get_my_files_directory
+        from Globales import get_my_files_directory
 
-        #archivo = "%s-%s" % (fecha, hora)
-        #archivo = os.path.join(get_my_files_directory(), archivo)
+        archivo = "%s-%s" % (fecha, hora)
+        archivo = os.path.join(get_my_files_directory(), archivo)
 
-        #if self.player == self.jamediareproductor:
-        #    self.grabador = JAMediaGrabador(uri, archivo, tipo)
+        self.grabador = JAMediaGrabador(uri, archivo, tipo)
 
-        #elif self.player == self.mplayerreproductor:
-        #    self.grabador = MplayerGrabador(uri, archivo, tipo)
+        self.grabador.connect('update', self.__update_grabador)
+        self.grabador.connect('endfile', self.__detener_grabacion)
 
-        #self.grabador.connect('update', self.__update_grabador)
-        #self.grabador.connect('endfile', self.__detener_grabacion)
-
-        #self.get_toplevel().set_sensitive(True)
+        self.get_toplevel().set_sensitive(True)
 
     def __update_grabador(self, widget, datos):
         """
         Actualiza informacion de Grabacion en proceso.
         """
-        pass
-        #self.toolbar_grabar.set_info(datos)
+
+        self.toolbar_grabar.set_info(datos)
 
     def __detener_grabacion(self, widget=None):
         """
         Detiene la Grabación en Proceso.
         """
-        pass
-        #if self.grabador != None:
-        #    self.grabador.stop()
 
-        #self.toolbar_grabar.stop()
+        if self.grabador != None:
+            self.grabador.stop()
+
+        self.toolbar_grabar.stop()
 
     def __set_volumen(self, widget, valor):
         """
