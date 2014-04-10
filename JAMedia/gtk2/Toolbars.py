@@ -464,8 +464,6 @@ class Toolbar(gtk.Toolbar):
     'salir': (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, []),
     'config': (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, []),
-    'capturar': (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -501,14 +499,6 @@ class Toolbar(gtk.Toolbar):
         boton.connect("clicked", self.__show_help)
         self.insert(boton, -1)
 
-        #archivo = os.path.join(BASE_PATH,
-        #    "Iconos", "foto.png")
-        #boton = G.get_boton(archivo, flip = False,
-        #    pixels = G.get_pixels(1))
-        #boton.set_tooltip_text("Captura.")
-        #boton.connect("clicked", self.emit_capturar)
-        #self.insert(boton, -1)
-
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
@@ -524,13 +514,6 @@ class Toolbar(gtk.Toolbar):
             ancho=3, expand=False), -1)
 
         self.show_all()
-
-    #def emit_capturar(self, widget):
-    #    """
-    #    Emite Capturar para obtener la imagen del video.
-    #    """
-
-    #    self.emit('capturar')
 
     def __show_credits(self, widget):
 
@@ -586,31 +569,6 @@ class ToolbarInfo(gtk.Toolbar):
         self.modify_bg(0, get_colors("barradeprogreso"))
 
         self.ocultar_controles = False
-
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        imagen = gtk.Image()
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "mplayer.png")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            -1, 24)
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        self.mplayer = gtk.ToolItem()
-        self.mplayer.add(imagen)
-        self.insert(self.mplayer, -1)
-
-        imagen = gtk.Image()
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "JAMedia.svg")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            -1, 35)
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        self.jamedia = gtk.ToolItem()
-        self.jamedia.add(imagen)
-        self.insert(self.jamedia, -1)
 
         self.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
@@ -670,19 +628,6 @@ class ToolbarInfo(gtk.Toolbar):
 
         self.emit('actualizar_streamings')
 
-    def set_reproductor(self, reproductor):
-        """
-        Muestra el Reproductor Activo.
-        """
-
-        if reproductor == "MplayerReproductor":
-            self.mplayer.show()
-            self.jamedia.hide()
-
-        elif reproductor == "JAMediaReproductor":
-            self.jamedia.show()
-            self.mplayer.hide()
-
     def __emit_rotar(self, widget):
         """
         Emite la señal rotar con su valor Izquierda o Derecha.
@@ -711,14 +656,12 @@ class ToolbarConfig(gtk.Table):
     #__gtype_name__ = 'ToolbarConfig'
 
     __gsignals__ = {
-    "reproductor": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
     'valor': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
         (gobject.TYPE_FLOAT, gobject.TYPE_STRING))}
 
     def __init__(self):
 
-        gtk.Table.__init__(self, rows=6, columns=1, homogeneous=True)
+        gtk.Table.__init__(self, rows=5, columns=1, homogeneous=True)
 
         self.modify_bg(0, get_colors("window"))
 
@@ -728,43 +671,11 @@ class ToolbarConfig(gtk.Table):
         self.hue = ToolbarcontrolValores("Matíz")
         self.gamma = ToolbarcontrolValores("Gamma")
 
-        frame = gtk.Frame()
-        frame.set_label(" Reproductor: ")
-        frame.set_border_width(4)
-        box = gtk.HBox()
-        event = gtk.EventBox()
-        event.modify_bg(0, get_colors("window"))
-        event.add(box)
-        frame.add(event)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "mplayer.png")
-        self.mplayer_boton = get_togle_boton(archivo,
-            flip=False,
-            pixels=24)
-        self.mplayer_boton.set_tooltip_text("MplayerReproductor")
-        self.mplayer_boton.connect("toggled",
-            self.__emit_reproductor, "MplayerReproductor")
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "JAMedia.svg")
-        self.jamedia_boton = get_togle_boton(archivo,
-            flip=False,
-            pixels=24)
-        self.jamedia_boton.set_tooltip_text("JAMediaReproductor")
-        self.jamedia_boton.connect("toggled",
-            self.__emit_reproductor, "JAMediaReproductor")
-
-        box.pack_start(self.jamedia_boton, False, True, 0)
-        box.pack_start(self.mplayer_boton, False, True, 0)
-
-        self.attach(frame, 0, 1, 0, 1)
-
-        self.attach(self.brillo, 0, 1, 1, 2)
-        self.attach(self.contraste, 0, 1, 2, 3)
-        self.attach(self.saturacion, 0, 1, 3, 4)
-        self.attach(self.hue, 0, 1, 4, 5)
-        self.attach(self.gamma, 0, 1, 5, 6)
+        self.attach(self.brillo, 0, 1, 0, 1)
+        self.attach(self.contraste, 0, 1, 1, 2)
+        self.attach(self.saturacion, 0, 1, 2, 3)
+        self.attach(self.hue, 0, 1, 3, 4)
+        self.attach(self.gamma, 0, 1, 4, 5)
 
         self.show_all()
 
@@ -803,25 +714,6 @@ class ToolbarConfig(gtk.Table):
 
         if gamma != None:
             self.gamma.set_progress(gamma)
-
-    def __emit_reproductor(self, widget, nombre):
-        """
-        Emite la señal que cambia de reproductor
-        entre mplayer y jamediareproductor (Gst 1.0)
-        """
-
-        if widget.get_active():
-            self.emit("reproductor", nombre)
-
-            if widget == self.mplayer_boton:
-                self.jamedia_boton.set_active(False)
-
-            elif widget == self.jamedia_boton:
-                self.mplayer_boton.set_active(False)
-
-        if not self.mplayer_boton.get_active() and \
-            not self.jamedia_boton.get_active():
-                widget.set_active(True)
 
 
 class ToolbarcontrolValores(gtk.Toolbar):

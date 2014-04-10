@@ -50,7 +50,9 @@ class Lista(gtk.TreeView):
         self.set_headers_visible(True)
 
         self.permitir_select = True
-        self.valor_select = None
+        self.valor_select = False
+        self.ultimo_select = False
+        self.timer_select = False
 
         self.__setear_columnas()
 
@@ -67,16 +69,28 @@ class Lista(gtk.TreeView):
         if not self.permitir_select:
             return True
 
-        # model y listore son ==
         _iter = self.get_model().get_iter(path)
         valor = self.get_model().get_value(_iter, 2)
 
         if self.valor_select != valor:
-            self.scroll_to_cell(self.get_model().get_path(_iter))
             self.valor_select = valor
-            self.emit('nueva-seleccion', self.valor_select)
+
+            if self.timer_select:
+                gobject.source_remove(self.timer_select)
+                self.timer_select = False
+
+            gobject.timeout_add(3, self.__select)
+            self.scroll_to_cell(self.get_model().get_path(_iter))
 
         return True
+
+    def __select(self):
+
+        if self.ultimo_select != self.valor_select:
+            self.emit('nueva-seleccion', self.valor_select)
+            self.ultimo_select = self.valor_select
+
+        return False
 
     def __setear_columnas(self):
 

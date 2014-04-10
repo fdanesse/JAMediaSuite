@@ -37,7 +37,6 @@ Necesita:
     gstreamer0.10-plugins-ugly
     gstreamer0.10-plugins-bad
     gstreamer0.10-tools
-    mplayer
 """
 
 
@@ -55,7 +54,7 @@ class JAMedia(gtk.Window):
 
         self.modify_bg(0, get_colors("window"))
         self.set_resizable(True)
-        self.set_size_request(640, 480)
+        self.set_size_request(437, 328)
         self.set_border_width(2)
         self.set_position(gtk.WIN_POS_CENTER)
 
@@ -85,7 +84,7 @@ class JAMedia(gtk.Window):
 
         self.jamediaplayer.setup_init()
         self.jamediaplayer.pack_standar()
-        self.jamediaplayer.pack_efectos()
+        #self.jamediaplayer.pack_efectos()
 
         if self.pistas:
             gobject.idle_add(

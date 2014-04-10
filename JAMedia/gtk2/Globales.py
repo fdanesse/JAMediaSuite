@@ -59,45 +59,6 @@ def get_colors(key):
     return gdk.color_parse(_dict.get(key, "#ffffff"))
 
 
-def get_programa(programa):
-    """
-    Devuelve true si programa se encuentra
-    instaldo y false si no lo está.
-    """
-
-    import os
-
-    paths = os.environ['PATH'].split(":")
-    presente = False
-
-    for directorio in paths:
-        if os.path.exists(directorio):
-            datos = os.listdir(directorio)
-            if programa in datos:
-                presente = True
-                break
-
-        else:
-            print "Directorio Inexistente en el path", directorio
-
-    # print programa, "Instalado en el sistema:", presente
-    return presente
-
-
-def verificar_Gstreamer():
-
-    presente = False
-
-    try:
-        import gst
-        presente = True
-
-    except:
-        presente = False
-
-    return presente
-
-
 def describe_archivo(archivo):
     """
     Devuelve el tipo de un archivo (imagen, video, texto).
