@@ -24,12 +24,15 @@ import os
 import gobject
 import gst
 
+from JAMediaBins import JAMedia_Audio_Pipeline
+from JAMediaBins import JAMedia_Video_Pipeline
+
 gobject.threads_init()
 
 
-class JAMediaReproductor(gst.Pipeline):
+class JAMediaReproductor(gobject.GObject):
     """
-    Reproductor de Audio y Video
+    Reproductor de Streaming de Radio y Television.
     """
 
     __gsignals__ = {
@@ -51,18 +54,9 @@ class JAMediaReproductor(gst.Pipeline):
         para mostrar el video.
         """
 
-        gst.Pipeline.__init__(self)
+        gobject.GObject.__init__(self)
 
-        self.set_name('JAMediaReproductor')
         self.nombre = "JAMediaReproductor"
-
-        self.config = {
-            'saturacion': 50.0,
-            'contraste': 50.0,
-            'brillo': 50.0,
-            'hue': 50.0,
-            'gamma': 10.0,
-            'rotacion': 0}
 
         self.ventana_id = ventana_id
         self.progressbar = True
@@ -73,90 +67,17 @@ class JAMediaReproductor(gst.Pipeline):
         self.player = None
         self.bus = None
 
-        # BIN
-        player = gst.element_factory_make(
-            "uridecodebin", "uridecodebin")
+        self.player = gst.element_factory_make(
+            "playbin2", "player")
 
-        # AUDIO
-        audioconvert = gst.element_factory_make(
-            'audioconvert', 'audioconvert')
-        audioresample = gst.element_factory_make(
-            'audioresample', 'audioresample')
-        audioresample.set_property('quality', 10)
-        volume = gst.element_factory_make(
-            'volume', 'volume')
-        autoaudiosink = gst.element_factory_make(
-            "autoaudiosink", "autoaudiosink")
+        self.audio_bin = JAMedia_Audio_Pipeline()
+        self.video_bin = JAMedia_Video_Pipeline()
 
-        # Video
-        videoconvert = gst.element_factory_make(
-            'ffmpegcolorspace', 'videoconvert')
-        videorate = gst.element_factory_make(
-            'videorate', 'videorate')
-        videobalance = gst.element_factory_make(
-            'videobalance', "videobalance")
-        gamma = gst.element_factory_make(
-            'gamma', "gamma")
-        videoflip = gst.element_factory_make(
-            'videoflip', "videoflip")
-        pantalla = gst.element_factory_make(
-            'xvimagesink', "pantalla")
-        pantalla.set_property(
-            "force-aspect-ratio", True)
+        self.player.set_property('video-sink', self.video_bin)
+        self.player.set_property('audio-sink', self.audio_bin)
 
-        self.add(player)
-        self.add(audioconvert)
-        self.add(audioresample)
-        self.add(volume)
-        self.add(autoaudiosink)
-        self.add(videoconvert)
-        self.add(videorate)
-        self.add(videobalance)
-        self.add(gamma)
-        self.add(videoflip)
-        self.add(pantalla)
-
-        audioconvert.link(audioresample)
-        audioresample.link(volume)
-        volume.link(autoaudiosink)
-
-        videoconvert.link(videorate)
-        videorate.link(videobalance)
-        videobalance.link(gamma)
-        gamma.link(videoflip)
-        videoflip.link(pantalla)
-
-        self.audio_sink = audioconvert.get_static_pad('sink')
-        self.video_sink = videoconvert.get_static_pad('sink')
-
-        self.bus = self.get_bus()
+        self.bus = self.player.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
-
-        player.connect('pad-added', self.__pad_added)
-
-        try: # FIXME: xo no posee esta propiedad
-            self.videorate.set_property('max-rate', 30)
-        except:
-            pass
-
-        #self.video_in_stream = False
-
-    def __pad_added(self, uridecodebin, pad):
-        """
-        Agregar elementos en forma dinámica según
-        sean necesarios. https://wiki.ubuntu.com/Novacut/GStreamer1.0
-        """
-
-        caps = pad.get_caps()
-        string = caps.to_string()
-
-        if string.startswith('audio'):
-            if not self.audio_sink.is_linked():
-                pad.link(self.audio_sink)
-
-        elif string.startswith('video'):
-            if not self.video_sink.is_linked():
-                pad.link(self.video_sink)
 
     def __bus_handler(self, bus, message):
 
@@ -191,7 +112,7 @@ class JAMediaReproductor(gst.Pipeline):
             self.emit("endfile")
 
         elif message.type == gst.MESSAGE_ERROR:
-            print "JAMediaSReproductor ERROR:"
+            print "JAMediaReproductor ERROR:"
             print message.parse_error()
             print
             self.__new_handle(False, [gst.MESSAGE_ERROR])
@@ -199,7 +120,7 @@ class JAMediaReproductor(gst.Pipeline):
         elif message.type == gst.MESSAGE_LATENCY:
         #    # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
         #    print "\n gst.MESSAGE_LATENCY"
-            self.recalculate_latency()
+            self.player.recalculate_latency()
 
         #elif message.type == gst.MESSAGE_TAG:
         #    taglist = message.parse_tag()
@@ -234,14 +155,14 @@ class JAMediaReproductor(gst.Pipeline):
         Pone el pipe de gst en gst.STATE_PLAYING
         """
 
-        self.set_state(gst.STATE_PLAYING)
+        self.player.set_state(gst.STATE_PLAYING)
 
     def __pause(self):
         """
         Pone el pipe de gst en gst.STATE_PAUSED
         """
 
-        self.set_state(gst.STATE_PAUSED)
+        self.player.set_state(gst.STATE_PAUSED)
 
     def __new_handle(self, reset, func):
         """
@@ -274,8 +195,8 @@ class JAMediaReproductor(gst.Pipeline):
         duracion = None
 
         try:
-            valor1, bool1 = self.query_duration(gst.FORMAT_TIME)
-            valor2, bool2 = self.query_position(gst.FORMAT_TIME)
+            valor1, bool1 = self.player.query_duration(gst.FORMAT_TIME)
+            valor2, bool2 = self.player.query_position(gst.FORMAT_TIME)
 
         except:
             print "ERROR en HANDLER"
@@ -323,24 +244,7 @@ class JAMediaReproductor(gst.Pipeline):
         Rota el Video.
         """
 
-        videoflip = self.get_by_name("videoflip")
-        rot = videoflip.get_property('method')
-
-        if valor == "Derecha":
-            if rot < 3:
-                rot += 1
-
-            else:
-                rot = 0
-
-        elif valor == "Izquierda":
-            if rot > 0:
-                rot -= 1
-
-            else:
-                rot = 3
-
-        videoflip.set_property('method', rot)
+        self.video_bin.rotar(valor)
 
     def set_balance(self, brillo=None, contraste=None,
         saturacion=None, hue=None, gamma=None):
@@ -349,49 +253,22 @@ class JAMediaReproductor(gst.Pipeline):
         Recibe % en float y convierte a los valores del filtro.
         """
 
-        if brillo:
-            self.config['brillo'] = brillo
-            valor = (2.0 * brillo / 100.0) - 1.0
-            self.get_by_name("videobalance").set_property(
-                'brightness', valor)
-
-        if contraste:
-            self.config['contraste'] = contraste
-            valor = 2.0 * contraste / 100.0
-            self.get_by_name("videobalance").set_property(
-                'contrast', valor)
-
-        if saturacion:
-            self.config['saturacion'] = saturacion
-            valor = 2.0 * saturacion / 100.0
-            self.get_by_name("videobalance").set_property(
-                'saturation', valor)
-
-        if hue:
-            self.config['hue'] = hue
-            valor = (2.0 * hue / 100.0) - 1.0
-            self.get_by_name("videobalance").set_property(
-                'hue', valor)
-
-        if gamma:
-            self.config['gamma'] = gamma
-            valor = (10.0 * gamma / 100.0)
-            self.get_by_name("gamma").set_property(
-                'gamma', valor)
+        self.video_bin.set_balance(brillo=brillo, contraste=contraste,
+            saturacion=saturacion, hue=hue, gamma=gamma)
 
     def get_balance(self):
         """
         Retorna los valores actuales de balance en % float.
         """
 
-        return self.config
+        return self.video_bin.get_balance()
 
     def stop(self):
         """
         Pone el pipe de gst en gst.STATE_NULL
         """
 
-        self.set_state(gst.STATE_NULL)
+        self.player.set_state(gst.STATE_NULL)
         self.emit("newposicion", 0)
 
     def load(self, uri):
@@ -404,14 +281,14 @@ class JAMediaReproductor(gst.Pipeline):
         if os.path.exists(uri):
             #direccion = gst.filename_to_uri(uri)
             direccion = "file://" + uri
-            self.get_by_name("uridecodebin").set_property("uri", direccion)
+            self.player.set_property("uri", direccion)
             self.progressbar = True
             self.__play()
 
         else:
             if gst.uri_is_valid(uri):
-                self.get_by_name("uridecodebin").set_property("uri", uri)
-                self.progressbar = True#False
+                self.player.set_property("uri", uri)
+                self.progressbar = False
                 self.__play()
 
         return False
@@ -421,6 +298,9 @@ class JAMediaReproductor(gst.Pipeline):
         Permite desplazarse por
         la pista que se esta reproduciendo.
         """
+
+        if not self.progressbar:
+            return
 
         if self.duracion < posicion:
             return
@@ -449,7 +329,7 @@ class JAMediaReproductor(gst.Pipeline):
             gst.SEEK_TYPE_SET, posicion * 1000000000,
             gst.SEEK_TYPE_NONE, self.duracion * 1000000000)
 
-        self.send_event(event)
+        self.player.send_event(event)
         #self.player.set_state(gst.STATE_PLAYING)
 
     def set_volumen(self, volumen):
@@ -457,42 +337,8 @@ class JAMediaReproductor(gst.Pipeline):
         Cambia el volúmen de Reproducción. (Recibe float 0.0 - 10.0)
         """
 
-        self.get_by_name("volume").set_property('volume', volumen)
+        self.player.set_property('volume', volumen/10)
 
     def get_volumen(self):
 
-        return self.get_by_name("volume").get_property('volume')
-
-
-def exit(win=False, event=False):
-    import sys
-    gtk.main_quit()
-    sys.exit(0)
-
-
-def print_status(player, uno=False, dos=False):
-    print uno, dos
-
-
-if __name__ == "__main__":
-    import gtk
-
-    win = gtk.Window()
-    drawing = gtk.DrawingArea()
-    win.add(drawing)
-
-    win.show_all()
-
-    win.connect("delete-event", exit)
-    xid = drawing.get_property('window').xid
-    player = JAMediaReproductor(xid)
-
-    player.connect("endfile", print_status)
-    player.connect("estado", print_status)
-    player.connect("newposicion", print_status)
-    player.connect("volumen", print_status)
-    player.connect("video", print_status)
-
-    player.load("/home/flavio/Lorde/Lorde - Tennis Court")
-
-    gtk.main()
+        return self.player.get_property('volume')*10

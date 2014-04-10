@@ -27,7 +27,6 @@ import gobject
 
 from Globales import get_colors
 from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
-from JAMediaReproductor.JAMediaStreamingReproductor import JAMediaStreamingReproductor
 from JAMediaReproductor.JAMediaGrabador import JAMediaGrabador
 
 BASE_PATH = os.path.dirname(__file__)
@@ -918,11 +917,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         xid = self.pantalla.get_property('window').xid
 
-        if os.path.exists(path):
-            self.player = JAMediaReproductor(xid)
-
-        else:
-            self.player = JAMediaStreamingReproductor(xid)
+        self.player = JAMediaReproductor(xid)
 
         self.player.connect(
             "endfile", self.__endfile)
