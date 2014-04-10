@@ -56,6 +56,8 @@ class JAMediaStreamingReproductor(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
+        self.nombre = "JAMediaStreamingReproductor"
+
         self.ventana_id = ventana_id
         self.progressbar = True
         self.estado = None
@@ -329,11 +331,11 @@ class JAMediaStreamingReproductor(gobject.GObject):
 
     def set_volumen(self, volumen):
         """
-        Cambia el volúmen de Reproducción.
+        Cambia el volúmen de Reproducción. (Recibe float 0.0 - 10.0)
         """
 
         self.player.set_property('volume', volumen/10)
 
     def get_volumen(self):
 
-        return self.player.get_property('volume')
+        return self.player.get_property('volume')*10

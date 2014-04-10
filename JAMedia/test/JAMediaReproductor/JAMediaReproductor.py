@@ -54,6 +54,7 @@ class JAMediaReproductor(gst.Pipeline):
         gst.Pipeline.__init__(self)
 
         self.set_name('JAMediaReproductor')
+        self.nombre = "JAMediaReproductor"
 
         self.config = {
             'saturacion': 50.0,
@@ -453,7 +454,7 @@ class JAMediaReproductor(gst.Pipeline):
 
     def set_volumen(self, volumen):
         """
-        Cambia el volúmen de Reproducción.
+        Cambia el volúmen de Reproducción. (Recibe float 0.0 - 10.0)
         """
 
         self.get_by_name("volume").set_property('volume', volumen)

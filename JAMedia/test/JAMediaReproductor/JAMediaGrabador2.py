@@ -47,6 +47,7 @@ class JAMediaGrabador(gobject.GObject):
 
         if not archivo.endswith(".ogg"):
             archivo = "%s%s" % (archivo, ".ogg")
+            #archivo = "%s%s" % (archivo, ".mp3")
 
         self.patharchivo = archivo
         self.actualizador = False
@@ -58,6 +59,31 @@ class JAMediaGrabador(gobject.GObject):
         self.player = None
         self.archivo = None
         self.bus = None
+
+        self.__reset()
+
+        print "JAMediaGrabador:", uri
+
+        if os.path.exists(uri):
+            # FIXME: Analizar
+            #uri = gst.filename_to_uri(uri)
+            uri = "file://" + uri
+
+        if gst.uri_is_valid(uri):
+            self.archivo.set_property("location", self.patharchivo)
+            self.uri = uri
+            self.player.set_property("uri", self.uri)
+            self.__play()
+            self.__new_handle(True, [])
+
+        else:
+            print "JAMediaGrabador: uri inválida"
+            self.emit("endfile")
+
+    def __reset(self):
+        """
+        Crea el pipe de gst. (playbin)
+        """
 
         self.pipeline = gst.Pipeline()
 
@@ -134,25 +160,6 @@ class JAMediaGrabador(gobject.GObject):
 
         self.player.connect('pad-added', self.__pad_added)
         #self.player.connect("source-setup", self.__source_setup)
-
-        gobject.idle_add(self.load, uri)
-
-    def load(self, uri):
-
-        print "JAMediaGrabador:", uri
-
-        if gst.uri_is_valid(uri):
-            self.archivo.set_property("location", self.patharchivo)
-            self.uri = uri
-            self.player.set_property("uri", self.uri)
-            self.__play()
-            self.__new_handle(True, [])
-
-        else:
-            print "JAMediaGrabador: uri inválida"
-            self.emit("endfile")
-
-        return False
 
     def __pad_added(self, uridecodebin, pad):
         """

@@ -909,10 +909,9 @@ class JAMediaPlayer(gtk.EventBox):
         # Rotacion
         # Volumen
 
-        # FIXME: Verificar Volumenes de Reproductores no son iguales
-        volumen = 1
+        volumen = 1.0
         if self.player:
-            volumen = self.player.get_volumen()
+            volumen = float("{:.1f}".format(self.volumen.get_value()*10))
             self.player.stop()
             del(self.player)
 
@@ -933,8 +932,9 @@ class JAMediaPlayer(gtk.EventBox):
         #self.player.connect(
         #    "video", self.__set_video)
 
-        self.player.set_volumen(volumen)
         self.player.load(path)
+        self.player.set_volumen(volumen)
+        self.volumen.set_value(volumen/10)
 
         if visible:
             self.scroll_config.show()
