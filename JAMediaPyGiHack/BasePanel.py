@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   BasePanel.py por:
-#       Flavio Danesse <fdanesse@gmail.com>, <fdanesse@activitycentral.com>
-#       CeibalJAM - Uruguay - Activity Central
+#       Flavio Danesse <fdanesse@gmail.com>
+#       Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@ from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import WebKit
 
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
+BASE_PATH = os.path.dirname(__file__)
 
-from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
+from JAMediaTerminal.JAMediaTerminal import JAMediaTerminal
 from JAMediaGstreamer.JAMediaGstreamer import JAMediaGstreamer
 
 from Widgets import ToolbarTry
 from ApiWidget import ApiWidget
+
 
 def get_pixels(centimetros):
     """
@@ -197,7 +197,7 @@ class BaseNotebook(Gtk.Notebook):
             label = Gtk.Label(modulo)
 
             boton = get_boton(
-                os.path.join(JAMediaObjectsPath,
+                os.path.join(BASE_PATH,
                 "Iconos", "button-cancel.svg"),
                 pixels=get_pixels(0.5),
                 tooltip_text="Cerrar")

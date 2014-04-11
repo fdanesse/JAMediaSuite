@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   Make_gi_doc.py por:
-#       Flavio Danesse <fdanesse@gmail.com>, <fdanesse@activitycentral.com>
-#       CeibalJAM - Uruguay - Activity Central
+#       Flavio Danesse <fdanesse@gmail.com>
+#       Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

@@ -3,7 +3,7 @@
 
 #   JAMediaGstreamer.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM - Uruguay
+#   Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,97 +28,99 @@ from gi.repository import GObject
 from Widgets import TextView
 from Widgets import Lista
 
+
 def get_inspect(elemento):
     """
     Devuelve inspect de elemento.
     """
-    
+
     import commands
     return commands.getoutput('gst-inspect-1.0 %s' % (elemento))
 
+
 class JAMediaGstreamer(Gtk.Paned):
-    
+
     def __init__(self):
-        
+
         Gtk.Paned.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
-        
+
         # Izquierda
         self.lista = Lista()
-        
+
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
         scroll.add(self.lista)
         scroll.set_size_request(250, -1)
-        
+
         self.pack1(
             scroll,
             resize = False,
             shrink = False)
-        
+
         # Derecha
         self.textview = TextView()
-        
+
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(
             Gtk.PolicyType.AUTOMATIC,
             Gtk.PolicyType.AUTOMATIC)
         scroll.add(self.textview)
-        
+
         self.pack2(
             scroll,
             resize = True,
             shrink = True)
-            
+
         self.show_all()
-        
+
         self.__llenar_lista()
-        
+
         self.lista.connect('nueva-seleccion', self.__get_element)
-        
+
     def __llenar_lista(self):
-        
+
         try:
             import gi
             gi.require_version('Gst', '1.0')
             from gi.repository import Gst
-            
+
             Gst.init([])
 
             registry = Gst.Registry.get()
             plugins = registry.get_plugin_list()
-            
+
         except:
             return
-        
+
         iter = self.lista.get_model().get_iter_first()
-        
+
         for elemento in plugins:
-            
+
             iteractual = self.lista.get_model().append(
                 iter, [elemento.get_name(), elemento.get_description()])
-            
+
             features = registry.get_feature_list_by_plugin(elemento.get_name())
-            
+
             if len(features) > 1:
                 for feature in features:
                     self.lista.get_model().append(
                         iteractual,
                         [feature.get_name(),
                         elemento.get_description()])
-            
+
     def __get_element(self, widget, path):
-        
+
         self.textview.get_buffer().set_text(get_inspect(path))
 
 def exit(self, widget=None, senial=None):
-    
+
     import sys
     sys.exit(0)
-    
+
 if __name__ == "__main__":
-    
+
     ventana = Gtk.Window()
     ventana.add(JAMediaGstreamer())
     ventana.connect("delete-event", exit)
@@ -128,4 +130,4 @@ if __name__ == "__main__":
     ventana.set_border_width(2)
     ventana.set_position(Gtk.WindowPosition.CENTER)
     Gtk.main()
-    
+

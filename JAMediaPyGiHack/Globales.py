@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   Globales.py por:
-#       Flavio Danesse <fdanesse@gmail.com>, <fdanesse@activitycentral.com>
-#       CeibalJAM - Uruguay - Activity Central
+#       Flavio Danesse <fdanesse@gmail.com>
+#       Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 import os
 
-BASEPATH = os.path.dirname(__file__)
+#BASE_PATH = os.path.dirname(__file__)
 WorkPath = os.environ["HOME"]
 
 # http://docs.python.org/2.7/py-modindex.html
@@ -167,3 +167,55 @@ def get_dict():
 
     #return dict
     return BASEDICT
+
+
+def get_separador(draw=False, ancho=0, expand=False):
+    """
+    Devuelve un separador generico.
+    """
+
+    from gi.repository import Gtk
+
+    separador = Gtk.SeparatorToolItem()
+    separador.props.draw = draw
+    separador.set_size_request(ancho, -1)
+    separador.set_expand(expand)
+
+    return separador
+
+
+def get_boton(archivo, flip=False, rotacion=None,
+    pixels=0, tooltip_text=None):
+    """
+    Devuelve un toolbutton generico.
+    """
+
+    from gi.repository import Gtk
+    from gi.repository import GdkPixbuf
+
+    if not pixels:
+        pixels = get_pixels(1)
+
+    boton = Gtk.ToolButton()
+
+    imagen = Gtk.Image()
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+        archivo, pixels, pixels)
+
+    if flip:
+        pixbuf = pixbuf.flip(True)
+
+    if rotacion:
+        pixbuf = pixbuf.rotate_simple(rotacion)
+
+    imagen.set_from_pixbuf(pixbuf)
+    boton.set_icon_widget(imagen)
+
+    imagen.show()
+    boton.show()
+
+    if tooltip_text:
+        boton.set_tooltip_text(tooltip_text)
+        boton.TOOLTIP = tooltip_text
+
+    return boton

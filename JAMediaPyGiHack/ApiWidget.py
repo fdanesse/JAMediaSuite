@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   ApiWidget.py por:
-#       Flavio Danesse <fdanesse@gmail.com>, <fdanesse@activitycentral.com>
-#       CeibalJAM - Uruguay - Activity Central
+#       Flavio Danesse <fdanesse@gmail.com>
+#       Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,10 +26,7 @@ from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
-BASEPATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(__file__)
 
 
 class ApiWidget(Gtk.TreeView):
@@ -157,15 +154,15 @@ class ApiWidget(Gtk.TreeView):
 
         if tipo == "python-gi":
             if modulo == "gi":
-                ejecutable = os.path.join(BASEPATH,
+                ejecutable = os.path.join(BASE_PATH,
                     'SpyderHack', 'Dir_Modulo.py')
 
             else:
-                ejecutable = os.path.join(BASEPATH,
+                ejecutable = os.path.join(BASE_PATH,
                     'SpyderHack', 'Dir_Gi_Modulo.py')
 
         elif tipo == "python" or tipo == "Otros":
-            ejecutable = os.path.join(BASEPATH,
+            ejecutable = os.path.join(BASE_PATH,
                 'SpyderHack', 'Dir_Modulo.py')
 
         commands.getoutput('python %s %s' % (ejecutable, modulo))
@@ -183,13 +180,13 @@ class ApiWidget(Gtk.TreeView):
     def __add_modulo_dict(self, dict, iter, tipo):
 
         ### Iconos Representativos
-        icono = os.path.join(JAMediaObjectsPath, "Iconos", "class.svg")
+        icono = os.path.join(BASE_PATH, "Iconos", "class.svg")
         pixbufclase = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-        icono = os.path.join(JAMediaObjectsPath, "Iconos", "def.svg")
+        icono = os.path.join(BASE_PATH, "Iconos", "def.svg")
         pixbuffunc = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-        icono = os.path.join(JAMediaObjectsPath, "Iconos", "const.svg")
+        icono = os.path.join(BASE_PATH, "Iconos", "const.svg")
         pixbufconst = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
-        icono = os.path.join(JAMediaObjectsPath, "Iconos", "otros.svg")
+        icono = os.path.join(BASE_PATH, "Iconos", "otros.svg")
         pixbufotros = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
 
         modulo_path = dict.get("PATH", '')

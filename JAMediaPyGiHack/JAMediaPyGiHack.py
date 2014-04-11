@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   JAMediaPygiHack.py por:
-#       Flavio Danesse <fdanesse@gmail.com>, <fdanesse@activitycentral.com>
-#       CeibalJAM - Uruguay - Activity Central
+#       Flavio Danesse <fdanesse@gmail.com>
+#       Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,14 +19,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
+
 from gi.repository import Gtk
 from gi.repository import GObject
 
 from Widgets import Toolbar
 from BasePanel import BasePanel
 
+BASE_PATH = os.path.dirname(__file__)
 
-class JAMediaPyGiHack(Gtk.Box):
+
+class JAMediaPyGiHack(Gtk.EventBox):
 
     __gtype_name__ = 'JAMediaPyGiHack'
 
@@ -36,14 +40,17 @@ class JAMediaPyGiHack(Gtk.Box):
 
     def __init__(self):
 
-        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
+        Gtk.EventBox.__init__(self)
+
+        vbox = Gtk.VBox()
 
         self.toolbar = Toolbar()
-        self.pack_start(self.toolbar, False, False, 0)
+        vbox.pack_start(self.toolbar, False, False, 0)
 
         self.base_panel = BasePanel()
-        self.pack_start(self.base_panel, True, True, 0)
+        vbox.pack_start(self.base_panel, True, True, 0)
 
+        self.add(vbox)
         self.show_all()
 
         self.toolbar.connect("import", self.__import)
@@ -71,3 +78,43 @@ class JAMediaPyGiHack(Gtk.Box):
     def __import(self, widget, paquete, modulo):
 
         self.base_panel.import_modulo(paquete, modulo)
+
+
+class Ventana(Gtk.Window):
+
+    __gtype_name__ = 'VentanaJAMediaPyGiHack'
+
+    def __init__(self):
+
+        Gtk.Window.__init__(self)
+
+        self.set_title("JAMediaPygiHack")
+
+        self.set_icon_from_file(
+            os.path.join(BASE_PATH,
+            "Iconos", "PygiHack.svg"))
+
+        self.set_resizable(True)
+        self.set_size_request(640, 480)
+        self.maximize()
+        self.set_border_width(2)
+        self.set_position(Gtk.WindowPosition.CENTER)
+
+        jamediapygihack = JAMediaPyGiHack()
+        self.add(jamediapygihack)
+
+        self.show_all()
+        self.realize()
+
+        jamediapygihack.connect("salir", self.__salir)
+        self.connect("delete-event", self.__salir)
+
+    def __salir(self, widget=None, senial=None):
+
+        import sys
+        sys.exit(0)
+
+
+if __name__ == "__main__":
+    Ventana()
+    Gtk.main()

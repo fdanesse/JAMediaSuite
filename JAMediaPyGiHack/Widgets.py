@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #   Widgets.py por:
-#       Flavio Danesse <fdanesse@gmail.com>, <fdanesse@activitycentral.com>
-#       CeibalJAM - Uruguay - Activity Central
+#       Flavio Danesse <fdanesse@gmail.com>
+#       Uruguay
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,64 +24,12 @@ import os
 from gi.repository import Gtk
 from gi.repository import GObject
 
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
-BASEPATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(__file__)
 
 from Globales import get_dict
 #from Globales import set_dict
-
-
-def get_separador(draw=False, ancho=0, expand=False):
-    """
-    Devuelve un separador generico.
-    """
-
-    from gi.repository import Gtk
-
-    separador = Gtk.SeparatorToolItem()
-    separador.props.draw = draw
-    separador.set_size_request(ancho, -1)
-    separador.set_expand(expand)
-
-    return separador
-
-
-def get_boton(archivo, flip=False, rotacion=None, pixels=0, tooltip_text=None):
-    """
-    Devuelve un toolbutton generico.
-    """
-
-    from gi.repository import Gtk
-    from gi.repository import GdkPixbuf
-
-    if not pixels:
-        pixels = get_pixels(1)
-
-    boton = Gtk.ToolButton()
-
-    imagen = Gtk.Image()
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-        archivo, pixels, pixels)
-
-    if flip:
-        pixbuf = pixbuf.flip(True)
-
-    if rotacion:
-        pixbuf = pixbuf.rotate_simple(rotacion)
-
-    imagen.set_from_pixbuf(pixbuf)
-    boton.set_icon_widget(imagen)
-
-    imagen.show()
-    boton.show()
-
-    if tooltip_text:
-        boton.set_tooltip_text(tooltip_text)
-        boton.TOOLTIP = tooltip_text
-
-    return boton
+from Globales import get_separador
+from Globales import get_boton
 
 
 class Toolbar(Gtk.Toolbar):
@@ -107,7 +55,7 @@ class Toolbar(Gtk.Toolbar):
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(
-            JAMediaObjectsPath,
+            BASE_PATH,
             "Iconos", "PygiHack.svg")
         boton = get_boton(
             archivo, flip=False,
@@ -126,7 +74,7 @@ class Toolbar(Gtk.Toolbar):
         self.insert(item, -1)
 
         archivo = os.path.join(
-            JAMediaObjectsPath,
+            BASE_PATH,
             "Iconos", "button-cancel.svg")
         boton = get_boton(
             archivo, flip=False,
@@ -356,18 +304,19 @@ class Menu(Gtk.MenuBar):
 
         if menu == "python-gi":
             if widget.get_label() == "gi":
-                ejecutable = os.path.join(BASEPATH, "SpyderHack", "Check.py")
+                ejecutable = os.path.join(
+                    BASE_PATH, "SpyderHack", "Check.py")
 
             else:
-                ejecutable = os.path.join(BASEPATH,
+                ejecutable = os.path.join(BASE_PATH,
                     "SpyderHack", "Gi_Check.py")
 
         elif menu == "python":
-            ejecutable = os.path.join(BASEPATH,
+            ejecutable = os.path.join(BASE_PATH,
                 "SpyderHack", "Check.py")
 
         elif menu == "Otros":
-            ejecutable = os.path.join(BASEPATH,
+            ejecutable = os.path.join(BASE_PATH,
                 "SpyderHack", "Check.py")
 
         else:
@@ -426,7 +375,7 @@ class Credits(Gtk.Dialog):
 
         imagen = Gtk.Image()
         imagen.set_from_file(
-            os.path.join(JAMediaObjectsPath,
+            os.path.join(BASE_PATH,
                 "Iconos", "PyGiHackCredits.svg"))
 
         self.vbox.pack_start(imagen, True, True, 0)
