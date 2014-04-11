@@ -41,7 +41,7 @@ class My_FileChooser(gtk.FileChooserDialog):
     #__gtype_name__ = 'My_FileChooser'
 
     __gsignals__ = {
-    'archivos-seleccionados': (gobject.SIGNAL_RUN_FIRST,
+    'archivos-seleccionados': (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self, parent=None, action=None,
@@ -55,12 +55,13 @@ class My_FileChooser(gtk.FileChooserDialog):
             )
 
         self.modify_bg(0, get_colors("window"))
+        self.set_resizable(True)
+        self.set_size_request(320, 240)
 
         if not path:
             path = "file:///media"
 
         self.set_current_folder_uri(path)
-
         self.set_select_multiple(True)
 
         hbox = gtk.HBox()
@@ -102,10 +103,12 @@ class My_FileChooser(gtk.FileChooserDialog):
             self.add_filter(filtro)
 
         self.add_shortcut_folder_uri("file:///media/")
-
-        self.resize(400, 300)
-
         self.connect("file-activated", self.__file_activated)
+        self.connect("realize", self.__resize)
+
+    def __resize(self, widget):
+
+        self.resize(437, 328)
 
     def __file_activated(self, widget):
         """
@@ -144,7 +147,7 @@ class MenuList(gtk.Menu):
     #__gtype_name__ = 'MenuList'
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_FIRST,
+    'accion': (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
@@ -247,9 +250,9 @@ class JAMediaButton(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "clicked": (gobject.SIGNAL_RUN_FIRST,
+    "clicked": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-    "click_derecho": (gobject.SIGNAL_RUN_FIRST,
+    "click_derecho": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
 
     def __init__(self):
@@ -507,13 +510,18 @@ class Help(gtk.Dialog):
         self.helps = []
 
         for x in range(1, 5):
-            help = gtk.Image()
-            help.set_from_file(
-                os.path.join(BASE_PATH,
-                    "Iconos", "JAMedia-help%s.png" % x))
-            tabla1.attach_defaults(help, 0, 5, 1, 2)
+            try:
+                help = gtk.Image()
+                archivo = os.path.join(BASE_PATH,
+                    "Iconos", "help-%s.svg" % x)
+                pix = gtk.gdk.pixbuf_new_from_file(archivo)
+                help.set_from_pixbuf(pix)
+                tabla1.attach_defaults(help, 0, 5, 1, 2)
 
-            self.helps.append(help)
+                self.helps.append(help)
+
+            except:
+                pass
 
         self.vbox.pack_start(tabla1, True, True, 0)
         self.vbox.show_all()
@@ -577,7 +585,7 @@ class Visor(gtk.DrawingArea):
     #__gtype_name__ = 'Visor'
 
     __gsignals__ = {
-    "ocultar_controles": (gobject.SIGNAL_RUN_FIRST,
+    "ocultar_controles": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
 
     def __init__(self):
@@ -624,7 +632,7 @@ class BarraProgreso(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_LAST,
+    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
@@ -673,7 +681,7 @@ class ProgressBar(gtk.HScale):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_FIRST,
+    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
@@ -777,7 +785,7 @@ class ControlVolumen(gtk.VolumeButton):
     """
 
     __gsignals__ = {
-    "volumen": (gobject.SIGNAL_RUN_FIRST,
+    "volumen": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self):
@@ -787,12 +795,14 @@ class ControlVolumen(gtk.VolumeButton):
         self.connect("value-changed", self.__value_changed)
         self.show_all()
 
+        self.set_value(0.1)
+
     def __value_changed(self, widget, valor):
         """
-        Cuando el usuario desplaza la escala
-        emite el valor en float de 0.0 a 1.0.
+        Cuando el usuario desplaza la escala.
         """
 
+        valor = int(valor * 10)
         self.emit('volumen', valor)
 
 
@@ -806,7 +816,7 @@ class MouseSpeedDetector(gobject.GObject):
     """
 
     __gsignals__ = {
-        'estado': (gobject.SIGNAL_RUN_FIRST,
+        'estado': (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, parent):

@@ -32,9 +32,6 @@ BASE_PATH = os.path.dirname(__file__)
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
 
-#gobject.threads_init()
-#gdk.threads_init()
-
 
 class JAMediaTube(gtk.Window):
     """
@@ -143,8 +140,8 @@ class JAMediaTube(gtk.Window):
         self.jamedia.setup_init()
         self.jamedia.pack_standar()
         #self.jamedia.pack_efectos()
-        self.jamedia.switch_reproductor(
-            None, "JAMediaReproductor")
+        #self.jamedia.switch_reproductor(
+        #    None, "JAMediaReproductor")
 
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()

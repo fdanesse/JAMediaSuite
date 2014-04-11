@@ -14,7 +14,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -25,43 +25,17 @@ import gtk
 from gtk import gdk
 import gobject
 
-from Globales import get_programa
-from Globales import verificar_Gstreamer
 from Globales import get_colors
+from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
+from JAMediaReproductor.JAMediaGrabador import JAMediaGrabador
 
 BASE_PATH = os.path.dirname(__file__)
 
-# HACK: La aplicación nunca debe explotar :P
-if get_programa("mplayer"):
-    from JAMediaReproductor.MplayerReproductor import MplayerReproductor
-    from JAMediaReproductor.MplayerReproductor import MplayerGrabador
-
-else:
-    from JAMediaReproductor.PlayerNull import MplayerReproductor
-    from JAMediaReproductor.PlayerNull import MplayerGrabador
-
-# HACK: La aplicación nunca debe explotar :P
-if verificar_Gstreamer():
-    from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
-    from JAMediaReproductor.JAMediaReproductor import JAMediaGrabador
-
-else:
-    from JAMediaReproductor.PlayerNull import JAMediaReproductor
-    from JAMediaReproductor.PlayerNull import JAMediaGrabador
-
 
 class JAMediaPlayer(gtk.EventBox):
-    """
-    JAMedia:
-        Interfaz grafica de:
-            JAMediaReproductor y MplayerReproductor.
-
-        Implementado sobre:
-            python 2.7.3 y gtk 3
-    """
 
     __gsignals__ = {
-    "salir": (gobject.SIGNAL_RUN_LAST,
+    "salir": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -70,7 +44,6 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.modify_bg(0, get_colors("window"))
 
-        self.timer_next_play = float("{:.1f}".format(time.time()))
         self.pantalla = None
         self.barradeprogreso = None
         self.volumen = None
@@ -80,7 +53,7 @@ class JAMediaPlayer(gtk.EventBox):
         self.toolbar = None
         self.toolbar_list = None
         self.toolbar_config = None
-        self.widget_efectos = None
+        #self.widget_efectos = None
         self.toolbar_accion = None
         self.toolbar_grabar = None
         self.toolbar_info = None
@@ -88,7 +61,7 @@ class JAMediaPlayer(gtk.EventBox):
         self.toolbar_salir = None
 
         self.derecha_vbox = None
-        self.hbox_efectos_en_pipe = None
+        #self.hbox_efectos_en_pipe = None
         self.vbox_config = None
         self.scroll_config = None
         self.evnt_box_lista_reproduccion = None
@@ -96,12 +69,8 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.controles_dinamicos = None
 
-        self.mplayerreproductor = None
-        self.jamediareproductor = None
-        self.mplayergrabador = None
-        self.jamediagrabador = None
-        self.player = None
-        self.grabador = None
+        self.player = False
+        self.grabador = False
 
         self.cursor_root = None
         self.jamedia_cursor = None
@@ -123,7 +92,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         from PlayerList import Lista
         from PlayerControls import PlayerControl
-        from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
+        #from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
 
         from Toolbars import ToolbarSalir
         from Toolbars import Toolbar
@@ -140,7 +109,7 @@ class JAMediaPlayer(gtk.EventBox):
         self.controlesrepro = PlayerControl()
         self.toolbar = Toolbar()
         self.toolbar_config = ToolbarConfig()
-        self.widget_efectos = WidgetsGstreamerEfectos()
+        #self.widget_efectos = WidgetsGstreamerEfectos()
         self.toolbar_accion = ToolbarAccion()
         self.toolbar_grabar = ToolbarGrabar()
         self.toolbar_info = ToolbarInfo()
@@ -165,16 +134,16 @@ class JAMediaPlayer(gtk.EventBox):
         # Area Izquierda del Panel
 
         # Efectos que se están aplicando.
-        eventbox = gtk.EventBox()  # FIXME: Para poder pintar el fondo
-        eventbox.modify_bg(0, get_colors("drawingplayer"))
-        self.hbox_efectos_en_pipe = gtk.HBox()
-        self.hbox_efectos_en_pipe.set_size_request(-1, 24)
-        eventbox.add(self.hbox_efectos_en_pipe)
-        scroll = gtk.ScrolledWindow()
-        scroll.set_policy(
-            gtk.POLICY_AUTOMATIC,
-            gtk.POLICY_NEVER)
-        scroll.add_with_viewport(eventbox)
+        #eventbox = gtk.EventBox()  # FIXME: Para poder pintar el fondo
+        #eventbox.modify_bg(0, get_colors("drawingplayer"))
+        #self.hbox_efectos_en_pipe = gtk.HBox()
+        #self.hbox_efectos_en_pipe.set_size_request(-1, 24)
+        #eventbox.add(self.hbox_efectos_en_pipe)
+        #scroll = gtk.ScrolledWindow()
+        #scroll.set_policy(
+        #    gtk.POLICY_AUTOMATIC,
+        #    gtk.POLICY_NEVER)
+        #scroll.add_with_viewport(eventbox)
 
         # Barra de Progreso + Volúmen
         ev_box = gtk.EventBox()  # FIXME: Para poder pintar el fondo
@@ -190,7 +159,7 @@ class JAMediaPlayer(gtk.EventBox):
         vbox = gtk.VBox()
         vbox.pack_start(self.toolbar_grabar, False, False, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
-        vbox.pack_start(scroll, False, False, 0)
+        #vbox.pack_start(scroll, False, False, 0)
 
         eventbox = gtk.EventBox()  # FIXME: Para poder pintar el fondo
         eventbox.modify_bg(0, get_colors("barradeprogreso"))
@@ -245,8 +214,9 @@ class JAMediaPlayer(gtk.EventBox):
             self.derecha_vbox,
             self.toolbar,
             self.toolbar_info,
-            self.hbox_efectos_en_pipe.get_parent().get_parent(
-                ).get_parent()]
+            #self.hbox_efectos_en_pipe.get_parent().get_parent(
+            #    ).get_parent(),
+            ]
 
         basebox.show_all()
 
@@ -259,47 +229,6 @@ class JAMediaPlayer(gtk.EventBox):
             self.toolbar_info.descarga])
 
         self.add(basebox)
-
-        xid = self.pantalla.get_property('window').xid
-
-        # HACK: La aplicación nunca debe explotar :P
-        if get_programa("mplayer"):
-            self.mplayerreproductor = MplayerReproductor(xid)
-
-        else:
-            self.mplayerreproductor = MplayerReproductor(self.pantalla)
-
-        # HACK: La aplicación nunca debe explotar :P
-        if verificar_Gstreamer():
-            self.jamediareproductor = JAMediaReproductor(xid)
-
-        else:
-            self.jamediareproductor = JAMediaReproductor(self.pantalla)
-
-        self.switch_reproductor(
-            None, "JAMediaReproductor")  # default Gst.
-
-        self.mplayerreproductor.connect(
-            "endfile", self.__endfile)
-        self.mplayerreproductor.connect(
-            "estado", self.__cambioestadoreproductor)
-        self.mplayerreproductor.connect(
-            "newposicion", self.__update_progress)
-        self.mplayerreproductor.connect(
-            "volumen", self.__get_volumen)
-        self.mplayerreproductor.connect(
-            "video", self.__set_video)
-
-        self.jamediareproductor.connect(
-            "endfile", self.__endfile)
-        self.jamediareproductor.connect(
-            "estado", self.__cambioestadoreproductor)
-        self.jamediareproductor.connect(
-            "newposicion", self.__update_progress)
-        self.jamediareproductor.connect(
-            "volumen", self.__get_volumen)
-        self.jamediareproductor.connect(
-            "video", self.__set_video)
 
         self.lista_de_reproduccion.connect(
             "nueva-seleccion",
@@ -318,13 +247,10 @@ class JAMediaPlayer(gtk.EventBox):
             "button_press_event", self.__clicks_en_pantalla)
 
         self.toolbar.connect('salir', self.confirmar_salir)
-        #self.toolbar.connect('capturar', self.fotografiar)
         self.toolbar.connect('config', self.__mostrar_config)
 
         self.toolbar_salir.connect(
             'salir', self.__emit_salir)
-        self.toolbar_config.connect(
-            'reproductor', self.switch_reproductor)
         self.toolbar_config.connect(
             'valor', self.__set_balance)
         self.toolbar_info.connect(
@@ -343,13 +269,14 @@ class JAMediaPlayer(gtk.EventBox):
         self.toolbaraddstream.connect(
             "add-stream", self.__ejecutar_add_stream)
 
-        self.widget_efectos.connect(
-            "click_efecto", self.__click_efecto)
-        self.widget_efectos.connect(
-            'configurar_efecto', self.__configurar_efecto)
+        #self.widget_efectos.connect(
+        #    "click_efecto", self.__click_efecto)
+        #self.widget_efectos.connect(
+        #    'configurar_efecto', self.__configurar_efecto)
 
         # Controlador del mouse.
-        # http://www.pygtk.org/pygtk2reference/class-gdkdisplay.html#function-gdk--display-get-default
+        #   http://www.pygtk.org/pygtk2reference/class-gdkdisplay.html
+        #   #function-gdk--display-get-default
         icono = os.path.join(BASE_PATH,
             "Iconos", "jamedia_cursor.svg")
         pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
@@ -372,18 +299,12 @@ class JAMediaPlayer(gtk.EventBox):
         self.get_parent().connect(
             "show", self.__hide_show_parent)
 
-        self.hbox_efectos_en_pipe.get_parent().get_parent(
-            ).get_parent().hide()
+        #self.hbox_efectos_en_pipe.get_parent().get_parent(
+        #    ).get_parent().hide()
 
         self.get_toplevel().set_sensitive(True)
 
-    # FIXME: La idea es utilizar gdkpixbufsink en el pipe.
-    #def fotografiar(self, widget):
-    #    """
-    #    Captura una imagen desde el video en reproduccion.
-    #    """
-
-    #    self.player.fotografiar()
+        self.derecha_vbox.set_size_request(169, -1)
 
     def pack_standar(self):
         """
@@ -413,24 +334,24 @@ class JAMediaPlayer(gtk.EventBox):
         for child in self.vbox_lista_reproduccion.get_children():
             self.vbox_lista_reproduccion.remove(child)
 
-        self.vbox_lista_reproduccion.pack_start(self.toolbar_list,
-            False, False, 0)
+        self.vbox_lista_reproduccion.pack_start(
+            self.toolbar_list, False, False, 0)
         self.__pack_vbox_lista_reproduccion()
 
         self.get_toplevel().set_sensitive(True)
 
-    def pack_efectos(self):
-        """
-        Empaqueta los widgets de efectos gstreamer.
-        """
+    #def pack_efectos(self):
+    #    """
+    #    Empaqueta los widgets de efectos gstreamer.
+    #    """
 
-        self.vbox_config.pack_start(
-            self.widget_efectos, False, False, 0)
+    #    self.vbox_config.pack_start(
+    #        self.widget_efectos, False, False, 0)
 
-        from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
+    #    from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
 
-        gobject.idle_add(self.__cargar_efectos,
-            list(get_jamedia_video_efectos()))
+    #    gobject.idle_add(self.__cargar_efectos,
+    #        list(get_jamedia_video_efectos()))
 
     def set_nueva_lista(self, lista):
         """
@@ -457,71 +378,11 @@ class JAMediaPlayer(gtk.EventBox):
     def confirmar_salir(self, widget=None, senial=None):
         """
         Recibe salir y lo pasa a la toolbar de confirmación.
-
         Es pública para sobre escritura.
         """
 
         self.__cancel_toolbars_flotantes()
-
         self.toolbar_salir.run("JAMedia")
-
-    def switch_reproductor(self, widget, nombre):
-        """
-        Recibe la señal "reproductor" desde toolbar_config y
-        cambia el reproductor que se utiliza, entre mplayer y
-        jamediareproductor (Gst 1.0).
-        """
-
-        self.get_toplevel().set_sensitive(False)
-
-        reproductor = self.player
-
-        # HACK: JAMediaReproductor no funciona con Tv.
-        #if reproductor == self.mplayerreproductor and \
-        #    ("TV" in self.toolbar_list.label.get_text() or \
-        #    "Tv" in self.toolbar_list.label.get_text()):
-        #        self.toolbar_config.mplayer_boton.set_active(True)
-        #        self.toolbar_config.jamedia_boton.set_active(False)
-        #        return
-
-        if nombre == "MplayerReproductor":
-            if get_programa('mplayer'):
-                reproductor = self.mplayerreproductor
-                self.toolbar_info.set_reproductor("MplayerReproductor")
-                self.toolbar_config.mplayer_boton.set_active(True)
-
-            else:
-                reproductor = self.jamediareproductor
-                self.toolbar_info.set_reproductor("JAMediaReproductor")
-                self.toolbar_config.jamedia_boton.set_active(True)
-
-        elif nombre == "JAMediaReproductor":
-            reproductor = self.jamediareproductor
-            self.toolbar_info.set_reproductor("JAMediaReproductor")
-            self.toolbar_config.jamedia_boton.set_active(True)
-
-        if self.player != reproductor:
-            try:
-                self.player.stop()
-
-            except:
-                pass
-
-            self.player = reproductor
-            print "Reproduciendo con:", self.player.nombre
-
-            try:
-                model, iter = self.lista_de_reproduccion.get_selection(
-                    ).get_selected()
-                valor = model.get_value(iter, 2)
-
-                if self.player:
-                    self.player.load(valor)
-
-            except:
-                pass
-
-        self.get_toplevel().set_sensitive(True)
 
     def __hide_show_parent(self, widget):
         """
@@ -589,22 +450,22 @@ class JAMediaPlayer(gtk.EventBox):
         """
         Configura un efecto en el pipe, si no está en eĺ, lo agrega.
         """
-
-        if not self.player:
-            return
+        pass
+        #if not self.player:
+        #    return
 
         # Si el efecto no está agregado al pipe, lo agrega
-        if self.player.efectos:
-            if not nombre_efecto in self.player.efectos:
-                self.__click_efecto(None, nombre_efecto)
-                self.widget_efectos.seleccionar_efecto(nombre_efecto)
+        #if self.player.efectos:
+        #    if not nombre_efecto in self.player.efectos:
+        #        self.__click_efecto(None, nombre_efecto)
+        #        self.widget_efectos.seleccionar_efecto(nombre_efecto)
 
-        else:
-            self.__click_efecto(None, nombre_efecto)
-            self.widget_efectos.seleccionar_efecto(nombre_efecto)
+        #else:
+        #    self.__click_efecto(None, nombre_efecto)
+        #    self.widget_efectos.seleccionar_efecto(nombre_efecto)
 
         # Setea el efecto
-        self.player.configurar_efecto(nombre_efecto, propiedad, valor)
+        #self.player.configurar_efecto(nombre_efecto, propiedad, valor)
 
     def __click_efecto(self, widget, nombre_efecto):
         """
@@ -612,88 +473,87 @@ class JAMediaPlayer(gtk.EventBox):
         se ha hecho click y decide si debe agregarse
         al pipe de JAMedia.
         """
+        pass
+        #if not self.player:
+        #    return
 
-        if not self.player:
-            return
+        #self.get_toplevel().set_sensitive(False)
 
-        self.get_toplevel().set_sensitive(False)
+        #self.__cancel_toolbars_flotantes()
 
-        self.__cancel_toolbars_flotantes()
+        #agregar = False
 
-        agregar = False
+        #if self.player.efectos:
+        #    if not nombre_efecto in self.player.efectos:
+        #        agregar = True
 
-        if self.player.efectos:
-            if not nombre_efecto in self.player.efectos:
-                agregar = True
+        #else:
+        #    agregar = True
 
-        else:
-            agregar = True
+        #if agregar:
+        #    self.player.agregar_efecto(nombre_efecto)
 
-        if agregar:
-            self.player.agregar_efecto(nombre_efecto)
+        #    from Widgets import WidgetEfecto_en_Pipe
 
-            from Widgets import WidgetEfecto_en_Pipe
+        #    # Agrega un widget a self.hbox_efectos_en_pipe
+        #    botonefecto = WidgetEfecto_en_Pipe()
+        #    botonefecto.set_tooltip(nombre_efecto)
+        #    botonefecto.connect(
+        #        'clicked', self.__clicked_mini_efecto)
+        #    botonefecto.set_tamanio(16, 16)
 
-            # Agrega un widget a self.hbox_efectos_en_pipe
-            botonefecto = WidgetEfecto_en_Pipe()
-            botonefecto.set_tooltip(nombre_efecto)
-            botonefecto.connect(
-                'clicked', self.__clicked_mini_efecto)
-            botonefecto.set_tamanio(16, 16)
+        #    archivo = os.path.join(BASE_PATH,
+        #        "Iconos", 'configurar.svg')
+        #    pixbuf = gdk.pixbuf_new_from_file_at_size(
+        #        archivo, 16, 16)
+        #    botonefecto.imagen.set_from_pixbuf(pixbuf)
 
-            archivo = os.path.join(BASE_PATH,
-                "Iconos", 'configurar.svg')
-            pixbuf = gdk.pixbuf_new_from_file_at_size(
-                archivo, 16, 16)
-            botonefecto.imagen.set_from_pixbuf(pixbuf)
+        #    self.hbox_efectos_en_pipe.pack_start(
+        #        botonefecto, False, False, 0)
+        #    self.hbox_efectos_en_pipe.get_parent().get_parent(
+        #        ).get_parent().show()
 
-            self.hbox_efectos_en_pipe.pack_start(
-                botonefecto, False, False, 0)
-            self.hbox_efectos_en_pipe.get_parent().get_parent(
-                ).get_parent().show()
+        #else:
+        #    self.player.quitar_efecto(nombre_efecto)
 
-        else:
-            self.player.quitar_efecto(nombre_efecto)
+        #    self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
 
-            self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
+        #    # Quitar el widget de self.hbox_efectos_en_pipe
+        #    for efecto in self.hbox_efectos_en_pipe.get_children():
+        #        if efecto.get_tooltip_text() == nombre_efecto:
+        #            efecto.destroy()
+        #            break
 
-            # Quitar el widget de self.hbox_efectos_en_pipe
-            for efecto in self.hbox_efectos_en_pipe.get_children():
-                if efecto.get_tooltip_text() == nombre_efecto:
-                    efecto.destroy()
-                    break
+        #    if not self.hbox_efectos_en_pipe.get_children():
+        #        self.hbox_efectos_en_pipe.get_parent().get_parent(
+        #            ).get_parent().hide()
 
-            if not self.hbox_efectos_en_pipe.get_children():
-                self.hbox_efectos_en_pipe.get_parent().get_parent(
-                    ).get_parent().hide()
-
-        self.get_toplevel().set_sensitive(True)
+        #self.get_toplevel().set_sensitive(True)
 
     def __clicked_mini_efecto(self, widget, void=None):
         """
         Cuando se hace click en el mini objeto en pantalla
         para efecto agregado, este se quita del pipe de la cámara.
         """
+        pass
+        #self.__cancel_toolbars_flotantes()
 
-        self.__cancel_toolbars_flotantes()
+        #nombre_efecto = widget.get_tooltip_text()
+        #self.player.quitar_efecto(nombre_efecto)
+        #self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
+        #widget.destroy()
 
-        nombre_efecto = widget.get_tooltip_text()
-        self.player.quitar_efecto(nombre_efecto)
-        self.widget_efectos.des_seleccionar_efecto(nombre_efecto)
-        widget.destroy()
-
-        if not self.hbox_efectos_en_pipe.get_children():
-            self.hbox_efectos_en_pipe.get_parent().get_parent(
-                ).get_parent().hide()
+        #if not self.hbox_efectos_en_pipe.get_children():
+        #    self.hbox_efectos_en_pipe.get_parent().get_parent(
+        #        ).get_parent().hide()
 
     def __cargar_efectos(self, efectos):
         """
         Agrega los widgets con efectos a la paleta de configuración.
         """
-
-        self.widget_efectos.cargar_efectos(efectos)
-
-        return False
+        pass
+        #self.widget_efectos.cargar_efectos(efectos)
+        #return False
 
     def __actualizar_streamings(self, widget):
         """
@@ -773,11 +633,8 @@ class JAMediaPlayer(gtk.EventBox):
             return
 
         self.get_toplevel().set_sensitive(False)
-
         self.__cancel_toolbars_flotantes()
-
         self.player.rotar(valor)
-
         self.get_toplevel().set_sensitive(True)
 
     def __set_balance(self, widget, valor, tipo):
@@ -813,10 +670,10 @@ class JAMediaPlayer(gtk.EventBox):
         empaquetarse cuando JAMedia es embebida en otra aplicacion.
         """
 
-        self.vbox_lista_reproduccion.pack_start(self.scroll_list,
-            True, True, 0)
-        self.vbox_lista_reproduccion.pack_end(self.controlesrepro,
-            False, True, 0)
+        self.vbox_lista_reproduccion.pack_start(
+            self.scroll_list, True, True, 0)
+        self.vbox_lista_reproduccion.pack_end(
+            self.controlesrepro, False, True, 0)
 
     def __clicks_en_pantalla(self, widget, event):
         """
@@ -893,9 +750,9 @@ class JAMediaPlayer(gtk.EventBox):
 
         elif not zona and ocultar:
             map(self.__mostrar, self.controles_dinamicos)
-            if not self.hbox_efectos_en_pipe.get_children():
-                self.hbox_efectos_en_pipe.get_parent().get_parent(
-                    ).get_parent().hide()
+            #if not self.hbox_efectos_en_pipe.get_children():
+            #    self.hbox_efectos_en_pipe.get_parent().get_parent(
+            #        ).get_parent().hide()
 
         elif not zona and not ocultar:
             pass
@@ -954,17 +811,9 @@ class JAMediaPlayer(gtk.EventBox):
         y llama a seleccionar_siguiente en la lista de reproduccion.
         """
 
-        # FIXME: HACK: A veces no se llega al final del archivo y no
-        # se produce EOS.
-        t = float("{:.1f}".format(time.time()))
-        dif = t - self.timer_next_play
-
-        if dif > 2:
-            self.timer_next_play = t
-
-            self.controlesrepro.set_paused()
-            gobject.idle_add(
-                self.lista_de_reproduccion.seleccionar_siguiente)
+        self.controlesrepro.set_paused()
+        gobject.idle_add(
+            self.lista_de_reproduccion.seleccionar_siguiente)
 
     def __cambioestadoreproductor(self, widget=None, valor=None):
         """
@@ -1047,21 +896,41 @@ class JAMediaPlayer(gtk.EventBox):
         reproduccion y lo manda al reproductor.
         """
 
-        # HACK: Cuando cambia de pista se deben
-        # reestablecer los valores de balance para
-        # que no cuelgue la aplicación, por lo tanto,
-        # el usuario no puede estar modificando estos
-        # valores en el momento en que cambia la pista
-        # en el reproductor.
-
         self.get_toplevel().set_sensitive(False)
 
         visible = self.scroll_config.get_visible()
         if visible:
             self.scroll_config.hide()
 
+        # FIXME: Analizar mantener los siguientes valores:
+        # Efectos
+        # balanace
+        # Gamma
+        # Rotacion
+        # Volumen
+
+        volumen = 1.0
         if self.player:
-            self.player.load(path)
+            volumen = float("{:.1f}".format(self.volumen.get_value()*10))
+            self.player.stop()
+            del(self.player)
+
+        xid = self.pantalla.get_property('window').xid
+
+        self.player = JAMediaReproductor(xid)
+
+        self.player.connect(
+            "endfile", self.__endfile)
+        self.player.connect(
+            "estado", self.__cambioestadoreproductor)
+        self.player.connect(
+            "newposicion", self.__update_progress)
+        #self.player.connect(
+        #    "video", self.__set_video)
+
+        self.player.load(path)
+        self.player.set_volumen(volumen)
+        self.volumen.set_value(volumen/10)
 
         if visible:
             self.scroll_config.show()
@@ -1075,6 +944,7 @@ class JAMediaPlayer(gtk.EventBox):
         JAMedia.
         """
 
+        # FIXME: Verificar no detener nada para caso embebido
         if self.grabador:
             self.grabador.stop()
 
@@ -1350,16 +1220,15 @@ class JAMediaPlayer(gtk.EventBox):
         la toolbar_accion.
         """
 
-        if not self.player:
-            return
-
         self.get_toplevel().set_sensitive(False)
 
         self.__detener_grabacion()
 
         tipo = "video"
-        if "TV" in self.toolbar_list.label.get_text() or \
-            "Tv" in self.toolbar_list.label.get_text():
+        label = self.toolbar_list.label.get_text()
+        if label == "JAM-TV" or \
+            label == "TVs" or \
+            label == "WebCams":
                 tipo = "video"
 
         else:
@@ -1376,11 +1245,7 @@ class JAMediaPlayer(gtk.EventBox):
         archivo = "%s-%s" % (fecha, hora)
         archivo = os.path.join(get_my_files_directory(), archivo)
 
-        if self.player == self.jamediareproductor:
-            self.grabador = JAMediaGrabador(uri, archivo, tipo)
-
-        elif self.player == self.mplayerreproductor:
-            self.grabador = MplayerGrabador(uri, archivo, tipo)
+        self.grabador = JAMediaGrabador(uri, archivo, tipo)
 
         self.grabador.connect('update', self.__update_grabador)
         self.grabador.connect('endfile', self.__detener_grabacion)
@@ -1399,8 +1264,10 @@ class JAMediaPlayer(gtk.EventBox):
         Detiene la Grabación en Proceso.
         """
 
-        if self.grabador != None:
+        if self.grabador:
             self.grabador.stop()
+            del(self.grabador)
+            self.grabador = False
 
         self.toolbar_grabar.stop()
 
@@ -1409,16 +1276,8 @@ class JAMediaPlayer(gtk.EventBox):
         Cuando el usuario cambia el volumen.
         """
 
-        valor = valor * 100
         if self.player:
             self.player.set_volumen(valor)
-
-    def __get_volumen(self, widget, valor):
-        """
-        El volumen con el que se reproduce actualmente.
-        """
-
-        self.volumen.set_value(valor)
 
     def __set_video(self, widget, valor):
         """
