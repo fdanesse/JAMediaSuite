@@ -3,7 +3,7 @@
 
 #   Widgets.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
-#   CeibalJAM - Uruguay
+#   Uruguay
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,17 +19,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
-
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource
 from gi.repository import GLib
 
+
 class TreeView(Gtk.TreeView):
-    
-    __gtype_name__ = 'TreeViewManTree'
-    
+
+    #__gtype_name__ = 'TreeViewManTree'
+
     __gsignals__ = {
     'nueva-seleccion': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
@@ -37,110 +36,111 @@ class TreeView(Gtk.TreeView):
     def __init__(self, dict):
 
         Gtk.TreeView.__init__(self, Gtk.TreeStore(GObject.TYPE_STRING))
-        
+
         self.set_property("rules-hint", True)
         self.set_property("enable-tree-lines", True)
-        
+
         self.__set_columnas()
         self.set_headers_visible(False)
-        
+
         self.valor_select = None
 
         self.show_all()
-        
-        self.get_selection().set_select_function(self.__selecciones, self.get_model())
-        
+
+        self.get_selection().set_select_function(
+            self.__selecciones, self.get_model())
+
         items = []
         for grupo in dict.keys():
             items.append([grupo, dict[grupo].keys()])
-            
+
         self.connect("key-press-event", self.keypress)
-        
+
         GLib.idle_add(self.__load_estructura, items)
 
     def keypress(self, widget, event):
-        
+
         tecla = event.get_keycode()[1]
         model, iter = self.get_selection().get_selected()
         path = model.get_path(iter)
-        
+
         if tecla == 22:
             if self.row_expanded(path):
                 self.collapse_row(path)
-                
+
         elif tecla == 113:
             if self.row_expanded(path):
                 self.collapse_row(path)
-                
+
         elif tecla == 114:
             if not self.row_expanded(path):
                 self.expand_to_path(path)
-        
+
         return False
-    
+
     def __set_columnas(self):
         """
         Crea y agrega las columnas al TreeView.
         """
-        
+
         render = Gtk.CellRendererText()
         columna = Gtk.TreeViewColumn('text', render, text=0)
         columna.set_property('resizable', True)
         columna.set_property('visible', True)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         self.append_column(columna)
-        
+
     def __load_estructura(self, estructura):
         """
         Carga La Estructura del Man.
         """
-        
+
         self.get_model().clear()
-        
+
         iter = self.get_model().get_iter_first()
-        
+
         hijos = []
         for item in estructura:
             grupo, items = item
             iteractual = self.get_model().append(iter, [grupo])
-            
+
             hijos.append([self.get_model().get_path(iteractual), items])
-            
+
         for hijo in hijos:
             path, items = hijo
             iter = self.get_model().get_iter(path)
-            
+
             for item in items:
                 self.get_model().append(iter, [item])
-                
+
     def __selecciones(self, treeselection, model, path, is_selected, listore):
         """
         Cuando se selecciona un item en la lista.
         """
-        
+
         # model y listore son ==
         iter = model.get_iter(path)
-        valor =  model.get_value(iter, 0)
-        
+        valor = model.get_value(iter, 0)
+
         if not is_selected and self.valor_select != valor:
             self.scroll_to_cell(model.get_path(iter))
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
             self.scroll_to_cell(path)
-            
+
         return True
-    
+
     def do_row_activated(self, path, column):
         """
         Cuando se hace doble click sobre una fila.
         """
-        
+
         if self.row_expanded(path):
             self.collapse_row(path)
-            
+
         else:
             self.expand_to_path(path)
-    
+
     '''
     # FIXME: Reescribir.
     def do_key_press_event(self, event):
@@ -159,10 +159,10 @@ class TreeView(Gtk.TreeView):
         if tecla == 65293:
             if self.row_expanded(path):
                 self.collapse_row(path)
-                
+
             else:
                 self.expand_to_path(path)
-    
+
         elif tecla == 65361:
 
             if self.row_expanded(path):
@@ -174,11 +174,11 @@ class TreeView(Gtk.TreeView):
             if len_max > 1:
                 path = str(path).split(":")
                 path_str = ""
-                
+
                 for x in path:
                     if path_str != "":
                         path_str = path_str + ":" + x
-                        
+
                     else:
                         path_str = x
 
@@ -190,7 +190,7 @@ class TreeView(Gtk.TreeView):
                     iter = self.get_model().get_iter(new_path)
                     self.get_selection().select_iter(iter)
                     self.scroll_to_cell(new_path)
-                    
+
                 except:
                     return False
             else:
@@ -205,21 +205,21 @@ class TreeView(Gtk.TreeView):
 
         else:
             pass
-        
+
         return False'''
-    
+
+
 class SourceView(GtkSource.View):
 
-    __gtype_name__ = 'SourceViewManTree'
-    
+    #__gtype_name__ = 'SourceViewManTree'
+
     def __init__(self):
 
         GtkSource.View.__init__(self)
-        
+
         self.set_editable(False)
-        
+
         self.set_insert_spaces_instead_of_tabs(True)
         self.set_tab_width(4)
-        
+
         self.show_all()
-        

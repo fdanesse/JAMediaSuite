@@ -25,9 +25,6 @@ import os
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
 home = os.environ["HOME"]
 BatovideWorkSpace = os.path.join(
     home, 'BatovideWorkSpace')
@@ -35,12 +32,12 @@ BatovideWorkSpace = os.path.join(
 if not os.path.exists(BatovideWorkSpace):
     os.mkdir(BatovideWorkSpace)
 
-PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(__file__)
 
 screen = Gdk.Screen.get_default()
 css_provider = Gtk.CssProvider()
 style_path = os.path.join(
-    PATH, "JAMediaEditor", "Estilo.css")
+    BASE_PATH, "Estilo.css")
 css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
 
@@ -68,7 +65,7 @@ class JAMediaEditor(Gtk.Window):
         self.set_title("JAMediaEditor")
 
         self.set_icon_from_file(os.path.join(
-            "JAMediaEditor", "Iconos",
+            BASE_PATH, "Iconos",
             "JAMediaEditor2.svg"))
 
         self.set_resizable(True)
@@ -82,9 +79,9 @@ class JAMediaEditor(Gtk.Window):
         base_widget = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL)
 
-        from JAMediaEditor.Widgets import Menu
-        from JAMediaEditor.BasePanel import BasePanel
-        from JAMediaEditor.Toolbars import ToolbarEstado
+        from Widgets import Menu
+        from BasePanel import BasePanel
+        from Toolbars import ToolbarEstado
         from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack
 
         self.menu = Menu(accel_group)

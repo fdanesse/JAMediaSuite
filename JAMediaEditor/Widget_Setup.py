@@ -995,9 +995,9 @@ class DialogoInstall(Gtk.Dialog):
         self.destino_path = destino_path
         self.dirpath = dirpath
 
-        from JAMediaObjects.JAMediaTerminal import JAMediaTerminal
+        from JAMediaTerminal.Terminal import Terminal
 
-        self.terminal = JAMediaTerminal()
+        self.terminal = Terminal()
 
         self.vbox.pack_start(self.terminal, True, True, 0)
 

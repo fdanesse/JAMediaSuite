@@ -28,10 +28,7 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
 
-import JAMediaObjects
-JAMediaObjectsPath = JAMediaObjects.__path__[0]
-
-BASEPATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(__file__)
 
 
 class Menu(Gtk.MenuBar):
@@ -1194,7 +1191,7 @@ class ErroresTreeview(Gtk.TreeView):
         arch.write(texto)
         arch.close()
 
-        check = os.path.join(BASEPATH, "Check1.py")
+        check = os.path.join(BASE_PATH, "Check1.py")
         errores = commands.getoutput(
             'python %s %s' % (check, path))
 
@@ -1213,7 +1210,7 @@ class ErroresTreeview(Gtk.TreeView):
             except:
                 pass
 
-        check = os.path.join(BASEPATH, "Check2.py")
+        check = os.path.join(BASE_PATH, "Check2.py")
         errores = commands.getoutput(
             'python %s %s' % (check, path))
 
@@ -1609,7 +1606,7 @@ class Credits(Gtk.Dialog):
         imagen = Gtk.Image()
 
         imagen.set_from_file(
-            os.path.join(JAMediaObjectsPath,
+            os.path.join(BASE_PATH,
                 "Iconos", "JAMediaEditorCredits.svg"))
 
         self.vbox.pack_start(imagen, False, False, 0)
