@@ -168,6 +168,8 @@ class TubeListDialog(gtk.Dialog):
                 buttons=("OK", gtk.RESPONSE_ACCEPT))
 
             dialog.set_border_width(15)
+            dialog.set_decorated(False)
+            dialog.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
             label = gtk.Label("Todas las Listas han sido Eliminadas.")
             dialog.vbox.pack_start(label, True, True, 0)

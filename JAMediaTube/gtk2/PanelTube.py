@@ -298,6 +298,8 @@ class PanelTube(gtk.HPaned):
                     "Cancelar", gtk.RESPONSE_CANCEL))
 
                 dialog.set_border_width(15)
+                dialog.set_decorated(False)
+                dialog.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
                 text = "Ya Existe un Album de Búsquedas con Este Nombre.\n"
                 text = "%s%s" % (text, "¿Deseas Suplantarlo?")
@@ -324,6 +326,8 @@ class PanelTube(gtk.HPaned):
                 buttons=("OK", gtk.RESPONSE_CANCEL))
 
             dialog.set_border_width(15)
+            dialog.set_decorated(False)
+            dialog.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
             label = gtk.Label("Videos Almacenados.")
             dialog.vbox.pack_start(label, True, True, 0)

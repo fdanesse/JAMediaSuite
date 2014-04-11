@@ -729,7 +729,7 @@ class Help(gtk.Dialog):
             help = gtk.Image()
             help.set_from_file(
                 os.path.join(BASE_PATH,
-                    "Iconos", "JAMediaTube-help%s.png" % x))
+                "Iconos", "help-%s.svg" % x))
             tabla1.attach_defaults(help, 0, 5, 1, 2)
 
             self.helps.append(help)

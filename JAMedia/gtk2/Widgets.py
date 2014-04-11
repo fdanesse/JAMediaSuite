@@ -463,7 +463,7 @@ class Credits(gtk.Dialog):
         imagen = gtk.Image()
         imagen.set_from_file(
             os.path.join(BASE_PATH,
-                "Iconos", "JAMediaCredits.svg"))
+            "Iconos", "JAMediaCredits.svg"))
 
         self.vbox.pack_start(imagen, True, True, 0)
         self.vbox.show_all()
@@ -512,10 +512,9 @@ class Help(gtk.Dialog):
         for x in range(1, 5):
             try:
                 help = gtk.Image()
-                archivo = os.path.join(BASE_PATH,
-                    "Iconos", "help-%s.svg" % x)
-                pix = gtk.gdk.pixbuf_new_from_file(archivo)
-                help.set_from_pixbuf(pix)
+                help.set_from_file(
+                    os.path.join(BASE_PATH,
+                    "Iconos", "help-%s.svg" % x))
                 tabla1.attach_defaults(help, 0, 5, 1, 2)
 
                 self.helps.append(help)
