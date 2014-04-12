@@ -66,7 +66,16 @@ class Toolbar(gtk.EventBox):
         toolbar.insert(item, -1)
 
         toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+            ancho=3, expand=False), -1)
+
+        self.toolbars_container = gtk.HBox()
+        item = gtk.ToolItem()
+        item.set_expand(True)
+        item.add(self.toolbars_container)
+        toolbar.insert(item, -1)
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "button-cancel.svg")
@@ -78,6 +87,9 @@ class Toolbar(gtk.EventBox):
 
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
+
+        self.toolbars_container.pack_start(
+            ToolbarPrincipal(), True, True, 0)
 
         self.add(toolbar)
         self.show_all()
@@ -185,10 +197,12 @@ class ToolbarPrincipal(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
+        self.set_border_width(4)
+
         toolbar = gtk.Toolbar()
 
-        self.modify_bg(0, get_colors("drawingplayer"))
-        toolbar.modify_bg(0, get_colors("drawingplayer"))
+        self.modify_bg(0, get_colors("toolbars"))
+        toolbar.modify_bg(0, get_colors("toolbars"))
 
         toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)

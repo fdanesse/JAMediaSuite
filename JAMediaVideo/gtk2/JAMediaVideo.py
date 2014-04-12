@@ -50,30 +50,10 @@ class JAMediaVideo(gtk.Window):
         self.modify_bg(0, get_colors("window"))
         self.set_position(gtk.WIN_POS_CENTER)
 
-        self.jamediawebcam = None
-
         self.toolbar = None
         self.toolbar_salir = None
-        self.toolbarprincipal = None
-
-        # Sockets para Aplicaciones Embebidas
-        #self.socketjamediavideo = None
-        #self.socketjamediafotografia = None
-        #self.socketjamediaaudio = None
-        #self.socketjamedia = None
-        #self.socketjamimagenes = None
-
-        # Aplicaciones Embebidas
-        #self.jamediavideo = None
-        #self.jamediafotografia = None
-        #self.jamediaaudio = None
-        #self.jamediaplayer = None
-        #self.jamimagenes = None
-
+        self.jamediawebcam = None
         self.pantalla = None
-
-        self.controlesdinamicos = None
-
         self.pistas = []
 
         self.__setup_init()
@@ -86,13 +66,6 @@ class JAMediaVideo(gtk.Window):
         from Widgets import Visor
         from Toolbars import ToolbarSalir
         from Toolbars import Toolbar
-        from Toolbars import ToolbarPrincipal
-        #from JAMediaVideoAplicaciones import JAMediaVideoWidget
-        #from JAMediaVideoAplicaciones import JAMediaFotografiaWidget
-        #from JAMediaVideoAplicaciones import JAMediaAudioWidget
-
-        #from JAMedia.JAMedia import JAMediaPlayer
-        #from JAMImagenes2.JAMImagenes import JAMImagenes
 
         vbox = gtk.VBox()
         self.add(vbox)
@@ -100,42 +73,11 @@ class JAMediaVideo(gtk.Window):
 
         self.toolbar = Toolbar()
         self.toolbar_salir = ToolbarSalir()
-        self.toolbarprincipal = ToolbarPrincipal()
-
-        #self.socketjamediavideo = gtk.Socket()
-        #self.socketjamediafotografia = gtk.Socket()
-        #self.socketjamediaaudio = gtk.Socket()
-        #self.socketjamedia = gtk.Socket()
-        #self.socketjamimagenes = gtk.Socket()
-
         self.pantalla = Visor()
 
         vbox.pack_start(self.toolbar, False, True, 0)
         vbox.pack_start(self.toolbar_salir, False, True, 0)
-        vbox.pack_start(self.toolbarprincipal, False, True, 0)
-
-        #vbox.pack_start(self.socketjamediavideo, True, True, 0)
-        #vbox.pack_start(self.socketjamediafotografia, True, True, 0)
-        #vbox.pack_start(self.socketjamediaaudio, True, True, 0)
-        #vbox.pack_start(self.socketjamedia, True, True, 0)
-        #vbox.pack_start(self.socketjamimagenes, True, True, 0)
-
         vbox.pack_start(self.pantalla, True, True, 0)
-
-        #self.jamediavideo = JAMediaVideoWidget()
-        #self.socketjamediavideo.add_id(self.jamediavideo.get_id())
-
-        #self.jamediafotografia = JAMediaFotografiaWidget()
-        #self.socketjamediafotografia.add_id(self.jamediafotografia.get_id())
-
-        #self.jamediaaudio = JAMediaAudioWidget()
-        #self.socketjamediaaudio.add_id(self.jamediaaudio.get_id())
-
-        #self.jamediaplayer = JAMediaPlayer()
-        #self.socketjamedia.add_id(self.jamediaplayer.get_id())
-
-        #self.jamimagenes = JAMImagenes()
-        #self.socketjamimagenes.add_id(self.jamimagenes.get_id())
 
         self.show_all()
         self.realize()
@@ -147,58 +89,20 @@ class JAMediaVideo(gtk.Window):
         Inicializa la aplicación a su estado fundamental.
         """
 
-        #from JAMediaWebCam import JAMediaWebCam
-
-        #self.jamediaplayer.setup_init()
-        #self.jamediaplayer.switch_reproductor(None, "JAMediaReproductor")
-
-        #self.jamediavideo.setup_init()
-        #self.jamediafotografia.setup_init()
-        #self.jamediaaudio.setup_init()
-
-        #self.controlesdinamicos = [
-        #    self.toolbar,
-        #    self.toolbar_salir,
-        #    self.toolbarprincipal,
-        #    self.socketjamediavideo,
-        #    self.socketjamediafotografia,
-        #    self.socketjamediaaudio,
-        #    self.socketjamedia,
-        #    self.socketjamimagenes]
-
-        #map(self.__ocultar, self.controlesdinamicos)
-        #map(self.__mostrar, [self.toolbar, self.toolbarprincipal])
-
-        #from gi.repository import gdkX11
+        from JAMediaWebCamView import JAMediaWebCamView
 
         xid = self.pantalla.get_property('window').xid
-        #self.jamediawebcam = JAMediaWebCam(xid)
+        self.jamediawebcam = JAMediaWebCamView(xid)
 
         self.toolbar.connect('salir', self.__confirmar_salir)
         self.toolbar_salir.connect('salir', self.__salir)
-        self.toolbarprincipal.connect("menu", self.__get_menu)
-
-        #self.jamediavideo.connect('salir', self.__get_menu_base)
-        #self.jamediafotografia.connect('salir', self.__get_menu_base)
-        #self.jamediaaudio.connect('salir', self.__get_menu_base)
-        #self.jamediaplayer.connect('salir', self.__get_menu_base)
-        #self.jamimagenes.connect('salir', self.__get_menu_base)
-
         self.pantalla.connect("button_press_event", self.__clicks_en_pantalla)
 
         self.connect("delete-event", self.__salir)
 
         #self.fullscreen()
 
-        #from JAMediaObjects.JAMediaGlobales import get_video_efectos
-        #from JAMediaObjects.JAMediaGlobales import get_visualizadores
-
-        #self.jamediavideo.cargar_efectos(list(get_video_efectos()))
-        #self.jamediafotografia.cargar_efectos(list(get_video_efectos()))
-        #self.jamediaaudio.cargar_efectos(list(get_video_efectos()))
-        #self.jamediaaudio.cargar_visualizadores(list(get_visualizadores()))
-
-        #gobject.idle_add(self.jamediawebcam.reset)
+        gobject.idle_add(self.jamediawebcam.play)
 
         #if self.pistas:
         #    # FIXME: Agregar reconocer tipo de archivo para cargar
