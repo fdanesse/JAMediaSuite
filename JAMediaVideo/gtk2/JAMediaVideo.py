@@ -30,6 +30,12 @@ from Globales import get_imagenes_directory
 from Globales import get_video_directory
 from Globales import get_colors
 
+from Toolbars import Toolbar
+from Toolbars import ToolbarSalir
+from Widgets import Visor
+
+from JAMediaWebCamView import JAMediaWebCamView
+
 BASE_PATH = os.path.dirname(__file__)
 
 gobject.threads_init()
@@ -50,22 +56,8 @@ class JAMediaVideo(gtk.Window):
         self.modify_bg(0, get_colors("window"))
         self.set_position(gtk.WIN_POS_CENTER)
 
-        self.toolbar = None
-        self.toolbar_salir = None
         self.jamediawebcam = None
-        self.pantalla = None
         self.pistas = []
-
-        self.__setup_init()
-
-    def __setup_init(self):
-        """
-        Genera y empaqueta toda la interfaz.
-        """
-
-        from Widgets import Visor
-        from Toolbars import ToolbarSalir
-        from Toolbars import Toolbar
 
         vbox = gtk.VBox()
         self.add(vbox)
@@ -79,30 +71,24 @@ class JAMediaVideo(gtk.Window):
         vbox.pack_start(self.toolbar_salir, False, True, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
 
-        self.show_all()
-        self.realize()
-
-        gobject.idle_add(self.__setup_init2)
-
-    def __setup_init2(self):
-        """
-        Inicializa la aplicación a su estado fundamental.
-        """
-
-        from JAMediaWebCamView import JAMediaWebCamView
-
-        xid = self.pantalla.get_property('window').xid
-        self.jamediawebcam = JAMediaWebCamView(xid)
-
         self.toolbar.connect('salir', self.__confirmar_salir)
         self.toolbar_salir.connect('salir', self.__salir)
-        self.pantalla.connect("button_press_event", self.__clicks_en_pantalla)
+        self.pantalla.connect("button_press_event",
+            self.__clicks_en_pantalla)
 
         self.connect("delete-event", self.__salir)
 
-        #self.fullscreen()
+        self.show_all()
+        self.realize()
 
-        gobject.idle_add(self.jamediawebcam.play)
+        gobject.idle_add(self.__run)
+
+    def __run(self):
+
+        self.toolbar_salir.hide()
+
+        xid = self.pantalla.get_property('window').xid
+        self.jamediawebcam = JAMediaWebCamView(xid)
 
         #if self.pistas:
         #    # FIXME: Agregar reconocer tipo de archivo para cargar
@@ -112,6 +98,10 @@ class JAMediaVideo(gtk.Window):
         #    map(self.__ocultar, [self.pantalla])
         #    map(self.__mostrar, [self.socketjamedia])
         #    self.jamediaplayer.set_nueva_lista(self.pistas)
+
+        #self.fullscreen()
+        self.toolbar.switch("menu")
+        gobject.idle_add(self.jamediawebcam.play)
 
     def __clicks_en_pantalla(self, widget, event):
         """
@@ -141,83 +131,14 @@ class JAMediaVideo(gtk.Window):
 
             self.get_toplevel().set_sensitive(True)
 
-    def __get_menu_base(self, widget):
-        """
-        Cuando se sale de un menú particular,
-        se vuelve al menú principal.
-        """
-        pass
-        #map(self.__ocultar, self.controlesdinamicos)
-        #map(self.__mostrar, [self.toolbar,
-        #    self.toolbarprincipal, self.pantalla])
+    #def __get_menu_base(self, widget):
+    #    """
+    #    Cuando se sale de un menú particular,
+    #    se vuelve al menú principal.
+    #    """
 
-        #gobject.idle_add(self.jamediawebcam.reset)
-
-    def __get_menu(self, widget, menu):
-        """
-        Cuando se hace click en algún botón de
-        la toolbar principal, se entra en el menú
-        correspondiente o se ejecuta determinada acción.
-        """
-        pass
-        #map(self.__ocultar, self.controlesdinamicos)
-
-        #if menu == "Filmar":
-        #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamediavideo])
-        #    self.jamediavideo.play()
-
-        #elif menu == "Fotografiar":
-        #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamediafotografia])
-        #    self.jamediafotografia.play()
-
-        #elif menu == "Grabar":
-        #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamediaaudio])
-        #    self.jamediaaudio.play()
-
-        #elif menu == "Reproducir":
-        #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamedia])
-        #    archivos = []
-
-        #    for arch in os.listdir(get_audio_directory()):
-        #        ar = os.path.join(get_audio_directory(), arch)
-        #        archivos.append([arch, ar])
-
-        #    for arch in os.listdir(get_video_directory()):
-        #        ar = os.path.join(get_video_directory(), arch)
-        #        archivos.append([arch, ar])
-
-        #    gobject.idle_add(self.jamediaplayer.set_nueva_lista, archivos)
-
-        #elif menu == "Ver":
-        #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamimagenes])
-
-        #    self.jamimagenes.switch_to(None, get_imagenes_directory())
-
-    def __ocultar(self, objeto):
-        """
-        Esta funcion es llamada desde self.get_menu()
-        """
-
-        if objeto.get_visible():
-            objeto.hide()
-
-    def __mostrar(self, objeto):
-        """
-        Esta funcion es llamada desde self.get_menu()
-        """
-
-        if not objeto.get_visible():
-            objeto.show()
+    #    # detener camaras
+    #    self.toolbar.switch("Ver")
 
     def set_pistas(self, pistas):
 

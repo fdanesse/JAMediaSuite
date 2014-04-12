@@ -41,11 +41,6 @@ class JAMediaWebCamView(gobject.GObject):
         src.set_property("device", "/dev/video0")
         self.camerabin.set_property("video-source", src)
 
-        #pantalla = gst.element_factory_make(
-        #    'xvimagesink', "pantalla")
-        #pantalla.set_property(
-        #    "force-aspect-ratio", True)
-
         self.bus = self.camerabin.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
 
