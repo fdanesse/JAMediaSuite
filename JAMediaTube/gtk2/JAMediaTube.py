@@ -396,11 +396,11 @@ class JAMediaTube(gtk.Window):
 
     def __salir(self, widget=None, senial=None):
 
-        # FIXME: Hay que Mejorar esta forma de salir.
-        import commands
+        #import commands
         import sys
 
-        commands.getoutput('killall mplayer')
+        #commands.getoutput('killall mplayer')
+        gtk.main_quit()
         sys.exit(0)
 
     def set_pistas(self, pistas):

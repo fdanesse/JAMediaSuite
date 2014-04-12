@@ -777,7 +777,6 @@ class DialogoReemplazar(Gtk.Dialog):
         Busca el texto en el buffer.
         """
 
-        # FIXME: hay un error, ver en la web
         try:
             texto = self.buscar_entry.get_text()
             _buffer = self.view.get_buffer()
@@ -813,7 +812,10 @@ class DialogoReemplazar(Gtk.Dialog):
                 else:
                     buffer.select_range(posicion, posicion)
         except:
-            print "Error en __buscar de DialogoReemplazar"
+            # print "Error en __buscar de DialogoReemplazar"
+            # Cuando se reemplaza texto y llega al final del archivo,
+            # al parecer no afecta en nada a la aplicación.
+            pass
 
     def __destroy(self, widget=None, event=None):
 

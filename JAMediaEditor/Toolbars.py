@@ -564,8 +564,11 @@ class ToolbarEstado(Gtk.Toolbar):
         arch = _dict['archivo']
 
         text = self.label.get_text()
-        new_text = "Archivo: %s  Lineas: %s  Caracteres: %s" % (
+        new_text = u"Archivo: %s  Lineas: %s  Caracteres: %s" % (
             arch, reng, carac)
 
-        if text != new_text:
-            self.label.set_text(new_text)
+        try:
+            if text != new_text:
+                self.label.set_text(new_text)
+        except:
+            pass

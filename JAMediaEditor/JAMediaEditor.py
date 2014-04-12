@@ -218,12 +218,12 @@ class JAMediaEditor(Gtk.Window):
 
         # FIXME: Esta funcion se ejecuta tambien cuando se cambia de lengueta,
         # por este motivo detener_ejecucion() no debe llamarse aquí.
-        #self.base_panel.workpanel.detener_ejecucion()
+        # self.base_panel.workpanel.detener_ejecucion()
 
         self.menu.activar_proyecto(valor)
         self.base_panel.toolbarproyecto.activar_proyecto(valor)
 
-        ### Ejecuciones
+        # Ejecuciones
         self.base_panel.toolbararchivo.activar_ejecucion(False)
 
         if valor:
@@ -250,12 +250,12 @@ class JAMediaEditor(Gtk.Window):
 
         elif valor:
             if tipo == "proyecto":
-                ### Se está ejecutando proyecto.
+                # Se está ejecutando proyecto.
                 self.base_panel.toolbararchivo.activar_ejecucion(None)
                 self.base_panel.toolbarproyecto.activar_ejecucion(True)
 
             elif tipo == "archivo":
-                ### Se está ejecutando archivo.
+                # Se está ejecutando archivo.
                 self.base_panel.toolbarproyecto.activar_ejecucion(None)
                 self.base_panel.toolbararchivo.activar_ejecucion(True)
 

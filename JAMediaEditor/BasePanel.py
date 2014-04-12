@@ -407,7 +407,7 @@ class BasePanel(Gtk.Paned):
         # character u'\xed' in position 13: ordinal not in range(128)
         try:
             for autor in proyecto["autores"]:
-                arch.write("%s %s\n" % (autor[0], autor[1]))
+                arch.write(u"%s %s\n" % (autor[0], autor[1]))
 
         except:
             pass

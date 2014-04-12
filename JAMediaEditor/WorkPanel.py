@@ -380,8 +380,12 @@ class Notebook_SourceView(Gtk.Notebook):
                 view = pagina.get_child()
 
                 # FIXME: No permitir abrir dos veces el mismo archivo?
-                if view.archivo and view.archivo == archivo:
-                    return
+                if view.archivo:
+                    arch1 = os.path.join(view.archivo)
+                    arch2 = os.path.join(archivo)
+
+                    if arch1 == arch2:
+                        return
 
             sourceview = SourceView(self.config)
 

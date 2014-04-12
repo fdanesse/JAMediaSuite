@@ -791,8 +791,18 @@ class SourceView(GtkSource.View):
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         clipboard_texto = bool(clipboard.wait_for_text())
 
-        deshacer = _buffer.can_undo()
-        rehacer = _buffer.can_redo()
+        deshacer = False
+        rehacer = False
+
+        try:
+            deshacer = _buffer.can_undo()
+        except:
+            pass
+
+        try:
+            rehacer = _buffer.can_redo()
+        except:
+            pass
 
         renglones = self.get_buffer().get_line_count()
         caracteres = self.get_buffer().get_char_count()
