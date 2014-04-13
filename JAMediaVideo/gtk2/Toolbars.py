@@ -144,7 +144,18 @@ class Toolbar(gtk.EventBox):
         dialog.destroy()
 
     def __get_menu(self, widget, menu):
+        """
+        Muestra la toolbar correspondiente a:
+            Filmar
+            Grabar Audio
+            Fotografiar
+            Reproducir Audio y Video
+            Ver Imágenes
+            Convertir audio o video y/o extraer audio, video o imágenes
+        """
 
+        # al cambiar el modo, se deben detener las grabaciones y reproducciones
+        # se deben ocultar los widgets de configuración.
         self.switch(menu)
 
     def switch(self, modo):

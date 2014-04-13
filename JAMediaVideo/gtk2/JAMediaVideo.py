@@ -44,7 +44,7 @@ class JAMediaVideo(gtk.Window):
 
     def __init__(self):
 
-        super(JAMediaVideo, self).__init__()
+        gtk.Window.__init__(self)
 
         self.set_title("JAMediaVideo")
         self.set_icon_from_file(os.path.join(BASE_PATH,
@@ -81,8 +81,8 @@ class JAMediaVideo(gtk.Window):
     def __run(self):
 
         self.toolbar_salir.hide()
+        self.base_panel.pack_efectos()
         self.base_panel.run()
-
         #if self.pistas:
         #    # FIXME: Agregar reconocer tipo de archivo para cargar
         #    # la lista en jamedia o jamediaimagenes.
