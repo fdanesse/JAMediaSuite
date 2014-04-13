@@ -32,9 +32,7 @@ from Globales import get_colors
 
 from Toolbars import Toolbar
 from Toolbars import ToolbarSalir
-from Widgets import Visor
-
-from JAMediaWebCamView import JAMediaWebCamView
+from BasePanel import BasePanel
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -56,7 +54,6 @@ class JAMediaVideo(gtk.Window):
         self.modify_bg(0, get_colors("window"))
         self.set_position(gtk.WIN_POS_CENTER)
 
-        self.jamediawebcam = None
         self.pistas = []
 
         vbox = gtk.VBox()
@@ -65,16 +62,14 @@ class JAMediaVideo(gtk.Window):
 
         self.toolbar = Toolbar()
         self.toolbar_salir = ToolbarSalir()
-        self.pantalla = Visor()
+        self.base_panel = BasePanel()
 
         vbox.pack_start(self.toolbar, False, True, 0)
         vbox.pack_start(self.toolbar_salir, False, True, 0)
-        vbox.pack_start(self.pantalla, True, True, 0)
+        vbox.pack_start(self.base_panel, True, True, 0)
 
         self.toolbar.connect('salir', self.__confirmar_salir)
         self.toolbar_salir.connect('salir', self.__salir)
-        self.pantalla.connect("button_press_event",
-            self.__clicks_en_pantalla)
 
         self.connect("delete-event", self.__salir)
 
@@ -86,9 +81,7 @@ class JAMediaVideo(gtk.Window):
     def __run(self):
 
         self.toolbar_salir.hide()
-
-        xid = self.pantalla.get_property('window').xid
-        self.jamediawebcam = JAMediaWebCamView(xid)
+        self.base_panel.run()
 
         #if self.pistas:
         #    # FIXME: Agregar reconocer tipo de archivo para cargar
@@ -101,35 +94,6 @@ class JAMediaVideo(gtk.Window):
 
         #self.fullscreen()
         self.toolbar.switch("menu")
-        gobject.idle_add(self.jamediawebcam.play)
-
-    def __clicks_en_pantalla(self, widget, event):
-        """
-        Hace fullscreen y unfullscreen sobre la
-        ventana principal cuando el usuario hace
-        doble click en el visor.
-        """
-
-        if event.type.value_name == "GDK_2BUTTON_PRESS":
-
-            self.get_toplevel().set_sensitive(False)
-
-            ventana = self.get_toplevel()
-            screen = ventana.get_screen()
-            w, h = ventana.get_size()
-            ww, hh = (screen.get_width(), screen.get_height())
-
-            #self.__cancel_toolbars_flotantes()
-
-            if ww == w and hh == h:
-                #ventana.set_border_width(2)
-                gobject.idle_add(ventana.unfullscreen)
-
-            else:
-                #ventana.set_border_width(0)
-                gobject.idle_add(ventana.fullscreen)
-
-            self.get_toplevel().set_sensitive(True)
 
     #def __get_menu_base(self, widget):
     #    """
