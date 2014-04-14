@@ -34,7 +34,7 @@ from Globales import get_boton
 BASE_PATH = os.path.dirname(__file__)
 
 
-class ToolbarConfig(gtk.Table):
+class ToolbarConfig(gtk.EventBox):
     """
     Toolbar para intercambiar reproductores (mplayer gst) y
     modificar valores de balance en video.
@@ -48,9 +48,12 @@ class ToolbarConfig(gtk.Table):
 
     def __init__(self):
 
-        gtk.Table.__init__(self, rows=5, columns=1, homogeneous=True)
+        gtk.EventBox.__init__(self)
+
+        tabla = gtk.Table(rows=5, columns=1, homogeneous=True)
 
         self.modify_bg(0, get_colors("window"))
+        tabla.modify_bg(0, get_colors("window"))
 
         self.brillo = ToolbarcontrolValores("Brillo")
         self.contraste = ToolbarcontrolValores("Contraste")
@@ -58,13 +61,16 @@ class ToolbarConfig(gtk.Table):
         self.hue = ToolbarcontrolValores("Matíz")
         self.gamma = ToolbarcontrolValores("Gamma")
 
-        self.attach(self.brillo, 0, 1, 0, 1)
-        self.attach(self.contraste, 0, 1, 1, 2)
-        self.attach(self.saturacion, 0, 1, 2, 3)
-        self.attach(self.hue, 0, 1, 3, 4)
-        self.attach(self.gamma, 0, 1, 4, 5)
+        tabla.attach(self.brillo, 0, 1, 0, 1)
+        tabla.attach(self.contraste, 0, 1, 1, 2)
+        tabla.attach(self.saturacion, 0, 1, 2, 3)
+        tabla.attach(self.hue, 0, 1, 3, 4)
+        tabla.attach(self.gamma, 0, 1, 4, 5)
 
+        self.add(tabla)
         self.show_all()
+
+        self.set_size_request(150, -1)
 
         self.brillo.connect('valor', self.__emit_senial, 'brillo')
         self.contraste.connect('valor', self.__emit_senial, 'contraste')

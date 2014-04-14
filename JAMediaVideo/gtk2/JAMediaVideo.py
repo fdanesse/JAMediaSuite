@@ -90,7 +90,7 @@ class JAMediaVideo(gtk.Window):
     def __run(self):
 
         self.toolbar_salir.hide()
-        #self.base_panel.pack_efectos()
+        self.base_panel.pack_efectos()
         self.base_panel.run()
         #if self.pistas:
         #    # FIXME: Agregar reconocer tipo de archivo para cargar
