@@ -39,8 +39,10 @@ class Toolbar(gtk.EventBox):
     """
 
     __gsignals__ = {
-    'salir': (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, [])}
+    "salir": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
+    "config-show": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),}
 
     def __init__(self):
 
@@ -119,15 +121,57 @@ class Toolbar(gtk.EventBox):
         self.show_all()
 
         self.toolbar_principal.connect("menu", self.__get_menu)
-        self.toolbar_video.connect("salir", self.__get_menu, "menu")
-        #self.toolbar_principal.connect("accion", self.__get_menu)
-        #self.toolbar_principal.connect("rotar", self.__get_menu)
+        self.toolbar_video.connect("accion", self.__set_video_accion)
         self.toolbar_fotografia.connect("salir", self.__get_menu, "menu")
         #self.toolbar_fotografia.connect("accion", self.__get_menu)
         #self.toolbar_fotografia.connect("rotar", self.__get_menu)
         self.toolbar_audio.connect("salir", self.__get_menu, "menu")
         #self.toolbar_audio.connect("accion", self.__get_menu)
         #self.toolbar_audio.connect("rotar", self.__get_menu)
+
+    def __set_video_accion(self, toolbar, accion):
+        """
+        filmar
+        configurar
+        Stop
+        Izquierda
+        Derecha
+        Salir
+        """
+
+        # FIXME: Implementar
+        if accion == "Salir":
+            self.toolbar_video.set_estado(False)
+            self.switch("menu")
+
+        elif accion == "configurar":
+            # mostrar u ocultar:
+            # configuracion de cámara, audio y video.
+            self.emit("config-show", ["audio", "video"])
+
+        elif accion == "Stop":
+            # detener grabación
+            # activar botones de:
+            #   rotación
+            #   configuración
+            #   grabar
+            self.toolbar_video.set_estado("Stop")
+
+        elif accion == "filmar":
+            # iniciar grabación de audio y video
+            # desactivar botones de:
+            #   rotación
+            #   configuración
+            #   grabar
+            self.toolbar_video.set_estado("Playing")
+
+        elif accion == "Izquierda":
+            # rotar
+            pass
+
+        elif accion == "Derecha":
+            # rotar
+            pass
 
     def __show_credits(self, widget):
 
@@ -144,6 +188,10 @@ class Toolbar(gtk.EventBox):
         dialog.destroy()
 
     def __get_menu(self, widget, menu):
+
+        self.switch(menu)
+
+    def switch(self, modo):
         """
         Muestra la toolbar correspondiente a:
             Filmar
@@ -154,40 +202,30 @@ class Toolbar(gtk.EventBox):
             Convertir audio o video y/o extraer audio, video o imágenes
         """
 
+        # FIXME:
         # al cambiar el modo, se deben detener las grabaciones y reproducciones
         # se deben ocultar los widgets de configuración.
-        self.switch(menu)
-
-    def switch(self, modo):
 
         map(self.__ocultar, self.toolbars)
 
         if modo == "Filmar":
+            #self.jamediawebcam.stop()
             self.toolbar_video.show()
-        #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamediavideo])
+            self.toolbar_video.set_estado("Stop")
         #    self.jamediavideo.play()
 
-        elif modo == "Fotografiar":
-            self.toolbar_fotografia.show()
+        #elif modo == "Fotografiar":
+        #    self.toolbar_fotografia.show()
         #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamediafotografia])
         #    self.jamediafotografia.play()
 
-        elif modo == "Grabar":
-            self.toolbar_audio.show()
+        #elif modo == "Grabar":
+        #    self.toolbar_audio.show()
         #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamediaaudio])
         #    self.jamediaaudio.play()
 
-        elif modo == "Reproducir":
-            pass
+        #elif modo == "Reproducir":
         #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamedia])
         #    archivos = []
 
         #    for arch in os.listdir(get_audio_directory()):
@@ -200,16 +238,12 @@ class Toolbar(gtk.EventBox):
 
         #    gobject.idle_add(self.jamediaplayer.set_nueva_lista, archivos)
 
-        elif modo == "Ver":
-            pass
+        #elif modo == "Ver":
+        #   self.jamimagenes.switch_to(None, get_imagenes_directory())
 
         elif modo == "menu":
             self.toolbar_principal.show()
         #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamimagenes])
-
-        #    self.jamimagenes.switch_to(None, get_imagenes_directory())
 
     def __ocultar(self, objeto):
         """
@@ -346,9 +380,10 @@ class ToolbarPrincipal(gtk.EventBox):
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "foto.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        boton = get_boton(
+            archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Fotografiar")
+        boton.set_sensitive(False)
         boton.connect("clicked",
             self.__emit_senial, "Fotografiar")
         toolbar.insert(boton, -1)
@@ -358,9 +393,10 @@ class ToolbarPrincipal(gtk.EventBox):
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "microfono.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        boton = get_boton(
+            archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Grabar Audio")
+        boton.set_sensitive(False)
         boton.connect("clicked",
             self.__emit_senial, "Grabar")
         toolbar.insert(boton, -1)
@@ -369,9 +405,23 @@ class ToolbarPrincipal(gtk.EventBox):
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
+            "Iconos", "convert.svg")
+        boton = get_boton(
+            archivo, flip=False, pixels=24)
+        boton.set_tooltip_text("Convertir Audio o Video")
+        boton.set_sensitive(False)
+        boton.connect("clicked",
+            self.__emit_senial, "Convert")
+        boton.set_sensitive(False)
+        toolbar.insert(boton, -1)
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
+
+        archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        boton = get_boton(
+            archivo, flip=False, pixels=24)
         boton.set_sensitive(False)
         boton.set_tooltip_text("Reproducir Audio y Video")
         boton.connect("clicked",
@@ -383,8 +433,8 @@ class ToolbarPrincipal(gtk.EventBox):
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "monitor.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        boton = get_boton(
+            archivo, flip=False, pixels=24)
         boton.set_sensitive(False)
         boton.set_tooltip_text("Ver Imágenes")
         boton.connect("clicked",
@@ -411,11 +461,7 @@ class ToolbarVideo(gtk.EventBox):
     """
 
     __gsignals__ = {
-    'salir': (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, []),
     'accion': (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    'rotar': (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -429,7 +475,8 @@ class ToolbarVideo(gtk.EventBox):
         self.modify_bg(0, get_colors("toolbars"))
         toolbar.modify_bg(0, get_colors("toolbars"))
 
-        self.actualizador = False
+        self.widget_playing = []  # activos en playing
+        self.widget_stop = []  # activos en stop
 
         toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
@@ -443,24 +490,26 @@ class ToolbarVideo(gtk.EventBox):
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "camara.svg")
-        self.filmar = get_boton(
+        boton = get_boton(
             archivo, flip=False, pixels=24)
-        self.filmar.set_tooltip_text("Filmar")
-        self.filmar.connect("clicked",
+        boton.set_tooltip_text("Filmar")
+        boton.connect("clicked",
             self.__emit_senial, "filmar")
-        toolbar.insert(self.filmar, -1)
+        toolbar.insert(boton, -1)
+        self.widget_stop = [boton]
 
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "configurar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        boton = get_boton(
+            archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Configurar")
         boton.connect("clicked",
             self.__emit_senial, "configurar")
         toolbar.insert(boton, -1)
+        self.widget_stop.append(boton)
 
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
@@ -471,8 +520,9 @@ class ToolbarVideo(gtk.EventBox):
             pixels=24)
         boton.set_tooltip_text("Izquierda")
         boton.connect("clicked",
-            self.__emit_rotar, 'Izquierda')
+            self.__emit_senial, 'Izquierda')
         toolbar.insert(boton, -1)
+        self.widget_stop.append(boton)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "rotar.svg")
@@ -480,18 +530,21 @@ class ToolbarVideo(gtk.EventBox):
             pixels=24)
         boton.set_tooltip_text("Derecha")
         boton.connect("clicked",
-            self.__emit_rotar, 'Derecha')
+            self.__emit_senial, 'Derecha')
         toolbar.insert(boton, -1)
+        self.widget_stop.append(boton)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "stop.svg")
         boton = get_boton(archivo, flip=False,
             pixels=24)
-        boton.set_sensitive(False)
+        #boton.set_sensitive(False)
         boton.set_tooltip_text("Detener")
         boton.connect("clicked",
-            self.__emit_senial, "Reset")
+            self.__emit_senial, "Stop")
         toolbar.insert(boton, -1)
+
+        self.widget_playing = [boton]
 
         toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
@@ -501,56 +554,71 @@ class ToolbarVideo(gtk.EventBox):
         boton = get_boton(archivo, flip=False,
             pixels=24)
         boton.set_tooltip_text("Volver al Menú")
-        boton.connect("clicked", self.__salir)
+        boton.connect("clicked", self.__emit_senial, "Salir")
         toolbar.insert(boton, -1)
 
         self.add(toolbar)
         self.show_all()
 
     def set_estado(self, estado):
-        """
-        Cuando está grabando cambiará los colores
-        intermitentemente en el botón correspondiente.
-        """
 
-        self.estado = estado
+        if not estado:
+            map(self.__activar, self.widget_stop)
+            map(self.__activar, self.widget_playing)
 
-        if self.actualizador:
-            gobject.source_remove(self.actualizador)
-            self.actualizador = False
+        elif estado == "Playing":
+            map(self.__activar, self.widget_playing)
+            map(self.__desactivar, self.widget_stop)
 
-        if estado == "grabando":
-            self.actualizador = gobject.timeout_add(400, self.__handle)
-            self.label.set_text("Grabando . . .")
+        elif estado == "Stop":
+            map(self.__activar, self.widget_stop)
+            map(self.__desactivar, self.widget_playing)
 
-        elif estado == "detenido":
-            self.label.set_text("")
-            self.color = get_color("BLANCO")
+    def __activar(self, objeto):
 
-    def __handle(self):
-        """
-        Cambia el color para advertir al usuario
-        de que está grabando desde la webcam.
-        """
+        objeto.set_sensitive(True)
 
-        # FIXME: El color de fondo de la toolbar
-        # no se puede cambiar, por eso agregué el label.
-        if self.color == get_color("BLANCO"):
-            self.color = get_color("NARANJA")
+    def __desactivar(self, objeto):
 
-        elif self.color == get_color("NARANJA"):
-            self.color = get_color("BLANCO")
+        objeto.set_sensitive(False)
 
-        self.label.modify_fg(0, self.color)
+    #def set_estado(self, estado):
+    #    """
+    #    Cuando está grabando cambiará los colores
+    #    intermitentemente en el botón correspondiente.
+    #    """
 
-        return True
+    #    self.estado = estado
 
-    def __emit_rotar(self, widget, valor):
-        """
-        Emite la señal rotar con su valor Izquierda o Derecha.
-        """
+    #    if self.actualizador:
+    #        gobject.source_remove(self.actualizador)
+    #        self.actualizador = False
 
-        self.emit('rotar', valor)
+    #    if estado == "grabando":
+    #        self.actualizador = gobject.timeout_add(400, self.__handle)
+    #        self.label.set_text("Grabando . . .")
+
+    #    elif estado == "detenido":
+    #        self.label.set_text("")
+    #        self.color = get_color("BLANCO")
+
+    #def __handle(self):
+    #    """
+    #    Cambia el color para advertir al usuario
+    #    de que está grabando desde la webcam.
+    #    """
+
+    #    # FIXME: El color de fondo de la toolbar
+    #    # no se puede cambiar, por eso agregué el label.
+    #    if self.color == get_color("BLANCO"):
+    #        self.color = get_color("NARANJA")
+
+    #    elif self.color == get_color("NARANJA"):
+    #        self.color = get_color("BLANCO")
+
+    #    self.label.modify_fg(0, self.color)
+
+    #    return True
 
     def __emit_senial(self, widget, senial):
         """
@@ -558,13 +626,6 @@ class ToolbarVideo(gtk.EventBox):
         """
 
         self.emit('accion', senial)
-
-    def __salir(self, widget):
-        """
-        Para Salir al menú principal.
-        """
-
-        self.emit('salir')
 
 
 class ToolbarFotografia(gtk.EventBox):

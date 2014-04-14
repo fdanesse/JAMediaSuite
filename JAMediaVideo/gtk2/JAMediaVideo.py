@@ -51,7 +51,8 @@ class JAMediaVideo(gtk.Window):
             "Iconos", "JAMediaVideo.svg"))
         self.set_resizable(True)
         self.set_default_size(640, 480)
-        self.modify_bg(0, get_colors("window"))
+        self.set_border_width(4)
+        self.modify_bg(0, get_colors("toolbars"))
         self.set_position(gtk.WIN_POS_CENTER)
 
         self.pistas = []
@@ -64,11 +65,12 @@ class JAMediaVideo(gtk.Window):
         self.toolbar_salir = ToolbarSalir()
         self.base_panel = BasePanel()
 
-        vbox.pack_start(self.toolbar, False, True, 0)
-        vbox.pack_start(self.toolbar_salir, False, True, 0)
+        vbox.pack_start(self.toolbar, False, True, 4)
+        vbox.pack_start(self.toolbar_salir, False, True, 4)
         vbox.pack_start(self.base_panel, True, True, 0)
 
         self.toolbar.connect('salir', self.__confirmar_salir)
+        self.toolbar.connect("config-show", self.__config_show)
         self.toolbar_salir.connect('salir', self.__salir)
 
         self.connect("delete-event", self.__salir)
@@ -78,10 +80,17 @@ class JAMediaVideo(gtk.Window):
 
         gobject.idle_add(self.__run)
 
+    def __config_show(self, toolbar, datos):
+        """
+        Mostrar u Ocultar Widgets de Configuración.
+        """
+
+        self.base_panel.config_show(datos)
+
     def __run(self):
 
         self.toolbar_salir.hide()
-        self.base_panel.pack_efectos()
+        #self.base_panel.pack_efectos()
         self.base_panel.run()
         #if self.pistas:
         #    # FIXME: Agregar reconocer tipo de archivo para cargar
