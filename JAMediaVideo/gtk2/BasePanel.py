@@ -106,6 +106,9 @@ class BasePanel(gtk.HPaned):
             # Configuración de audio
             pass
 
+        else:
+            pass
+
         if "video" in datos:
             # configuración de cámara
             # configuración de Video
@@ -115,9 +118,15 @@ class BasePanel(gtk.HPaned):
             else:
                 map(self.__mostrar, self.video_widgets_config)
 
+        else:
+            map(self.__ocultar, self.video_widgets_config)
+
         if "foto" in datos:
             # ráfagas
             # formato de salida de imágenes
+            pass
+
+        else:
             pass
 
     def run(self):

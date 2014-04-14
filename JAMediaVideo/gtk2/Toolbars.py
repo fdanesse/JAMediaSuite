@@ -131,8 +131,8 @@ class Toolbar(gtk.EventBox):
 
     def __set_video_accion(self, toolbar, accion):
         """
-        filmar
-        configurar
+        Filmar
+        Configurar
         Stop
         Izquierda
         Derecha
@@ -141,28 +141,19 @@ class Toolbar(gtk.EventBox):
 
         # FIXME: Implementar
         if accion == "Salir":
+            # detener grabación y reproducción
             self.toolbar_video.set_estado(False)
             self.switch("menu")
 
-        elif accion == "configurar":
-            # mostrar u ocultar:
-            # configuracion de cámara, audio y video.
+        elif accion == "Configurar":
             self.emit("config-show", ["audio", "video"])
 
         elif accion == "Stop":
-            # detener grabación
-            # activar botones de:
-            #   rotación
-            #   configuración
-            #   grabar
+            # detener grabación y reproducción
             self.toolbar_video.set_estado("Stop")
 
-        elif accion == "filmar":
+        elif accion == "Filmar":
             # iniciar grabación de audio y video
-            # desactivar botones de:
-            #   rotación
-            #   configuración
-            #   grabar
             self.toolbar_video.set_estado("Playing")
 
         elif accion == "Izquierda":
@@ -494,7 +485,7 @@ class ToolbarVideo(gtk.EventBox):
             archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Filmar")
         boton.connect("clicked",
-            self.__emit_senial, "filmar")
+            self.__emit_senial, "Filmar")
         toolbar.insert(boton, -1)
         self.widget_stop = [boton]
 
@@ -507,7 +498,7 @@ class ToolbarVideo(gtk.EventBox):
             archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Configurar")
         boton.connect("clicked",
-            self.__emit_senial, "configurar")
+            self.__emit_senial, "Configurar")
         toolbar.insert(boton, -1)
         self.widget_stop.append(boton)
 
