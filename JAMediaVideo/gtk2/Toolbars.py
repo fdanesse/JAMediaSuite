@@ -42,7 +42,9 @@ class Toolbar(gtk.EventBox):
     "salir": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, []),
     "config-show": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),}
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
+    "accion": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -130,39 +132,25 @@ class Toolbar(gtk.EventBox):
         #self.toolbar_audio.connect("rotar", self.__get_menu)
 
     def __set_video_accion(self, toolbar, accion):
-        """
-        Filmar
-        Configurar
-        Stop
-        Izquierda
-        Derecha
-        Salir
-        """
 
-        # FIXME: Implementar
         if accion == "Salir":
-            # detener grabación y reproducción
+            self.emit("accion", accion)
             self.toolbar_video.set_estado(False)
             self.switch("menu")
 
         elif accion == "Configurar":
-            self.emit("config-show", ["audio", "video"])
+            self.emit("config-show", ["audio", "video", "camara"])
 
         elif accion == "Stop":
-            # detener grabación y reproducción
+            self.emit("accion", accion)
             self.toolbar_video.set_estado("Stop")
 
         elif accion == "Filmar":
-            # iniciar grabación de audio y video
+            self.emit("accion", accion)
             self.toolbar_video.set_estado("Playing")
 
-        elif accion == "Izquierda":
-            # rotar
-            pass
-
-        elif accion == "Derecha":
-            # rotar
-            pass
+        elif accion == "Izquierda" or accion == "Derecha":
+            self.emit("accion", accion)
 
     def __show_credits(self, widget):
 
@@ -193,11 +181,12 @@ class Toolbar(gtk.EventBox):
             Convertir audio o video y/o extraer audio, video o imágenes
         """
 
-        # FIXME:
-        # al cambiar el modo, se deben detener las grabaciones y reproducciones
-        # se deben ocultar los widgets de configuración.
-
         map(self.__ocultar, self.toolbars)
+        #self.jamediawebcam.stop()
+        # Ocultar los widgets de configuración.
+        base_panel = self.get_toplevel().base_panel
+        if base_panel.video_widgets_config[0].get_visible():
+            map(self.__ocultar, base_panel.video_widgets_config)
 
         if modo == "Filmar":
             #self.jamediawebcam.stop()
@@ -234,7 +223,6 @@ class Toolbar(gtk.EventBox):
 
         elif modo == "menu":
             self.toolbar_principal.show()
-        #    self.jamediawebcam.stop()
 
     def __ocultar(self, objeto):
         """

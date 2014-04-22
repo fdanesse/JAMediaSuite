@@ -69,6 +69,7 @@ class JAMediaVideo(gtk.Window):
         vbox.pack_start(self.toolbar_salir, False, True, 4)
         vbox.pack_start(self.base_panel, True, True, 0)
 
+        self.toolbar.connect("accion", self.__set_accion)
         self.toolbar.connect('salir', self.__confirmar_salir)
         self.toolbar.connect("config-show", self.__config_show)
         self.toolbar_salir.connect('salir', self.__salir)
@@ -79,6 +80,33 @@ class JAMediaVideo(gtk.Window):
         self.realize()
 
         gobject.idle_add(self.__run)
+
+    def __set_accion(self, widget, accion):
+        """
+        Le pasa a la camara las ordenes seleccionadas por el usuario
+        en la toolbar correspondiente de la aplicacion.
+        """
+        """
+        Filmar
+        Stop
+        Izquierda
+        Derecha
+        Salir
+
+        if accion == "Salir":
+            hacer stop en la camara
+
+        elif accion == "Stop":
+            hacer stop en la camara
+
+        elif accion == "Filmar":
+            setear camara para grabar y hacer play
+
+        elif accion == "Izquierda" or accion == "Derecha":
+            rotar solo si no esta grabando
+        """
+
+        print widget, accion
 
     def __config_show(self, toolbar, datos):
         """

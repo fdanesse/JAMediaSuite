@@ -55,7 +55,7 @@ class JAMedia(Gtk.Window):
 
         self.modify_bg(0, get_colors("window"))
         self.set_resizable(True)
-        self.set_size_request(640, 480)
+        self.set_size_request(437, 328)
         self.set_border_width(2)
         self.set_position(Gtk.WindowPosition.CENTER)
 
@@ -100,6 +100,7 @@ class JAMedia(Gtk.Window):
         import commands
 
         commands.getoutput('killall mplayer')
+        Gtk.main_quit()
         sys.exit(0)
 
 

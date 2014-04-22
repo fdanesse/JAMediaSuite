@@ -40,8 +40,9 @@ class BasePanel(gtk.HPaned):
         barra con efectos de video que se aplican
 
     derecha:
-        balance y efectos de video ==> self.scroll_video_config
-        efectos de audio
+        Configuración de cámara y formato de salida ==> self.camara_setting
+        balance y efectos de video ==> self.video_widgets_config
+        efectos de audio ==> self.audio_widgets_config
     """
 
     def __init__(self):
@@ -61,6 +62,7 @@ class BasePanel(gtk.HPaned):
         # Area Derecha del Panel
         self.derecha_vbox = gtk.VBox()
 
+        self.camara_setting = gtk.Label("Camara Setting")
         self.balance_config_widget = ToolbarConfig()
         self.widget_efectos = False #WidgetsGstreamerEfectos()
 
@@ -73,9 +75,11 @@ class BasePanel(gtk.HPaned):
             self.vbox_config)
         self.scroll_video_config.get_child().modify_bg(
             0, get_colors("window"))
+
+        self.vbox_config.pack_start(
+            self.camara_setting, False, False, 0)
         self.vbox_config.pack_start(
             self.balance_config_widget, False, False, 0)
-
         self.derecha_vbox.pack_start(
             self.scroll_video_config, True, True, 0)
 
@@ -97,10 +101,32 @@ class BasePanel(gtk.HPaned):
         Muestra u oculta los widgets de configuración.
         """
 
-        # ocultar todas.
-        # si modo video: balance, efectos de video y efectos de audio
-        # si modo fotografía: balance y efectos de video.
-        # si modo audio: efectos de audio.
+        # si modo video:
+        #   camara, formato de salida,
+        #   balance, efectos de video y efectos de audio
+        # si modo fotografía:
+        #   camarara, formato de salida,
+        #   balance y efectos de video.
+        # si modo audio: formato de salida, efectos de audio.
+
+        if "video" in datos:
+            # configuración de cámara, formato de salida
+            # balance y efectos de video
+
+            if self.video_widgets_config[0].get_visible():
+                map(self.__ocultar, self.video_widgets_config)
+
+            else:
+                map(self.__mostrar, self.video_widgets_config)
+
+        else:
+            map(self.__ocultar, self.video_widgets_config)
+
+        if "camara" in datos:
+            self.camara_setting.show()
+
+        else:
+            self.camara_setting.hide()
 
         if "audio" in datos:
             # Configuración de audio
@@ -108,18 +134,6 @@ class BasePanel(gtk.HPaned):
 
         else:
             pass
-
-        if "video" in datos:
-            # configuración de cámara
-            # configuración de Video
-            # configuración de grabación de video
-            if self.video_widgets_config[0].get_visible():
-                map(self.__ocultar, self.video_widgets_config)
-            else:
-                map(self.__mostrar, self.video_widgets_config)
-
-        else:
-            map(self.__ocultar, self.video_widgets_config)
 
         if "foto" in datos:
             # ráfagas
@@ -136,8 +150,8 @@ class BasePanel(gtk.HPaned):
 
         #self.derecha_vbox.hide()
         xid = self.pantalla.get_property('window').xid
-        #self.jamediawebcam = JAMediaWebCamView(xid)
-        #gobject.idle_add(self.jamediawebcam.play)
+        self.jamediawebcam = JAMediaWebCamView(xid)
+        gobject.idle_add(self.jamediawebcam.play)
 
         map(self.__ocultar, self.video_widgets_config)
         map(self.__ocultar, self.audio_widgets_config)
