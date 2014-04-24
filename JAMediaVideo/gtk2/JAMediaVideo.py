@@ -86,27 +86,8 @@ class JAMediaVideo(gtk.Window):
         Le pasa a la camara las ordenes seleccionadas por el usuario
         en la toolbar correspondiente de la aplicacion.
         """
-        """
-        Filmar
-        Stop
-        Izquierda
-        Derecha
-        Salir
 
-        if accion == "Salir":
-            hacer stop en la camara
-
-        elif accion == "Stop":
-            hacer stop en la camara
-
-        elif accion == "Filmar":
-            setear camara para grabar y hacer play
-
-        elif accion == "Izquierda" or accion == "Derecha":
-            rotar solo si no esta grabando
-        """
-
-        print widget, accion
+        self.base_panel.set_accion(accion)
 
     def __config_show(self, toolbar, datos):
         """

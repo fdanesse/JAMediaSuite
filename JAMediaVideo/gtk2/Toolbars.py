@@ -139,7 +139,7 @@ class Toolbar(gtk.EventBox):
             self.switch("menu")
 
         elif accion == "Configurar":
-            self.emit("config-show", ["audio", "video", "camara"])
+            self.emit("config-show", ["camara"])
 
         elif accion == "Stop":
             self.emit("accion", accion)
@@ -185,8 +185,8 @@ class Toolbar(gtk.EventBox):
         #self.jamediawebcam.stop()
         # Ocultar los widgets de configuración.
         base_panel = self.get_toplevel().base_panel
-        if base_panel.video_widgets_config[0].get_visible():
-            map(self.__ocultar, base_panel.video_widgets_config)
+        if base_panel.box_config.get_visible():
+            map(self.__ocultar, [base_panel.box_config])
 
         if modo == "Filmar":
             #self.jamediawebcam.stop()
