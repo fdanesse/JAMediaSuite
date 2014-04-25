@@ -208,6 +208,91 @@ class Help(gtk.Dialog):
             if help.get_visible():
                 return self.helps.index(help)
 
+
+class CamaraConfig(gtk.EventBox):
+
+    __gsignals__ = {
+    'set_camara': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
+        (gobject.TYPE_STRING, gobject.TYPE_STRING))}
+
+    def __init__(self):
+
+        gtk.EventBox.__init__(self)
+
+        self.device = "/dev/video0"
+        self.formato = "ogg"
+
+        self.modify_bg(0, get_colors("window"))
+        self.set_border_width(4)
+
+        vbox = gtk.VBox()
+
+        # Camara Origen
+        frame = gtk.Frame()
+        frame.set_label(" Origen: ")
+        box = gtk.VBox()
+        frame.add(box)
+
+        boton1 = gtk.RadioButton()
+        boton1.set_label("Camara 1")
+        boton1.connect("clicked", self.__set_camara)
+        box.pack_start(boton1, False, False, 0)
+
+        boton2 = gtk.RadioButton()
+        boton2.set_group(boton1)
+        boton2.connect("clicked", self.__set_camara)
+        boton2.set_label("Camara 2")
+        box.pack_start(boton2, False, False, 0)
+
+        vbox.pack_start(frame, False, False, 0)
+
+        # Formato
+        frame = gtk.Frame()
+        frame.set_label(" Formato: ")
+        box = gtk.VBox()
+        frame.add(box)
+
+        #vbox.pack_start(gtk.Label("Resolucion"))
+        boton3 = gtk.RadioButton()
+        boton3.set_label("ogg")
+        boton3.connect("clicked", self.__set_formato)
+        box.pack_start(boton3, False, False, 0)
+
+        boton4 = gtk.RadioButton()
+        boton4.set_group(boton3)
+        boton4.set_label("avi")
+        boton4.connect("clicked", self.__set_formato)
+        box.pack_start(boton4, False, False, 0)
+
+        boton5 = gtk.RadioButton()
+        boton5.set_group(boton3)
+        boton5.set_label("mpeg")
+        boton5.connect("clicked", self.__set_formato)
+        box.pack_start(boton5, False, False, 0)
+
+        vbox.pack_start(frame, False, False, 0)
+
+        self.add(vbox)
+        self.show_all()
+
+        boton1.set_active(True)
+        boton3.set_active(True)
+
+    def __set_camara(self, widget):
+
+        if widget.get_active():
+            self.device = "/dev/video%s" % str(int(
+                widget.get_label().split()[-1])-1)
+            self.emit("set_camara",
+                "device", self.device)
+
+    def __set_formato(self, widget):
+
+        if widget.get_active():
+            self.formato = widget.get_label()
+            self.emit("set_camara",
+                "formato", self.formato)
+
 '''
 class JAMediaButton(gtk.EventBox):
     """

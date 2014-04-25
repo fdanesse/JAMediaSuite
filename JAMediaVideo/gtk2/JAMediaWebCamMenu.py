@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   JAMediaWebCam.py por:
+#   JAMediaWebCamMenu.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   Uruguay
 #
@@ -33,13 +33,13 @@ CONFIG_DEFAULT = {
     }
 
 
-class JAMediaWebCam(gobject.GObject):
+class JAMediaWebCamMenu(gobject.GObject):
 
     __gsignals__ = {
     "estado": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
-    def __init__(self, ventana_id, camara="/dev/video0", formato="ogg"):
+    def __init__(self, ventana_id, device="/dev/video0"):
         """
         Recibe el id de un DrawingArea
         para mostrar el video.
@@ -54,8 +54,7 @@ class JAMediaWebCam(gobject.GObject):
 
         self.camara = gst.element_factory_make(
             'v4l2src', "camara")
-        #self.camara.set_property("device",
-        #    self.config["camara"])
+        self.camara.set_property("device", device)
 
         xvimagesink = gst.element_factory_make(
             'xvimagesink', "xvimagesink")
@@ -87,33 +86,13 @@ class JAMediaWebCam(gobject.GObject):
 
         return gst.BUS_PASS
 
-    def rotar(self, valor):
+    def __stop(self):
 
-        rot = self.videoflip.get_property('method')
-
-        if valor == "Derecha":
-            if rot < 3:
-                rot += 1
-
-            else:
-                rot = 0
-
-        elif valor == "Izquierda":
-            if rot > 0:
-                rot -= 1
-
-            else:
-                rot = 3
-
-        self.videoflip.set_property('method', rot)
+        self.pipeline.set_state(gst.STATE_NULL)
 
     def play(self):
 
         self.pipeline.set_state(gst.STATE_PLAYING)
-
-    def stop(self):
-
-        self.pipeline.set_state(gst.STATE_NULL)
 
     def reset(self):
         """
@@ -136,53 +115,7 @@ class JAMediaWebCam(gobject.GObject):
 
         self.videoflip.set_property('method', 0)
 
-        self.stop()
-
-    def set_balance(self, brillo=False, contraste=False,
-        saturacion=False, hue=False, gamma=False):
-        """
-        Seteos de balance en la fuente de video.
-        Recibe % en float.
-        """
-
-        # Rangos: int. -2147483648 2147483647
-        min = 2147483648
-        # max = 2147483647
-        total = 4294967295
-
-        if saturacion:
-            new_valor = int(total * int(saturacion) / 100)
-            new_valor -= min
-            self.config['saturacion'] = new_valor
-            self.camara.set_property(
-                'saturation', self.config['saturacion'])
-
-        if contraste:
-            new_valor = int(total * int(contraste) / 100)
-            new_valor -= min
-            self.config['contraste'] = new_valor
-            self.camara.set_property(
-                'contrast', self.config['contraste'])
-
-        if brillo:
-            new_valor = int(total * int(brillo) / 100)
-            new_valor -= min
-            self.config['brillo'] = new_valor
-            self.camara.set_property(
-                'brightness', self.config['brillo'])
-
-        if hue:
-            new_valor = int(total * int(hue) / 100)
-            new_valor -= min
-            self.config['hue'] = new_valor
-            self.camara.set_property(
-                'hue', self.config['hue'])
-
-        if gamma:
-            # Double. Range: 0,01 - 10 Default: 1
-            self.config['gamma'] = (10.0 * gamma / 100.0)
-            self.gamma.set_property(
-                'gamma', self.config['gamma'])
+        self.__stop()
 
     def get_balance(self):
         """

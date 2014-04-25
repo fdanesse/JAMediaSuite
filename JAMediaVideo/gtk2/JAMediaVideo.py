@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import sys
 
 import gtk
 from gtk import gdk
@@ -72,6 +73,7 @@ class JAMediaVideo(gtk.Window):
         self.toolbar.connect("accion", self.__set_accion)
         self.toolbar.connect('salir', self.__confirmar_salir)
         self.toolbar.connect("config-show", self.__config_show)
+        self.toolbar.connect("nueva_camara", self.__nueva_camara)
         self.toolbar_salir.connect('salir', self.__salir)
 
         self.connect("delete-event", self.__salir)
@@ -82,124 +84,37 @@ class JAMediaVideo(gtk.Window):
         gobject.idle_add(self.__run)
 
     def __set_accion(self, widget, accion):
-        """
-        Le pasa a la camara las ordenes seleccionadas por el usuario
-        en la toolbar correspondiente de la aplicacion.
-        """
 
         self.base_panel.set_accion(accion)
 
     def __config_show(self, toolbar, datos):
-        """
-        Mostrar u Ocultar Widgets de Configuración.
-        """
 
         self.base_panel.config_show(datos)
+
+    def __nueva_camara(self, widget, tipo):
+
+        self.base_panel.nueva_camara(tipo)
 
     def __run(self):
 
         self.toolbar_salir.hide()
         self.base_panel.pack_efectos()
-        self.base_panel.run()
-        #if self.pistas:
-        #    # FIXME: Agregar reconocer tipo de archivo para cargar
-        #    # la lista en jamedia o jamediaimagenes.
-        #    map(self.__ocultar, self.controlesdinamicos)
-        #    self.jamediawebcam.stop()
-        #    map(self.__ocultar, [self.pantalla])
-        #    map(self.__mostrar, [self.socketjamedia])
-        #    self.jamediaplayer.set_nueva_lista(self.pistas)
-
-        #self.fullscreen()
         self.toolbar.switch("menu")
 
-    #def __get_menu_base(self, widget):
-    #    """
-    #    Cuando se sale de un menú particular,
-    #    se vuelve al menú principal.
-    #    """
-
-    #    # detener camaras
-    #    self.toolbar.switch("Ver")
-
-    def set_pistas(self, pistas):
-
-        self.pistas = pistas
-
     def __confirmar_salir(self, widget=None, senial=None):
-        """
-        Recibe salir y lo pasa a la toolbar de confirmación.
-        """
 
         self.toolbar_salir.run("JAMediaVideo")
 
     def __salir(self, widget=None, senial=None):
-        """
-        Reconfigurar la cámara y salir.
-        """
 
         #self.jamediawebcam.reset()
         #self.jamediawebcam.stop()
 
-        import sys
         gtk.main_quit()
         sys.exit(0)
 
 
-def get_item_list(path):
-
-    if os.path.exists(path):
-        if os.path.isfile(path):
-
-            from Globales import describe_archivo
-
-            archivo = os.path.basename(path)
-            datos = describe_archivo(path)
-
-            if 'audio' in datos or \
-                'video' in datos or \
-                'application/ogg' in datos or \
-                'application/octet-stream' in datos:
-                    return [archivo, path]
-
-    return False
-
-
 if __name__ == "__main__":
 
-    items = []
-    import sys
-
-    if len(sys.argv) > 1:
-
-        for campo in sys.argv[1:]:
-            path = os.path.join(campo)
-
-            if os.path.isfile(path):
-                item = get_item_list(path)
-
-                if item:
-                    items.append(item)
-
-            elif os.path.isdir(path):
-
-                for arch in os.listdir(path):
-                    newpath = os.path.join(path, arch)
-
-                    if os.path.isfile(newpath):
-                        item = get_item_list(newpath)
-
-                        if item:
-                            items.append(item)
-
-        if items:
-            jamediavideo = JAMediaVideo()
-            jamediavideo.set_pistas(items)
-
-        else:
-            jamediavideo = JAMediaVideo()
-
-    else:
-        jamediavideo = JAMediaVideo()
-
+    JAMediaVideo()
     gtk.main()

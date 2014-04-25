@@ -30,7 +30,16 @@ from Globales import get_boton
 from Globales import get_color
 from Globales import get_colors
 
+from Widgets import Help
+from Widgets import Credits
+
 BASE_PATH = os.path.dirname(__file__)
+
+
+def ocultar(objeto):
+
+    if objeto.get_visible():
+        objeto.hide()
 
 
 class Toolbar(gtk.EventBox):
@@ -44,6 +53,8 @@ class Toolbar(gtk.EventBox):
     "config-show": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
     "accion": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
+    "nueva_camara": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
@@ -109,25 +120,25 @@ class Toolbar(gtk.EventBox):
             self.toolbar_video, True, True, 0)
         self.toolbars.append(self.toolbar_video)
 
-        self.toolbar_fotografia = ToolbarFotografia()
-        self.toolbars_container.pack_start(
-            self.toolbar_fotografia, True, True, 0)
-        self.toolbars.append(self.toolbar_fotografia)
+        #self.toolbar_fotografia = ToolbarFotografia()
+        #self.toolbars_container.pack_start(
+        #    self.toolbar_fotografia, True, True, 0)
+        #self.toolbars.append(self.toolbar_fotografia)
 
-        self.toolbar_audio = ToolbarGrabarAudio()
-        self.toolbars_container.pack_start(
-            self.toolbar_audio, True, True, 0)
-        self.toolbars.append(self.toolbar_audio)
+        #self.toolbar_audio = ToolbarGrabarAudio()
+        #self.toolbars_container.pack_start(
+        #    self.toolbar_audio, True, True, 0)
+        #self.toolbars.append(self.toolbar_audio)
 
         self.add(toolbar)
         self.show_all()
 
         self.toolbar_principal.connect("menu", self.__get_menu)
         self.toolbar_video.connect("accion", self.__set_video_accion)
-        self.toolbar_fotografia.connect("salir", self.__get_menu, "menu")
+        #self.toolbar_fotografia.connect("salir", self.__get_menu, "menu")
         #self.toolbar_fotografia.connect("accion", self.__get_menu)
         #self.toolbar_fotografia.connect("rotar", self.__get_menu)
-        self.toolbar_audio.connect("salir", self.__get_menu, "menu")
+        #self.toolbar_audio.connect("salir", self.__get_menu, "menu")
         #self.toolbar_audio.connect("accion", self.__get_menu)
         #self.toolbar_audio.connect("rotar", self.__get_menu)
 
@@ -144,24 +155,24 @@ class Toolbar(gtk.EventBox):
         elif accion == "Stop":
             self.emit("accion", accion)
             self.toolbar_video.set_estado("Stop")
+            self.emit("config-show", ["camara"])
 
         elif accion == "Filmar":
             self.emit("accion", accion)
             self.toolbar_video.set_estado("Playing")
+            self.emit("config-show", [])
 
         elif accion == "Izquierda" or accion == "Derecha":
             self.emit("accion", accion)
 
     def __show_credits(self, widget):
 
-        from Widgets import Credits
         dialog = Credits(parent=self.get_toplevel())
         dialog.run()
         dialog.destroy()
 
     def __show_help(self, widget):
 
-        from Widgets import Help
         dialog = Help(parent=self.get_toplevel())
         dialog.run()
         dialog.destroy()
@@ -181,62 +192,20 @@ class Toolbar(gtk.EventBox):
             Convertir audio o video y/o extraer audio, video o imágenes
         """
 
-        map(self.__ocultar, self.toolbars)
-        #self.jamediawebcam.stop()
-        # Ocultar los widgets de configuración.
-        base_panel = self.get_toplevel().base_panel
-        if base_panel.box_config.get_visible():
-            map(self.__ocultar, [base_panel.box_config])
+        map(ocultar, self.toolbars)
 
         if modo == "Filmar":
-            #self.jamediawebcam.stop()
             self.toolbar_video.show()
             self.toolbar_video.set_estado("Stop")
-        #    self.jamediavideo.play()
-
-        #elif modo == "Fotografiar":
-        #    self.toolbar_fotografia.show()
-        #    self.jamediawebcam.stop()
-        #    self.jamediafotografia.play()
-
-        #elif modo == "Grabar":
-        #    self.toolbar_audio.show()
-        #    self.jamediawebcam.stop()
-        #    self.jamediaaudio.play()
-
-        #elif modo == "Reproducir":
-        #    self.jamediawebcam.stop()
-        #    archivos = []
-
-        #    for arch in os.listdir(get_audio_directory()):
-        #        ar = os.path.join(get_audio_directory(), arch)
-        #        archivos.append([arch, ar])
-
-        #    for arch in os.listdir(get_video_directory()):
-        #        ar = os.path.join(get_video_directory(), arch)
-        #        archivos.append([arch, ar])
-
-        #    gobject.idle_add(self.jamediaplayer.set_nueva_lista, archivos)
-
-        #elif modo == "Ver":
-        #   self.jamimagenes.switch_to(None, get_imagenes_directory())
+            self.emit("config-show", ["camara"])
+            self.emit("nueva_camara", "video")
 
         elif modo == "menu":
             self.toolbar_principal.show()
-
-    def __ocultar(self, objeto):
-        """
-        Esta funcion es llamada desde self.get_menu()
-        """
-
-        if objeto.get_visible():
-            objeto.hide()
+            self.emit("config-show", [])
+            self.emit("nueva_camara", "visor")
 
     def __salir(self, widget):
-        """
-        Cuando se hace click en el boton salir
-        de la toolbar principal.
-        """
 
         self.emit('salir')
 
@@ -606,7 +575,7 @@ class ToolbarVideo(gtk.EventBox):
 
         self.emit('accion', senial)
 
-
+'''
 class ToolbarFotografia(gtk.EventBox):
     """
     Toolbar Fotografias.
@@ -767,8 +736,8 @@ class ToolbarFotografia(gtk.EventBox):
         """
 
         self.emit('salir')
-
-
+'''
+'''
 class ToolbarGrabarAudio(gtk.EventBox):
     """
     Toolbar Fotografias.
@@ -924,7 +893,7 @@ class ToolbarGrabarAudio(gtk.EventBox):
         """
 
         self.emit('salir')
-
+'''
 '''
 class ToolbarRafagas(gtk.Toolbar):
     """
