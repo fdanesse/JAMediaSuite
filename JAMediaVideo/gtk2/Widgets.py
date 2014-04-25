@@ -33,6 +33,68 @@ from Globales import get_colors
 BASE_PATH = os.path.dirname(__file__)
 
 
+class Info_Label(gtk.EventBox):
+
+    def __init__(self):
+
+        gtk.EventBox.__init__(self)
+
+        self.modify_bg(0, get_colors("drawingplayer"))
+
+        self.label = gtk.Label("Info Grabador")
+        self.label.modify_bg(0, get_colors("drawingplayer"))
+        self.label.modify_fg(0, get_colors("window"))
+
+        self.add(self.label)
+        self.show_all()
+
+    def set_text(self, text):
+
+        self.label.set_text(text)
+
+
+class Efectos_en_Pipe(gtk.EventBox):
+
+    def __init__(self):
+
+        gtk.EventBox.__init__(self)
+
+        self.modify_bg(0, get_colors("drawingplayer"))
+
+        self.box = gtk.HBox()
+
+        self.add(self.box)
+        self.show_all()
+
+        #self.set_size_request(-1, 15)
+
+    def clear(self):
+
+        for child in self.box.get_children():
+            self.box.remove(child)
+            child.destroy()
+
+        self.hide()
+
+    def add_efecto(self, efecto):
+
+        button = gtk.Button(efecto)
+        button.set_tooltip_text(efecto)
+        self.box.pack_start(button, False, False, 0)
+        self.show_all()
+
+    def remover_efecto(self, efecto):
+
+        for button in self.box.get_children():
+            if button.get_tooltip_text() == efecto:
+                self.box.remove(button)
+                button.destroy()
+                break
+
+        if not self.box.get_children():
+            self.hide()
+
+
 class Visor(gtk.DrawingArea):
     """
     Visor generico para utilizar como area de

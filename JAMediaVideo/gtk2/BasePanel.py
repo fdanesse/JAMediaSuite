@@ -29,6 +29,8 @@ from Globales import get_colors
 
 from Widgets import Visor
 from Widgets import CamaraConfig
+from Widgets import Efectos_en_Pipe
+from Widgets import Info_Label
 from ToolbarConfig import ToolbarConfig
 
 from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
@@ -72,7 +74,23 @@ class BasePanel(gtk.HPaned):
         self.jamediawebcam = False
 
         self.pantalla = Visor()
-        self.pack1(self.pantalla, resize=True, shrink=True)
+        self.info_label = Info_Label()
+        self.efectos_en_pipe = Efectos_en_Pipe()
+
+        scroll = gtk.ScrolledWindow()
+        scroll.set_policy(
+            gtk.POLICY_AUTOMATIC,
+            gtk.POLICY_NEVER)
+        scroll.add_with_viewport(
+            self.efectos_en_pipe)
+        scroll.get_child().modify_bg(
+            0, get_colors("drawingplayer"))
+
+        vbox = gtk.VBox()
+        vbox.pack_start(self.info_label, False, False, 0)
+        vbox.pack_start(self.pantalla, True, True, 0)
+        vbox.pack_start(scroll, False, False, 0)
+        self.pack1(vbox, resize=True, shrink=True)
 
         # Area Derecha del Panel
         self.box_config = gtk.EventBox()
@@ -116,7 +134,16 @@ class BasePanel(gtk.HPaned):
 
     def __set_efecto(self, widget, efecto, propiedad=None, valor=None):
 
-        print efecto, propiedad, valor
+        if propiedad == True:
+            self.efectos_en_pipe.add_efecto(efecto)
+            print "BasePanel: Menu video ==> agregar efecto en la camara", efecto
+
+        elif propiedad == False:
+            self.efectos_en_pipe.remover_efecto(efecto)
+            print "BasePanel: Menu video ==> quitar efecto de la camara", efecto
+
+        else:
+            print "BasePanel: Menu video ==> configurar efecto en la camara", efecto, propiedad, valor
 
     def __cargar_efectos(self, efectos):
         """
@@ -175,11 +202,17 @@ class BasePanel(gtk.HPaned):
         elif tipo == "gamma":
             self.jamediawebcam.set_balance(gamma=valor)
         '''
-        print valor, tipo
+
+        print "BasePanel: Menu video ==> configurar", valor, tipo
 
     def __camara_menu_run(self):
 
-        print "BasePanel: FIXME: Menu principal ==> quitar efectos"
+        if self.widget_efectos:
+            self.widget_efectos.clear()
+
+        self.info_label.set_text("")
+        self.info_label.hide()
+        self.efectos_en_pipe.clear()
 
         if self.jamediawebcam:
             self.jamediawebcam.reset()
@@ -243,12 +276,9 @@ class BasePanel(gtk.HPaned):
             pass
 
         elif accion == "Stop":
-            # detener grabacion
-            # self.box_config.show()
-            print "BasePanel ==>", accion, "Detener Grabacion y hacer replay"
+            print "BasePanel ==>", accion, "Detener Grabacion y hacer replay actualizar info_label"
 
         elif accion == "Filmar":
-            #self.box_config.hide()
             print "BasePanel ==>", accion, "Comenzar a Filmar"
 
     def config_show(self, datos):

@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import commands
 
 import gtk
 from gtk import gdk
@@ -208,7 +209,8 @@ class WidgetsGstreamerEfectos(gtk.Frame):
 
     __gsignals__ = {
     "click_efecto": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_BOOLEAN)),
     'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
@@ -217,7 +219,7 @@ class WidgetsGstreamerEfectos(gtk.Frame):
 
         gtk.Frame.__init__(self)
 
-        self.set_label(" Efectos: ")
+        self.set_label(" Efectos de Video: ")
         self.set_label_align(0.0, 0.5)
 
         self.gstreamer_efectos = GstreamerVideoEfectos()
@@ -233,9 +235,9 @@ class WidgetsGstreamerEfectos(gtk.Frame):
 
         self.emit('configurar_efecto', efecto, propiedad, valor)
 
-    def __emit_click_efecto(self, widget, nombre_efecto):
+    def __emit_click_efecto(self, widget, nombre_efecto, valor):
 
-        self.emit('click_efecto', nombre_efecto)
+        self.emit('click_efecto', nombre_efecto, valor)
 
     def cargar_efectos(self, elementos):
         """
@@ -244,14 +246,9 @@ class WidgetsGstreamerEfectos(gtk.Frame):
 
         self.gstreamer_efectos.cargar_efectos(elementos)
 
-    def des_seleccionar_efecto(self, nombre):
+    def clear(self):
 
-        self.gstreamer_efectos.des_seleccionar_efecto(nombre)
-
-    def seleccionar_efecto(self, nombre):
-
-        self.gstreamer_efectos.seleccionar_efecto(nombre)
-
+        self.gstreamer_efectos.clear()
 
 class GstreamerVideoEfectos(gtk.VBox):
     """
@@ -261,7 +258,8 @@ class GstreamerVideoEfectos(gtk.VBox):
 
     __gsignals__ = {
     'agregar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_BOOLEAN)),
     'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
@@ -284,7 +282,7 @@ class GstreamerVideoEfectos(gtk.VBox):
         nombre = elementos[0]
         # Los efectos se definen en globales
         # pero hay que ver si están instalados.
-        import commands
+
         datos = commands.getoutput('gst-inspect-0.10 %s' % (nombre))
 
         #if 'gst-plugins-good' in datos and \
@@ -294,7 +292,7 @@ class GstreamerVideoEfectos(gtk.VBox):
             'Transform/Effect/Video' in datos:
             botonefecto = Efecto_widget_Config(nombre)
             botonefecto.connect(
-                'agregar_efecto', self.agregar_efecto)
+                'agregar_efecto', self.__agregar_efecto)
             botonefecto.connect(
                 'configurar_efecto', self.__configurar_efecto)
             self.pack_start(botonefecto, False, False, 0)
@@ -310,41 +308,18 @@ class GstreamerVideoEfectos(gtk.VBox):
 
         self.emit('configurar_efecto', efecto, propiedad, valor)
 
-    def agregar_efecto(self, widget, nombre_efecto):
+    def __agregar_efecto(self, widget, nombre_efecto, valor):
         """
         Cuando se hace click en el botón del efecto
         se envía la señal 'agregar-efecto'.
         """
 
-        self.emit('agregar_efecto', nombre_efecto)
+        self.emit('agregar_efecto', nombre_efecto, valor)
 
-    """
-    def efecto_click_derecho(self, widget, void):
+    def clear(self):
 
-        #print "Click", widget.get_tooltip_text(),
-            "Select", widget.estado_select
-        pass
-    """
-
-    def des_seleccionar_efecto(self, nombre):
-
-        efectos = self.get_children()
-
-        for efecto in efectos:
-
-            if efecto.botonefecto.get_tooltip_text() == nombre:
-                efecto.des_seleccionar()
-                return
-
-    def seleccionar_efecto(self, nombre):
-
-        efectos = self.get_children()
-
-        for efecto in efectos:
-
-            if efecto.botonefecto.get_tooltip_text() == nombre:
-                efecto.seleccionar()
-                return
+        for child in self.get_children():
+            child.clear()
 
 
 class Efecto_widget_Config(gtk.EventBox):
@@ -355,7 +330,8 @@ class Efecto_widget_Config(gtk.EventBox):
 
     __gsignals__ = {
     'agregar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_BOOLEAN)),
     'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
@@ -372,25 +348,15 @@ class Efecto_widget_Config(gtk.EventBox):
         if "-" in nombre:
             text = nombre.split("-")[-1]
 
-        frame.set_label(text)
-        #frame.set_label_align(0.5, 1.0)
         box = gtk.VBox()
         frame.add(box)
 
-        self.botonefecto = JAMediaButton()
-        self.botonefecto.set_border_width(4)
+        self.botonefecto = gtk.CheckButton()
+        self.botonefecto.set_label(nombre)
         self.botonefecto.connect('clicked', self.__efecto_click)
-        #self.botonefecto.connect('click_derecho', self.__efecto_click_derecho)
-        self.botonefecto.set_tooltip(nombre)
-        self.botonefecto.set_tamanio(150, 24)
+        self.botonefecto.set_tooltip_text(nombre)
 
         box.pack_start(self.botonefecto, False, False, 0)
-        #path = os.path.dirname(BASE_PATH)
-        #archivo = os.path.join(path,
-        #    "Iconos", 'configurar.svg')
-
-        #pixbuf = gdk.pixbuf_new_from_file_at_size(archivo, lado, lado)
-        #self.botonefecto.imagen.set_from_pixbuf(pixbuf)
 
         self.widget_config = get_widget_config_efecto(nombre)
 
@@ -400,45 +366,27 @@ class Efecto_widget_Config(gtk.EventBox):
 
         self.add(frame)
         self.show_all()
-        # y ocultar configuraciones.
 
     def __set_efecto(self, widget, propiedad, valor):
+
+        if not self.botonefecto.get_active():
+            self.botonefecto.set_active(True)
 
         self.emit('configurar_efecto',
             self.botonefecto.get_tooltip_text(),
             propiedad, valor)
 
-    def __efecto_click(self, widget, void):
+    def __efecto_click(self, widget):
         """
         Cuando se hace click en el botón del efecto
         se envía la señal 'agregar-efecto'.
         """
 
-        self.emit('agregar_efecto', widget.get_tooltip_text())
+        self.emit('agregar_efecto',
+            widget.get_tooltip_text(), widget.get_active())
 
-    """
-    def efecto_click_derecho(self, widget, void):
-
-        #print "Click", widget.get_tooltip_text(),
-            "Select", widget.estado_select
-        pass
-    """
-
-    def seleccionar(self):
-        """
-        Marca como seleccionado
-        """
-
-        self.botonefecto.seleccionar()
-        # y mostrar configuracion
-
-    def des_seleccionar(self):
-        """
-        Desmarca como seleccionado
-        """
-
-        self.botonefecto.des_seleccionar()
-        #y ocultar configuracion
+    def clear(self):
+        self.botonefecto.set_active(False)
 
 
 def get_widget_config_efecto(nombre):
