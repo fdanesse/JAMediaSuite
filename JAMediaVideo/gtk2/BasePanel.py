@@ -238,6 +238,8 @@ class BasePanel(gtk.HPaned):
         Actualiza las toolbars de balance en video.
         """
 
+        if not self.jamediawebcam: return
+
         config = self.jamediawebcam.get_balance()
 
         self.balance_config_widget.set_balance(

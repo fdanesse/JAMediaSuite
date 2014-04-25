@@ -282,7 +282,7 @@ class CamaraConfig(gtk.EventBox):
         gtk.EventBox.__init__(self)
 
         self.device = "/dev/video0"
-        self.formato = "ogg"
+        self.formato = "ogv"
 
         self.modify_bg(0, get_colors("window"))
         self.set_border_width(4)
@@ -291,7 +291,7 @@ class CamaraConfig(gtk.EventBox):
 
         # Camara Origen
         frame = gtk.Frame()
-        frame.set_label(" Origen: ")
+        frame.set_label(" Fuente de Video: ")
         box = gtk.VBox()
         frame.add(box)
 
@@ -310,13 +310,13 @@ class CamaraConfig(gtk.EventBox):
 
         # Formato
         frame = gtk.Frame()
-        frame.set_label(" Formato: ")
+        frame.set_label(" Formato de Salida: ")
         box = gtk.VBox()
         frame.add(box)
 
         #vbox.pack_start(gtk.Label("Resolucion"))
         boton3 = gtk.RadioButton()
-        boton3.set_label("ogg")
+        boton3.set_label("ogv")
         boton3.connect("clicked", self.__set_formato)
         box.pack_start(boton3, False, False, 0)
 
