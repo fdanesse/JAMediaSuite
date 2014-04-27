@@ -282,7 +282,6 @@ class CamaraConfig(gtk.EventBox):
         gtk.EventBox.__init__(self)
 
         self.device = "/dev/video0"
-        self.formato = "ogv"
 
         self.modify_bg(0, get_colors("window"))
         self.set_border_width(4)
@@ -307,6 +306,37 @@ class CamaraConfig(gtk.EventBox):
         box.pack_start(boton2, False, False, 0)
 
         vbox.pack_start(frame, False, False, 0)
+
+        self.add(vbox)
+        self.show_all()
+
+        boton1.set_active(True)
+
+    def __set_camara(self, widget):
+
+        if widget.get_active():
+            self.device = "/dev/video%s" % str(int(
+                widget.get_label().split()[-1])-1)
+            self.emit("set_camara",
+                "device", self.device)
+
+
+class Video_out_Config(gtk.EventBox):
+
+    __gsignals__ = {
+    'set_video_out': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
+        (gobject.TYPE_STRING, gobject.TYPE_STRING))}
+
+    def __init__(self):
+
+        gtk.EventBox.__init__(self)
+
+        self.formato = "ogv"
+
+        self.modify_bg(0, get_colors("window"))
+        self.set_border_width(4)
+
+        vbox = gtk.VBox()
 
         # Formato
         frame = gtk.Frame()
@@ -337,22 +367,13 @@ class CamaraConfig(gtk.EventBox):
         self.add(vbox)
         self.show_all()
 
-        boton1.set_active(True)
         boton3.set_active(True)
-
-    def __set_camara(self, widget):
-
-        if widget.get_active():
-            self.device = "/dev/video%s" % str(int(
-                widget.get_label().split()[-1])-1)
-            self.emit("set_camara",
-                "device", self.device)
 
     def __set_formato(self, widget):
 
         if widget.get_active():
             self.formato = widget.get_label()
-            self.emit("set_camara",
+            self.emit("set_video_out",
                 "formato", self.formato)
 
 '''

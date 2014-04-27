@@ -29,6 +29,7 @@ from Globales import get_colors
 
 from Widgets import Visor
 from Widgets import CamaraConfig
+from Widgets import Video_out_Config
 from Widgets import Efectos_en_Pipe
 from Widgets import Info_Label
 from ToolbarConfig import ToolbarConfig
@@ -109,11 +110,14 @@ class BasePanel(gtk.HPaned):
         self.box_config.add(scroll)
 
         self.camara_setting = CamaraConfig()
+        self.video_out_setting = Video_out_Config()
         self.balance_config_widget = ToolbarConfig()
         self.widget_efectos = False #WidgetsGstreamerEfectos()
 
         self.vbox_config.pack_start(
             self.camara_setting, False, False, 0)
+        self.vbox_config.pack_start(
+            self.video_out_setting, False, False, 0)
         self.vbox_config.pack_start(
             self.balance_config_widget, False, False, 0)
         #self.derecha_vbox.pack_start(
@@ -131,6 +135,8 @@ class BasePanel(gtk.HPaned):
             'valor', self.__set_balance)
         self.camara_setting.connect(
             "set_camara", self.__set_camara)
+        self.video_out_setting.connect(
+            "set_video_out", self.__set_video_out)
 
     def __set_efecto(self, widget, efecto, propiedad=None, valor=None):
 
@@ -233,6 +239,15 @@ class BasePanel(gtk.HPaned):
             del(self.jamediawebcam)
             self.jamediawebcam = False
 
+    def __camara_foto_run(self):
+
+        print "BasePanel: Menu de Fotografia ==> construir camara de grabacion de imagenes tomando en cuenta origen y formato segun widget de configuraciones"
+
+        if self.jamediawebcam:
+            self.jamediawebcam.reset()
+            del(self.jamediawebcam)
+            self.jamediawebcam = False
+
     def __update_balance_toolbars(self):
         """
         Actualiza las toolbars de balance en video.
@@ -249,6 +264,10 @@ class BasePanel(gtk.HPaned):
             hue=config['hue'],
             gamma=config['gamma'])
 
+    def __set_video_out(self, widget, tipo, valor):
+
+        print "BasePanel ==> Reconfigurar formato de salida de video", tipo, valor
+
     def __set_camara(self, widget, tipo, valor):
 
         print "BasePanel ==> Reconfigurar camara de video", tipo, valor
@@ -260,6 +279,9 @@ class BasePanel(gtk.HPaned):
 
         elif tipo == "video":
             self.__camara_video_run()
+
+        elif tipo == "foto":
+            self.__camara_foto_run()
 
         else:
             print "BasePanel Nueva camara:", tipo
@@ -283,7 +305,7 @@ class BasePanel(gtk.HPaned):
         elif accion == "Filmar":
             print "BasePanel ==>", accion, "Comenzar a Filmar"
 
-    def config_show(self, datos):
+    def config_show(self, tipo):
         """
         Muestra u oculta los widgets de configuración.
         """
@@ -296,7 +318,9 @@ class BasePanel(gtk.HPaned):
         #   balance y efectos de video.
         # si modo audio: formato de salida, efectos de audio.
 
-        if datos:
+        print "BasePanel ==> config_show", tipo
+
+        if tipo:
             if self.box_config.get_visible():
                 self.box_config.hide()
 
@@ -309,32 +333,38 @@ class BasePanel(gtk.HPaned):
 
         video_widgets = [
             self.camara_setting,
+            self.video_out_setting,
+            self.balance_config_widget,
+            self.widget_efectos]
+
+        foto_widgets = [
+            self.camara_setting,
+            #self.video_out_setting,
             self.balance_config_widget,
             self.widget_efectos]
 
         self.__update_balance_toolbars()
 
-        if "camara" in datos:
+        map(ocultar, video_widgets)
+        map(ocultar, foto_widgets)
+
+        if tipo == "camara":
             map(mostrar, video_widgets)
 
-        else:
-            map(ocultar, video_widgets)
+        elif tipo == "foto":
+            # ráfagas
+            # formato de salida de imágenes
+            map(mostrar, foto_widgets)
 
         #elif "video" in datos:
 
         #elif "audio" in datos:
             # Configuración de audio
 
-        #elif "foto" in datos:
-            # ráfagas
-            # formato de salida de imágenes
-
     def pack_efectos(self):
         """
         Empaqueta los widgets de efectos gstreamer.
         """
-
-        # FIXME: agregar widget para efectos que se aplican y efectos de audio
 
         self.widget_efectos = WidgetsGstreamerEfectos()
 
@@ -346,3 +376,8 @@ class BasePanel(gtk.HPaned):
 
         self.widget_efectos.connect("click_efecto", self.__set_efecto)
         self.widget_efectos.connect("configurar_efecto", self.__set_efecto)
+
+    def salir(self):
+
+        if self.jamediawebcam:
+            self.jamediawebcam.reset()

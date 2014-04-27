@@ -56,8 +56,6 @@ class JAMediaVideo(gtk.Window):
         self.modify_bg(0, get_colors("toolbars"))
         self.set_position(gtk.WIN_POS_CENTER)
 
-        self.pistas = []
-
         vbox = gtk.VBox()
         self.add(vbox)
         self.show_all()
@@ -87,9 +85,9 @@ class JAMediaVideo(gtk.Window):
 
         self.base_panel.set_accion(accion)
 
-    def __config_show(self, toolbar, datos):
+    def __config_show(self, toolbar, tipo):
 
-        self.base_panel.config_show(datos)
+        self.base_panel.config_show(tipo)
 
     def __nueva_camara(self, widget, tipo):
 
@@ -107,9 +105,7 @@ class JAMediaVideo(gtk.Window):
 
     def __salir(self, widget=None, senial=None):
 
-        #self.jamediawebcam.reset()
-        #self.jamediawebcam.stop()
-
+        self.base_panel.salir()
         gtk.main_quit()
         sys.exit(0)
 
