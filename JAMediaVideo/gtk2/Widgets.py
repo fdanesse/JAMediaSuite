@@ -376,6 +376,64 @@ class Video_out_Config(gtk.EventBox):
             self.emit("set_video_out",
                 "formato", self.formato)
 
+
+class Rafagas_Config(gtk.EventBox):
+
+    __gsignals__ = {
+    'set_video_out': (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING))}
+
+    def __init__(self):
+
+        gtk.EventBox.__init__(self)
+
+        self.modify_bg(0, get_colors("window"))
+        self.set_border_width(4)
+
+        frame = gtk.Frame()
+        frame.set_label("Ráfaga:")
+        box = gtk.HBox()
+        frame.add(box)
+
+        button = gtk.Button("-")
+        button.connect("clicked", self.__set)
+        box.pack_start(button, True, True, 5)
+        self.label = gtk.Label("1.0")
+        box.pack_start(self.label, False, False, 5)
+        button = gtk.Button("+")
+        button.connect("clicked", self.__set)
+        box.pack_start(button, True, True, 5)
+        self.rafaga = gtk.CheckButton()
+        self.rafaga.set_label("on")
+        box.pack_start(self.rafaga, True, True, 5)
+
+        self.add(frame)
+        self.show_all()
+
+    def __set(self, widget):
+
+        signo = widget.get_label()
+        valor = float(self.label.get_text())
+
+        if signo == "-":
+            if valor > 1.0:
+                valor -= 0.1
+
+        elif signo == "+":
+            valor += 0.1
+
+        self.label.set_text(str(valor))
+
+    def get_rafaga(self):
+
+        if self.rafaga.get_active():
+            return float(self.label.get_text())
+
+        else:
+            return 0
+
+
 '''
 class JAMediaButton(gtk.EventBox):
     """

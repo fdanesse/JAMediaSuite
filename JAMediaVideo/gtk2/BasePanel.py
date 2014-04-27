@@ -30,6 +30,7 @@ from Globales import get_colors
 from Widgets import Visor
 from Widgets import CamaraConfig
 from Widgets import Video_out_Config
+from Widgets import Rafagas_Config
 from Widgets import Efectos_en_Pipe
 from Widgets import Info_Label
 from ToolbarConfig import ToolbarConfig
@@ -111,6 +112,7 @@ class BasePanel(gtk.HPaned):
 
         self.camara_setting = CamaraConfig()
         self.video_out_setting = Video_out_Config()
+        self.rafagas_setting = Rafagas_Config()
         self.balance_config_widget = ToolbarConfig()
         self.widget_efectos = False #WidgetsGstreamerEfectos()
 
@@ -118,6 +120,8 @@ class BasePanel(gtk.HPaned):
             self.camara_setting, False, False, 0)
         self.vbox_config.pack_start(
             self.video_out_setting, False, False, 0)
+        self.vbox_config.pack_start(
+            self.rafagas_setting, False, False, 0)
         self.vbox_config.pack_start(
             self.balance_config_widget, False, False, 0)
         #self.derecha_vbox.pack_start(
@@ -232,7 +236,7 @@ class BasePanel(gtk.HPaned):
 
     def __camara_video_run(self):
 
-        print "BasePanel: Menu de Video ==> construir camara de grabacion de video tomando en cuenta origen y formato segun widget de configuraciones"
+        print "BasePanel: Menu de Video ==> construir camara de grabacion de video tomando en cuenta origen y formato segun widget de configuraciones (tomar en cuenta configuracion de rafagas)"
 
         if self.jamediawebcam:
             self.jamediawebcam.reset()
@@ -305,6 +309,12 @@ class BasePanel(gtk.HPaned):
         elif accion == "Filmar":
             print "BasePanel ==>", accion, "Comenzar a Filmar"
 
+        elif accion == "Fotografiar":
+            print "BasePanel ==>", accion, "Comenzar a Fotografiar, tomando en cuenta las rafagas" #self.rafagas_setting.get_rafaga
+
+        else:
+            print "BasePanel ==>", accion, "falta definir"
+
     def config_show(self, tipo):
         """
         Muestra u oculta los widgets de configuración.
@@ -340,6 +350,7 @@ class BasePanel(gtk.HPaned):
         foto_widgets = [
             self.camara_setting,
             #self.video_out_setting,
+            self.rafagas_setting,
             self.balance_config_widget,
             self.widget_efectos]
 
