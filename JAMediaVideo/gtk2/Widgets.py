@@ -306,42 +306,24 @@ class CamaraConfig(gtk.EventBox):
         boton3 = gtk.RadioButton()
         boton3.set_group(boton1)
         boton3.set_label("Estación Remota")
-        boton3.connect("clicked", self.__set_remoto)
+        boton3.connect("clicked", self.__set_camara)
         box.pack_start(boton3, False, False, 0)
-
-        hbox = gtk.HBox()
-        self.ip_text = gtk.Entry()
-        self.ip_text.set_size_request(100, -1)
-        self.ip_text.set_text("192.168.1.2")
-        hbox.pack_start(gtk.Label("Ip:"), False, False, 5)
-        hbox.pack_end(self.ip_text, True, True, 5)
-        box.pack_start(hbox, False, False, 0)
-
-        hbox = gtk.HBox()
-        self.port_text = gtk.Entry()
-        self.port_text.set_size_request(100, -1)
-        self.port_text.set_text("5000")
-        hbox.pack_start(gtk.Label("Puerto:"), False, False, 5)
-        hbox.pack_end(self.port_text, True, True, 5)
-        box.pack_start(hbox, False, False, 5)
 
         self.add(frame)
         self.show_all()
 
         boton1.set_active(True)
 
-    def __set_remoto(self, widget):
-
-        if widget.get_active():
-            self.device = widget.get_label()
-            self.emit("set_camara",
-                "device", self.device)
-
     def __set_camara(self, widget):
 
         if widget.get_active():
-            self.device = "/dev/video%s" % str(int(
-                widget.get_label().split()[-1])-1)
+            if widget.get_label() == "Estación Remota":
+                self.device = "Estación Remota"
+
+            else:
+                self.device = "/dev/video%s" % str(int(
+                    widget.get_label().split()[-1])-1)
+
             self.emit("set_camara",
                 "device", self.device)
 
@@ -397,14 +379,6 @@ class Video_out_Config(gtk.EventBox):
         self.ip_text.set_text("192.168.1.2")
         hbox.pack_start(gtk.Label("Ip:"), False, False, 5)
         hbox.pack_end(self.ip_text, True, True, 5)
-        box.pack_start(hbox, False, False, 0)
-
-        hbox = gtk.HBox()
-        self.port_text = gtk.Entry()
-        self.port_text.set_size_request(100, -1)
-        self.port_text.set_text("5000")
-        hbox.pack_start(gtk.Label("Puerto:"), False, False, 5)
-        hbox.pack_end(self.port_text, True, True, 5)
         box.pack_start(hbox, False, False, 5)
 
         self.add(frame)
@@ -415,7 +389,12 @@ class Video_out_Config(gtk.EventBox):
     def __set_formato(self, widget):
 
         if widget.get_active():
-            self.formato = widget.get_label()
+            if widget.get_label() == "Estación Remota":
+                self.formato = self.ip_text.get_text()
+
+            else:
+                self.formato = widget.get_label()
+
             self.emit("set_video_out",
                 "formato", self.formato)
 
