@@ -51,7 +51,7 @@ class JAMediaVideo(gtk.Window):
         self.set_icon_from_file(os.path.join(BASE_PATH,
             "Iconos", "JAMediaVideo.svg"))
         self.set_resizable(True)
-        self.set_default_size(640, 480)
+        self.set_default_size(437, 328)
         self.set_border_width(4)
         self.modify_bg(0, get_colors("toolbars"))
         self.set_position(gtk.WIN_POS_CENTER)

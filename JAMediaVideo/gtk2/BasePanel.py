@@ -236,7 +236,7 @@ class BasePanel(gtk.HPaned):
 
     def __camara_video_run(self):
 
-        print "BasePanel: Menu de Video ==> construir camara de grabacion de video tomando en cuenta origen y formato segun widget de configuraciones (tomar en cuenta configuracion de rafagas)"
+        print "BasePanel: Menu de Video ==> construir camara de grabacion de video tomando en cuenta origen y formato segun widget de configuraciones"
 
         if self.jamediawebcam:
             self.jamediawebcam.reset()
@@ -245,7 +245,7 @@ class BasePanel(gtk.HPaned):
 
     def __camara_foto_run(self):
 
-        print "BasePanel: Menu de Fotografia ==> construir camara de grabacion de imagenes tomando en cuenta origen y formato segun widget de configuraciones"
+        print "BasePanel: Menu de Fotografia ==> construir camara de grabacion de imagenes tomando en cuenta origen y formato segun widget de configuraciones y (tomar en cuenta configuracion de rafagas"
 
         if self.jamediawebcam:
             self.jamediawebcam.reset()

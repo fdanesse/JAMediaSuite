@@ -286,8 +286,6 @@ class CamaraConfig(gtk.EventBox):
         self.modify_bg(0, get_colors("window"))
         self.set_border_width(4)
 
-        vbox = gtk.VBox()
-
         # Camara Origen
         frame = gtk.Frame()
         frame.set_label(" Fuente de Video: ")
@@ -305,12 +303,39 @@ class CamaraConfig(gtk.EventBox):
         boton2.set_label("Camara 2")
         box.pack_start(boton2, False, False, 0)
 
-        vbox.pack_start(frame, False, False, 0)
+        boton3 = gtk.RadioButton()
+        boton3.set_group(boton1)
+        boton3.set_label("Estación Remota")
+        boton3.connect("clicked", self.__set_remoto)
+        box.pack_start(boton3, False, False, 0)
 
-        self.add(vbox)
+        hbox = gtk.HBox()
+        self.ip_text = gtk.Entry()
+        self.ip_text.set_size_request(100, -1)
+        self.ip_text.set_text("192.168.1.2")
+        hbox.pack_start(gtk.Label("Ip:"), False, False, 5)
+        hbox.pack_end(self.ip_text, True, True, 5)
+        box.pack_start(hbox, False, False, 0)
+
+        hbox = gtk.HBox()
+        self.port_text = gtk.Entry()
+        self.port_text.set_size_request(100, -1)
+        self.port_text.set_text("5000")
+        hbox.pack_start(gtk.Label("Puerto:"), False, False, 5)
+        hbox.pack_end(self.port_text, True, True, 5)
+        box.pack_start(hbox, False, False, 5)
+
+        self.add(frame)
         self.show_all()
 
         boton1.set_active(True)
+
+    def __set_remoto(self, widget):
+
+        if widget.get_active():
+            self.device = widget.get_label()
+            self.emit("set_camara",
+                "device", self.device)
 
     def __set_camara(self, widget):
 
@@ -336,8 +361,6 @@ class Video_out_Config(gtk.EventBox):
         self.modify_bg(0, get_colors("window"))
         self.set_border_width(4)
 
-        vbox = gtk.VBox()
-
         # Formato
         frame = gtk.Frame()
         frame.set_label(" Formato de Salida: ")
@@ -362,9 +385,29 @@ class Video_out_Config(gtk.EventBox):
         boton5.connect("clicked", self.__set_formato)
         box.pack_start(boton5, False, False, 0)
 
-        vbox.pack_start(frame, False, False, 0)
+        boton6 = gtk.RadioButton()
+        boton6.set_group(boton3)
+        boton6.set_label("Estación Remota")
+        boton6.connect("clicked", self.__set_formato)
+        box.pack_start(boton6, False, False, 0)
 
-        self.add(vbox)
+        hbox = gtk.HBox()
+        self.ip_text = gtk.Entry()
+        self.ip_text.set_size_request(100, -1)
+        self.ip_text.set_text("192.168.1.2")
+        hbox.pack_start(gtk.Label("Ip:"), False, False, 5)
+        hbox.pack_end(self.ip_text, True, True, 5)
+        box.pack_start(hbox, False, False, 0)
+
+        hbox = gtk.HBox()
+        self.port_text = gtk.Entry()
+        self.port_text.set_size_request(100, -1)
+        self.port_text.set_text("5000")
+        hbox.pack_start(gtk.Label("Puerto:"), False, False, 5)
+        hbox.pack_end(self.port_text, True, True, 5)
+        box.pack_start(hbox, False, False, 5)
+
+        self.add(frame)
         self.show_all()
 
         boton3.set_active(True)
