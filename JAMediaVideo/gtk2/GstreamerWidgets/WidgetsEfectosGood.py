@@ -98,6 +98,8 @@ class Radioactv(gtk.VBox):
 
         gtk.VBox.__init__(self)
 
+        self.control = False
+
         frame1 = gtk.Frame()
         frame1.set_label("Color:")
         frame1.set_border_width(4)
@@ -111,12 +113,12 @@ class Radioactv(gtk.VBox):
         frame2.set_label_align(0.5, 1.0)
         frame2.add(self.__get_widgets_modo())
 
-        self.interval = ToolbarcontrolValores('interval')
-        self.interval.connect('valor', self.__set_interval)
+        #self.interval = ToolbarcontrolValores('interval')
+        #self.interval.connect('valor', self.__set_interval)
 
         self.pack_start(frame1, False, False, 0)
         self.pack_start(frame2, False, False, 0)
-        self.pack_start(self.interval, False, False, 0)
+        #self.pack_start(self.interval, False, False, 0)
 
         self.show_all()
 
@@ -129,14 +131,14 @@ class Radioactv(gtk.VBox):
 
         self.white = gtk.RadioButton()
         self.white.set_label("W")
-        self.white.connect('clicked', self.__set_color, 3)
+        self.white.connect('toggled', self.__set_color, 3)
         self.white.modify_bg(0, get_color("BLANCO"))
         self.white.set_tooltip_text('Blanco')
         hbox.pack_start(self.white, False, False, 0)
 
         self.red = gtk.RadioButton()
         self.red.set_label("R")
-        self.red.connect('clicked', self.__set_color, 0)
+        self.red.connect('toggled', self.__set_color, 0)
         self.red.modify_bg(0, get_color("ROJO"))
         self.red.set_tooltip_text('Rojo')
         hbox.pack_start(self.red, False, False, 0)
@@ -144,7 +146,7 @@ class Radioactv(gtk.VBox):
 
         self.green = gtk.RadioButton()
         self.green.set_label("G")
-        self.green.connect('clicked', self.__set_color, 1)
+        self.green.connect('toggled', self.__set_color, 1)
         self.green.modify_bg(0, get_color("VERDE"))
         self.green.set_tooltip_text('VERDE')
         hbox.pack_start(self.green, False, False, 0)
@@ -152,7 +154,7 @@ class Radioactv(gtk.VBox):
 
         self.blue = gtk.RadioButton()
         self.blue.set_label("B")
-        self.blue.connect('clicked', self.__set_color, 2)
+        self.blue.connect('toggled', self.__set_color, 2)
         self.blue.modify_bg(0, get_color("AZUL"))
         self.blue.set_tooltip_text('AZUL')
         hbox.pack_start(self.blue, False, False, 0)
@@ -170,52 +172,63 @@ class Radioactv(gtk.VBox):
         self.modo0 = gtk.RadioButton()
         self.modo0.set_label("0")
         self.modo0.set_tooltip_text('normal')
-        self.modo0.connect('clicked', self.__set_modo, 0)
+        self.modo0.connect('toggled', self.__set_modo, 0)
         hbox.pack_start(self.modo0, False, False, 0)
 
         self.modo1 = gtk.RadioButton()
         self.modo1.set_label("1")
         self.modo1.set_tooltip_text('strobe1')
-        self.modo1.connect('clicked', self.__set_modo, 1)
+        self.modo1.connect('toggled', self.__set_modo, 1)
         self.modo1.set_group(self.modo0)
         hbox.pack_start(self.modo1, False, False, 0)
 
         self.modo2 = gtk.RadioButton()
         self.modo2.set_label("2")
         self.modo2.set_tooltip_text('strobe2')
-        self.modo2.connect('clicked', self.__set_modo, 2)
+        self.modo2.connect('toggled', self.__set_modo, 2)
         self.modo2.set_group(self.modo0)
         hbox.pack_start(self.modo2, False, False, 0)
 
         self.modo3 = gtk.RadioButton()
         self.modo3.set_label("3")
         self.modo3.set_tooltip_text('strobe3')
-        self.modo3.connect('clicked', self.__set_modo, 3)
+        self.modo3.connect('toggled', self.__set_modo, 3)
         self.modo3.set_group(self.modo0)
         hbox.pack_start(self.modo3, False, False, 0)
 
         return hbox
 
-    def __set_interval(self, widget, valor):
+    #def __set_interval(self, widget, valor):
 
-        interval = long(2147483647 * valor / 100.0)
-        self.emit('propiedad', 'interval', interval)
+    #    if self.control:
+    #        return
+
+    #    interval = long(2147483647 * valor / 100.0)
+    #    self.emit('propiedad', 'interval', interval)
 
     def __set_color(self, widget, color):
+
+        if self.control:
+            return
 
         if widget.get_active():
             self.emit('propiedad', 'color', color)
 
     def __set_modo(self, widget, valor):
 
+        if self.control:
+            return
+
         if widget.get_active():
             self.emit('propiedad', 'mode', valor)
 
     def reset(self):
 
-        self.interval.set_progress(0.0)
+        self.control = True
+        #self.interval.set_progress(0.0)
         self.white.set_active(True)
         self.modo0.set_active(True)
+        self.control = False
 
 
 class Agingtv(gtk.VBox):
@@ -252,6 +265,8 @@ class Agingtv(gtk.VBox):
     def __init__(self):
 
         gtk.VBox.__init__(self)
+
+        self.control = False
 
         self.switch_dusts = False
         self.switch_pits = False
@@ -320,22 +335,33 @@ class Agingtv(gtk.VBox):
 
     def __set_scratch_lines(self, widget, valor):
 
+        if self.control:
+            return
+
         interval = int(20.0 * valor / 100.0)
         self.emit('propiedad', 'scratch-lines', interval)
 
     def __set_pits(self, widget, valor):
 
+        if self.control:
+            return
+
         self.emit("propiedad", 'pits', not widget.get_active())
 
     def __set_dusts(self, widget, valor):
+
+        if self.control:
+            return
 
         self.emit("propiedad", 'dusts', not widget.get_active())
 
     def reset(self):
 
+        self.control = True
         self.scratch_lines.set_progress(35.0)
         self.switch_dusts.set_active(True)
         self.switch_pits.set_active(True)
+        self.control = False
 
 
 class ToolbarcontrolValores(gtk.Toolbar):

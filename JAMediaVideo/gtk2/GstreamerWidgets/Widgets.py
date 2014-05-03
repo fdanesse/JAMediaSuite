@@ -215,7 +215,7 @@ class Efecto_widget_Config(gtk.EventBox):
 
         self.botonefecto = gtk.CheckButton()
         self.botonefecto.set_label(nombre)
-        self.botonefecto.connect('clicked', self.__efecto_click)
+        self.botonefecto.connect('toggled', self.__efecto_click)
         self.botonefecto.set_tooltip_text(nombre)
 
         box.pack_start(self.botonefecto, False, False, 0)
@@ -244,6 +244,7 @@ class Efecto_widget_Config(gtk.EventBox):
 
         if not activo and self.widget_config:
             self.widget_config.reset()
+            widget.set_active(False)
 
         self.emit('agregar_efecto',
             widget.get_tooltip_text(), activo)
