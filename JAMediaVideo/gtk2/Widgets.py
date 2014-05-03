@@ -94,6 +94,14 @@ class Efectos_en_Pipe(gtk.EventBox):
         if not self.box.get_children():
             self.hide()
 
+    def get_efectos(self):
+
+        efectos = []
+        for button in self.box.get_children():
+            efectos.append(button.get_label())
+
+        return efectos
+
 
 class Visor(gtk.DrawingArea):
     """

@@ -25,11 +25,11 @@ import gobject
 import gst
 
 CONFIG_DEFAULT = {
-    'saturacion': 5,
-    'contraste': 6,
-    'brillo': 8,
-    'hue': 0,
-    'gamma': 1.0,
+    'saturacion': (50.0, 1),
+    'contraste': (50.0, 1),
+    'brillo': (50.0, 0),
+    'hue': (50.0, 0),
+    'gamma': (10.0, 1.0),
     }
 
 
@@ -54,26 +54,46 @@ class JAMediaWebCamMenu(gobject.GObject):
 
         self.camara = gst.element_factory_make(
             'v4l2src', "camara")
-        self.camara.set_property("device", device)
 
+        if device == "Estación Remota":
+            pass
+            # gst-launch-0.10 udpsrc port=5000 !
+            # queue ! smokedec ! queue ! autovideosink
+            # tcpclientsrc host=192.168.1.5 port=5001 !
+            # queue ! speexdec ! queue ! alsasink sync=false
+
+        else:
+            self.camara.set_property("device", device)
+
+        queue1 = gst.element_factory_make(
+            'queue', "queue1")
+        self.videobalance = gst.element_factory_make(
+            'videobalance', "videobalance")
+        self.gamma = gst.element_factory_make(
+            'gamma', "gamma")
+        self.videoflip = gst.element_factory_make(
+            'videoflip', "videoflip")
+        queue2 = gst.element_factory_make(
+            'queue', "queue2")
         xvimagesink = gst.element_factory_make(
             'xvimagesink', "xvimagesink")
         xvimagesink.set_property(
             "force-aspect-ratio", True)
 
-        self.gamma = gst.element_factory_make(
-            'gamma', "gamma")
-        self.videoflip = gst.element_factory_make(
-            'videoflip', "videoflip")
-
         self.pipeline.add(self.camara)
+        self.pipeline.add(queue1)
+        self.pipeline.add(self.videobalance)
         self.pipeline.add(self.gamma)
         self.pipeline.add(self.videoflip)
+        self.pipeline.add(queue2)
         self.pipeline.add(xvimagesink)
 
-        self.camara.link(self.gamma)
+        self.camara.link(queue1)
+        queue1.link(self.videobalance)
+        self.videobalance.link(self.gamma)
         self.gamma.link(self.videoflip)
-        self.videoflip.link(xvimagesink)
+        self.videoflip.link(queue2)
+        queue2.link(xvimagesink)
 
         self.bus = self.pipeline.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
@@ -102,46 +122,17 @@ class JAMediaWebCamMenu(gobject.GObject):
         self.config = CONFIG_DEFAULT.copy()
 
         self.camara.set_property(
-            'saturation', self.config['saturacion'])
+            'saturation', self.config['saturacion'][1])
         self.camara.set_property(
-            'contrast', self.config['contraste'])
+            'contrast', self.config['contraste'][1])
         self.camara.set_property(
-            'brightness', self.config['brillo'])
+            'brightness', self.config['brillo'][1])
         self.camara.set_property(
-            'hue', self.config['hue'])
+            'hue', self.config['hue'][1])
 
         self.gamma.set_property(
-            'gamma', self.config['gamma'])
+            'gamma', self.config['gamma'][1])
 
         self.videoflip.set_property('method', 0)
 
         self.__stop()
-
-    def get_balance(self):
-        """
-        Retorna los valores actuales de
-        balance en %.
-        """
-
-        # Rangos: int. -2147483648 2147483647
-        min = 2147483648
-        #max = 2147483647
-        total = 4294967295
-
-        config = {}
-
-        brillo = self.config['brillo'] + min
-        config['brillo'] = brillo * 100 / total
-
-        contraste = self.config['contraste'] + min
-        config['contraste'] = contraste * 100 / total
-
-        saturacion = self.config['saturacion'] + min
-        config['saturacion'] = saturacion * 100 / total
-
-        hue = self.config['hue'] + min
-        config['hue'] = hue * 100 / total
-
-        config['gamma'] = self.config['gamma'] * 100.0 / 10.0
-
-        return config

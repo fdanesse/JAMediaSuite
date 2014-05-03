@@ -39,6 +39,7 @@ from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
 from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
 
 from JAMediaWebCamMenu import JAMediaWebCamMenu
+from JAMediaWebCamVideo import JAMediaWebCamVideo
 
 
 def ocultar(objeto):
@@ -143,17 +144,20 @@ class BasePanel(gtk.HPaned):
             "set_video_out", self.__set_video_out)
 
     def __set_efecto(self, widget, efecto, propiedad=None, valor=None):
+        """
+        Agrega o configura efectos en la cámara de video o fotografía.
+        """
 
         if propiedad == True:
             self.efectos_en_pipe.add_efecto(efecto)
-            print "BasePanel: Menu video ==> agregar efecto en la camara", efecto
+            self.__re_init_video_web_cam()
 
         elif propiedad == False:
             self.efectos_en_pipe.remover_efecto(efecto)
-            print "BasePanel: Menu video ==> quitar efecto de la camara", efecto
+            self.__re_init_video_web_cam()
 
         else:
-            print "BasePanel: Menu video ==> configurar efecto en la camara", efecto, propiedad, valor
+            self.jamediawebcam.set_efecto(efecto, propiedad, valor)
 
     def __cargar_efectos(self, efectos):
         """
@@ -196,7 +200,7 @@ class BasePanel(gtk.HPaned):
         Setea valores en Balance de Video.
         valor es % float
         """
-        '''
+
         if tipo == "saturacion":
             self.jamediawebcam.set_balance(saturacion=valor)
 
@@ -211,11 +215,11 @@ class BasePanel(gtk.HPaned):
 
         elif tipo == "gamma":
             self.jamediawebcam.set_balance(gamma=valor)
-        '''
-
-        print "BasePanel: Menu video ==> configurar", valor, tipo
 
     def __camara_menu_run(self):
+        """
+        Cámara básica del menú.
+        """
 
         if self.widget_efectos:
             self.widget_efectos.clear()
@@ -235,13 +239,30 @@ class BasePanel(gtk.HPaned):
         gobject.idle_add(self.jamediawebcam.play)
 
     def __camara_video_run(self):
+        """
+        Cámara básica de video.
+        """
 
-        print "BasePanel: Menu de Video ==> construir camara de grabacion de video tomando en cuenta origen y formato segun widget de configuraciones"
+        if self.widget_efectos:
+            self.widget_efectos.clear()
+
+        self.info_label.set_text("")
+        self.info_label.hide()
+        self.efectos_en_pipe.clear()
 
         if self.jamediawebcam:
             self.jamediawebcam.reset()
             del(self.jamediawebcam)
             self.jamediawebcam = False
+
+        device = self.camara_setting.device
+        salida = self.video_out_setting.formato
+
+        xid = self.pantalla.get_property('window').xid
+        self.jamediawebcam = JAMediaWebCamVideo(
+            xid, device=device, formato=salida,
+            efectos=[])
+        gobject.idle_add(self.jamediawebcam.play)
 
     def __camara_foto_run(self):
 
@@ -252,31 +273,76 @@ class BasePanel(gtk.HPaned):
             del(self.jamediawebcam)
             self.jamediawebcam = False
 
-    def __update_balance_toolbars(self):
+    def __update_balance_toolbars(self, config):
         """
         Actualiza las toolbars de balance en video.
         """
 
-        if not self.jamediawebcam: return
-
-        config = self.jamediawebcam.get_balance()
-
         self.balance_config_widget.set_balance(
-            brillo=config['brillo'],
-            contraste=config['contraste'],
-            saturacion=config['saturacion'],
-            hue=config['hue'],
-            gamma=config['gamma'])
+            brillo=config['brillo'][0],
+            contraste=config['contraste'][0],
+            saturacion=config['saturacion'][0],
+            hue=config['hue'][0],
+            gamma=config['gamma'][0])
 
     def __set_video_out(self, widget, tipo, valor):
+        """
+        Setea la salida de video para camara de filmación y fotografía.
+        """
 
-        print "BasePanel ==> Reconfigurar formato de salida de video", tipo, valor
+        self.__re_init_video_web_cam(salida=valor)
 
     def __set_camara(self, widget, tipo, valor):
+        """
+        Setea la entrada de video para camara de filmación y fotografía.
+        """
 
-        print "BasePanel ==> Reconfigurar camara de video", tipo, valor
+        self.__re_init_video_web_cam(device=valor)
+
+    def __re_init_video_web_cam(self,
+        device=False, salida=False):
+        """
+        Cuando se agregan o quitan efectos o se cambia la fuente o
+        la salida de video, se crea un nuevo objeto gstreamer que mantiene
+        las configuraciones realizadas hasta el momento.
+        """
+
+        rot = self.jamediawebcam.videoflip.get_property('method')
+        config = self.jamediawebcam.config
+        efectos = self.efectos_en_pipe.get_efectos()
+
+        if not device:
+            device = self.camara_setting.device
+
+        if not salida:
+            salida = self.video_out_setting.formato
+
+        self.jamediawebcam.reset()
+        del(self.jamediawebcam)
+        self.jamediawebcam = False
+
+        xid = self.pantalla.get_property('window').xid
+        self.jamediawebcam = JAMediaWebCamVideo(
+            xid, device=device, formato=salida,
+            efectos=efectos)
+        gobject.idle_add(self.jamediawebcam.play)
+
+        self.jamediawebcam.set_balance(
+            brillo=config["brillo"][0],
+            contraste=config["contraste"][0],
+            saturacion=config["saturacion"][0],
+            hue=config["hue"][0],
+            gamma=config["hue"][0])
+
+        gobject.idle_add(
+            self.jamediawebcam.videoflip.set_property,
+            'method', rot)
 
     def nueva_camara(self, tipo):
+        """
+        Cuando se cambia el modo de la aplicación
+        se reconstruye la camara base.
+        """
 
         if tipo == "visor":
             self.__camara_menu_run()
@@ -297,8 +363,7 @@ class BasePanel(gtk.HPaned):
         """
 
         if accion == "Izquierda" or accion == "Derecha":
-            #self.jamediawebcam.rotar(accion)
-            print "BasePanel ==>", accion, "Rotar el Video"
+            self.jamediawebcam.rotar(accion)
 
         elif accion == "Salir":
             pass
@@ -354,7 +419,9 @@ class BasePanel(gtk.HPaned):
             self.balance_config_widget,
             self.widget_efectos]
 
-        self.__update_balance_toolbars()
+        if self.jamediawebcam:
+            self.__update_balance_toolbars(
+                self.jamediawebcam.config)
 
         map(ocultar, video_widgets)
         map(ocultar, foto_widgets)
