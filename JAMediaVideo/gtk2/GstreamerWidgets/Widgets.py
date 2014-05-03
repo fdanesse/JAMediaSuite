@@ -382,10 +382,19 @@ class Efecto_widget_Config(gtk.EventBox):
         se envía la señal 'agregar-efecto'.
         """
 
+        activo = widget.get_active()
+
         self.emit('agregar_efecto',
-            widget.get_tooltip_text(), widget.get_active())
+            widget.get_tooltip_text(), activo)
+
+        if not activo and self.widget_config:
+            self.widget_config.reset()
 
     def clear(self):
+
+        if self.widget_config:
+            self.widget_config.reset()
+
         self.botonefecto.set_active(False)
 
 

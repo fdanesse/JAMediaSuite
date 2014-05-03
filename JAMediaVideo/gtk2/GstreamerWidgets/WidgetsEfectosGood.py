@@ -112,12 +112,12 @@ class Radioactv(gtk.VBox):
         frame2.set_label_align(0.5, 1.0)
         frame2.add(self.__get_widgets_modo())
 
-        interval = ToolbarcontrolValores('interval')
-        interval.connect('valor', self.__set_interval)
+        self.interval = ToolbarcontrolValores('interval')
+        self.interval.connect('valor', self.__set_interval)
 
         self.pack_start(frame1, False, False, 0)
         self.pack_start(frame2, False, False, 0)
-        self.pack_start(interval, False, False, 0)
+        self.pack_start(self.interval, False, False, 0)
 
         self.show_all()
 
@@ -222,7 +222,8 @@ class Radioactv(gtk.VBox):
         Setea el intervalo.
         """
 
-        interval = int(3 * valor / 100.0)
+        #interval = int(3 * valor / 100.0)
+        interval = long(2147483647 * valor / 100.0)
         self.emit('propiedad', 'interval', interval)
 
     def __set_color(self, widget, void, color):
@@ -238,6 +239,11 @@ class Radioactv(gtk.VBox):
         """
 
         self.emit('propiedad', 'mode', valor)
+
+    def reset(self):
+        self.interval.set_progress(0.0)
+        #self.switch_dusts.set_active(True)
+        #self.switch_pits.set_active(True)
 
 
 class Agingtv(gtk.VBox):
@@ -275,15 +281,16 @@ class Agingtv(gtk.VBox):
 
         gtk.VBox.__init__(self)
 
-        interval = ToolbarcontrolValores('scratch-lines')
-        interval.connect('valor', self.__set_scratch_lines)
+        self.switch_dusts = False
+        self.switch_pits = False
+        self.scratch_lines = ToolbarcontrolValores('scratch-lines')
+        self.scratch_lines.connect('valor', self.__set_scratch_lines)
 
-        self.pack_start(interval, False, False, 0)
-        # FIXME: Desactivo porque no funciona bien.
-        #self.pack_start(self.get_toolbar_color_aging(), False, False, 0)
+        self.pack_start(self.scratch_lines, False, False, 0)
         self.pack_start(self.__get_toolbar_pits(), False, False, 0)
         self.pack_start(self.__get_toolbar_dusts(), False, False, 0)
 
+        self.reset()
         self.show_all()
 
     def __get_toolbar_dusts(self):
@@ -291,12 +298,12 @@ class Agingtv(gtk.VBox):
         toolbar = gtk.Toolbar()
         toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
 
-        switch = gtk.CheckButton()
-        switch.set_active(True)
-        switch.show()
+        self.switch_dusts = gtk.CheckButton()
+        self.switch_dusts.set_active(True)
+        self.switch_dusts.show()
         item = gtk.ToolItem()
         item.set_expand(False)
-        item.add(switch)
+        item.add(self.switch_dusts)
         toolbar.insert(item, -1)
 
         toolbar.insert(get_separador(draw=False,
@@ -308,7 +315,8 @@ class Agingtv(gtk.VBox):
         item.add(label)
         toolbar.insert(item, -1)
 
-        switch.connect('button-press-event', self.__set_dusts)
+        self.switch_dusts.connect(
+            'button-press-event', self.__set_dusts)
 
         return toolbar
 
@@ -317,12 +325,12 @@ class Agingtv(gtk.VBox):
         toolbar = gtk.Toolbar()
         toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
 
-        switch = gtk.CheckButton()
-        switch.set_active(True)
-        switch.show()
+        self.switch_pits = gtk.CheckButton()
+        self.switch_pits.set_active(True)
+        self.switch_pits.show()
         item = gtk.ToolItem()
         item.set_expand(False)
-        item.add(switch)
+        item.add(self.switch_pits)
         toolbar.insert(item, -1)
 
         toolbar.insert(get_separador(draw=False,
@@ -334,7 +342,7 @@ class Agingtv(gtk.VBox):
         item.add(label)
         toolbar.insert(item, -1)
 
-        switch.connect('button-press-event', self.__set_pits)
+        self.switch_pits.connect('button-press-event', self.__set_pits)
 
         return toolbar
 
@@ -343,12 +351,9 @@ class Agingtv(gtk.VBox):
         Setea el intervalo.
         """
 
-        interval = int(20 * valor / 100.0)
+        interval = int(20.0 * valor / 100.0)
         self.emit('propiedad', 'scratch-lines', interval)
-
-    def __set_color_aging(self, widget, valor):
-
-        self.emit("propiedad", 'color-aging', not widget.get_active())
+        print interval, valor
 
     def __set_pits(self, widget, valor):
 
@@ -357,6 +362,12 @@ class Agingtv(gtk.VBox):
     def __set_dusts(self, widget, valor):
 
         self.emit("propiedad", 'dusts', not widget.get_active())
+
+    def reset(self):
+
+        self.scratch_lines.set_progress(35.0)
+        self.switch_dusts.set_active(True)
+        self.switch_pits.set_active(True)
 
 
 class ToolbarcontrolValores(gtk.Toolbar):
@@ -403,6 +414,8 @@ class ToolbarcontrolValores(gtk.Toolbar):
         progreso (en % float), y re emite los valores.
         """
 
+        if valor > 99.4:
+            valor = 100.0
         self.emit('valor', valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 

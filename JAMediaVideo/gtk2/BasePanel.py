@@ -381,8 +381,8 @@ class BasePanel(gtk.HPaned):
 
     def set_accion(self, accion):
         """
-        Le pasa a la camara las ordenes seleccionadas por el usuario
-        en la toolbar correspondiente de la aplicacion.
+        Le pasa a la camara las ordenes seleccionadas por el
+        usuario en la toolbar correspondiente de la aplicacion.
         """
 
         if accion == "Izquierda" or accion == "Derecha":
@@ -475,8 +475,10 @@ class BasePanel(gtk.HPaned):
         gobject.idle_add(self.__cargar_efectos,
             list(get_jamedia_video_efectos()))
 
-        self.widget_efectos.connect("click_efecto", self.__set_efecto)
-        self.widget_efectos.connect("configurar_efecto", self.__set_efecto)
+        self.widget_efectos.connect(
+            "click_efecto", self.__set_efecto)
+        self.widget_efectos.connect(
+            "configurar_efecto", self.__set_efecto)
 
     def salir(self):
 

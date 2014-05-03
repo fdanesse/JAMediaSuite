@@ -155,6 +155,8 @@ class ToolbarcontrolValores(gtk.Toolbar):
         progreso (en % float), y re emite los valores.
         """
 
+        if valor > 99.4:
+            valor = 100.0
         self.emit('valor', valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
