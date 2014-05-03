@@ -24,14 +24,6 @@ import os
 import gobject
 import gst
 
-CONFIG_DEFAULT = {
-    'saturacion': (50.0, 5),
-    'contraste': (50.0, 6),
-    'brillo': (50.0, 8),
-    'hue': (50.0, 0),
-    'gamma': (10.0, 1.0),
-    }
-
 
 class JAMediaWebCamVideo(gobject.GObject):
 
@@ -49,7 +41,13 @@ class JAMediaWebCamVideo(gobject.GObject):
         gobject.GObject.__init__(self)
 
         self.ventana_id = ventana_id
-        self.config = CONFIG_DEFAULT.copy()
+
+        self.config = {
+            'saturacion': 50.0,
+            'contraste': 50.0,
+            'brillo': 50.0,
+            'hue': 50.0,
+            'gamma': 10.0}
 
         self.pipeline = gst.Pipeline()
 
@@ -66,11 +64,10 @@ class JAMediaWebCamVideo(gobject.GObject):
         else:
             self.camara.set_property("device", device)
 
-        xvimagesink = gst.element_factory_make(
-            'xvimagesink', "xvimagesink")
-        xvimagesink.set_property(
-            "force-aspect-ratio", True)
-
+        queue1 = gst.element_factory_make(
+            'queue', "queue1")
+        self.videobalance = gst.element_factory_make(
+            'videobalance', "videobalance")
         self.gamma = gst.element_factory_make(
             'gamma', "gamma")
         self.videoflip = gst.element_factory_make(
@@ -81,15 +78,23 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
+        xvimagesink = gst.element_factory_make(
+            'xvimagesink', "xvimagesink")
+        xvimagesink.set_property(
+            "force-aspect-ratio", True)
 
         self.pipeline.add(self.camara)
+        self.pipeline.add(queue1)
+        self.pipeline.add(self.videobalance)
         self.pipeline.add(self.gamma)
         self.pipeline.add(self.videoflip)
         self.pipeline.add(self.tee)
         self.pipeline.add(ffmpegcolorspace)
         self.pipeline.add(xvimagesink)
 
-        self.camara.link(self.gamma)
+        self.camara.link(queue1)
+        queue1.link(self.videobalance)
+        self.videobalance.link(self.gamma)
         self.gamma.link(self.videoflip)
 
         self.tee.link(ffmpegcolorspace)
@@ -172,85 +177,43 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline.set_state(gst.STATE_PLAYING)
 
-        print "brightness", self.camara.get_property('brightness')
-        print "contrast", self.camara.get_property('contrast')
-        print "saturation", self.camara.get_property('saturation')
-        print "hue", self.camara.get_property('hue')
-        print "gamma", self.gamma.get_property('gamma')
-
     def stop(self):
 
         self.pipeline.set_state(gst.STATE_NULL)
 
-    def reset(self):
+    def set_balance(self, brillo=None, contraste=None,
+        saturacion=None, hue=None, gamma=None):
         """
-        Re establece la cámara a su estado original.
-        """
-
-        self.config = CONFIG_DEFAULT.copy()
-
-        self.camara.set_property(
-            'saturation', self.config['saturacion'][1])
-        self.camara.set_property(
-            'contrast', self.config['contraste'][1])
-        self.camara.set_property(
-            'brightness', self.config['brillo'][1])
-        self.camara.set_property(
-            'hue', self.config['hue'][1])
-
-        self.gamma.set_property(
-            'gamma', self.config['gamma'][1])
-
-        self.videoflip.set_property('method', 0)
-
-        self.stop()
-
-    def set_balance(self, brillo=False, contraste=False,
-        saturacion=False, hue=False, gamma=False):
-        """
-        Seteos de balance en la fuente de video.
-        Recibe % en float.
+        Seteos de balance en video.
+        Recibe % en float y convierte a los valores del filtro.
         """
 
-        # Rangos: int. -2147483648 2147483647
-        total = 2147483648*2
+        if brillo:
+            self.config['brillo'] = brillo
+            valor = (2.0 * brillo / 100.0) - 1.0
+            self.videobalance.set_property(
+                'brightness', valor)
 
-        if saturacion != False:
-            new_valor = long(total * long(saturacion) / long(100))
-            self.config['saturacion'] = (
-                saturacion, new_valor - (total / 2))
+        if contraste:
+            self.config['contraste'] = contraste
+            valor = 2.0 * contraste / 100.0
+            self.videobalance.set_property(
+                'contrast', valor)
 
-            gobject.idle_add(self.camara.set_property,
-                'saturation', self.config['saturacion'][1])
+        if saturacion:
+            self.config['saturacion'] = saturacion
+            valor = 2.0 * saturacion / 100.0
+            self.videobalance.set_property(
+                'saturation', valor)
 
-        if contraste != False:
-            new_valor = long(total * long(contraste) / long(100))
-            self.config['contraste'] = (
-                contraste, new_valor - (total / 2))
+        if hue:
+            self.config['hue'] = hue
+            valor = (2.0 * hue / 100.0) - 1.0
+            self.videobalance.set_property(
+                'hue', valor)
 
-            gobject.idle_add(self.camara.set_property,
-                'contrast', self.config['contraste'][1])
-
-        if brillo != False:
-            new_valor = long(total * long(brillo) / long(100))
-            self.config['brillo'] = (
-                brillo, new_valor - (total / 2))
-
-            gobject.idle_add(self.camara.set_property,
-                'brightness', self.config['brillo'][1])
-
-        if hue != False:
-            new_valor = long(total * long(hue) / long(100))
-            self.config['hue'] = (
-                hue, new_valor - (total / 2))
-
-            gobject.idle_add(self.camara.set_property,
-                'hue', self.config['hue'][1])
-
-        if gamma != False:
-            # Double. Range: 0,01 - 10 Default: 1
-            self.config['gamma'] = (
-                gamma, (10.0 * gamma / 100.0))
-
-            gobject.idle_add(self.gamma.set_property,
-                'gamma', self.config['gamma'][1])
+        if gamma:
+            self.config['gamma'] = gamma
+            valor = (10.0 * gamma / 100.0)
+            self.gamma.set_property(
+                'gamma', valor)

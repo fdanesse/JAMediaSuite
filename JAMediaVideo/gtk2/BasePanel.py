@@ -229,13 +229,16 @@ class BasePanel(gtk.HPaned):
         self.efectos_en_pipe.clear()
 
         if self.jamediawebcam:
-            self.jamediawebcam.reset()
+            self.jamediawebcam.stop()
             del(self.jamediawebcam)
             self.jamediawebcam = False
 
+        device = self.camara_setting.device
+
         xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamMenu(xid,
-            self.camara_setting.device)
+            device=device)
+
         gobject.idle_add(self.jamediawebcam.play)
 
     def __camara_video_run(self):
@@ -251,7 +254,7 @@ class BasePanel(gtk.HPaned):
         self.efectos_en_pipe.clear()
 
         if self.jamediawebcam:
-            self.jamediawebcam.reset()
+            self.jamediawebcam.stop()
             del(self.jamediawebcam)
             self.jamediawebcam = False
 
@@ -262,16 +265,33 @@ class BasePanel(gtk.HPaned):
         self.jamediawebcam = JAMediaWebCamVideo(
             xid, device=device, formato=salida,
             efectos=[])
+
         gobject.idle_add(self.jamediawebcam.play)
 
     def __camara_foto_run(self):
 
         print "BasePanel: Menu de Fotografia ==> construir camara de grabacion de imagenes tomando en cuenta origen y formato segun widget de configuraciones y (tomar en cuenta configuracion de rafagas"
 
+        if self.widget_efectos:
+            self.widget_efectos.clear()
+
+        self.info_label.set_text("")
+        self.info_label.hide()
+        self.efectos_en_pipe.clear()
+
         if self.jamediawebcam:
-            self.jamediawebcam.reset()
+            self.jamediawebcam.stop()
             del(self.jamediawebcam)
             self.jamediawebcam = False
+
+        device = self.camara_setting.device
+
+        xid = self.pantalla.get_property('window').xid
+        #self.jamediawebcam = JAMediaWebCamVideo(
+        #    xid, device=device, formato=salida,
+        #    efectos=[])
+
+        #gobject.idle_add(self.jamediawebcam.play)
 
     def __update_balance_toolbars(self, config):
         """
@@ -279,11 +299,11 @@ class BasePanel(gtk.HPaned):
         """
 
         self.balance_config_widget.set_balance(
-            brillo=config['brillo'][0],
-            contraste=config['contraste'][0],
-            saturacion=config['saturacion'][0],
-            hue=config['hue'][0],
-            gamma=config['gamma'][0])
+            brillo=config['brillo'],
+            contraste=config['contraste'],
+            saturacion=config['saturacion'],
+            hue=config['hue'],
+            gamma=config['gamma'])
 
     def __set_video_out(self, widget, tipo, valor):
         """
@@ -308,7 +328,7 @@ class BasePanel(gtk.HPaned):
         """
 
         rot = self.jamediawebcam.videoflip.get_property('method')
-        config = self.jamediawebcam.config
+        config = self.jamediawebcam.config.copy()
         efectos = self.efectos_en_pipe.get_efectos()
 
         if not device:
@@ -317,7 +337,7 @@ class BasePanel(gtk.HPaned):
         if not salida:
             salida = self.video_out_setting.formato
 
-        self.jamediawebcam.reset()
+        self.jamediawebcam.stop()
         del(self.jamediawebcam)
         self.jamediawebcam = False
 
@@ -325,18 +345,21 @@ class BasePanel(gtk.HPaned):
         self.jamediawebcam = JAMediaWebCamVideo(
             xid, device=device, formato=salida,
             efectos=efectos)
-        gobject.idle_add(self.jamediawebcam.play)
 
-        self.jamediawebcam.set_balance(
-            brillo=config["brillo"][0],
-            contraste=config["contraste"][0],
-            saturacion=config["saturacion"][0],
-            hue=config["hue"][0],
-            gamma=config["hue"][0])
+        gobject.idle_add(self.jamediawebcam.play)
 
         gobject.idle_add(
             self.jamediawebcam.videoflip.set_property,
             'method', rot)
+
+        self.jamediawebcam.set_balance(
+            brillo=config["brillo"],
+            contraste=config["contraste"],
+            saturacion=config["saturacion"],
+            hue=config["hue"],
+            gamma=config["gamma"])
+
+        self.__update_balance_toolbars(config)
 
     def nueva_camara(self, tipo):
         """
@@ -421,7 +444,7 @@ class BasePanel(gtk.HPaned):
 
         if self.jamediawebcam:
             self.__update_balance_toolbars(
-                self.jamediawebcam.config)
+                self.jamediawebcam.config.copy())
 
         map(ocultar, video_widgets)
         map(ocultar, foto_widgets)
@@ -458,4 +481,4 @@ class BasePanel(gtk.HPaned):
     def salir(self):
 
         if self.jamediawebcam:
-            self.jamediawebcam.reset()
+            self.jamediawebcam.stop()

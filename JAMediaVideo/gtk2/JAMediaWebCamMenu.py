@@ -24,14 +24,6 @@ import os
 import gobject
 import gst
 
-CONFIG_DEFAULT = {
-    'saturacion': (50.0, 1),
-    'contraste': (50.0, 1),
-    'brillo': (50.0, 0),
-    'hue': (50.0, 0),
-    'gamma': (10.0, 1.0),
-    }
-
 
 class JAMediaWebCamMenu(gobject.GObject):
 
@@ -48,7 +40,13 @@ class JAMediaWebCamMenu(gobject.GObject):
         gobject.GObject.__init__(self)
 
         self.ventana_id = ventana_id
-        self.config = CONFIG_DEFAULT.copy()
+
+        self.config = {
+            'saturacion': 50.0,
+            'contraste': 50.0,
+            'brillo': 50.0,
+            'hue': 50.0,
+            'gamma': 10.0}
 
         self.pipeline = gst.Pipeline()
 
@@ -106,33 +104,10 @@ class JAMediaWebCamMenu(gobject.GObject):
 
         return gst.BUS_PASS
 
-    def __stop(self):
+    def stop(self):
 
         self.pipeline.set_state(gst.STATE_NULL)
 
     def play(self):
 
         self.pipeline.set_state(gst.STATE_PLAYING)
-
-    def reset(self):
-        """
-        Re establece la cámara a su estado original.
-        """
-
-        self.config = CONFIG_DEFAULT.copy()
-
-        self.camara.set_property(
-            'saturation', self.config['saturacion'][1])
-        self.camara.set_property(
-            'contrast', self.config['contraste'][1])
-        self.camara.set_property(
-            'brightness', self.config['brillo'][1])
-        self.camara.set_property(
-            'hue', self.config['hue'][1])
-
-        self.gamma.set_property(
-            'gamma', self.config['gamma'][1])
-
-        self.videoflip.set_property('method', 0)
-
-        self.__stop()

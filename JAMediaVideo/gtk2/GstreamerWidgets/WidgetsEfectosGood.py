@@ -118,7 +118,6 @@ class Radioactv(gtk.VBox):
         self.pack_start(frame1, False, False, 0)
         self.pack_start(frame2, False, False, 0)
         self.pack_start(interval, False, False, 0)
-        self.pack_start(self.__get_toolbar_on_off(), False, False, 0)
 
         self.show_all()
 
@@ -204,40 +203,6 @@ class Radioactv(gtk.VBox):
 
         return modo_widgets
 
-    def __get_toolbar_on_off(self):
-        """
-        En modo 3, se puede desactivar y activar el efecto.
-        switch activa y desactiva el efecto si modo == 3.
-        """
-
-        toolbar = gtk.Toolbar()
-
-        toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
-
-        #toolbar.insert(get_separador(draw=False,
-        #    ancho=0, expand=True), -1)
-
-        item = gtk.ToolItem()
-        label = gtk.Label("on:")
-        label.show()
-        item.add(label)
-        toolbar.insert(item, -1)
-
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        self.switch = gtk.CheckButton()
-        self.switch.set_active(True)
-        self.switch.show()
-        item = gtk.ToolItem()
-        item.set_expand(False)
-        item.add(self.switch)
-        toolbar.insert(item, -1)
-
-        self.switch.connect('button-press-event', self.__set_trigger)
-
-        return toolbar
-
     def __clicked_color(self, widget, void):
 
         for boton in self.botones_colores:
@@ -273,13 +238,6 @@ class Radioactv(gtk.VBox):
         """
 
         self.emit('propiedad', 'mode', valor)
-
-    def __set_trigger(self, widget, valor):
-        """
-        Activa y desactiva el efecto.
-        """
-
-        self.emit("propiedad", 'trigger', not widget.get_active())
 
 
 class Agingtv(gtk.VBox):
