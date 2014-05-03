@@ -30,7 +30,6 @@ import gtk
 import gobject
 from gtk import gdk
 
-from Widgets import JAMediaButton
 from Widgets import get_color
 from Widgets import get_separador
 
@@ -126,124 +125,97 @@ class Radioactv(gtk.VBox):
         Cuatro botones para seleccionar el color.
         """
 
-        color_widgets = gtk.HBox()
+        hbox = gtk.HBox()
 
-        white = JAMediaButton()
-        white.connect('clicked', self.__set_color, 3)
-        white.set_colores(colornormal=get_color("BLANCO"))
-        white.set_tooltip('Blanco')
+        self.white = gtk.RadioButton()
+        self.white.set_label("W")
+        self.white.connect('clicked', self.__set_color, 3)
+        self.white.modify_bg(0, get_color("BLANCO"))
+        self.white.set_tooltip_text('Blanco')
+        hbox.pack_start(self.white, False, False, 0)
 
-        red = JAMediaButton()
-        red.connect('clicked', self.__set_color, 0)
-        red.set_colores(colornormal=get_color("ROJO"))
-        red.set_tooltip('Rojo')
+        self.red = gtk.RadioButton()
+        self.red.set_label("R")
+        self.red.connect('clicked', self.__set_color, 0)
+        self.red.modify_bg(0, get_color("ROJO"))
+        self.red.set_tooltip_text('Rojo')
+        hbox.pack_start(self.red, False, False, 0)
+        self.red.set_group(self.white)
 
-        green = JAMediaButton()
-        green.connect('clicked', self.__set_color, 1)
-        green.set_colores(colornormal=get_color("VERDE"))
-        green.set_tooltip('Verde')
+        self.green = gtk.RadioButton()
+        self.green.set_label("G")
+        self.green.connect('clicked', self.__set_color, 1)
+        self.green.modify_bg(0, get_color("VERDE"))
+        self.green.set_tooltip_text('VERDE')
+        hbox.pack_start(self.green, False, False, 0)
+        self.green.set_group(self.white)
 
-        blue = JAMediaButton()
-        blue.connect('clicked', self.__set_color, 2)
-        blue.set_colores(colornormal=get_color("AZUL"))
-        blue.set_tooltip('Azul')
+        self.blue = gtk.RadioButton()
+        self.blue.set_label("B")
+        self.blue.connect('clicked', self.__set_color, 2)
+        self.blue.modify_bg(0, get_color("AZUL"))
+        self.blue.set_tooltip_text('AZUL')
+        hbox.pack_start(self.blue, False, False, 0)
+        self.blue.set_group(self.white)
 
-        self.botones_colores = [
-            white,
-            red,
-            green,
-            blue]
-
-        for button in self.botones_colores:
-            button.set_tamanio(24, 24)
-            button.set_border_width(4)
-            color_widgets.pack_start(button, True, True, 0)
-            button.connect('clicked', self.__clicked_color)
-
-        return color_widgets
+        return hbox
 
     def __get_widgets_modo(self):
         """
         Cuatro botones para seleccinar el modo.
         """
 
-        modo_widgets = gtk.HBox()
+        hbox = gtk.HBox()
 
-        white = JAMediaButton()
-        white.connect('clicked', self.__set_modo, 0)
-        white.set_label(0)
-        white.set_tooltip('normal')
+        self.modo0 = gtk.RadioButton()
+        self.modo0.set_label("0")
+        self.modo0.set_tooltip_text('normal')
+        self.modo0.connect('clicked', self.__set_modo, 0)
+        hbox.pack_start(self.modo0, False, False, 0)
 
-        red = JAMediaButton()
-        red.connect('clicked', self.__set_modo, 1)
-        red.set_label(1)
-        red.set_tooltip('strobe1')
+        self.modo1 = gtk.RadioButton()
+        self.modo1.set_label("1")
+        self.modo1.set_tooltip_text('strobe1')
+        self.modo1.connect('clicked', self.__set_modo, 1)
+        self.modo1.set_group(self.modo0)
+        hbox.pack_start(self.modo1, False, False, 0)
 
-        green = JAMediaButton()
-        green.connect('clicked', self.__set_modo, 2)
-        green.set_label(2)
-        green.set_tooltip('strobe2')
+        self.modo2 = gtk.RadioButton()
+        self.modo2.set_label("2")
+        self.modo2.set_tooltip_text('strobe2')
+        self.modo2.connect('clicked', self.__set_modo, 2)
+        self.modo2.set_group(self.modo0)
+        hbox.pack_start(self.modo2, False, False, 0)
 
-        blue = JAMediaButton()
-        blue.connect('clicked', self.__set_modo, 3)
-        blue.set_label(3)
-        blue.set_tooltip('trigger')
+        self.modo3 = gtk.RadioButton()
+        self.modo3.set_label("3")
+        self.modo3.set_tooltip_text('strobe3')
+        self.modo3.connect('clicked', self.__set_modo, 3)
+        self.modo3.set_group(self.modo0)
+        hbox.pack_start(self.modo3, False, False, 0)
 
-        self.botones_modo = [
-            white,
-            red,
-            green,
-            blue]
-
-        for button in self.botones_modo:
-            button.set_tamanio(24, 24)
-            button.set_border_width(4)
-            modo_widgets.pack_start(button, True, True, 0)
-            button.connect('clicked', self.__clicked_modo)
-
-        return modo_widgets
-
-    def __clicked_color(self, widget, void):
-
-        for boton in self.botones_colores:
-
-            if not boton == widget:
-                boton.des_seleccionar()
-
-    def __clicked_modo(self, widget, void):
-
-        for boton in self.botones_modo:
-
-            if not boton == widget:
-                boton.des_seleccionar()
+        return hbox
 
     def __set_interval(self, widget, valor):
-        """
-        Setea el intervalo.
-        """
 
-        #interval = int(3 * valor / 100.0)
         interval = long(2147483647 * valor / 100.0)
         self.emit('propiedad', 'interval', interval)
 
-    def __set_color(self, widget, void, color):
-        """
-        void = <class 'gi.overrides.gdk.EventButton'>
-        """
+    def __set_color(self, widget, color):
 
-        self.emit('propiedad', 'color', color)
+        if widget.get_active():
+            self.emit('propiedad', 'color', color)
 
-    def __set_modo(self, widget, void, valor):
-        """
-        void = <class 'gi.overrides.gdk.EventButton'>
-        """
+    def __set_modo(self, widget, valor):
 
-        self.emit('propiedad', 'mode', valor)
+        if widget.get_active():
+            self.emit('propiedad', 'mode', valor)
 
     def reset(self):
+
         self.interval.set_progress(0.0)
-        #self.switch_dusts.set_active(True)
-        #self.switch_pits.set_active(True)
+        self.white.set_active(True)
+        self.modo0.set_active(True)
 
 
 class Agingtv(gtk.VBox):
@@ -347,13 +319,9 @@ class Agingtv(gtk.VBox):
         return toolbar
 
     def __set_scratch_lines(self, widget, valor):
-        """
-        Setea el intervalo.
-        """
 
         interval = int(20.0 * valor / 100.0)
         self.emit('propiedad', 'scratch-lines', interval)
-        print interval, valor
 
     def __set_pits(self, widget, valor):
 

@@ -148,6 +148,8 @@ class BasePanel(gtk.HPaned):
         Agrega o configura efectos en la cámara de video o fotografía.
         """
 
+        print efecto, propiedad, valor
+        '''
         if propiedad == True:
             self.efectos_en_pipe.add_efecto(efecto)
             self.__re_init_video_web_cam()
@@ -158,7 +160,7 @@ class BasePanel(gtk.HPaned):
 
         else:
             self.jamediawebcam.set_efecto(efecto, propiedad, valor)
-
+        '''
     def __cargar_efectos(self, efectos):
         """
         Agrega los widgets con efectos a la paleta de configuración.

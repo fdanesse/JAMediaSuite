@@ -63,144 +63,6 @@ def get_color(color):
     return colors.get(color, None)
 
 
-class JAMediaButton(gtk.EventBox):
-    """
-    Un Boton a medida.
-    """
-
-    __gsignals__ = {
-    "clicked": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-    "click_derecho": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
-
-    def __init__(self):
-
-        gtk.EventBox.__init__(self)
-
-        self.cn = get_color("BLANCO")
-        self.cs = get_color("AMARILLO")
-        self.cc = get_color("NARANJA")
-        self.text_color = get_color("NEGRO")
-        self.colornormal = self.cn
-        self.colorselect = self.cs
-        self.colorclicked = self.cc
-
-        self.set_visible_window(True)
-        self.modify_bg(0, self.colornormal)
-        self.modify_fg(0, self.text_color)
-        self.set_border_width(1)
-
-        self.estado_select = False
-
-        self.add_events(
-            gdk.BUTTON_PRESS_MASK |
-            gdk.BUTTON_RELEASE_MASK |
-            gdk.POINTER_MOTION_MASK |
-            gdk.ENTER_NOTIFY_MASK |
-            gdk.LEAVE_NOTIFY_MASK)
-
-        self.connect("button_press_event", self.button_press)
-        self.connect("button_release_event", self.__button_release)
-        self.connect("enter-notify-event", self.__enter_notify_event)
-        self.connect("leave-notify-event", self.__leave_notify_event)
-
-        self.imagen = gtk.Image()
-        self.add(self.imagen)
-
-        self.show_all()
-
-    def set_colores(self, colornormal=False,
-        colorselect=False, colorclicked=False):
-
-        if colornormal:
-            self.cn = colornormal
-
-        if colorselect:
-            self.cs = colorselect
-
-        if colorclicked:
-            self.cc = colorclicked
-
-        self.colornormal = self.cn
-        self.colorselect = self.cs
-        self.colorclicked = self.cc
-
-        if self.estado_select:
-            self.seleccionar()
-
-        else:
-            self.des_seleccionar()
-
-    def seleccionar(self):
-        """
-        Marca como seleccionado
-        """
-
-        self.estado_select = True
-        self.colornormal = self.cc
-        self.colorselect = self.cc
-        self.colorclicked = self.cc
-
-        self.modify_bg(0, self.colornormal)
-
-    def des_seleccionar(self):
-        """
-        Desmarca como seleccionado
-        """
-
-        self.estado_select = False
-
-        self.colornormal = self.cn
-        self.colorselect = self.cs
-        self.colorclicked = self.cc
-
-        self.modify_bg(0, self.colornormal)
-
-    def __button_release(self, widget, event):
-
-        self.modify_bg(0, self.colorselect)
-
-    def __leave_notify_event(self, widget, event):
-
-        self.modify_bg(0, self.colornormal)
-
-    def __enter_notify_event(self, widget, event):
-
-        self.modify_bg(0, self.colorselect)
-
-    def button_press(self, widget, event):
-
-        self.seleccionar()
-
-        if event.button == 1:
-            self.emit("clicked", event)
-
-        elif event.button == 3:
-            self.emit("click_derecho", event)
-
-    def set_tooltip(self, texto):
-
-        self.set_tooltip_text(texto)
-
-    def set_label(self, texto):
-
-        for child in self.get_children():
-            child.destroy()
-
-        label = gtk.Label(texto)
-        label.show()
-        self.add(label)
-
-    def set_imagen(self, archivo):
-
-        self.imagen.set_from_file(archivo)
-
-    def set_tamanio(self, w, h):
-
-        self.set_size_request(w, h)
-
-
 class WidgetsGstreamerEfectos(gtk.Frame):
     """
     Frame exterior de Contenedor de widgets que
@@ -377,18 +239,14 @@ class Efecto_widget_Config(gtk.EventBox):
             propiedad, valor)
 
     def __efecto_click(self, widget):
-        """
-        Cuando se hace click en el botón del efecto
-        se envía la señal 'agregar-efecto'.
-        """
 
         activo = widget.get_active()
 
-        self.emit('agregar_efecto',
-            widget.get_tooltip_text(), activo)
-
         if not activo and self.widget_config:
             self.widget_config.reset()
+
+        self.emit('agregar_efecto',
+            widget.get_tooltip_text(), activo)
 
     def clear(self):
 
