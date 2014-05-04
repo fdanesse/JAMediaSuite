@@ -25,9 +25,7 @@ import gtk
 from gtk import gdk
 import gobject
 
-from Globales import get_separador
 from Globales import get_boton
-from Globales import get_color
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
@@ -330,7 +328,7 @@ class CamaraConfig(gtk.EventBox):
 
             else:
                 self.device = "/dev/video%s" % str(int(
-                    widget.get_label().split()[-1])-1)
+                    widget.get_label().split()[-1]) - 1)
 
             self.emit("set_camara",
                 "device", self.device)

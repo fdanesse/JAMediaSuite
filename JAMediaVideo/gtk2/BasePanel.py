@@ -19,10 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
-
 import gtk
-from gtk import gdk
 import gobject
 
 from Globales import get_colors
@@ -74,6 +71,7 @@ class BasePanel(gtk.HPaned):
 
         self.modify_bg(0, get_colors("toolbars"))
 
+        self.control = True
         self.jamediawebcam = False
 
         self.pantalla = Visor()
@@ -115,7 +113,7 @@ class BasePanel(gtk.HPaned):
         self.video_out_setting = Video_out_Config()
         self.rafagas_setting = Rafagas_Config()
         self.balance_config_widget = ToolbarConfig()
-        self.widget_efectos = False #WidgetsGstreamerEfectos()
+        self.widget_efectos = False  #WidgetsGstreamerEfectos()
 
         self.vbox_config.pack_start(
             self.camara_setting, False, False, 0)
@@ -143,10 +141,15 @@ class BasePanel(gtk.HPaned):
         self.video_out_setting.connect(
             "set_video_out", self.__set_video_out)
 
+        self.control = False
+
     def __set_efecto(self, widget, efecto, propiedad=None, valor=None):
         """
         Agrega o configura efectos en la cámara de video o fotografía.
         """
+
+        if self.control:
+            return
 
         if propiedad == True:
             self.efectos_en_pipe.add_efecto(efecto)
@@ -221,17 +224,19 @@ class BasePanel(gtk.HPaned):
         Cámara básica del menú.
         """
 
+        self.control = True
+
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            del(self.jamediawebcam)
+            self.jamediawebcam = False
+
         if self.widget_efectos:
             self.widget_efectos.clear()
 
         self.info_label.set_text("")
         self.info_label.hide()
         self.efectos_en_pipe.clear()
-
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            del(self.jamediawebcam)
-            self.jamediawebcam = False
 
         device = self.camara_setting.device
 
@@ -241,10 +246,19 @@ class BasePanel(gtk.HPaned):
 
         gobject.idle_add(self.jamediawebcam.play)
 
+        self.control = False
+
     def __camara_video_run(self):
         """
         Cámara básica de video.
         """
+
+        self.control = True
+
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            del(self.jamediawebcam)
+            self.jamediawebcam = False
 
         if self.widget_efectos:
             self.widget_efectos.clear()
@@ -252,11 +266,6 @@ class BasePanel(gtk.HPaned):
         self.info_label.set_text("")
         self.info_label.hide()
         self.efectos_en_pipe.clear()
-
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            del(self.jamediawebcam)
-            self.jamediawebcam = False
 
         device = self.camara_setting.device
         salida = self.video_out_setting.formato
@@ -268,9 +277,18 @@ class BasePanel(gtk.HPaned):
 
         gobject.idle_add(self.jamediawebcam.play)
 
+        self.control = False
+
     def __camara_foto_run(self):
 
         print "BasePanel: Menu de Fotografia ==> construir camara de grabacion de imagenes tomando en cuenta origen y formato segun widget de configuraciones y (tomar en cuenta configuracion de rafagas"
+
+        self.control = True
+
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            del(self.jamediawebcam)
+            self.jamediawebcam = False
 
         if self.widget_efectos:
             self.widget_efectos.clear()
@@ -278,11 +296,6 @@ class BasePanel(gtk.HPaned):
         self.info_label.set_text("")
         self.info_label.hide()
         self.efectos_en_pipe.clear()
-
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            del(self.jamediawebcam)
-            self.jamediawebcam = False
 
         device = self.camara_setting.device
 
@@ -292,6 +305,8 @@ class BasePanel(gtk.HPaned):
         #    efectos=[])
 
         #gobject.idle_add(self.jamediawebcam.play)
+
+        self.control = False
 
     def __update_balance_toolbars(self, config):
         """
@@ -358,6 +373,9 @@ class BasePanel(gtk.HPaned):
             saturacion=config["saturacion"],
             hue=config["hue"],
             gamma=config["gamma"])
+
+        for efecto in efectos:
+            self.widget_efectos.reemit_config_efecto(efecto)
 
         self.__update_balance_toolbars(config)
 
@@ -442,6 +460,7 @@ class BasePanel(gtk.HPaned):
             self.balance_config_widget,
             self.widget_efectos]
 
+        #FIXME: Quizas sea mejor al final de la funcion
         if self.jamediawebcam:
             self.__update_balance_toolbars(
                 self.jamediawebcam.config.copy())

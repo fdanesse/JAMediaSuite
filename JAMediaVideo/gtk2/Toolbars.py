@@ -22,12 +22,10 @@
 import os
 
 import gtk
-from gtk import gdk
 import gobject
 
 from Globales import get_separador
 from Globales import get_boton
-from Globales import get_color
 from Globales import get_colors
 
 from Widgets import Help
@@ -37,16 +35,15 @@ BASE_PATH = os.path.dirname(__file__)
 
 
 def ocultar(objeto):
-
     if objeto.get_visible():
         objeto.hide()
 
-def activar(objeto):
 
+def activar(objeto):
     objeto.set_sensitive(True)
 
-def desactivar(objeto):
 
+def desactivar(objeto):
     objeto.set_sensitive(False)
 
 

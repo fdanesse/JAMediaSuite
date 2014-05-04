@@ -47,17 +47,15 @@ def get_color(color):
     Devuelve Colores predefinidos.
     """
 
-    from gtk import gdk
-
     colors = {
-        "GRIS": gdk.Color(60156, 60156, 60156),
-        "AMARILLO": gdk.Color(65000, 65000, 40275),
-        "NARANJA": gdk.Color(65000, 26000, 0),
-        "BLANCO": gdk.Color(65535, 65535, 65535),
-        "NEGRO": gdk.Color(0, 0, 0),
-        "ROJO": gdk.Color(65000, 0, 0),
-        "VERDE": gdk.Color(0, 65000, 0),
-        "AZUL": gdk.Color(0, 0, 65000),
+        "GRIS": gtk.gdk.Color(60156, 60156, 60156),
+        "AMARILLO": gtk.gdk.Color(65000, 65000, 40275),
+        "NARANJA": gtk.gdk.Color(65000, 26000, 0),
+        "BLANCO": gtk.gdk.Color(65535, 65535, 65535),
+        "NEGRO": gtk.gdk.Color(0, 0, 0),
+        "ROJO": gtk.gdk.Color(65000, 0, 0),
+        "VERDE": gtk.gdk.Color(0, 65000, 0),
+        "AZUL": gtk.gdk.Color(0, 0, 65000),
         }
 
     return colors.get(color, None)
@@ -111,6 +109,11 @@ class WidgetsGstreamerEfectos(gtk.Frame):
     def clear(self):
 
         self.gstreamer_efectos.clear()
+
+    def reemit_config_efecto(self, efecto):
+
+        self.gstreamer_efectos.reemit_config_efecto(efecto)
+
 
 class GstreamerVideoEfectos(gtk.VBox):
     """
@@ -183,6 +186,12 @@ class GstreamerVideoEfectos(gtk.VBox):
         for child in self.get_children():
             child.clear()
 
+    def reemit_config_efecto(self, efecto):
+
+        for child in self.get_children():
+            if child.botonefecto.get_label() == efecto:
+                child.reemit_config_efecto(efecto)
+
 
 class Efecto_widget_Config(gtk.EventBox):
     """
@@ -206,10 +215,6 @@ class Efecto_widget_Config(gtk.EventBox):
         self.set_border_width(4)
 
         frame = gtk.Frame()
-        text = nombre
-        if "-" in nombre:
-            text = nombre.split("-")[-1]
-
         box = gtk.VBox()
         frame.add(box)
 
@@ -255,6 +260,11 @@ class Efecto_widget_Config(gtk.EventBox):
             self.widget_config.reset()
 
         self.botonefecto.set_active(False)
+
+    def reemit_config_efecto(self, efecto):
+
+        if self.widget_config:
+            self.widget_config.reemit_config()
 
 
 def get_widget_config_efecto(nombre):

@@ -98,7 +98,7 @@ class Radioactv(gtk.VBox):
 
         gtk.VBox.__init__(self)
 
-        self.control = False
+        self.control = True
 
         frame1 = gtk.Frame()
         frame1.set_label("Color:")
@@ -121,6 +121,8 @@ class Radioactv(gtk.VBox):
         #self.pack_start(self.interval, False, False, 0)
 
         self.show_all()
+
+        self.control = False
 
     def __get_widgets_colors(self):
         """
@@ -214,13 +216,28 @@ class Radioactv(gtk.VBox):
         if widget.get_active():
             self.emit('propiedad', 'color', color)
 
-    def __set_modo(self, widget, valor):
+    def __set_modo(self, widget, mode):
 
         if self.control:
             return
 
         if widget.get_active():
-            self.emit('propiedad', 'mode', valor)
+            self.emit('propiedad', 'mode', mode)
+
+    def reemit_config(self):
+
+        widgets = [self.red, self.green, self.blue, self.white]
+        for widget in widgets:
+            if widget.get_active():
+                widget.set_active(True)
+                self.__set_color(widget, widgets.index(widget))
+                break
+
+        for widget in [self.modo0, self.modo1, self.modo2, self.modo3]:
+            if widget.get_active():
+                widget.set_active(True)
+                self.__set_modo(widget, int(widget.get_label()))
+                break
 
     def reset(self):
 
@@ -266,7 +283,7 @@ class Agingtv(gtk.VBox):
 
         gtk.VBox.__init__(self)
 
-        self.control = False
+        self.control = True
 
         self.switch_dusts = False
         self.switch_pits = False
@@ -279,6 +296,8 @@ class Agingtv(gtk.VBox):
 
         self.reset()
         self.show_all()
+
+        self.control = False
 
     def __get_toolbar_dusts(self):
 
@@ -302,8 +321,7 @@ class Agingtv(gtk.VBox):
         item.add(label)
         toolbar.insert(item, -1)
 
-        self.switch_dusts.connect(
-            'button-press-event', self.__set_dusts)
+        self.switch_dusts.connect('toggled', self.__set_dusts)
 
         return toolbar
 
@@ -329,7 +347,7 @@ class Agingtv(gtk.VBox):
         item.add(label)
         toolbar.insert(item, -1)
 
-        self.switch_pits.connect('button-press-event', self.__set_pits)
+        self.switch_pits.connect('toggled', self.__set_pits)
 
         return toolbar
 
@@ -341,19 +359,30 @@ class Agingtv(gtk.VBox):
         interval = int(20.0 * valor / 100.0)
         self.emit('propiedad', 'scratch-lines', interval)
 
-    def __set_pits(self, widget, valor):
+    def __set_pits(self, widget, x=False):
 
         if self.control:
             return
 
-        self.emit("propiedad", 'pits', not widget.get_active())
+        self.emit("propiedad", 'pits', widget.get_active())
 
-    def __set_dusts(self, widget, valor):
+    def __set_dusts(self, widget, x=False):
 
         if self.control:
             return
 
-        self.emit("propiedad", 'dusts', not widget.get_active())
+        self.emit("propiedad", 'dusts', widget.get_active())
+
+    def reemit_config(self):
+
+        self.__set_scratch_lines(False,
+            self.scratch_lines.get_progress())
+
+        self.switch_dusts.set_active(self.switch_dusts.get_active())
+        self.__set_dusts(self.switch_dusts)
+
+        self.switch_pits.set_active(self.switch_pits.get_active())
+        self.__set_pits(self.switch_pits)
 
     def reset(self):
 
@@ -421,6 +450,10 @@ class ToolbarcontrolValores(gtk.Toolbar):
         self.escala.set_progress(valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
+    def get_progress(self):
+
+        return self.escala.get_progress()
+
 
 class SlicerBalance(gtk.EventBox):
     """
@@ -452,6 +485,10 @@ class SlicerBalance(gtk.EventBox):
 
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
+
+    def get_progress(self):
+
+        return self.escala.ajuste.get_value()
 
     def __emit_valor(self, widget, valor):
         """

@@ -88,7 +88,7 @@ def get_jamedia_video_efectos():
         #'shagadelictv',                            # gst-plugins-good
         'vertigotv',                                # gst-plugins-good
         #'revtv',                                   # gst-plugins-good
-        #'quarktv',                                 # gst-plugins-good Demasiado Lento
+        #'quarktv',                         # gst-plugins-good Demasiado Lento
         #'optv',                                    # gst-plugins-good
         'radioactv',                                # gst-plugins-good
         'streaktv',                                 # gst-plugins-good

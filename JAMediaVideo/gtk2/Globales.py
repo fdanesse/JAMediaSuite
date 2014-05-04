@@ -250,6 +250,7 @@ def get_my_files_directory():
     return DIRECTORIO_MIS_ARCHIVOS
 '''
 
+
 def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
@@ -290,6 +291,7 @@ def get_togle_boton(archivo, flip=False,
 
     return boton
 '''
+
 
 def get_boton(archivo, flip=False, rotacion=None,
     pixels=24, tooltip_text=None):

@@ -25,11 +25,7 @@ import gtk
 from gtk import gdk
 import gobject
 
-from Globales import get_color
 from Globales import get_colors
-from Globales import get_separador
-from Globales import get_boton
-#from Globales import get_togle_boton
 
 BASE_PATH = os.path.dirname(__file__)
 

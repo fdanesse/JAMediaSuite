@@ -19,8 +19,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
-
 import gobject
 import gst
 
@@ -128,7 +126,7 @@ class JAMediaWebCamVideo(gobject.GObject):
                 index = elementos.index(elemento)
 
                 if index > 0:
-                    elementos[index-1].link(elementos[index])
+                    elementos[index - 1].link(elementos[index])
 
             queue.link(elementos[0])
             elementos[-1].link(self.tee)
