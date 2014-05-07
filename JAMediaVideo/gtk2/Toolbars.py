@@ -58,7 +58,8 @@ class Toolbar(gtk.EventBox):
     "config-show": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
     "accion": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING)),
     "nueva_camara": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
@@ -150,7 +151,7 @@ class Toolbar(gtk.EventBox):
     def __set_foto_accion(self, toolbar, accion):
 
         if accion == "Salir":
-            self.emit("accion", accion)
+            self.emit("accion", "foto", accion)
             self.toolbar_fotografia.set_estado(False)
             self.switch("menu")
 
@@ -158,22 +159,22 @@ class Toolbar(gtk.EventBox):
             self.emit("config-show", "foto")
 
         elif accion == "Stop":
-            self.emit("accion", accion)
+            self.emit("accion", "foto", accion)
             self.toolbar_fotografia.set_estado("Stop")
             self.emit("config-show", "foto")
 
         elif accion == "Fotografiar":
-            self.emit("accion", accion)
+            self.emit("accion", "foto", accion)
             self.toolbar_fotografia.set_estado("Playing")
             self.emit("config-show", "")
 
         elif accion == "Izquierda" or accion == "Derecha":
-            self.emit("accion", accion)
+            self.emit("accion", "foto", accion)
 
     def __set_video_accion(self, toolbar, accion):
 
         if accion == "Salir":
-            self.emit("accion", accion)
+            self.emit("accion", "video", accion)
             self.toolbar_video.set_estado(False)
             self.switch("menu")
 
@@ -181,17 +182,17 @@ class Toolbar(gtk.EventBox):
             self.emit("config-show", "camara")
 
         elif accion == "Stop":
-            self.emit("accion", accion)
+            self.emit("accion", "video", accion)
             self.toolbar_video.set_estado("Stop")
             self.emit("config-show", "camara")
 
         elif accion == "Filmar":
-            self.emit("accion", accion)
+            self.emit("accion", "video", accion)
             self.toolbar_video.set_estado("Playing")
             self.emit("config-show", "")
 
         elif accion == "Izquierda" or accion == "Derecha":
-            self.emit("accion", accion)
+            self.emit("accion", "video", accion)
 
     def __show_credits(self, widget):
 

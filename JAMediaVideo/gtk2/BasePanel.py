@@ -19,8 +19,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
 import gtk
 import gobject
+import time
+import datetime
 
 from Globales import get_colors
 
@@ -37,6 +40,8 @@ from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
 
 from JAMediaWebCamMenu import JAMediaWebCamMenu
 from JAMediaWebCamVideo import JAMediaWebCamVideo
+
+from Globales import get_video_directory
 
 
 def ocultar(objeto):
@@ -325,7 +330,7 @@ class BasePanel(gtk.HPaned):
         Setea la salida de video para camara de filmación y fotografía.
         """
 
-        self.__re_init_video_web_cam(salida=valor)
+        self.jamediawebcam.set_formato(valor)
 
     def __set_camara(self, widget, tipo, valor):
         """
@@ -356,6 +361,8 @@ class BasePanel(gtk.HPaned):
         del(self.jamediawebcam)
         self.jamediawebcam = False
 
+        time.sleep(0.500)
+
         xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamVideo(
             xid, device=device, formato=salida,
@@ -379,6 +386,16 @@ class BasePanel(gtk.HPaned):
 
         self.__update_balance_toolbars(config)
 
+    def __update_record(self, widget, info):
+
+        self.info_label.show()
+        self.info_label.set_text(info)
+
+    def __re_sensitive(self):
+
+        self.get_toplevel().toolbar.set_sensitive(True)
+        return False
+
     def nueva_camara(self, tipo):
         """
         Cuando se cambia el modo de la aplicación
@@ -397,7 +414,7 @@ class BasePanel(gtk.HPaned):
         else:
             print "BasePanel Nueva camara:", tipo
 
-    def set_accion(self, accion):
+    def set_accion(self, modo, accion):
         """
         Le pasa a la camara las ordenes seleccionadas por el
         usuario en la toolbar correspondiente de la aplicacion.
@@ -410,10 +427,25 @@ class BasePanel(gtk.HPaned):
             pass
 
         elif accion == "Stop":
-            print "BasePanel ==>", accion, "Detener Grabacion y hacer replay actualizar info_label"
+            if modo == "video":
+                self.get_toplevel().toolbar.set_sensitive(False)
+                self.__re_init_video_web_cam()
+                self.info_label.set_text("")
+                self.info_label.hide()
+                gobject.timeout_add(1000, self.__re_sensitive)
 
-        elif accion == "Filmar":
-            print "BasePanel ==>", accion, "Comenzar a Filmar"
+            else:
+                print "BasePanel ==>", accion, "Detener Grabacion y hacer replay actualizar info_label"
+
+        elif accion == "Filmar" and modo == "video":
+            self.get_toplevel().toolbar.set_sensitive(False)
+            hora = time.strftime("%H-%M-%S")
+            fecha = str(datetime.date.today())
+            archivo = "JV_%s_%s" % (fecha, hora)
+            archivo = os.path.join(get_video_directory(), archivo)
+            self.jamediawebcam.connect("update", self.__update_record)
+            self.jamediawebcam.filmar(archivo)
+            gobject.timeout_add(1000, self.__re_sensitive)
 
         elif accion == "Fotografiar":
             print "BasePanel ==>", accion, "Comenzar a Fotografiar, tomando en cuenta las rafagas" #self.rafagas_setting.get_rafaga
@@ -434,7 +466,7 @@ class BasePanel(gtk.HPaned):
         #   balance y efectos de video.
         # si modo audio: formato de salida, efectos de audio.
 
-        print "BasePanel ==> config_show", tipo
+        #print "BasePanel ==> config_show", tipo
 
         if tipo:
             if self.box_config.get_visible():

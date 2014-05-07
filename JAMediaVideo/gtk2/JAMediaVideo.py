@@ -38,7 +38,7 @@ from BasePanel import BasePanel
 BASE_PATH = os.path.dirname(__file__)
 
 gobject.threads_init()
-gdk.threads_init()
+#gdk.threads_init()
 
 
 class JAMediaVideo(gtk.Window):
@@ -81,9 +81,9 @@ class JAMediaVideo(gtk.Window):
 
         gobject.idle_add(self.__run)
 
-    def __set_accion(self, widget, accion):
+    def __set_accion(self, widget, modo, accion):
 
-        self.base_panel.set_accion(accion)
+        self.base_panel.set_accion(modo, accion)
 
     def __config_show(self, toolbar, tipo):
 
