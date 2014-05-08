@@ -38,7 +38,7 @@ from BasePanel import BasePanel
 BASE_PATH = os.path.dirname(__file__)
 
 gobject.threads_init()
-#gdk.threads_init()
+gtk.gdk.threads_init()
 
 
 class JAMediaVideo(gtk.Window):

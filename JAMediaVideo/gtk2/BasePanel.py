@@ -43,6 +43,9 @@ from JAMediaWebCamVideo import JAMediaWebCamVideo
 
 from Globales import get_video_directory
 
+gobject.threads_init()
+gtk.gdk.threads_init()
+
 
 def ocultar(objeto):
 
@@ -358,7 +361,7 @@ class BasePanel(gtk.HPaned):
             salida = self.video_out_setting.formato
 
         self.jamediawebcam.stop()
-        del(self.jamediawebcam)
+        #del(self.jamediawebcam)
         self.jamediawebcam = False
 
         xid = self.pantalla.get_property('window').xid
@@ -367,6 +370,12 @@ class BasePanel(gtk.HPaned):
             efectos=efectos)
 
         self.jamediawebcam.play()
+
+        #gobject.timeout_add(1000, self.__re_config,
+        #    rot, config, efectos)
+        self.__re_config(rot, config, efectos)
+
+    def __re_config(self, rot, config, efectos):
 
         self.jamediawebcam.set_balance(
             brillo=config["brillo"],
@@ -382,6 +391,8 @@ class BasePanel(gtk.HPaned):
             self.widget_efectos.reemit_config_efecto(efecto)
 
         self.__update_balance_toolbars(config)
+
+        return False
 
     def __update_record(self, widget, info):
 

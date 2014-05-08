@@ -32,6 +32,7 @@ from Gstreamer_Bins import Efectos_bin
 gobject.threads_init()
 gtk.gdk.threads_init()
 
+
 class JAMediaWebCamVideo(gobject.GObject):
 
     __gsignals__ = {
@@ -63,7 +64,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.camara = gst.element_factory_make(
             'v4l2src', "camara")
-        self.camara.set_property("num-buffers", 32000)
+        #self.camara.set_property("num-buffers", 32000)
 
         if device == "Estación Remota":
             pass
@@ -95,12 +96,11 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.tee = gst.element_factory_make(
             'tee', "tee")
 
-        queue1 = gst.element_factory_make(
+        queue = gst.element_factory_make(
             'queue', "queuexvimage")
-        #queue1.set_property("max-size-buffers", 0)
-        #queue1.set_property("max-size-time", 0)
-        queue1.set_property("max-size-bytes", 32000)
-        queue1.set_property("leaky", 2)
+        queue.set_property("max-size-buffers", 32000)
+        queue.set_property("min-threshold-buffers", 0)
+
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspacegtk")
         xvimagesink = gst.element_factory_make(
@@ -126,7 +126,7 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.pipeline.add(self.gamma)
         self.pipeline.add(self.videoflip)
         self.pipeline.add(self.tee)
-        self.pipeline.add(queue1)
+        self.pipeline.add(queue)
         self.pipeline.add(ffmpegcolorspace)
         self.pipeline.add(xvimagesink)
 
@@ -134,8 +134,8 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.gamma.link(self.videoflip)
         self.videoflip.link(self.tee)
 
-        self.tee.link(queue1)
-        queue1.link(ffmpegcolorspace)
+        self.tee.link(queue)
+        queue.link(ffmpegcolorspace)
         ffmpegcolorspace.link(xvimagesink)
 
         self.bus = self.pipeline.get_bus()
@@ -156,7 +156,8 @@ class JAMediaWebCamVideo(gobject.GObject):
             print "gst.MESSAGE_EOS"
 
         elif message.type == gst.MESSAGE_QOS:
-            print time.time(), "gst.MESSAGE_QOS"
+            #print time.time(), "gst.MESSAGE_QOS"
+            pass
 
         elif message.type == gst.MESSAGE_LATENCY:
             print "gst.MESSAGE_LATENCY"
@@ -321,8 +322,7 @@ class JAMediaWebCamVideo(gobject.GObject):
         Conecta a la salida, sea archivo o ip, para grabar o transmitir.
         """
 
-        self.pipeline.set_state(gst.STATE_PAUSED)
-		self.pipeline.set_state(gst.STATE_NULL)
+        self.pipeline.set_state(gst.STATE_NULL)
 
         if self.formato == "ogv" or self.formato == "avi" or self.formato == "mpeg":
             self.path_archivo = u"%s.%s" % (path_archivo, self.formato)
