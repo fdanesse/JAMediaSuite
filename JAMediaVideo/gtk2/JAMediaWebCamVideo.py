@@ -23,7 +23,14 @@ import os
 import time
 import gobject
 import gst
+import pygst
+import gtk
 
+from Gstreamer_Bins import Camara_ogv_out_bin
+from Gstreamer_Bins import Efectos_bin
+
+gobject.threads_init()
+gtk.gdk.threads_init()
 
 class JAMediaWebCamVideo(gobject.GObject):
 
@@ -39,7 +46,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         gobject.GObject.__init__(self)
 
         self.actualizador = False
-        self.control = 0
         self.tamanio = 0
         self.estado = None
         self.ventana_id = ventana_id
@@ -91,8 +97,8 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         queue1 = gst.element_factory_make(
             'queue', "queuexvimage")
-        queue1.set_property("max-size-buffers", 0)
-        queue1.set_property("max-size-time", 0)
+        #queue1.set_property("max-size-buffers", 0)
+        #queue1.set_property("max-size-time", 0)
         queue1.set_property("max-size-bytes", 32000)
         queue1.set_property("leaky", 2)
         ffmpegcolorspace = gst.element_factory_make(
@@ -105,6 +111,18 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.pipeline.add(self.camara)
         self.pipeline.add(videorate)
         self.pipeline.add(self.videobalance)
+
+        self.camara.link(videorate)
+
+        if efectos:
+            efectos_bin = Efectos_bin(efectos)
+            self.pipeline.add(efectos_bin)
+            videorate.link(efectos_bin)
+            efectos_bin.link(self.videobalance)
+
+        else:
+            videorate.link(self.videobalance)
+
         self.pipeline.add(self.gamma)
         self.pipeline.add(self.videoflip)
         self.pipeline.add(self.tee)
@@ -112,50 +130,13 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.pipeline.add(ffmpegcolorspace)
         self.pipeline.add(xvimagesink)
 
-        self.camara.link(videorate)
-        videorate.link(self.videobalance)
         self.videobalance.link(self.gamma)
         self.gamma.link(self.videoflip)
+        self.videoflip.link(self.tee)
 
         self.tee.link(queue1)
         queue1.link(ffmpegcolorspace)
         ffmpegcolorspace.link(xvimagesink)
-
-        if efectos:
-            elementos = []
-            cont = 1
-
-            for efecto in efectos:
-                queue = gst.element_factory_make(
-                    'queue', "queue%s" % cont)
-                queue.set_property("max-size-buffers", 0)
-                queue.set_property("max-size-time", 0)
-                queue.set_property("max-size-bytes", 32000)
-                queue.set_property("leaky", 2)
-
-                ffmpegcolorspace = gst.element_factory_make(
-                    'ffmpegcolorspace', "ffmpegcolorspace%s" % cont)
-
-                ef = gst.element_factory_make(
-                    efecto, efecto)
-
-                elementos.append(ffmpegcolorspace)
-                elementos.append(ef)
-
-                cont += 1
-
-            for elemento in elementos:
-                self.pipeline.add(elemento)
-                index = elementos.index(elemento)
-
-                if index > 0:
-                    elementos[index - 1].link(elementos[index])
-
-            self.videoflip.link(elementos[0])
-            elementos[-1].link(self.tee)
-
-        else:
-            self.videoflip.link(self.tee)
 
         self.bus = self.pipeline.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
@@ -164,7 +145,10 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
+                gtk.gdk.threads_enter()
+                gtk.gdk.display_get_default().sync()
                 message.src.set_xwindow_id(self.ventana_id)
+                gtk.gdk.threads_leave()
 
         elif message.type == gst.MESSAGE_EOS:
             #self.__new_handle(False, [])
@@ -175,8 +159,8 @@ class JAMediaWebCamVideo(gobject.GObject):
             print time.time(), "gst.MESSAGE_QOS"
 
         elif message.type == gst.MESSAGE_LATENCY:
-            #self.pipeline.recalculate_latency()
             print "gst.MESSAGE_LATENCY"
+            self.pipeline.recalculate_latency()
 
         elif message.type == gst.MESSAGE_ERROR:
             print "JAMediaGrabador ERROR:"
@@ -212,57 +196,6 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         return gst.BUS_PASS
 
-    def __make_ogg_out(self):
-
-        autoaudiosrc = gst.element_factory_make(
-            'autoaudiosrc', "autoaudiosrc")
-        audioresample = gst.element_factory_make(
-            'audioresample', 'audioresample')
-
-        vorbisenc = gst.element_factory_make(
-            'vorbisenc', 'vorbisenc')
-
-        self.pipeline.add(autoaudiosrc)
-        self.pipeline.add(vorbisenc)
-
-        autoaudiosrc.link(vorbisenc)
-
-        oggmux = gst.element_factory_make(
-            'oggmux', "oggmux")
-        self.archivo = gst.element_factory_make(
-            'filesink', "filesink")
-
-        self.pipeline.add(oggmux)
-        self.pipeline.add(self.archivo)
-
-        vorbisenc.link(oggmux)
-        oggmux.link(self.archivo)
-
-        queue2 = gst.element_factory_make(
-            'queue', "queuetheora")
-        queue2.set_property("max-size-buffers", 0)
-        queue2.set_property("max-size-time", 0)
-        queue2.set_property("max-size-bytes", 32000)
-        queue2.set_property("leaky", 2)
-
-        ffmpegcolorspace = gst.element_factory_make(
-            'ffmpegcolorspace', "ffmpegcolorspacetheora")
-        theoraenc = gst.element_factory_make(
-            'theoraenc', 'theoraenc')
-        theoraenc.set_property("quality", 16)
-
-        self.pipeline.add(queue2)
-        self.pipeline.add(ffmpegcolorspace)
-        self.pipeline.add(theoraenc)
-
-        self.tee.link(queue2)
-        queue2.link(ffmpegcolorspace)
-        ffmpegcolorspace.link(theoraenc)
-        theoraenc.link(oggmux)
-
-        self.archivo.set_property(
-            "location", self.path_archivo)
-
     def __new_handle(self, reset, data):
         """
         Elimina o reinicia la funcion que
@@ -288,21 +221,12 @@ class JAMediaWebCamVideo(gobject.GObject):
             tam = int(tamanio) / 1024.0 / 1024.0
 
             if self.tamanio != tamanio:
-                #self.control = 0
                 self.tamanio = tamanio
 
                 texto = os.path.basename(self.path_archivo)
                 info = "Grabando: %s %.2f Mb" % (texto, tam)
 
                 self.emit('update', info)
-
-            #else:
-            #    self.control += 1
-
-        #if self.control > 60:
-        #    self.stop()
-        #    #self.emit("endfile")
-        #    return False
 
         return True
 
@@ -311,10 +235,10 @@ class JAMediaWebCamVideo(gobject.GObject):
         Setea propiedades de efectos en el pipe.
         """
 
-        ef = self.pipeline.get_by_name(efecto)
+        ef = self.pipeline.get_by_name("Efectos_bin")
 
         if ef:
-            ef.set_property(propiedad, valor)
+            ef.set_efecto(efecto, propiedad, valor)
 
     def rotar(self, valor):
         """
@@ -397,15 +321,17 @@ class JAMediaWebCamVideo(gobject.GObject):
         Conecta a la salida, sea archivo o ip, para grabar o transmitir.
         """
 
-        self.stop()
+        self.pipeline.set_state(gst.STATE_PAUSED)
+		self.pipeline.set_state(gst.STATE_NULL)
 
         if self.formato == "ogv" or self.formato == "avi" or self.formato == "mpeg":
             self.path_archivo = u"%s.%s" % (path_archivo, self.formato)
-            print "Comenzar a Grabar en:", self.path_archivo
 
             if self.formato == "ogv":
-                self.__make_ogg_out()
-                gobject.idle_add(self.play)
+                out = Camara_ogv_out_bin(self.path_archivo)
+                self.pipeline.add(out)
+                self.tee.link(out)
+                self.play()
                 self.__new_handle(True, [])
 
         else:

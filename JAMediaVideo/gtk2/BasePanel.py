@@ -361,18 +361,12 @@ class BasePanel(gtk.HPaned):
         del(self.jamediawebcam)
         self.jamediawebcam = False
 
-        time.sleep(0.500)
-
         xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamVideo(
             xid, device=device, formato=salida,
             efectos=efectos)
 
-        gobject.idle_add(self.jamediawebcam.play)
-
-        gobject.idle_add(
-            self.jamediawebcam.videoflip.set_property,
-            'method', rot)
+        self.jamediawebcam.play()
 
         self.jamediawebcam.set_balance(
             brillo=config["brillo"],
@@ -380,6 +374,9 @@ class BasePanel(gtk.HPaned):
             saturacion=config["saturacion"],
             hue=config["hue"],
             gamma=config["gamma"])
+
+        self.jamediawebcam.videoflip.set_property(
+            'method', rot)
 
         for efecto in efectos:
             self.widget_efectos.reemit_config_efecto(efecto)
