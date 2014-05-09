@@ -102,6 +102,12 @@ class JAMediaWebCamMenu(gobject.GObject):
 
         return gst.BUS_PASS
 
+    def get_config(self):
+
+        #balance = self.pipeline.get_by_name("Balance_bin")
+        #return balance.get_config()
+        return self.config.copy()
+
     def stop(self):
 
         self.pipeline.set_state(gst.STATE_NULL)

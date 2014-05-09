@@ -23,11 +23,13 @@ import os
 import time
 import gobject
 import gst
-import pygst
 import gtk
 
 from Gstreamer_Bins import Camara_ogv_out_bin
 from Gstreamer_Bins import Efectos_bin
+from Gstreamer_Bins import v4l2src_bin
+from Gstreamer_Bins import Balance_bin
+from Gstreamer_Bins import Xvimage_bin
 
 gobject.threads_init()
 gtk.gdk.threads_init()
@@ -53,18 +55,9 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.formato = formato
         self.path_archivo = ""
 
-        self.config = {
-            'saturacion': 50.0,
-            'contraste': 50.0,
-            'brillo': 50.0,
-            'hue': 50.0,
-            'gamma': 10.0}
-
         self.pipeline = gst.Pipeline()
 
-        self.camara = gst.element_factory_make(
-            'v4l2src', "camara")
-        #self.camara.set_property("num-buffers", 32000)
+        self.camara = v4l2src_bin()
 
         if device == "Estación Remota":
             pass
@@ -74,32 +67,33 @@ class JAMediaWebCamVideo(gobject.GObject):
             # queue ! speexdec ! queue ! alsasink sync=false
 
         else:
-            self.camara.set_property("device", device)
+            self.camara.set_device(device)
 
-        videorate = gst.element_factory_make(
-            'videorate', 'videorate')
-        videorate.set_property("skip-to-first", True)
-        #videorate.set_property("drop-only", True)
-
-        try:
-            videorate.set_property('max-rate', 24)
-        except:
-            pass
-
-        self.videobalance = gst.element_factory_make(
-            'videobalance', "videobalance")
-        self.gamma = gst.element_factory_make(
-            'gamma', "gamma")
-        self.videoflip = gst.element_factory_make(
-            'videoflip', "videoflip")
+        self.balance = Balance_bin()
 
         self.tee = gst.element_factory_make(
             'tee', "tee")
+        self.tee.set_property('pull-mode', 1)
+
+        self.pipeline.add(self.camara)
+        self.pipeline.add(self.balance)
+
+        if efectos:
+            efectos_bin = Efectos_bin(efectos)
+            self.pipeline.add(efectos_bin)
+            self.camara.link(efectos_bin)
+            efectos_bin.link(self.balance)
+
+        else:
+            self.camara.link(self.balance)
+
+        self.pipeline.add(self.tee)
 
         queue = gst.element_factory_make(
             'queue', "queuexvimage")
-        queue.set_property("max-size-buffers", 32000)
-        queue.set_property("min-threshold-buffers", 0)
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspacegtk")
@@ -108,35 +102,18 @@ class JAMediaWebCamVideo(gobject.GObject):
         xvimagesink.set_property(
             "force-aspect-ratio", True)
 
-        self.pipeline.add(self.camara)
-        self.pipeline.add(videorate)
-        self.pipeline.add(self.videobalance)
-
-        self.camara.link(videorate)
-
-        if efectos:
-            efectos_bin = Efectos_bin(efectos)
-            self.pipeline.add(efectos_bin)
-            videorate.link(efectos_bin)
-            efectos_bin.link(self.videobalance)
-
-        else:
-            videorate.link(self.videobalance)
-
-        self.pipeline.add(self.gamma)
-        self.pipeline.add(self.videoflip)
-        self.pipeline.add(self.tee)
         self.pipeline.add(queue)
         self.pipeline.add(ffmpegcolorspace)
         self.pipeline.add(xvimagesink)
 
-        self.videobalance.link(self.gamma)
-        self.gamma.link(self.videoflip)
-        self.videoflip.link(self.tee)
+        self.balance.link(self.tee)
 
         self.tee.link(queue)
         queue.link(ffmpegcolorspace)
         ffmpegcolorspace.link(xvimagesink)
+
+        #xvimage = Xvimage_bin()
+        #self.tee.link(xvimage)
 
         self.bus = self.pipeline.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
@@ -231,10 +208,22 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         return True
 
+    def set_rotacion(self, rot):
+
+        balance = self.pipeline.get_by_name("Balance_bin")
+        balance.set_rotacion(rot)
+
+    def get_rotacion(self):
+
+        balance = self.pipeline.get_by_name("Balance_bin")
+        return balance.get_rotacion()
+
+    def get_config(self):
+
+        balance = self.pipeline.get_by_name("Balance_bin")
+        return balance.get_config()
+
     def set_efecto(self, efecto, propiedad, valor):
-        """
-        Setea propiedades de efectos en el pipe.
-        """
 
         ef = self.pipeline.get_by_name("Efectos_bin")
 
@@ -242,28 +231,9 @@ class JAMediaWebCamVideo(gobject.GObject):
             ef.set_efecto(efecto, propiedad, valor)
 
     def rotar(self, valor):
-        """
-        Rota el video.
-        """
 
-        rot = self.videoflip.get_property('method')
-
-        if valor == "Derecha":
-            if rot < 3:
-                rot += 1
-
-            else:
-                rot = 0
-
-        elif valor == "Izquierda":
-            if rot > 0:
-                rot -= 1
-
-            else:
-                rot = 3
-
-        gobject.idle_add(
-            self.videoflip.set_property, 'method', rot)
+        balance = self.pipeline.get_by_name('Balance_bin')
+        balance.rotar(valor)
 
     def play(self):
 
@@ -276,39 +246,15 @@ class JAMediaWebCamVideo(gobject.GObject):
 
     def set_balance(self, brillo=None, contraste=None,
         saturacion=None, hue=None, gamma=None):
-        """
-        Recibe % en float y convierte a los valores del filtro.
-        """
 
-        if brillo:
-            self.config['brillo'] = brillo
-            valor = (2.0 * brillo / 100.0) - 1.0
-            self.videobalance.set_property(
-                'brightness', valor)
+        balance = self.pipeline.get_by_name("Balance_bin")
 
-        if contraste:
-            self.config['contraste'] = contraste
-            valor = 2.0 * contraste / 100.0
-            self.videobalance.set_property(
-                'contrast', valor)
-
-        if saturacion:
-            self.config['saturacion'] = saturacion
-            valor = 2.0 * saturacion / 100.0
-            self.videobalance.set_property(
-                'saturation', valor)
-
-        if hue:
-            self.config['hue'] = hue
-            valor = (2.0 * hue / 100.0) - 1.0
-            self.videobalance.set_property(
-                'hue', valor)
-
-        if gamma:
-            self.config['gamma'] = gamma
-            valor = (10.0 * gamma / 100.0)
-            self.gamma.set_property(
-                'gamma', valor)
+        balance.set_balance(
+            brillo=brillo,
+            contraste=contraste,
+            saturacion=saturacion,
+            hue=hue,
+            gamma=gamma)
 
     def set_formato(self, formato):
         """

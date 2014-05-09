@@ -350,8 +350,8 @@ class BasePanel(gtk.HPaned):
         las configuraciones realizadas hasta el momento.
         """
 
-        rot = self.jamediawebcam.videoflip.get_property('method')
-        config = self.jamediawebcam.config.copy()
+        rot = self.jamediawebcam.get_rotacion()
+        config = self.jamediawebcam.get_config()
         efectos = self.efectos_en_pipe.get_efectos()
 
         if not device:
@@ -384,8 +384,7 @@ class BasePanel(gtk.HPaned):
             hue=config["hue"],
             gamma=config["gamma"])
 
-        self.jamediawebcam.videoflip.set_property(
-            'method', rot)
+        self.jamediawebcam.set_rotacion(rot)
 
         for efecto in efectos:
             self.widget_efectos.reemit_config_efecto(efecto)
@@ -503,7 +502,7 @@ class BasePanel(gtk.HPaned):
         #FIXME: Quizas sea mejor al final de la funcion
         if self.jamediawebcam:
             self.__update_balance_toolbars(
-                self.jamediawebcam.config.copy())
+                self.jamediawebcam.get_config())
 
         map(ocultar, video_widgets)
         map(ocultar, foto_widgets)

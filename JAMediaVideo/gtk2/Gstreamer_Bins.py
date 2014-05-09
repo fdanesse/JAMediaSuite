@@ -25,6 +25,182 @@ import gobject
 gobject.threads_init()
 
 
+class Xvimage_bin(gst.Bin):
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('Xvimage_bin')
+
+        queue = gst.element_factory_make(
+            'queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspacegtk")
+        xvimagesink = gst.element_factory_make(
+            'xvimagesink', "xvimagesink")
+        xvimagesink.set_property(
+            "force-aspect-ratio", True)
+
+        self.add(queue)
+        self.add(ffmpegcolorspace)
+        self.add(xvimagesink)
+
+        queue.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(xvimagesink)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+
+
+class Balance_bin(gst.Bin):
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('Balance_bin')
+
+        self.config = {
+            'saturacion': 50.0,
+            'contraste': 50.0,
+            'brillo': 50.0,
+            'hue': 50.0,
+            'gamma': 10.0}
+
+        videobalance = gst.element_factory_make(
+            "videobalance", "videobalance")
+        gamma = gst.element_factory_make(
+            "gamma", "gamma")
+        videoflip = gst.element_factory_make(
+            "videoflip", "videoflip")
+
+        self.add(videobalance)
+        self.add(gamma)
+        self.add(videoflip)
+
+        videobalance.link(gamma)
+        gamma.link(videoflip)
+
+        self.add_pad(gst.GhostPad("sink",
+            videobalance.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            videoflip.get_static_pad("src")))
+
+    def rotar(self, valor):
+        """
+        Rota el video.
+        """
+
+        videoflip = self.get_by_name("videoflip")
+        rot = videoflip.get_property('method')
+
+        if valor == "Derecha":
+            if rot < 3:
+                rot += 1
+
+            else:
+                rot = 0
+
+        elif valor == "Izquierda":
+            if rot > 0:
+                rot -= 1
+
+            else:
+                rot = 3
+
+        gobject.idle_add(videoflip.set_property,
+            'method', rot)
+
+    def set_rotacion(self, rot):
+
+        videoflip = self.get_by_name("videoflip")
+        videoflip.set_property(
+            'method', rot)
+
+    def set_balance(self, brillo=None, contraste=None,
+        saturacion=None, hue=None, gamma=None):
+        """
+        Recibe % en float y convierte a los valores del filtro.
+        """
+
+        balance = self.get_by_name("videobalance")
+        gammabin = self.get_by_name("gamma")
+
+        if brillo:
+            self.config['brillo'] = brillo
+            valor = (2.0 * brillo / 100.0) - 1.0
+            balance.set_property(
+                'brightness', valor)
+
+        if contraste:
+            self.config['contraste'] = contraste
+            valor = 2.0 * contraste / 100.0
+            balance.set_property(
+                'contrast', valor)
+
+        if saturacion:
+            self.config['saturacion'] = saturacion
+            valor = 2.0 * saturacion / 100.0
+            balance.set_property(
+                'saturation', valor)
+
+        if hue:
+            self.config['hue'] = hue
+            valor = (2.0 * hue / 100.0) - 1.0
+            balance.set_property(
+                'hue', valor)
+
+        if gamma:
+            self.config['gamma'] = gamma
+            valor = (10.0 * gamma / 100.0)
+            gammabin.set_property(
+                'gamma', valor)
+
+    def get_config(self):
+
+        return self.config.copy()
+
+    def get_rotacion(self):
+
+        videoflip = self.get_by_name("videoflip")
+        return videoflip.get_property('method')
+
+
+class v4l2src_bin(gst.Bin):
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('jamedia_camara_bin')
+
+        camara = gst.element_factory_make(
+            "v4l2src", "v4l2src")
+
+        caps = gst.Caps('video/x-raw-rgb,framerate=30/1')
+        camerafilter = gst.element_factory_make(
+            "capsfilter", "camera_filter")
+        camerafilter.set_property("caps", caps)
+
+        self.add(camara)
+        self.add(camerafilter)
+
+        camara.link(camerafilter)
+
+        self.add_pad(gst.GhostPad("src",
+            camerafilter.get_static_pad("src")))
+
+    def set_device(self, device):
+
+        camara = self.get_by_name("v4l2src")
+        camara.set_property("device", device)
+
+
 class Efectos_bin(gst.Bin):
 
     def __init__(self, efectos):
@@ -35,8 +211,8 @@ class Efectos_bin(gst.Bin):
 
         queue = gst.element_factory_make(
             'queue', "queue")
-        queue.set_property("max-size-buffers", 32000)
-        queue.set_property("min-threshold-buffers", 0)
+        #queue.set_property("max-size-buffers", 32000)
+        #queue.set_property("min-threshold-buffers", 0)
         ffmpegout = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
 
@@ -106,8 +282,9 @@ class Camara_ogv_out_bin(gst.Bin):
 
         queueaudio = gst.element_factory_make(
             'queue', "queueaudio")
-        queueaudio.set_property("max-size-buffers", 32000)
-        queueaudio.set_property("min-threshold-buffers", 0)
+        queueaudio.set_property("max-size-buffers", 1000)
+        queueaudio.set_property("max-size-bytes", 0)
+        queueaudio.set_property("max-size-time", 0)
 
         audioconvert = gst.element_factory_make(
             'audioconvert', "audioconvert")
@@ -130,8 +307,9 @@ class Camara_ogv_out_bin(gst.Bin):
 
         queueaudiomuxor = gst.element_factory_make(
             'queue', "queueaudiomuxor")
-        queueaudiomuxor.set_property("max-size-buffers", 32000)
-        queueaudiomuxor.set_property("min-threshold-buffers", 0)
+        queueaudiomuxor.set_property("max-size-buffers", 1000)
+        queueaudiomuxor.set_property("max-size-bytes", 0)
+        queueaudiomuxor.set_property("max-size-time", 0)
         oggmux = gst.element_factory_make(
             'oggmux', "oggmux")
         archivo = gst.element_factory_make(
@@ -146,8 +324,9 @@ class Camara_ogv_out_bin(gst.Bin):
 
         queuevideo = gst.element_factory_make(
             'queue', "queuevideo")
-        queuevideo.set_property("max-size-buffers", 32000)
-        queuevideo.set_property("min-threshold-buffers", 0)
+        queuevideo.set_property("max-size-buffers", 1000)
+        queuevideo.set_property("max-size-bytes", 0)
+        queuevideo.set_property("max-size-time", 0)
 
         #scale = gst.element_factory_make("videoscale", "vbscale")
         #scalecapsfilter = gst.element_factory_make("capsfilter", "scalecaps")
@@ -169,8 +348,9 @@ class Camara_ogv_out_bin(gst.Bin):
         theoraenc.set_property("quality", 16)
         queuevideomuxor = gst.element_factory_make(
             'queue', "queuevideomuxor")
-        queuevideomuxor.set_property("max-size-buffers", 32000)
-        queuevideomuxor.set_property("min-threshold-buffers", 0)
+        queuevideomuxor.set_property("max-size-buffers", 1000)
+        queuevideomuxor.set_property("max-size-bytes", 0)
+        queuevideomuxor.set_property("max-size-time", 0)
 
         self.add(ffmpegcolorspace)
         self.add(theoraenc)
@@ -184,8 +364,9 @@ class Camara_ogv_out_bin(gst.Bin):
 
         queuearchivo = gst.element_factory_make(
             'queue', "queuearchivo")
-        queuearchivo.set_property("max-size-buffers", 32000)
-        queuearchivo.set_property("min-threshold-buffers", 0)
+        queuearchivo.set_property("max-size-buffers", 1000)
+        queuearchivo.set_property("max-size-bytes", 0)
+        queuearchivo.set_property("max-size-time", 0)
 
         self.add(queuearchivo)
 
