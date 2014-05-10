@@ -22,6 +22,9 @@
 import gobject
 import gst
 
+from Gstreamer_Bins import v4l2src_bin
+from Gstreamer_Bins import Balance_bin
+
 
 class JAMediaWebCamMenu(gobject.GObject):
 
@@ -39,17 +42,10 @@ class JAMediaWebCamMenu(gobject.GObject):
 
         self.ventana_id = ventana_id
 
-        self.config = {
-            'saturacion': 50.0,
-            'contraste': 50.0,
-            'brillo': 50.0,
-            'hue': 50.0,
-            'gamma': 10.0}
-
         self.pipeline = gst.Pipeline()
 
-        self.camara = gst.element_factory_make(
-            'v4l2src', "camara")
+        camara = v4l2src_bin()
+        balance = Balance_bin()
 
         if device == "Estación Remota":
             pass
@@ -59,37 +55,31 @@ class JAMediaWebCamMenu(gobject.GObject):
             # queue ! speexdec ! queue ! alsasink sync=false
 
         else:
-            self.camara.set_property("device", device)
+            camara.set_device(device)
 
-        queue1 = gst.element_factory_make(
-            'queue', "queue1")
-        self.videobalance = gst.element_factory_make(
-            'videobalance', "videobalance")
-        self.gamma = gst.element_factory_make(
-            'gamma', "gamma")
-        self.videoflip = gst.element_factory_make(
-            'videoflip', "videoflip")
-        queue2 = gst.element_factory_make(
-            'queue', "queue2")
+        queue = gst.element_factory_make(
+            'queue', "queuexvimage")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspace")
         xvimagesink = gst.element_factory_make(
             'xvimagesink', "xvimagesink")
         xvimagesink.set_property(
             "force-aspect-ratio", True)
 
-        self.pipeline.add(self.camara)
-        self.pipeline.add(queue1)
-        self.pipeline.add(self.videobalance)
-        self.pipeline.add(self.gamma)
-        self.pipeline.add(self.videoflip)
-        self.pipeline.add(queue2)
+        self.pipeline.add(camara)
+        self.pipeline.add(balance)
+        self.pipeline.add(queue)
+        self.pipeline.add(ffmpegcolorspace)
         self.pipeline.add(xvimagesink)
 
-        self.camara.link(queue1)
-        queue1.link(self.videobalance)
-        self.videobalance.link(self.gamma)
-        self.gamma.link(self.videoflip)
-        self.videoflip.link(queue2)
-        queue2.link(xvimagesink)
+        camara.link(balance)
+        balance.link(queue)
+        queue.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(xvimagesink)
 
         self.bus = self.pipeline.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
@@ -102,11 +92,32 @@ class JAMediaWebCamMenu(gobject.GObject):
 
         return gst.BUS_PASS
 
+    def get_rotacion(self):
+
+        balance = self.pipeline.get_by_name("Balance_bin")
+        return balance.get_rotacion()
+
+    def set_rotacion(self, rot):
+
+        balance = self.pipeline.get_by_name("Balance_bin")
+        balance.set_rotacion(rot)
+
     def get_config(self):
 
-        #balance = self.pipeline.get_by_name("Balance_bin")
-        #return balance.get_config()
-        return self.config.copy()
+        balance = self.pipeline.get_by_name("Balance_bin")
+        return balance.get_config()
+
+    def set_balance(self, brillo=None, contraste=None,
+        saturacion=None, hue=None, gamma=None):
+
+        balance = self.pipeline.get_by_name("Balance_bin")
+
+        balance.set_balance(
+            brillo=brillo,
+            contraste=contraste,
+            saturacion=saturacion,
+            hue=hue,
+            gamma=gamma)
 
     def stop(self):
 

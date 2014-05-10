@@ -409,6 +409,8 @@ class BasePanel(gtk.HPaned):
         se reconstruye la camara base.
         """
 
+        self.get_toplevel().toolbar.set_sensitive(False)
+
         if tipo == "visor":
             self.__camara_menu_run()
 
@@ -420,6 +422,8 @@ class BasePanel(gtk.HPaned):
 
         else:
             print "BasePanel Nueva camara:", tipo
+
+        gobject.timeout_add(1000, self.__re_sensitive)
 
     def set_accion(self, modo, accion):
         """
