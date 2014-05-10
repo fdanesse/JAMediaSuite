@@ -26,7 +26,7 @@ import gst
 import gtk
 
 from Gstreamer_Bins import Camara_ogv_out_bin
-from Gstreamer_Bins import Efectos_bin
+from Gstreamer_Bins import Video_Efectos_bin
 from Gstreamer_Bins import v4l2src_bin
 from Gstreamer_Bins import Balance_bin
 from Gstreamer_Bins import Xvimage_bin
@@ -79,7 +79,7 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.pipeline.add(self.balance)
 
         if efectos:
-            efectos_bin = Efectos_bin(efectos)
+            efectos_bin = Video_Efectos_bin(efectos)
             self.pipeline.add(efectos_bin)
             self.camara.link(efectos_bin)
             efectos_bin.link(self.balance)
@@ -112,6 +112,7 @@ class JAMediaWebCamVideo(gobject.GObject):
         queue.link(ffmpegcolorspace)
         ffmpegcolorspace.link(xvimagesink)
 
+        # FIXME: Por algún motivo no linkea
         #xvimage = Xvimage_bin()
         #self.tee.link(xvimage)
 
