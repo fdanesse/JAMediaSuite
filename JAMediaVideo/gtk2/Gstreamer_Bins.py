@@ -25,6 +25,35 @@ import gobject
 gobject.threads_init()
 
 
+# http://wiki.laptop.org/go/GStreamer
+# Envio:
+# gst-launch v4l2src ! queue ! video/x-raw-yuv,width=320,height=240,framerate=\(fraction\)4/1 ! videorate ! videoscale ! ffmpegcolorspace ! queue ! smokeenc ! queue ! udpsink host=192.168.2.129 port=5000 alsasrc ! queue ! audio/x-raw-int,rate=8000,channels=1,depth=8 ! audioconvert ! speexenc ! queue ! tcpserversink host=192.168.2.129 port=5001
+# Recibo:
+# gst-launch-0.10 udpsrc port=5000 ! queue ! smokedec ! queue ! autovideosink tcpclientsrc host=192.168.2.129 port=5001 ! queue ! speexdec ! queue ! alsasink sync=false
+
+# http://feeding.cloud.geek.nz/posts/peer-to-peer-video-conferencing-using/
+# http://wiki.maemo.org/Streaming_video_from_built-in_webcam
+# Envía Video
+# gst-launch-0.10 v4l2src device=/dev/video0 ! videorate ! video/x-raw-yuv,width=640,height=480,framerate=6/1 !
+# jpegenc quality=30 ! multipartmux ! tcpserversink port=5000 # Si no se establece host, se manda a toda la red
+
+# Recibe Video
+# gst-launch-0.10 tcpclientsrc host=localhost port=5000 ! multipartdemux ! jpegdec ! ffmpegcolorspace ! autovideosink
+
+# gst-launch-0.10 tcpclientsrc host='192.168.1.3' port=8080 ! mpegtsdemux name=demux
+# ! queue ! mpeg2dec ! xvimagesink force-aspect-ratio=TRUE
+# demux. ! queue ! mad ! alsasink
+
+# gst-launch-0.10 tcpclientsrc host='192.168.1.3' port=8080 ! mpegtsdemux
+# name=demux ! queue ! mpeg2dec ! xvimagesink force-aspect-ratio=TRUE
+# demux. ! queue ! mad ! alsasink
+
+# gst-launch -v alsasrc ! audio/x-raw-int,rate=16000,channels=1 ! audioconvert ! speexenc ! tcpserversink host=127.0.0.1 port=5001
+# gst-launch -v  tcpclientsrc host=127.0.0.1 port=5000 ! speexdec ! alsasink sync=false
+# gst-launch -v v4l2src ! video/x-raw-yuv,framerate=\(fraction\)5/1 ! smokeenc threshold=1000 ! tcpserversink host=127.0.0.1 port=5003
+# gst-launch -v tcpclientsrc host=127.0.0.1 port=5002 ! smokedec ! xvimagesink sync=false
+
+
 class Theora_bin(gst.Bin):
     """
     Comprime video utilizando theoraenc.
@@ -368,7 +397,7 @@ class Video_Efectos_bin(gst.Bin):
             ef.set_property(propiedad, valor)
 
 
-class Camara_ogv_out_bin(gst.Bin):
+class Ogv_out_bin(gst.Bin):
     """
     Toma el audio desde autoaudio en vorbisbin.
     Recibe fuente de video y la pasa por theorabin.
@@ -412,3 +441,93 @@ class Camara_ogv_out_bin(gst.Bin):
 
         self.add_pad(gst.GhostPad(
             "sink", theorabin.get_static_pad("sink")))
+
+
+class Out_lan_bin(gst.Bin):
+    """
+    Volcado de audio y video a la red lan.
+    """
+
+    def __init__(self, ip):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('out_lan_bin')
+
+        queue = gst.element_factory_make(
+            'queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        jpegenc = gst.element_factory_make(
+            'jpegenc', "jpegenc")
+        jpegenc.set_property("quality", 30)
+
+        multipartmux = gst.element_factory_make(
+            'multipartmux', "multipartmux")
+
+        tcpserversink = gst.element_factory_make(
+            'tcpserversink', "tcpserversink")
+
+        if ip:
+            tcpserversink.set_property("host", ip)
+
+        tcpserversink.set_property("port", 5000)
+
+        self.add(queue)
+        self.add(jpegenc)
+        self.add(multipartmux)
+        self.add(tcpserversink)
+
+        queue.link(jpegenc)
+        jpegenc.link(multipartmux)
+        multipartmux.link(tcpserversink)
+
+        self.add_pad(gst.GhostPad(
+            "sink", queue.get_static_pad("sink")))
+
+
+class In_lan_bin(gst.Bin):
+    """
+    Fuente de audio y video desde red lan.
+    """
+
+    def __init__(self, ip):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('in_lan_bin')
+
+        queue = gst.element_factory_make(
+            'queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        tcpclientsrc = gst.element_factory_make(
+            'tcpclientsrc', "tcpclientsrc")
+        tcpclientsrc.set_property("host", ip)
+        tcpclientsrc.set_property("port", 5000)
+
+        multipartdemux = gst.element_factory_make(
+            'multipartdemux', "multipartdemux")
+
+        jpegdec = gst.element_factory_make(
+            'jpegdec', "jpegdec")
+
+        xvimagesink = Xvimage_bin()
+
+        self.add(queue)
+        self.add(tcpclientsrc)
+        self.add(multipartdemux)
+        self.add(jpegdec)
+        self.add(xvimagesink)
+
+        queue.link(tcpclientsrc)
+        tcpclientsrc.link(multipartdemux)
+        multipartdemux.link(jpegdec)
+        jpegdec.link(xvimagesink)
+
+        self.add_pad(gst.GhostPad(
+            "sink", queue.get_static_pad("sink")))

@@ -298,40 +298,120 @@ class CamaraConfig(gtk.EventBox):
         box = gtk.VBox()
         frame.add(box)
 
-        boton1 = gtk.RadioButton()
-        boton1.set_label("Camara 1")
-        boton1.connect("clicked", self.__set_camara)
-        box.pack_start(boton1, False, False, 0)
+        if os.path.exists("/dev/video0"):
+            boton1 = gtk.RadioButton()
+            boton1.set_label("Camara 1")
+            boton1.connect("clicked", self.__set_camara)
+            box.pack_start(boton1, False, False, 0)
 
-        boton2 = gtk.RadioButton()
-        boton2.set_group(boton1)
-        boton2.connect("clicked", self.__set_camara)
-        boton2.set_label("Camara 2")
-        box.pack_start(boton2, False, False, 0)
+        if os.path.exists("/dev/video1"):
+            boton2 = gtk.RadioButton()
+            boton2.set_group(boton1)
+            boton2.connect("clicked", self.__set_camara)
+            boton2.set_label("Camara 2")
+            box.pack_start(boton2, False, False, 0)
 
-        boton3 = gtk.RadioButton()
-        boton3.set_group(boton1)
-        boton3.set_label("Estación Remota")
-        boton3.connect("clicked", self.__set_camara)
-        box.pack_start(boton3, False, False, 0)
+        self.boton3 = gtk.RadioButton()
+        self.boton3.set_sensitive(False)
+        self.boton3.set_group(boton1)
+        self.boton3.set_label("Estación Remota")
+        self.boton3.connect("clicked", self.__set_camara)
+        box.pack_start(self.boton3, False, False, 0)
+
+        hbox = gtk.HBox()
+        self.ip_text = gtk.Entry()
+        self.ip_text.connect("changed", self.__change_ip)
+        self.ip_text.set_size_request(100, -1)
+
+        self.boton = gtk.Button()
+        self.boton.set_sensitive(False)
+        self.boton.connect("clicked", self.__update_ip)
+        self.imagen = gtk.Image()
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "dialog-ok.svg")
+        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            archivo, 16, 16)
+        self.imagen.set_from_pixbuf(pixbuf)
+
+        self.boton.set_image(self.imagen)
+        hbox.pack_start(gtk.Label("Ip:"), False, False, 5)
+        hbox.pack_end(self.boton, True, True, 5)
+        hbox.pack_end(self.ip_text, True, True, 0)
+        box.pack_start(hbox, False, False, 5)
 
         self.add(frame)
         self.show_all()
 
         boton1.set_active(True)
 
+    def __update_ip(self, widget):
+
+        if self.boton3.get_active():
+            self.__set_camara(self.boton3)
+
+        else:
+            self.boton3.set_active(True)
+
+    def __change_ip(self, widget):
+        """
+        Valida ip y activa widgets que setean entrada videolan.
+        """
+
+        ip = self.ip_text.get_text()
+        valida = False
+
+        if ip:
+            num = ip.split(".")
+
+            if len(num) == 4:
+                for n in num:
+                    try:
+                        nu = int(n)
+                        if nu > 0 and nu < 255 and nu != 127:
+                            pass
+
+                        else:
+                            valida = False
+                            break
+
+                        valida = True
+
+                    except:
+                        valida = False
+                        break
+
+        if valida:
+            self.boton3.set_sensitive(True)
+            self.boton.set_sensitive(True)
+
+        else:
+            self.boton3.set_sensitive(False)
+            self.boton.set_sensitive(False)
+
     def __set_camara(self, widget):
+        """
+        Setea fuente de audio y video en camaras o videolan.
+        """
 
         if widget.get_active():
             if widget.get_label() == "Estación Remota":
-                self.device = "Estación Remota"
+                device = self.ip_text.get_text()
+
+                if self.device != device:
+                    self.device = device
+
+                    self.emit("set_camara",
+                        "device", self.device)
 
             else:
-                self.device = "/dev/video%s" % str(int(
+                device = "/dev/video%s" % str(int(
                     widget.get_label().split()[-1]) - 1)
 
-            self.emit("set_camara",
-                "device", self.device)
+                if self.device != device:
+                    self.device = device
+
+                    self.emit("set_camara",
+                        "device", self.device)
 
 
 class Video_out_Config(gtk.EventBox):
@@ -373,16 +453,17 @@ class Video_out_Config(gtk.EventBox):
         boton5.connect("clicked", self.__set_formato)
         box.pack_start(boton5, False, False, 0)
 
-        boton6 = gtk.RadioButton()
-        boton6.set_group(boton3)
-        boton6.set_label("Estación Remota")
-        boton6.connect("clicked", self.__set_formato)
-        box.pack_start(boton6, False, False, 0)
+        self.boton6 = gtk.RadioButton()
+        self.boton6.set_group(boton3)
+        self.boton6.set_label("Estación Remota")
+        self.boton6.connect("clicked", self.__set_formato)
+        box.pack_start(self.boton6, False, False, 0)
 
         hbox = gtk.HBox()
         self.ip_text = gtk.Entry()
+        self.ip_text.connect("changed", self.__change_ip)
         self.ip_text.set_size_request(100, -1)
-        self.ip_text.set_text("192.168.1.2")
+
         hbox.pack_start(gtk.Label("Ip:"), False, False, 5)
         hbox.pack_end(self.ip_text, True, True, 5)
         box.pack_start(hbox, False, False, 5)
@@ -392,17 +473,67 @@ class Video_out_Config(gtk.EventBox):
 
         boton3.set_active(True)
 
+    def __change_ip(self, widget):
+        """
+        Valida ip y activa widgets que setean entrada videolan.
+        """
+
+        ip = self.ip_text.get_text()
+        valida = False
+
+        if ip:
+            num = ip.split(".")
+
+            if len(num) == 4:
+                for n in num:
+                    try:
+                        nu = int(n)
+                        if nu > 0 and nu < 255 and nu != 127:
+                            pass
+
+                        else:
+                            valida = False
+                            break
+
+                        valida = True
+
+                    except:
+                        valida = False
+                        break
+
+        if valida:
+            if self.boton6.get_active():
+                self.__set_formato(self.boton6)
+
+            else:
+                self.boton6.set_active(True)
+
+        else:
+            # FIXME: Si se pone en grabar con una ip válida y luego el usuario
+            # detiene la grabación y pone una ip inválida y vuelve a dar
+            # grabar, el volcado se produce en la última ip válida.
+            print "ip inválida", ip
+
     def __set_formato(self, widget):
 
         if widget.get_active():
             if widget.get_label() == "Estación Remota":
-                self.formato = self.ip_text.get_text()
+                formato = self.ip_text.get_text()
+
+                if self.formato != formato:
+                    self.formato = formato
+
+                    self.emit("set_video_out",
+                        "formato", self.formato)
 
             else:
-                self.formato = widget.get_label()
+                formato = widget.get_label()
 
-            self.emit("set_video_out",
-                "formato", self.formato)
+                if self.formato != formato:
+                    self.formato = formato
+
+                    self.emit("set_video_out",
+                        "formato", self.formato)
 
 
 class Rafagas_Config(gtk.EventBox):

@@ -360,20 +360,26 @@ class BasePanel(gtk.HPaned):
         if not salida:
             salida = self.video_out_setting.formato
 
-        self.jamediawebcam.stop()
-        #del(self.jamediawebcam)
-        self.jamediawebcam = False
-
         xid = self.pantalla.get_property('window').xid
-        self.jamediawebcam = JAMediaWebCamVideo(
-            xid, device=device, formato=salida,
-            efectos=efectos)
 
-        self.jamediawebcam.play()
+        if "/dev/video" in device:
+            if os.path.exists(device):
+                self.jamediawebcam.stop()
+                #del(self.jamediawebcam)
+                self.jamediawebcam = False
 
-        #gobject.timeout_add(1000, self.__re_config,
-        #    rot, config, efectos)
-        self.__re_config(rot, config, efectos)
+                self.jamediawebcam = JAMediaWebCamVideo(
+                    xid, device=device, formato=salida,
+                    efectos=efectos)
+
+                self.jamediawebcam.play()
+
+                #gobject.timeout_add(1000, self.__re_config,
+                #    rot, config, efectos)
+                self.__re_config(rot, config, efectos)
+
+        else:
+            print "BasePanel:", device, salida
 
     def __re_config(self, rot, config, efectos):
 

@@ -25,11 +25,13 @@ import gobject
 import gst
 import gtk
 
-from Gstreamer_Bins import Camara_ogv_out_bin
+from Gstreamer_Bins import Ogv_out_bin
 from Gstreamer_Bins import Video_Efectos_bin
 from Gstreamer_Bins import v4l2src_bin
 from Gstreamer_Bins import Balance_bin
 from Gstreamer_Bins import Xvimage_bin
+from Gstreamer_Bins import Out_lan_bin
+from Gstreamer_Bins import In_lan_bin
 
 gobject.threads_init()
 gtk.gdk.threads_init()
@@ -48,6 +50,8 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
+        print "Webcam Formato:", formato, "Device:", device
+
         self.actualizador = False
         self.tamanio = 0
         self.estado = None
@@ -57,7 +61,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline = gst.Pipeline()
 
-        self.camara = v4l2src_bin()
+        camara = v4l2src_bin()
 
         if device == "Estación Remota":
             pass
@@ -67,7 +71,7 @@ class JAMediaWebCamVideo(gobject.GObject):
             # queue ! speexdec ! queue ! alsasink sync=false
 
         else:
-            self.camara.set_device(device)
+            camara.set_device(device)
 
         self.balance = Balance_bin()
 
@@ -75,17 +79,17 @@ class JAMediaWebCamVideo(gobject.GObject):
             'tee', "tee")
         self.tee.set_property('pull-mode', 1)
 
-        self.pipeline.add(self.camara)
+        self.pipeline.add(camara)
         self.pipeline.add(self.balance)
 
         if efectos:
             efectos_bin = Video_Efectos_bin(efectos)
             self.pipeline.add(efectos_bin)
-            self.camara.link(efectos_bin)
+            camara.link(efectos_bin)
             efectos_bin.link(self.balance)
 
         else:
-            self.camara.link(self.balance)
+            camara.link(self.balance)
 
         self.pipeline.add(self.tee)
 
@@ -267,6 +271,8 @@ class JAMediaWebCamVideo(gobject.GObject):
     def filmar(self, path_archivo):
         """
         Conecta a la salida, sea archivo o ip, para grabar o transmitir.
+        self.formato, puede ser:
+            "", "192.168.1.2", "ogv", "mpeg", "avi"
         """
 
         self.pipeline.set_state(gst.STATE_NULL)
@@ -275,11 +281,15 @@ class JAMediaWebCamVideo(gobject.GObject):
             self.path_archivo = u"%s.%s" % (path_archivo, self.formato)
 
             if self.formato == "ogv":
-                out = Camara_ogv_out_bin(self.path_archivo)
+                out = Ogv_out_bin(self.path_archivo)
                 self.pipeline.add(out)
                 self.tee.link(out)
                 self.play()
                 self.__new_handle(True, [])
 
         else:
-            print "JAMediaWebCamVideo => Construir pipe para:", self.formato
+            # "Volcado a red lan"
+            out = Out_lan_bin(self.formato)
+            self.pipeline.add(out)
+            self.tee.link(out)
+            self.play()
