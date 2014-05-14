@@ -443,7 +443,7 @@ class Ogv_out_bin(gst.Bin):
             "sink", theorabin.get_static_pad("sink")))
 
 
-class Out_lan_bin(gst.Bin):
+class Out_lan_jpegenc_bin(gst.Bin):
     """
     Volcado de audio y video a la red lan.
     """
@@ -488,7 +488,8 @@ class Out_lan_bin(gst.Bin):
             "sink", queue.get_static_pad("sink")))
 
 
-class In_lan_bin(gst.Bin):
+#FIXME: Por algún motivo, no enlaza: multipartdemux.link(jpegdec)
+class In_lan_jpegdec_bin(gst.Bin):
     """
     Fuente de audio y video desde red lan.
     """
@@ -499,11 +500,8 @@ class In_lan_bin(gst.Bin):
 
         self.set_name('in_lan_bin')
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
-        queue.set_property("max-size-bytes", 0)
-        queue.set_property("max-size-time", 0)
+        # gst-launch-0.10 tcpclientsrc host=localhost port=5000 !
+        # multipartdemux ! jpegdec ! ffmpegcolorspace ! autovideosink
 
         tcpclientsrc = gst.element_factory_make(
             'tcpclientsrc', "tcpclientsrc")
@@ -516,18 +514,17 @@ class In_lan_bin(gst.Bin):
         jpegdec = gst.element_factory_make(
             'jpegdec', "jpegdec")
 
-        xvimagesink = Xvimage_bin()
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspace")
 
-        self.add(queue)
         self.add(tcpclientsrc)
         self.add(multipartdemux)
         self.add(jpegdec)
-        self.add(xvimagesink)
+        self.add(ffmpegcolorspace)
 
-        queue.link(tcpclientsrc)
         tcpclientsrc.link(multipartdemux)
         multipartdemux.link(jpegdec)
-        jpegdec.link(xvimagesink)
+        jpegdec.link(ffmpegcolorspace)
 
         self.add_pad(gst.GhostPad(
-            "sink", queue.get_static_pad("sink")))
+            "src", ffmpegcolorspace.get_static_pad("src")))

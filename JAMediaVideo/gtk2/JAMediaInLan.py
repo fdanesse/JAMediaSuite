@@ -25,18 +25,19 @@ import gobject
 import gst
 import gtk
 
-from Gstreamer_Bins import Ogv_out_bin
+#from Gstreamer_Bins import Ogv_out_bin
 from Gstreamer_Bins import Video_Efectos_bin
-from Gstreamer_Bins import v4l2src_bin
+#from Gstreamer_Bins import v4l2src_bin
 from Gstreamer_Bins import Balance_bin
 #from Gstreamer_Bins import Xvimage_bin
-from Gstreamer_Bins import Out_lan_jpegenc_bin
+#from Gstreamer_Bins import Out_lan_jpegenc_bin
+from Gstreamer_Bins import In_lan_jpegdec_bin
 
 gobject.threads_init()
 gtk.gdk.threads_init()
 
 
-class JAMediaWebCamVideo(gobject.GObject):
+class JAMediaInLan(gobject.GObject):
 
     __gsignals__ = {
     "estado": (gobject.SIGNAL_RUN_FIRST,
@@ -44,12 +45,12 @@ class JAMediaWebCamVideo(gobject.GObject):
     "update": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
-    def __init__(self, ventana_id, device="/dev/video0",
+    def __init__(self, ventana_id, ip="",
         formato="ogg", efectos=[]):
 
         gobject.GObject.__init__(self)
 
-        print "Webcam Formato:", formato, "Device:", device
+        print "Webcam Formato:", formato, "Device:", ip
 
         self.actualizador = False
         self.tamanio = 0
@@ -60,17 +61,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline = gst.Pipeline()
 
-        camara = v4l2src_bin()
-
-        if device == "Estación Remota":
-            pass
-            # gst-launch-0.10 udpsrc port=5000 !
-            # queue ! smokedec ! queue ! autovideosink
-            # tcpclientsrc host=192.168.1.5 port=5001 !
-            # queue ! speexdec ! queue ! alsasink sync=false
-
-        else:
-            camara.set_device(device)
+        camara = In_lan_jpegdec_bin(ip)
 
         self.balance = Balance_bin()
 
@@ -265,7 +256,10 @@ class JAMediaWebCamVideo(gobject.GObject):
         Setea formato de salida [ogv, avi, mpeg, ip]
         """
 
+        pass
+        '''
         self.formato = formato
+        '''
 
     def filmar(self, path_archivo):
         """
@@ -273,6 +267,9 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.formato, puede ser:
             "", "192.168.1.2", "ogv", "mpeg", "avi"
         """
+
+        pass
+        '''
 
         self.pipeline.set_state(gst.STATE_NULL)
 
@@ -292,3 +289,4 @@ class JAMediaWebCamVideo(gobject.GObject):
             self.pipeline.add(out)
             self.tee.link(out)
             self.play()
+        '''
