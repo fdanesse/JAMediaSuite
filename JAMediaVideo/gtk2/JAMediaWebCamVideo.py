@@ -30,7 +30,8 @@ from Gstreamer_Bins import Video_Efectos_bin
 from Gstreamer_Bins import v4l2src_bin
 from Gstreamer_Bins import Balance_bin
 #from Gstreamer_Bins import Xvimage_bin
-from Gstreamer_Bins import Out_lan_jpegenc_bin
+#from Gstreamer_Bins import Out_lan_jpegenc_bin
+from Gstreamer_Bins import Out_lan_smokeenc_bin
 
 gobject.threads_init()
 gtk.gdk.threads_init()
@@ -288,7 +289,8 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         else:
             # "Volcado a red lan"
-            out = Out_lan_jpegenc_bin(self.formato)
+            #out = Out_lan_jpegenc_bin(self.formato)
+            out = Out_lan_smokeenc_bin(self.formato)
             self.pipeline.add(out)
             self.tee.link(out)
             self.play()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   JAMediaWebCamVideo.py por:
+#   JAMediaInLan.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   Uruguay
 #
@@ -31,13 +31,17 @@ from Gstreamer_Bins import Video_Efectos_bin
 from Gstreamer_Bins import Balance_bin
 #from Gstreamer_Bins import Xvimage_bin
 #from Gstreamer_Bins import Out_lan_jpegenc_bin
-from Gstreamer_Bins import In_lan_jpegdec_bin
+#from Gstreamer_Bins import In_lan_jpegdec_bin
+from Gstreamer_Bins import In_lan_udpsrc_bin
 
 gobject.threads_init()
 gtk.gdk.threads_init()
 
 
 class JAMediaInLan(gobject.GObject):
+    """
+    Entrada - Streaming lan
+    """
 
     __gsignals__ = {
     "estado": (gobject.SIGNAL_RUN_FIRST,
@@ -61,7 +65,8 @@ class JAMediaInLan(gobject.GObject):
 
         self.pipeline = gst.Pipeline()
 
-        camara = In_lan_jpegdec_bin(ip)
+        #camara = In_lan_jpegdec_bin(ip)
+        camara = In_lan_udpsrc_bin(ip)
 
         self.balance = Balance_bin()
 

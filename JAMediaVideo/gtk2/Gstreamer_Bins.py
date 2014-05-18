@@ -148,6 +148,7 @@ class Vorbis_bin(gst.Bin):
 
 
 # FIXME: Por algún motivo no linkea
+'''
 class Xvimage_bin(gst.Bin):
     """
     Salida de Video a pantalla utilizando xvimagesink.
@@ -181,6 +182,7 @@ class Xvimage_bin(gst.Bin):
 
         self.add_pad(gst.GhostPad("sink",
             queue.get_static_pad("sink")))
+'''
 
 
 class Balance_bin(gst.Bin):
@@ -443,6 +445,7 @@ class Ogv_out_bin(gst.Bin):
             "sink", theorabin.get_static_pad("sink")))
 
 
+'''
 class Out_lan_jpegenc_bin(gst.Bin):
     """
     Volcado de audio y video a la red lan.
@@ -452,7 +455,7 @@ class Out_lan_jpegenc_bin(gst.Bin):
 
         gst.Bin.__init__(self)
 
-        self.set_name('out_lan_bin')
+        self.set_name('out_lan_jpegenc_bin')
 
         queue = gst.element_factory_make(
             'queue', "queue")
@@ -486,9 +489,10 @@ class Out_lan_jpegenc_bin(gst.Bin):
 
         self.add_pad(gst.GhostPad(
             "sink", queue.get_static_pad("sink")))
-
+'''
 
 #FIXME: Por algún motivo, no enlaza: multipartdemux.link(jpegdec)
+'''
 class In_lan_jpegdec_bin(gst.Bin):
     """
     Fuente de audio y video desde red lan.
@@ -498,7 +502,7 @@ class In_lan_jpegdec_bin(gst.Bin):
 
         gst.Bin.__init__(self)
 
-        self.set_name('in_lan_bin')
+        self.set_name('in_lan_jpegdec_bin')
 
         # gst-launch-0.10 tcpclientsrc host=localhost port=5000 !
         # multipartdemux ! jpegdec ! ffmpegcolorspace ! autovideosink
@@ -525,6 +529,96 @@ class In_lan_jpegdec_bin(gst.Bin):
         tcpclientsrc.link(multipartdemux)
         multipartdemux.link(jpegdec)
         jpegdec.link(ffmpegcolorspace)
+
+        self.add_pad(gst.GhostPad(
+            "src", ffmpegcolorspace.get_static_pad("src")))
+'''
+
+
+class Out_lan_smokeenc_bin(gst.Bin):
+    """
+    Volcado de audio y video a la red lan.
+    queue ! ffmpegcolorspace ! smokeenc ! udpsink host=192.168.1.1 port=5000
+    autoaudiosrc ! queue ! audio/x-raw-int,rate=8000,channels=1,depth=8 ! audioconvert ! speexenc ! queue ! tcpserversink host=192.168.1.1 port=5001
+    """
+
+    def __init__(self, ip):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('out_lan_smokeenc_bin')
+
+        queue = gst.element_factory_make(
+            'queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspace")
+
+        smokeenc = gst.element_factory_make(
+            'smokeenc', "smokeenc")
+
+        udpsink = gst.element_factory_make(
+            'udpsink', "udpsink")
+
+        if ip:
+            udpsink.set_property("host", ip)
+
+        udpsink.set_property("port", 5000)
+
+        self.add(queue)
+        self.add(ffmpegcolorspace)
+        self.add(smokeenc)
+        self.add(udpsink)
+
+        queue.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(smokeenc)
+        smokeenc.link(udpsink)
+
+        self.add_pad(gst.GhostPad(
+            "sink", queue.get_static_pad("sink")))
+
+
+class In_lan_udpsrc_bin(gst.Bin):
+    """
+    Fuente de audio y video desde red lan.
+    udpsrc port=5000 ! queue ! smokedec ! autovideosink
+    tcpclientsrc host=192.168.1.5 port=5001 ! queue ! speexdec ! queue ! autoaudiosink
+    """
+
+    def __init__(self, ip):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('in_lan_udpsrc_bin')
+
+        udpsrc = gst.element_factory_make(
+            'udpsrc', "udpsrc")
+
+        udpsrc.set_property("port", 5000)
+
+        queue = gst.element_factory_make(
+            'queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        smokedec = gst.element_factory_make(
+            'smokedec', "smokedec")
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspace")
+
+        self.add(udpsrc)
+        self.add(queue)
+        self.add(smokedec)
+        self.add(ffmpegcolorspace)
+
+        udpsrc.link(queue)
+        queue.link(smokedec)
+        smokedec.link(ffmpegcolorspace)
 
         self.add_pad(gst.GhostPad(
             "src", ffmpegcolorspace.get_static_pad("src")))

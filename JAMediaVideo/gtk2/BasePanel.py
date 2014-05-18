@@ -346,9 +346,9 @@ class BasePanel(gtk.HPaned):
     def __re_init_video_web_cam(self,
         device=False, salida=False):
         """
-        Cuando se agregan o quitan efectos o se cambia la fuente o
-        la salida de video, se crea un nuevo objeto gstreamer que mantiene
-        las configuraciones realizadas hasta el momento.
+        Cuando se agregan o quitan efectos o se cambia la fuente de video,
+        se crea un nuevo objeto gstreamer que mantiene las configuraciones
+        realizadas hasta el momento.
         """
 
         rot = self.jamediawebcam.get_rotacion()
