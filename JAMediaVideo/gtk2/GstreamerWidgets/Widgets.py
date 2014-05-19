@@ -219,7 +219,7 @@ class Efecto_widget_Config(gtk.EventBox):
         frame.add(box)
 
         self.botonefecto = gtk.CheckButton()
-        self.botonefecto.set_label(nombre)
+        self.botonefecto.set_label(nombre.split("-")[-1])
         self.botonefecto.connect('toggled', self.__efecto_click)
         self.botonefecto.set_tooltip_text(nombre)
 

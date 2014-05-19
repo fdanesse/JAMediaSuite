@@ -54,7 +54,7 @@ class JAMediaInLan(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
-        print "Webcam Formato:", formato, "Device:", ip
+        print "JAMediaInLan - Formato:", formato, "Device:", ip
 
         self.actualizador = False
         self.tamanio = 0
@@ -65,7 +65,6 @@ class JAMediaInLan(gobject.GObject):
 
         self.pipeline = gst.Pipeline()
 
-        #camara = In_lan_jpegdec_bin(ip)
         camara = In_lan_udpsrc_bin(ip)
 
         self.balance = Balance_bin()
@@ -141,7 +140,7 @@ class JAMediaInLan(gobject.GObject):
             self.pipeline.recalculate_latency()
 
         elif message.type == gst.MESSAGE_ERROR:
-            print "JAMediaGrabador ERROR:"
+            print "JAMediaInLan ERROR:"
             print message.parse_error()
             print
             #self.__new_handle(False, [])

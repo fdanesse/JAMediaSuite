@@ -40,7 +40,7 @@ from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
 
 from JAMediaWebCamMenu import JAMediaWebCamMenu
 from JAMediaWebCamVideo import JAMediaWebCamVideo
-from JAMediaInLan import JAMediaInLan
+#from JAMediaInLan import JAMediaInLan
 
 from Globales import get_video_directory
 
@@ -384,8 +384,9 @@ class BasePanel(gtk.HPaned):
             #del(self.jamediawebcam)
             self.jamediawebcam = False
 
-            self.jamediawebcam = JAMediaInLan(
-                xid, ip=device, formato=salida,
+            #self.jamediawebcam = JAMediaInLan(
+            self.jamediawebcam = JAMediaWebCamVideo(
+                xid, device=device, formato=salida,
                 efectos=efectos)
 
             self.jamediawebcam.play()

@@ -32,6 +32,7 @@ from Gstreamer_Bins import Balance_bin
 #from Gstreamer_Bins import Xvimage_bin
 #from Gstreamer_Bins import Out_lan_jpegenc_bin
 from Gstreamer_Bins import Out_lan_smokeenc_bin
+from Gstreamer_Bins import In_lan_udpsrc_bin
 
 gobject.threads_init()
 gtk.gdk.threads_init()
@@ -50,7 +51,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
-        print "Webcam Formato:", formato, "Device:", device
+        print "JAMediaWebCamVideo - Formato:", formato, "Device:", device
 
         self.actualizador = False
         self.tamanio = 0
@@ -63,15 +64,11 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         camara = v4l2src_bin()
 
-        if device == "Estación Remota":
-            pass
-            # gst-launch-0.10 udpsrc port=5000 !
-            # queue ! smokedec ! queue ! autovideosink
-            # tcpclientsrc host=192.168.1.5 port=5001 !
-            # queue ! speexdec ! queue ! alsasink sync=false
+        if "/dev/video" in device:
+            camara.set_device(device)
 
         else:
-            camara.set_device(device)
+            camara = In_lan_udpsrc_bin(device)
 
         self.balance = Balance_bin()
 
@@ -146,7 +143,7 @@ class JAMediaWebCamVideo(gobject.GObject):
             self.pipeline.recalculate_latency()
 
         elif message.type == gst.MESSAGE_ERROR:
-            print "JAMediaGrabador ERROR:"
+            print "JAMediaWebCamVideo ERROR:"
             print message.parse_error()
             print
             #self.__new_handle(False, [])
@@ -289,7 +286,6 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         else:
             # "Volcado a red lan"
-            #out = Out_lan_jpegenc_bin(self.formato)
             out = Out_lan_smokeenc_bin(self.formato)
             self.pipeline.add(out)
             self.tee.link(out)

@@ -53,6 +53,11 @@ gobject.threads_init()
 # gst-launch -v v4l2src ! video/x-raw-yuv,framerate=\(fraction\)5/1 ! smokeenc threshold=1000 ! tcpserversink host=127.0.0.1 port=5003
 # gst-launch -v tcpclientsrc host=127.0.0.1 port=5002 ! smokedec ! xvimagesink sync=false
 
+# Diversos Ejemplos:
+# http://processors.wiki.ti.com/index.php/Example_GStreamer_Pipelines
+# https://labs.isee.biz/index.php/Example_GStreamer_Pipelines
+# http://wiki.oz9aec.net/index.php/Gstreamer_cheat_sheet
+
 
 class Theora_bin(gst.Bin):
     """
@@ -539,7 +544,8 @@ class Out_lan_smokeenc_bin(gst.Bin):
     """
     Volcado de audio y video a la red lan.
     queue ! ffmpegcolorspace ! smokeenc ! udpsink host=192.168.1.1 port=5000
-    autoaudiosrc ! queue ! audio/x-raw-int,rate=8000,channels=1,depth=8 ! audioconvert ! speexenc ! queue ! tcpserversink host=192.168.1.1 port=5001
+    autoaudiosrc ! queue ! audioconvert ! speexenc !
+        tcpserversink host=192.168.1.1 port=5001
     """
 
     def __init__(self, ip):
@@ -585,7 +591,8 @@ class In_lan_udpsrc_bin(gst.Bin):
     """
     Fuente de audio y video desde red lan.
     udpsrc port=5000 ! queue ! smokedec ! autovideosink
-    tcpclientsrc host=192.168.1.5 port=5001 ! queue ! speexdec ! queue ! autoaudiosink
+    tcpclientsrc host=192.168.1.5 port=5001 ! queue ! speexdec !
+        queue ! autoaudiosink
     """
 
     def __init__(self, ip):

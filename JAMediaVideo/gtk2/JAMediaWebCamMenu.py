@@ -24,6 +24,7 @@ import gst
 
 from Gstreamer_Bins import v4l2src_bin
 from Gstreamer_Bins import Balance_bin
+from Gstreamer_Bins import In_lan_udpsrc_bin
 
 
 class JAMediaWebCamMenu(gobject.GObject):
@@ -40,22 +41,20 @@ class JAMediaWebCamMenu(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
-        self.ventana_id = ventana_id
+        print "JAMediaWebCamMenu:", "Device:", device
 
+        self.ventana_id = ventana_id
         self.pipeline = gst.Pipeline()
 
         camara = v4l2src_bin()
-        balance = Balance_bin()
 
-        if device == "Estación Remota":
-            pass
-            # gst-launch-0.10 udpsrc port=5000 !
-            # queue ! smokedec ! queue ! autovideosink
-            # tcpclientsrc host=192.168.1.5 port=5001 !
-            # queue ! speexdec ! queue ! alsasink sync=false
+        if "/dev/video" in device:
+            camara.set_device(device)
 
         else:
-            camara.set_device(device)
+            camara = In_lan_udpsrc_bin(device)
+
+        balance = Balance_bin()
 
         queue = gst.element_factory_make(
             'queue', "queuexvimage")
