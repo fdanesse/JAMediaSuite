@@ -336,12 +336,20 @@ class BasePanel(gtk.HPaned):
 
         self.jamediawebcam.set_formato(valor)
 
-    def __set_camara(self, widget, tipo, valor):
+    def __set_camara(self, widget, tipo, device):
         """
         Setea la entrada de video para camara de filmación y fotografía.
         """
 
-        self.__re_init_video_web_cam(device=valor)
+        if not "/dev/video" in device:
+            self.video_out_setting.set_sensitive(False)
+            self.get_toplevel().toolbar.permitir_filmar(False)
+
+        else:
+            self.video_out_setting.set_sensitive(True)
+            self.get_toplevel().toolbar.permitir_filmar(True)
+
+        self.__re_init_video_web_cam(device=device)
 
     def __re_init_video_web_cam(self,
         device=False, salida=False):
@@ -363,37 +371,19 @@ class BasePanel(gtk.HPaned):
 
         xid = self.pantalla.get_property('window').xid
 
-        if "/dev/video" in device:
-            if os.path.exists(device):
-                self.jamediawebcam.stop()
-                #del(self.jamediawebcam)
-                self.jamediawebcam = False
+        self.jamediawebcam.stop()
+        #del(self.jamediawebcam)
+        self.jamediawebcam = False
 
-                self.jamediawebcam = JAMediaWebCamVideo(
-                    xid, device=device, formato=salida,
-                    efectos=efectos)
+        self.jamediawebcam = JAMediaWebCamVideo(
+            xid, device=device, formato=salida,
+            efectos=efectos)
 
-                self.jamediawebcam.play()
+        self.jamediawebcam.play()
 
-                #gobject.timeout_add(1000, self.__re_config,
-                #    rot, config, efectos)
-                self.__re_config(rot, config, efectos)
-
-        else:
-            self.jamediawebcam.stop()
-            #del(self.jamediawebcam)
-            self.jamediawebcam = False
-
-            #self.jamediawebcam = JAMediaInLan(
-            self.jamediawebcam = JAMediaWebCamVideo(
-                xid, device=device, formato=salida,
-                efectos=efectos)
-
-            self.jamediawebcam.play()
-
-            #gobject.timeout_add(1000, self.__re_config,
-            #    rot, config, efectos)
-            self.__re_config(rot, config, efectos)
+        #gobject.timeout_add(1000, self.__re_config,
+        #    rot, config, efectos)
+        self.__re_config(rot, config, efectos)
 
     def __re_config(self, rot, config, efectos):
 

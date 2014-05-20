@@ -120,6 +120,7 @@ class Vorbis_bin(gst.Bin):
 
         self.set_name('Vorbis_bin')
 
+        #FIXME: el audio puede que venga desde la red
         autoaudiosrc = gst.element_factory_make(
             'autoaudiosrc', "autoaudiosrc")
         audiorate = gst.element_factory_make(
@@ -417,6 +418,7 @@ class Ogv_out_bin(gst.Bin):
 
         self.set_name('ogv_out_bin')
 
+        #FIXME: el audio puede que venga desde la red
         vorbisbin = Vorbis_bin()
         theorabin = Theora_bin()
 

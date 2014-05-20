@@ -244,6 +244,10 @@ class Toolbar(gtk.EventBox):
 
         self.emit('salir')
 
+    def permitir_filmar(self, valor):
+
+        self.toolbar_video.permitir_filmar(valor)
+
 
 class ToolbarSalir(gtk.EventBox):
     """
@@ -472,13 +476,13 @@ class ToolbarVideo(gtk.EventBox):
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "camara.svg")
-        boton = get_boton(
+        self.boton_filmar = get_boton(
             archivo, flip=False, pixels=24)
-        boton.set_tooltip_text("Filmar")
-        boton.connect("clicked",
+        self.boton_filmar.set_tooltip_text("Filmar")
+        self.boton_filmar.connect("clicked",
             self.__emit_senial, "Filmar")
-        toolbar.insert(boton, -1)
-        self.widget_stop = [boton]
+        toolbar.insert(self.boton_filmar, -1)
+        self.widget_stop = [self.boton_filmar]
 
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
@@ -542,6 +546,13 @@ class ToolbarVideo(gtk.EventBox):
         self.add(toolbar)
         self.show_all()
 
+    def __emit_senial(self, widget, senial):
+        """
+        Emite filmar o configurar.
+        """
+
+        self.emit('accion', senial)
+
     def set_estado(self, estado):
 
         if not estado:
@@ -556,12 +567,9 @@ class ToolbarVideo(gtk.EventBox):
             map(activar, self.widget_stop)
             map(desactivar, self.widget_playing)
 
-    def __emit_senial(self, widget, senial):
-        """
-        Emite filmar o configurar.
-        """
+    def permitir_filmar(self, valor):
 
-        self.emit('accion', senial)
+        self.boton_filmar.set_sensitive(valor)
 
 
 class ToolbarFotografia(gtk.EventBox):
