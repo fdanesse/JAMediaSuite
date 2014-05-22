@@ -40,7 +40,6 @@ from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
 
 from JAMediaWebCamMenu import JAMediaWebCamMenu
 from JAMediaWebCamVideo import JAMediaWebCamVideo
-#from JAMediaInLan import JAMediaInLan
 
 from Globales import get_video_directory
 
@@ -122,7 +121,7 @@ class BasePanel(gtk.HPaned):
         self.video_out_setting = Video_out_Config()
         self.rafagas_setting = Rafagas_Config()
         self.balance_config_widget = ToolbarConfig()
-        self.widget_efectos = False  #WidgetsGstreamerEfectos()
+        self.widget_efectos = False  # WidgetsGstreamerEfectos()
 
         self.vbox_config.pack_start(
             self.camara_setting, False, False, 0)
@@ -135,7 +134,6 @@ class BasePanel(gtk.HPaned):
         #self.derecha_vbox.pack_start(
         #    self.widget_efectos, True, True, 0)
 
-        # empaquetando todo
         self.pack2(self.box_config,
             resize=False, shrink=False)
 
@@ -188,24 +186,23 @@ class BasePanel(gtk.HPaned):
 
         if event.type.value_name == "GDK_2BUTTON_PRESS":
 
-            self.get_toplevel().set_sensitive(False)
-
             ventana = self.get_toplevel()
+            ventana.set_sensitive(False)
             screen = ventana.get_screen()
             w, h = ventana.get_size()
             ww, hh = (screen.get_width(), screen.get_height())
 
-            #self.__cancel_toolbars_flotantes()
+            ventana.toolbar_salir.hide()
 
             if ww == w and hh == h:
-                #ventana.set_border_width(2)
+                ventana.set_border_width(4)
                 gobject.idle_add(ventana.unfullscreen)
 
             else:
-                #ventana.set_border_width(0)
+                ventana.set_border_width(0)
                 gobject.idle_add(ventana.fullscreen)
 
-            self.get_toplevel().set_sensitive(True)
+            ventana.set_sensitive(True)
 
     def __set_balance(self, widget, valor, tipo):
         """
@@ -237,7 +234,7 @@ class BasePanel(gtk.HPaned):
 
         if self.jamediawebcam:
             self.jamediawebcam.stop()
-            del(self.jamediawebcam)
+            #del(self.jamediawebcam)
             self.jamediawebcam = False
 
         if self.widget_efectos:
@@ -266,7 +263,7 @@ class BasePanel(gtk.HPaned):
 
         if self.jamediawebcam:
             self.jamediawebcam.stop()
-            del(self.jamediawebcam)
+            #del(self.jamediawebcam)
             self.jamediawebcam = False
 
         if self.widget_efectos:
@@ -296,7 +293,7 @@ class BasePanel(gtk.HPaned):
 
         if self.jamediawebcam:
             self.jamediawebcam.stop()
-            del(self.jamediawebcam)
+            #del(self.jamediawebcam)
             self.jamediawebcam = False
 
         if self.widget_efectos:
@@ -339,6 +336,8 @@ class BasePanel(gtk.HPaned):
     def __set_camara(self, widget, tipo, device):
         """
         Setea la entrada de video para camara de filmación y fotografía.
+        Si la entrada de video es la red lan, deshabilita el volcado a la
+        red y la grabación.
         """
 
         if not "/dev/video" in device:
@@ -351,8 +350,7 @@ class BasePanel(gtk.HPaned):
 
         self.__re_init_video_web_cam(device=device)
 
-    def __re_init_video_web_cam(self,
-        device=False, salida=False):
+    def __re_init_video_web_cam(self, device=False, salida=False):
         """
         Cuando se agregan o quitan efectos o se cambia la fuente de video,
         se crea un nuevo objeto gstreamer que mantiene las configuraciones
@@ -380,9 +378,6 @@ class BasePanel(gtk.HPaned):
             efectos=efectos)
 
         self.jamediawebcam.play()
-
-        #gobject.timeout_add(1000, self.__re_config,
-        #    rot, config, efectos)
         self.__re_config(rot, config, efectos)
 
     def __re_config(self, rot, config, efectos):

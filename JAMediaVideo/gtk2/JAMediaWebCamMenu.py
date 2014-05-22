@@ -34,14 +34,8 @@ class JAMediaWebCamMenu(gobject.GObject):
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, ventana_id, device="/dev/video0"):
-        """
-        Recibe el id de un DrawingArea
-        para mostrar el video.
-        """
 
         gobject.GObject.__init__(self)
-
-        print "JAMediaWebCamMenu:", "Device:", device
 
         self.ventana_id = ventana_id
         self.pipeline = gst.Pipeline()

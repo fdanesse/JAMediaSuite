@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import time
 import gobject
 import gst
 import gtk
@@ -50,8 +49,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         formato="ogg", efectos=[]):
 
         gobject.GObject.__init__(self)
-
-        print "JAMediaWebCamVideo - Formato:", formato, "Device:", device
 
         self.actualizador = False
         self.tamanio = 0
@@ -129,24 +126,19 @@ class JAMediaWebCamVideo(gobject.GObject):
                 message.src.set_xwindow_id(self.ventana_id)
                 gtk.gdk.threads_leave()
 
-        elif message.type == gst.MESSAGE_EOS:
-            #self.__new_handle(False, [])
-            #self.emit("endfile")
-            print "gst.MESSAGE_EOS"
+        #elif message.type == gst.MESSAGE_EOS:
+        #    print "gst.MESSAGE_EOS"
 
-        elif message.type == gst.MESSAGE_QOS:
-            #print time.time(), "gst.MESSAGE_QOS"
-            pass
+        #elif message.type == gst.MESSAGE_QOS:
+        #    print "gst.MESSAGE_QOS"
 
         elif message.type == gst.MESSAGE_LATENCY:
-            print "gst.MESSAGE_LATENCY"
             self.pipeline.recalculate_latency()
 
         elif message.type == gst.MESSAGE_ERROR:
             print "JAMediaWebCamVideo ERROR:"
             print message.parse_error()
             print
-            #self.__new_handle(False, [])
 
         elif message.type == gst.MESSAGE_STATE_CHANGED:
             old, new, pending = message.parse_state_changed()
@@ -156,23 +148,15 @@ class JAMediaWebCamVideo(gobject.GObject):
 
                 if new == gst.STATE_PLAYING:
                     self.emit("estado", "playing")
-                    #print "estado", "playing"
-                    #self.__new_handle(True, [old, new])
 
                 elif new == gst.STATE_PAUSED:
                     self.emit("estado", "paused")
-                    #print "estado", "paused"
-                    #self.__new_handle(False, [old, new])
 
                 elif new == gst.STATE_NULL:
                     self.emit("estado", "None")
-                    #print "estado", "None"
-                    #self.__new_handle(False, [old, new])
 
                 else:
                     self.emit("estado", "paused")
-                    #print "estado", "paused"
-                    #self.__new_handle(False, [old, new])
 
         return gst.BUS_PASS
 
@@ -192,8 +176,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
     def __handle(self):
         """
-        Consulta el estado y progreso de
-        la grabacion.
+        Consulta el estado y progreso de la grabacion.
         """
 
         if os.path.exists(self.path_archivo):

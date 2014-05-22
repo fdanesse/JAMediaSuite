@@ -193,7 +193,7 @@ class Xvimage_bin(gst.Bin):
 
 class Balance_bin(gst.Bin):
     """
-    Bin con brillo, contraste, saturación, hue y rotación.
+    Bin con brillo, contraste, saturación, hue, gamma y rotación.
     """
 
     def __init__(self):
@@ -256,8 +256,7 @@ class Balance_bin(gst.Bin):
     def set_rotacion(self, rot):
 
         videoflip = self.get_by_name("videoflip")
-        videoflip.set_property(
-            'method', rot)
+        videoflip.set_property('method', rot)
 
     def set_balance(self, brillo=None, contraste=None,
         saturacion=None, hue=None, gamma=None):

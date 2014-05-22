@@ -23,12 +23,8 @@ import os
 import sys
 
 import gtk
-from gtk import gdk
 import gobject
 
-#from Globales import get_audio_directory
-#from Globales import get_imagenes_directory
-#from Globales import get_video_directory
 from Globales import get_colors
 
 from Toolbars import Toolbar

@@ -31,12 +31,6 @@ BASE_PATH = os.path.dirname(__file__)
 
 
 class ToolbarConfig(gtk.EventBox):
-    """
-    Toolbar para intercambiar reproductores (mplayer gst) y
-    modificar valores de balance en video.
-    """
-
-    #__gtype_name__ = 'ToolbarConfig'
 
     __gsignals__ = {
     'valor': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
@@ -107,9 +101,7 @@ class ToolbarConfig(gtk.EventBox):
 
 class ToolbarcontrolValores(gtk.Toolbar):
     """
-    Toolbar con escala para modificar
-    valores de balance en video, utilizada
-    por ToolbarBalanceConfig.
+    Toolbar con escala para modificar valores de balance y gamma en video.
     """
 
     __gsignals__ = {
@@ -167,7 +159,7 @@ class ToolbarcontrolValores(gtk.Toolbar):
 
 class SlicerBalance(gtk.EventBox):
     """
-    Barra deslizable para cambiar valores de Balance en Video.
+    Barra deslizable para cambiar valores de Balance o gamma en Video.
     """
 
     __gsignals__ = {

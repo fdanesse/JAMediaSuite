@@ -390,7 +390,7 @@ class CamaraConfig(gtk.EventBox):
 
     def __set_camara(self, widget):
         """
-        Setea fuente de audio y video en camaras o videolan.
+        Setea fuente de audio y video (camaras o videolan).
         """
 
         if widget.get_active():
@@ -417,8 +417,9 @@ class CamaraConfig(gtk.EventBox):
 class Video_out_Config(gtk.EventBox):
 
     __gsignals__ = {
-    'set_video_out': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
-        (gobject.TYPE_STRING, gobject.TYPE_STRING))}
+    'set_video_out': (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -591,171 +592,3 @@ class Rafagas_Config(gtk.EventBox):
 
         else:
             return 0
-
-
-'''
-class JAMediaButton(gtk.EventBox):
-    """
-    Un Boton a medida.
-    """
-
-    __gsignals__ = {
-    "clicked": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-    "click_derecho": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
-
-    def __init__(self):
-
-        gtk.EventBox.__init__(self)
-
-        self.cn = get_color("BLANCO")
-        self.cs = get_color("AMARILLO")
-        self.cc = get_color("NARANJA")
-        self.text_color = get_color("NEGRO")
-        self.colornormal = self.cn
-        self.colorselect = self.cs
-        self.colorclicked = self.cc
-
-        self.set_visible_window(True)
-        self.modify_bg(0, self.colornormal)
-        self.modify_fg(0, self.text_color)
-        self.set_border_width(1)
-
-        self.estado_select = False
-
-        self.add_events(
-            gdk.BUTTON_PRESS_MASK |
-            gdk.BUTTON_RELEASE_MASK |
-            gdk.POINTER_MOTION_MASK |
-            gdk.ENTER_NOTIFY_MASK |
-            gdk.LEAVE_NOTIFY_MASK)
-
-        self.connect("button_press_event", self.button_press)
-        self.connect("button_release_event", self.__button_release)
-        self.connect("enter-notify-event", self.__enter_notify_event)
-        self.connect("leave-notify-event", self.__leave_notify_event)
-
-        self.imagen = gtk.Image()
-        self.add(self.imagen)
-
-        self.show_all()
-
-    def set_colores(self, colornormal=False,
-        colorselect=False, colorclicked=False):
-
-        if colornormal:
-            self.cn = colornormal
-
-        if colorselect:
-            self.cs = colorselect
-
-        if colorclicked:
-            self.cc = colorclicked
-
-        self.colornormal = self.cn
-        self.colorselect = self.cs
-        self.colorclicked = self.cc
-
-        if self.estado_select:
-            self.seleccionar()
-
-        else:
-            self.des_seleccionar()
-
-    def seleccionar(self):
-        """
-        Marca como seleccionado
-        """
-
-        self.estado_select = True
-        self.colornormal = self.cc
-        self.colorselect = self.cc
-        self.colorclicked = self.cc
-
-        self.modify_bg(0, self.colornormal)
-
-    def des_seleccionar(self):
-        """
-        Desmarca como seleccionado
-        """
-
-        self.estado_select = False
-
-        self.colornormal = self.cn
-        self.colorselect = self.cs
-        self.colorclicked = self.cc
-
-        self.modify_bg(0, self.colornormal)
-
-    def __button_release(self, widget, event):
-
-        self.modify_bg(0, self.colorselect)
-
-    def __leave_notify_event(self, widget, event):
-
-        self.modify_bg(0, self.colornormal)
-
-    def __enter_notify_event(self, widget, event):
-
-        self.modify_bg(0, self.colorselect)
-
-    def button_press(self, widget, event):
-
-        self.seleccionar()
-
-        if event.button == 1:
-            self.emit("clicked", event)
-
-        elif event.button == 3:
-            self.emit("click_derecho", event)
-
-    def set_tooltip(self, texto):
-
-        self.set_tooltip_text(texto)
-
-    def set_label(self, texto):
-
-        for child in self.get_children():
-            child.destroy()
-
-        label = gtk.Label(texto)
-        label.show()
-        self.add(label)
-
-    def set_imagen(self, archivo):
-
-        self.imagen.set_from_file(archivo)
-
-    def set_tamanio(self, w, h):
-
-        self.set_size_request(w, h)
-
-
-class WidgetEfecto_en_Pipe(JAMediaButton):
-    """
-    Representa un efecto agregado al pipe de JAMediaVideo.
-    Es simplemente un objeto gráfico que se agrega debajo del
-    visor de video, para que el usuario tenga una referencia de
-    los efectos que ha agregado y en que orden se encuentran.
-    """
-
-    def __init__(self):
-
-        JAMediaButton.__init__(self)
-
-        self.show_all()
-
-        self.set_colores(
-            colornormal=get_color("NEGRO"),
-            colorselect=get_color("NEGRO"),
-            colorclicked=get_color("NEGRO"))
-
-        self.modify_bg(0, self.colornormal)
-
-    def seleccionar(self):
-        pass
-
-    def des_seleccionar(self):
-        pass
-'''
