@@ -437,25 +437,25 @@ class Video_out_Config(gtk.EventBox):
         frame.add(box)
 
         #vbox.pack_start(gtk.Label("Resolucion"))
-        boton3 = gtk.RadioButton()
-        boton3.set_label("ogv")
-        boton3.connect("clicked", self.__set_formato)
-        box.pack_start(boton3, False, False, 0)
+        self.boton3 = gtk.RadioButton()
+        self.boton3.set_label("ogv")
+        self.boton3.connect("clicked", self.__set_formato)
+        box.pack_start(self.boton3, False, False, 0)
 
         boton4 = gtk.RadioButton()
-        boton4.set_group(boton3)
+        boton4.set_group(self.boton3)
         boton4.set_label("avi")
         boton4.connect("clicked", self.__set_formato)
         box.pack_start(boton4, False, False, 0)
 
         boton5 = gtk.RadioButton()
-        boton5.set_group(boton3)
+        boton5.set_group(self.boton3)
         boton5.set_label("mpeg")
         boton5.connect("clicked", self.__set_formato)
         box.pack_start(boton5, False, False, 0)
 
         self.boton6 = gtk.RadioButton()
-        self.boton6.set_group(boton3)
+        self.boton6.set_group(self.boton3)
         self.boton6.set_sensitive(False)
         self.boton6.set_label("Estación Remota")
         self.boton6.connect("clicked", self.__set_formato)
@@ -466,34 +466,14 @@ class Video_out_Config(gtk.EventBox):
         self.ip_text.connect("changed", self.__change_ip)
         self.ip_text.set_size_request(100, -1)
 
-        self.boton = gtk.Button()
-        self.boton.set_sensitive(False)
-        self.boton.connect("clicked", self.__update_ip)
-        self.imagen = gtk.Image()
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "dialog-ok.svg")
-        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-            archivo, 16, 16)
-        self.imagen.set_from_pixbuf(pixbuf)
-
-        self.boton.set_image(self.imagen)
         hbox.pack_start(gtk.Label("Ip:"), False, False, 5)
-        hbox.pack_end(self.boton, True, True, 5)
         hbox.pack_end(self.ip_text, True, True, 0)
         box.pack_start(hbox, False, False, 5)
 
         self.add(frame)
         self.show_all()
 
-        boton3.set_active(True)
-
-    def __update_ip(self, widget):
-
-        if self.boton6.get_active():
-            self.__set_formato(self.boton6)
-
-        else:
-            self.boton6.set_active(True)
+        self.boton3.set_active(True)
 
     def __change_ip(self, widget):
         """
@@ -525,11 +505,17 @@ class Video_out_Config(gtk.EventBox):
 
         if valida:
             self.boton6.set_sensitive(True)
-            self.boton.set_sensitive(True)
+
+            if self.boton6.get_active():
+                self.__set_formato(self.boton6)
+
+            else:
+                self.boton6.set_active(True)
 
         else:
             self.boton6.set_sensitive(False)
-            self.boton.set_sensitive(False)
+            self.boton3.set_active(True)
+            self.__set_formato(self.boton3)
 
     def __set_formato(self, widget):
 

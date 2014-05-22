@@ -326,12 +326,12 @@ class BasePanel(gtk.HPaned):
             hue=config['hue'],
             gamma=config['gamma'])
 
-    def __set_video_out(self, widget, tipo, valor):
+    def __set_video_out(self, widget, tipo, formato):
         """
         Setea la salida de video para camara de filmación y fotografía.
         """
-
-        self.jamediawebcam.set_formato(valor)
+        print formato
+        self.jamediawebcam.set_formato(formato)
 
     def __set_camara(self, widget, tipo, device):
         """
@@ -454,6 +454,8 @@ class BasePanel(gtk.HPaned):
                 print "BasePanel ==>", accion, "Detener Grabacion y hacer replay actualizar info_label"
 
         elif accion == "Filmar" and modo == "video":
+            # FIXME: Verificar salida de video: si es la red, y los widgets contienen ip invalida
+            # actualizar con la ip donde se volcará o cambiar la salida a ogv
             self.get_toplevel().toolbar.set_sensitive(False)
             hora = time.strftime("%H-%M-%S")
             fecha = str(datetime.date.today())
