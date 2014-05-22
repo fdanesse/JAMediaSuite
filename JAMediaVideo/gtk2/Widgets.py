@@ -456,6 +456,7 @@ class Video_out_Config(gtk.EventBox):
 
         self.boton6 = gtk.RadioButton()
         self.boton6.set_group(boton3)
+        self.boton6.set_sensitive(False)
         self.boton6.set_label("Estación Remota")
         self.boton6.connect("clicked", self.__set_formato)
         box.pack_start(self.boton6, False, False, 0)
@@ -465,14 +466,34 @@ class Video_out_Config(gtk.EventBox):
         self.ip_text.connect("changed", self.__change_ip)
         self.ip_text.set_size_request(100, -1)
 
+        self.boton = gtk.Button()
+        self.boton.set_sensitive(False)
+        self.boton.connect("clicked", self.__update_ip)
+        self.imagen = gtk.Image()
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "dialog-ok.svg")
+        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+            archivo, 16, 16)
+        self.imagen.set_from_pixbuf(pixbuf)
+
+        self.boton.set_image(self.imagen)
         hbox.pack_start(gtk.Label("Ip:"), False, False, 5)
-        hbox.pack_end(self.ip_text, True, True, 5)
+        hbox.pack_end(self.boton, True, True, 5)
+        hbox.pack_end(self.ip_text, True, True, 0)
         box.pack_start(hbox, False, False, 5)
 
         self.add(frame)
         self.show_all()
 
         boton3.set_active(True)
+
+    def __update_ip(self, widget):
+
+        if self.boton6.get_active():
+            self.__set_formato(self.boton6)
+
+        else:
+            self.boton6.set_active(True)
 
     def __change_ip(self, widget):
         """
@@ -503,17 +524,12 @@ class Video_out_Config(gtk.EventBox):
                         break
 
         if valida:
-            if self.boton6.get_active():
-                self.__set_formato(self.boton6)
-
-            else:
-                self.boton6.set_active(True)
+            self.boton6.set_sensitive(True)
+            self.boton.set_sensitive(True)
 
         else:
-            # FIXME: Si se pone en grabar con una ip válida y luego el usuario
-            # detiene la grabación y pone una ip inválida y vuelve a dar
-            # grabar, el volcado se produce en la última ip válida.
-            print "ip inválida", ip
+            self.boton6.set_sensitive(False)
+            self.boton.set_sensitive(False)
 
     def __set_formato(self, widget):
 
