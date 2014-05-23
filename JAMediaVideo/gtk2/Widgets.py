@@ -298,6 +298,17 @@ class CamaraConfig(gtk.EventBox):
         box = gtk.VBox()
         frame.add(box)
 
+        event = gtk.EventBox()
+        event.set_border_width(4)
+        event.modify_bg(0, get_colors("window"))
+        frame1 = gtk.Frame()
+        frame1.set_label(" ip Local ")
+        frame1.set_label_align(0.5, 0.5)
+        event.add(frame1)
+        self.label_ip = gtk.Label()
+        frame1.add(self.label_ip)
+        box.pack_start(event, False, False, 0)
+
         if os.path.exists("/dev/video0"):
             boton1 = gtk.RadioButton()
             boton1.set_label("Camara 1")

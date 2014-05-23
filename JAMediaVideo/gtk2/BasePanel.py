@@ -42,6 +42,7 @@ from JAMediaWebCamMenu import JAMediaWebCamMenu
 from JAMediaWebCamVideo import JAMediaWebCamVideo
 
 from Globales import get_video_directory
+from Globales import get_ip
 
 gobject.threads_init()
 gtk.gdk.threads_init()
@@ -196,10 +197,22 @@ class BasePanel(gtk.HPaned):
 
             if ww == w and hh == h:
                 ventana.set_border_width(4)
+                color = get_colors("toolbars")
+                ventana.modify_bg(0, color)
+                ventana.toolbar.modify_bg(0, color)
+                ventana.toolbar.toolbar_principal.modify_bg(0, color)
+                ventana.toolbar.toolbar_video.modify_bg(0, color)
+                ventana.toolbar.toolbar_fotografia.modify_bg(0, color)
                 gobject.idle_add(ventana.unfullscreen)
 
             else:
                 ventana.set_border_width(0)
+                color = get_colors("drawingplayer")
+                ventana.modify_bg(0, color)
+                ventana.toolbar.modify_bg(0, color)
+                ventana.toolbar.toolbar_principal.modify_bg(0, color)
+                ventana.toolbar.toolbar_video.modify_bg(0, color)
+                ventana.toolbar.toolbar_fotografia.modify_bg(0, color)
                 gobject.idle_add(ventana.fullscreen)
 
             ventana.set_sensitive(True)
@@ -283,6 +296,17 @@ class BasePanel(gtk.HPaned):
 
         gobject.idle_add(self.jamediawebcam.play)
 
+        if not "/dev/video" in device:
+            toolbar = self.get_toplevel().toolbar
+            toolbar.toolbar_video.boton_filmar.set_sensitive(False)
+            toolbar.toolbar_fotografia.boton_fotografiar.set_sensitive(False)
+
+        else:
+            toolbar = self.get_toplevel().toolbar
+            toolbar.toolbar_video.boton_filmar.set_sensitive(True)
+            toolbar.toolbar_fotografia.boton_fotografiar.set_sensitive(True)
+
+
         self.control = False
 
     def __camara_foto_run(self):
@@ -330,7 +354,7 @@ class BasePanel(gtk.HPaned):
         """
         Setea la salida de video para camara de filmación y fotografía.
         """
-        print formato
+
         self.jamediawebcam.set_formato(formato)
 
     def __set_camara(self, widget, tipo, device):
@@ -520,11 +544,15 @@ class BasePanel(gtk.HPaned):
 
         if tipo == "camara":
             map(mostrar, video_widgets)
+            ip = get_ip()[0]
+            self.camara_setting.label_ip.set_text(ip)
 
         elif tipo == "foto":
             # ráfagas
             # formato de salida de imágenes
             map(mostrar, foto_widgets)
+            ip = get_ip()[0]
+            self.camara_setting.label_ip.set_text(ip)
 
         #elif "video" in datos:
 

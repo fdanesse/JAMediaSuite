@@ -257,8 +257,10 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline.set_state(gst.STATE_NULL)
 
-        if self.formato == "ogv" or self.formato == "avi" or self.formato == "mpeg":
-            self.path_archivo = u"%s.%s" % (path_archivo, self.formato)
+        formatos = ["ogv", "avi", "mpeg"]
+        if self.formato in formatos:
+            self.path_archivo = u"%s.%s" % (
+                path_archivo, self.formato)
 
             if self.formato == "ogv":
                 out = Ogv_out_bin(self.path_archivo)
@@ -267,9 +269,17 @@ class JAMediaWebCamVideo(gobject.GObject):
                 self.play()
                 self.__new_handle(True, [])
 
+            elif self.formato == "avi":
+                pass
+
+            elif self.formato == "mpeg":
+                pass
+
         else:
             # "Volcado a red lan"
             out = Out_lan_smokeenc_bin(self.formato)
             self.pipeline.add(out)
             self.tee.link(out)
             self.play()
+            self.emit('update',
+                "Emitiendo Hacia: %s" % self.formato)

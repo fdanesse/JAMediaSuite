@@ -609,13 +609,13 @@ class ToolbarFotografia(gtk.EventBox):
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "foto.svg")
-        boton = get_boton(archivo, flip=False,
+        self.boton_fotografiar = get_boton(archivo, flip=False,
             pixels=24)
-        boton.set_tooltip_text("Fotografiar")
-        boton.connect("clicked",
+        self.boton_fotografiar.set_tooltip_text("Fotografiar")
+        self.boton_fotografiar.connect("clicked",
             self.__emit_senial, "Fotografiar")
-        self.widget_stop = [boton]
-        toolbar.insert(boton, -1)
+        self.widget_stop = [self.boton_fotografiar]
+        toolbar.insert(self.boton_fotografiar, -1)
 
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
