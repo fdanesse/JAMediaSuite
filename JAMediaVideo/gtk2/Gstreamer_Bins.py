@@ -543,10 +543,8 @@ class In_lan_jpegdec_bin(gst.Bin):
 
 class Out_lan_smokeenc_bin(gst.Bin):
     """
-    Volcado de audio y video a la red lan.
+    Volcado de video a la red lan.
     queue ! ffmpegcolorspace ! smokeenc ! udpsink host=192.168.1.1 port=5000
-    autoaudiosrc ! queue ! audioconvert ! speexenc !
-        tcpserversink host=192.168.1.1 port=5001
     """
 
     def __init__(self, ip):
@@ -570,9 +568,7 @@ class Out_lan_smokeenc_bin(gst.Bin):
         udpsink = gst.element_factory_make(
             'udpsink', "udpsink")
 
-        if ip:
-            udpsink.set_property("host", ip)
-
+        udpsink.set_property("host", ip)
         udpsink.set_property("port", 5000)
 
         self.add(queue)
@@ -587,6 +583,62 @@ class Out_lan_smokeenc_bin(gst.Bin):
         self.add_pad(gst.GhostPad(
             "sink", queue.get_static_pad("sink")))
 
+'''
+class Out_lan_speexenc_bin(gst.Bin):
+    """
+    Volcado de audio a la red lan.
+    autoaudiosrc ! queue ! audioconvert ! speexenc !
+        tcpserversink host=192.168.1.1 port=5001
+    """
+
+    def __init__(self, ip):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('out_lan_speexenc_bin')
+
+        #autoaudiosrc = gst.element_factory_make(
+        #    'autoaudiosrc', "autoaudiosrc")
+
+        queue = gst.element_factory_make(
+            'queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        audioconvert = gst.element_factory_make(
+            'audioconvert', "audioconvert")
+
+        speexenc = gst.element_factory_make(
+            'speexenc', "speexenc")
+
+        queue1 = gst.element_factory_make(
+            'queue', "queue1")
+        queue1.set_property("max-size-buffers", 1000)
+        queue1.set_property("max-size-bytes", 0)
+        queue1.set_property("max-size-time", 0)
+
+        tcpserversink = gst.element_factory_make(
+            'tcpserversink', "tcpserversink")
+
+        tcpserversink.set_property("host", ip)
+        tcpserversink.set_property("port", 5001)
+        #tcpserversink.set_property("sync", False)
+
+        self.add(queue)
+        self.add(audioconvert)
+        self.add(speexenc)
+        self.add(queue1)
+        self.add(tcpserversink)
+
+        queue.link(audioconvert)
+        audioconvert.link(speexenc)
+        speexenc.link(queue1)
+        queue1.link(tcpserversink)
+
+        self.add_pad(gst.GhostPad(
+            "sink", queue.get_static_pad("sink")))
+'''
 
 class In_lan_udpsrc_bin(gst.Bin):
     """

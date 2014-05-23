@@ -32,6 +32,7 @@ from Gstreamer_Bins import Balance_bin
 #from Gstreamer_Bins import Out_lan_jpegenc_bin
 from Gstreamer_Bins import Out_lan_smokeenc_bin
 from Gstreamer_Bins import In_lan_udpsrc_bin
+#from Gstreamer_Bins import Out_lan_speexenc_bin
 
 gobject.threads_init()
 gtk.gdk.threads_init()
@@ -277,9 +278,10 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         else:
             # "Volcado a red lan"
-            out = Out_lan_smokeenc_bin(self.formato)
-            self.pipeline.add(out)
-            self.tee.link(out)
+            video_out = Out_lan_smokeenc_bin(self.formato)
+            self.pipeline.add(video_out)
+
+            self.tee.link(video_out)
             self.play()
             self.emit('update',
                 "Emitiendo Hacia: %s" % self.formato)
