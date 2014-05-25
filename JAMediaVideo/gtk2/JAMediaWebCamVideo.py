@@ -20,6 +20,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import time
+import datetime
 import gobject
 import gst
 import gtk
@@ -33,6 +35,7 @@ from Gstreamer_Bins import Balance_bin
 from Gstreamer_Bins import Out_lan_smokeenc_bin
 from Gstreamer_Bins import In_lan_udpsrc_bin
 #from Gstreamer_Bins import Out_lan_speexenc_bin
+from Gstreamer_Bins import Foto_bin
 
 gobject.threads_init()
 gtk.gdk.threads_init()
@@ -41,9 +44,11 @@ gtk.gdk.threads_init()
 class JAMediaWebCamVideo(gobject.GObject):
 
     __gsignals__ = {
-    "estado": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "update": (gobject.SIGNAL_RUN_FIRST,
+    "stop-rafaga": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, []),
+    #"estado": (gobject.SIGNAL_RUN_FIRST,
+    #    gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "update": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, ventana_id, device="/dev/video0",
@@ -57,6 +62,7 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.ventana_id = ventana_id
         self.formato = formato
         self.path_archivo = ""
+        self.foto_contador = 0
 
         self.pipeline = gst.Pipeline()
 
@@ -111,6 +117,11 @@ class JAMediaWebCamVideo(gobject.GObject):
         queue.link(ffmpegcolorspace)
         ffmpegcolorspace.link(xvimagesink)
 
+        fotobin = Foto_bin()
+        self.pipeline.add(fotobin)
+
+        self.tee.link(fotobin)
+
         # FIXME: Por algún motivo no linkea
         #xvimage = Xvimage_bin()
         #self.tee.link(xvimage)
@@ -146,18 +157,18 @@ class JAMediaWebCamVideo(gobject.GObject):
 
             if self.estado != new:
                 self.estado = new
+                #FIXME: No lo estoy utilizando
+                #if new == gst.STATE_PLAYING:
+                #    self.emit("estado", "playing")
 
-                if new == gst.STATE_PLAYING:
-                    self.emit("estado", "playing")
+                #elif new == gst.STATE_PAUSED:
+                #    self.emit("estado", "paused")
 
-                elif new == gst.STATE_PAUSED:
-                    self.emit("estado", "paused")
+                #elif new == gst.STATE_NULL:
+                #    self.emit("estado", "None")
 
-                elif new == gst.STATE_NULL:
-                    self.emit("estado", "None")
-
-                else:
-                    self.emit("estado", "paused")
+                #else:
+                #    self.emit("estado", "paused")
 
         return gst.BUS_PASS
 
@@ -285,3 +296,31 @@ class JAMediaWebCamVideo(gobject.GObject):
             self.play()
             self.emit('update',
                 "Emitiendo Hacia: %s" % self.formato)
+
+    def fotografiar(self, dir_path, rafaga):
+
+        gdkpixbufsink = self.pipeline.get_by_name("gdkpixbufsink")
+
+        pixbuf = gdkpixbufsink.get_property('last-pixbuf')
+
+        if pixbuf and pixbuf != None:
+            fecha = datetime.date.today()
+            hora = time.strftime("%H-%M-%S")
+            archivo = os.path.join(
+                dir_path, "JV_%s-%s-%s.png" % (
+                fecha, hora, str(self.foto_contador)))
+
+            pixbuf.save(archivo, "png", options={})
+            self.foto_contador += 1
+
+            self.emit('update', "%s" % str(
+                os.path.basename(archivo)))
+
+        if rafaga < 1.0:
+            self.emit("stop-rafaga")
+
+        else:
+            gobject.timeout_add(int(rafaga * 1000),
+                self.fotografiar, dir_path, rafaga)
+
+        return False

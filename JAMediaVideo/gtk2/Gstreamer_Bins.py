@@ -59,6 +59,37 @@ gobject.threads_init()
 # http://wiki.oz9aec.net/index.php/Gstreamer_cheat_sheet
 
 
+class Foto_bin(gst.Bin):
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('Foto_bin')
+
+        queue = gst.element_factory_make("queue", "queue")
+        queue.set_property("leaky", 1)
+        queue.set_property("max-size-buffers", 1)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            "ffmpegcolorspace", "ffmpegcolorspace")
+
+        gdkpixbufsink = gst.element_factory_make(
+            "gdkpixbufsink", "gdkpixbufsink")
+
+        gdkpixbufsink.set_property("post-messages", False)
+
+        self.add(queue)
+        self.add(ffmpegcolorspace)
+        self.add(gdkpixbufsink)
+
+        queue.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(gdkpixbufsink)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+
+
 class Theora_bin(gst.Bin):
     """
     Comprime video utilizando theoraenc.

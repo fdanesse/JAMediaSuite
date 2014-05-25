@@ -160,12 +160,12 @@ class Toolbar(gtk.EventBox):
 
         elif accion == "Stop":
             self.emit("accion", "foto", accion)
-            self.toolbar_fotografia.set_estado("Stop")
+            self.toolbar_fotografia.set_estado(self.__set_foto_accion, "Stop")
             self.emit("config-show", "foto")
 
         elif accion == "Fotografiar":
             self.emit("accion", "foto", accion)
-            self.toolbar_fotografia.set_estado("Playing")
+            self.toolbar_fotografia.set_estado(self.__set_foto_accion, "Playing")
             self.emit("config-show", "")
 
         elif accion == "Izquierda" or accion == "Derecha":
@@ -236,7 +236,7 @@ class Toolbar(gtk.EventBox):
 
         elif modo == "Fotografiar":
             self.toolbar_fotografia.show()
-            self.toolbar_fotografia.set_estado("Stop")
+            self.toolbar_fotografia.set_estado(self.switch, "Stop")
             self.emit("config-show", "foto")
             self.emit("nueva_camara", "foto")
 
@@ -679,8 +679,8 @@ class ToolbarFotografia(gtk.EventBox):
         self.add(toolbar)
         self.show_all()
 
-    def set_estado(self, estado):
-
+    def set_estado(self, func, estado):
+        print "Estado", func, estado
         if not estado:
             map(activar, self.widget_stop)
             map(activar, self.widget_playing)

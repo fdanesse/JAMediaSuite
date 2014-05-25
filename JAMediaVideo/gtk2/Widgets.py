@@ -604,4 +604,4 @@ class Rafagas_Config(gtk.EventBox):
             return float(self.label.get_text())
 
         else:
-            return 0
+            return 0.0

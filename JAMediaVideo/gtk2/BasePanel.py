@@ -42,6 +42,7 @@ from JAMediaWebCamMenu import JAMediaWebCamMenu
 from JAMediaWebCamVideo import JAMediaWebCamVideo
 
 from Globales import get_video_directory
+from Globales import get_imagenes_directory
 from Globales import get_ip
 
 gobject.threads_init()
@@ -306,12 +307,12 @@ class BasePanel(gtk.HPaned):
             toolbar.toolbar_video.boton_filmar.set_sensitive(True)
             toolbar.toolbar_fotografia.boton_fotografiar.set_sensitive(True)
 
-
         self.control = False
 
     def __camara_foto_run(self):
-
-        print "BasePanel: Menu de Fotografia ==> construir camara de grabacion de imagenes tomando en cuenta origen y formato segun widget de configuraciones y (tomar en cuenta configuracion de rafagas"
+        """
+        Cámara básica de video.
+        """
 
         self.control = True
 
@@ -328,15 +329,32 @@ class BasePanel(gtk.HPaned):
         self.efectos_en_pipe.clear()
 
         device = self.camara_setting.device
+        salida = self.video_out_setting.formato
 
         xid = self.pantalla.get_property('window').xid
-        #self.jamediawebcam = JAMediaWebCamVideo(
-        #    xid, device=device, formato=salida,
-        #    efectos=[])
+        self.jamediawebcam = JAMediaWebCamVideo(
+            xid, device=device, formato=salida,
+            efectos=[])
 
-        #gobject.idle_add(self.jamediawebcam.play)
+        gobject.idle_add(self.jamediawebcam.play)
 
         self.control = False
+
+    def __recibe_stop_rafaga(self, widget):
+        """
+        Cuando la camara dejará de fotografiar.
+        """
+
+        self.info_label.set_text("")
+        self.info_label.hide()
+
+        gobject.timeout_add(500, self.__resensitive_foto)
+
+    def __resensitive_foto(self):
+
+        toolbar = self.get_toplevel().toolbar
+        toolbar.toolbar_fotografia.set_estado(
+            self.__recibe_stop_rafaga, "Stop")
 
     def __update_balance_toolbars(self, config):
         """
@@ -400,6 +418,11 @@ class BasePanel(gtk.HPaned):
         self.jamediawebcam = JAMediaWebCamVideo(
             xid, device=device, formato=salida,
             efectos=efectos)
+
+        self.jamediawebcam.connect("update",
+            self.__update_record)
+        self.jamediawebcam.connect("stop-rafaga",
+            self.__recibe_stop_rafaga)
 
         self.jamediawebcam.play()
         self.__re_config(rot, config, efectos)
@@ -474,26 +497,34 @@ class BasePanel(gtk.HPaned):
                 self.info_label.hide()
                 gobject.timeout_add(1000, self.__re_sensitive)
 
+            elif modo == "foto":
+                self.get_toplevel().toolbar.set_sensitive(False)
+                self.__re_init_video_web_cam()
+                self.info_label.set_text("")
+                self.info_label.hide()
+                gobject.timeout_add(1000, self.__re_sensitive)
+
             else:
-                print "BasePanel ==>", accion, "Detener Grabacion y hacer replay actualizar info_label"
+                print "BasePanel ==>", accion, modo, "Detener Grabacion y hacer replay actualizar info_label"
 
         elif accion == "Filmar" and modo == "video":
-            # FIXME: Verificar salida de video: si es la red, y los widgets contienen ip invalida
-            # actualizar con la ip donde se volcará o cambiar la salida a ogv
             self.get_toplevel().toolbar.set_sensitive(False)
             hora = time.strftime("%H-%M-%S")
             fecha = str(datetime.date.today())
             archivo = "JV_%s_%s" % (fecha, hora)
             archivo = os.path.join(get_video_directory(), archivo)
-            self.jamediawebcam.connect("update", self.__update_record)
             self.jamediawebcam.filmar(archivo)
             gobject.timeout_add(1000, self.__re_sensitive)
 
         elif accion == "Fotografiar":
-            print "BasePanel ==>", accion, "Comenzar a Fotografiar, tomando en cuenta las rafagas" #self.rafagas_setting.get_rafaga
+            self.get_toplevel().toolbar.set_sensitive(False)
+            toolbar = self.get_toplevel().toolbar
+            rafaga = self.rafagas_setting.get_rafaga()
+            self.jamediawebcam.fotografiar(get_imagenes_directory(), rafaga)
+            gobject.timeout_add(500, self.__re_sensitive)
 
         else:
-            print "BasePanel ==>", accion, "falta definir"
+            print "BasePanel ==>", "falta definir", accion
 
     def config_show(self, tipo):
         """
@@ -548,8 +579,6 @@ class BasePanel(gtk.HPaned):
             self.camara_setting.label_ip.set_text(ip)
 
         elif tipo == "foto":
-            # ráfagas
-            # formato de salida de imágenes
             map(mostrar, foto_widgets)
             ip = get_ip()[0]
             self.camara_setting.label_ip.set_text(ip)
