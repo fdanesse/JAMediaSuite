@@ -38,8 +38,8 @@ from ToolbarConfig import ToolbarConfig
 from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
 from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
 
-from JAMediaWebCamMenu import JAMediaWebCamMenu
-from JAMediaWebCamVideo import JAMediaWebCamVideo
+from GstreamerBins.JAMediaWebCamMenu import JAMediaWebCamMenu
+from GstreamerBins.JAMediaWebCamVideo import JAMediaWebCamVideo
 
 from Globales import get_video_directory
 from Globales import get_imagenes_directory
@@ -195,26 +195,24 @@ class BasePanel(gtk.HPaned):
             ww, hh = (screen.get_width(), screen.get_height())
 
             ventana.toolbar_salir.hide()
+            color = get_colors("toolbars")
 
             if ww == w and hh == h:
                 ventana.set_border_width(4)
                 color = get_colors("toolbars")
-                ventana.modify_bg(0, color)
-                ventana.toolbar.modify_bg(0, color)
-                ventana.toolbar.toolbar_principal.modify_bg(0, color)
-                ventana.toolbar.toolbar_video.modify_bg(0, color)
-                ventana.toolbar.toolbar_fotografia.modify_bg(0, color)
                 gobject.idle_add(ventana.unfullscreen)
 
             else:
                 ventana.set_border_width(0)
                 color = get_colors("drawingplayer")
-                ventana.modify_bg(0, color)
-                ventana.toolbar.modify_bg(0, color)
-                ventana.toolbar.toolbar_principal.modify_bg(0, color)
-                ventana.toolbar.toolbar_video.modify_bg(0, color)
-                ventana.toolbar.toolbar_fotografia.modify_bg(0, color)
                 gobject.idle_add(ventana.fullscreen)
+
+            ventana.modify_bg(0, color)
+            ventana.toolbar.modify_bg(0, color)
+            ventana.toolbar.toolbar_principal.modify_bg(0, color)
+            ventana.toolbar.toolbar_video.modify_bg(0, color)
+            ventana.toolbar.toolbar_fotografia.modify_bg(0, color)
+            ventana.toolbar.toolbar_jamedia.modify_bg(0, color)
 
             ventana.set_sensitive(True)
 
@@ -238,6 +236,28 @@ class BasePanel(gtk.HPaned):
 
         elif tipo == "gamma":
             self.jamediawebcam.set_balance(gamma=valor)
+
+    def __jamedia_run(self):
+        """
+        Cambia de modo cámara a modo reproductor.
+        """
+
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            #del(self.jamediawebcam)
+            self.jamediawebcam = False
+
+        if self.widget_efectos:
+            self.widget_efectos.clear()
+
+        self.info_label.set_text("")
+        self.info_label.hide()
+        self.efectos_en_pipe.clear()
+
+        xid = self.pantalla.get_property('window').xid
+        #self.jamediawebcam = JAMediaWebCamMenu(xid,
+        #    device=device)
+        print "Iniciar JAMedia"
 
     def __camara_menu_run(self):
         """
@@ -462,6 +482,7 @@ class BasePanel(gtk.HPaned):
         """
 
         self.get_toplevel().toolbar.set_sensitive(False)
+        #self.jamedia.stop()
 
         if tipo == "visor":
             self.__camara_menu_run()
@@ -471,6 +492,9 @@ class BasePanel(gtk.HPaned):
 
         elif tipo == "foto":
             self.__camara_foto_run()
+
+        elif tipo == "jamedia":
+            self.__jamedia_run()
 
         else:
             print "BasePanel Nueva camara:", tipo
@@ -484,7 +508,12 @@ class BasePanel(gtk.HPaned):
         """
 
         if accion == "Izquierda" or accion == "Derecha":
-            self.jamediawebcam.rotar(accion)
+            if self.jamediawebcam:
+                self.jamediawebcam.rotar(accion)
+
+            else:
+                #self.jamedia.rotar(accion)
+                print self.set_accion, "rotar en jamedia"
 
         elif accion == "Salir":
             pass
@@ -498,16 +527,16 @@ class BasePanel(gtk.HPaned):
                 gobject.timeout_add(1000, self.__re_sensitive)
 
             elif modo == "foto":
-                self.get_toplevel().toolbar.set_sensitive(False)
+                #self.get_toplevel().toolbar.set_sensitive(False)
                 self.__re_init_video_web_cam()
                 self.info_label.set_text("")
                 self.info_label.hide()
-                gobject.timeout_add(1000, self.__re_sensitive)
+                #gobject.timeout_add(1000, self.__re_sensitive)
 
             else:
-                print "BasePanel ==>", accion, modo, "Detener Grabacion y hacer replay actualizar info_label"
+                print self.set_accion, accion, modo
 
-        elif accion == "Filmar" and modo == "video":
+        elif accion == "Filmar":  # and modo == "video":
             self.get_toplevel().toolbar.set_sensitive(False)
             hora = time.strftime("%H-%M-%S")
             fecha = str(datetime.date.today())
@@ -524,7 +553,7 @@ class BasePanel(gtk.HPaned):
             gobject.timeout_add(500, self.__re_sensitive)
 
         else:
-            print "BasePanel ==>", "falta definir", accion
+            print self.set_accion, accion
 
     def config_show(self, tipo):
         """
@@ -565,6 +594,15 @@ class BasePanel(gtk.HPaned):
             self.balance_config_widget,
             self.widget_efectos]
 
+        #FIXME: Que muestre lista de reproducción, controles y barra de
+        #progreso en lugar de widgets de configuración.
+        jamedia_widgets = [
+            #self.camara_setting,
+            #self.video_out_setting,
+            #self.rafagas_setting,
+            self.balance_config_widget,
+            self.widget_efectos]
+
         #FIXME: Quizas sea mejor al final de la funcion
         if self.jamediawebcam:
             self.__update_balance_toolbars(
@@ -583,10 +621,12 @@ class BasePanel(gtk.HPaned):
             ip = get_ip()[0]
             self.camara_setting.label_ip.set_text(ip)
 
-        #elif "video" in datos:
+        elif tipo == "jamedia":
+            print "mostrar config y lista de reproduccion"
+            map(mostrar, jamedia_widgets)
 
-        #elif "audio" in datos:
-            # Configuración de audio
+        else:
+            print self.config_show, "Falta definir:", tipo
 
     def pack_efectos(self):
         """

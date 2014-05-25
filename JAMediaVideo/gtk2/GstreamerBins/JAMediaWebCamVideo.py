@@ -44,7 +44,7 @@ gtk.gdk.threads_init()
 class JAMediaWebCamVideo(gobject.GObject):
 
     __gsignals__ = {
-    "stop-rafaga": (gobject.SIGNAL_RUN_CLEANUP,
+    "stop-rafaga": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
     #"estado": (gobject.SIGNAL_RUN_FIRST,
     #    gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
@@ -294,8 +294,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
             self.tee.link(video_out)
             self.play()
-            self.emit('update',
-                "Emitiendo Hacia: %s" % self.formato)
+            self.emit('update', "Emitiendo Hacia: %s" % self.formato)
 
     def fotografiar(self, dir_path, rafaga):
 
@@ -317,6 +316,7 @@ class JAMediaWebCamVideo(gobject.GObject):
                 os.path.basename(archivo)))
 
         if rafaga < 1.0:
+            # FIXME: La primera vez que fotografía no envía la señal
             self.emit("stop-rafaga")
 
         else:

@@ -136,6 +136,11 @@ class Toolbar(gtk.EventBox):
         #    self.toolbar_audio, True, True, 0)
         #self.toolbars.append(self.toolbar_audio)
 
+        self.toolbar_jamedia = ToolbarJAMedia()
+        self.toolbars_container.pack_start(
+            self.toolbar_jamedia, True, True, 0)
+        self.toolbars.append(self.toolbar_jamedia)
+
         self.add(toolbar)
         self.show_all()
 
@@ -143,16 +148,29 @@ class Toolbar(gtk.EventBox):
         self.toolbar_video.connect("accion", self.__set_video_accion)
         #self.toolbar_fotografia.connect("salir", self.__get_menu, "menu")
         self.toolbar_fotografia.connect("accion", self.__set_foto_accion)
+        self.toolbar_jamedia.connect("accion", self.__set_jamedia_accion)
         #self.toolbar_fotografia.connect("rotar", self.__get_menu)
         #self.toolbar_audio.connect("salir", self.__get_menu, "menu")
         #self.toolbar_audio.connect("accion", self.__get_menu)
         #self.toolbar_audio.connect("rotar", self.__get_menu)
 
+    def __set_jamedia_accion(self, toolbar, accion):
+
+        if accion == "Salir":
+            self.emit("accion", "jamedia", accion)
+            self.switch("menu")
+
+        elif accion == "Configurar":
+            self.emit("config-show", "jamedia")
+
+        elif accion == "Izquierda" or accion == "Derecha":
+            self.emit("accion", "jamedia", accion)
+
     def __set_foto_accion(self, toolbar, accion):
 
         if accion == "Salir":
             self.emit("accion", "foto", accion)
-            self.toolbar_fotografia.set_estado(False)
+            self.toolbar_fotografia.set_estado(self.__set_foto_accion, False)
             self.switch("menu")
 
         elif accion == "Configurar":
@@ -210,6 +228,10 @@ class Toolbar(gtk.EventBox):
 
         self.switch(menu)
 
+    def __salir(self, widget):
+
+        self.emit('salir')
+
     def switch(self, modo):
         """
         Muestra la toolbar correspondiente a:
@@ -240,9 +262,13 @@ class Toolbar(gtk.EventBox):
             self.emit("config-show", "foto")
             self.emit("nueva_camara", "foto")
 
-    def __salir(self, widget):
+        elif modo == "Reproducir":
+            self.toolbar_jamedia.show()
+            self.emit("config-show", "jamedia")
+            self.emit("nueva_camara", "jamedia")
 
-        self.emit('salir')
+        else:
+            print "switch:", modo
 
     def permitir_filmar(self, valor):
 
@@ -408,7 +434,6 @@ class ToolbarPrincipal(gtk.EventBox):
             "Iconos", "iconplay.svg")
         boton = get_boton(
             archivo, flip=False, pixels=24)
-        boton.set_sensitive(False)
         boton.set_tooltip_text("Reproducir Audio y Video")
         boton.connect("clicked",
             self.__emit_senial, "Reproducir")
@@ -555,17 +580,13 @@ class ToolbarVideo(gtk.EventBox):
 
     def set_estado(self, estado):
 
-        if not estado:
+        if not estado or estado == "Stop":
             map(activar, self.widget_stop)
-            map(activar, self.widget_playing)
+            map(desactivar, self.widget_playing)
 
         elif estado == "Playing":
             map(activar, self.widget_playing)
             map(desactivar, self.widget_stop)
-
-        elif estado == "Stop":
-            map(activar, self.widget_stop)
-            map(desactivar, self.widget_playing)
 
     def permitir_filmar(self, valor):
 
@@ -599,14 +620,14 @@ class ToolbarFotografia(gtk.EventBox):
 
         toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
-
+        '''
         item = gtk.ToolItem()
         item.set_expand(False)
         self.label = gtk.Label("")
         self.label.show()
         item.add(self.label)
         toolbar.insert(item, -1)
-
+        '''
         archivo = os.path.join(BASE_PATH,
             "Iconos", "foto.svg")
         self.boton_fotografiar = get_boton(archivo, flip=False,
@@ -680,23 +701,18 @@ class ToolbarFotografia(gtk.EventBox):
         self.show_all()
 
     def set_estado(self, func, estado):
+
         print "Estado", func, estado
-        if not estado:
+
+        if not estado or estado == "Stop":
             map(activar, self.widget_stop)
-            map(activar, self.widget_playing)
+            map(desactivar, self.widget_playing)
 
         elif estado == "Playing":
             map(activar, self.widget_playing)
             map(desactivar, self.widget_stop)
 
-        elif estado == "Stop":
-            map(activar, self.widget_stop)
-            map(desactivar, self.widget_playing)
-
     def __emit_senial(self, widget, senial):
-        """
-        Emite filmar o configurar.
-        """
 
         self.emit('accion', senial)
 
@@ -857,3 +873,73 @@ class ToolbarGrabarAudio(gtk.EventBox):
 
         self.emit('salir')
 '''
+
+
+class ToolbarJAMedia(gtk.EventBox):
+
+    __gsignals__ = {
+    'accion': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
+
+    def __init__(self):
+
+        gtk.EventBox.__init__(self)
+
+        self.set_border_width(4)
+
+        toolbar = gtk.Toolbar()
+
+        self.modify_bg(0, get_colors("toolbars"))
+        toolbar.modify_bg(0, get_colors("toolbars"))
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=0, expand=True), -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "configurar.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Configurar")
+        boton.connect("clicked",
+            self.__emit_senial, "Configurar")
+        toolbar.insert(boton, -1)
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "rotar.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Izquierda")
+        boton.connect("clicked",
+            self.__emit_senial, 'Izquierda')
+        toolbar.insert(boton, -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "rotar.svg")
+        boton = get_boton(archivo, flip=True,
+            pixels=24)
+        boton.set_tooltip_text("Derecha")
+        boton.connect("clicked",
+            self.__emit_senial, 'Derecha')
+        toolbar.insert(boton, -1)
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=0, expand=True), -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "lista.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Volver al Menú")
+        boton.connect("clicked",
+            self.__emit_senial, "Salir")
+        toolbar.insert(boton, -1)
+
+        self.add(toolbar)
+        self.show_all()
+
+    def __emit_senial(self, widget, senial):
+
+        self.emit('accion', senial)
