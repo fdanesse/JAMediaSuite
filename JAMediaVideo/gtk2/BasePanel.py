@@ -27,6 +27,9 @@ import datetime
 
 from Globales import get_colors
 
+from JAMedia.PlayerList import Lista
+from JAMedia.PlayerControls import PlayerControl
+
 from Widgets import Visor
 from Widgets import CamaraConfig
 from Widgets import Video_out_Config
@@ -123,6 +126,8 @@ class BasePanel(gtk.HPaned):
         self.video_out_setting = Video_out_Config()
         self.rafagas_setting = Rafagas_Config()
         self.balance_config_widget = ToolbarConfig()
+        self.playerlist = Lista()
+        self.player_control = PlayerControl()
         self.widget_efectos = False  # WidgetsGstreamerEfectos()
 
         self.vbox_config.pack_start(
@@ -135,6 +140,20 @@ class BasePanel(gtk.HPaned):
             self.balance_config_widget, False, False, 0)
         #self.derecha_vbox.pack_start(
         #    self.widget_efectos, True, True, 0)
+
+        self.scroll_list = gtk.ScrolledWindow()
+        self.scroll_list.set_policy(
+            gtk.POLICY_AUTOMATIC,
+            gtk.POLICY_AUTOMATIC)
+        self.scroll_list.add(self.playerlist)
+        self.vbox_config.pack_start(
+            self.scroll_list, True, True, 0)
+        self.scroll_list.set_size_request(150, -1)
+
+        event = gtk.EventBox()
+        event.modify_bg(0, get_colors("toolbars"))
+        event.add(self.player_control)
+        self.vbox_config.pack_end(event, False, True, 0)
 
         self.pack2(self.box_config,
             resize=False, shrink=False)
@@ -600,8 +619,10 @@ class BasePanel(gtk.HPaned):
             #self.camara_setting,
             #self.video_out_setting,
             #self.rafagas_setting,
-            self.balance_config_widget,
-            self.widget_efectos]
+            #self.balance_config_widget,
+            #self.widget_efectos,
+            self.scroll_list,
+            self.player_control]
 
         #FIXME: Quizas sea mejor al final de la funcion
         if self.jamediawebcam:
@@ -610,6 +631,7 @@ class BasePanel(gtk.HPaned):
 
         map(ocultar, video_widgets)
         map(ocultar, foto_widgets)
+        map(ocultar, jamedia_widgets)
 
         if tipo == "camara":
             map(mostrar, video_widgets)
@@ -622,7 +644,6 @@ class BasePanel(gtk.HPaned):
             self.camara_setting.label_ip.set_text(ip)
 
         elif tipo == "jamedia":
-            print "mostrar config y lista de reproduccion"
             map(mostrar, jamedia_widgets)
 
         else:
