@@ -29,6 +29,7 @@ from Globales import get_colors
 
 from JAMedia.PlayerList import PlayerList
 from JAMedia.PlayerControls import PlayerControl
+from JAMedia.ProgressPlayer import ProgressPlayer
 from JAMedia.JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 
 from Widgets import Visor
@@ -87,10 +88,12 @@ class BasePanel(gtk.HPaned):
 
         self.control = True
         self.jamediawebcam = False
+        self.player = False
 
         self.pantalla = Visor()
         self.info_label = Info_Label()
         self.efectos_en_pipe = Efectos_en_Pipe()
+        self.progressplayer = ProgressPlayer()
 
         scroll = gtk.ScrolledWindow()
         scroll.set_policy(
@@ -105,6 +108,7 @@ class BasePanel(gtk.HPaned):
         vbox.pack_start(self.info_label, False, False, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
         vbox.pack_start(scroll, False, False, 0)
+        vbox.pack_start(self.progressplayer, False, False, 0)
         self.pack1(vbox, resize=True, shrink=True)
 
         # Area Derecha del Panel
