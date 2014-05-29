@@ -118,7 +118,8 @@ class JAMediaReproductor(gobject.GObject):
             self.__new_handle(False, [gst.MESSAGE_ERROR])
 
         elif message.type == gst.MESSAGE_LATENCY:
-        #    # http://cgit.collabora.com/git/farstream.git/tree/examples/gui/fs-gui.py
+        #    http://cgit.collabora.com/git/farstream.git/
+        #       tree/examples/gui/fs-gui.py
         #    print "\n gst.MESSAGE_LATENCY"
             self.player.recalculate_latency()
 
@@ -312,7 +313,8 @@ class JAMediaReproductor(gobject.GObject):
 
         # http://pygstdocs.berlios.de/pygst-reference/gst-constants.html
         #self.player.set_state(gst.STATE_PAUSED)
-        # http://nullege.com/codes/show/src@d@b@dbr-HEAD@trunk@src@reproductor.py/72/gst.SEEK_TYPE_SET
+        # http://nullege.com/codes/show/
+        #   src@d@b@dbr-HEAD@trunk@src@reproductor.py/72/gst.SEEK_TYPE_SET
         #self.player.seek(
         #    1.0,
         #    gst.FORMAT_TIME,
@@ -322,7 +324,9 @@ class JAMediaReproductor(gobject.GObject):
         #    gst.SEEK_TYPE_SET,
         #    self.duracion)
 
-        # http://nullege.com/codes/show/src@c@o@congabonga-HEAD@congaplayer@congalib@engines@gstplay.py/104/gst.SEEK_FLAG_ACCURATE
+        # http://nullege.com/codes/show/
+        #   src@c@o@congabonga-HEAD@congaplayer@congalib@engines@gstplay.py/
+        #   104/gst.SEEK_FLAG_ACCURATE
         event = gst.event_new_seek(
             1.0, gst.FORMAT_TIME,
             gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_ACCURATE,
@@ -337,8 +341,8 @@ class JAMediaReproductor(gobject.GObject):
         Cambia el volúmen de Reproducción. (Recibe float 0.0 - 10.0)
         """
 
-        self.player.set_property('volume', volumen/10)
+        self.player.set_property('volume', volumen / 10)
 
     def get_volumen(self):
 
-        return self.player.get_property('volume')*10
+        return self.player.get_property('volume') * 10

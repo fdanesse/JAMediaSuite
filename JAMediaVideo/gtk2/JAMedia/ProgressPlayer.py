@@ -31,11 +31,17 @@ BASE_PATH = os.path.dirname(__file__)
 
 class ProgressPlayer(gtk.EventBox):
 
+    __gsignals__ = {
+    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
+    "volumen": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
+
     def __init__(self):
 
         gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, get_colors("barradeprogreso"))
+        self.modify_bg(0, get_colors("toolbars"))
 
         self.barraprogreso = BarraProgreso()
         self.volumen = ControlVolumen()
@@ -48,20 +54,22 @@ class ProgressPlayer(gtk.EventBox):
 
         self.barraprogreso.connect(
             "user-set-value", self.__user_set_value)
+        self.volumen.connect(
+            "volumen", self.__set_volumen)
 
         self.show_all()
 
     def __user_set_value(self, widget=None, valor=None):
-        """
-        Recibe la posicion en la barra de progreso cuando
-        el usuario la desplaza y hace "seek" sobre el reproductor.
-        """
 
-        #self.__cancel_toolbars_flotantes()
+        self.emit("user-set-value", valor)
 
-        #if self.player:
-        #    self.player.set_position(valor)
-        pass
+    def __set_volumen(self, widget, valor):
+
+        self.emit('volumen', valor)
+
+    def set_progress(self, valor):
+
+        self.barraprogreso.set_progress(valor)
 
 
 class BarraProgreso(gtk.EventBox):
@@ -77,7 +85,7 @@ class BarraProgreso(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, get_colors("barradeprogreso"))
+        self.modify_bg(0, get_colors("toolbars"))
 
         self.escala = ProgressBar(
             gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
@@ -126,7 +134,7 @@ class ProgressBar(gtk.HScale):
 
         gtk.HScale.__init__(self)
 
-        self.modify_bg(0, get_colors("barradeprogreso"))
+        self.modify_bg(0, get_colors("toolbars"))
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -186,7 +194,7 @@ class ProgressBar(gtk.HScale):
         gc = gtk.gdk.Drawable.new_gc(self.window)
 
         # todo el widget
-        gc.set_rgb_fg_color(get_colors("barradeprogreso"))
+        gc.set_rgb_fg_color(get_colors("toolbars"))
         self.window.draw_rectangle(gc, True, x, y, w, h)
 
         # vacio

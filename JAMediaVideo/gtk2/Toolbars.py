@@ -896,10 +896,10 @@ class ToolbarJAMedia(gtk.EventBox):
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH,
-            "Iconos", "configurar.svg")
+            "Iconos", "lista.svg")
         boton = get_boton(archivo, flip=False,
             pixels=24)
-        boton.set_tooltip_text("Configurar")
+        boton.set_tooltip_text("Listar Archivos")
         boton.connect("clicked",
             self.__emit_senial, "Configurar")
         toolbar.insert(boton, -1)

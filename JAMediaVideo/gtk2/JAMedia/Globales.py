@@ -122,3 +122,97 @@ def get_boton(archivo, flip=False, rotacion=None,
         boton.TOOLTIP = tooltip_text
 
     return boton
+
+
+def make_base_directory():
+    """
+    Crea toda la estructura de Directorios de JAMedia.
+    """
+
+    import os
+    import commands
+
+    if not os.path.exists(os.path.join(
+        os.environ["HOME"], "JAMediaDatos")):
+        os.mkdir(os.path.join(
+            os.environ["HOME"], "JAMediaDatos"))
+        os.chmod(os.path.join(
+            os.environ["HOME"], "JAMediaDatos"), 0755)
+
+    # unificar directorios de JAMedia,
+    # JAMediaVideo y JAMediaImagenes
+    directorio_viejo = os.path.join(
+        os.environ["HOME"], ".JAMediaDatos")
+    directorio_nuevo = os.path.join(
+        os.environ["HOME"], "JAMediaDatos")
+
+    if os.path.exists(directorio_viejo):
+        for elemento in os.listdir(directorio_viejo):
+            commands.getoutput(
+                'mv %s %s' % (os.path.join(directorio_viejo,
+                elemento), directorio_nuevo))
+
+        commands.getoutput('rm -r %s' % (directorio_viejo))
+
+    # Directorios JAMedia
+    DIRECTORIO_MIS_ARCHIVOS = os.path.join(
+        os.environ["HOME"],
+        "JAMediaDatos", "MisArchivos")
+
+    DIRECTORIO_DATOS = os.path.join(
+        os.environ["HOME"],
+        "JAMediaDatos", "Datos")
+
+    if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
+        os.mkdir(DIRECTORIO_MIS_ARCHIVOS)
+        os.chmod(DIRECTORIO_MIS_ARCHIVOS, 0755)
+
+    if not os.path.exists(DIRECTORIO_DATOS):
+        os.mkdir(DIRECTORIO_DATOS)
+        os.chmod(DIRECTORIO_DATOS, 0755)
+
+    # Directorio JAMediaTube
+    DIRECTORIO_YOUTUBE = os.path.join(
+        os.environ["HOME"],
+        "JAMediaDatos", "YoutubeVideos")
+
+    if not os.path.exists(DIRECTORIO_YOUTUBE):
+        os.mkdir(DIRECTORIO_YOUTUBE)
+        os.chmod(DIRECTORIO_YOUTUBE, 0755)
+
+    # Directorios JAMediaVideo
+    AUDIO_JAMEDIA_VIDEO = os.path.join(
+        os.environ["HOME"],
+        "JAMediaDatos", "Audio")
+
+    if not os.path.exists(AUDIO_JAMEDIA_VIDEO):
+        os.mkdir(AUDIO_JAMEDIA_VIDEO)
+        os.chmod(AUDIO_JAMEDIA_VIDEO, 0755)
+
+    VIDEO_JAMEDIA_VIDEO = os.path.join(
+        os.environ["HOME"],
+        "JAMediaDatos", "Videos")
+
+    if not os.path.exists(VIDEO_JAMEDIA_VIDEO):
+        os.mkdir(VIDEO_JAMEDIA_VIDEO)
+        os.chmod(VIDEO_JAMEDIA_VIDEO, 0755)
+
+    IMAGENES_JAMEDIA_VIDEO = os.path.join(
+        os.environ["HOME"],
+        "JAMediaDatos", "Fotos")
+
+    if not os.path.exists(IMAGENES_JAMEDIA_VIDEO):
+        os.mkdir(IMAGENES_JAMEDIA_VIDEO)
+        os.chmod(IMAGENES_JAMEDIA_VIDEO, 0755)
+
+
+def get_JAMedia_Directory():
+
+    import os
+
+    path = os.path.join(os.environ["HOME"], "JAMediaDatos")
+
+    if not os.path.exists(path):
+        make_base_directory()
+
+    return path

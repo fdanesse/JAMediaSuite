@@ -172,8 +172,31 @@ class BasePanel(gtk.HPaned):
             "activar", self.__accion_player)
         self.playerlist.connect(
             "nueva-seleccion", self.__play_item)
+        self.progressplayer.connect(
+            "user-set-value", self.__user_set_progress)
+        self.progressplayer.connect(
+            "volumen", self.__set_volumen)
 
         self.control = False
+
+    def __set_volumen(self, widget, valor):
+        """
+        Cuando el usuario cambia el volumen.
+        """
+
+        if self.player:
+            self.player.set_volumen(valor)
+
+    def __user_set_progress(self, widget=None, valor=None):
+        """
+        Recibe la posicion en la barra de progreso cuando
+        el usuario la desplaza y hace "seek" sobre el reproductor.
+        """
+
+        #self.__cancel_toolbars_flotantes()
+
+        if self.player:
+            self.player.set_position(valor)
 
     def __accion_player(self, widget, senial):
 
@@ -195,11 +218,12 @@ class BasePanel(gtk.HPaned):
 
     def __play_item(self, widget, path):
 
-        #volumen = 1.0
+        volumen = 1.0
         if self.player:
-        #    volumen = float("{:.1f}".format(self.volumen.get_value()*10))
+            volumen = float("{:.1f}".format(
+                self.progressplayer.volumen.get_value() * 10))
             self.player.stop()
-            #del(self.player)
+            del(self.player)
 
         xid = self.pantalla.get_property('window').xid
         self.player = JAMediaReproductor(xid)
@@ -216,8 +240,8 @@ class BasePanel(gtk.HPaned):
         if path:
             self.player.load(path)
 
-        #self.player.set_volumen(volumen)
-        #self.volumen.set_value(volumen/10)
+        self.player.set_volumen(volumen)
+        self.progressplayer.volumen.set_value(volumen / 10)
 
     def __endfile(self, widget=None, senial=None):
         """
@@ -250,24 +274,7 @@ class BasePanel(gtk.HPaned):
         y actualiza la barra de progreso.
         """
 
-        #self.barradeprogreso.set_progress(float(valor))
-        pass
-
-    def __user_set_value(self, widget=None, valor=None):
-        """
-        Recibe la posicion en la barra de progreso cuando
-        el usuario la desplaza y hace "seek" sobre el reproductor.
-        """
-
-        #self.__cancel_toolbars_flotantes()
-
-        #if self.player:
-        #    self.player.set_position(valor)
-        pass
-
-
-
-
+        self.progressplayer.set_progress(float(valor))
 
     def __set_efecto(self, widget, efecto, propiedad=None, valor=None):
         """
@@ -597,7 +604,12 @@ class BasePanel(gtk.HPaned):
         """
 
         self.get_toplevel().toolbar.set_sensitive(False)
-        print "self.jamedia.stop()", "limpiar lista de Reproducción"
+
+        if self.player:
+            self.player.stop()
+
+        self.playerlist.limpiar()
+        self.progressplayer.hide()
 
         if tipo == "visor":
             self.__camara_menu_run()
@@ -610,6 +622,7 @@ class BasePanel(gtk.HPaned):
 
         elif tipo == "jamedia":
             self.__jamedia_run()
+            self.progressplayer.show()
 
         else:
             print "BasePanel Nueva camara:", tipo
@@ -627,8 +640,9 @@ class BasePanel(gtk.HPaned):
                 self.jamediawebcam.rotar(accion)
 
             else:
-                #self.jamedia.rotar(accion)
-                print self.set_accion, "rotar en jamedia"
+                if self.player:
+                    #self.__cancel_toolbars_flotantes()
+                    self.player.rotar(accion)
 
         elif accion == "Salir":
             pass
@@ -662,7 +676,6 @@ class BasePanel(gtk.HPaned):
 
         elif accion == "Fotografiar":
             self.get_toplevel().toolbar.set_sensitive(False)
-            toolbar = self.get_toplevel().toolbar
             rafaga = self.rafagas_setting.get_rafaga()
             self.jamediawebcam.fotografiar(get_imagenes_directory(), rafaga)
             gobject.timeout_add(500, self.__re_sensitive)

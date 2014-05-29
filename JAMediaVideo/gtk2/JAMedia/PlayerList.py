@@ -30,6 +30,7 @@ from Globales import describe_archivo
 from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
+from Globales import get_JAMedia_Directory
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -66,7 +67,8 @@ class PlayerList(gtk.ScrolledWindow):
         self.set_size_request(150, -1)
 
         self.toolbar.connect("load", self.__load_files)
-        self.lista.connect("nueva-seleccion", self.__re_emit_nueva_seleccion)
+        self.lista.connect("nueva-seleccion",
+            self.__re_emit_nueva_seleccion)
 
     def __re_emit_nueva_seleccion(self, widget, pista):
 
@@ -90,6 +92,10 @@ class PlayerList(gtk.ScrolledWindow):
     def seleccionar_siguiente(self):
 
         self.lista.seleccionar_siguiente()
+
+    def limpiar(self):
+
+        self.lista.limpiar()
 
 
 class ToolbarList(gtk.EventBox):
@@ -153,7 +159,7 @@ class ToolbarList(gtk.EventBox):
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
             mime=["audio/*", "video/*"],
             title="Abrir Archivos",
-            path=os.environ["HOME"])
+            path=get_JAMedia_Directory())
 
         selector.connect(
             'archivos-seleccionados',
@@ -420,7 +426,7 @@ class My_FileChooser(gtk.FileChooserDialog):
         #if not path:
         #    path = "file:///media"
 
-        #self.set_current_folder_uri(path)
+        self.set_current_folder_uri("file://%s" % path)
         self.set_select_multiple(True)
 
         hbox = gtk.HBox()

@@ -87,7 +87,7 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
         pantalla.set_property(
             "force-aspect-ratio", True)
 
-        try: # FIXME: xo no posee esta propiedad
+        try:  # FIXME: xo no posee esta propiedad
             videorate.set_property('max-rate', 30)
 
         except:
