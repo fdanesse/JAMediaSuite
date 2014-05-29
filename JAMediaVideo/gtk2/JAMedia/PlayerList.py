@@ -25,8 +25,139 @@ import gtk
 from gtk import gdk
 import gobject
 
+from Globales import get_colors
+from Globales import get_separador
+from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
+
+
+class PlayerList(gtk.ScrolledWindow):
+
+    def __init__(self):
+
+        gtk.ScrolledWindow.__init__(self)
+
+        vbox = gtk.VBox()
+
+        self.toolbar = ToolbarList()
+        self.lista = Lista()
+
+        vbox.pack_start(self.toolbar, False, False, 0)
+        vbox.pack_start(self.lista, True, True, 0)
+
+        self.set_policy(
+            gtk.POLICY_AUTOMATIC,
+            gtk.POLICY_AUTOMATIC)
+        self.add_with_viewport(vbox)
+
+        self.get_child().modify_bg(
+            0, get_colors("window"))
+
+        self.show_all()
+
+        self.set_size_request(150, -1)
+
+        self.toolbar.connect("load", self.__load_files)
+
+    def __load_files(self, widget, items, tipo):
+
+        if tipo == "load":
+            self.lista.limpiar()
+
+        self.lista.agregar_items(items)
+
+
+class ToolbarList(gtk.EventBox):
+
+    __gsignals__ = {
+    "load": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
+        gobject.TYPE_STRING))}
+
+    def __init__(self):
+
+        gtk.EventBox.__init__(self)
+
+        toolbar = gtk.Toolbar()
+
+        self.modify_bg(0, get_colors("window"))
+        toolbar.modify_bg(0, get_colors("window"))
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "document-open.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Abrir Archivos")
+        boton.connect("clicked", self.__open_files, "load")
+        toolbar.insert(boton, -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "document-new.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Agregar Archivos")
+        boton.connect("clicked", self.__open_files, "add")
+        toolbar.insert(boton, -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "clear.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Limpiar Lista")
+        boton.connect("clicked", self.__clear_list)
+        toolbar.insert(boton, -1)
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=0, expand=True), -1)
+
+        self.add(toolbar)
+        self.show_all()
+
+    def __clear_list(self, widget):
+
+        self.emit("load", [], "load")
+
+    def __open_files(self, widget, tipo):
+
+        selector = My_FileChooser(
+            parent=self.get_toplevel(),
+            filter_type=[],
+            action=gtk.FILE_CHOOSER_ACTION_OPEN,
+            mime=["audio/*", "video/*"],
+            title="Abrir Archivos",
+            path=os.environ["HOME"])
+
+        selector.connect(
+            'archivos-seleccionados',
+            self.__cargar_directorio, tipo)
+
+        selector.run()
+
+        if selector:
+            selector.destroy()
+
+    def __cargar_directorio(self, widget, archivos, tipo):
+        """
+        Recibe una lista de archivos y setea la lista
+        de reproduccion con ellos.
+        """
+
+        if not archivos:
+            return
+
+        items = []
+        archivos.sort()
+
+        for archivo in archivos:
+            path = archivo
+            archivo = os.path.basename(path)
+            items.append([archivo, path])
+
+        self.emit("load", items, tipo)
 
 
 class Lista(gtk.TreeView):
@@ -238,3 +369,96 @@ class Lista(gtk.TreeView):
         if _iter:
             self.get_selection().select_iter(_iter)
             #path = model.get_path(iter)
+
+
+class My_FileChooser(gtk.FileChooserDialog):
+    """
+    Selector de Archivos para poder cargar archivos
+    desde cualquier dispositivo o directorio.
+    """
+
+    __gsignals__ = {
+    'archivos-seleccionados': (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
+
+    def __init__(self, parent=None, action=None,
+        filter_type=[], title=None, path=None, mime=[]):
+
+        gtk.FileChooserDialog.__init__(self,
+            title=title,
+            parent=parent,
+            action=action,
+            #flags=gtk.DIALOG_MODAL,
+            )
+
+        self.modify_bg(0, get_colors("window"))
+        self.set_resizable(True)
+        self.set_size_request(320, 240)
+
+        #if not path:
+        #    path = "file:///media"
+
+        #self.set_current_folder_uri(path)
+        self.set_select_multiple(True)
+
+        hbox = gtk.HBox()
+
+        boton_abrir_directorio = gtk.Button("Abrir")
+        boton_seleccionar_todo = gtk.Button("Seleccionar Todos")
+        boton_salir = gtk.Button("Salir")
+
+        boton_salir.connect("clicked", self.__salir)
+        boton_abrir_directorio.connect("clicked",
+            self.__file_activated)
+        boton_seleccionar_todo.connect("clicked",
+            self.__seleccionar_todos_los_archivos)
+
+        hbox.pack_end(boton_salir, True, True, 5)
+        hbox.pack_end(boton_seleccionar_todo, True, True, 5)
+        hbox.pack_end(boton_abrir_directorio, True, True, 5)
+
+        self.set_extra_widget(hbox)
+
+        hbox.show_all()
+
+        if filter_type:
+            filtro = gtk.FileFilter()
+            filtro.set_name("Filtro")
+
+            for fil in filter_type:
+                filtro.add_pattern(fil)
+
+            self.add_filter(filtro)
+
+        elif mime:
+            filtro = gtk.FileFilter()
+            filtro.set_name("Filtro")
+
+            for mi in mime:
+                filtro.add_mime_type(mi)
+
+            self.add_filter(filtro)
+
+        self.add_shortcut_folder_uri("file:///media/")
+        self.connect("file-activated", self.__file_activated)
+        self.connect("realize", self.__resize)
+
+    def __resize(self, widget):
+
+        self.resize(437, 328)
+
+    def __file_activated(self, widget):
+        """
+        Cuando se hace doble click sobre un archivo.
+        """
+
+        self.emit('archivos-seleccionados', self.get_filenames())
+        self.__salir(None)
+
+    def __seleccionar_todos_los_archivos(self, widget):
+
+        self.select_all()
+
+    def __salir(self, widget):
+
+        self.destroy()

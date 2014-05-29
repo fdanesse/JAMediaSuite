@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="Fairytale_button_add-gold.svg"
+   inkscape:version="0.48.4 r9939"
+   id="svg2"
+   version="1.1"
+   width="64"
+   height="64">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     id="namedview28"
+     showgrid="false"
+     inkscape:zoom="2.6074563"
+     inkscape:cx="-87.778622"
+     inkscape:cy="31.653093"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3773">
+      <stop
+         style="stop-color:#fcf930;stop-opacity:1"
+         offset="0"
+         id="stop3775" />
+      <stop
+         style="stop-color:#ae7800;stop-opacity:1"
+         offset="1"
+         id="stop3777" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3773"
+       id="linearGradient3779"
+       x1="144.58534"
+       y1="68.301094"
+       x2="232.79391"
+       y2="68.301094"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3773"
+       id="linearGradient3783"
+       gradientUnits="userSpaceOnUse"
+       x1="144.58534"
+       y1="68.301094"
+       x2="232.79391"
+       y2="68.301094" />
+  </defs>
+  <metadata
+     id="metadata20">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path
+     transform="matrix(0,0.70421327,-0.70421327,0,80.098537,-100.87775)"
+     d="m 232.79392,68.301094 a 44.104286,44.104286 0 1 1 -88.20857,0 44.104286,44.104286 0 1 1 88.20857,0 z"
+     sodipodi:ry="44.104286"
+     sodipodi:rx="44.104286"
+     sodipodi:cy="68.301094"
+     sodipodi:cx="188.68964"
+     id="path3781"
+     style="fill:url(#linearGradient3783);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2.67298698;stroke-miterlimit:4;stroke-dasharray:none"
+     sodipodi:type="arc" />
+  <path
+     sodipodi:type="arc"
+     style="fill:url(#linearGradient3779);fill-opacity:1;fill-rule:evenodd;stroke:none"
+     id="path3771"
+     sodipodi:cx="188.68964"
+     sodipodi:cy="68.301094"
+     sodipodi:rx="44.104286"
+     sodipodi:ry="44.104286"
+     d="m 232.79392,68.301094 a 44.104286,44.104286 0 1 1 -88.20857,0 44.104286,44.104286 0 1 1 88.20857,0 z"
+     transform="matrix(0,-0.56683833,0.56683833,0,-6.7156783,138.95652)" />
+  <path
+     d="m 50,26.000001 -12,0 0,-12 -12,0 0,12 -12,0 0,12 12,0 0,11.999997 12,0 0,-11.999997 12,0 0,-12 z"
+     stroke-miterlimit="1"
+     id="path26"
+     style="fill:#ffffff;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-miterlimit:1;stroke-dasharray:none"
+     inkscape:connector-curvature="0" />
+</svg>

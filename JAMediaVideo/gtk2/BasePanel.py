@@ -27,7 +27,7 @@ import datetime
 
 from Globales import get_colors
 
-from JAMedia.PlayerList import Lista
+from JAMedia.PlayerList import PlayerList
 from JAMedia.PlayerControls import PlayerControl
 
 from Widgets import Visor
@@ -126,7 +126,7 @@ class BasePanel(gtk.HPaned):
         self.video_out_setting = Video_out_Config()
         self.rafagas_setting = Rafagas_Config()
         self.balance_config_widget = ToolbarConfig()
-        self.playerlist = Lista()
+        self.playerlist = PlayerList()
         self.player_control = PlayerControl()
         self.widget_efectos = False  # WidgetsGstreamerEfectos()
 
@@ -141,14 +141,8 @@ class BasePanel(gtk.HPaned):
         #self.derecha_vbox.pack_start(
         #    self.widget_efectos, True, True, 0)
 
-        self.scroll_list = gtk.ScrolledWindow()
-        self.scroll_list.set_policy(
-            gtk.POLICY_AUTOMATIC,
-            gtk.POLICY_AUTOMATIC)
-        self.scroll_list.add(self.playerlist)
         self.vbox_config.pack_start(
-            self.scroll_list, True, True, 0)
-        self.scroll_list.set_size_request(150, -1)
+            self.playerlist, True, True, 0)
 
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("toolbars"))
@@ -276,7 +270,7 @@ class BasePanel(gtk.HPaned):
         xid = self.pantalla.get_property('window').xid
         #self.jamediawebcam = JAMediaWebCamMenu(xid,
         #    device=device)
-        print "Iniciar JAMedia"
+        print "Cargar Lista de Reproducción e Iniciar JAMedia"
 
     def __camara_menu_run(self):
         """
@@ -501,7 +495,7 @@ class BasePanel(gtk.HPaned):
         """
 
         self.get_toplevel().toolbar.set_sensitive(False)
-        #self.jamedia.stop()
+        print "self.jamedia.stop()", "limpiar lista de Reproducción"
 
         if tipo == "visor":
             self.__camara_menu_run()
@@ -579,16 +573,6 @@ class BasePanel(gtk.HPaned):
         Muestra u oculta los widgets de configuración.
         """
 
-        # si modo video:
-        #   camara, formato de salida,
-        #   balance, efectos de video y efectos de audio
-        # si modo fotografía:
-        #   camarara, formato de salida,
-        #   balance y efectos de video.
-        # si modo audio: formato de salida, efectos de audio.
-
-        #print "BasePanel ==> config_show", tipo
-
         if tipo:
             if self.box_config.get_visible():
                 self.box_config.hide()
@@ -613,15 +597,13 @@ class BasePanel(gtk.HPaned):
             self.balance_config_widget,
             self.widget_efectos]
 
-        #FIXME: Que muestre lista de reproducción, controles y barra de
-        #progreso en lugar de widgets de configuración.
         jamedia_widgets = [
             #self.camara_setting,
             #self.video_out_setting,
             #self.rafagas_setting,
             #self.balance_config_widget,
             #self.widget_efectos,
-            self.scroll_list,
+            self.playerlist,
             self.player_control]
 
         #FIXME: Quizas sea mejor al final de la funcion
