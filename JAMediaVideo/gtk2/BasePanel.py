@@ -29,6 +29,7 @@ from Globales import get_colors
 
 from JAMedia.PlayerList import PlayerList
 from JAMedia.PlayerControls import PlayerControl
+from JAMedia.JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 
 from Widgets import Visor
 from Widgets import CamaraConfig
@@ -163,7 +164,106 @@ class BasePanel(gtk.HPaned):
         self.video_out_setting.connect(
             "set_video_out", self.__set_video_out)
 
+        self.player_control.connect(
+            "activar", self.__accion_player)
+        self.playerlist.connect(
+            "nueva-seleccion", self.__play_item)
+
         self.control = False
+
+    def __accion_player(self, widget, senial):
+
+        #self.__cancel_toolbars_flotantes()
+
+        if senial == "atras":
+            self.playerlist.seleccionar_anterior()
+
+        elif senial == "siguiente":
+            self.playerlist.seleccionar_siguiente()
+
+        elif senial == "stop":
+            if self.player:
+                self.player.stop()
+
+        elif senial == "pausa-play":
+            if self.player:
+                self.player.pause_play()
+
+    def __play_item(self, widget, path):
+
+        #volumen = 1.0
+        if self.player:
+        #    volumen = float("{:.1f}".format(self.volumen.get_value()*10))
+            self.player.stop()
+            #del(self.player)
+
+        xid = self.pantalla.get_property('window').xid
+        self.player = JAMediaReproductor(xid)
+
+        self.player.connect(
+            "endfile", self.__endfile)
+        self.player.connect(
+            "estado", self.__cambioestadoreproductor)
+        self.player.connect(
+            "newposicion", self.__update_progress)
+        #self.player.connect(
+        #    "video", self.__set_video)
+
+        if path:
+            self.player.load(path)
+
+        #self.player.set_volumen(volumen)
+        #self.volumen.set_value(volumen/10)
+
+    def __endfile(self, widget=None, senial=None):
+        """
+        Recibe la señal de fin de archivo desde el reproductor
+        y llama a seleccionar_siguiente en la lista de reproduccion.
+        """
+
+        self.player_control.set_paused()
+        gobject.idle_add(
+            self.playerlist.seleccionar_siguiente)
+
+    def __cambioestadoreproductor(self, widget=None, valor=None):
+        """
+        Recibe los cambios de estado del reproductor (paused y playing)
+        y actualiza la imagen del boton play en la toolbar de reproduccion.
+        """
+
+        if "playing" in valor:
+            self.player_control.set_playing()
+
+        elif "paused" in valor or "None" in valor:
+            self.player_control.set_paused()
+
+        else:
+            print "Estado del Reproductor desconocido:", valor
+
+    def __update_progress(self, objetoemisor, valor):
+        """
+        Recibe el progreso de la reproduccion desde el reproductor
+        y actualiza la barra de progreso.
+        """
+
+        #self.barradeprogreso.set_progress(float(valor))
+        pass
+
+    def __user_set_value(self, widget=None, valor=None):
+        """
+        Recibe la posicion en la barra de progreso cuando
+        el usuario la desplaza y hace "seek" sobre el reproductor.
+        """
+
+        #self.__cancel_toolbars_flotantes()
+
+        #if self.player:
+        #    self.player.set_position(valor)
+        pass
+
+
+
+
 
     def __set_efecto(self, widget, efecto, propiedad=None, valor=None):
         """
@@ -268,9 +368,7 @@ class BasePanel(gtk.HPaned):
         self.efectos_en_pipe.clear()
 
         xid = self.pantalla.get_property('window').xid
-        #self.jamediawebcam = JAMediaWebCamMenu(xid,
-        #    device=device)
-        print "Cargar Lista de Reproducción e Iniciar JAMedia"
+        self.player = JAMediaReproductor(xid)
 
     def __camara_menu_run(self):
         """

@@ -25,6 +25,8 @@ import gtk
 from gtk import gdk
 import gobject
 
+from Globales import describe_uri
+from Globales import describe_archivo
 from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
@@ -34,10 +36,15 @@ BASE_PATH = os.path.dirname(__file__)
 
 class PlayerList(gtk.ScrolledWindow):
 
+    __gsignals__ = {
+    "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
+
     def __init__(self):
 
         gtk.ScrolledWindow.__init__(self)
 
+        #FIXME: Scroll debe contener solo la lista
         vbox = gtk.VBox()
 
         self.toolbar = ToolbarList()
@@ -59,13 +66,30 @@ class PlayerList(gtk.ScrolledWindow):
         self.set_size_request(150, -1)
 
         self.toolbar.connect("load", self.__load_files)
+        self.lista.connect("nueva-seleccion", self.__re_emit_nueva_seleccion)
+
+    def __re_emit_nueva_seleccion(self, widget, pista):
+
+        self.emit('nueva-seleccion', pista)
 
     def __load_files(self, widget, items, tipo):
 
         if tipo == "load":
             self.lista.limpiar()
 
-        self.lista.agregar_items(items)
+        if items:
+            self.lista.agregar_items(items)
+
+        else:
+            self.emit('nueva-seleccion', False)
+
+    def seleccionar_anterior(self):
+
+        self.lista.seleccionar_anterior()
+
+    def seleccionar_siguiente(self):
+
+        self.lista.seleccionar_siguiente()
 
 
 class ToolbarList(gtk.EventBox):
@@ -282,9 +306,6 @@ class Lista(gtk.TreeView):
 
         texto, path = elementos[0]
 
-        from Globales import describe_uri
-        from Globales import describe_archivo
-
         descripcion = describe_uri(path)
 
         icono = None
@@ -343,8 +364,9 @@ class Lista(gtk.TreeView):
             path = self.get_model().get_path(_iter)
             path = (path[0] - 1, )
 
-            self.get_selection().select_iter(
-                self.get_model().get_iter(path))
+            if path > -1:
+                self.get_selection().select_iter(
+                    self.get_model().get_iter(path))
 
         except:
             self.seleccionar_ultimo()
