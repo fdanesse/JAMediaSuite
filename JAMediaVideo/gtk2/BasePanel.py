@@ -40,7 +40,7 @@ from Widgets import Rafagas_Config
 from Widgets import Efectos_en_Pipe
 from Widgets import Info_Label
 
-from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
+from GstreamerWidgets.WidgetsGstreamerVideoEfectos import WidgetsGstreamerVideoEfectos
 from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
 
 from GstreamerBins.JAMediaWebCamMenu import JAMediaWebCamMenu
@@ -817,7 +817,7 @@ class BasePanel(gtk.HPaned):
         Empaqueta los widgets de efectos gstreamer.
         """
 
-        self.widget_efectos = WidgetsGstreamerEfectos()
+        self.widget_efectos = WidgetsGstreamerVideoEfectos()
 
         self.vbox_config.pack_start(
             self.widget_efectos, False, False, 0)

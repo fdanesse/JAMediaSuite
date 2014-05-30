@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   Widgets.py por:
+#   WidgetsGstreamerVideoEfectos.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   Uruguay
 #
@@ -19,6 +19,42 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+"""
+Descripción:
+
+Contiene Widgets para activar/desactivar y/o Configurar efectos de video
+    sobre un pipe de gstreamer:
+
+    Utilice:
+        cargar_efectos(elementos)
+
+            para agregar una lista de widget que represente a los efectos
+            correspondientes según "elementos".
+                Para hacer esto, Vea la función:
+                    VideoEfectos.get_jamedia_video_efectos()
+
+        clear
+
+            para desactivar todos los efectos.
+
+        reemit_config_efecto(efecto)
+
+            para foorzar la emisión de la señal 'configurar_efecto' la cual
+            envía la configuración del mismo según su widget de configuración.
+
+    Conéctese a la señal:
+        "click_efecto": gobject.TYPE_STRING, gobject.TYPE_BOOLEAN
+
+            para activar o desactivar un determinado efecto en el
+            pipe de gstreamer segúna acciones del usuario sobre el widget.
+
+        'configurar_efecto': gobject.TYPE_STRING, gobject.TYPE_STRING,
+            gobject.TYPE_PYOBJECT
+
+            para activar/desactivar y configurar un determinado efecto en el
+            pipe de gstreamer según acciones del usuario sobre el widget.
+"""
+
 import os
 import commands
 
@@ -29,39 +65,7 @@ import gobject
 BASE_PATH = os.path.dirname(__file__)
 
 
-def get_separador(draw=False, ancho=0, expand=False):
-    """
-    Devuelve un separador generico.
-    """
-
-    separador = gtk.SeparatorToolItem()
-    separador.props.draw = draw
-    separador.set_size_request(ancho, -1)
-    separador.set_expand(expand)
-
-    return separador
-
-
-def get_color(color):
-    """
-    Devuelve Colores predefinidos.
-    """
-
-    colors = {
-        "GRIS": gtk.gdk.Color(60156, 60156, 60156),
-        "AMARILLO": gtk.gdk.Color(65000, 65000, 40275),
-        "NARANJA": gtk.gdk.Color(65000, 26000, 0),
-        "BLANCO": gtk.gdk.Color(65535, 65535, 65535),
-        "NEGRO": gtk.gdk.Color(0, 0, 0),
-        "ROJO": gtk.gdk.Color(65000, 0, 0),
-        "VERDE": gtk.gdk.Color(0, 65000, 0),
-        "AZUL": gtk.gdk.Color(0, 0, 65000),
-        }
-
-    return colors.get(color, None)
-
-
-class WidgetsGstreamerEfectos(gtk.Frame):
+class WidgetsGstreamerVideoEfectos(gtk.Frame):
     """
     Frame exterior de Contenedor de widgets que
     representan efectos de video para gstreamer.

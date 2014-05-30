@@ -30,8 +30,36 @@ import gtk
 import gobject
 from gtk import gdk
 
-from Widgets import get_color
-from Widgets import get_separador
+def get_separador(draw=False, ancho=0, expand=False):
+    """
+    Devuelve un separador generico.
+    """
+
+    separador = gtk.SeparatorToolItem()
+    separador.props.draw = draw
+    separador.set_size_request(ancho, -1)
+    separador.set_expand(expand)
+
+    return separador
+
+
+def get_color(color):
+    """
+    Devuelve Colores predefinidos.
+    """
+
+    colors = {
+        "GRIS": gtk.gdk.Color(60156, 60156, 60156),
+        "AMARILLO": gtk.gdk.Color(65000, 65000, 40275),
+        "NARANJA": gtk.gdk.Color(65000, 26000, 0),
+        "BLANCO": gtk.gdk.Color(65535, 65535, 65535),
+        "NEGRO": gtk.gdk.Color(0, 0, 0),
+        "ROJO": gtk.gdk.Color(65000, 0, 0),
+        "VERDE": gtk.gdk.Color(0, 65000, 0),
+        "AZUL": gtk.gdk.Color(0, 0, 65000),
+        }
+
+    return colors.get(color, None)
 
 BASE_PATH = os.path.dirname(__file__)
 
