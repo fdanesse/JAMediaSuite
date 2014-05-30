@@ -97,6 +97,10 @@ class PlayerList(gtk.ScrolledWindow):
 
         self.lista.limpiar()
 
+    def set_mime_types(self, mime):
+
+        self.toolbar.mime = mime
+
 
 class ToolbarList(gtk.EventBox):
 
@@ -105,10 +109,11 @@ class ToolbarList(gtk.EventBox):
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING))}
 
-    def __init__(self):
+    def __init__(self, mime=["audio/*", "video/*", "image/*"]):
 
         gtk.EventBox.__init__(self)
 
+        self.mime = mime
         toolbar = gtk.Toolbar()
 
         self.modify_bg(0, get_colors("window"))
@@ -157,7 +162,7 @@ class ToolbarList(gtk.EventBox):
             parent=self.get_toplevel(),
             filter_type=[],
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            mime=["audio/*", "video/*"],
+            mime=self.mime,
             title="Abrir Archivos",
             path=get_JAMedia_Directory())
 
@@ -256,7 +261,7 @@ class Lista(gtk.TreeView):
     def __setear_columnas(self):
 
         self.append_column(self.__construir_columa_icono('', 0, True))
-        self.append_column(self.__construir_columa('Nombre', 1, True))
+        self.append_column(self.__construir_columa('Archivo', 1, True))
         self.append_column(self.__construir_columa('', 2, False))
 
     def __construir_columa(self, text, index, visible):

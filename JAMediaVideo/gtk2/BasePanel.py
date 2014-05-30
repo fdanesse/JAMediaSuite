@@ -28,6 +28,7 @@ import datetime
 from Globales import get_colors
 
 from JAMedia.PlayerList import PlayerList
+from JAMedia.ToolbarConfig import ToolbarConfig
 from JAMedia.PlayerControls import PlayerControl
 from JAMedia.ProgressPlayer import ProgressPlayer
 from JAMedia.JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
@@ -38,7 +39,6 @@ from Widgets import Video_out_Config
 from Widgets import Rafagas_Config
 from Widgets import Efectos_en_Pipe
 from Widgets import Info_Label
-from ToolbarConfig import ToolbarConfig
 
 from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
 from GstreamerWidgets.VideoEfectos import get_jamedia_video_efectos
@@ -181,7 +181,8 @@ class BasePanel(gtk.HPaned):
 
     def __set_volumen(self, widget, valor):
         """
-        Cuando el usuario cambia el volumen.
+        REPRODUCTOR:
+            Cuando el usuario cambia el volumen.
         """
 
         if self.player:
@@ -189,8 +190,9 @@ class BasePanel(gtk.HPaned):
 
     def __user_set_progress(self, widget=None, valor=None):
         """
-        Recibe la posicion en la barra de progreso cuando
-        el usuario la desplaza y hace "seek" sobre el reproductor.
+        REPRODUCTOR:
+            Recibe la posicion en la barra de progreso cuando
+            el usuario la desplaza y hace "seek" sobre el reproductor.
         """
 
         #self.__cancel_toolbars_flotantes()
@@ -199,7 +201,10 @@ class BasePanel(gtk.HPaned):
             self.player.set_position(valor)
 
     def __accion_player(self, widget, senial):
-
+        """
+        REPRODUCTOR:
+            Acciones sobre pistas en lista de reproducción.
+        """
         #self.__cancel_toolbars_flotantes()
 
         if senial == "atras":
@@ -217,36 +222,47 @@ class BasePanel(gtk.HPaned):
                 self.player.pause_play()
 
     def __play_item(self, widget, path):
+        """
+        REPRODUCTOR y VISOR de IMAGENES:
+        """
 
-        volumen = 1.0
         if self.player:
+            volumen = 1.0
+
             volumen = float("{:.1f}".format(
                 self.progressplayer.volumen.get_value() * 10))
             self.player.stop()
             del(self.player)
 
-        xid = self.pantalla.get_property('window').xid
-        self.player = JAMediaReproductor(xid)
+            xid = self.pantalla.get_property('window').xid
+            self.player = JAMediaReproductor(xid)
 
-        self.player.connect(
-            "endfile", self.__endfile)
-        self.player.connect(
-            "estado", self.__cambioestadoreproductor)
-        self.player.connect(
-            "newposicion", self.__update_progress)
-        #self.player.connect(
-        #    "video", self.__set_video)
+            self.player.connect(
+                "endfile", self.__endfile)
+            self.player.connect(
+                "estado", self.__cambioestadoreproductor)
+            self.player.connect(
+                "newposicion", self.__update_progress)
+            #self.player.connect(
+            #    "video", self.__set_video)
 
-        if path:
-            self.player.load(path)
+            if path:
+                self.player.load(path)
 
-        self.player.set_volumen(volumen)
-        self.progressplayer.volumen.set_value(volumen / 10)
+            self.player.set_volumen(volumen)
+            self.progressplayer.volumen.set_value(volumen / 10)
+
+        elif self.visor:
+            print self.__play_item, path
+
+        else:
+            print self.__play_item, path
 
     def __endfile(self, widget=None, senial=None):
         """
-        Recibe la señal de fin de archivo desde el reproductor
-        y llama a seleccionar_siguiente en la lista de reproduccion.
+        REPRODUCTOR:
+            Recibe la señal de fin de archivo desde el reproductor
+            y llama a seleccionar_siguiente en la lista de reproduccion.
         """
 
         self.player_control.set_paused()
@@ -255,8 +271,9 @@ class BasePanel(gtk.HPaned):
 
     def __cambioestadoreproductor(self, widget=None, valor=None):
         """
-        Recibe los cambios de estado del reproductor (paused y playing)
-        y actualiza la imagen del boton play en la toolbar de reproduccion.
+        REPRODUCTOR:
+            Recibe los cambios de estado del reproductor (paused y playing)
+            y actualiza la imagen del boton play en la toolbar de reproduccion.
         """
 
         if "playing" in valor:
@@ -270,8 +287,9 @@ class BasePanel(gtk.HPaned):
 
     def __update_progress(self, objetoemisor, valor):
         """
-        Recibe el progreso de la reproduccion desde el reproductor
-        y actualiza la barra de progreso.
+        REPRODUCTOR:
+            Recibe el progreso de la reproduccion desde el reproductor
+            y actualiza la barra de progreso.
         """
 
         self.progressplayer.set_progress(float(valor))
@@ -361,9 +379,32 @@ class BasePanel(gtk.HPaned):
         elif tipo == "gamma":
             self.jamediawebcam.set_balance(gamma=valor)
 
+    def __jamediaimagenes_run(self):
+        """
+        Cambia a modo visor de imágenes.
+        """
+
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            #del(self.jamediawebcam)
+            self.jamediawebcam = False
+
+        if self.widget_efectos:
+            self.widget_efectos.clear()
+
+        self.info_label.set_text("")
+        self.info_label.hide()
+        self.efectos_en_pipe.clear()
+
+        xid = self.pantalla.get_property('window').xid
+        #self.player = JAMediaReproductor(xid)
+
+        self.playerlist.set_mime_types(["image/*"])
+        #self.progressplayer.show()
+
     def __jamedia_run(self):
         """
-        Cambia de modo cámara a modo reproductor.
+        Cambia a modo reproductor.
         """
 
         if self.jamediawebcam:
@@ -381,9 +422,12 @@ class BasePanel(gtk.HPaned):
         xid = self.pantalla.get_property('window').xid
         self.player = JAMediaReproductor(xid)
 
+        self.playerlist.set_mime_types(["audio/*", "video/*"])
+        self.progressplayer.show()
+
     def __camara_menu_run(self):
         """
-        Cámara básica del menú.
+        Cambia a modo Cámara básica del menú.
         """
 
         self.control = True
@@ -392,6 +436,11 @@ class BasePanel(gtk.HPaned):
             self.jamediawebcam.stop()
             #del(self.jamediawebcam)
             self.jamediawebcam = False
+
+        if self.player:
+            self.player.stop()
+            #del(self.player)
+            self.player = False
 
         if self.widget_efectos:
             self.widget_efectos.clear()
@@ -412,7 +461,7 @@ class BasePanel(gtk.HPaned):
 
     def __camara_video_run(self):
         """
-        Cámara básica de video.
+        Cambia modo Cámara de video.
         """
 
         self.control = True
@@ -453,7 +502,7 @@ class BasePanel(gtk.HPaned):
 
     def __camara_foto_run(self):
         """
-        Cámara básica de video.
+        Cambia a modo Cámara de Fotografía.
         """
 
         self.control = True
@@ -551,12 +600,11 @@ class BasePanel(gtk.HPaned):
         if not salida:
             salida = self.video_out_setting.formato
 
-        xid = self.pantalla.get_property('window').xid
-
         self.jamediawebcam.stop()
         #del(self.jamediawebcam)
         self.jamediawebcam = False
 
+        xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamVideo(
             xid, device=device, formato=salida,
             efectos=efectos)
@@ -599,14 +647,15 @@ class BasePanel(gtk.HPaned):
 
     def nueva_camara(self, tipo):
         """
-        Cuando se cambia el modo de la aplicación
-        se reconstruye la camara base.
+        Cambia el modo de la aplicación.
         """
 
         self.get_toplevel().toolbar.set_sensitive(False)
 
         if self.player:
             self.player.stop()
+            del(self.player)
+            self.player = False
 
         self.playerlist.limpiar()
         self.progressplayer.hide()
@@ -622,7 +671,9 @@ class BasePanel(gtk.HPaned):
 
         elif tipo == "jamedia":
             self.__jamedia_run()
-            self.progressplayer.show()
+
+        elif tipo == "jamediaimagenes":
+            self.__jamediaimagenes_run()
 
         else:
             print "BasePanel Nueva camara:", tipo
@@ -639,10 +690,12 @@ class BasePanel(gtk.HPaned):
             if self.jamediawebcam:
                 self.jamediawebcam.rotar(accion)
 
+            elif self.player:
+                #self.__cancel_toolbars_flotantes()
+                self.player.rotar(accion)
+
             else:
-                if self.player:
-                    #self.__cancel_toolbars_flotantes()
-                    self.player.rotar(accion)
+                self.set_accion, modo, accion
 
         elif accion == "Salir":
             pass
@@ -721,14 +774,20 @@ class BasePanel(gtk.HPaned):
             self.playerlist,
             self.player_control]
 
-        #FIXME: Quizas sea mejor al final de la funcion
-        if self.jamediawebcam:
-            self.__update_balance_toolbars(
-                self.jamediawebcam.get_config())
+        jamediaimagenes_widgets = [
+            #self.camara_setting,
+            #self.video_out_setting,
+            #self.rafagas_setting,
+            #self.balance_config_widget,
+            #self.widget_efectos,
+            self.playerlist,
+            #self.player_control,
+            ]
 
         map(ocultar, video_widgets)
         map(ocultar, foto_widgets)
         map(ocultar, jamedia_widgets)
+        map(ocultar, jamediaimagenes_widgets)
 
         if tipo == "camara":
             map(mostrar, video_widgets)
@@ -743,8 +802,15 @@ class BasePanel(gtk.HPaned):
         elif tipo == "jamedia":
             map(mostrar, jamedia_widgets)
 
+        elif tipo == "jamediaimagenes":
+            map(mostrar, jamediaimagenes_widgets)
+
         else:
             print self.config_show, "Falta definir:", tipo
+
+        if self.jamediawebcam:
+            self.__update_balance_toolbars(
+                self.jamediawebcam.get_config())
 
     def pack_efectos(self):
         """

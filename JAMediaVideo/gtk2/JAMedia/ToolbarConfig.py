@@ -19,6 +19,29 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+"""
+Descripción:
+
+Contiene Widgets para controlar:
+    brillo
+    contraste
+    hue
+    saturación
+    gamma
+
+    Utilice:
+        set_balance(self, brillo=None, contraste=None,
+            saturacion=None, hue=None, gamma=None)
+
+            para setear los valores en los widgets.
+
+    Conéctese a la señal:
+        'valor': gobject.TYPE_FLOAT, gobject.TYPE_STRING
+
+            para obtener los valores del widgets de cada propiedad según
+            cambios del usuario sobre el widget.
+"""
+
 import os
 
 import gtk
