@@ -697,9 +697,6 @@ class BasePanel(gtk.HPaned):
             else:
                 self.set_accion, modo, accion
 
-        elif accion == "Salir":
-            pass
-
         elif accion == "Stop":
             if modo == "video":
                 self.get_toplevel().toolbar.set_sensitive(False)

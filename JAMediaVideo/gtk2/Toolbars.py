@@ -161,24 +161,22 @@ class Toolbar(gtk.EventBox):
 
         if accion == "Salir":
             self.emit("accion", "jamediaimagenes", accion)
-            self.switch("menu")
 
         elif accion == "Configurar":
             self.emit("config-show", "jamediaimagenes")
 
-        elif accion == "Izquierda" or accion == "Derecha":
+        else:
             self.emit("accion", "jamediaimagenes", accion)
 
     def __set_jamedia_accion(self, toolbar, accion):
 
         if accion == "Salir":
             self.emit("accion", "jamedia", accion)
-            self.switch("menu")
 
         elif accion == "Configurar":
             self.emit("config-show", "jamedia")
 
-        elif accion == "Izquierda" or accion == "Derecha":
+        else:
             self.emit("accion", "jamedia", accion)
 
     def __set_foto_accion(self, toolbar, accion):
@@ -186,7 +184,6 @@ class Toolbar(gtk.EventBox):
         if accion == "Salir":
             self.emit("accion", "foto", accion)
             self.toolbar_fotografia.set_estado(False)
-            self.switch("menu")
 
         elif accion == "Configurar":
             self.emit("config-show", "foto")
@@ -209,7 +206,6 @@ class Toolbar(gtk.EventBox):
         if accion == "Salir":
             self.emit("accion", "video", accion)
             self.toolbar_video.set_estado(False)
-            self.switch("menu")
 
         elif accion == "Configurar":
             self.emit("config-show", "camara")
@@ -989,6 +985,36 @@ class ToolbarJAMediaImagenes(gtk.EventBox):
         boton.set_tooltip_text("Listar Archivos")
         boton.connect("clicked",
             self.__emit_senial, "Configurar")
+        toolbar.insert(boton, -1)
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "zoom-fit-best.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Centrar")
+        boton.connect("clicked",
+            self.__emit_senial, 'Centrar')
+        toolbar.insert(boton, -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "zoom-in.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Acercar")
+        boton.connect("clicked",
+            self.__emit_senial, 'Acercar')
+        toolbar.insert(boton, -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "zoom-out.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Alejar")
+        boton.connect("clicked",
+            self.__emit_senial, 'Alejar')
         toolbar.insert(boton, -1)
 
         toolbar.insert(get_separador(draw=False,

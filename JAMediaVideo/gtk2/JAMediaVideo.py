@@ -79,7 +79,11 @@ class JAMediaVideo(gtk.Window):
 
     def __set_accion(self, widget, modo, accion):
 
-        self.base_panel.set_accion(modo, accion)
+        if accion == "Salir":
+            self.toolbar.switch("menu")
+
+        else:
+            self.base_panel.set_accion(modo, accion)
 
     def __config_show(self, toolbar, tipo):
 

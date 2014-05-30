@@ -20,8 +20,25 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 """
-    Widgets con controles de configuración para cada uno de
-    los efectos gráficos disponibles en gstreamer.
+Widgets con controles de configuración para cada uno de los efectos gráficos
+    disponibles en gstreamer.
+
+    Contiene:
+        Radioactv
+        Agingtv
+
+    Debido a que no son configurables No Contiene:
+        edgetv
+        warptv
+        shagadelictv
+
+        dicetv          (Solo se puede configurar square-bits de 0-5)
+        rippletv        (Solo se puede configurar el modo 0-1)
+        vertigotv       (Solo se puede configurar speed y zoom-speed)
+        streaktv        (Solo se puede configurar feedback true-false)
+
+        optv            Es bien feo
+        revtv           Feo
 """
 
 import os
@@ -62,25 +79,6 @@ def get_color(color):
     return colors.get(color, None)
 
 BASE_PATH = os.path.dirname(__file__)
-
-"""
-Contiene:
-    Radioactv
-    Agingtv
-
-No Contiene (Debido a que no son configurables):
-    edgetv
-    warptv
-    shagadelictv
-
-    dicetv          (Solo se puede configurar square-bits de 0-5)
-    rippletv        (Solo se puede configurar el modo 0-1)
-    vertigotv       (Solo se puede configurar speed y zoom-speed)
-    streaktv        (Solo se puede configurar feedback true-false)
-
-    optv            Es bien feo
-    revtv           Feo
-"""
 
 
 class Radioactv(gtk.VBox):
