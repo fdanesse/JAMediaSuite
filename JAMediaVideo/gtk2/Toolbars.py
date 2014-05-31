@@ -60,7 +60,7 @@ class Toolbar(gtk.EventBox):
     "accion": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING)),
-    "nueva_camara": (gobject.SIGNAL_RUN_FIRST,
+    "mode-change": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
@@ -260,28 +260,28 @@ class Toolbar(gtk.EventBox):
             self.toolbar_video.show()
             self.toolbar_video.set_estado("Stop")
             self.emit("config-show", "camara")
-            self.emit("nueva_camara", "video")
+            self.emit("mode-change", "video")
 
         elif modo == "menu":
             self.toolbar_principal.show()
             self.emit("config-show", "")
-            self.emit("nueva_camara", "visor")
+            self.emit("mode-change", "visor")
 
         elif modo == "Fotografiar":
             self.toolbar_fotografia.show()
             self.toolbar_fotografia.set_estado("Stop")
             self.emit("config-show", "foto")
-            self.emit("nueva_camara", "foto")
+            self.emit("mode-change", "foto")
 
         elif modo == "Reproducir":
             self.toolbar_jamedia.show()
             self.emit("config-show", "jamedia")
-            self.emit("nueva_camara", "jamedia")
+            self.emit("mode-change", "jamedia")
 
         elif modo == "Ver":
             self.toolbar_jamediaimagenes.show()
             self.emit("config-show", "jamediaimagenes")
-            self.emit("nueva_camara", "jamediaimagenes")
+            self.emit("mode-change", "jamediaimagenes")
 
         else:
             print "switch:", modo
@@ -404,9 +404,6 @@ class ToolbarPrincipal(gtk.EventBox):
             self.__emit_senial, "Filmar")
         toolbar.insert(boton, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
         archivo = os.path.join(BASE_PATH,
             "Iconos", "foto.svg")
         boton = get_boton(
@@ -416,34 +413,15 @@ class ToolbarPrincipal(gtk.EventBox):
             self.__emit_senial, "Fotografiar")
         toolbar.insert(boton, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
         archivo = os.path.join(BASE_PATH,
             "Iconos", "microfono.svg")
         boton = get_boton(
             archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Grabar Audio")
-        #boton.set_sensitive(False)
+        boton.set_sensitive(False)
         boton.connect("clicked",
             self.__emit_senial, "Grabar")
         toolbar.insert(boton, -1)
-
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
-
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "convert.svg")
-        boton = get_boton(
-            archivo, flip=False, pixels=24)
-        boton.set_tooltip_text("Convertir Audio o Video")
-        boton.connect("clicked",
-            self.__emit_senial, "Convert")
-        #boton.set_sensitive(False)
-        toolbar.insert(boton, -1)
-
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
@@ -453,9 +431,6 @@ class ToolbarPrincipal(gtk.EventBox):
         boton.connect("clicked",
             self.__emit_senial, "Reproducir")
         toolbar.insert(boton, -1)
-
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "monitor.svg")
@@ -563,7 +538,6 @@ class ToolbarVideo(gtk.EventBox):
             "Iconos", "stop.svg")
         boton = get_boton(archivo, flip=False,
             pixels=24)
-        #boton.set_sensitive(False)
         boton.set_tooltip_text("Detener")
         boton.connect("clicked",
             self.__emit_senial, "Stop")
@@ -634,14 +608,7 @@ class ToolbarFotografia(gtk.EventBox):
 
         toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
-        '''
-        item = gtk.ToolItem()
-        item.set_expand(False)
-        self.label = gtk.Label("")
-        self.label.show()
-        item.add(self.label)
-        toolbar.insert(item, -1)
-        '''
+
         archivo = os.path.join(BASE_PATH,
             "Iconos", "foto.svg")
         self.boton_fotografiar = get_boton(archivo, flip=False,

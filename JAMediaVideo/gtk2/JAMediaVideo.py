@@ -67,7 +67,7 @@ class JAMediaVideo(gtk.Window):
         self.toolbar.connect("accion", self.__set_accion)
         self.toolbar.connect('salir', self.__confirmar_salir)
         self.toolbar.connect("config-show", self.__config_show)
-        self.toolbar.connect("nueva_camara", self.__nueva_camara)
+        self.toolbar.connect("mode-change", self.__mode_change)
         self.toolbar_salir.connect('salir', self.__salir)
 
         self.connect("delete-event", self.__salir)
@@ -89,9 +89,9 @@ class JAMediaVideo(gtk.Window):
 
         self.base_panel.config_show(tipo)
 
-    def __nueva_camara(self, widget, tipo):
+    def __mode_change(self, widget, tipo):
 
-        self.base_panel.nueva_camara(tipo)
+        self.base_panel.mode_change(tipo)
 
     def __run(self):
 

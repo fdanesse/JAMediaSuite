@@ -581,7 +581,7 @@ class BasePanel(gtk.HPaned):
         self.get_toplevel().toolbar.set_sensitive(True)
         return False
 
-    def nueva_camara(self, tipo):
+    def mode_change(self, tipo):
         """
         Cambia el modo de la aplicación.
         """
@@ -628,7 +628,7 @@ class BasePanel(gtk.HPaned):
             self.__jamediaimagenes_run()
 
         else:
-            print "BasePanel Nueva camara:", tipo
+            print "BasePanel Nuevo Modo:", tipo
 
         gobject.timeout_add(1000, self.__re_sensitive)
 
