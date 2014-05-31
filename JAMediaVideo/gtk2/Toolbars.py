@@ -987,35 +987,35 @@ class ToolbarJAMediaImagenes(gtk.EventBox):
             self.__emit_senial, "Configurar")
         toolbar.insert(boton, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        #toolbar.insert(get_separador(draw=False,
+        #    ancho=3, expand=False), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "zoom-fit-best.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Centrar")
-        boton.connect("clicked",
-            self.__emit_senial, 'Centrar')
-        toolbar.insert(boton, -1)
+        #archivo = os.path.join(BASE_PATH,
+        #    "Iconos", "zoom-fit-best.svg")
+        #boton = get_boton(archivo, flip=False,
+        #    pixels=24)
+        #boton.set_tooltip_text("Centrar")
+        #boton.connect("clicked",
+        #    self.__emit_senial, 'Centrar')
+        #toolbar.insert(boton, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "zoom-in.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Acercar")
-        boton.connect("clicked",
-            self.__emit_senial, 'Acercar')
-        toolbar.insert(boton, -1)
+        #archivo = os.path.join(BASE_PATH,
+        #    "Iconos", "zoom-in.svg")
+        #boton = get_boton(archivo, flip=False,
+        #    pixels=24)
+        #boton.set_tooltip_text("Acercar")
+        #boton.connect("clicked",
+        #    self.__emit_senial, 'Acercar')
+        #toolbar.insert(boton, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "zoom-out.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Alejar")
-        boton.connect("clicked",
-            self.__emit_senial, 'Alejar')
-        toolbar.insert(boton, -1)
+        #archivo = os.path.join(BASE_PATH,
+        #    "Iconos", "zoom-out.svg")
+        #boton = get_boton(archivo, flip=False,
+        #    pixels=24)
+        #boton.set_tooltip_text("Alejar")
+        #boton.connect("clicked",
+        #    self.__emit_senial, 'Alejar')
+        #toolbar.insert(boton, -1)
 
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)

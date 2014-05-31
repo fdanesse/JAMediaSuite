@@ -388,10 +388,10 @@ class BasePanel(gtk.HPaned):
         Cambia a modo visor de imágenes.
         """
 
-        rect = self.pantalla.get_allocation()
+        #rect = self.pantalla.get_allocation()
 
-        xid = self.pantalla.get_property('window').xid
-        self.imageplayer = ImagePlayer(xid, rect.width, rect.height)
+        #xid = self.pantalla.get_property('window').xid
+        self.imageplayer = ImagePlayer(self.pantalla)
 
         self.playerlist.set_mime_types(["image/*"])
 
@@ -689,8 +689,9 @@ class BasePanel(gtk.HPaned):
             self.jamediawebcam.fotografiar(get_imagenes_directory(), rafaga)
             gobject.timeout_add(500, self.__re_sensitive)
 
-        elif accion == "Centrar" or accion == "Acercar" or accion == "Alejar":
-            self.imageplayer.set_zoom(accion)
+        # FIXME: Desactivadas por ahora
+        #elif accion == "Centrar" or accion == "Acercar" or accion == "Alejar":
+        #    self.imageplayer.set_zoom(accion)
 
         else:
             print self.set_accion, accion
