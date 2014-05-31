@@ -33,6 +33,8 @@ from JAMedia.PlayerControls import PlayerControl
 from JAMedia.ProgressPlayer import ProgressPlayer
 from JAMedia.JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 
+from JAMediaImagenes.ImagePlayer import ImagePlayer
+
 from Widgets import Visor
 from Widgets import CamaraConfig
 from Widgets import Video_out_Config
@@ -89,6 +91,7 @@ class BasePanel(gtk.HPaned):
         self.control = True
         self.jamediawebcam = False
         self.player = False
+        self.imageplayer = False
 
         self.pantalla = Visor()
         self.info_label = Info_Label()
@@ -252,8 +255,8 @@ class BasePanel(gtk.HPaned):
             self.player.set_volumen(volumen)
             self.progressplayer.volumen.set_value(volumen / 10)
 
-        elif self.visor:
-            print self.__play_item, path
+        elif self.imageplayer:
+            self.imageplayer.load(path)
 
         else:
             print self.__play_item, path
@@ -355,6 +358,7 @@ class BasePanel(gtk.HPaned):
             ventana.toolbar.toolbar_video.modify_bg(0, color)
             ventana.toolbar.toolbar_fotografia.modify_bg(0, color)
             ventana.toolbar.toolbar_jamedia.modify_bg(0, color)
+            ventana.toolbar.toolbar_jamediaimagenes.modify_bg(0, color)
 
             ventana.set_sensitive(True)
 
@@ -384,40 +388,17 @@ class BasePanel(gtk.HPaned):
         Cambia a modo visor de imágenes.
         """
 
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            #del(self.jamediawebcam)
-            self.jamediawebcam = False
-
-        if self.widget_efectos:
-            self.widget_efectos.clear()
-
-        self.info_label.set_text("")
-        self.info_label.hide()
-        self.efectos_en_pipe.clear()
+        rect = self.pantalla.get_allocation()
 
         xid = self.pantalla.get_property('window').xid
-        #self.player = JAMediaReproductor(xid)
+        self.imageplayer = ImagePlayer(xid, rect.width, rect.height)
 
         self.playerlist.set_mime_types(["image/*"])
-        #self.progressplayer.show()
 
     def __jamedia_run(self):
         """
         Cambia a modo reproductor.
         """
-
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            #del(self.jamediawebcam)
-            self.jamediawebcam = False
-
-        if self.widget_efectos:
-            self.widget_efectos.clear()
-
-        self.info_label.set_text("")
-        self.info_label.hide()
-        self.efectos_en_pipe.clear()
 
         xid = self.pantalla.get_property('window').xid
         self.player = JAMediaReproductor(xid)
@@ -431,23 +412,6 @@ class BasePanel(gtk.HPaned):
         """
 
         self.control = True
-
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            #del(self.jamediawebcam)
-            self.jamediawebcam = False
-
-        if self.player:
-            self.player.stop()
-            #del(self.player)
-            self.player = False
-
-        if self.widget_efectos:
-            self.widget_efectos.clear()
-
-        self.info_label.set_text("")
-        self.info_label.hide()
-        self.efectos_en_pipe.clear()
 
         device = self.camara_setting.device
 
@@ -465,18 +429,6 @@ class BasePanel(gtk.HPaned):
         """
 
         self.control = True
-
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            #del(self.jamediawebcam)
-            self.jamediawebcam = False
-
-        if self.widget_efectos:
-            self.widget_efectos.clear()
-
-        self.info_label.set_text("")
-        self.info_label.hide()
-        self.efectos_en_pipe.clear()
 
         device = self.camara_setting.device
         salida = self.video_out_setting.formato
@@ -506,18 +458,6 @@ class BasePanel(gtk.HPaned):
         """
 
         self.control = True
-
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            #del(self.jamediawebcam)
-            self.jamediawebcam = False
-
-        if self.widget_efectos:
-            self.widget_efectos.clear()
-
-        self.info_label.set_text("")
-        self.info_label.hide()
-        self.efectos_en_pipe.clear()
 
         device = self.camara_setting.device
         salida = self.video_out_setting.formato
@@ -652,11 +592,27 @@ class BasePanel(gtk.HPaned):
 
         self.get_toplevel().toolbar.set_sensitive(False)
 
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            del(self.jamediawebcam)
+            self.jamediawebcam = False
+
         if self.player:
             self.player.stop()
             del(self.player)
             self.player = False
 
+        if self.imageplayer:
+            self.imageplayer.stop()
+            del(self.imageplayer)
+            self.imageplayer = False
+
+        if self.widget_efectos:
+            self.widget_efectos.clear()
+
+        self.info_label.set_text("")
+        self.info_label.hide()
+        self.efectos_en_pipe.clear()
         self.playerlist.limpiar()
         self.progressplayer.hide()
 
@@ -694,8 +650,11 @@ class BasePanel(gtk.HPaned):
                 #self.__cancel_toolbars_flotantes()
                 self.player.rotar(accion)
 
+            elif self.imageplayer:
+                self.imageplayer.rotar(accion)
+
             else:
-                self.set_accion, modo, accion
+                print self.set_accion, modo, accion
 
         elif accion == "Stop":
             if modo == "video":
@@ -729,6 +688,9 @@ class BasePanel(gtk.HPaned):
             rafaga = self.rafagas_setting.get_rafaga()
             self.jamediawebcam.fotografiar(get_imagenes_directory(), rafaga)
             gobject.timeout_add(500, self.__re_sensitive)
+
+        elif accion == "Centrar" or accion == "Acercar" or accion == "Alejar":
+            self.imageplayer.set_zoom(accion)
 
         else:
             print self.set_accion, accion
@@ -788,13 +750,11 @@ class BasePanel(gtk.HPaned):
 
         if tipo == "camara":
             map(mostrar, video_widgets)
-            ip = get_ip()[0]
-            self.camara_setting.label_ip.set_text(ip)
+            self.camara_setting.label_ip.set_text(get_ip())
 
         elif tipo == "foto":
             map(mostrar, foto_widgets)
-            ip = get_ip()[0]
-            self.camara_setting.label_ip.set_text(ip)
+            self.camara_setting.label_ip.set_text(get_ip())
 
         elif tipo == "jamedia":
             map(mostrar, jamedia_widgets)
@@ -831,3 +791,15 @@ class BasePanel(gtk.HPaned):
 
         if self.jamediawebcam:
             self.jamediawebcam.stop()
+            del(self.jamediawebcam)
+            self.jamediawebcam = False
+
+        if self.player:
+            self.player.stop()
+            del(self.player)
+            self.player = False
+
+        if self.imageplayer:
+            self.imageplayer.stop()
+            del(self.imageplayer)
+            self.imageplayer = False

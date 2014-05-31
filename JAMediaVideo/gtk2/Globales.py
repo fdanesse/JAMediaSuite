@@ -25,51 +25,16 @@ def get_ip():
     Devuelve ip rango de difusión en la red.
     """
 
-    # FIXME: Hay que mejorar esto para el caso en que
-    # se esté conectado a dos redes simultáneamente por eth0 y wlan0.
+    import socket
 
-    import commands
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("gmail.com",80))
 
-    ret = commands.getoutput("ifconfig")
-    lines = ret.split("\n")
+        return s.getsockname()[0]
 
-    ip_difusion = [False,False]
-
-    for line in lines:
-        if "Difus.:" in line and "Direc. inet:" in line:
-
-            ip = line.split("Direc. inet:")[-1].strip().split()[0]
-            ip_difusion[0] = ip
-
-            difusion = line.split("Difus.:")[-1].strip().split()[0]
-            ip_difusion[1] = difusion
-
-    return ip_difusion
-
-
-def get_ip_range():
-
-    ip_difusion = get_ip()
-    rango = int(ip_difusion[1].split(".")[-1])
-
-    ip_base = "%s.%s.%s." % (
-        ip_difusion[1].split(".")[0],
-        ip_difusion[1].split(".")[1],
-        ip_difusion[1].split(".")[2])
-
-    ips = []
-    for x in range(2,rango):
-        if x != 127 and x != 255:
-            new = ip_base + str(x)
-
-            if new != ip_difusion[0]:
-                ips.append(new)
-                if x > 5:
-                    print ips
-                    return ips
-
-    return ips
-
+    except:
+        return ""
 
 def get_color(color):
     """
