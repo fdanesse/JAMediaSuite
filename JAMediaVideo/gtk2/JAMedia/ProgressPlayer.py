@@ -27,6 +27,7 @@ from gtk import gdk
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(BASE_PATH)
 
 
 class ProgressPlayer(gtk.EventBox):
@@ -145,11 +146,9 @@ class ProgressBar(gtk.HScale):
         self.ancho, self.borde = (10, 10)
 
         icono = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+            "Iconos", "controlslicer.svg")
+        self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
             24, 24)
-        self.pixbuf = pixbuf.rotate_simple(
-            gdk.PIXBUF_ROTATE_CLOCKWISE)
 
         self.connect("button-press-event", self.__button_press_event)
         self.connect("button-release-event", self.__button_release_event)

@@ -33,6 +33,7 @@ from Globales import get_boton
 from Globales import get_JAMedia_Directory
 
 BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(BASE_PATH)
 
 
 class PlayerList(gtk.ScrolledWindow):

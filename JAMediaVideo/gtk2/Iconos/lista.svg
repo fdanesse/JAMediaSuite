@@ -16,16 +16,12 @@
    xml:space="preserve"
    y="0px"
    id="svg2"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="stop.svg"><metadata
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="lista.svg"><metadata
      id="metadata17"><rdf:RDF><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
-     id="defs15">
-	
-		
-	
-</defs><sodipodi:namedview
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
+     id="defs15" /><sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1"
@@ -35,7 +31,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="712"
+     inkscape:window-height="713"
      id="namedview13"
      showgrid="false"
      inkscape:zoom="4.2909091"
@@ -44,7 +40,7 @@
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2" /><g
+     inkscape:current-layer="g3317" /><g
      id="g3317"
      transform="matrix(0.39502959,0,0,0.39502959,-68.902431,431.75741)"><rect
        inkscape:export-ydpi="33.810032"
@@ -56,7 +52,7 @@
        height="110.70896"
        width="110.70896"
        id="rect3059"
-       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" /><rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#ff6600;stroke-width:12.40413408000000040;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" /><rect
        inkscape:export-ydpi="33.810032"
        inkscape:export-xdpi="33.810032"
        inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/lista.png"
@@ -66,7 +62,7 @@
        height="14.013793"
        width="84.082756"
        id="rect3061"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" /><rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.33660873000000002;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" /><rect
        inkscape:export-ydpi="33.810032"
        inkscape:export-xdpi="33.810032"
        inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/lista.png"
@@ -76,7 +72,7 @@
        height="14.013793"
        width="84.082756"
        id="rect3061-3"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" /><rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.33660873000000002;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" /><rect
        inkscape:export-ydpi="33.810032"
        inkscape:export-xdpi="33.810032"
        inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/lista.png"
@@ -86,4 +82,4 @@
        height="14.013793"
        width="84.082756"
        id="rect3061-9"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" /></g></svg>
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.33660873000000002;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" /></g></svg>

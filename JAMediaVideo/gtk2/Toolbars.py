@@ -424,7 +424,7 @@ class ToolbarPrincipal(gtk.EventBox):
         boton = get_boton(
             archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Grabar Audio")
-        boton.set_sensitive(False)
+        #boton.set_sensitive(False)
         boton.connect("clicked",
             self.__emit_senial, "Grabar")
         toolbar.insert(boton, -1)
@@ -437,10 +437,9 @@ class ToolbarPrincipal(gtk.EventBox):
         boton = get_boton(
             archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Convertir Audio o Video")
-        boton.set_sensitive(False)
         boton.connect("clicked",
             self.__emit_senial, "Convert")
-        boton.set_sensitive(False)
+        #boton.set_sensitive(False)
         toolbar.insert(boton, -1)
 
         toolbar.insert(get_separador(draw=False,

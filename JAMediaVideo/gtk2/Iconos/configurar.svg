@@ -8,24 +8,20 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    enable-background="new 0 0 55 55"
-   height="50"
+   height="48.425583"
    version="1.1"
-   viewBox="0 0 50 50"
-   width="50"
+   viewBox="0 0 48.437836 48.425583"
+   width="48.437836"
    x="0px"
    xml:space="preserve"
    y="0px"
    id="svg2"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="agregar.svg"><metadata
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="configurar.svg"><metadata
      id="metadata17"><rdf:RDF><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
-     id="defs15">
-	
-		
-	
-</defs><sodipodi:namedview
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
+     id="defs15" /><sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1"
@@ -35,18 +31,22 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="712"
+     inkscape:window-height="713"
      id="namedview13"
      showgrid="false"
      inkscape:zoom="4.2909091"
-     inkscape:cx="27.5"
-     inkscape:cy="27.5"
+     inkscape:cx="26.547684"
+     inkscape:cy="27.006554"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2" /><g
+     inkscape:current-layer="g4158"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" /><g
      id="g4158"
-     transform="matrix(0.86485046,0,0,0.86485046,-71.778047,-2.2246907)"><path
+     transform="matrix(0.86485046,0,0,0.86485046,-72.730363,-3.30566)"><path
        inkscape:export-ydpi="32.776936"
        inkscape:export-xdpi="32.776936"
        inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaVideoEstudio/Iconos/configurar.png"
@@ -56,7 +56,7 @@
        sodipodi:cy="356.64789"
        sodipodi:cx="265.71429"
        id="path2985-61-4-4-4-8"
-       style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:#ff6600;fill-opacity:1;stroke:#ff6600;stroke-width:6.4000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        sodipodi:type="arc"
        transform="matrix(0.45327004,0,0,0.45327004,-8.3428758,-129.83577)" /><path
        inkscape:export-ydpi="32"

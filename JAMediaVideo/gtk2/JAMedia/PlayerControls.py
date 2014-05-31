@@ -28,6 +28,7 @@ import gobject
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(BASE_PATH)
 
 
 class PlayerControl(gtk.HBox):

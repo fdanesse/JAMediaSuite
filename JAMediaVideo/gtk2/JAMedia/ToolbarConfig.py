@@ -51,6 +51,7 @@ import gobject
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(BASE_PATH)
 
 
 class ToolbarConfig(gtk.EventBox):
@@ -242,11 +243,9 @@ class BalanceBar(gtk.HScale):
         self.ancho, self.borde = (7, 10)
 
         icono = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+            "Iconos", "controlslicer.svg")
+        self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
             16, 16)
-        self.pixbuf = pixbuf.rotate_simple(
-            gdk.PIXBUF_ROTATE_CLOCKWISE)
 
         self.connect("expose_event", self.__expose)
 
