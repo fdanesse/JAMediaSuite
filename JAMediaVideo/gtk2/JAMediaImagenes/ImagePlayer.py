@@ -89,6 +89,7 @@ class ImagePlayer(gobject.GObject):
 
     def stop(self):
         self.player.stop()
+        self.ventana.disconnect_by_func(self.__set_size)
 
 
 class PlayerBin(gobject.GObject):

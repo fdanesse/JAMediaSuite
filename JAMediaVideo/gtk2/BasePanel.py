@@ -388,11 +388,7 @@ class BasePanel(gtk.HPaned):
         Cambia a modo visor de imágenes.
         """
 
-        #rect = self.pantalla.get_allocation()
-
-        #xid = self.pantalla.get_property('window').xid
         self.imageplayer = ImagePlayer(self.pantalla)
-
         self.playerlist.set_mime_types(["image/*"])
 
     def __jamedia_run(self):
