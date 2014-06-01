@@ -55,6 +55,8 @@ from Globales import get_ip
 gobject.threads_init()
 gtk.gdk.threads_init()
 
+PR = True
+
 
 def ocultar(objeto):
 
@@ -388,6 +390,7 @@ class BasePanel(gtk.HPaned):
         Cambia a modo visor de imágenes.
         """
 
+        if PR: print "__jamediaimagenes_run"
         self.imageplayer = ImagePlayer(self.pantalla)
         self.playerlist.set_mime_types(["image/*"])
 
@@ -396,6 +399,7 @@ class BasePanel(gtk.HPaned):
         Cambia a modo reproductor.
         """
 
+        if PR: print "__jamedia_run"
         xid = self.pantalla.get_property('window').xid
         self.player = JAMediaReproductor(xid)
 
@@ -407,9 +411,17 @@ class BasePanel(gtk.HPaned):
         Cambia a modo Cámara básica del menú.
         """
 
+        if PR: print "__camara_menu_run"
+
         self.control = True
 
         device = self.camara_setting.device
+
+        #FIXME: No debiera ser necesario
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            del(self.jamediawebcam)
+            self.jamediawebcam = False
 
         xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamMenu(xid,
@@ -424,15 +436,28 @@ class BasePanel(gtk.HPaned):
         Cambia modo Cámara de video.
         """
 
+        if PR: print "__camara_video_run"
+
         self.control = True
 
         device = self.camara_setting.device
         salida = self.video_out_setting.formato
 
+        #FIXME: No debiera ser necesario
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            del(self.jamediawebcam)
+            self.jamediawebcam = False
+
         xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamVideo(
             xid, device=device, formato=salida,
             efectos=[])
+
+        self.jamediawebcam.connect("update",
+            self.__update_record)
+        self.jamediawebcam.connect("stop-rafaga",
+            self.__recibe_stop_rafaga)
 
         gobject.idle_add(self.jamediawebcam.play)
 
@@ -453,15 +478,28 @@ class BasePanel(gtk.HPaned):
         Cambia a modo Cámara de Fotografía.
         """
 
+        if PR: print "__camara_foto_run"
+
         self.control = True
 
         device = self.camara_setting.device
         salida = self.video_out_setting.formato
 
+        #FIXME: No debiera ser necesario
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            del(self.jamediawebcam)
+            self.jamediawebcam = False
+
         xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamVideo(
             xid, device=device, formato=salida,
             efectos=[])
+
+        self.jamediawebcam.connect("update",
+            self.__update_record)
+        self.jamediawebcam.connect("stop-rafaga",
+            self.__recibe_stop_rafaga)
 
         gobject.idle_add(self.jamediawebcam.play)
 
@@ -480,8 +518,7 @@ class BasePanel(gtk.HPaned):
     def __resensitive_foto(self):
 
         toolbar = self.get_toplevel().toolbar
-        toolbar.toolbar_fotografia.set_estado(
-            self.__recibe_stop_rafaga, "Stop")
+        toolbar.toolbar_fotografia.set_estado("Stop")
 
     def __update_balance_toolbars(self, config):
         """
@@ -489,11 +526,11 @@ class BasePanel(gtk.HPaned):
         """
 
         self.balance_config_widget.set_balance(
-            brillo=config['brillo'],
-            contraste=config['contraste'],
-            saturacion=config['saturacion'],
-            hue=config['hue'],
-            gamma=config['gamma'])
+            brillo=config.get('brillo', False),
+            contraste=config.get('contraste', False),
+            saturacion=config.get('saturacion', False),
+            hue=config.get('hue', False),
+            gamma=config.get('gamma', False))
 
     def __set_video_out(self, widget, tipo, formato):
         """
@@ -526,8 +563,15 @@ class BasePanel(gtk.HPaned):
         realizadas hasta el momento.
         """
 
-        rot = self.jamediawebcam.get_rotacion()
-        config = self.jamediawebcam.get_config()
+        if PR: print "__re_init_video_web_cam", device, salida
+
+        rot = 0
+        config = {}
+
+        if self.jamediawebcam:
+            rot = self.jamediawebcam.get_rotacion()
+            config = self.jamediawebcam.get_config()
+
         efectos = self.efectos_en_pipe.get_efectos()
 
         if not device:
@@ -536,9 +580,10 @@ class BasePanel(gtk.HPaned):
         if not salida:
             salida = self.video_out_setting.formato
 
-        self.jamediawebcam.stop()
-        #del(self.jamediawebcam)
-        self.jamediawebcam = False
+        if self.jamediawebcam:
+            self.jamediawebcam.stop()
+            #del(self.jamediawebcam)
+            self.jamediawebcam = False
 
         xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamVideo(
@@ -555,14 +600,16 @@ class BasePanel(gtk.HPaned):
 
     def __re_config(self, rot, config, efectos):
 
-        self.jamediawebcam.set_balance(
-            brillo=config["brillo"],
-            contraste=config["contraste"],
-            saturacion=config["saturacion"],
-            hue=config["hue"],
-            gamma=config["gamma"])
+        if PR: print "__re_config", rot, config, efectos
 
-        self.jamediawebcam.set_rotacion(rot)
+        self.jamediawebcam.set_balance(
+            brillo=config.get("brillo", False),
+            contraste=config.get("contraste", False),
+            saturacion=config.get("saturacion", False),
+            hue=config.get("hue", False),
+            gamma=config.get("gamma", False))
+
+        if rot: self.jamediawebcam.set_rotacion(rot)
 
         for efecto in efectos:
             self.widget_efectos.reemit_config_efecto(efecto)
@@ -585,6 +632,8 @@ class BasePanel(gtk.HPaned):
         """
         Cambia el modo de la aplicación.
         """
+
+        if PR: print "Mode_Change:", tipo
 
         self.get_toplevel().toolbar.set_sensitive(False)
 
@@ -612,7 +661,7 @@ class BasePanel(gtk.HPaned):
         self.playerlist.limpiar()
         self.progressplayer.hide()
 
-        if tipo == "visor":
+        if tipo == "menu":
             self.__camara_menu_run()
 
         elif tipo == "video":

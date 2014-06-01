@@ -265,7 +265,7 @@ class Toolbar(gtk.EventBox):
         elif modo == "menu":
             self.toolbar_principal.show()
             self.emit("config-show", "")
-            self.emit("mode-change", "visor")
+            self.emit("mode-change", "menu")
 
         elif modo == "Fotografiar":
             self.toolbar_fotografia.show()

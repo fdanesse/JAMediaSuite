@@ -76,6 +76,31 @@ def describe_uri(uri):
         return False
 
 
+def describe_acceso_uri(uri):
+    """
+    Devuelve los permisos de acceso sobre una uri.
+    """
+
+    import os
+
+    existe = False
+
+    try:
+        existe = os.access(uri, os.F_OK)
+
+    except:
+        return False
+
+    if existe:
+        lectura = os.access(uri, os.R_OK)
+        escritura = os.access(uri, os.W_OK)
+        ejecucion = os.access(uri, os.X_OK)
+        return [lectura, escritura, ejecucion]
+
+    else:
+        return False
+
+
 def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
@@ -216,3 +241,35 @@ def get_JAMedia_Directory():
         make_base_directory()
 
     return path
+
+
+def get_my_files_directory():
+    """
+    Devuelve el Directorio de Archivos del usuario en JAMedia.
+    """
+
+    import os
+
+    DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "MisArchivos")
+
+    if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
+        make_base_directory()
+
+    return DIRECTORIO_MIS_ARCHIVOS
+
+
+def get_data_directory():
+    """
+    Devuelve el Directorio de Datos de JAMedia y JAMediaTube.
+    """
+
+    import os
+
+    DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Datos")
+
+    if not os.path.exists(DIRECTORIO_DATOS):
+        make_base_directory()
+
+    return DIRECTORIO_DATOS

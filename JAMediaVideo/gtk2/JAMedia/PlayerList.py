@@ -32,6 +32,11 @@ from Globales import get_separador
 from Globales import get_boton
 from Globales import get_JAMedia_Directory
 
+from Globales import describe_acceso_uri
+from Globales import get_my_files_directory
+from Globales import get_data_directory
+#from Globales import stream_en_archivo
+
 BASE_PATH = os.path.dirname(__file__)
 BASE_PATH = os.path.dirname(BASE_PATH)
 
@@ -70,6 +75,65 @@ class PlayerList(gtk.ScrolledWindow):
         self.toolbar.connect("load", self.__load_files)
         self.lista.connect("nueva-seleccion",
             self.__re_emit_nueva_seleccion)
+        self.lista.connect("button-press-event",
+            self.__click_derecho_en_lista)
+
+    def __click_derecho_en_lista(self, widget, event):
+        """
+        Esto es para abrir un menu de opciones cuando
+        el usuario hace click derecho sobre un elemento en
+        la lista de reproduccion, permitiendo copiar, mover y
+        borrar el archivo o streaming o simplemente quitarlo
+        de la lista.
+        """
+
+        #self.__cancel_toolbars_flotantes()
+
+        boton = event.button
+        pos = (event.x, event.y)
+        tiempo = event.time
+        path, columna, xdefondo, ydefondo = (None, None, None, None)
+
+        try:
+            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
+                int(pos[0]), int(pos[1]))
+
+        except:
+            return
+
+        # TreeView.get_path_at_pos(event.x, event.y) devuelve:
+        # * La ruta de acceso en el punto especificado (x, y),
+        # en relación con las coordenadas widget
+        # * El gtk.TreeViewColumn en ese punto
+        # * La coordenada X en relación con el fondo de la celda
+        # * La coordenada Y en relación con el fondo de la celda
+
+        if boton == 1:
+            return
+
+        elif boton == 3:
+            menu = MenuList(
+                widget, boton, pos, tiempo, path, widget.get_model())
+            menu.connect('accion', self.__set_accion)
+            gtk.Menu.popup(menu, None, None, None, boton, tiempo)
+
+        elif boton == 2:
+            return
+
+    def __set_accion(self, widget, lista, accion, _iter):
+        """
+        Responde a la seleccion del usuario sobre el menu
+        que se despliega al hacer click derecho sobre un elemento
+        en la lista de reproduccion.
+
+        Recibe la lista de reproduccion, una accion a realizar
+        sobre el elemento seleccionado en ella y el elemento
+        seleccionado y pasa todo a toolbar_accion para pedir
+        confirmacion al usuario sobre la accion a realizar.
+        """
+
+        #self.toolbar_accion.set_accion(lista, accion, _iter)
+        print self.__set_accion, lista, accion, _iter
 
     def __re_emit_nueva_seleccion(self, widget, pista):
 
@@ -288,23 +352,6 @@ class Lista(gtk.TreeView):
 
         return columna
 
-    def limpiar(self):
-
-        self.permitir_select = False
-        self.get_model().clear()
-        self.permitir_select = True
-
-    def agregar_items(self, elementos):
-        """
-        Recibe lista de: [texto para mostrar, path oculto] y
-        Comienza secuencia de agregado a la lista.
-        """
-
-        self.get_toplevel().set_sensitive(False)
-        self.permitir_select = False
-
-        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
-
     def __ejecutar_agregar_elemento(self, elementos):
         """
         Agrega los items a la lista, uno a uno, actualizando.
@@ -351,6 +398,23 @@ class Lista(gtk.TreeView):
         gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
 
         return False
+
+    def limpiar(self):
+
+        self.permitir_select = False
+        self.get_model().clear()
+        self.permitir_select = True
+
+    def agregar_items(self, elementos):
+        """
+        Recibe lista de: [texto para mostrar, path oculto] y
+        Comienza secuencia de agregado a la lista.
+        """
+
+        self.get_toplevel().set_sensitive(False)
+        self.permitir_select = False
+
+        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
 
     def seleccionar_siguiente(self, widget=None):
 
@@ -496,3 +560,107 @@ class My_FileChooser(gtk.FileChooserDialog):
     def __salir(self, widget):
 
         self.destroy()
+
+
+class MenuList(gtk.Menu):
+    """
+    Menu con opciones para operar sobre el archivo o
+    el streaming seleccionado en la lista de reproduccion
+    al hacer click derecho sobre él.
+    """
+
+    __gsignals__ = {
+    'accion': (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
+
+    def __init__(self, widget, boton, pos, tiempo, path, modelo):
+
+        gtk.Menu.__init__(self)
+
+        _iter = modelo.get_iter(path)
+        uri = modelo.get_value(_iter, 2)
+
+        quitar = gtk.MenuItem("Quitar de la Lista")
+        self.append(quitar)
+        quitar.connect_object("activate", self.__set_accion,
+            widget, path, "Quitar")
+
+        my_files_directory = get_my_files_directory()
+
+        if describe_acceso_uri(uri):
+            lectura, escritura, ejecucion = describe_acceso_uri(uri)
+
+            #if lectura and os.path.dirname(uri) != my_files_directory:
+            #    copiar = gtk.MenuItem("Copiar a JAMedia")
+            #    self.append(copiar)
+            #    copiar.connect_object("activate", self.__set_accion,
+            #        widget, path, "Copiar")
+
+            #if escritura and os.path.dirname(uri) != my_files_directory:
+            #    mover = gtk.MenuItem("Mover a JAMedia")
+            #    self.append(mover)
+            #    mover.connect_object("activate", self.__set_accion,
+            #        widget, path, "Mover")
+
+            if escritura:
+                borrar = gtk.MenuItem("Borrar el Archivo")
+                self.append(borrar)
+                borrar.connect_object("activate", self.__set_accion,
+                    widget, path, "Borrar")
+
+        #else:
+        #    borrar = gtk.MenuItem("Borrar Streaming")
+        #    self.append(borrar)
+        #    borrar.connect_object("activate", self.__set_accion,
+        #        widget, path, "Borrar")
+
+        #    data_directory = get_data_directory()
+
+        #    listas = [
+        #        os.path.join(data_directory, "JAMediaTV.JAMedia"),
+        #        os.path.join(data_directory, "JAMediaRadio.JAMedia"),
+        #        os.path.join(data_directory, "MisRadios.JAMedia"),
+        #        os.path.join(data_directory, "MisTvs.JAMedia")
+        #        ]
+
+        #    if (stream_en_archivo(uri, listas[0]) and \
+        #        not stream_en_archivo(uri, listas[3])) or \
+        #        (stream_en_archivo(uri, listas[1]) and \
+        #        not stream_en_archivo(uri, listas[2])):
+
+        #        copiar = gtk.MenuItem("Copiar a JAMedia")
+        #        self.append(copiar)
+        #        copiar.connect_object("activate", self.__set_accion,
+        #            widget, path, "Copiar")
+
+        #        mover = gtk.MenuItem("Mover a JAMedia")
+        #        self.append(mover)
+        #        mover.connect_object("activate", self.__set_accion,
+        #            widget, path, "Mover")
+
+        #    grabar = gtk.MenuItem("Grabar")
+        #    self.append(grabar)
+        #    grabar.connect_object("activate", self.__set_accion,
+        #        widget, path, "Grabar")
+
+        self.show_all()
+        self.attach_to_widget(widget, self.__null)
+
+    def __null(self):
+        pass
+
+    def __set_accion(self, widget, path, accion):
+        """
+        Responde a la seleccion del usuario sobre el menu
+        que se despliega al hacer click derecho sobre un elemento
+        en la lista de reproduccion.
+
+        Recibe la lista de reproduccion, una accion a realizar
+        sobre el elemento seleccionado en ella y el elemento
+        seleccionado y pasa todo a toolbar_accion para pedir
+        confirmacion al usuario sobre la accion a realizar.
+        """
+
+        _iter = widget.get_model().get_iter(path)
+        self.emit('accion', widget, accion, _iter)
