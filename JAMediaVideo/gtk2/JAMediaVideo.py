@@ -28,7 +28,7 @@ import gobject
 from Globales import get_colors
 
 from Toolbars import Toolbar
-from Toolbars import ToolbarSalir
+from JAMedia.Toolbars import ToolbarSalir
 from BasePanel import BasePanel
 
 BASE_PATH = os.path.dirname(__file__)
@@ -69,6 +69,7 @@ class JAMediaVideo(gtk.Window):
         self.toolbar.connect("config-show", self.__config_show)
         self.toolbar.connect("mode-change", self.__mode_change)
         self.toolbar_salir.connect('salir', self.__salir)
+        self.base_panel.connect("accion-list", self.__accion_list)
 
         self.connect("delete-event", self.__salir)
 
@@ -76,6 +77,23 @@ class JAMediaVideo(gtk.Window):
         self.realize()
 
         gobject.idle_add(self.__run)
+
+    def __accion_list(self, widget, lista, accion, _iter):
+
+        #self.toolbar_accion.set_accion(lista, accion, _iter)
+        if accion == "Quitar":
+            print "Confirmar Quitar"
+            lista.quitar_item(_iter)
+
+        elif accion == "Borrar":
+            print "Confirmar Borrar"
+            #lista.quitar_item(_iter)
+
+        elif accion == "Editar":
+            print "Switch a Convorsor y Extractor"
+
+        else:
+            print "Accion en la lista sin definir:", accion
 
     def __set_accion(self, widget, modo, accion):
 

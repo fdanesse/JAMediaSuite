@@ -84,6 +84,11 @@ class BasePanel(gtk.HPaned):
         efectos de audio ==> self.audio_widgets_config
     """
 
+    __gsignals__ = {
+    "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
+
     def __init__(self):
 
         gtk.HPaned.__init__(self)
@@ -177,12 +182,18 @@ class BasePanel(gtk.HPaned):
             "activar", self.__accion_player)
         self.playerlist.connect(
             "nueva-seleccion", self.__play_item)
+        self.playerlist.connect(
+            "accion", self.__re_emit_accion_list)
         self.progressplayer.connect(
             "user-set-value", self.__user_set_progress)
         self.progressplayer.connect(
             "volumen", self.__set_volumen)
 
         self.control = False
+
+    def __re_emit_accion_list(self, widget, lista, accion, _iter):
+
+        self.emit("accion-list", lista, accion, _iter)
 
     def __set_volumen(self, widget, valor):
         """

@@ -36,6 +36,7 @@ from Globales import describe_acceso_uri
 from Globales import get_my_files_directory
 from Globales import get_data_directory
 #from Globales import stream_en_archivo
+from Globales import describe_archivo
 
 BASE_PATH = os.path.dirname(__file__)
 BASE_PATH = os.path.dirname(BASE_PATH)
@@ -45,7 +46,10 @@ class PlayerList(gtk.ScrolledWindow):
 
     __gsignals__ = {
     "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
+    "accion": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
     def __init__(self):
 
@@ -132,8 +136,7 @@ class PlayerList(gtk.ScrolledWindow):
         confirmacion al usuario sobre la accion a realizar.
         """
 
-        #self.toolbar_accion.set_accion(lista, accion, _iter)
-        print self.__set_accion, lista, accion, _iter
+        self.emit("accion", lista, accion, _iter)
 
     def __re_emit_nueva_seleccion(self, widget, pista):
 
@@ -468,6 +471,20 @@ class Lista(gtk.TreeView):
             self.get_selection().select_iter(_iter)
             #path = model.get_path(iter)
 
+    def quitar_item(self, _iter):
+
+        path = self.get_model().get_path(_iter)
+        path = (path[0] - 1, )
+
+        self.get_model().remove(_iter)
+
+        try:
+            self.get_selection().select_iter(
+                self.get_model().get_iter(path))
+
+        except:
+            self.seleccionar_primero()
+
 
 class My_FileChooser(gtk.FileChooserDialog):
     """
@@ -580,6 +597,7 @@ class MenuList(gtk.Menu):
 
         _iter = modelo.get_iter(path)
         uri = modelo.get_value(_iter, 2)
+        tipo = describe_archivo(uri)
 
         quitar = gtk.MenuItem("Quitar de la Lista")
         self.append(quitar)
@@ -608,6 +626,12 @@ class MenuList(gtk.Menu):
                 self.append(borrar)
                 borrar.connect_object("activate", self.__set_accion,
                     widget, path, "Borrar")
+
+        if "audio" in tipo or "video" in tipo:
+            editar = gtk.MenuItem("Editar o Convertir Archivo")
+            self.append(editar)
+            editar.connect_object("activate", self.__set_accion,
+                widget, path, "Editar")
 
         #else:
         #    borrar = gtk.MenuItem("Borrar Streaming")
