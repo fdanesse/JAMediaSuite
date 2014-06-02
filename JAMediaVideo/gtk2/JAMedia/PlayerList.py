@@ -31,12 +31,8 @@ from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 from Globales import get_JAMedia_Directory
-
 from Globales import describe_acceso_uri
 from Globales import get_my_files_directory
-from Globales import get_data_directory
-#from Globales import stream_en_archivo
-from Globales import describe_archivo
 
 BASE_PATH = os.path.dirname(__file__)
 BASE_PATH = os.path.dirname(BASE_PATH)
@@ -90,8 +86,6 @@ class PlayerList(gtk.ScrolledWindow):
         borrar el archivo o streaming o simplemente quitarlo
         de la lista.
         """
-
-        #self.__cancel_toolbars_flotantes()
 
         boton = event.button
         pos = (event.x, event.y)
@@ -583,7 +577,6 @@ class MenuList(gtk.Menu):
 
         _iter = modelo.get_iter(path)
         uri = modelo.get_value(_iter, 2)
-        tipo = describe_archivo(uri)
 
         quitar = gtk.MenuItem("Quitar de la Lista")
         self.append(quitar)
@@ -593,6 +586,7 @@ class MenuList(gtk.Menu):
         my_files_directory = get_my_files_directory()
 
         if describe_acceso_uri(uri):
+            tipo = describe_archivo(uri)
             lectura, escritura, ejecucion = describe_acceso_uri(uri)
 
             if lectura and os.path.dirname(uri) != my_files_directory:
@@ -612,12 +606,12 @@ class MenuList(gtk.Menu):
                 self.append(borrar)
                 borrar.connect_object("activate", self.__set_accion,
                     widget, path, "Borrar")
-
-        if "audio" in tipo or "video" in tipo:
-            editar = gtk.MenuItem("Editar o Convertir Archivo")
-            self.append(editar)
-            editar.connect_object("activate", self.__set_accion,
-                widget, path, "Editar")
+            print tipo
+            if "audio" in tipo or "video" in tipo or "application/ogg" in tipo:
+                editar = gtk.MenuItem("Editar o Convertir Archivo")
+                self.append(editar)
+                editar.connect_object("activate", self.__set_accion,
+                    widget, path, "Editar")
 
         #else:
         #    borrar = gtk.MenuItem("Borrar Streaming")
