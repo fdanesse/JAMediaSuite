@@ -27,9 +27,11 @@ import gobject
 from Globales import get_separador
 from Globales import get_boton
 from Globales import get_colors
-
-from Widgets import Help
-from Widgets import Credits
+from Globales import get_my_files_directory
+from Globales import describe_acceso_uri
+from Globales import copiar
+from Globales import borrar
+from Globales import mover
 
 BASE_PATH = os.path.dirname(__file__)
 BASE_PATH = os.path.dirname(BASE_PATH)
@@ -90,6 +92,14 @@ class ToolbarSalir(gtk.EventBox):
         self.add(toolbar)
         self.show_all()
 
+    def __emit_salir(self, widget):
+        """
+        Confirma Salir de la aplicación.
+        """
+
+        self.cancelar()
+        self.emit('salir')
+
     def run(self, nombre_aplicacion):
         """
         La toolbar se muestra y espera confirmación
@@ -99,14 +109,6 @@ class ToolbarSalir(gtk.EventBox):
         self.label.set_text("¿Salir de %s?" % (nombre_aplicacion))
         self.show()
 
-    def __emit_salir(self, widget):
-        """
-        Confirma Salir de la aplicación.
-        """
-
-        self.cancelar()
-        self.emit('salir')
-
     def cancelar(self, widget=None):
         """
         Cancela salir de la aplicación.
@@ -115,7 +117,7 @@ class ToolbarSalir(gtk.EventBox):
         self.label.set_text("")
         self.hide()
 
-'''
+
 class ToolbarAccion(gtk.Toolbar):
     """
     Toolbar para que el usuario confirme las
@@ -177,13 +179,6 @@ class ToolbarAccion(gtk.Toolbar):
         en la lista de reprucción cuando el usuario confirma.
         """
 
-        from Globales import get_my_files_directory
-
-        from Globales import describe_acceso_uri
-        from Globales import copiar
-        from Globales import borrar
-        from Globales import mover
-
         uri = self.lista.get_model().get_value(self.iter, 2)
 
         if describe_acceso_uri(uri):
@@ -233,53 +228,55 @@ class ToolbarAccion(gtk.Toolbar):
 
                         except:
                             self.lista.seleccionar_primero()
-        else:
-            if self.accion == "Quitar":
-                path = self.lista.get_model().get_path(self.iter)
-                path = (path[0] - 1, )
 
-                self.lista.get_model().remove(self.iter)
+        #Streaming no se usan en JAMediaVideo
+        #else:
+        #    if self.accion == "Quitar":
+        #        path = self.lista.get_model().get_path(self.iter)
+        #        path = (path[0] - 1, )
 
-                try:
-                    self.lista.get_selection().select_iter(
-                        self.lista.get_model().get_iter(path))
+        #        self.lista.get_model().remove(self.iter)
 
-                except:
-                    self.lista.seleccionar_primero()
+        #        try:
+        #            self.lista.get_selection().select_iter(
+        #                self.lista.get_model().get_iter(path))
 
-            elif self.accion == "Borrar":
-                self.emit("accion-stream", "Borrar", uri)
-                path = self.lista.get_model().get_path(self.iter)
-                path = (path[0] - 1, )
+        #        except:
+        #            self.lista.seleccionar_primero()
 
-                self.lista.get_model().remove(self.iter)
+        #    elif self.accion == "Borrar":
+        #        self.emit("accion-stream", "Borrar", uri)
+        #        path = self.lista.get_model().get_path(self.iter)
+        #        path = (path[0] - 1, )
 
-                try:
-                    self.lista.get_selection().select_iter(
-                        self.lista.get_model().get_iter(path))
+        #        self.lista.get_model().remove(self.iter)
 
-                except:
-                    self.lista.seleccionar_primero()
+        #        try:
+        #            self.lista.get_selection().select_iter(
+        #                self.lista.get_model().get_iter(path))
 
-            elif self.accion == "Copiar":
-                self.emit("accion-stream", "Copiar", uri)
+        #        except:
+        #            self.lista.seleccionar_primero()
 
-            elif self.accion == "Mover":
-                self.emit("accion-stream", "Mover", uri)
-                path = self.lista.get_model().get_path(self.iter)
-                path = (path[0] - 1, )
+        #    elif self.accion == "Copiar":
+        #        self.emit("accion-stream", "Copiar", uri)
 
-                self.lista.get_model().remove(self.iter)
+        #    elif self.accion == "Mover":
+        #        self.emit("accion-stream", "Mover", uri)
+        #        path = self.lista.get_model().get_path(self.iter)
+        #        path = (path[0] - 1, )
 
-                try:
-                    self.lista.get_selection().select_iter(
-                        self.lista.get_model().get_iter(path))
+        #        self.lista.get_model().remove(self.iter)
 
-                except:
-                    self.lista.seleccionar_primero()
+        #        try:
+        #            self.lista.get_selection().select_iter(
+        #                self.lista.get_model().get_iter(path))
 
-            elif self.accion == "Grabar":
-                self.emit("Grabar", uri)
+        #        except:
+        #            self.lista.seleccionar_primero()
+
+        #    elif self.accion == "Grabar":
+        #        self.emit("Grabar", uri)
 
         self.label.set_text("")
         self.lista = None
@@ -287,7 +284,7 @@ class ToolbarAccion(gtk.Toolbar):
         self.iter = None
         self.hide()
 
-    def set_accion(self, lista, accion, iter):
+    def set_accion(self, lista, accion, _iter):
         """
         Configura una accion sobre un archivo o
         streaming y muestra toolbaraccion para que
@@ -296,7 +293,7 @@ class ToolbarAccion(gtk.Toolbar):
 
         self.lista = lista
         self.accion = accion
-        self.iter = iter
+        self.iter = _iter
 
         if self.lista and self.accion and self.iter:
             uri = self.lista.get_model().get_value(self.iter, 2)
@@ -306,7 +303,7 @@ class ToolbarAccion(gtk.Toolbar):
                 texto = os.path.basename(uri)
 
             if len(texto) > 30:
-                texto = str(texto[0:30]) + " . . . "
+                texto = " . . . " + str(texto[len(texto) - 30:-1])
 
             self.label.set_text("¿%s?: %s" % (accion, texto))
             self.show_all()
@@ -323,4 +320,3 @@ class ToolbarAccion(gtk.Toolbar):
         self.accion = None
         self.iter = None
         self.hide()
-'''

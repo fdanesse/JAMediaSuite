@@ -471,20 +471,6 @@ class Lista(gtk.TreeView):
             self.get_selection().select_iter(_iter)
             #path = model.get_path(iter)
 
-    def quitar_item(self, _iter):
-
-        path = self.get_model().get_path(_iter)
-        path = (path[0] - 1, )
-
-        self.get_model().remove(_iter)
-
-        try:
-            self.get_selection().select_iter(
-                self.get_model().get_iter(path))
-
-        except:
-            self.seleccionar_primero()
-
 
 class My_FileChooser(gtk.FileChooserDialog):
     """
@@ -609,17 +595,17 @@ class MenuList(gtk.Menu):
         if describe_acceso_uri(uri):
             lectura, escritura, ejecucion = describe_acceso_uri(uri)
 
-            #if lectura and os.path.dirname(uri) != my_files_directory:
-            #    copiar = gtk.MenuItem("Copiar a JAMedia")
-            #    self.append(copiar)
-            #    copiar.connect_object("activate", self.__set_accion,
-            #        widget, path, "Copiar")
+            if lectura and os.path.dirname(uri) != my_files_directory:
+                copiar = gtk.MenuItem("Copiar a JAMedia")
+                self.append(copiar)
+                copiar.connect_object("activate", self.__set_accion,
+                    widget, path, "Copiar")
 
-            #if escritura and os.path.dirname(uri) != my_files_directory:
-            #    mover = gtk.MenuItem("Mover a JAMedia")
-            #    self.append(mover)
-            #    mover.connect_object("activate", self.__set_accion,
-            #        widget, path, "Mover")
+            if escritura and os.path.dirname(uri) != my_files_directory:
+                mover = gtk.MenuItem("Mover a JAMedia")
+                self.append(mover)
+                mover.connect_object("activate", self.__set_accion,
+                    widget, path, "Mover")
 
             if escritura:
                 borrar = gtk.MenuItem("Borrar el Archivo")

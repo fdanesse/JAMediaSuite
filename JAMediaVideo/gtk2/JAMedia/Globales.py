@@ -273,3 +273,63 @@ def get_data_directory():
         make_base_directory()
 
     return DIRECTORIO_DATOS
+
+
+def borrar(origen):
+
+    try:
+        import os
+        import shutil
+
+        if os.path.isdir(origen):
+            shutil.rmtree("%s" % (os.path.join(origen)))
+
+        elif os.path.isfile(origen):
+            os.remove("%s" % (os.path.join(origen)))
+
+        else:
+            return False
+
+        return True
+
+    except:
+        print "ERROR Al Intentar Borrar un Archivo"
+        return False
+
+
+def mover(origen, destino):
+
+    try:
+        import os
+        if os.path.isdir(origen):
+            copiar(origen, destino)
+            borrar(origen)
+            return True
+
+        elif os.path.isfile(origen):
+            expresion = "mv \"" + origen + "\" \"" + destino + "\""
+            os.system(expresion)
+            return True
+
+    except:
+        print "ERROR Al Intentar Mover un Archivo"
+        return False
+
+
+def copiar(origen, destino):
+
+    try:
+        import os
+        if os.path.isdir(origen):
+            expresion = "cp -r \"" + origen + "\" \"" + destino + "\""
+
+        elif os.path.isfile(origen):
+            expresion = "cp \"" + origen + "\" \"" + destino + "\""
+
+        os.system(expresion)
+
+        return True
+
+    except:
+        print "ERROR Al Intentar Copiar un Archivo"
+        return False

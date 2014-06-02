@@ -29,6 +29,7 @@ from Globales import get_colors
 
 from Toolbars import Toolbar
 from JAMedia.Toolbars import ToolbarSalir
+from JAMedia.Toolbars import ToolbarAccion
 from BasePanel import BasePanel
 
 BASE_PATH = os.path.dirname(__file__)
@@ -58,10 +59,12 @@ class JAMediaVideo(gtk.Window):
 
         self.toolbar = Toolbar()
         self.toolbar_salir = ToolbarSalir()
+        self.toolbar_accion = ToolbarAccion()
         self.base_panel = BasePanel()
 
         vbox.pack_start(self.toolbar, False, True, 4)
         vbox.pack_start(self.toolbar_salir, False, True, 4)
+        vbox.pack_start(self.toolbar_accion, False, True, 4)
         vbox.pack_start(self.base_panel, True, True, 0)
 
         self.toolbar.connect("accion", self.__set_accion)
@@ -80,23 +83,24 @@ class JAMediaVideo(gtk.Window):
 
     def __accion_list(self, widget, lista, accion, _iter):
 
-        #self.toolbar_accion.set_accion(lista, accion, _iter)
-        if accion == "Quitar":
-            print "Confirmar Quitar"
-            lista.quitar_item(_iter)
+        self.__cancel_toolbars()
+        acciones = ["Copiar", "Quitar", "Borrar", "Mover"]
 
-        elif accion == "Borrar":
-            print "Confirmar Borrar"
-            #lista.quitar_item(_iter)
+        if accion in acciones:
+            self.toolbar_accion.set_accion(lista, accion, _iter)
 
         elif accion == "Editar":
-            print "Switch a Convorsor y Extractor"
+            print "Switch a Conversor y Extractor"
 
         else:
             print "Accion en la lista sin definir:", accion
 
     def __set_accion(self, widget, modo, accion):
+        """
+        Acciones sobre Base Panel.
+        """
 
+        self.__cancel_toolbars()
         if accion == "Salir":
             self.toolbar.switch("menu")
 
@@ -105,21 +109,29 @@ class JAMediaVideo(gtk.Window):
 
     def __config_show(self, toolbar, tipo):
 
+        self.__cancel_toolbars()
         self.base_panel.config_show(tipo)
 
     def __mode_change(self, widget, tipo):
 
+        self.__cancel_toolbars()
         self.base_panel.mode_change(tipo)
 
     def __run(self):
 
-        self.toolbar_salir.hide()
+        self.__cancel_toolbars()
         self.base_panel.pack_efectos()
         self.toolbar.switch("menu")
 
     def __confirmar_salir(self, widget=None, senial=None):
 
+        self.__cancel_toolbars()
         self.toolbar_salir.run("JAMediaVideo")
+
+    def __cancel_toolbars(self):
+
+        self.toolbar_accion.cancelar()
+        self.toolbar_salir.cancelar()
 
     def __salir(self, widget=None, senial=None):
 
