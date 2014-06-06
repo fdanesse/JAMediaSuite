@@ -66,8 +66,8 @@ class BasePanel(gtk.HPaned):
             "accion", self.__re_emit_accion_list)
         self.playerlist.connect(
             "nueva-seleccion", self.__selecction_file)
-        #self.widgettareas.connect(
-        #    'copy_tarea', self.__copy_tarea)
+        self.widgettareas.connect(
+            'copy_tarea', self.__copy_tarea)
 
     def __re_emit_accion_list(self, widget, lista, accion, _iter):
         print accion, _iter
@@ -76,7 +76,6 @@ class BasePanel(gtk.HPaned):
     def __selecction_file(self, widget, path):
         self.widgettareas.go_tarea(path)
 
-    '''
     def __copy_tarea(self, widget, tarea):
         """
         Extiende la tarea configurada a todos
@@ -85,7 +84,7 @@ class BasePanel(gtk.HPaned):
         actual lo permite (ejemplo: no se convierte mp3 a mp3).
         """
 
-        model = self.lista.get_model()
+        model = self.playerlist.lista.get_model()
         item = model.get_iter_first()
 
         it = None
@@ -96,14 +95,13 @@ class BasePanel(gtk.HPaned):
 
             if it:
                 path = model.get_value(it, 2)
-                widtarea = self.widgettareas.tareas.get(path, False)
+                widtarea = self.widgettareas.base_frame.tareas.get(path, False)
 
                 if not widtarea:
                     self.widgettareas.go_tarea(path)
 
-        for key in self.widgettareas.tareas.keys():
-            widtarea = self.widgettareas.tareas[key]
+        for key in self.widgettareas.base_frame.tareas.keys():
+            widtarea = self.widgettareas.base_frame.tareas[key]
 
             if not widtarea.estado:
                 widtarea.setear(tarea)
-    '''

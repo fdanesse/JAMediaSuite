@@ -32,9 +32,9 @@ gtk.gdk.threads_init()
 
 class WidgetTareas(gtk.EventBox):
 
-    #__gsignals__ = {
-    #'copy_tarea': (gobject.SIGNAL_RUN_LAST,
-    #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
+    __gsignals__ = {
+    'copy_tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
 
@@ -48,6 +48,19 @@ class WidgetTareas(gtk.EventBox):
         self.add(self.base_frame)
         self.show_all()
 
+        self.base_frame.connect("copy_tarea",
+            self.__emit_copy_tarea)
+
+    def __emit_copy_tarea(self, widget, tarea):
+        """
+        Extiende la tarea configurada a todos
+        los archivos en la lista, siempre que estos
+        sean del mismo tipo (audio o video) y si su formato
+        actual lo permite (ejemplo: no se convierte mp3 a mp3).
+        """
+
+        self.emit('copy_tarea', tarea)
+
     def go_tarea(self, path):
         """
         Cuando se selecciona un archivo en la lista
@@ -58,9 +71,9 @@ class WidgetTareas(gtk.EventBox):
 
 class BaseFrame(gtk.Frame):
 
-    #__gsignals__ = {
-    #'copy_tarea': (gobject.SIGNAL_RUN_LAST,
-    #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
+    __gsignals__ = {
+    'copy_tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
 
@@ -84,7 +97,7 @@ class BaseFrame(gtk.Frame):
 
         self.add(scroll)
         self.show_all()
-    '''
+
     def __emit_copy_tarea(self, widget, tarea):
         """
         Extiende la tarea configurada a todos
@@ -103,7 +116,7 @@ class BaseFrame(gtk.Frame):
         del(self.tareas[tarea.path])
         tarea.get_parent().remove(tarea)
         tarea.destroy()
-    '''
+
     def go_tarea(self, path):
         """
         Cuando se selecciona un archivo en la lista
@@ -112,9 +125,9 @@ class BaseFrame(gtk.Frame):
 
         if not self.tareas.get(path, False):
             self.tareas[path] = WidgetConverter(path)
-            #self.tareas[path].connect(
-            #    'copy_tarea', self.__emit_copy_tarea)
-            #self.tareas[path].connect(
-            #    'eliminar_tarea', self.__eliminar_tarea)
+            self.tareas[path].connect(
+                'copy_tarea', self.__emit_copy_tarea)
+            self.tareas[path].connect(
+                'eliminar_tarea', self.__eliminar_tarea)
             self.base_box.pack_start(
                 self.tareas[path], False, False, 0)

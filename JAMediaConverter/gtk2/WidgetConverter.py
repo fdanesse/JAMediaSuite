@@ -25,7 +25,10 @@ import gtk
 #import Pango
 import gobject
 
+#from PipelineConverter import PipelineConverter
+
 from Globales import get_colors
+from Globales import describe_archivo
 
 gobject.threads_init()
 gtk.gdk.threads_init()
@@ -37,11 +40,11 @@ class WidgetConverter(gtk.Frame):
     * Extractor de audio de archivos de video.
     """
 
-    #__gsignals__ = {
-    #'copy_tarea': (gobject.SIGNAL_RUN_LAST,
-    #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
-    #'eliminar_tarea': (gobject.SIGNAL_RUN_LAST,
-    #    gobject.TYPE_NONE, [])}
+    __gsignals__ = {
+    'copy_tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
+    'eliminar_tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self, path):
 
@@ -58,19 +61,19 @@ class WidgetConverter(gtk.Frame):
         hbox.set_border_width(4)
 
         # checkbuttons + barras de progreso.
-        #self.frame_formatos = Tareas(self.path)
+        self.frame_formatos = Tareas(self.path)
 
-        #hbox.pack_start(
-        #    self.frame_formatos,
-        #    False, False, 5)
+        hbox.pack_start(
+            self.frame_formatos,
+            False, False, 5)
 
         # Botones.
         vbox = gtk.VBox()
 
         self.boton_ejecutar = gtk.Button(
             "Ejecutar Esta Tarea")
-        #self.boton_ejecutar.connect(
-        #    "clicked", self.__ejecutar_tarea)
+        self.boton_ejecutar.connect(
+            "clicked", self.__ejecutar_tarea)
         event = gtk.EventBox()
         event.set_border_width(4)
         event.modify_bg(0, get_colors("window"))
@@ -78,7 +81,7 @@ class WidgetConverter(gtk.Frame):
         vbox.pack_start(event, False, False, 5)
 
         boton = gtk.Button("Copiar a Toda la Lista")
-        #boton.connect("clicked", self.__emit_copy)
+        boton.connect("clicked", self.__emit_copy)
         event = gtk.EventBox()
         event.set_border_width(4)
         event.modify_bg(0, get_colors("window"))
@@ -123,8 +126,8 @@ class WidgetConverter(gtk.Frame):
         self.add(hbox)
         self.show_all()
 
-        #self.frame_formatos.connect("end", self.__end)
-        #self.frame_formatos.connect("info", self.__set_info)
+        self.frame_formatos.connect("end", self.__end)
+        self.frame_formatos.connect("info", self.__set_info)
 
     def __detener_eliminar(self, widget):
         """
@@ -154,6 +157,7 @@ class WidgetConverter(gtk.Frame):
         """
         Cuando Todos los procesos han concluido.
         """
+
         # FIXME: Ver como alertar, o eliminar la tarea.
         self.boton_ejecutar.set_sensitive(True)
         self.estado = False
@@ -198,14 +202,14 @@ class WidgetConverter(gtk.Frame):
         self.frame_formatos.setear(tarea)
         #GLib.idle_add(self.__ejecutar_tarea, None)
 
-'''
+
 class Tareas(gtk.Frame):
 
-    #__gsignals__ = {
-    #"end": (gobject.SIGNAL_RUN_LAST,
-    #    gobject.TYPE_NONE, []),
-    #"info": (gobject.SIGNAL_RUN_LAST,
-    #    gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
+    __gsignals__ = {
+    "end": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, []),
+    "info": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self, path):
 
@@ -231,7 +235,7 @@ class Tareas(gtk.Frame):
 
         vbox = gtk.VBox()
 
-        datos = get_data(self.path)
+        datos = describe_archivo(self.path)
 
         if extension != 'mp3':
             vbox.pack_start(
@@ -288,6 +292,48 @@ class Tareas(gtk.Frame):
 
         self.tarea[formato] = active
 
+    def __procesar_tareas(self):
+
+        if not self.players:
+            self.set_sensitive(True)
+            self.emit("end")
+            return
+
+        formato = self.players.keys()[0]
+
+        #self.players[formato] = PipelineConverter(
+        #    self.path, formato)
+
+        #self.players[formato].connect('endfile', self.__set_end)
+        #self.players[formato].connect('newposicion', self.__set_posicion)
+        #self.players[formato].connect('info', self.__set_info)
+
+        #self.players[formato].play()
+
+        return False
+
+    def __set_end(self, player):
+        """
+        Cuando todos los procesos han terminado
+        se emite end.
+        """
+
+        self.barras[player.codec].set_progress(100.0)
+
+        del(self.players[player.codec])
+        del(player)
+
+        gobject.idle_add(self.__procesar_tareas)
+
+    def __set_info(self, player, info):
+
+        self.emit("info", info)
+
+    def __set_posicion(self, player, posicion):
+
+        self.barras[player.codec].set_progress(float(posicion))
+        return True
+
     def setear(self, tarea):
         """
         Configura la tarea segun copia desde otro item.
@@ -330,8 +376,6 @@ class Tareas(gtk.Frame):
         self.__set_info(None, "")
         self.set_sensitive(False)
 
-        #from PipelineConverter import PipelineConverter
-
         for formato in formatos:
             self.players[formato] = None
             """
@@ -350,69 +394,18 @@ class Tareas(gtk.Frame):
 
         return True
 
-    def __procesar_tareas(self):
 
-        if not self.players:
-            self.set_sensitive(True)
-            self.emit("end")
-            return
-
-        #formato = self.players.keys()[0]
-        #self.players[formato].play()
-
-        formato = self.players.keys()[0]
-        from PipelineConverter import PipelineConverter
-
-        self.players[formato] = PipelineConverter(
-            self.path, formato)
-
-        self.players[formato].connect('endfile', self.__set_end)
-        #self.players[formato].connect('estado', self.__set_estado)
-        self.players[formato].connect('newposicion', self.__set_posicion)
-        self.players[formato].connect('info', self.__set_info)
-
-        self.players[formato].play()
-
-        return False
-
-    def __set_end(self, player):
-        """
-        Cuando todos los procesos han terminado
-        se emite end.
-        """
-
-        self.barras[player.codec].set_progress(100.0)
-
-        del(self.players[player.codec])
-        del(player)
-
-        GLib.idle_add(self.__procesar_tareas)
-
-    def __set_info(self, player, info):
-
-        self.emit("info", info)
-
-    def __set_posicion(self, player, posicion):
-
-        self.barras[player.codec].set_progress(float(posicion))
-        return True
-
-
-class CheckButton(Gtk.CheckButton):
-
-    __gtype_name__ = 'JAMediaConverterCheckButton'
+class CheckButton(gtk.CheckButton):
 
     __gsignals__ = {
-    'set_data': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,
-        GObject.TYPE_BOOLEAN))}
+    'set_data': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_BOOLEAN))}
 
     def __init__(self, formato):
 
-        Gtk.CheckButton.__init__(self)
-
+        gtk.CheckButton.__init__(self)
         self.set_label(formato)
-
         self.show_all()
 
     def do_toggled(self):
@@ -421,25 +414,25 @@ class CheckButton(Gtk.CheckButton):
             self.get_active())
 
 
-class BarraProgreso(Gtk.ProgressBar):
+class BarraProgreso(gtk.ProgressBar):
 
     def __init__(self):
 
-        Gtk.ProgressBar.__init__(self)
+        gtk.ProgressBar.__init__(self)
 
         self.set_size_request(200, 5)
         self.modify_bg(0, get_colors("window"))
 
         self.valor = 0.0
 
-        self.modify_font(
-            Pango.FontDescription("Monospace %s" % 6))
+        #self.modify_font(
+        #    Pango.FontDescription("Monospace %s" % 6))
         self.set_show_text(True)
 
-        self.set_margin_bottom(10)
-        self.set_margin_left(10)
-        self.set_margin_right(10)
-        self.set_margin_top(10)
+        #self.set_margin_bottom(10)
+        #self.set_margin_left(10)
+        #self.set_margin_right(10)
+        #self.set_margin_top(10)
 
         self.show_all()
 
@@ -455,4 +448,3 @@ class BarraProgreso(Gtk.ProgressBar):
             self.valor = valor
             self.set_fraction(self.valor)
             self.queue_draw()
-'''

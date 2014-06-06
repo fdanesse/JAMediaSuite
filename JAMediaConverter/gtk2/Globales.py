@@ -19,6 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+
 def get_colors(key):
 
     from gtk import gdk
@@ -31,3 +32,20 @@ def get_colors(key):
         }
 
     return gdk.color_parse(_dict.get(key, "#ffffff"))
+
+
+def describe_archivo(archivo):
+    """
+    Devuelve el tipo de un archivo (imagen, video, texto).
+    -z, --uncompress para ver dentro de los zip.
+    """
+
+    import commands
+
+    datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
+    retorno = ""
+
+    for dat in datos.split(":")[1:]:
+        retorno += " %s" % (dat)
+
+    return retorno
