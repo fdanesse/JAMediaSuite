@@ -25,7 +25,7 @@ import gtk
 #import Pango
 import gobject
 
-#from PipelineConverter import PipelineConverter
+from Converter.PipelineConverter import PipelineConverter
 
 from Globales import get_colors
 from Globales import describe_archivo
@@ -261,7 +261,6 @@ class Tareas(gtk.Frame):
                 True, True, 0)
 
         self.add(vbox)
-
         self.show_all()
 
     def __get_item_format(self, formato):
@@ -301,14 +300,14 @@ class Tareas(gtk.Frame):
 
         formato = self.players.keys()[0]
 
-        #self.players[formato] = PipelineConverter(
-        #    self.path, formato)
+        self.players[formato] = PipelineConverter(
+            self.path, formato)
 
-        #self.players[formato].connect('endfile', self.__set_end)
-        #self.players[formato].connect('newposicion', self.__set_posicion)
-        #self.players[formato].connect('info', self.__set_info)
+        self.players[formato].connect('endfile', self.__set_end)
+        self.players[formato].connect('newposicion', self.__set_posicion)
+        self.players[formato].connect('info', self.__set_info)
 
-        #self.players[formato].play()
+        self.players[formato].play()
 
         return False
 
@@ -378,7 +377,7 @@ class Tareas(gtk.Frame):
 
         for formato in formatos:
             self.players[formato] = None
-            """
+
             self.players[formato] = PipelineConverter(
                 self.path, formato)
 
@@ -388,7 +387,6 @@ class Tareas(gtk.Frame):
             self.players[formato].connect('info', self.__set_info)
 
             #self.players[formato].play()
-            """
 
         gobject.idle_add(self.__procesar_tareas)
 
