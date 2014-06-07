@@ -108,8 +108,24 @@ class ScrollTareas(gtk.ScrolledWindow):
         self.show_all()
 
     def __accion_tarea(self, widget, accion):
+        """
+        Cuando se hace click sobre un botón de acciones.
+        """
 
-        print self.__accion_tarea, widget, accion
+        if accion == "Ejecutar Tarea en Archivo":
+            print "insensibilizar controles que afecten proceso"
+            print "iniciar tareas configuradas"
+
+        elif accion == "Ejecutar Tareas en la Lista":
+            print "insensibilizar controles que afecten proceso"
+            print "iniciar tareas configuradas"
+
+        elif accion == "Copiar Tarea a Toda la Lista":
+            print "Copiar la tarea configurada a toda la lista de archivos"
+            print widget.get_tareas()
+
+        else:
+            print "Tarea sin definir:", self.__accion_tarea, accion
 
     def __clear(self, widget):
 
@@ -215,7 +231,10 @@ class WidgetArchivo(gtk.Frame):
         Cuando se hace click sobre un botón de acciones.
         """
 
-        if accion == "Iniciar Tareas":
+        if accion == "Ejecutar Tarea en Archivo":
+            self.emit("accion-tarea", accion)
+
+        elif accion == "Ejecutar Tareas en la Lista":
             self.emit("accion-tarea", accion)
 
         elif accion == "Copiar Tarea a Toda la Lista":
@@ -232,6 +251,23 @@ class WidgetArchivo(gtk.Frame):
 
         else:
             print "Tarea sin Definir:", self.__set_accion, accion
+
+    def get_tareas(self):
+        """
+        Devuelve las tareas configuradas para un determinado archivo.
+        """
+
+        tareas = []
+
+        for frame in self.iz_box.get_children():
+            event = frame.get_child()
+            vbox = event.get_child()
+
+            for check in vbox.get_children():
+                if check.get_active():
+                    tareas.append(check.get_label())
+
+        return tareas
 
     def stop(self):
         print "Detener Todas las Tareas", self.stop
@@ -349,7 +385,12 @@ class ButtonsBox(gtk.Frame):
 
         vbox = gtk.VBox()
 
-        iniciar = gtk.Button("Iniciar Tareas")
+        iniciar = gtk.Button("Ejecutar Tarea en Archivo")
+        iniciar.connect("clicked", self.__emit_accion)
+        vbox.pack_start(iniciar, False, False, 2)
+        iniciar.set_sensitive(False)
+
+        iniciar = gtk.Button("Ejecutar Tareas en la Lista")
         iniciar.connect("clicked", self.__emit_accion)
         vbox.pack_start(iniciar, False, False, 2)
         iniciar.set_sensitive(False)
@@ -393,5 +434,5 @@ class ButtonsBox(gtk.Frame):
         event = self.get_child()
         vbox = event.get_child()
 
-        for button in vbox.get_children()[0:2]:
+        for button in vbox.get_children()[0:3]:
             button.set_sensitive(valor)
