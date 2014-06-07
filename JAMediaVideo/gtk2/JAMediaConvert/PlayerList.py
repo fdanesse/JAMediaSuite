@@ -38,7 +38,7 @@ BASE_PATH = os.path.dirname(__file__)
 BASE_PATH = os.path.dirname(BASE_PATH)
 
 
-class PlayerList(gtk.ScrolledWindow):
+class PlayerList(gtk.Frame):
 
     __gsignals__ = {
     "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
@@ -49,25 +49,27 @@ class PlayerList(gtk.ScrolledWindow):
 
     def __init__(self):
 
-        gtk.ScrolledWindow.__init__(self)
+        gtk.Frame.__init__(self)
 
-        #FIXME: Scroll debe contener solo la lista
+        self.modify_bg(0, get_colors("window"))
+
         vbox = gtk.VBox()
 
         self.toolbar = ToolbarList()
         self.lista = Lista()
 
-        vbox.pack_start(self.toolbar, False, False, 0)
-        vbox.pack_start(self.lista, True, True, 0)
-
-        self.set_policy(
+        scroll = gtk.ScrolledWindow()
+        scroll.set_policy(
             gtk.POLICY_AUTOMATIC,
             gtk.POLICY_AUTOMATIC)
-        self.add_with_viewport(vbox)
-
-        self.get_child().modify_bg(
+        scroll.add_with_viewport(self.lista)
+        scroll.get_child().modify_bg(
             0, get_colors("window"))
 
+        vbox.pack_start(self.toolbar, False, False, 0)
+        vbox.pack_start(scroll, True, True, 0)
+
+        self.add(vbox)
         self.show_all()
 
         self.set_size_request(150, -1)

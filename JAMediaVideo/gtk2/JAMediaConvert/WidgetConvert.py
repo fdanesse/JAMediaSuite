@@ -70,17 +70,21 @@ class WidgetConvert(gtk.HPaned):
 
     def __selecction_file(self, widget, path):
 
-        #self.scrolltareas.crear_tarea(path)
-        print "Crear Tarea para:", path
+        if not path:
+            return
+
+        if not os.path.exists(path):
+            return
+
+        self.scrolltareas.crear_tarea(path)
 
     def __re_emit_accion_list(self, widget, lista, accion, _iter):
 
         self.emit("accion-list", lista, accion, _iter)
 
     def reset(self):
-        print "detener todo en jamediaconvert"
-        print "Eliminar todas las tareas en jamediaconvert"
-        print "Limpiar la lista de jamediaconvert"
+        self.scrolltareas.limpiar()
+        self.playerlist.limpiar()
 
 
 class ScrollTareas(gtk.ScrolledWindow):
@@ -103,12 +107,41 @@ class ScrollTareas(gtk.ScrolledWindow):
 
         self.show_all()
 
+    def __accion_tarea(self, widget, accion):
+
+        print self.__accion_tarea, widget, accion
+
+    def __clear(self, widget):
+
+        self.limpiar()
+
     def crear_tarea(self, path):
 
-        self.vbox.pack_start(WidgetArchivo(path), False, False, 2)
+        paths = []
+        for child in self.vbox.get_children():
+            paths.append(child.path_origen)
+
+        if not path in paths:
+            widgetarchivo = WidgetArchivo(path)
+            self.vbox.pack_start(widgetarchivo, False, False, 2)
+            widgetarchivo.connect('clear-tareas', self.__clear)
+            widgetarchivo.connect('accion-tarea', self.__accion_tarea)
+
+    def limpiar(self):
+
+        for child in self.vbox.get_children():
+            child.stop()
+            self.vbox.remove(child)
+            child.destroy()
 
 
 class WidgetArchivo(gtk.Frame):
+
+    __gsignals__ = {
+    'clear-tareas': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, ()),
+    'accion-tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, path):
 
@@ -136,18 +169,21 @@ class WidgetArchivo(gtk.Frame):
         if 'video' in datos or 'application/ogg' in datos or \
             'application/octet-stream' in datos:
 
-            self.iz_box.pack_start(
-                VideoFrame("  Convertir Video a Formato:  ",
-                self.path_origen), False, False, 0)
+            videoframe = VideoFrame(
+                "  Convertir Video a Formato:  ", self.path_origen)
+            self.iz_box.pack_start(videoframe, False, False, 0)
+            videoframe.connect("tarea", self.__sensitive_buttons)
 
-            self.iz_box.pack_start(
-                AudioFrame("  Extraer el Audio en Formato:  ",
-                self.path_origen), False, False, 0)
+            audioframe = AudioFrame(
+                "  Extraer Audio en Formato:  ", self.path_origen)
+            self.iz_box.pack_start(audioframe, False, False, 0)
+            audioframe.connect("tarea", self.__sensitive_buttons)
 
         elif "audio" in datos:
-            self.iz_box.pack_start(
-                AudioFrame("  Convertir a Formato:  ",
-                    self.path_origen), False, False, 0)
+            audioframe = AudioFrame(
+                "  Convertir Audio a Formato:  ", self.path_origen)
+            self.iz_box.pack_start(audioframe, False, False, 0)
+            audioframe.connect("tarea", self.__sensitive_buttons)
 
         else:
             print "Tipo de Archivo Desconocido:", self.path_origen, datos
@@ -155,11 +191,60 @@ class WidgetArchivo(gtk.Frame):
         self.add(self.panel)
         self.show_all()
 
+        self.buttonsbox.connect("accion", self.__set_accion)
+
+    def __sensitive_buttons(self, widget):
+        """
+        Botones de acciones iniciar y copiar tarea,
+        se activan solo si hay una tarea configurada.
+        """
+
+        for frame in self.iz_box.get_children():
+            event = frame.get_child()
+            vbox = event.get_child()
+
+            for check in vbox.get_children():
+                if check.get_active():
+                    self.buttonsbox.activar(True)
+                    return
+
+        self.buttonsbox.activar(False)
+
+    def __set_accion(self, widget, accion):
+        """
+        Cuando se hace click sobre un botón de acciones.
+        """
+
+        if accion == "Iniciar Tareas":
+            self.emit("accion-tarea", accion)
+
+        elif accion == "Copiar Tarea a Toda la Lista":
+            self.emit("accion-tarea", accion)
+
+        elif accion == "Eliminar Tarea":
+            self.stop()
+            vbox = self.get_parent()
+            vbox.remove(self)
+            self.destroy()
+
+        elif accion == "Eliminar Todas las Tareas":
+            self.emit("clear-tareas")
+
+        else:
+            print "Tarea sin Definir:", self.__set_accion, accion
+
+    def stop(self):
+        print "Detener Todas las Tareas", self.stop
+
 
 class VideoFrame(gtk.Frame):
     """
     Conversiones posibles para archivos de video.
     """
+
+    __gsignals__ = {
+    'tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, ())}
 
     def __init__(self, title, path):
 
@@ -173,9 +258,10 @@ class VideoFrame(gtk.Frame):
 
         vbox = gtk.VBox()
 
-        vbox.pack_start(CheckButton("ogv"), False, False, 0)
-        vbox.pack_start(CheckButton("mpeg"), False, False, 0)
-        vbox.pack_start(CheckButton("avi"), False, False, 0)
+        for formato in ["ogv", "mpeg", "avi"]:
+            check = CheckButton(formato)
+            vbox.pack_start(check, False, False, 0)
+            check.connect("tarea", self.__emit_tarea)
 
         event = gtk.EventBox()
         event.set_border_width(5)
@@ -184,6 +270,10 @@ class VideoFrame(gtk.Frame):
 
         self.add(event)
         self.show_all()
+
+    def __emit_tarea(self, widget):
+
+        self.emit("tarea")
 
 
 class AudioFrame(gtk.Frame):
@@ -191,6 +281,10 @@ class AudioFrame(gtk.Frame):
     Conversiones posibles para archivos de audio.
     """
 
+    __gsignals__ = {
+    'tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, ())}
+
     def __init__(self, title, path):
 
         gtk.Frame.__init__(self)
@@ -203,9 +297,10 @@ class AudioFrame(gtk.Frame):
 
         vbox = gtk.VBox()
 
-        vbox.pack_start(CheckButton("ogg"), False, False, 0)
-        vbox.pack_start(CheckButton("mp3"), False, False, 0)
-        vbox.pack_start(CheckButton("wav"), False, False, 0)
+        for formato in ["ogg", "mp3", "wav"]:
+            check = CheckButton(formato)
+            vbox.pack_start(check, False, False, 0)
+            check.connect("tarea", self.__emit_tarea)
 
         event = gtk.EventBox()
         event.set_border_width(5)
@@ -215,13 +310,16 @@ class AudioFrame(gtk.Frame):
         self.add(event)
         self.show_all()
 
+    def __emit_tarea(self, widget):
+
+        self.emit("tarea")
+
 
 class CheckButton(gtk.CheckButton):
 
-    #__gsignals__ = {
-    #'set_data': (gobject.SIGNAL_RUN_LAST,
-    #    gobject.TYPE_NONE, (gobject.TYPE_STRING,
-    #    gobject.TYPE_BOOLEAN))}
+    __gsignals__ = {
+    'tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, ())}
 
     def __init__(self, formato):
 
@@ -230,18 +328,16 @@ class CheckButton(gtk.CheckButton):
         self.set_label(formato)
         self.show_all()
 
-    #def do_toggled(self):
+    def do_toggled(self):
 
-    #    self.emit('set_data', self.get_label(),
-    #        self.get_active())
+        self.emit('tarea')
 
 
 class ButtonsBox(gtk.Frame):
 
-    #__gsignals__ = {
-    #'set_data': (gobject.SIGNAL_RUN_LAST,
-    #    gobject.TYPE_NONE, (gobject.TYPE_STRING,
-    #    gobject.TYPE_BOOLEAN))}
+    __gsignals__ = {
+    'accion': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
 
@@ -256,12 +352,18 @@ class ButtonsBox(gtk.Frame):
         iniciar = gtk.Button("Iniciar Tareas")
         iniciar.connect("clicked", self.__emit_accion)
         vbox.pack_start(iniciar, False, False, 2)
+        iniciar.set_sensitive(False)
 
         copiar = gtk.Button("Copiar Tarea a Toda la Lista")
         copiar.connect("clicked", self.__emit_accion)
         vbox.pack_start(copiar, False, False, 2)
+        copiar.set_sensitive(False)
 
         eliminar = gtk.Button("Eliminar Tarea")
+        eliminar.connect("clicked", self.__emit_accion)
+        vbox.pack_start(eliminar, False, False, 2)
+
+        eliminar = gtk.Button("Eliminar Todas las Tareas")
         eliminar.connect("clicked", self.__emit_accion)
         vbox.pack_start(eliminar, False, False, 2)
 
@@ -284,4 +386,12 @@ class ButtonsBox(gtk.Frame):
 
     def __emit_accion(self, widget):
 
-        print widget.get_label()
+        self.emit("accion", widget.get_label())
+
+    def activar(self, valor):
+
+        event = self.get_child()
+        vbox = event.get_child()
+
+        for button in vbox.get_children()[0:2]:
+            button.set_sensitive(valor)
