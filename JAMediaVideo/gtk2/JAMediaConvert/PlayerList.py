@@ -149,6 +149,14 @@ class PlayerList(gtk.Frame):
         else:
             self.emit('nueva-seleccion', False)
 
+    def seleccionar_primero(self):
+
+        self.lista.seleccionar_primero()
+
+    def seleccionar_ultimo(self):
+
+        self.lista.seleccionar_ultimo()
+
     def seleccionar_anterior(self):
 
         self.lista.seleccionar_anterior()
@@ -162,8 +170,38 @@ class PlayerList(gtk.Frame):
         self.lista.limpiar()
 
     def set_mime_types(self, mime):
+        """
+        Setea el tipo de elementos admitidos en la lista.
+        """
 
         self.toolbar.mime = mime
+
+    def get_selected_path(self):
+        """
+        Devuelve el valor del path seleccionado.
+        """
+
+        modelo, _iter = self.lista.get_selection().get_selected()
+        valor = self.lista.get_model().get_value(_iter, 2)
+        return valor
+
+    def get_items_paths(self):
+        """
+        Devuelve la lista de archivos en la lista.
+        """
+
+        filepaths = []
+        model = self.lista.get_model()
+        item = model.get_iter_first()
+
+        self.lista.get_selection().select_iter(item)
+        first_path = model.get_path(item)
+
+        while item:
+            filepaths.append(model.get_value(item, 2))
+            item = model.iter_next(item)
+
+        return filepaths
 
 
 class ToolbarList(gtk.EventBox):

@@ -36,8 +36,6 @@ gtk.gdk.threads_init()
 class WidgetConvert(gtk.HPaned):
 
     __gsignals__ = {
-    #'copy_tarea': (gobject.SIGNAL_RUN_LAST,
-    #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
     "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
@@ -62,13 +60,40 @@ class WidgetConvert(gtk.HPaned):
             "accion", self.__re_emit_accion_list)
         self.playerlist.connect(
             "nueva-seleccion", self.__selecction_file)
-        #self.widgettareas.connect(
-        #    'copy_tarea', self.__copy_tarea)
+        self.scrolltareas.connect(
+            'accion-tarea', self.__accion_tareas)
 
-        #self.base_frame.connect("copy_tarea",
-        #    self.__emit_copy_tarea)
+    def __accion_tareas(self, widget, widgetarchivo, accion):
+        """
+        Cuando el usuario ejecuta una acción en la botonera derecha.
+        """
+
+        if accion == "Ejecutar Tarea en Archivo":
+            print "insensibilizar controles que afecten proceso"
+            print "iniciar tareas configuradas"
+
+        elif accion == "Ejecutar Tareas en la Lista":
+            print "insensibilizar controles que afecten proceso"
+            print "iniciar tareas configuradas"
+
+        elif accion == "Copiar Tarea a Toda la Lista":
+            self.get_toplevel().set_sensitive(False)
+
+            for filepath in self.playerlist.get_items_paths():
+                # Crear el widget de tareas para cada archivo en la lista.
+                self.__selecction_file(False, filepath)
+
+            self.scrolltareas.copy_tarea(widgetarchivo.get_tareas())
+
+            self.get_toplevel().set_sensitive(True)
+
+        else:
+            print "Tarea sin definir:", self.__accion_tarea, accion
 
     def __selecction_file(self, widget, path):
+        """
+        Cuando el usuario selecciona un archivo en la lista.
+        """
 
         if not path:
             return
@@ -79,10 +104,18 @@ class WidgetConvert(gtk.HPaned):
         self.scrolltareas.crear_tarea(path)
 
     def __re_emit_accion_list(self, widget, lista, accion, _iter):
+        """
+        Cuando el usuario selecciona opciones en el menu emergente de
+        la lista de archivos.
+        """
 
         self.emit("accion-list", lista, accion, _iter)
 
     def reset(self):
+        """
+        Limpia la lista de archivos y el widget de tareas.
+        """
+
         self.scrolltareas.limpiar()
         self.playerlist.limpiar()
 
@@ -92,6 +125,11 @@ class ScrollTareas(gtk.ScrolledWindow):
     Area derecha de WidgetConvert:
         Contenedor de Tareas por archivo.
     """
+
+    __gsignals__ = {
+    'accion-tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
+        gobject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -107,31 +145,33 @@ class ScrollTareas(gtk.ScrolledWindow):
 
         self.show_all()
 
-    def __accion_tarea(self, widget, accion):
+    def __accion_tarea(self, widgetarchivo, accion):
         """
         Cuando se hace click sobre un botón de acciones.
         """
 
-        if accion == "Ejecutar Tarea en Archivo":
-            print "insensibilizar controles que afecten proceso"
-            print "iniciar tareas configuradas"
-
-        elif accion == "Ejecutar Tareas en la Lista":
-            print "insensibilizar controles que afecten proceso"
-            print "iniciar tareas configuradas"
-
-        elif accion == "Copiar Tarea a Toda la Lista":
-            print "Copiar la tarea configurada a toda la lista de archivos"
-            print widget.get_tareas()
-
-        else:
-            print "Tarea sin definir:", self.__accion_tarea, accion
+        self.emit('accion-tarea', widgetarchivo, accion)
 
     def __clear(self, widget):
+        """
+        Elimina todas las tareas.
+        """
 
         self.limpiar()
 
+    def copy_tarea(self, tareas):
+        """
+        Copia una lista de tareas asignada a un archivo,
+        a todos los archivos abiertos en el widget de tareas.
+        """
+
+        for widgetarchivo in self.vbox.get_children():
+            widgetarchivo.copy_tarea(tareas)
+
     def crear_tarea(self, path):
+        """
+        Crear el widget de tareas para un determinado archivo.
+        """
 
         paths = []
         for child in self.vbox.get_children():
@@ -144,6 +184,9 @@ class ScrollTareas(gtk.ScrolledWindow):
             widgetarchivo.connect('accion-tarea', self.__accion_tarea)
 
     def limpiar(self):
+        """
+        Elimina todas las tareas.
+        """
 
         for child in self.vbox.get_children():
             child.stop()
@@ -184,6 +227,11 @@ class WidgetArchivo(gtk.Frame):
 
         if 'video' in datos or 'application/ogg' in datos or \
             'application/octet-stream' in datos:
+
+            imageframe = ImageFrame(
+                "  Extraer Imágenes en Formato:  ", self.path_origen)
+            self.iz_box.pack_start(imageframe, False, False, 0)
+            imageframe.connect("tarea", self.__sensitive_buttons)
 
             videoframe = VideoFrame(
                 "  Convertir Video a Formato:  ", self.path_origen)
@@ -269,8 +317,63 @@ class WidgetArchivo(gtk.Frame):
 
         return tareas
 
+    def copy_tarea(self, tareas):
+        """
+        Setea una lista de tareas a realizar.
+        """
+
+        for frame in self.iz_box.get_children():
+            event = frame.get_child()
+            vbox = event.get_child()
+
+            for check in vbox.get_children():
+                if check.get_label() in tareas:
+                    check.set_active(True)
+
+                else:
+                    check.set_active(False)
+
     def stop(self):
         print "Detener Todas las Tareas", self.stop
+
+
+class ImageFrame(gtk.Frame):
+    """
+    Extracciones de Imágenes posibles para archivos de video.
+    """
+
+    __gsignals__ = {
+    'tarea': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, ())}
+
+    def __init__(self, title, path):
+
+        gtk.Frame.__init__(self)
+
+        self.set_label(title)
+        self.set_border_width(5)
+        self.modify_bg(0, get_colors("toolbars"))
+
+        self.path_origen = path
+
+        vbox = gtk.VBox()
+
+        for formato in ["jpg", "png"]:
+            check = CheckButton(formato)
+            vbox.pack_start(check, False, False, 0)
+            check.connect("tarea", self.__emit_tarea)
+
+        event = gtk.EventBox()
+        event.set_border_width(5)
+        event.modify_bg(0, get_colors("windows"))
+        event.add(vbox)
+
+        self.add(event)
+        self.show_all()
+
+    def __emit_tarea(self, widget):
+
+        self.emit("tarea")
 
 
 class VideoFrame(gtk.Frame):
