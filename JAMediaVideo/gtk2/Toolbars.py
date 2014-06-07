@@ -146,6 +146,11 @@ class Toolbar(gtk.EventBox):
             self.toolbar_jamediaimagenes, True, True, 0)
         self.toolbars.append(self.toolbar_jamediaimagenes)
 
+        self.toolbar_converter = ToolbarConverter()
+        self.toolbars_container.pack_start(
+            self.toolbar_converter, True, True, 0)
+        self.toolbars.append(self.toolbar_converter)
+
         self.add(toolbar)
         self.show_all()
 
@@ -156,6 +161,16 @@ class Toolbar(gtk.EventBox):
         #self.toolbar_audio.connect("accion", self.__set_audio_accion)
         self.toolbar_jamediaimagenes.connect("accion",
             self.__set_jamediaimagenes_accion)
+        self.toolbar_converter.connect("accion",
+            self.__set_converter_accion)
+
+    def __set_converter_accion(self, toolbar, accion):
+
+        if accion == "Salir":
+            self.emit("accion", "jamediaconverter", accion)
+
+        else:
+            print self.__set_converter_accion, toolbar, accion
 
     def __set_jamediaimagenes_accion(self, toolbar, accion):
 
@@ -283,6 +298,11 @@ class Toolbar(gtk.EventBox):
             self.emit("config-show", "jamediaimagenes")
             self.emit("mode-change", "jamediaimagenes")
 
+        elif modo == "Convert":
+            self.toolbar_converter.show()
+            #self.emit("config-show", "converter")
+            self.emit("mode-change", "converter")
+
         else:
             print "switch:", modo
 
@@ -340,6 +360,15 @@ class ToolbarPrincipal(gtk.EventBox):
         boton.set_sensitive(False)
         boton.connect("clicked",
             self.__emit_senial, "Grabar")
+        toolbar.insert(boton, -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "convert.svg")
+        boton = get_boton(
+            archivo, flip=False, pixels=24)
+        boton.set_tooltip_text("JAMediaConverter")
+        boton.connect("clicked",
+            self.__emit_senial, "Convert")
         toolbar.insert(boton, -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -922,6 +951,43 @@ class ToolbarJAMediaImagenes(gtk.EventBox):
         boton.connect("clicked",
             self.__emit_senial, 'Derecha')
         toolbar.insert(boton, -1)
+
+        toolbar.insert(get_separador(draw=False,
+            ancho=0, expand=True), -1)
+
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "lista.svg")
+        boton = get_boton(archivo, flip=False,
+            pixels=24)
+        boton.set_tooltip_text("Volver al Menú")
+        boton.connect("clicked",
+            self.__emit_senial, "Salir")
+        toolbar.insert(boton, -1)
+
+        self.add(toolbar)
+        self.show_all()
+
+    def __emit_senial(self, widget, senial):
+
+        self.emit('accion', senial)
+
+
+class ToolbarConverter(gtk.EventBox):
+
+    __gsignals__ = {
+    'accion': (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
+
+    def __init__(self):
+
+        gtk.EventBox.__init__(self)
+
+        self.set_border_width(4)
+
+        toolbar = gtk.Toolbar()
+
+        self.modify_bg(0, get_colors("toolbars"))
+        toolbar.modify_bg(0, get_colors("toolbars"))
 
         toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)

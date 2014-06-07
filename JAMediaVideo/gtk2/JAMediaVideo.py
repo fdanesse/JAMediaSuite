@@ -71,6 +71,7 @@ class JAMediaVideo(gtk.Window):
         self.toolbar.connect('salir', self.__confirmar_salir)
         self.toolbar.connect("config-show", self.__config_show)
         self.toolbar.connect("mode-change", self.__mode_change)
+
         self.toolbar_salir.connect('salir', self.__salir)
         self.base_panel.connect("accion-list", self.__accion_list)
 
@@ -90,7 +91,10 @@ class JAMediaVideo(gtk.Window):
             self.toolbar_accion.set_accion(lista, accion, _iter)
 
         elif accion == "Editar":
-            print "Switch a Conversor y Extractor"
+            print "Switch a Conversor y Extractor", self.__accion_list
+            # Detener Reproductor
+            # limpiar la lista
+            # cambiar a conversor pasandole el archivo
 
         else:
             print "Accion en la lista sin definir:", accion

@@ -27,6 +27,8 @@ import datetime
 
 from Globales import get_colors
 
+from JAMediaConvert.WidgetConvert import WidgetConvert
+
 from JAMedia.PlayerList import PlayerList
 from JAMedia.ToolbarConfig import ToolbarConfig
 from JAMedia.PlayerControls import PlayerControl
@@ -104,6 +106,7 @@ class BasePanel(gtk.HPaned):
         self.info_label = Info_Label()
         self.efectos_en_pipe = Efectos_en_Pipe()
         self.progressplayer = ProgressPlayer()
+        self.jamediaconvert = WidgetConvert()
 
         scroll = gtk.ScrolledWindow()
         scroll.set_policy(
@@ -117,6 +120,7 @@ class BasePanel(gtk.HPaned):
         vbox = gtk.VBox()
         vbox.pack_start(self.info_label, False, False, 0)
         vbox.pack_start(self.pantalla, True, True, 0)
+        vbox.pack_start(self.jamediaconvert, True, True, 0)
         vbox.pack_start(scroll, False, False, 0)
         vbox.pack_start(self.progressplayer, False, False, 0)
         self.pack1(vbox, resize=True, shrink=True)
@@ -159,10 +163,8 @@ class BasePanel(gtk.HPaned):
         self.vbox_config.pack_start(
             self.playerlist, True, True, 0)
 
-        event = gtk.EventBox()
-        event.modify_bg(0, get_colors("toolbars"))
-        event.add(self.player_control)
-        self.vbox_config.pack_end(event, False, True, 0)
+        self.vbox_config.pack_end(
+            self.player_control, False, True, 0)
 
         self.pack2(self.box_config,
             resize=False, shrink=False)
@@ -188,6 +190,9 @@ class BasePanel(gtk.HPaned):
             "user-set-value", self.__user_set_progress)
         self.progressplayer.connect(
             "volumen", self.__set_volumen)
+
+        self.jamediaconvert.connect(
+            "accion-list", self.__re_emit_accion_list)
 
         self.control = False
 
@@ -395,6 +400,17 @@ class BasePanel(gtk.HPaned):
 
         elif tipo == "gamma":
             self.jamediawebcam.set_balance(gamma=valor)
+
+    def __jamediaconvert_run(self):
+        """
+        Cambia a modo Conversor y Extractor.
+        """
+
+        if PR: print "__jamediaconvert_run"
+        self.pantalla.hide()
+        self.jamediaconvert.show()
+        #self.imageplayer = ImagePlayer(self.pantalla)
+        #self.playerlist.set_mime_types(["image/*"])
 
     def __jamediaimagenes_run(self):
         """
@@ -648,6 +664,10 @@ class BasePanel(gtk.HPaned):
 
         self.get_toplevel().toolbar.set_sensitive(False)
 
+        self.jamediaconvert.reset()
+        self.jamediaconvert.hide()
+        self.pantalla.show()
+
         if self.jamediawebcam:
             self.jamediawebcam.stop()
             del(self.jamediawebcam)
@@ -686,6 +706,9 @@ class BasePanel(gtk.HPaned):
 
         elif tipo == "jamediaimagenes":
             self.__jamediaimagenes_run()
+
+        elif tipo == "converter":
+            self.__jamediaconvert_run()
 
         else:
             print "BasePanel Nuevo Modo:", tipo
