@@ -89,7 +89,9 @@ class BasePanel(gtk.HPaned):
     __gsignals__ = {
     "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
+    "in-run": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN, ))}
 
     def __init__(self):
 
@@ -193,8 +195,14 @@ class BasePanel(gtk.HPaned):
 
         self.jamediaconvert.connect(
             "accion-list", self.__re_emit_accion_list)
+        self.jamediaconvert.connect(
+            "in-run", self.__jamediaconvert_in_run)
 
         self.control = False
+
+    def __jamediaconvert_in_run(self, widget, valor):
+
+        self.emit("in-run", valor)
 
     def __re_emit_accion_list(self, widget, lista, accion, _iter):
 

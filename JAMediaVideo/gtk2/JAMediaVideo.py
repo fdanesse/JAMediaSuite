@@ -74,6 +74,8 @@ class JAMediaVideo(gtk.Window):
 
         self.toolbar_salir.connect('salir', self.__salir)
         self.base_panel.connect("accion-list", self.__accion_list)
+        self.base_panel.connect(
+            "in-run", self.__jamediaconvert_in_run)
 
         self.connect("delete-event", self.__salir)
 
@@ -81,6 +83,10 @@ class JAMediaVideo(gtk.Window):
         self.realize()
 
         gobject.idle_add(self.__run)
+
+    def __jamediaconvert_in_run(self, widget, valor):
+
+        self.toolbar.activate_conversor(valor)
 
     def __accion_list(self, widget, lista, accion, _iter):
 

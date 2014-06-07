@@ -310,6 +310,10 @@ class Toolbar(gtk.EventBox):
 
         self.toolbar_video.permitir_filmar(valor)
 
+    def activate_conversor(self, valor):
+
+        self.toolbar_converter.set_sensitive(not valor)
+
 
 class ToolbarPrincipal(gtk.EventBox):
     """

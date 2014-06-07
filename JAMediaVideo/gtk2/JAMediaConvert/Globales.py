@@ -333,3 +333,51 @@ def copiar(origen, destino):
     except:
         print "ERROR Al Intentar Copiar un Archivo"
         return False
+
+
+def get_audio_directory():
+    """
+    Devuelve el Directorio de Audio de JAMedia y JAMediaTube.
+    """
+
+    import os
+
+    AUDIO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Audio")
+
+    if not os.path.exists(AUDIO_JAMEDIA_VIDEO):
+        make_base_directory()
+
+    return AUDIO_JAMEDIA_VIDEO
+
+
+def get_imagenes_directory():
+    """
+    Devuelve el Directorio de Imagenes de JAMediaVideo y JAMediaImagenes.
+    """
+
+    import os
+
+    IMAGENES_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Fotos")
+
+    if not os.path.exists(IMAGENES_JAMEDIA_VIDEO):
+        make_base_directory()
+
+    return IMAGENES_JAMEDIA_VIDEO
+
+
+def get_video_directory():
+    """
+    Devuelve el Directorio de Video de JAMediaVideo.
+    """
+
+    import os
+
+    VIDEO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
+        "JAMediaDatos", "Videos")
+
+    if not os.path.exists(VIDEO_JAMEDIA_VIDEO):
+        make_base_directory()
+
+    return VIDEO_JAMEDIA_VIDEO

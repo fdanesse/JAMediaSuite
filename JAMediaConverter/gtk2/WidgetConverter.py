@@ -29,6 +29,9 @@ from Converter.PipelineConverter import PipelineConverter
 
 from Globales import get_colors
 from Globales import describe_archivo
+from Globales import get_audio_directory
+from Globales import get_imagenes_directory
+from Globales import get_video_directory
 
 gobject.threads_init()
 gtk.gdk.threads_init()

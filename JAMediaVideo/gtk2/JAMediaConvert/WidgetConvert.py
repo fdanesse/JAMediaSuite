@@ -25,9 +25,13 @@ import gobject
 
 from PlayerList import PlayerList
 from ProgressBar import ProgressBar
+from Converter.PipelineConverter import PipelineConverter
 
 from Globales import get_colors
 from Globales import describe_archivo
+from Globales import get_audio_directory
+from Globales import get_imagenes_directory
+from Globales import get_video_directory
 
 gobject.threads_init()
 gtk.gdk.threads_init()
@@ -38,7 +42,9 @@ class WidgetConvert(gtk.HPaned):
     __gsignals__ = {
     "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
+    "in-run": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN, ))}
 
     def __init__(self):
 
@@ -69,26 +75,33 @@ class WidgetConvert(gtk.HPaned):
         """
 
         if accion == "Ejecutar Tarea en Archivo":
-            print "insensibilizar controles que afecten proceso"
-            print "iniciar tareas configuradas"
+            # Desactiva toolbar del conversor
+            self.emit("in-run", True)
+
+            for tarea in self.scrolltareas.vbox.get_children():
+                tarea.hide()
+
+            # desactiva botonera
+            widgetarchivo.in_run(True)
+            widgetarchivo.show()
+            widgetarchivo.play()
+            #FIXME: Recordar que debe emitir end para reactivar controles
 
         elif accion == "Ejecutar Tareas en la Lista":
-            print "insensibilizar controles que afecten proceso"
-            print "iniciar tareas configuradas"
+            #self.emit("in-run", True)
+            print "iniciar tareas configuradas sobre toda la lista"
 
         elif accion == "Copiar Tarea a Toda la Lista":
             self.get_toplevel().set_sensitive(False)
 
             for filepath in self.playerlist.get_items_paths():
-                # Crear el widget de tareas para cada archivo en la lista.
                 self.__selecction_file(False, filepath)
 
             self.scrolltareas.copy_tarea(widgetarchivo.get_tareas())
-
             self.get_toplevel().set_sensitive(True)
 
         else:
-            print "Tarea sin definir:", self.__accion_tarea, accion
+            print "Tarea sin definir:", self.__accion_tareas, accion
 
     def __selecction_file(self, widget, path):
         """
@@ -207,6 +220,8 @@ class WidgetArchivo(gtk.Frame):
         gtk.Frame.__init__(self)
 
         self.path_origen = path
+        self.temp_tareas = []
+        self.player = False
 
         self.set_label("  %s  " % os.path.basename(self.path_origen))
         self.set_border_width(5)
@@ -300,6 +315,61 @@ class WidgetArchivo(gtk.Frame):
         else:
             print "Tarea sin Definir:", self.__set_accion, accion
 
+    def __play_stack_tareas(self, player=False):
+
+        if not self.temp_tareas:
+            self.emit("accion-tarea", "end")
+            #self.buttonsbox.progress.set_progress(100.0)
+            return
+
+        tarea = self.temp_tareas[0]
+        self.temp_tareas.remove(tarea)
+
+        if self.player:
+            self.player.stop()
+            del(self.player)
+            self.player = False
+
+        dirpath_destino = ""
+
+        if tarea in ["jpg", "png"]:
+            dirpath_destino = get_imagenes_directory()
+
+        elif tarea in ["ogg", "mp3", "wav"]:
+            dirpath_destino = get_audio_directory()
+
+        elif tarea in ["ogv", "mpeg", "avi"]:
+            dirpath_destino = get_video_directory()
+
+        self.player = PipelineConverter(
+            self.path_origen, tarea, dirpath_destino)
+
+        self.player.connect("endfile", self.__play_stack_tareas)
+        self.player.connect("newposicion", self.__process_tarea)
+        self.player.connect("info", self.__info_tarea)
+        self.player.play()
+
+    def __info_tarea(self, player, info):
+
+        print info
+
+    def __process_tarea(self, player, posicion):
+
+        self.buttonsbox.progress.set_progress(float(posicion))
+
+    def in_run(self, valor):
+        """
+        Cuando se ejecutan tareas, se desactivan las botoneras.
+        """
+
+        for frame in self.iz_box.get_children():
+            vbox = frame.get_child()
+
+            for check in vbox.get_children():
+                check.set_sensitive(not valor)
+
+        self.buttonsbox.set_sensitive(not valor)
+
     def get_tareas(self):
         """
         Devuelve las tareas configuradas para un determinado archivo.
@@ -335,6 +405,10 @@ class WidgetArchivo(gtk.Frame):
 
     def stop(self):
         print "Detener Todas las Tareas", self.stop
+
+    def play(self):
+        self.temp_tareas = self.get_tareas()
+        self.__play_stack_tareas()
 
 
 class ImageFrame(gtk.Frame):
