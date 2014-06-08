@@ -76,6 +76,7 @@ class JAMediaVideo(gtk.Window):
         self.base_panel.connect("accion-list", self.__accion_list)
         self.base_panel.connect(
             "in-run", self.__jamediaconvert_in_run)
+        self.base_panel.connect("cancel-toolbars", self.__cancel_toolbars)
 
         self.toolbar_accion.connect("aviso", self.__update_accions)
 
@@ -148,7 +149,7 @@ class JAMediaVideo(gtk.Window):
         self.__cancel_toolbars()
         self.toolbar_salir.run("JAMediaVideo")
 
-    def __cancel_toolbars(self):
+    def __cancel_toolbars(self, widget=False):
 
         self.toolbar_accion.cancelar()
         self.toolbar_salir.cancelar()

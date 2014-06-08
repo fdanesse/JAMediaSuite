@@ -91,7 +91,9 @@ class BasePanel(gtk.HPaned):
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
     "in-run": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN, ))}
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN, )),
+    "cancel-toolbars": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, ())}
 
     def __init__(self):
 
@@ -217,6 +219,8 @@ class BasePanel(gtk.HPaned):
         if self.player:
             self.player.set_volumen(valor)
 
+        self.emit("cancel-toolbars")
+
     def __user_set_progress(self, widget=None, valor=None):
         """
         REPRODUCTOR:
@@ -224,17 +228,16 @@ class BasePanel(gtk.HPaned):
             el usuario la desplaza y hace "seek" sobre el reproductor.
         """
 
-        #self.__cancel_toolbars_flotantes()
-
         if self.player:
             self.player.set_position(valor)
+
+        self.emit("cancel-toolbars")
 
     def __accion_player(self, widget, senial):
         """
         REPRODUCTOR:
             Acciones sobre pistas en lista de reproducción.
         """
-        #self.__cancel_toolbars_flotantes()
 
         if senial == "atras":
             self.playerlist.seleccionar_anterior()
@@ -249,6 +252,8 @@ class BasePanel(gtk.HPaned):
         elif senial == "pausa-play":
             if self.player:
                 self.player.pause_play()
+
+        self.emit("cancel-toolbars")
 
     def __play_item(self, widget, path):
         """
@@ -342,6 +347,8 @@ class BasePanel(gtk.HPaned):
         else:
             self.jamediawebcam.set_efecto(efecto, propiedad, valor)
 
+        self.emit("cancel-toolbars")
+
     def __cargar_efectos(self, efectos):
         """
         Agrega los widgets con efectos a la paleta de configuración.
@@ -388,6 +395,8 @@ class BasePanel(gtk.HPaned):
 
             ventana.set_sensitive(True)
 
+        self.emit("cancel-toolbars")
+
     def __set_balance(self, widget, valor, tipo):
         """
         Setea valores en Balance de Video.
@@ -409,6 +418,8 @@ class BasePanel(gtk.HPaned):
         elif tipo == "gamma":
             self.jamediawebcam.set_balance(gamma=valor)
 
+        self.emit("cancel-toolbars")
+
     def __jamediaconvert_run(self):
         """
         Cambia a modo Conversor y Extractor.
@@ -418,8 +429,6 @@ class BasePanel(gtk.HPaned):
             print "__jamediaconvert_run"
         self.pantalla.hide()
         self.jamediaconvert.show()
-        #self.imageplayer = ImagePlayer(self.pantalla)
-        #self.playerlist.set_mime_types(["image/*"])
 
     def __jamediaimagenes_run(self):
         """
@@ -579,6 +588,7 @@ class BasePanel(gtk.HPaned):
         """
 
         self.jamediawebcam.set_formato(formato)
+        self.emit("cancel-toolbars")
 
     def __set_camara(self, widget, tipo, device):
         """
@@ -596,6 +606,7 @@ class BasePanel(gtk.HPaned):
             self.get_toplevel().toolbar.permitir_filmar(True)
 
         self.__re_init_video_web_cam(device=device)
+        self.emit("cancel-toolbars")
 
     def __re_init_video_web_cam(self, device=False, salida=False):
         """
@@ -760,7 +771,6 @@ class BasePanel(gtk.HPaned):
                 self.jamediawebcam.rotar(accion)
 
             elif self.player:
-                #self.__cancel_toolbars_flotantes()
                 self.player.rotar(accion)
 
             elif self.imageplayer:
@@ -808,6 +818,8 @@ class BasePanel(gtk.HPaned):
 
         else:
             print self.set_accion, accion
+
+        self.emit("cancel-toolbars")
 
     def config_show(self, tipo):
         """
@@ -882,6 +894,8 @@ class BasePanel(gtk.HPaned):
         if self.jamediawebcam:
             self.__update_balance_toolbars(
                 self.jamediawebcam.get_config())
+
+        self.emit("cancel-toolbars")
 
     def pack_efectos(self):
         """
