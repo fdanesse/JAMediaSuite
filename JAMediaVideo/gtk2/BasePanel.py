@@ -891,3 +891,5 @@ class BasePanel(gtk.HPaned):
             self.imageplayer.stop()
             del(self.imageplayer)
             self.imageplayer = False
+
+        self.jamediaconvert.salir()

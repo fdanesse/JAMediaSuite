@@ -25,7 +25,7 @@ import gobject
 
 from PlayerList import PlayerList
 from ProgressBar import ProgressBar
-from Converter.PipelineConverter import PipelineConverter
+from Converter.JAMediaConverter import JAMediaConverter
 
 from Globales import get_colors
 from Globales import describe_archivo
@@ -77,7 +77,7 @@ class WidgetConvert(gtk.HPaned):
         if accion == "Ejecutar Tarea en Archivo":
             # Desactiva toolbar del conversor
             self.emit("in-run", True)
-
+            self.playerlist.set_sensitive(False)
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.hide()
 
@@ -85,7 +85,6 @@ class WidgetConvert(gtk.HPaned):
             widgetarchivo.in_run(True)
             widgetarchivo.show()
             widgetarchivo.play()
-            #FIXME: Recordar que debe emitir end para reactivar controles
 
         elif accion == "Ejecutar Tareas en la Lista":
             #self.emit("in-run", True)
@@ -101,7 +100,14 @@ class WidgetConvert(gtk.HPaned):
             self.get_toplevel().set_sensitive(True)
 
         else:
-            print "Tarea sin definir:", self.__accion_tareas, accion
+            self.emit("in-run", False)
+            self.playerlist.set_sensitive(True)
+
+            for tarea in self.scrolltareas.vbox.get_children():
+                tarea.show()
+
+            widgetarchivo.in_run(False)
+            # widgetarchivo.show()
 
     def __selecction_file(self, widget, path):
         """
@@ -131,6 +137,11 @@ class WidgetConvert(gtk.HPaned):
 
         self.scrolltareas.limpiar()
         self.playerlist.limpiar()
+
+    def salir(self):
+
+        for tarea in self.scrolltareas.vbox.get_children():
+            tarea.salir()
 
 
 class ScrollTareas(gtk.ScrolledWindow):
@@ -304,7 +315,6 @@ class WidgetArchivo(gtk.Frame):
             self.emit("accion-tarea", accion)
 
         elif accion == "Eliminar Tarea":
-            self.stop()
             vbox = self.get_parent()
             vbox.remove(self)
             self.destroy()
@@ -319,16 +329,15 @@ class WidgetArchivo(gtk.Frame):
 
         if not self.temp_tareas:
             self.emit("accion-tarea", "end")
-            #self.buttonsbox.progress.set_progress(100.0)
             return
 
         tarea = self.temp_tareas[0]
         self.temp_tareas.remove(tarea)
 
-        if self.player:
-            self.player.stop()
-            del(self.player)
-            self.player = False
+        #if self.player:
+        #    self.player.stop()
+        #    del(self.player)
+        #    self.player = False
 
         dirpath_destino = ""
 
@@ -341,13 +350,19 @@ class WidgetArchivo(gtk.Frame):
         elif tarea in ["ogv", "mpeg", "avi"]:
             dirpath_destino = get_video_directory()
 
-        self.player = PipelineConverter(
+        gobject.idle_add(self.__new_jamedia_converter,
+            tarea, dirpath_destino)
+
+    def __new_jamedia_converter(self, tarea, dirpath_destino):
+
+        self.player = JAMediaConverter(
             self.path_origen, tarea, dirpath_destino)
 
         self.player.connect("endfile", self.__play_stack_tareas)
         self.player.connect("newposicion", self.__process_tarea)
         self.player.connect("info", self.__info_tarea)
-        self.player.play()
+
+        gobject.idle_add(self.player.play)
 
     def __info_tarea(self, player, info):
 
@@ -403,8 +418,11 @@ class WidgetArchivo(gtk.Frame):
                 else:
                     check.set_active(False)
 
-    def stop(self):
-        print "Detener Todas las Tareas", self.stop
+    def salir(self):
+        if self.player:
+            self.player.stop()
+            del(self.player)
+            self.player = False
 
     def play(self):
         self.temp_tareas = self.get_tareas()

@@ -31,7 +31,13 @@ class wav_bin(gst.Bin):
 
         gst.Bin.__init__(self)
 
-        self.set_name('wav_bin')
+        self.set_name('audio-out')
+
+        audioconvert = gst.element_factory_make(
+            "audioconvert", "audioconvert")
+        audioresample = gst.element_factory_make(
+            "audioresample", "audioresample")
+        audioresample.set_property('quality', 10)
 
         wavenc = gst.element_factory_make(
             "wavenc", "wavenc")
@@ -39,15 +45,19 @@ class wav_bin(gst.Bin):
         filesink = gst.element_factory_make(
             "filesink", "filesinkwav")
 
+        self.add(audioconvert)
+        self.add(audioresample)
         self.add(wavenc)
         self.add(filesink)
 
+        audioconvert.link(audioresample)
+        audioresample.link(wavenc)
         wavenc.link(filesink)
 
         filesink.set_property(
             'location', location)
 
-        pad = wavenc.get_static_pad("sink")
+        pad = audioconvert.get_static_pad("sink")
         self.add_pad(gst.GhostPad("sink", pad))
 
 
@@ -57,23 +67,32 @@ class mp3_bin(gst.Bin):
 
         gst.Bin.__init__(self)
 
-        self.set_name('mp3_bin')
+        self.set_name('audio-out')
+
+        audioconvert = gst.element_factory_make(
+            "audioconvert", "audioconvert")
+        audioresample = gst.element_factory_make(
+            "audioresample", "audioresample")
+        audioresample.set_property('quality', 10)
 
         lamemp3enc = gst.element_factory_make(
             "lamemp3enc", "lamemp3enc")
-
         filesink = gst.element_factory_make(
             "filesink", "filesinkmp3")
 
+        self.add(audioconvert)
+        self.add(audioresample)
         self.add(lamemp3enc)
         self.add(filesink)
 
+        audioconvert.link(audioresample)
+        audioresample.link(lamemp3enc)
         lamemp3enc.link(filesink)
 
         filesink.set_property(
             'location', location)
 
-        pad = lamemp3enc.get_static_pad("sink")
+        pad = audioconvert.get_static_pad("sink")
         self.add_pad(gst.GhostPad("sink", pad))
 
 
@@ -83,7 +102,7 @@ class ogg_bin(gst.Bin):
 
         gst.Bin.__init__(self)
 
-        self.set_name('ogg_bin')
+        self.set_name('audio-out')
 
         vorbisenc = gst.element_factory_make(
             "vorbisenc", "vorbisenc")
