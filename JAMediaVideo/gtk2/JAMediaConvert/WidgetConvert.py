@@ -161,8 +161,19 @@ class WidgetConvert(gtk.HPaned):
     def salir(self):
 
         self.tareas_pendientes = []
-        for tarea in self.scrolltareas.vbox.get_children():
-            tarea.salir()
+        for widgetarchivo in self.scrolltareas.vbox.get_children():
+            widgetarchivo.salir()
+
+    def quitar(self, path):
+        """
+        Quita el Widget de tareas de un archivo en particular.
+        """
+
+        for widgetarchivo in self.scrolltareas.vbox.get_children():
+            if widgetarchivo.path_origen == path:
+                self.scrolltareas.vbox.remove(widgetarchivo)
+                widgetarchivo.destroy()
+                break
 
 
 class ScrollTareas(gtk.ScrolledWindow):

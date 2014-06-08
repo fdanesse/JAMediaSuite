@@ -646,7 +646,7 @@ class MenuList(gtk.Menu):
                 self.append(borrar)
                 borrar.connect_object("activate", self.__set_accion,
                     widget, path, "Borrar")
-            print tipo
+
             if "audio" in tipo or "video" in tipo or "application/ogg" in tipo:
                 editar = gtk.MenuItem("Editar o Convertir Archivo")
                 self.append(editar)

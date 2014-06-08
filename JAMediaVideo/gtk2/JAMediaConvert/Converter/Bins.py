@@ -104,6 +104,12 @@ class ogg_bin(gst.Bin):
 
         self.set_name('audio-out')
 
+        audioconvert = gst.element_factory_make(
+            "audioconvert", "audioconvert")
+        audioresample = gst.element_factory_make(
+            "audioresample", "audioresample")
+        audioresample.set_property('quality', 10)
+
         vorbisenc = gst.element_factory_make(
             "vorbisenc", "vorbisenc")
         oggmux = gst.element_factory_make(
@@ -111,15 +117,19 @@ class ogg_bin(gst.Bin):
         filesink = gst.element_factory_make(
             "filesink", "filesinkogg")
 
+        self.add(audioconvert)
+        self.add(audioresample)
         self.add(vorbisenc)
         self.add(oggmux)
         self.add(filesink)
 
+        audioconvert.link(audioresample)
+        audioresample.link(vorbisenc)
         vorbisenc.link(oggmux)
         oggmux.link(filesink)
 
         filesink.set_property(
             'location', location)
 
-        pad = vorbisenc.get_static_pad("sink")
+        pad = audioconvert.get_static_pad("sink")
         self.add_pad(gst.GhostPad("sink", pad))

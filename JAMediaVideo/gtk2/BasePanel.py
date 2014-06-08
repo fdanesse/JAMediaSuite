@@ -672,6 +672,22 @@ class BasePanel(gtk.HPaned):
         self.get_toplevel().toolbar.set_sensitive(True)
         return False
 
+    def update_accions(self, accion, uri):
+        """
+        Cuando se quita un archivo de su lugar a través de la lista,
+        se detienen los reproductores y se quita la tarea de ese
+        archivo en el conversor.
+        """
+
+        if accion in ["Quitar", "Borrar", "Mover"]:
+            if self.player:
+                self.player.stop()
+
+            if self.imageplayer:
+                self.imageplayer.stop()
+
+            self.jamediaconvert.quitar(uri)
+
     def mode_change(self, tipo):
         """
         Cambia el modo de la aplicación.

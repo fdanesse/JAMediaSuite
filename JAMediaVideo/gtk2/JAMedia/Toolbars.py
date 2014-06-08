@@ -131,6 +131,9 @@ class ToolbarAccion(gtk.EventBox):
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
     "accion-stream": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING)),
+    "aviso": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING))}
 
     def __init__(self):
@@ -282,6 +285,7 @@ class ToolbarAccion(gtk.EventBox):
         #    elif self.accion == "Grabar":
         #        self.emit("Grabar", uri)
 
+        self.emit("aviso", self.accion, uri)
         self.label.set_text("")
         self.lista = None
         self.accion = None

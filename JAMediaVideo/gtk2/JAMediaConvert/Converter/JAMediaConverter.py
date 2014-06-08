@@ -27,6 +27,7 @@ import gobject
 
 from Bins import wav_bin
 from Bins import mp3_bin
+from Bins import ogg_bin
 
 def borrar(origen):
 
@@ -100,6 +101,9 @@ class JAMediaConverter(gst.Pipeline):
         elif self.codec == "mp3":
             self.__run_mp3_out()
 
+        elif self.codec == "ogg":
+            self.__run_ogg_out()
+
         filesrc = gst.element_factory_make(
             "filesrc", "filesrc")
         decodebin = gst.element_factory_make(
@@ -169,6 +173,33 @@ class JAMediaConverter(gst.Pipeline):
         lamemp3enc = mp3_bin(self.newpath)
         self.add(lamemp3enc)
 
+    def __run_ogg_out(self):
+
+        videoconvert = gst.element_factory_make(
+            "fakesink", "video-out")
+        self.add(videoconvert)
+
+        # path de salida
+        location = os.path.basename(self.origen)
+
+        if "." in location:
+            extension = ".%s" % self.origen.split(".")[-1]
+            location = location.replace(extension, ".%s" % self.codec)
+
+        else:
+            location = "%s.%s" % (location, self.codec)
+
+        self.newpath = os.path.join(self.dirpath_destino, location)
+
+        if os.path.exists(self.newpath):
+            fecha = datetime.date.today()
+            hora = time.strftime("%H-%M-%S")
+            location = "%s_%s_%s" % (fecha, hora, location)
+            self.newpath = os.path.join(self.dirpath_destino, location)
+
+        oggenc = ogg_bin(self.newpath)
+        self.add(oggenc)
+
     def __on_pad_added(self, decodebin, pad):
         """
         Agregar elementos en forma dinámica según sean necesarios.
@@ -208,7 +239,10 @@ class JAMediaConverter(gst.Pipeline):
             err, debug = mensaje.parse_error()
             self.__new_handle(False)
             if PR:
-                print "JAMediaConverter ERROR:", err, debug
+                print "JAMediaConverter ERROR:"
+                print "\t%s ==> %s" % (self.origen, self.codec)
+                print "\t%s" % err
+                print "\t%s" % debug
             self.emit("endfile")
 
         return gst.BUS_PASS

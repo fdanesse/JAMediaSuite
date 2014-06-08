@@ -77,12 +77,22 @@ class JAMediaVideo(gtk.Window):
         self.base_panel.connect(
             "in-run", self.__jamediaconvert_in_run)
 
+        self.toolbar_accion.connect("aviso", self.__update_accions)
+
         self.connect("delete-event", self.__salir)
 
         self.show_all()
         self.realize()
 
         gobject.idle_add(self.__run)
+
+    def __update_accions(self, toolbaraccion, accion, uri):
+        """
+        Cuando se confirma una accion desde toolbar_accion, se
+        acualiza la interfaz ya que puede que ese archivo ya no esté allí.
+        """
+
+        self.base_panel.update_accions(accion, uri)
 
     def __jamediaconvert_in_run(self, widget, valor):
 
