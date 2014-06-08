@@ -40,17 +40,15 @@ from Gstreamer_Bins import Foto_bin
 gobject.threads_init()
 gtk.gdk.threads_init()
 
-PR = True
+PR = False
 
 
 class JAMediaWebCamVideo(gobject.GObject):
 
     __gsignals__ = {
-    "stop-rafaga": (gobject.SIGNAL_RUN_LAST,
+    "stop-rafaga": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, []),
-    #"estado": (gobject.SIGNAL_RUN_FIRST,
-    #    gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "update": (gobject.SIGNAL_RUN_LAST,
+    "update": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, ventana_id, device="/dev/video0",
@@ -154,7 +152,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         elif message.type == gst.MESSAGE_ERROR:
             print "JAMediaWebCamVideo ERROR:"
             print message.parse_error()
-            print
 
         elif message.type == gst.MESSAGE_STATE_CHANGED:
             old, new, pending = message.parse_state_changed()

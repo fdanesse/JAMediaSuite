@@ -118,7 +118,7 @@ class ToolbarSalir(gtk.EventBox):
         self.hide()
 
 
-class ToolbarAccion(gtk.Toolbar):
+class ToolbarAccion(gtk.EventBox):
     """
     Toolbar para que el usuario confirme las
     acciones que se realizan sobre items que se
@@ -135,15 +135,18 @@ class ToolbarAccion(gtk.Toolbar):
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
+        gtk.EventBox.__init__(self)
+
+        toolbar = gtk.Toolbar()
 
         self.modify_bg(0, get_colors("window"))
+        toolbar.modify_bg(0, get_colors("window"))
 
         self.lista = None
         self.accion = None
         self.iter = None
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -152,13 +155,13 @@ class ToolbarAccion(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
         item = gtk.ToolItem()
         self.label = gtk.Label("")
         self.label.show()
         item.add(self.label)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "dialog-ok.svg")
@@ -166,11 +169,12 @@ class ToolbarAccion(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__realizar_accion)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
+        self.add(toolbar)
         self.show_all()
 
     def __realizar_accion(self, widget):

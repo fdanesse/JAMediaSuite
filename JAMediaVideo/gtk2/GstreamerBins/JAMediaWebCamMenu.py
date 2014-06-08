@@ -26,7 +26,7 @@ from Gstreamer_Bins import v4l2src_bin
 from Gstreamer_Bins import Balance_bin
 from Gstreamer_Bins import In_lan_udpsrc_bin
 
-PR = True
+PR = False
 
 
 class JAMediaWebCamMenu(gobject.GObject):
@@ -39,7 +39,8 @@ class JAMediaWebCamMenu(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
-        if PR: print "JAMediaWebCamMenu Iniciada"
+        if PR:
+            print "JAMediaWebCamMenu Iniciada"
 
         self.ventana_id = ventana_id
         self.pipeline = gst.Pipeline()
@@ -90,32 +91,35 @@ class JAMediaWebCamMenu(gobject.GObject):
         elif message.type == gst.MESSAGE_ERROR:
             print "JAMediaWebCamMenu ERROR:"
             print message.parse_error()
-            print
 
         return gst.BUS_PASS
 
     def get_rotacion(self):
 
-        if PR: print "\tJAMediaWebCamMenu.get_rotacion"
+        if PR:
+            print "\tJAMediaWebCamMenu.get_rotacion"
         balance = self.pipeline.get_by_name("Balance_bin")
         return balance.get_rotacion()
 
     def set_rotacion(self, rot):
 
-        if PR: print "\tJAMediaWebCamMenu.set_rotacion"
+        if PR:
+            print "\tJAMediaWebCamMenu.set_rotacion"
         balance = self.pipeline.get_by_name("Balance_bin")
         balance.set_rotacion(rot)
 
     def get_config(self):
 
-        if PR: print "\tJAMediaWebCamMenu.get_config"
+        if PR:
+            print "\tJAMediaWebCamMenu.get_config"
         balance = self.pipeline.get_by_name("Balance_bin")
         return balance.get_config()
 
     def set_balance(self, brillo=None, contraste=None,
         saturacion=None, hue=None, gamma=None):
 
-        if PR: print "\tJAMediaWebCamMenu.set_balance"
+        if PR:
+            print "\tJAMediaWebCamMenu.set_balance"
         balance = self.pipeline.get_by_name("Balance_bin")
 
         balance.set_balance(
@@ -126,9 +130,11 @@ class JAMediaWebCamMenu(gobject.GObject):
             gamma=gamma)
 
     def stop(self):
-        if PR: print "\tJAMediaWebCamMenu.stop"
+        if PR:
+            print "\tJAMediaWebCamMenu.stop"
         self.pipeline.set_state(gst.STATE_NULL)
 
     def play(self):
-        if PR: print "\tJAMediaWebCamMenu.play"
+        if PR:
+            print "\tJAMediaWebCamMenu.play"
         self.pipeline.set_state(gst.STATE_PLAYING)

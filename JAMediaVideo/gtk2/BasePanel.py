@@ -57,7 +57,7 @@ from Globales import get_ip
 gobject.threads_init()
 gtk.gdk.threads_init()
 
-PR = True
+PR = False
 
 
 def ocultar(objeto):
@@ -414,7 +414,8 @@ class BasePanel(gtk.HPaned):
         Cambia a modo Conversor y Extractor.
         """
 
-        if PR: print "__jamediaconvert_run"
+        if PR:
+            print "__jamediaconvert_run"
         self.pantalla.hide()
         self.jamediaconvert.show()
         #self.imageplayer = ImagePlayer(self.pantalla)
@@ -425,7 +426,8 @@ class BasePanel(gtk.HPaned):
         Cambia a modo visor de imágenes.
         """
 
-        if PR: print "__jamediaimagenes_run"
+        if PR:
+            print "__jamediaimagenes_run"
         self.imageplayer = ImagePlayer(self.pantalla)
         self.playerlist.set_mime_types(["image/*"])
 
@@ -434,7 +436,8 @@ class BasePanel(gtk.HPaned):
         Cambia a modo reproductor.
         """
 
-        if PR: print "__jamedia_run"
+        if PR:
+            print "__jamedia_run"
         xid = self.pantalla.get_property('window').xid
         self.player = JAMediaReproductor(xid)
 
@@ -446,7 +449,8 @@ class BasePanel(gtk.HPaned):
         Cambia a modo Cámara básica del menú.
         """
 
-        if PR: print "__camara_menu_run"
+        if PR:
+            print "__camara_menu_run"
 
         self.control = True
 
@@ -471,7 +475,8 @@ class BasePanel(gtk.HPaned):
         Cambia modo Cámara de video.
         """
 
-        if PR: print "__camara_video_run"
+        if PR:
+            print "__camara_video_run"
 
         self.control = True
 
@@ -513,7 +518,8 @@ class BasePanel(gtk.HPaned):
         Cambia a modo Cámara de Fotografía.
         """
 
-        if PR: print "__camara_foto_run"
+        if PR:
+            print "__camara_foto_run"
 
         self.control = True
 
@@ -598,7 +604,8 @@ class BasePanel(gtk.HPaned):
         realizadas hasta el momento.
         """
 
-        if PR: print "__re_init_video_web_cam", device, salida
+        if PR:
+            print "__re_init_video_web_cam", device, salida
 
         rot = 0
         config = {}
@@ -635,7 +642,8 @@ class BasePanel(gtk.HPaned):
 
     def __re_config(self, rot, config, efectos):
 
-        if PR: print "__re_config", rot, config, efectos
+        if PR:
+            print "__re_config", rot, config, efectos
 
         self.jamediawebcam.set_balance(
             brillo=config.get("brillo", False),
@@ -644,7 +652,8 @@ class BasePanel(gtk.HPaned):
             hue=config.get("hue", False),
             gamma=config.get("gamma", False))
 
-        if rot: self.jamediawebcam.set_rotacion(rot)
+        if rot:
+            self.jamediawebcam.set_rotacion(rot)
 
         for efecto in efectos:
             self.widget_efectos.reemit_config_efecto(efecto)
@@ -668,7 +677,8 @@ class BasePanel(gtk.HPaned):
         Cambia el modo de la aplicación.
         """
 
-        if PR: print "Mode_Change:", tipo
+        if PR:
+            print "Mode_Change:", tipo
 
         self.get_toplevel().toolbar.set_sensitive(False)
 

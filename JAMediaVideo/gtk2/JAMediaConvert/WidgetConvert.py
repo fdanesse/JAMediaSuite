@@ -53,6 +53,8 @@ class WidgetConvert(gtk.HPaned):
         self.set_border_width(2)
         self.modify_bg(0, get_colors("window"))
 
+        self.tareas_pendientes = []
+
         self.playerlist = PlayerList()
         self.playerlist.set_mime_types(["audio/*", "video/*"])
         self.scrolltareas = ScrollTareas()
@@ -75,20 +77,17 @@ class WidgetConvert(gtk.HPaned):
         """
 
         if accion == "Ejecutar Tarea en Archivo":
-            # Desactiva toolbar del conversor
-            self.emit("in-run", True)
-            self.playerlist.set_sensitive(False)
-            for tarea in self.scrolltareas.vbox.get_children():
-                tarea.hide()
-
-            # desactiva botonera
-            widgetarchivo.in_run(True)
-            widgetarchivo.show()
-            widgetarchivo.play()
+            self.tareas_pendientes = [widgetarchivo]
+            gobject.idle_add(self.__run_stack_tareas)
 
         elif accion == "Ejecutar Tareas en la Lista":
-            #self.emit("in-run", True)
-            print "iniciar tareas configuradas sobre toda la lista"
+            self.tareas_pendientes = []
+
+            for tarea in self.scrolltareas.vbox.get_children():
+                tarea.hide()
+                self.tareas_pendientes.append(tarea)
+
+            gobject.idle_add(self.__run_stack_tareas)
 
         elif accion == "Copiar Tarea a Toda la Lista":
             self.get_toplevel().set_sensitive(False)
@@ -100,13 +99,34 @@ class WidgetConvert(gtk.HPaned):
             self.get_toplevel().set_sensitive(True)
 
         else:
+            gobject.idle_add(self.__run_stack_tareas)
+
+    def __run_stack_tareas(self):
+
+        if not self.tareas_pendientes:
             self.emit("in-run", False)
             self.playerlist.set_sensitive(True)
 
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.show()
+                tarea.in_run(False)
 
-            widgetarchivo.in_run(False)
+        else:
+            widgetarchivo = self.tareas_pendientes[0]
+            self.tareas_pendientes.remove(widgetarchivo)
+
+            self.emit("in-run", True)
+            self.playerlist.set_sensitive(False)
+
+            for tarea in self.scrolltareas.vbox.get_children():
+                tarea.hide()
+
+            widgetarchivo.in_run(True)
+            widgetarchivo.show()
+            widgetarchivo.play()
+
+        #self.queue_draw()
+        return False
 
     def __selecction_file(self, widget, path):
         """
@@ -134,11 +154,13 @@ class WidgetConvert(gtk.HPaned):
         Limpia la lista de archivos y el widget de tareas.
         """
 
+        self.tareas_pendientes = []
         self.scrolltareas.limpiar()
         self.playerlist.limpiar()
 
     def salir(self):
 
+        self.tareas_pendientes = []
         for tarea in self.scrolltareas.vbox.get_children():
             tarea.salir()
 
@@ -212,7 +234,7 @@ class ScrollTareas(gtk.ScrolledWindow):
         """
 
         for child in self.vbox.get_children():
-            child.stop()
+            child.salir()
             self.vbox.remove(child)
             child.destroy()
 
@@ -328,6 +350,8 @@ class WidgetArchivo(gtk.Frame):
 
         if not self.temp_tareas:
             self.emit("accion-tarea", "end")
+            self.buttonsbox.set_info("  Tareas Procesadas  ")
+            self.buttonsbox.progress.set_progress(100.0)
             return
 
         tarea = self.temp_tareas[0]
@@ -365,11 +389,11 @@ class WidgetArchivo(gtk.Frame):
 
     def __info_tarea(self, player, info):
 
-        print info
+        self.buttonsbox.set_info(info)
 
     def __process_tarea(self, player, posicion):
 
-        self.buttonsbox.progress.set_progress(float(posicion))
+        self.buttonsbox.set_progress(float(posicion))
 
     def in_run(self, valor):
         """
@@ -602,14 +626,14 @@ class ButtonsBox(gtk.Frame):
         eliminar.connect("clicked", self.__emit_accion)
         vbox.pack_start(eliminar, False, False, 2)
 
-        frame = gtk.Frame()
-        frame.set_label("  Progreso  ")
-        frame.set_border_width(5)
-        frame.modify_bg(0, get_colors("toolbars"))
+        self.frame_info = gtk.Frame()
+        self.frame_info.set_label("  Progreso  ")
+        self.frame_info.set_border_width(5)
+        self.frame_info.modify_bg(0, get_colors("toolbars"))
 
         self.progress = ProgressBar()
-        frame.add(self.progress)
-        vbox.pack_end(frame, False, False, 2)
+        self.frame_info.add(self.progress)
+        vbox.pack_end(self.frame_info, False, False, 2)
 
         event = gtk.EventBox()
         event.set_border_width(5)
@@ -622,6 +646,17 @@ class ButtonsBox(gtk.Frame):
     def __emit_accion(self, widget):
 
         self.emit("accion", widget.get_label())
+        self.queue_draw()
+
+    def set_info(self, info):
+
+        self.frame_info.set_label("  %s  " % info)
+        self.queue_draw()
+
+    def set_progress(self, posicion):
+
+        self.progress.set_progress(posicion)
+        self.queue_draw()
 
     def activar(self, valor):
 

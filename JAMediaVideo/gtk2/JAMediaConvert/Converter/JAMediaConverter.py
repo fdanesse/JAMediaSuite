@@ -28,6 +28,29 @@ import gobject
 from Bins import wav_bin
 from Bins import mp3_bin
 
+def borrar(origen):
+
+    try:
+        import os
+        import shutil
+
+        if os.path.isdir(origen):
+            shutil.rmtree("%s" % (os.path.join(origen)))
+
+        elif os.path.isfile(origen):
+            os.remove("%s" % (os.path.join(origen)))
+
+        else:
+            return False
+
+        return True
+
+    except:
+        print "ERROR Al Intentar Borrar un Archivo"
+        return False
+
+PR = True
+
 gobject.threads_init()
 
 
@@ -45,11 +68,11 @@ class JAMediaConverter(gst.Pipeline):
     """
 
     __gsignals__ = {
-    "endfile": (gobject.SIGNAL_RUN_LAST,
+    "endfile": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, []),
-    "newposicion": (gobject.SIGNAL_RUN_LAST,
+    "newposicion": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_INT,)),
-    "info": (gobject.SIGNAL_RUN_LAST,
+    "info": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self, origen, codec, dirpath_destino):
@@ -157,8 +180,9 @@ class JAMediaConverter(gst.Pipeline):
         #text = "Detectando Capas en la Fuente:"
         #for item in string.split(","):
         #    text = "%s\n\t%s" % (text, item.strip())
-
-        #self.emit("info", text)
+        #if PR:
+        #    print "Archivo: ", self.origen
+        #    print text
 
         if string.startswith('audio/'):
             audioconvert = self.get_by_name('audio-out')
@@ -177,18 +201,14 @@ class JAMediaConverter(gst.Pipeline):
     def __bus_handler(self, bus, mensaje):
 
         if mensaje.type == gst.MESSAGE_EOS:
-            #self.emit("info", "JAMediaConverter Concluido: %s ==> %s" % (
-            #    os.path.basename(self.origen), self.codec))
             self.__new_handle(False)
             self.emit("endfile")
 
         elif mensaje.type == gst.MESSAGE_ERROR:
             err, debug = mensaje.parse_error()
             self.__new_handle(False)
-            self.emit(
-                "info",
-                "JAMediaConverter Error en la Reproducción: %s %s" % (
-                err, debug))
+            if PR:
+                print "JAMediaConverter ERROR:", err, debug
             self.emit("endfile")
 
         return gst.BUS_PASS
@@ -206,7 +226,7 @@ class JAMediaConverter(gst.Pipeline):
 
         if reset:
             self.actualizador = gobject.timeout_add(
-                250, self.__handle)
+                500, self.__handle)
 
     def __handle(self):
         """
@@ -222,7 +242,7 @@ class JAMediaConverter(gst.Pipeline):
         # Control de archivo de salida
         if os.path.exists(self.newpath):
             tamanio = os.path.getsize(self.newpath)
-            tam = int(tamanio) / 1024.0 / 1024.0
+            #tam = int(tamanio) / 1024.0 / 1024.0
 
             if self.tamanio != tamanio:
                 self.timer = 0
@@ -234,6 +254,10 @@ class JAMediaConverter(gst.Pipeline):
         if self.timer > 60:
             self.stop()
             self.emit("endfile")
+            if PR:
+                print "JAMediaConverter No Pudo Procesar:", self.newpath
+            if os.path.exists(self.newpath):
+                borrar(self.newpath)
             return False
 
         # Control de progreso
@@ -242,7 +266,8 @@ class JAMediaConverter(gst.Pipeline):
             valor2, bool2 = self.query_position(gst.FORMAT_TIME)
 
         except:
-            print "JAMediaConverter ERROR en HANDLER"
+            if PR:
+                print "JAMediaConverter ERROR en HANDLER"
             return True
 
         if valor1 != None:
@@ -256,8 +281,8 @@ class JAMediaConverter(gst.Pipeline):
 
         pos = int(posicion * 100 / duracion)
 
-        if pos < 0 or pos > self.duracion:
-            return True
+        #if pos < 0 or pos > self.duracion:
+        #    return True
 
         if self.duracion != duracion:
             self.duracion = duracion
@@ -269,13 +294,20 @@ class JAMediaConverter(gst.Pipeline):
         return True
 
     def play(self):
-        self.emit("info", "JAMediaConverter Iniciado: %s ==> %s" % (
-            os.path.basename(self.origen), self.codec))
+        self.emit("info", "Procesando ==> %s" % self.codec)
+
+        #if PR:
+        #    print "JAMediaConverter Iniciado: %s ==> %s" % (
+        #        os.path.basename(self.origen), self.codec)
+
         self.set_state(gst.STATE_PLAYING)
         self.__new_handle(True)
 
     def stop(self):
         self.__new_handle(False)
         self.set_state(gst.STATE_NULL)
-        self.emit("info", "JAMediaConverter Detenido: %s" % (
-            os.path.basename(self.origen)))
+        self.emit("info", "  Progreso  ")
+
+        #if PR:
+        #    print "JAMediaConverter Detenido: %s" % (
+        #        os.path.basename(self.origen))

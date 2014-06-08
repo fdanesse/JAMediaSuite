@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import time
 import gobject
 import gst
 
@@ -28,8 +27,6 @@ from JAMediaBins import JAMedia_Audio_Pipeline
 from JAMediaBins import JAMedia_Video_Pipeline
 
 gobject.threads_init()
-
-PR = True
 
 
 class JAMediaReproductor(gobject.GObject):
@@ -57,8 +54,6 @@ class JAMediaReproductor(gobject.GObject):
         """
 
         gobject.GObject.__init__(self)
-
-        if PR: print "JAMediaReproductor Iniciado", time.strftime("%H-%M-%S")
 
         self.nombre = "JAMediaReproductor"
 
@@ -97,29 +92,28 @@ class JAMediaReproductor(gobject.GObject):
 
                 if new == gst.STATE_PLAYING:
                     self.emit("estado", "playing")
-                    self.__new_handle(True, [old, new])
+                    self.__new_handle(True)
 
                 elif new == gst.STATE_PAUSED:
                     self.emit("estado", "paused")
-                    self.__new_handle(False, [old, new])
+                    self.__new_handle(False)
 
                 elif new == gst.STATE_NULL:
                     self.emit("estado", "None")
-                    self.__new_handle(False, [old, new])
+                    self.__new_handle(False)
 
                 else:
                     self.emit("estado", "paused")
-                    self.__new_handle(False, [old, new])
+                    self.__new_handle(False)
 
         elif message.type == gst.MESSAGE_EOS:
-            self.__new_handle(False, [gst.MESSAGE_EOS])
+            self.__new_handle(False)
             self.emit("endfile")
 
         elif message.type == gst.MESSAGE_ERROR:
             print "JAMediaReproductor ERROR:"
             print message.parse_error()
-            print
-            self.__new_handle(False, [gst.MESSAGE_ERROR])
+            self.__new_handle(False)
 
         elif message.type == gst.MESSAGE_LATENCY:
         #    http://cgit.collabora.com/git/farstream.git/
@@ -160,24 +154,21 @@ class JAMediaReproductor(gobject.GObject):
         Pone el pipe de gst en gst.STATE_PLAYING
         """
 
-        if PR: print "JAMediaReproductor.play", time.strftime("%H-%M-%S")
         self.player.set_state(gst.STATE_PLAYING)
 
     def __pause(self):
         """
         Pone el pipe de gst en gst.STATE_PAUSED
         """
-        if PR: print "JAMediaReproductor.pause", time.strftime("%H-%M-%S")
+
         self.player.set_state(gst.STATE_PAUSED)
 
-    def __new_handle(self, reset, func):
+    def __new_handle(self, reset):
         """
         Elimina o reinicia la funcion que
         envia los datos de actualizacion para
         la barra de progreso del reproductor.
         """
-
-        #print time.time(), reset, func
 
         if self.actualizador:
             gobject.source_remove(self.actualizador)
@@ -237,7 +228,6 @@ class JAMediaReproductor(gobject.GObject):
         segun el estado actual del pipe de gst.
         """
 
-        if PR: print "JAMediaReproductor.pause_play", time.strftime("%H-%M-%S")
         if self.estado == gst.STATE_PAUSED \
             or self.estado == gst.STATE_NULL \
             or self.estado == gst.STATE_READY:
@@ -251,7 +241,6 @@ class JAMediaReproductor(gobject.GObject):
         Rota el Video.
         """
 
-        if PR: print "JAMediaReproductor.rotar", time.strftime("%H-%M-%S")
         self.video_bin.rotar(valor)
 
     def set_balance(self, brillo=False, contraste=False,
@@ -261,7 +250,6 @@ class JAMediaReproductor(gobject.GObject):
         Recibe % en float y convierte a los valores del filtro.
         """
 
-        if PR: print "JAMediaReproductor.set_balance", time.strftime("%H-%M-%S")
         self.video_bin.set_balance(brillo=brillo, contraste=contraste,
             saturacion=saturacion, hue=hue, gamma=gamma)
 
@@ -270,7 +258,6 @@ class JAMediaReproductor(gobject.GObject):
         Retorna los valores actuales de balance en % float.
         """
 
-        if PR: print "JAMediaReproductor.get_balance", time.strftime("%H-%M-%S")
         return self.video_bin.get_balance()
 
     def stop(self):
@@ -278,7 +265,6 @@ class JAMediaReproductor(gobject.GObject):
         Pone el pipe de gst en gst.STATE_NULL
         """
 
-        if PR: print "JAMediaReproductor.stop", time.strftime("%H-%M-%S")
         self.player.set_state(gst.STATE_NULL)
         self.emit("newposicion", 0)
 
@@ -286,8 +272,6 @@ class JAMediaReproductor(gobject.GObject):
         """
         Carga un archivo o stream en el pipe de gst.
         """
-
-        if PR: print "JAMediaReproductor.load", time.strftime("%H-%M-%S"), uri
 
         if os.path.exists(uri):
             #direccion = gst.filename_to_uri(uri)
@@ -355,5 +339,4 @@ class JAMediaReproductor(gobject.GObject):
 
     def get_volumen(self):
 
-        if PR: print "JAMediaReproductor.get_volumen", time.strftime("%H-%M-%S")
         return self.player.get_property('volume') * 10
