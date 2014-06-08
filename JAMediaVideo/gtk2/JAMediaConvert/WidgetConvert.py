@@ -107,7 +107,6 @@ class WidgetConvert(gtk.HPaned):
                 tarea.show()
 
             widgetarchivo.in_run(False)
-            # widgetarchivo.show()
 
     def __selecction_file(self, widget, path):
         """

@@ -62,9 +62,12 @@ class JAMediaConverter(gst.Pipeline):
         self.duracion = 0
         self.posicion = 0
         self.actualizador = False
+        self.timer = 0
+        self.tamanio = 0
         self.origen = origen
         self.dirpath_destino = dirpath_destino
         self.codec = codec
+        self.newpath = ""
 
         self.bus = self.get_bus()
 
@@ -105,15 +108,15 @@ class JAMediaConverter(gst.Pipeline):
         else:
             location = "%s.%s" % (location, self.codec)
 
-        newpath = os.path.join(self.dirpath_destino, location)
+        self.newpath = os.path.join(self.dirpath_destino, location)
 
-        if os.path.exists(newpath):
+        if os.path.exists(self.newpath):
             fecha = datetime.date.today()
             hora = time.strftime("%H-%M-%S")
             location = "%s_%s_%s" % (fecha, hora, location)
-            newpath = os.path.join(self.dirpath_destino, location)
+            self.newpath = os.path.join(self.dirpath_destino, location)
 
-        wavenc = wav_bin(newpath)
+        wavenc = wav_bin(self.newpath)
         self.add(wavenc)
 
     def __run_mp3_out(self):
@@ -132,15 +135,15 @@ class JAMediaConverter(gst.Pipeline):
         else:
             location = "%s.%s" % (location, self.codec)
 
-        newpath = os.path.join(self.dirpath_destino, location)
+        self.newpath = os.path.join(self.dirpath_destino, location)
 
-        if os.path.exists(newpath):
+        if os.path.exists(self.newpath):
             fecha = datetime.date.today()
             hora = time.strftime("%H-%M-%S")
             location = "%s_%s_%s" % (fecha, hora, location)
-            newpath = os.path.join(self.dirpath_destino, location)
+            self.newpath = os.path.join(self.dirpath_destino, location)
 
-        lamemp3enc = mp3_bin(newpath)
+        lamemp3enc = mp3_bin(self.newpath)
         self.add(lamemp3enc)
 
     def __on_pad_added(self, decodebin, pad):
@@ -182,8 +185,10 @@ class JAMediaConverter(gst.Pipeline):
         elif mensaje.type == gst.MESSAGE_ERROR:
             err, debug = mensaje.parse_error()
             self.__new_handle(False)
-            self.emit("info",
-                "JAMediaConverter Error en la Reproducción: %s %s" % (err, debug))
+            self.emit(
+                "info",
+                "JAMediaConverter Error en la Reproducción: %s %s" % (
+                err, debug))
             self.emit("endfile")
 
         return gst.BUS_PASS
@@ -214,6 +219,24 @@ class JAMediaConverter(gst.Pipeline):
         pos = None
         duracion = None
 
+        # Control de archivo de salida
+        if os.path.exists(self.newpath):
+            tamanio = os.path.getsize(self.newpath)
+            tam = int(tamanio) / 1024.0 / 1024.0
+
+            if self.tamanio != tamanio:
+                self.timer = 0
+                self.tamanio = tamanio
+
+            else:
+                self.timer += 1
+
+        if self.timer > 60:
+            self.stop()
+            self.emit("endfile")
+            return False
+
+        # Control de progreso
         try:
             valor1, bool1 = self.query_duration(gst.FORMAT_TIME)
             valor2, bool2 = self.query_position(gst.FORMAT_TIME)
