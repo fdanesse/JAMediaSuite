@@ -44,9 +44,13 @@ import gtk
 gobject.threads_init()
 gtk.gdk.threads_init()
 
+PR = False
+
+
 class ImagePlayer(gobject.GObject):
 
     def __init__(self, ventana):
+
         gobject.GObject.__init__(self)
 
         self.ventana = ventana
@@ -95,6 +99,7 @@ class ImagePlayer(gobject.GObject):
 class PlayerBin(gobject.GObject):
 
     def __init__(self, ventana_id, width, height):
+
         gobject.GObject.__init__(self)
 
         self.ventana_id = ventana_id
@@ -112,14 +117,17 @@ class PlayerBin(gobject.GObject):
         self.bus.set_sync_handler(self.__bus_handler)
 
     def __bus_handler(self, bus, message):
+
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
                 message.src.set_xwindow_id(self.ventana_id)
 
         elif message.type == gst.MESSAGE_ERROR:
-            print "ImagePlayer ERROR:"
-            print message.parse_error()
-            print
+            err, debug = message.parse_error()
+            if PR:
+                print "ImagePlayer ERROR:"
+                print "\t%s" % err
+                print "\t%s" % debug
 
         return gst.BUS_PASS
 

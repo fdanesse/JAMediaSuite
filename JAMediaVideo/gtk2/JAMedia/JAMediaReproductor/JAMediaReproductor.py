@@ -28,6 +28,8 @@ from JAMediaBins import JAMedia_Video_Pipeline
 
 gobject.threads_init()
 
+PR = False
+
 
 class JAMediaReproductor(gobject.GObject):
     """
@@ -111,8 +113,11 @@ class JAMediaReproductor(gobject.GObject):
             self.emit("endfile")
 
         elif message.type == gst.MESSAGE_ERROR:
-            print "JAMediaReproductor ERROR:"
-            print message.parse_error()
+            err, debug = message.parse_error()
+            if PR:
+                print "JAMediaReproductor ERROR:"
+                print "\t%s" % err
+                print "\t%s" % debug
             self.__new_handle(False)
 
         elif message.type == gst.MESSAGE_LATENCY:
@@ -196,7 +201,8 @@ class JAMediaReproductor(gobject.GObject):
             valor2, bool2 = self.player.query_position(gst.FORMAT_TIME)
 
         except:
-            print "ERROR en HANDLER"
+            if PR:
+                print "ERROR en HANDLER"
             return True
 
         if valor1 != None:

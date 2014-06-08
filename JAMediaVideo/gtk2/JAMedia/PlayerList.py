@@ -62,9 +62,7 @@ class PlayerList(gtk.Frame):
         scroll.set_policy(
             gtk.POLICY_AUTOMATIC,
             gtk.POLICY_AUTOMATIC)
-        scroll.add_with_viewport(self.lista)
-        scroll.get_child().modify_bg(
-            0, get_colors("window"))
+        scroll.add(self.lista)
 
         vbox.pack_start(self.toolbar, False, False, 0)
         vbox.pack_start(scroll, True, True, 0)
@@ -313,6 +311,7 @@ class Lista(gtk.TreeView):
             gobject.TYPE_STRING,
             gobject.TYPE_STRING))
 
+        self.modify_bg(0, get_colors("window"))
         self.set_property("rules-hint", True)
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
@@ -369,6 +368,8 @@ class Lista(gtk.TreeView):
     def __construir_columa(self, text, index, visible):
 
         render = gtk.CellRendererText()
+        render.set_property("background", get_colors("window"))
+        render.set_property("foreground", get_colors("drawingplayer"))
 
         columna = gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
@@ -381,6 +382,7 @@ class Lista(gtk.TreeView):
     def __construir_columa_icono(self, text, index, visible):
 
         render = gtk.CellRendererPixbuf()
+        render.set_property("cell-background", get_colors("toolbars"))
 
         columna = gtk.TreeViewColumn(text, render, pixbuf=index)
         columna.set_property('visible', visible)
@@ -420,14 +422,28 @@ class Lista(gtk.TreeView):
                         "Iconos", "sonido.svg")
 
                 else:
-                    icono = os.path.join(BASE_PATH,
-                        "Iconos", "sonido.svg")
+                    icono = path
+
         else:
             icono = os.path.join(BASE_PATH,
                 "Iconos", "sonido.svg")
 
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            24, -1)
+        pixbuf = ""
+
+        try:
+            if "image" in tipo:
+                pixbuf = gdk.pixbuf_new_from_file_at_size(
+                    icono, 50, -1)
+
+            else:
+                pixbuf = gdk.pixbuf_new_from_file_at_size(
+                    icono, 24, -1)
+
+        except:
+            icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
+            pixbuf = gdk.pixbuf_new_from_file_at_size(
+                icono, 24, -1)
+
         self.get_model().append([pixbuf, texto, path])
 
         elementos.remove(elementos[0])

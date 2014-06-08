@@ -614,6 +614,7 @@ class Out_lan_smokeenc_bin(gst.Bin):
         self.add_pad(gst.GhostPad(
             "sink", queue.get_static_pad("sink")))
 
+
 '''
 class Out_lan_speexenc_bin(gst.Bin):
     """
@@ -670,6 +671,7 @@ class Out_lan_speexenc_bin(gst.Bin):
         self.add_pad(gst.GhostPad(
             "sink", queue.get_static_pad("sink")))
 '''
+
 
 class In_lan_udpsrc_bin(gst.Bin):
     """

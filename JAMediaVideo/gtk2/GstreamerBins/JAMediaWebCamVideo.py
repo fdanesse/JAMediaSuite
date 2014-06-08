@@ -56,7 +56,8 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
-        if PR: print "JAMediaWebCamVideo Iniciada"
+        if PR:
+            print "JAMediaWebCamVideo Iniciada"
 
         self.actualizador = False
         self.tamanio = 0
@@ -208,25 +209,29 @@ class JAMediaWebCamVideo(gobject.GObject):
 
     def set_rotacion(self, rot):
 
-        if PR: print "\tJAMediaWebCamVideo.set_rotacion", rot
+        if PR:
+            print "\tJAMediaWebCamVideo.set_rotacion", rot
         balance = self.pipeline.get_by_name("Balance_bin")
         balance.set_rotacion(rot)
 
     def get_rotacion(self):
 
-        if PR: print "\tJAMediaWebCamVideo.get_rotacion"
+        if PR:
+            print "\tJAMediaWebCamVideo.get_rotacion"
         balance = self.pipeline.get_by_name("Balance_bin")
         return balance.get_rotacion()
 
     def get_config(self):
 
-        if PR: print "\tJAMediaWebCamVideo.get_config"
+        if PR:
+            print "\tJAMediaWebCamVideo.get_config"
         balance = self.pipeline.get_by_name("Balance_bin")
         return balance.get_config()
 
     def set_efecto(self, efecto, propiedad, valor):
 
-        if PR: print "\tJAMediaWebCamVideo.set_efecto", efecto, propiedad, valor
+        if PR:
+            print "\tJAMediaWebCamVideo.set_efecto", efecto, propiedad, valor
         ef = self.pipeline.get_by_name("Efectos_bin")
 
         if ef:
@@ -234,25 +239,29 @@ class JAMediaWebCamVideo(gobject.GObject):
 
     def rotar(self, valor):
 
-        if PR: print "\tJAMediaWebCamVideo.rotar", valor
+        if PR:
+            print "\tJAMediaWebCamVideo.rotar", valor
         balance = self.pipeline.get_by_name('Balance_bin')
         balance.rotar(valor)
 
     def play(self):
 
-        if PR: print "\tJAMediaWebCamVideo.play"
+        if PR:
+            print "\tJAMediaWebCamVideo.play"
         self.pipeline.set_state(gst.STATE_PLAYING)
 
     def stop(self):
 
-        print "\tJAMediaWebCamVideo.stop"
+        if PR:
+            print "\tJAMediaWebCamVideo.stop"
         self.__new_handle(False, [])
         self.pipeline.set_state(gst.STATE_NULL)
 
     def set_balance(self, brillo=False, contraste=False,
         saturacion=False, hue=False, gamma=False):
 
-        if PR: print "\tJAMediaWebCamVideo.set_balance"
+        if PR:
+            print "\tJAMediaWebCamVideo.set_balance"
         balance = self.pipeline.get_by_name("Balance_bin")
 
         balance.set_balance(
@@ -267,7 +276,8 @@ class JAMediaWebCamVideo(gobject.GObject):
         Setea formato de salida [ogv, avi, mpeg, ip]
         """
 
-        if PR: print "\tJAMediaWebCamVideo.set_formato", formato
+        if PR:
+            print "\tJAMediaWebCamVideo.set_formato", formato
         self.formato = formato
 
     def filmar(self, path_archivo):
@@ -277,7 +287,8 @@ class JAMediaWebCamVideo(gobject.GObject):
             "", "192.168.1.2", "ogv", "mpeg", "avi"
         """
 
-        if PR: print "\tJAMediaWebCamVideo.filmar"
+        if PR:
+            print "\tJAMediaWebCamVideo.filmar"
 
         self.pipeline.set_state(gst.STATE_NULL)
 
@@ -310,7 +321,8 @@ class JAMediaWebCamVideo(gobject.GObject):
 
     def fotografiar(self, dir_path, rafaga):
 
-        if PR: print "\tJAMediaWebCamVideo.fotografiar"
+        if PR:
+            print "\tJAMediaWebCamVideo.fotografiar"
 
         gdkpixbufsink = self.pipeline.get_by_name("gdkpixbufsink")
 
