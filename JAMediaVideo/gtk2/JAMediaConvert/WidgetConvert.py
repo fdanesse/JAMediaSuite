@@ -283,8 +283,7 @@ class WidgetArchivo(gtk.Frame):
 
         datos = describe_archivo(self.path_origen)
 
-        if 'video' in datos or 'application/ogg' in datos or \
-            'application/octet-stream' in datos:
+        if 'video' in datos or 'application/ogg' in datos:
 
             imageframe = ImageFrame(
                 "  Extraer Imágenes en Formato:  ", self.path_origen)
@@ -301,7 +300,9 @@ class WidgetArchivo(gtk.Frame):
             self.iz_box.pack_start(audioframe, False, False, 0)
             audioframe.connect("tarea", self.__sensitive_buttons)
 
-        elif "audio" in datos:
+        elif "audio" in datosor or \
+            'application/octet-stream' in datos:
+
             audioframe = AudioFrame(
                 "  Convertir Audio a Formato:  ", self.path_origen)
             self.iz_box.pack_start(audioframe, False, False, 0)

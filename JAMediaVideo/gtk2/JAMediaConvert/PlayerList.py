@@ -403,53 +403,47 @@ class Lista(gtk.TreeView):
             return False
 
         texto, path = elementos[0]
-
         descripcion = describe_uri(path)
-
+        pixbuf = ""
         icono = None
+
         if descripcion:
             if descripcion[2]:
                 # Es un Archivo
                 tipo = describe_archivo(path)
 
-                if 'video' in tipo or 'application/ogg' in tipo or \
-                    'application/octet-stream' in tipo:
+                if 'video' in tipo or 'application/ogg' in tipo:
                     icono = os.path.join(BASE_PATH,
                         "Iconos", "video.svg")
+                    pixbuf = gdk.pixbuf_new_from_file_at_size(
+                        icono, 24, -1)
 
-                elif 'audio' in tipo:
+                elif 'audio' in tipo or \
+                    'application/octet-stream' in tipo:
                     icono = os.path.join(BASE_PATH,
                         "Iconos", "sonido.svg")
+                    pixbuf = gdk.pixbuf_new_from_file_at_size(
+                        icono, 24, -1)
 
                 else:
                     icono = path
+                    if "image" in tipo:
+                        pixbuf = gdk.pixbuf_new_from_file_at_size(
+                            icono, 50, -1)
+
+                    else:
+                        pixbuf = gdk.pixbuf_new_from_file_at_size(
+                            icono, 24, -1)
 
         else:
             icono = os.path.join(BASE_PATH,
                 "Iconos", "sonido.svg")
-
-        pixbuf = ""
-
-        try:
-            if "image" in tipo:
-                pixbuf = gdk.pixbuf_new_from_file_at_size(
-                    icono, 50, -1)
-
-            else:
-                pixbuf = gdk.pixbuf_new_from_file_at_size(
-                    icono, 24, -1)
-
-        except:
-            icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
             pixbuf = gdk.pixbuf_new_from_file_at_size(
                 icono, 24, -1)
 
         self.get_model().append([pixbuf, texto, path])
-
         elementos.remove(elementos[0])
-
         gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
-
         return False
 
     def limpiar(self):
