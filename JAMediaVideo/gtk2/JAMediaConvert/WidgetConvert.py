@@ -125,7 +125,6 @@ class WidgetConvert(gtk.HPaned):
             widgetarchivo.show()
             widgetarchivo.play()
 
-        #self.queue_draw()
         return False
 
     def __selecction_file(self, widget, path):
@@ -366,7 +365,7 @@ class WidgetArchivo(gtk.Frame):
             self.buttonsbox.progress.set_progress(100.0)
             return
 
-        tarea = self.temp_tareas[0]
+        codec = self.temp_tareas[0]
         self.temp_tareas.remove(tarea)
 
         #if self.player:
@@ -376,22 +375,22 @@ class WidgetArchivo(gtk.Frame):
 
         dirpath_destino = ""
 
-        if tarea in ["jpg", "png"]:
+        if codec in ["jpg", "png"]:
             dirpath_destino = get_imagenes_directory()
 
-        elif tarea in ["ogg", "mp3", "wav"]:
+        elif codec in ["ogg", "mp3", "wav"]:
             dirpath_destino = get_audio_directory()
 
-        elif tarea in ["ogv", "mpeg", "avi"]:
+        elif codec in ["ogv", "mpeg", "avi"]:
             dirpath_destino = get_video_directory()
 
         gobject.idle_add(self.__new_jamedia_converter,
-            tarea, dirpath_destino)
+            codec, dirpath_destino)
 
-    def __new_jamedia_converter(self, tarea, dirpath_destino):
+    def __new_jamedia_converter(self, codec, dirpath_destino):
 
         self.player = JAMediaConverter(
-            self.path_origen, tarea, dirpath_destino)
+            self.path_origen, codec, dirpath_destino)
 
         self.player.connect("endfile", self.__play_stack_tareas)
         self.player.connect("newposicion", self.__process_tarea)

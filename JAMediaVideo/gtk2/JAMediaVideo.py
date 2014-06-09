@@ -108,10 +108,11 @@ class JAMediaVideo(gtk.Window):
             self.toolbar_accion.set_accion(lista, accion, _iter)
 
         elif accion == "Editar":
-            print "Switch a Conversor y Extractor", self.__accion_list
-            # Detener Reproductor
-            # limpiar la lista
-            # cambiar a conversor pasandole el archivo
+            text = lista.get_model().get_value(_iter, 1)
+            uri = lista.get_model().get_value(_iter, 2)
+            self.toolbar.switch("Convert")
+            converter = self.base_panel.jamediaconvert
+            converter.playerlist.lista.agregar_items([(text, uri)])
 
         else:
             print "Accion en la lista sin definir:", accion
