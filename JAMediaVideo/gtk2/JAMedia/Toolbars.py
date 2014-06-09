@@ -192,15 +192,8 @@ class ToolbarAccion(gtk.EventBox):
             if self.accion == "Quitar":
                 path = self.lista.get_model().get_path(self.iter)
                 path = (path[0] - 1, )
-
                 self.lista.get_model().remove(self.iter)
-
-                try:
-                    self.lista.get_selection().select_iter(
-                        self.lista.get_model().get_iter(path))
-
-                except:
-                    self.lista.seleccionar_primero()
+                self.__reselect(path)
 
             elif self.accion == "Copiar":
                 if os.path.isfile(uri):
@@ -211,59 +204,31 @@ class ToolbarAccion(gtk.EventBox):
                     if borrar(uri):
                         path = self.lista.get_model().get_path(self.iter)
                         path = (path[0] - 1, )
-
                         self.lista.get_model().remove(self.iter)
-
-                        try:
-                            self.lista.get_selection().select_iter(
-                                self.lista.get_model().get_iter(path))
-
-                        except:
-                            self.lista.seleccionar_primero()
+                        self.__reselect(path)
 
             elif self.accion == "Mover":
                 if os.path.isfile(uri):
                     if mover(uri, get_my_files_directory()):
                         path = self.lista.get_model().get_path(self.iter)
                         path = (path[0] - 1, )
-
                         self.lista.get_model().remove(self.iter)
-
-                        try:
-                            self.lista.get_selection().select_iter(
-                                self.lista.get_model().get_iter(path))
-
-                        except:
-                            self.lista.seleccionar_primero()
+                        self.__reselect(path)
 
         #Streaming no se usan en JAMediaVideo
         #else:
         #    if self.accion == "Quitar":
         #        path = self.lista.get_model().get_path(self.iter)
         #        path = (path[0] - 1, )
-
         #        self.lista.get_model().remove(self.iter)
-
-        #        try:
-        #            self.lista.get_selection().select_iter(
-        #                self.lista.get_model().get_iter(path))
-
-        #        except:
-        #            self.lista.seleccionar_primero()
+        #        self.__reselect(path)
 
         #    elif self.accion == "Borrar":
         #        self.emit("accion-stream", "Borrar", uri)
         #        path = self.lista.get_model().get_path(self.iter)
         #        path = (path[0] - 1, )
-
         #        self.lista.get_model().remove(self.iter)
-
-        #        try:
-        #            self.lista.get_selection().select_iter(
-        #                self.lista.get_model().get_iter(path))
-
-        #        except:
-        #            self.lista.seleccionar_primero()
+        #        self.__reselect(path)
 
         #    elif self.accion == "Copiar":
         #        self.emit("accion-stream", "Copiar", uri)
@@ -272,15 +237,8 @@ class ToolbarAccion(gtk.EventBox):
         #        self.emit("accion-stream", "Mover", uri)
         #        path = self.lista.get_model().get_path(self.iter)
         #        path = (path[0] - 1, )
-
         #        self.lista.get_model().remove(self.iter)
-
-        #        try:
-        #            self.lista.get_selection().select_iter(
-        #                self.lista.get_model().get_iter(path))
-
-        #        except:
-        #            self.lista.seleccionar_primero()
+        #        self.__reselect(path)
 
         #    elif self.accion == "Grabar":
         #        self.emit("Grabar", uri)
@@ -291,6 +249,17 @@ class ToolbarAccion(gtk.EventBox):
         self.accion = None
         self.iter = None
         self.hide()
+
+    def __reselect(self, path):
+
+        try:
+            if path[0] > -1:
+                self.lista.get_selection().select_iter(
+                    self.lista.get_model().get_iter(path))
+            else:
+                self.lista.seleccionar_primero()
+        except:
+            self.lista.seleccionar_primero()
 
     def set_accion(self, lista, accion, _iter):
         """

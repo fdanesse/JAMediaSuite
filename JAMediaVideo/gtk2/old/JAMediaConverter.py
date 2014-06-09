@@ -55,7 +55,7 @@ PR = True
 gobject.threads_init()
 
 
-class JAMediaConverter(gobject.GObject):
+class JAMediaConverter(gst.Pipeline):
     """
     Recibe un archivo de audio o un archivo de video y un codec de salida:
         Procesa dicho archivo de la siguiente forma:
@@ -78,7 +78,9 @@ class JAMediaConverter(gobject.GObject):
 
     def __init__(self, origen, codec, dirpath_destino):
 
-        gobject.GObject.__init__(self)
+        gst.Pipeline.__init__(self)
+
+        self.set_name('jamedia_converter_pipeline')
 
         self.estado = None
         self.duracion = 0
@@ -91,8 +93,7 @@ class JAMediaConverter(gobject.GObject):
         self.codec = codec
         self.newpath = ""
 
-        self.player = gst.element_factory_make(
-            "playbin2", "playbin2")
+        self.bus = self.get_bus()
 
         if self.codec == "wav":
             self.__run_wav_out()
@@ -103,16 +104,26 @@ class JAMediaConverter(gobject.GObject):
         elif self.codec == "ogg":
             self.__run_ogg_out()
 
-        self.player.set_property("uri", "file://" + self.origen)
+        filesrc = gst.element_factory_make(
+            "filesrc", "filesrc")
+        decodebin = gst.element_factory_make(
+            "decodebin", "decodebin")
 
-        self.bus = self.player.get_bus()
+        self.add(filesrc)
+        self.add(decodebin)
+
+        filesrc.link(decodebin)
+
+        filesrc.set_property('location', self.origen)
+        decodebin.connect('pad-added', self.__on_pad_added)
+
         self.bus.set_sync_handler(self.__bus_handler)
 
     def __run_wav_out(self):
 
         videoconvert = gst.element_factory_make(
             "fakesink", "video-out")
-        self.player.set_property('video-sink', videoconvert)
+        self.add(videoconvert)
 
         # path de salida
         location = os.path.basename(self.origen)
@@ -133,13 +144,13 @@ class JAMediaConverter(gobject.GObject):
             self.newpath = os.path.join(self.dirpath_destino, location)
 
         wavenc = wav_bin(self.newpath)
-        self.player.set_property('audio-sink', wavenc)
+        self.add(wavenc)
 
     def __run_mp3_out(self):
 
         videoconvert = gst.element_factory_make(
             "fakesink", "video-out")
-        self.player.set_property('video-sink', videoconvert)
+        self.add(videoconvert)
 
         # path de salida
         location = os.path.basename(self.origen)
@@ -160,13 +171,13 @@ class JAMediaConverter(gobject.GObject):
             self.newpath = os.path.join(self.dirpath_destino, location)
 
         lamemp3enc = mp3_bin(self.newpath)
-        self.player.set_property('audio-sink', lamemp3enc)
+        self.add(lamemp3enc)
 
     def __run_ogg_out(self):
 
         videoconvert = gst.element_factory_make(
             "fakesink", "video-out")
-        self.player.set_property('video-sink', videoconvert)
+        self.add(videoconvert)
 
         # path de salida
         location = os.path.basename(self.origen)
@@ -187,7 +198,36 @@ class JAMediaConverter(gobject.GObject):
             self.newpath = os.path.join(self.dirpath_destino, location)
 
         oggenc = ogg_bin(self.newpath)
-        self.player.set_property('audio-sink', oggenc)
+        self.add(oggenc)
+
+    def __on_pad_added(self, decodebin, pad):
+        """
+        Agregar elementos en forma dinámica según sean necesarios.
+            https://wiki.ubuntu.com/Novacut/GStreamer1.0
+        """
+
+        string = str(pad.get_caps())
+
+        #text = "Detectando Capas en la Fuente:"
+        #for item in string.split(","):
+        #    text = "%s\n\t%s" % (text, item.strip())
+        #if PR:
+        #    print "Archivo: ", self.origen
+        #    print text
+
+        if string.startswith('audio/'):
+            audioconvert = self.get_by_name('audio-out')
+
+            if audioconvert:
+                sink = audioconvert.get_static_pad('sink')
+                pad.link(sink)
+
+        elif string.startswith('video/'):
+            videoconvert = self.get_by_name('video-out')
+
+            if videoconvert:
+                sink = videoconvert.get_static_pad('sink')
+                pad.link(sink)
 
     def __bus_handler(self, bus, mensaje):
 
@@ -256,8 +296,8 @@ class JAMediaConverter(gobject.GObject):
 
         # Control de progreso
         try:
-            valor1, bool1 = self.player.query_duration(gst.FORMAT_TIME)
-            valor2, bool2 = self.player.query_position(gst.FORMAT_TIME)
+            valor1, bool1 = self.query_duration(gst.FORMAT_TIME)
+            valor2, bool2 = self.query_position(gst.FORMAT_TIME)
 
         except:
             if PR:
@@ -294,12 +334,12 @@ class JAMediaConverter(gobject.GObject):
         #    print "JAMediaConverter Iniciado: %s ==> %s" % (
         #        os.path.basename(self.origen), self.codec)
 
-        self.player.set_state(gst.STATE_PLAYING)
+        self.set_state(gst.STATE_PLAYING)
         self.__new_handle(True)
 
     def stop(self):
         self.__new_handle(False)
-        self.player.set_state(gst.STATE_NULL)
+        self.set_state(gst.STATE_NULL)
         self.emit("info", "  Progreso  ")
 
         #if PR:

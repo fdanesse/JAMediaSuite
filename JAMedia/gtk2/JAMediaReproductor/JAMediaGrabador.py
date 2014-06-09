@@ -63,6 +63,7 @@ class JAMediaGrabador(gobject.GObject):
 
         self.player = gst.element_factory_make(
             "uridecodebin", "uridecodebin")
+        self.player.set_property("download", True)
 
         self.pipeline.add(self.player)
 
