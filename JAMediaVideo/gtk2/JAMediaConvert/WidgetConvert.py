@@ -366,7 +366,7 @@ class WidgetArchivo(gtk.Frame):
             return
 
         codec = self.temp_tareas[0]
-        self.temp_tareas.remove(tarea)
+        self.temp_tareas.remove(codec)
 
         #if self.player:
         #    self.player.stop()

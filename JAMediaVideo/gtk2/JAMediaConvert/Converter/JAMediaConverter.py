@@ -103,7 +103,8 @@ class JAMediaConverter(gobject.GObject):
         elif self.codec == "ogg":
             self.__run_ogg_out()
 
-        self.player.set_property("uri", "file://" + self.origen)
+        elif self.codec == "ogv":
+            self.__run_ogv_out()
 
         self.bus = self.player.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
@@ -135,6 +136,8 @@ class JAMediaConverter(gobject.GObject):
         wavenc = wav_bin(self.newpath)
         self.player.set_property('audio-sink', wavenc)
 
+        self.player.set_property("uri", "file://" + self.origen)
+
     def __run_mp3_out(self):
 
         videoconvert = gst.element_factory_make(
@@ -162,6 +165,8 @@ class JAMediaConverter(gobject.GObject):
         lamemp3enc = mp3_bin(self.newpath)
         self.player.set_property('audio-sink', lamemp3enc)
 
+        self.player.set_property("uri", "file://" + self.origen)
+
     def __run_ogg_out(self):
 
         videoconvert = gst.element_factory_make(
@@ -188,6 +193,114 @@ class JAMediaConverter(gobject.GObject):
 
         oggenc = ogg_bin(self.newpath)
         self.player.set_property('audio-sink', oggenc)
+
+        self.player.set_property("uri", "file://" + self.origen)
+
+    def __run_ogv_out(self):
+
+        # path de salida
+        location = os.path.basename(self.origen)
+
+        if "." in location:
+            extension = ".%s" % self.origen.split(".")[-1]
+            location = location.replace(extension, ".%s" % self.codec)
+
+        else:
+            location = "%s.%s" % (location, self.codec)
+
+        self.newpath = os.path.join(self.dirpath_destino, location)
+
+        if os.path.exists(self.newpath):
+            fecha = datetime.date.today()
+            hora = time.strftime("%H-%M-%S")
+            location = "%s_%s_%s" % (fecha, hora, location)
+            self.newpath = os.path.join(self.dirpath_destino, location)
+
+        # Nueva declaración para player
+        self.player = gst.Pipeline()
+        filesrc = gst.element_factory_make(
+            "filesrc", "filesrc")
+        decodebin = gst.element_factory_make(
+            "decodebin", "decodebin")
+
+        self.player.add(filesrc)
+        self.player.add(decodebin)
+
+        filesrc.link(decodebin)
+
+        filesrc.set_property('location', self.origen)
+        decodebin.connect('pad-added', self.__on_pad_added)
+
+        # Audio
+        queue = gst.element_factory_make(
+            "queue", "audio-out")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        audioconvert = gst.element_factory_make(
+            "audioconvert", "audioconvert")
+
+        vorbisenc = gst.element_factory_make(
+            "vorbisenc", "vorbisenc")
+        oggmux = gst.element_factory_make(
+            "oggmux", "oggmux")
+        filesink = gst.element_factory_make(
+            "filesink", "filesinkogg")
+
+        self.player.add(queue)
+        self.player.add(audioconvert)
+        self.player.add(vorbisenc)
+        self.player.add(oggmux)
+        self.player.add(filesink)
+
+        queue.link(audioconvert)
+        audioconvert.link(vorbisenc)
+        vorbisenc.link(oggmux)
+        oggmux.link(filesink)
+
+        #Video
+        videoconvert = gst.element_factory_make(
+            "ffmpegcolorspace", "video-out")
+        theoraenc = gst.element_factory_make(
+            'theoraenc', 'theoraenc')
+
+        self.player.add(videoconvert)
+        self.player.add(theoraenc)
+
+        videoconvert.link(theoraenc)
+        theoraenc.link(oggmux)
+
+        filesink.set_property('location', self.newpath)
+
+    def __on_pad_added(self, decodebin, pad):
+        """
+        Agregar elementos en forma dinámica según sean necesarios.
+            https://wiki.ubuntu.com/Novacut/GStreamer1.0
+        """
+
+        string = str(pad.get_caps())
+
+        #text = "Detectando Capas en la Fuente:"
+        #for item in string.split(","):
+        #    text = "%s\n\t%s" % (text, item.strip())
+        #if PR:
+        #    print "Archivo: ", self.origen
+        #    print text
+
+        if string.startswith('audio/'):
+            audioconvert = self.player.get_by_name('audio-out')
+
+            if audioconvert:
+                sink = audioconvert.get_static_pad('sink')
+                pad.link(sink)
+
+        elif string.startswith('video/'):
+            videoconvert = self.player.get_by_name('video-out')
+
+            if videoconvert:
+                sink = videoconvert.get_static_pad('sink')
+                pad.link(sink)
 
     def __bus_handler(self, bus, mensaje):
 
