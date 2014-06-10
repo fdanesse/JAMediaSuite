@@ -312,7 +312,7 @@ class Toolbar(gtk.EventBox):
 
     def activate_conversor(self, valor):
 
-        self.toolbar_converter.set_sensitive(not valor)
+        self.toolbar_converter.activate_conversor(valor)
 
 
 class ToolbarPrincipal(gtk.EventBox):
@@ -998,16 +998,18 @@ class ToolbarConverter(gtk.EventBox):
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "lista.svg")
-        boton = get_boton(archivo, flip=False,
+        self.boton_menu = get_boton(archivo, flip=False,
             pixels=24)
-        boton.set_tooltip_text("Volver al Menú")
-        boton.connect("clicked",
+        self.boton_menu.set_tooltip_text("Volver al Menú")
+        self.boton_menu.connect("clicked",
             self.__emit_senial, "Salir")
-        toolbar.insert(boton, -1)
+        toolbar.insert(self.boton_menu, -1)
 
         self.add(toolbar)
         self.show_all()
 
     def __emit_senial(self, widget, senial):
-
         self.emit('accion', senial)
+
+    def activate_conversor(self, valor):
+        self.boton_menu.set_sensitive(not valor)

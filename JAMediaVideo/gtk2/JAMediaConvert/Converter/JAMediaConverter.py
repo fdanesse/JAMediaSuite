@@ -240,6 +240,9 @@ class JAMediaConverter(gobject.GObject):
 
         audioconvert = gst.element_factory_make(
             "audioconvert", "audioconvert")
+        audioresample = gst.element_factory_make(
+            "audioresample", "audioresample")
+        audioresample.set_property('quality', 10)
 
         vorbisenc = gst.element_factory_make(
             "vorbisenc", "vorbisenc")
@@ -250,25 +253,45 @@ class JAMediaConverter(gobject.GObject):
 
         self.player.add(queue)
         self.player.add(audioconvert)
+        self.player.add(audioresample)
         self.player.add(vorbisenc)
         self.player.add(oggmux)
         self.player.add(filesink)
 
         queue.link(audioconvert)
-        audioconvert.link(vorbisenc)
+        audioconvert.link(audioresample)
+        audioresample.link(vorbisenc)
         vorbisenc.link(oggmux)
         oggmux.link(filesink)
 
         #Video
+        queue = gst.element_factory_make(
+            "queue", "video-out")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
         videoconvert = gst.element_factory_make(
-            "ffmpegcolorspace", "video-out")
+            "ffmpegcolorspace", "ffmpegcolorspace")
+        videorate = gst.element_factory_make(
+            'videorate', 'videorate')
+
+        try:
+            videorate.set_property('max-rate', 30)
+        except:
+            pass
+
         theoraenc = gst.element_factory_make(
             'theoraenc', 'theoraenc')
 
+        self.player.add(queue)
         self.player.add(videoconvert)
+        self.player.add(videorate)
         self.player.add(theoraenc)
 
-        videoconvert.link(theoraenc)
+        queue.link(videoconvert)
+        videoconvert.link(videorate)
+        videorate.link(theoraenc)
         theoraenc.link(oggmux)
 
         filesink.set_property('location', self.newpath)
