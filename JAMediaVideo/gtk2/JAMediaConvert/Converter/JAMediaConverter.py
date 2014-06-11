@@ -94,6 +94,25 @@ class JAMediaConverter(gobject.GObject):
         self.player = gst.element_factory_make(
             "playbin2", "playbin2")
 
+        # path de salida
+        location = os.path.basename(self.origen)
+
+        if "." in location:
+            extension = ".%s" % self.origen.split(".")[-1]
+            location = location.replace(extension, ".%s" % self.codec)
+
+        else:
+            location = "%s.%s" % (location, self.codec)
+
+        self.newpath = os.path.join(self.dirpath_destino, location)
+
+        if os.path.exists(self.newpath):
+            fecha = datetime.date.today()
+            hora = time.strftime("%H-%M-%S")
+            location = "%s_%s_%s" % (fecha, hora, location)
+            self.newpath = os.path.join(self.dirpath_destino, location)
+
+        # Formato de salida
         if self.codec == "wav":
             self.__run_wav_out()
 
@@ -106,6 +125,9 @@ class JAMediaConverter(gobject.GObject):
         elif self.codec == "ogv":
             self.__run_ogv_out()
 
+        elif self.codec == "mpeg":
+            self.__run_mpeg_out()
+
         self.bus = self.player.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
 
@@ -114,24 +136,6 @@ class JAMediaConverter(gobject.GObject):
         videoconvert = gst.element_factory_make(
             "fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
-
-        # path de salida
-        location = os.path.basename(self.origen)
-
-        if "." in location:
-            extension = ".%s" % self.origen.split(".")[-1]
-            location = location.replace(extension, ".%s" % self.codec)
-
-        else:
-            location = "%s.%s" % (location, self.codec)
-
-        self.newpath = os.path.join(self.dirpath_destino, location)
-
-        if os.path.exists(self.newpath):
-            fecha = datetime.date.today()
-            hora = time.strftime("%H-%M-%S")
-            location = "%s_%s_%s" % (fecha, hora, location)
-            self.newpath = os.path.join(self.dirpath_destino, location)
 
         wavenc = wav_bin(self.newpath)
         self.player.set_property('audio-sink', wavenc)
@@ -144,24 +148,6 @@ class JAMediaConverter(gobject.GObject):
             "fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
 
-        # path de salida
-        location = os.path.basename(self.origen)
-
-        if "." in location:
-            extension = ".%s" % self.origen.split(".")[-1]
-            location = location.replace(extension, ".%s" % self.codec)
-
-        else:
-            location = "%s.%s" % (location, self.codec)
-
-        self.newpath = os.path.join(self.dirpath_destino, location)
-
-        if os.path.exists(self.newpath):
-            fecha = datetime.date.today()
-            hora = time.strftime("%H-%M-%S")
-            location = "%s_%s_%s" % (fecha, hora, location)
-            self.newpath = os.path.join(self.dirpath_destino, location)
-
         lamemp3enc = mp3_bin(self.newpath)
         self.player.set_property('audio-sink', lamemp3enc)
 
@@ -173,51 +159,80 @@ class JAMediaConverter(gobject.GObject):
             "fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
 
-        # path de salida
-        location = os.path.basename(self.origen)
-
-        if "." in location:
-            extension = ".%s" % self.origen.split(".")[-1]
-            location = location.replace(extension, ".%s" % self.codec)
-
-        else:
-            location = "%s.%s" % (location, self.codec)
-
-        self.newpath = os.path.join(self.dirpath_destino, location)
-
-        if os.path.exists(self.newpath):
-            fecha = datetime.date.today()
-            hora = time.strftime("%H-%M-%S")
-            location = "%s_%s_%s" % (fecha, hora, location)
-            self.newpath = os.path.join(self.dirpath_destino, location)
-
         oggenc = ogg_bin(self.newpath)
         self.player.set_property('audio-sink', oggenc)
 
         self.player.set_property("uri", "file://" + self.origen)
 
-    def __run_ogv_out(self):
+    def __run_mpeg_out(self):
 
-        # path de salida
-        location = os.path.basename(self.origen)
-
-        if "." in location:
-            extension = ".%s" % self.origen.split(".")[-1]
-            location = location.replace(extension, ".%s" % self.codec)
-
-        else:
-            location = "%s.%s" % (location, self.codec)
-
-        self.newpath = os.path.join(self.dirpath_destino, location)
-
-        if os.path.exists(self.newpath):
-            fecha = datetime.date.today()
-            hora = time.strftime("%H-%M-%S")
-            location = "%s_%s_%s" % (fecha, hora, location)
-            self.newpath = os.path.join(self.dirpath_destino, location)
+        # https://github.com/jspiros/hylia-transcoder/
+        # blob/master/hylia-transcoder.py
 
         # Nueva declaración para player
         self.player = gst.Pipeline()
+
+        filesrc = gst.element_factory_make(
+            "filesrc", "filesrc")
+        decodebin = gst.element_factory_make(
+            "decodebin", "decodebin")
+
+        self.player.add(filesrc)
+        self.player.add(decodebin)
+
+        filesrc.link(decodebin)
+
+        filesrc.set_property('location', self.origen)
+        decodebin.connect('pad-added', self.__on_pad_added)
+
+        # Audio
+        queue = gst.element_factory_make(
+            "queue", "audio-out")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        ffenc_mp2 = gst.element_factory_make(
+            "ffenc_mp2", "ffenc_mp2")
+
+        self.player.add(queue)
+        self.player.add(ffenc_mp2)
+
+        queue.link(ffenc_mp2)
+
+        #Video
+        queue = gst.element_factory_make(
+            "queue", "video-out")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        #ffenc_mpeg2video = gst.element_factory_make(
+        #    "ffenc_mpeg2video", "video-out")
+
+        self.player.add(queue)
+        self.player.add(ffenc_mpeg2video)
+
+        queue.link(ffenc_mpeg2video)
+
+        muxor = gst.element_factory_make('mpegtsmux', 'muxor')
+        filesink = gst.element_factory_make(
+            "filesink", "filesink")
+
+        self.player.add(muxor)
+        self.player.add(filesink)
+
+        ffenc_mp2.link(muxor)
+        ffenc_mpeg2video.link(muxor)
+        muxor.link(filesink)
+
+        filesink.set_property('location', self.newpath)
+
+    def __run_ogv_out(self):
+
+        # Nueva declaración para player
+        self.player = gst.Pipeline()
+
         filesrc = gst.element_factory_make(
             "filesrc", "filesrc")
         decodebin = gst.element_factory_make(
@@ -249,7 +264,7 @@ class JAMediaConverter(gobject.GObject):
         oggmux = gst.element_factory_make(
             "oggmux", "oggmux")
         filesink = gst.element_factory_make(
-            "filesink", "filesinkogg")
+            "filesink", "filesink")
 
         self.player.add(queue)
         self.player.add(audioconvert)
