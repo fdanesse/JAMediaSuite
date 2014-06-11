@@ -224,7 +224,6 @@ class JAMediaConverter(gobject.GObject):
         self.player.add(videoconvert)
         self.player.add(videorate)
         self.player.add(ffenc_mpeg2video)
-        self.player.add(fakesink)
 
         queue.link(videoconvert)
         videoconvert.link(videorate)
@@ -335,13 +334,13 @@ class JAMediaConverter(gobject.GObject):
 
         string = str(pad.get_caps())
 
-        text = "Detectando Capas en la Fuente:"
-        for item in string.split(","):
-            text = "%s\n\t%s" % (text, item.strip())
+        #text = "Detectando Capas en la Fuente:"
+        #for item in string.split(","):
+        #    text = "%s\n\t%s" % (text, item.strip())
         #if PR:
         #    print "Archivo: ", self.origen
         #    print text
-        print text
+        #print text
         if string.startswith('audio/'):
             audioconvert = self.player.get_by_name('audio-out')
 

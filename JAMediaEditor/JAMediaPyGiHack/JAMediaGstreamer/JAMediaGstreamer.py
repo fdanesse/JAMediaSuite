@@ -114,10 +114,12 @@ class JAMediaGstreamer(Gtk.Paned):
 
         self.textview.get_buffer().set_text(get_inspect(path))
 
+
 def exit(self, widget=None, senial=None):
 
     import sys
     sys.exit(0)
+
 
 if __name__ == "__main__":
 

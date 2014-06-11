@@ -432,8 +432,14 @@ class Lista(gtk.TreeView):
                             icono, 50, -1)
 
                     else:
-                        pixbuf = gdk.pixbuf_new_from_file_at_size(
-                            icono, 24, -1)
+                        try:
+                            pixbuf = gdk.pixbuf_new_from_file_at_size(
+                                icono, 24, -1)
+                        except:
+                            icono = os.path.join(BASE_PATH,
+                                "Iconos", "sonido.svg")
+                            pixbuf = gdk.pixbuf_new_from_file_at_size(
+                                icono, 24, -1)
 
         else:
             icono = os.path.join(BASE_PATH,

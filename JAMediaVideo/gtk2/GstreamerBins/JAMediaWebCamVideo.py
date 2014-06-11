@@ -27,6 +27,7 @@ import gst
 import gtk
 
 from Gstreamer_Bins import Ogv_out_bin
+from Gstreamer_Bins import mpeg_out_bin
 from Gstreamer_Bins import Video_Efectos_bin
 from Gstreamer_Bins import v4l2src_bin
 from Gstreamer_Bins import Balance_bin
@@ -37,15 +38,40 @@ from Gstreamer_Bins import In_lan_udpsrc_bin
 #from Gstreamer_Bins import Out_lan_speexenc_bin
 from Gstreamer_Bins import Foto_bin
 
-gobject.threads_init()
-gtk.gdk.threads_init()
+
+def borrar(origen):
+
+    try:
+        import os
+        import shutil
+
+        if os.path.isdir(origen):
+            shutil.rmtree("%s" % (os.path.join(origen)))
+
+        elif os.path.isfile(origen):
+            os.remove("%s" % (os.path.join(origen)))
+
+        else:
+            return False
+
+        return True
+
+    except:
+        print "ERROR Al Intentar Borrar un Archivo"
+        return False
+
 
 PR = False
+
+gobject.threads_init()
+gtk.gdk.threads_init()
 
 
 class JAMediaWebCamVideo(gobject.GObject):
 
     __gsignals__ = {
+    "endfile": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
     "stop-rafaga": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, []),
     "update": (gobject.SIGNAL_RUN_CLEANUP,
@@ -61,6 +87,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.actualizador = False
         self.tamanio = 0
+        self.timer = 0
         self.estado = None
         self.ventana_id = ventana_id
         self.formato = formato
@@ -79,8 +106,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.balance = Balance_bin()
 
-        self.tee = gst.element_factory_make(
-            'tee', "tee")
+        self.tee = gst.element_factory_make('tee', "tee")
         self.tee.set_property('pull-mode', 1)
 
         self.pipeline.add(camara)
@@ -97,8 +123,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline.add(self.tee)
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
+        queue = gst.element_factory_make('queue', "queue")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
@@ -141,8 +166,8 @@ class JAMediaWebCamVideo(gobject.GObject):
                 message.src.set_xwindow_id(self.ventana_id)
                 gtk.gdk.threads_leave()
 
-        #elif message.type == gst.MESSAGE_EOS:
-        #    print "gst.MESSAGE_EOS"
+        elif message.type == gst.MESSAGE_EOS:
+            self.emit("endfile")
 
         #elif message.type == gst.MESSAGE_QOS:
         #    print "gst.MESSAGE_QOS"
@@ -193,17 +218,33 @@ class JAMediaWebCamVideo(gobject.GObject):
         Consulta el estado y progreso de la grabacion.
         """
 
+        # Control de archivo de salida
         if os.path.exists(self.path_archivo):
             tamanio = os.path.getsize(self.path_archivo)
             tam = int(tamanio) / 1024.0 / 1024.0
 
             if self.tamanio != tamanio:
+                self.timer = 0
                 self.tamanio = tamanio
 
                 texto = os.path.basename(self.path_archivo)
                 info = "Grabando: %s %.2f Mb" % (texto, tam)
 
                 self.emit('update', info)
+
+            else:
+                self.timer += 1
+
+        if self.timer > 30:
+            self.stop()
+            self.emit("endfile")
+            if PR:
+                print "JAMediaWebCamVideo No Pudo Procesar:", self.path_archivo
+
+            if os.path.exists(self.path_archivo):
+                borrar(self.path_archivo)
+
+            return False
 
         return True
 
@@ -292,6 +333,10 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline.set_state(gst.STATE_NULL)
 
+        fotobin = self.pipeline.get_by_name("Foto_bin")
+        self.tee.unlink(fotobin)
+        #del(fotobin)
+
         formatos = ["ogv", "avi", "mpeg"]
         if self.formato in formatos:
             self.path_archivo = u"%s.%s" % (
@@ -308,7 +353,11 @@ class JAMediaWebCamVideo(gobject.GObject):
                 pass
 
             elif self.formato == "mpeg":
-                pass
+                out = mpeg_out_bin(self.path_archivo)
+                self.pipeline.add(out)
+                self.tee.link(out)
+                self.play()
+                self.__new_handle(True, [])
 
         else:
             # "Volcado a red lan"
@@ -318,6 +367,8 @@ class JAMediaWebCamVideo(gobject.GObject):
             self.tee.link(video_out)
             self.play()
             self.emit('update', "Emitiendo Hacia: %s" % self.formato)
+
+        return False
 
     def fotografiar(self, dir_path, rafaga):
 

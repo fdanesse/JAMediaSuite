@@ -89,7 +89,7 @@ class Foto_bin(gst.Bin):
         self.add_pad(gst.GhostPad("sink",
             queue.get_static_pad("sink")))
 
-
+'''
 class Theora_bin(gst.Bin):
     """
     Comprime video utilizando theoraenc.
@@ -107,6 +107,7 @@ class Theora_bin(gst.Bin):
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
+        #FIXME: Seteo de capas
         #scale = gst.element_factory_make("videoscale", "vbscale")
         #scalecapsfilter = gst.element_factory_make(
         #   "capsfilter", "scalecaps")
@@ -138,8 +139,8 @@ class Theora_bin(gst.Bin):
             queue.get_static_pad("sink")))
         self.add_pad(gst.GhostPad("src",
             theoraenc.get_static_pad("src")))
-
-
+'''
+'''
 class Vorbis_bin(gst.Bin):
     """
     Comprime Audio utilizando vorbisenc.
@@ -182,7 +183,7 @@ class Vorbis_bin(gst.Bin):
 
         self.add_pad(gst.GhostPad("src",
             vorbisenc.get_static_pad("src")))
-
+'''
 
 # FIXME: Por algún motivo no linkea
 '''
@@ -366,7 +367,6 @@ class v4l2src_bin(gst.Bin):
             camerafilter.get_static_pad("src")))
 
     def set_device(self, device):
-
         camara = self.get_by_name("v4l2src")
         camara.set_property("device", device)
 
@@ -382,8 +382,7 @@ class Video_Efectos_bin(gst.Bin):
 
         self.set_name('Efectos_bin')
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
+        queue = gst.element_factory_make('queue', "queue")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
@@ -448,9 +447,41 @@ class Ogv_out_bin(gst.Bin):
 
         self.set_name('ogv_out_bin')
 
-        #FIXME: el audio puede que venga desde la red
-        vorbisbin = Vorbis_bin()
-        theorabin = Theora_bin()
+        #autoaudiosrc = gst.element_factory_make(
+        #    'autoaudiosrc', "autoaudiosrc")
+        #audiorate = gst.element_factory_make(
+        #    'audiorate', "audiorate")
+
+        #capaaudio = gst.Caps(
+        #    "audio/x-raw-int,rate=16000,channels=2,depth=16")
+        #filtroaudio = gst.element_factory_make(
+        #    "capsfilter", "filtroaudio")
+        #filtroaudio.set_property("caps", capaaudio)
+
+        #audioconvert = gst.element_factory_make(
+        #    'audioconvert', "audioconvert")
+
+        #vorbisenc = gst.element_factory_make(
+        #    'vorbisenc', 'vorbisenc')
+
+        queuev = gst.element_factory_make('queue', "queuev")
+        queuev.set_property("max-size-buffers", 1000)
+        queuev.set_property("max-size-bytes", 0)
+        queuev.set_property("max-size-time", 0)
+
+        videoconvert = gst.element_factory_make(
+            "ffmpegcolorspace", "ffmpegcolorspace")
+        videorate = gst.element_factory_make(
+            'videorate', 'videorate')
+
+        try:
+            videorate.set_property('max-rate', 30)
+        except:
+            pass
+
+        theoraenc = gst.element_factory_make(
+            'theoraenc', 'theoraenc')
+        theoraenc.set_property("quality", 16)
 
         oggmux = gst.element_factory_make(
             'oggmux', "oggmux")
@@ -464,14 +495,30 @@ class Ogv_out_bin(gst.Bin):
         archivo = gst.element_factory_make(
             'filesink', "filesink")
 
-        self.add(vorbisbin)
-        self.add(theorabin)
+        #self.add(autoaudiosrc)
+        #self.add(audiorate)
+        #self.add(filtroaudio)
+        #self.add(audioconvert)
+        #self.add(vorbisenc)
+
+        self.add(queuev)
+        self.add(videoconvert)
+        self.add(videorate)
+        self.add(theoraenc)
         self.add(oggmux)
         self.add(queue)
         self.add(archivo)
 
-        vorbisbin.link(oggmux)
-        theorabin.link(oggmux)
+        #autoaudiosrc.link(audiorate)
+        #audiorate.link(filtroaudio)
+        #filtroaudio.link(audioconvert)
+        #audioconvert.link(vorbisenc)
+        #vorbisenc.link(oggmux)
+
+        queuev.link(videoconvert)
+        videoconvert.link(videorate)
+        videorate.link(theoraenc)
+        theoraenc.link(oggmux)
         oggmux.link(queue)
         queue.link(archivo)
 
@@ -479,7 +526,94 @@ class Ogv_out_bin(gst.Bin):
             "location", path_archivo)
 
         self.add_pad(gst.GhostPad(
-            "sink", theorabin.get_static_pad("sink")))
+            "sink", queuev.get_static_pad("sink")))
+
+
+class mpeg_out_bin(gst.Bin):
+
+    def __init__(self, path_archivo):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('mpeg_out_bin')
+
+        autoaudiosrc = gst.element_factory_make(
+            'autoaudiosrc', "autoaudiosrc")
+        audiorate = gst.element_factory_make(
+            'audiorate', "audiorate")
+
+        capaaudio = gst.Caps(
+            "audio/x-raw-int,rate=16000,channels=2,depth=16")
+        filtroaudio = gst.element_factory_make(
+            "capsfilter", "filtroaudio")
+        filtroaudio.set_property("caps", capaaudio)
+
+        audioconvert = gst.element_factory_make(
+            'audioconvert', "audioconvert")
+
+        #FIXME: el audio puede que venga desde la red
+        ffenc_mp2 = gst.element_factory_make(
+            "ffenc_mp2", "ffenc_mp2")
+
+        queuev = gst.element_factory_make('queue', "queuev")
+        queuev.set_property("max-size-buffers", 1000)
+        queuev.set_property("max-size-bytes", 0)
+        queuev.set_property("max-size-time", 0)
+
+        videoconvert = gst.element_factory_make(
+            "ffmpegcolorspace", "ffmpegcolorspace")
+        videorate = gst.element_factory_make(
+            'videorate', 'videorate')
+
+        try:
+            videorate.set_property('max-rate', 30)
+        except:
+            pass
+
+        ffenc_mpeg2video = gst.element_factory_make(
+            "ffenc_mpeg2video", "ffenc_mpeg2video")
+
+        muxor = gst.element_factory_make('mpegtsmux', 'muxor')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        archivo = gst.element_factory_make(
+            'filesink', "filesink")
+
+        self.add(autoaudiosrc)
+        self.add(audiorate)
+        self.add(filtroaudio)
+        self.add(audioconvert)
+        self.add(ffenc_mp2)
+
+        self.add(queuev)
+        self.add(videoconvert)
+        self.add(videorate)
+        self.add(ffenc_mpeg2video)
+        self.add(muxor)
+        self.add(queue)
+        self.add(archivo)
+
+        autoaudiosrc.link(audiorate)
+        audiorate.link(filtroaudio)
+        filtroaudio.link(audioconvert)
+        audioconvert.link(ffenc_mp2)
+        ffenc_mp2.link(muxor)
+        queuev.link(videoconvert)
+        videoconvert.link(videorate)
+        videorate.link(ffenc_mpeg2video)
+        ffenc_mpeg2video.link(muxor)
+        muxor.link(queue)
+        queue.link(archivo)
+
+        archivo.set_property(
+            "location", path_archivo)
+
+        self.add_pad(gst.GhostPad(
+            "sink", queuev.get_static_pad("sink")))
 
 
 '''
@@ -675,7 +809,7 @@ class Out_lan_speexenc_bin(gst.Bin):
 
 class In_lan_udpsrc_bin(gst.Bin):
     """
-    Fuente de audio y video desde red lan.
+    Fuente de video desde red lan.
     udpsrc port=5000 ! queue ! smokedec ! autovideosink
     tcpclientsrc host=192.168.1.5 port=5001 ! queue ! speexdec !
         queue ! autoaudiosink

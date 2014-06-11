@@ -525,6 +525,9 @@ class VideoFrame(gtk.Frame):
 
         for formato in ["ogv", "mpeg", "avi"]:
             check = CheckButton(formato)
+            #FIXME: mpeg no graba video
+            #if formato == "mpeg":
+            #    check.set_sensitive(False)
             vbox.pack_start(check, False, False, 0)
             check.connect("tarea", self.__emit_tarea)
 

@@ -508,6 +508,8 @@ class BasePanel(gtk.HPaned):
             self.__update_record)
         self.jamediawebcam.connect("stop-rafaga",
             self.__recibe_stop_rafaga)
+        self.jamediawebcam.connect("endfile",
+            self.__control_grabacion_end)
 
         gobject.idle_add(self.jamediawebcam.play)
 
@@ -522,6 +524,9 @@ class BasePanel(gtk.HPaned):
             toolbar.toolbar_fotografia.boton_fotografiar.set_sensitive(True)
 
         self.control = False
+
+    def __control_grabacion_end(self, widget):
+        self.mode_change("video")
 
     def __camara_foto_run(self):
         """
@@ -648,6 +653,8 @@ class BasePanel(gtk.HPaned):
             self.__update_record)
         self.jamediawebcam.connect("stop-rafaga",
             self.__recibe_stop_rafaga)
+        self.jamediawebcam.connect("endfile",
+            self.__control_grabacion_end)
 
         self.jamediawebcam.play()
         self.__re_config(rot, config, efectos)
