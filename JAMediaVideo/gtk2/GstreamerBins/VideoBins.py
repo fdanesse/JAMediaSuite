@@ -22,7 +22,7 @@
 import gst
 import gobject
 
-gobject.threads_init()
+#gobject.threads_init()
 
 
 class v4l2src_bin(gst.Bin):

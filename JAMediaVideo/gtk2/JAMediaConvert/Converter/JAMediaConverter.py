@@ -25,9 +25,6 @@ import datetime
 import gst
 import gobject
 
-from Bins import wav_bin
-from Bins import mp3_bin
-from Bins import ogg_bin
 
 def borrar(origen):
 
@@ -52,7 +49,7 @@ def borrar(origen):
 
 PR = True
 
-gobject.threads_init()
+#gobject.threads_init()
 
 
 class JAMediaConverter(gobject.GObject):
@@ -91,8 +88,7 @@ class JAMediaConverter(gobject.GObject):
         self.codec = codec
         self.newpath = ""
 
-        self.player = gst.element_factory_make(
-            "playbin2", "playbin2")
+        self.player = gst.element_factory_make("playbin2", "playbin2")
 
         # path de salida
         location = os.path.basename(self.origen)
@@ -133,8 +129,9 @@ class JAMediaConverter(gobject.GObject):
 
     def __run_wav_out(self):
 
-        videoconvert = gst.element_factory_make(
-            "fakesink", "video-out")
+        from Bins import wav_bin
+
+        videoconvert = gst.element_factory_make("fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
 
         wavenc = wav_bin(self.newpath)
@@ -144,8 +141,9 @@ class JAMediaConverter(gobject.GObject):
 
     def __run_mp3_out(self):
 
-        videoconvert = gst.element_factory_make(
-            "fakesink", "video-out")
+        from Bins import mp3_bin
+
+        videoconvert = gst.element_factory_make("fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
 
         lamemp3enc = mp3_bin(self.newpath)
@@ -155,8 +153,9 @@ class JAMediaConverter(gobject.GObject):
 
     def __run_ogg_out(self):
 
-        videoconvert = gst.element_factory_make(
-            "fakesink", "video-out")
+        from Bins import ogg_bin
+
+        videoconvert = gst.element_factory_make("fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
 
         oggenc = ogg_bin(self.newpath)
@@ -170,12 +169,13 @@ class JAMediaConverter(gobject.GObject):
         # blob/master/hylia-transcoder.py
 
         # Nueva declaración para player
+        del(self.player)
+        self.player = False
+
         self.player = gst.Pipeline()
 
-        filesrc = gst.element_factory_make(
-            "filesrc", "filesrc")
-        decodebin = gst.element_factory_make(
-            "decodebin", "decodebin")
+        filesrc = gst.element_factory_make("filesrc", "filesrc")
+        decodebin = gst.element_factory_make("decodebin", "decodebin")
 
         self.player.add(filesrc)
         self.player.add(decodebin)
@@ -186,31 +186,30 @@ class JAMediaConverter(gobject.GObject):
         decodebin.connect('pad-added', self.__on_pad_added)
 
         # Audio
-        queue = gst.element_factory_make(
-            "queue", "audio-out")
+        queue = gst.element_factory_make("queue", "audio-out")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
-        ffenc_mp2 = gst.element_factory_make(
-            "ffenc_mp2", "ffenc_mp2")
+        audioconvert = gst.element_factory_make('audioconvert', "audioconvert")
+        ffenc_mp2 = gst.element_factory_make("ffenc_mp2", "ffenc_mp2")
 
         self.player.add(queue)
+        self.player.add(audioconvert)
         self.player.add(ffenc_mp2)
 
-        queue.link(ffenc_mp2)
+        queue.link(audioconvert)
+        audioconvert.link(ffenc_mp2)
 
         #Video
-        queue = gst.element_factory_make(
-            "queue", "video-out")
+        queue = gst.element_factory_make("queue", "video-out")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
         videoconvert = gst.element_factory_make(
             "ffmpegcolorspace", "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', 'videorate')
+        videorate = gst.element_factory_make('videorate', 'videorate')
 
         try:
             videorate.set_property('max-rate', 30)
@@ -231,8 +230,7 @@ class JAMediaConverter(gobject.GObject):
 
         muxor = gst.element_factory_make('mpegtsmux', 'muxor')
         #muxor = gst.element_factory_make("ffmux_mpeg", 'muxor')
-        filesink = gst.element_factory_make(
-            "filesink", "filesink")
+        filesink = gst.element_factory_make("filesink", "filesink")
 
         self.player.add(muxor)
         self.player.add(filesink)
@@ -246,12 +244,13 @@ class JAMediaConverter(gobject.GObject):
     def __run_ogv_out(self):
 
         # Nueva declaración para player
+        del(self.player)
+        self.player = False
+
         self.player = gst.Pipeline()
 
-        filesrc = gst.element_factory_make(
-            "filesrc", "filesrc")
-        decodebin = gst.element_factory_make(
-            "decodebin", "decodebin")
+        filesrc = gst.element_factory_make("filesrc", "filesrc")
+        decodebin = gst.element_factory_make("decodebin", "decodebin")
 
         self.player.add(filesrc)
         self.player.add(decodebin)
@@ -262,24 +261,19 @@ class JAMediaConverter(gobject.GObject):
         decodebin.connect('pad-added', self.__on_pad_added)
 
         # Audio
-        queue = gst.element_factory_make(
-            "queue", "audio-out")
+        queue = gst.element_factory_make("queue", "audio-out")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
-        audioconvert = gst.element_factory_make(
-            "audioconvert", "audioconvert")
+        audioconvert = gst.element_factory_make("audioconvert", "audioconvert")
         audioresample = gst.element_factory_make(
             "audioresample", "audioresample")
         audioresample.set_property('quality', 10)
 
-        vorbisenc = gst.element_factory_make(
-            "vorbisenc", "vorbisenc")
-        oggmux = gst.element_factory_make(
-            "oggmux", "oggmux")
-        filesink = gst.element_factory_make(
-            "filesink", "filesink")
+        vorbisenc = gst.element_factory_make("vorbisenc", "vorbisenc")
+        oggmux = gst.element_factory_make("oggmux", "oggmux")
+        filesink = gst.element_factory_make("filesink", "filesink")
 
         self.player.add(queue)
         self.player.add(audioconvert)
@@ -295,24 +289,21 @@ class JAMediaConverter(gobject.GObject):
         oggmux.link(filesink)
 
         #Video
-        queue = gst.element_factory_make(
-            "queue", "video-out")
+        queue = gst.element_factory_make("queue", "video-out")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
         videoconvert = gst.element_factory_make(
             "ffmpegcolorspace", "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', 'videorate')
+        videorate = gst.element_factory_make('videorate', 'videorate')
 
         try:
             videorate.set_property('max-rate', 30)
         except:
             pass
 
-        theoraenc = gst.element_factory_make(
-            'theoraenc', 'theoraenc')
+        theoraenc = gst.element_factory_make('theoraenc', 'theoraenc')
 
         self.player.add(queue)
         self.player.add(videoconvert)

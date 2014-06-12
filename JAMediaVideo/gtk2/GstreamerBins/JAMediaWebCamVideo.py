@@ -60,8 +60,8 @@ def borrar(origen):
 
 PR = True
 
-gobject.threads_init()
-gtk.gdk.threads_init()
+#gobject.threads_init()
+#gtk.gdk.threads_init()
 
 
 class JAMediaWebCamVideo(gobject.GObject):

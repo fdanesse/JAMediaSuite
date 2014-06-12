@@ -22,7 +22,7 @@
 import gst
 import gobject
 
-gobject.threads_init()
+#gobject.threads_init()
 
 
 class wav_bin(gst.Bin):
@@ -133,3 +133,69 @@ class ogg_bin(gst.Bin):
 
         pad = audioconvert.get_static_pad("sink")
         self.add_pad(gst.GhostPad("sink", pad))
+
+
+class mp2_bin(gst.Bin):
+    """
+    Comprime Audio utilizando ffenc_mp2.
+    """
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('mp2_bin')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        audioconvert = gst.element_factory_make('audioconvert', "audioconvert")
+        ffenc_mp2 = gst.element_factory_make('ffenc_mp2', 'ffenc_mp2')
+
+        self.add(queue)
+        self.add(audioconvert)
+        self.add(ffenc_mp2)
+
+        queue.link(audioconvert)
+        audioconvert.link(ffenc_mp2)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            ffenc_mp2.get_static_pad("src")))
+
+
+class mpeg2_bin(gst.Bin):
+    """
+    Comprime video utilizando ffenc_mpeg2video.
+    """
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('mpeg2_bin')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspace")
+        ffenc_mpeg2video = gst.element_factory_make(
+            'ffenc_mpeg2video', 'ffenc_mpeg2video')
+
+        self.add(queue)
+        self.add(ffmpegcolorspace)
+        self.add(ffenc_mpeg2video)
+
+        queue.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(ffenc_mpeg2video)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            ffenc_mpeg2video.get_static_pad("src")))
