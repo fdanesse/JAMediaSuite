@@ -134,6 +134,8 @@ class JAMediaWebCamVideo(gobject.GObject):
             'xvimagesink', "xvimagesink")
         xvimagesink.set_property(
             "force-aspect-ratio", True)
+        #xvimagesink.set_property("sync", false)
+        #xvimagesink.set_property("async", false)
 
         self.pipeline.add(queue)
         self.pipeline.add(ffmpegcolorspace)
@@ -204,7 +206,7 @@ class JAMediaWebCamVideo(gobject.GObject):
                 #else:
                 #    self.emit("estado", "paused")
 
-        #return gst.BUS_PASS
+        return gst.BUS_PASS
 
     def __new_handle(self, reset, data):
         """

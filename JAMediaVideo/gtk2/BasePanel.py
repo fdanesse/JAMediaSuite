@@ -57,7 +57,7 @@ from Globales import get_ip
 gobject.threads_init()
 gtk.gdk.threads_init()
 
-PR = False
+PR = True
 
 
 def ocultar(objeto):
@@ -476,7 +476,7 @@ class BasePanel(gtk.HPaned):
         self.jamediawebcam = JAMediaWebCamMenu(xid,
             device=device)
 
-        gobject.idle_add(self.jamediawebcam.play)
+        self.jamediawebcam.play()
 
         self.control = False
 
@@ -521,7 +521,8 @@ class BasePanel(gtk.HPaned):
             toolbar.toolbar_video.boton_filmar.set_sensitive(True)
             toolbar.toolbar_fotografia.boton_fotografiar.set_sensitive(True)
 
-        gobject.idle_add(self.jamediawebcam.play)
+        self.jamediawebcam.play()
+
         self.control = False
 
     def __control_grabacion_end(self, widget):
