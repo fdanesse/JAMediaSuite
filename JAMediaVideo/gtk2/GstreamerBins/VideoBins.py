@@ -25,40 +25,6 @@ import gobject
 gobject.threads_init()
 
 
-# http://wiki.laptop.org/go/GStreamer
-# Envio:
-# gst-launch v4l2src ! queue ! video/x-raw-yuv,width=320,height=240,framerate=\(fraction\)4/1 ! videorate ! videoscale ! ffmpegcolorspace ! queue ! smokeenc ! queue ! udpsink host=192.168.2.129 port=5000 alsasrc ! queue ! audio/x-raw-int,rate=8000,channels=1,depth=8 ! audioconvert ! speexenc ! queue ! tcpserversink host=192.168.2.129 port=5001
-# Recibo:
-# gst-launch-0.10 udpsrc port=5000 ! queue ! smokedec ! queue ! autovideosink tcpclientsrc host=192.168.2.129 port=5001 ! queue ! speexdec ! queue ! alsasink sync=false
-
-# http://feeding.cloud.geek.nz/posts/peer-to-peer-video-conferencing-using/
-# http://wiki.maemo.org/Streaming_video_from_built-in_webcam
-# Envía Video
-# gst-launch-0.10 v4l2src device=/dev/video0 ! videorate ! video/x-raw-yuv,width=640,height=480,framerate=6/1 !
-# jpegenc quality=30 ! multipartmux ! tcpserversink port=5000 # Si no se establece host, se manda a toda la red
-
-# Recibe Video
-# gst-launch-0.10 tcpclientsrc host=localhost port=5000 ! multipartdemux ! jpegdec ! ffmpegcolorspace ! autovideosink
-
-# gst-launch-0.10 tcpclientsrc host='192.168.1.3' port=8080 ! mpegtsdemux name=demux
-# ! queue ! mpeg2dec ! xvimagesink force-aspect-ratio=TRUE
-# demux. ! queue ! mad ! alsasink
-
-# gst-launch-0.10 tcpclientsrc host='192.168.1.3' port=8080 ! mpegtsdemux
-# name=demux ! queue ! mpeg2dec ! xvimagesink force-aspect-ratio=TRUE
-# demux. ! queue ! mad ! alsasink
-
-# gst-launch -v alsasrc ! audio/x-raw-int,rate=16000,channels=1 ! audioconvert ! speexenc ! tcpserversink host=127.0.0.1 port=5001
-# gst-launch -v  tcpclientsrc host=127.0.0.1 port=5000 ! speexdec ! alsasink sync=false
-# gst-launch -v v4l2src ! video/x-raw-yuv,framerate=\(fraction\)5/1 ! smokeenc threshold=1000 ! tcpserversink host=127.0.0.1 port=5003
-# gst-launch -v tcpclientsrc host=127.0.0.1 port=5002 ! smokedec ! xvimagesink sync=false
-
-# Diversos Ejemplos:
-# http://processors.wiki.ti.com/index.php/Example_GStreamer_Pipelines
-# https://labs.isee.biz/index.php/Example_GStreamer_Pipelines
-# http://wiki.oz9aec.net/index.php/Gstreamer_cheat_sheet
-
-
 class v4l2src_bin(gst.Bin):
     """
     Bin de entrada de camara v4l2src.
@@ -120,56 +86,6 @@ class Foto_bin(gst.Bin):
 
         self.add_pad(gst.GhostPad("sink",
             queue.get_static_pad("sink")))
-
-
-class Theora_bin(gst.Bin):
-    """
-    Comprime video utilizando theoraenc.
-    """
-
-    def __init__(self):
-
-        gst.Bin.__init__(self)
-
-        self.set_name('Theora_bin')
-
-        queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
-        queue.set_property("max-size-bytes", 0)
-        queue.set_property("max-size-time", 0)
-
-        #FIXME: Seteo de capas
-        #scale = gst.element_factory_make("videoscale", "vbscale")
-        #scalecapsfilter = gst.element_factory_make(
-        #   "capsfilter", "scalecaps")
-        #scalecaps = gst.Caps("video/x-raw-yuv,width=160,height=120")
-        #   'video/x-raw-yuv,width=320,height=240''video/x-raw-yuv,
-        #   width=160,height=120'
-        #scalecapsfilter.set_property("caps", scalecaps)
-
-        #self.add(scale)
-        #self.add(scalecapsfilter)
-
-        #queue.link(scale)
-        #scale.link(scalecapsfilter)
-
-        ffmpegcolorspace = gst.element_factory_make(
-            'ffmpegcolorspace', "ffmpegcolorspacetheora")
-        theoraenc = gst.element_factory_make(
-            'theoraenc', 'theoraenc')
-        theoraenc.set_property("quality", 16)
-
-        self.add(queue)
-        self.add(ffmpegcolorspace)
-        self.add(theoraenc)
-
-        queue.link(ffmpegcolorspace)
-        ffmpegcolorspace.link(theoraenc)
-
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            theoraenc.get_static_pad("src")))
 
 
 class Balance_bin(gst.Bin):
@@ -351,6 +267,41 @@ class Video_Efectos_bin(gst.Bin):
             ef.set_property(propiedad, valor)
 
 
+class Theora_bin(gst.Bin):
+    """
+    Comprime video utilizando theoraenc.
+    """
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('Theora_bin')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspacetheora")
+        theoraenc = gst.element_factory_make(
+            'theoraenc', 'theoraenc')
+        theoraenc.set_property("quality", 16)
+
+        self.add(queue)
+        self.add(ffmpegcolorspace)
+        self.add(theoraenc)
+
+        queue.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(theoraenc)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            theoraenc.get_static_pad("src")))
+
+
 class Ogv_out_bin(gst.Bin):
 
     def __init__(self, path_archivo):
@@ -526,96 +477,6 @@ class mpeg_out_bin(gst.Bin):
             "sink", queuev.get_static_pad("sink")))
 
 
-'''
-class Out_lan_jpegenc_bin(gst.Bin):
-    """
-    Volcado de audio y video a la red lan.
-    """
-
-    def __init__(self, ip):
-
-        gst.Bin.__init__(self)
-
-        self.set_name('out_lan_jpegenc_bin')
-
-        queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
-        queue.set_property("max-size-bytes", 0)
-        queue.set_property("max-size-time", 0)
-
-        jpegenc = gst.element_factory_make(
-            'jpegenc', "jpegenc")
-        jpegenc.set_property("quality", 30)
-
-        multipartmux = gst.element_factory_make(
-            'multipartmux', "multipartmux")
-
-        tcpserversink = gst.element_factory_make(
-            'tcpserversink', "tcpserversink")
-
-        if ip:
-            tcpserversink.set_property("host", ip)
-
-        tcpserversink.set_property("port", 5000)
-
-        self.add(queue)
-        self.add(jpegenc)
-        self.add(multipartmux)
-        self.add(tcpserversink)
-
-        queue.link(jpegenc)
-        jpegenc.link(multipartmux)
-        multipartmux.link(tcpserversink)
-
-        self.add_pad(gst.GhostPad(
-            "sink", queue.get_static_pad("sink")))
-'''
-
-
-#FIXME: Por algún motivo, no enlaza: multipartdemux.link(jpegdec)
-'''
-class In_lan_jpegdec_bin(gst.Bin):
-    """
-    Fuente de audio y video desde red lan.
-    """
-
-    def __init__(self, ip):
-
-        gst.Bin.__init__(self)
-
-        self.set_name('in_lan_jpegdec_bin')
-
-        # gst-launch-0.10 tcpclientsrc host=localhost port=5000 !
-        # multipartdemux ! jpegdec ! ffmpegcolorspace ! autovideosink
-
-        tcpclientsrc = gst.element_factory_make(
-            'tcpclientsrc', "tcpclientsrc")
-        tcpclientsrc.set_property("host", ip)
-        tcpclientsrc.set_property("port", 5000)
-
-        multipartdemux = gst.element_factory_make(
-            'multipartdemux', "multipartdemux")
-
-        jpegdec = gst.element_factory_make(
-            'jpegdec', "jpegdec")
-
-        ffmpegcolorspace = gst.element_factory_make(
-            'ffmpegcolorspace', "ffmpegcolorspace")
-
-        self.add(tcpclientsrc)
-        self.add(multipartdemux)
-        self.add(jpegdec)
-        self.add(ffmpegcolorspace)
-
-        tcpclientsrc.link(multipartdemux)
-        multipartdemux.link(jpegdec)
-        jpegdec.link(ffmpegcolorspace)
-
-        self.add_pad(gst.GhostPad(
-            "src", ffmpegcolorspace.get_static_pad("src")))
-'''
-
-
 class Out_lan_smokeenc_bin(gst.Bin):
     """
     Volcado de video a la red lan.
@@ -656,62 +517,6 @@ class Out_lan_smokeenc_bin(gst.Bin):
 
         self.add_pad(gst.GhostPad(
             "sink", queue.get_static_pad("sink")))
-
-
-'''
-class Out_lan_speexenc_bin(gst.Bin):
-    """
-    Volcado de audio a la red lan.
-    autoaudiosrc ! queue ! audioconvert ! speexenc !
-        tcpserversink host=192.168.1.1 port=5001
-    """
-
-    def __init__(self, ip):
-
-        gst.Bin.__init__(self)
-
-        self.set_name('out_lan_speexenc_bin')
-
-        #autoaudiosrc = gst.element_factory_make(
-        #    'autoaudiosrc', "autoaudiosrc")
-
-        queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
-        queue.set_property("max-size-bytes", 0)
-        queue.set_property("max-size-time", 0)
-
-        audioconvert = gst.element_factory_make(
-            'audioconvert', "audioconvert")
-
-        speexenc = gst.element_factory_make(
-            'speexenc', "speexenc")
-
-        queue1 = gst.element_factory_make('queue', "queue1")
-        queue1.set_property("max-size-buffers", 1000)
-        queue1.set_property("max-size-bytes", 0)
-        queue1.set_property("max-size-time", 0)
-
-        tcpserversink = gst.element_factory_make(
-            'tcpserversink', "tcpserversink")
-
-        tcpserversink.set_property("host", ip)
-        tcpserversink.set_property("port", 5001)
-        #tcpserversink.set_property("sync", False)
-
-        self.add(queue)
-        self.add(audioconvert)
-        self.add(speexenc)
-        self.add(queue1)
-        self.add(tcpserversink)
-
-        queue.link(audioconvert)
-        audioconvert.link(speexenc)
-        speexenc.link(queue1)
-        queue1.link(tcpserversink)
-
-        self.add_pad(gst.GhostPad(
-            "sink", queue.get_static_pad("sink")))
-'''
 
 
 class In_lan_udpsrc_bin(gst.Bin):

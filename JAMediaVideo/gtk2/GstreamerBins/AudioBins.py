@@ -31,6 +31,8 @@ class Audio_src_Bin(gst.Bin):
 
         gst.Bin.__init__(self)
 
+        self.set_name("Audio_Bin")
+
         autoaudiosrc = gst.element_factory_make(
             'autoaudiosrc', "autoaudiosrc")
         audiorate = gst.element_factory_make(
@@ -69,33 +71,22 @@ class Vorbis_bin(gst.Bin):
 
         self.set_name('Vorbis_bin')
 
-        autoaudiosrc = gst.element_factory_make(
-            'autoaudiosrc', "autoaudiosrc")
-        audiorate = gst.element_factory_make(
-            'audiorate', "audiorate")
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
 
-        capaaudio = gst.Caps(
-            "audio/x-raw-int,rate=16000,channels=2,depth=16")
-        filtroaudio = gst.element_factory_make(
-            "capsfilter", "filtroaudio")
-        filtroaudio.set_property("caps", capaaudio)
+        audioconvert = gst.element_factory_make('audioconvert', "audioconvert")
+        vorbisenc = gst.element_factory_make('vorbisenc', 'vorbisenc')
 
-        audioconvert = gst.element_factory_make(
-            'audioconvert', "audioconvert")
-
-        vorbisenc = gst.element_factory_make(
-            'vorbisenc', 'vorbisenc')
-
-        self.add(autoaudiosrc)
-        self.add(audiorate)
-        self.add(filtroaudio)
+        self.add(queue)
         self.add(audioconvert)
         self.add(vorbisenc)
 
-        autoaudiosrc.link(audiorate)
-        audiorate.link(filtroaudio)
-        filtroaudio.link(audioconvert)
+        queue.link(audioconvert)
         audioconvert.link(vorbisenc)
 
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
         self.add_pad(gst.GhostPad("src",
             vorbisenc.get_static_pad("src")))

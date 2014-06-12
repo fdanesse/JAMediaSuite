@@ -33,13 +33,14 @@ from VideoBins import Foto_bin
 from VideoBins import Out_lan_smokeenc_bin
 from VideoBins import In_lan_udpsrc_bin
 
-#from VideoBins import Ogv_out_bin
+from VideoBins import Theora_bin
 #from VideoBins import mpeg_out_bin
 #from VideoBins import Xvimage_bin
 #from VideoBins import Out_lan_jpegenc_bin
 #from VideoBins import Out_lan_speexenc_bin
 
 from AudioBins import Audio_src_Bin
+from AudioBins import Vorbis_bin
 
 
 def borrar(origen):
@@ -361,10 +362,41 @@ class JAMediaWebCamVideo(gobject.GObject):
                 path_archivo, self.formato)
 
             if self.formato == "ogv":
-                out = Ogv_out_bin(self.path_archivo)
-                #out.sync_state_with_parent()
-                self.pipeline.add(out)
-                self.tee.link(out)
+
+                audiobin = self.pipeline.get_by_name("Audio_Bin")
+                fakesink = self.pipeline.get_by_name("fakesink")
+
+                audiobin.unlink(fakesink)
+                self.pipeline.remove(fakesink)
+
+                vorbisenc = Vorbis_bin()
+                theoraenc = Theora_bin()
+
+                oggmux = gst.element_factory_make('oggmux', "oggmux")
+
+                queuemux = gst.element_factory_make('queue', "queuemux")
+                queuemux.set_property("max-size-buffers", 1000)
+                queuemux.set_property("max-size-bytes", 0)
+                queuemux.set_property("max-size-time", 0)
+
+                archivo = gst.element_factory_make(
+                    'filesink', "filesink")
+
+                self.pipeline.add(vorbisenc)
+                self.pipeline.add(theoraenc)
+                self.pipeline.add(oggmux)
+                self.pipeline.add(queuemux)
+                self.pipeline.add(archivo)
+
+                archivo.set_property("location", self.path_archivo)
+
+                audiobin.link(vorbisenc)
+                vorbisenc.link(oggmux)
+                self.tee.link(theoraenc)
+                theoraenc.link(oggmux)
+                oggmux.link(queuemux)
+                queuemux.link(archivo)
+
                 self.__new_handle(True, [])
                 self.play()
 
