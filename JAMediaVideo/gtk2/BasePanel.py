@@ -511,8 +511,6 @@ class BasePanel(gtk.HPaned):
         self.jamediawebcam.connect("endfile",
             self.__control_grabacion_end)
 
-        gobject.idle_add(self.jamediawebcam.play)
-
         if not "/dev/video" in device:
             toolbar = self.get_toplevel().toolbar
             toolbar.toolbar_video.boton_filmar.set_sensitive(False)
@@ -523,6 +521,7 @@ class BasePanel(gtk.HPaned):
             toolbar.toolbar_video.boton_filmar.set_sensitive(True)
             toolbar.toolbar_fotografia.boton_fotografiar.set_sensitive(True)
 
+        gobject.idle_add(self.jamediawebcam.play)
         self.control = False
 
     def __control_grabacion_end(self, widget):
@@ -641,7 +640,7 @@ class BasePanel(gtk.HPaned):
 
         if self.jamediawebcam:
             self.jamediawebcam.stop()
-            #del(self.jamediawebcam)
+            del(self.jamediawebcam)
             self.jamediawebcam = False
 
         xid = self.pantalla.get_property('window').xid

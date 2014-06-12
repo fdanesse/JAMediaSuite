@@ -47,6 +47,7 @@ import gtk
 import gobject
 from gtk import gdk
 
+
 def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
@@ -77,6 +78,7 @@ def get_color(color):
         }
 
     return colors.get(color, None)
+
 
 BASE_PATH = os.path.dirname(__file__)
 BASE_PATH = os.path.dirname(BASE_PATH)

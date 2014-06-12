@@ -89,6 +89,7 @@ class Foto_bin(gst.Bin):
         self.add_pad(gst.GhostPad("sink",
             queue.get_static_pad("sink")))
 
+
 '''
 class Theora_bin(gst.Bin):
     """
@@ -101,8 +102,7 @@ class Theora_bin(gst.Bin):
 
         self.set_name('Theora_bin')
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
+        queue = gst.element_factory_make('queue', "queue")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
@@ -185,6 +185,7 @@ class Vorbis_bin(gst.Bin):
             vorbisenc.get_static_pad("src")))
 '''
 
+
 # FIXME: Por algún motivo no linkea
 '''
 class Xvimage_bin(gst.Bin):
@@ -198,8 +199,7 @@ class Xvimage_bin(gst.Bin):
 
         self.set_name('Xvimage_bin')
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
+        queue = gst.element_factory_make('queue', "queue")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
@@ -435,11 +435,6 @@ class Video_Efectos_bin(gst.Bin):
 
 
 class Ogv_out_bin(gst.Bin):
-    """
-    Toma el audio desde autoaudio en vorbisbin.
-    Recibe fuente de video y la pasa por theorabin.
-        Graba Audio y Video en Formato ogv.
-    """
 
     def __init__(self, path_archivo):
 
@@ -447,22 +442,22 @@ class Ogv_out_bin(gst.Bin):
 
         self.set_name('ogv_out_bin')
 
-        #autoaudiosrc = gst.element_factory_make(
-        #    'autoaudiosrc', "autoaudiosrc")
-        #audiorate = gst.element_factory_make(
-        #    'audiorate', "audiorate")
+        autoaudiosrc = gst.element_factory_make(
+            'autoaudiosrc', "autoaudiosrc")
+        audiorate = gst.element_factory_make(
+            'audiorate', "audiorate")
 
-        #capaaudio = gst.Caps(
-        #    "audio/x-raw-int,rate=16000,channels=2,depth=16")
-        #filtroaudio = gst.element_factory_make(
-        #    "capsfilter", "filtroaudio")
-        #filtroaudio.set_property("caps", capaaudio)
+        capaaudio = gst.Caps(
+            "audio/x-raw-int,rate=16000,channels=2,depth=16")
+        filtroaudio = gst.element_factory_make(
+            "capsfilter", "filtroaudio")
+        filtroaudio.set_property("caps", capaaudio)
 
-        #audioconvert = gst.element_factory_make(
-        #    'audioconvert', "audioconvert")
+        audioconvert = gst.element_factory_make(
+            'audioconvert', "audioconvert")
 
-        #vorbisenc = gst.element_factory_make(
-        #    'vorbisenc', 'vorbisenc')
+        vorbisenc = gst.element_factory_make(
+            'vorbisenc', 'vorbisenc')
 
         queuev = gst.element_factory_make('queue', "queuev")
         queuev.set_property("max-size-buffers", 1000)
@@ -486,8 +481,7 @@ class Ogv_out_bin(gst.Bin):
         oggmux = gst.element_factory_make(
             'oggmux', "oggmux")
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
+        queue = gst.element_factory_make('queue', "queue")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
@@ -495,11 +489,11 @@ class Ogv_out_bin(gst.Bin):
         archivo = gst.element_factory_make(
             'filesink', "filesink")
 
-        #self.add(autoaudiosrc)
-        #self.add(audiorate)
-        #self.add(filtroaudio)
-        #self.add(audioconvert)
-        #self.add(vorbisenc)
+        self.add(autoaudiosrc)
+        self.add(audiorate)
+        self.add(filtroaudio)
+        self.add(audioconvert)
+        self.add(vorbisenc)
 
         self.add(queuev)
         self.add(videoconvert)
@@ -509,11 +503,11 @@ class Ogv_out_bin(gst.Bin):
         self.add(queue)
         self.add(archivo)
 
-        #autoaudiosrc.link(audiorate)
-        #audiorate.link(filtroaudio)
-        #filtroaudio.link(audioconvert)
-        #audioconvert.link(vorbisenc)
-        #vorbisenc.link(oggmux)
+        autoaudiosrc.link(audiorate)
+        audiorate.link(filtroaudio)
+        filtroaudio.link(audioconvert)
+        audioconvert.link(vorbisenc)
+        vorbisenc.link(oggmux)
 
         queuev.link(videoconvert)
         videoconvert.link(videorate)
@@ -551,7 +545,6 @@ class mpeg_out_bin(gst.Bin):
         audioconvert = gst.element_factory_make(
             'audioconvert', "audioconvert")
 
-        #FIXME: el audio puede que venga desde la red
         ffenc_mp2 = gst.element_factory_make(
             "ffenc_mp2", "ffenc_mp2")
 
@@ -628,8 +621,7 @@ class Out_lan_jpegenc_bin(gst.Bin):
 
         self.set_name('out_lan_jpegenc_bin')
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
+        queue = gst.element_factory_make('queue', "queue")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
@@ -661,6 +653,7 @@ class Out_lan_jpegenc_bin(gst.Bin):
         self.add_pad(gst.GhostPad(
             "sink", queue.get_static_pad("sink")))
 '''
+
 
 #FIXME: Por algún motivo, no enlaza: multipartdemux.link(jpegdec)
 '''
@@ -718,8 +711,7 @@ class Out_lan_smokeenc_bin(gst.Bin):
 
         self.set_name('out_lan_smokeenc_bin')
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
+        queue = gst.element_factory_make('queue', "queue")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
@@ -766,8 +758,7 @@ class Out_lan_speexenc_bin(gst.Bin):
         #autoaudiosrc = gst.element_factory_make(
         #    'autoaudiosrc', "autoaudiosrc")
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
+        queue = gst.element_factory_make('queue', "queue")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
@@ -778,8 +769,7 @@ class Out_lan_speexenc_bin(gst.Bin):
         speexenc = gst.element_factory_make(
             'speexenc', "speexenc")
 
-        queue1 = gst.element_factory_make(
-            'queue', "queue1")
+        queue1 = gst.element_factory_make('queue', "queue1")
         queue1.set_property("max-size-buffers", 1000)
         queue1.set_property("max-size-bytes", 0)
         queue1.set_property("max-size-time", 0)
@@ -823,11 +813,9 @@ class In_lan_udpsrc_bin(gst.Bin):
 
         udpsrc = gst.element_factory_make(
             'udpsrc', "udpsrc")
-
         udpsrc.set_property("port", 5000)
 
-        queue = gst.element_factory_make(
-            'queue', "queue")
+        queue = gst.element_factory_make('queue', "queue")
         queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
