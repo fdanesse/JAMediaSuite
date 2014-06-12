@@ -199,3 +199,70 @@ class mpeg2_bin(gst.Bin):
             queue.get_static_pad("sink")))
         self.add_pad(gst.GhostPad("src",
             ffenc_mpeg2video.get_static_pad("src")))
+
+
+class Vorbis_bin(gst.Bin):
+    """
+    Comprime Audio utilizando vorbisenc.
+    """
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('Vorbis_bin')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        audioconvert = gst.element_factory_make('audioconvert', "audioconvert")
+        vorbisenc = gst.element_factory_make('vorbisenc', 'vorbisenc')
+
+        self.add(queue)
+        self.add(audioconvert)
+        self.add(vorbisenc)
+
+        queue.link(audioconvert)
+        audioconvert.link(vorbisenc)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            vorbisenc.get_static_pad("src")))
+
+
+class Theora_bin(gst.Bin):
+    """
+    Comprime video utilizando theoraenc.
+    """
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('Theora_bin')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspace")
+        theoraenc = gst.element_factory_make(
+            'theoraenc', 'theoraenc')
+        theoraenc.set_property("quality", 16)
+
+        self.add(queue)
+        self.add(ffmpegcolorspace)
+        self.add(theoraenc)
+
+        queue.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(theoraenc)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            theoraenc.get_static_pad("src")))
