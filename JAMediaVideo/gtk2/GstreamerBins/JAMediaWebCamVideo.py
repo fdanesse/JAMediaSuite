@@ -26,17 +26,20 @@ import gobject
 import gst
 import gtk
 
-from Gstreamer_Bins import Ogv_out_bin
-from Gstreamer_Bins import mpeg_out_bin
-from Gstreamer_Bins import Video_Efectos_bin
-from Gstreamer_Bins import v4l2src_bin
-from Gstreamer_Bins import Balance_bin
-#from Gstreamer_Bins import Xvimage_bin
-#from Gstreamer_Bins import Out_lan_jpegenc_bin
-from Gstreamer_Bins import Out_lan_smokeenc_bin
-from Gstreamer_Bins import In_lan_udpsrc_bin
-#from Gstreamer_Bins import Out_lan_speexenc_bin
-from Gstreamer_Bins import Foto_bin
+from VideoBins import v4l2src_bin
+from VideoBins import Balance_bin
+from VideoBins import Video_Efectos_bin
+from VideoBins import Foto_bin
+from VideoBins import Out_lan_smokeenc_bin
+from VideoBins import In_lan_udpsrc_bin
+
+#from VideoBins import Ogv_out_bin
+#from VideoBins import mpeg_out_bin
+#from VideoBins import Xvimage_bin
+#from VideoBins import Out_lan_jpegenc_bin
+#from VideoBins import Out_lan_speexenc_bin
+
+from AudioBins import Audio_src_Bin
 
 
 def borrar(origen):
@@ -151,6 +154,15 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.pipeline.add(fotobin)
 
         self.tee.link(fotobin)
+
+        audiobin = Audio_src_Bin()
+        fakesink = gst.element_factory_make(
+            'fakesink', "fakesink")
+
+        self.pipeline.add(audiobin)
+        self.pipeline.add(fakesink)
+
+        audiobin.link(fakesink)
 
         # FIXME: Por algún motivo no linkea
         #xvimage = Xvimage_bin()

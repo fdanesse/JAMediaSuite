@@ -22,9 +22,9 @@
 import gobject
 import gst
 
-from Gstreamer_Bins import v4l2src_bin
-from Gstreamer_Bins import Balance_bin
-from Gstreamer_Bins import In_lan_udpsrc_bin
+from VideoBins import v4l2src_bin
+from VideoBins import Balance_bin
+from VideoBins import In_lan_udpsrc_bin
 
 PR = False
 
