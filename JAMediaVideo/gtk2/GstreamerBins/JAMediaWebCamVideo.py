@@ -30,17 +30,10 @@ from VideoBins import v4l2src_bin
 from VideoBins import Balance_bin
 from VideoBins import Video_Efectos_bin
 from VideoBins import Foto_bin
+from VideoBins import xvimage_bin
+
 from VideoBins import Out_lan_smokeenc_bin
 from VideoBins import In_lan_udpsrc_bin
-
-from VideoBins import Theora_bin
-#from VideoBins import mpeg_out_bin
-#from VideoBins import Xvimage_bin
-#from VideoBins import Out_lan_jpegenc_bin
-#from VideoBins import Out_lan_speexenc_bin
-
-from AudioBins import Audio_src_Bin
-from AudioBins import Vorbis_bin
 
 
 def borrar(origen):
@@ -127,54 +120,37 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline.add(self.tee)
 
-        queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
-        queue.set_property("max-size-bytes", 0)
-        queue.set_property("max-size-time", 0)
+        #queue = gst.element_factory_make('queue', "queue")
+        #queue.set_property("max-size-buffers", 1000)
+        #queue.set_property("max-size-bytes", 0)
+        #queue.set_property("max-size-time", 0)
 
-        ffmpegcolorspace = gst.element_factory_make(
-            'ffmpegcolorspace', "ffmpegcolorspace")
-        xvimagesink = gst.element_factory_make(
-            'xvimagesink', "xvimagesink")
-        xvimagesink.set_property(
-            "force-aspect-ratio", True)
-        #xvimagesink.set_property("sync", false)
-        #xvimagesink.set_property("async", false)
+        #ffmpegcolorspace = gst.element_factory_make(
+        #    'ffmpegcolorspace', "ffmpegcolorspace")
+        #xvimagesink = gst.element_factory_make(
+        #    'xvimagesink', "xvimagesink")
+        #xvimagesink.set_property(
+        #    "force-aspect-ratio", True)
 
-        self.pipeline.add(queue)
-        self.pipeline.add(ffmpegcolorspace)
-        self.pipeline.add(xvimagesink)
+        #self.pipeline.add(queue)
+        #self.pipeline.add(ffmpegcolorspace)
+        #self.pipeline.add(xvimagesink)
+
+        xvimage = xvimage_bin()
+        self.pipeline.add(xvimage)
 
         self.balance.link(self.tee)
 
-        self.tee.link(queue)
-        queue.link(ffmpegcolorspace)
-        ffmpegcolorspace.link(xvimagesink)
+        #self.tee.link(queue)
+        #queue.link(ffmpegcolorspace)
+        #ffmpegcolorspace.link(xvimagesink)
+
+        self.tee.link(xvimage)
 
         fotobin = Foto_bin()
         self.pipeline.add(fotobin)
 
         self.tee.link(fotobin)
-
-        audiobin = Audio_src_Bin()
-        fakesink = gst.element_factory_make(
-            'fakesink', "fakesink")
-
-        self.pipeline.add(audiobin)
-        self.pipeline.add(fakesink)
-
-        audiobin.link(fakesink)
-
-        # FIXME: Por algún motivo no linkea
-        #xvimage = Xvimage_bin()
-        #self.tee.link(xvimage)
-
-        #self.pipeline.set_auto_flush_bus(False)
-        #fotobin.sync_state_with_parent()
-        #efectos_bin.sync_state_with_parent()
-        #self.balance.sync_state_with_parent()
-        #camara.sync_state_with_parent()
-        #self.pipeline.set_clock(gst.Clock())
 
         self.bus = self.pipeline.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
@@ -353,8 +329,12 @@ class JAMediaWebCamVideo(gobject.GObject):
         if PR:
             print "\tJAMediaWebCamVideo.filmar"
 
-        #self.pipeline.set_state(gst.STATE_NULL)
         self.stop()
+
+        fotobin = self.pipeline.get_by_name("Foto_bin")
+        self.tee.unlink(fotobin)
+
+        self.pipeline.remove(fotobin)
 
         formatos = ["ogv", "avi", "mpeg"]
         if self.formato in formatos:
@@ -362,13 +342,11 @@ class JAMediaWebCamVideo(gobject.GObject):
                 path_archivo, self.formato)
 
             if self.formato == "ogv":
+                from AudioBins import Audio_src_Bin
+                from AudioBins import Vorbis_bin
+                from VideoBins import Theora_bin
 
-                audiobin = self.pipeline.get_by_name("Audio_Bin")
-                fakesink = self.pipeline.get_by_name("fakesink")
-
-                audiobin.unlink(fakesink)
-                self.pipeline.remove(fakesink)
-
+                audiobin = Audio_src_Bin()
                 vorbisenc = Vorbis_bin()
                 theoraenc = Theora_bin()
 
@@ -379,16 +357,15 @@ class JAMediaWebCamVideo(gobject.GObject):
                 queuemux.set_property("max-size-bytes", 0)
                 queuemux.set_property("max-size-time", 0)
 
-                archivo = gst.element_factory_make(
-                    'filesink', "filesink")
+                archivo = gst.element_factory_make('filesink', "filesink")
+                archivo.set_property("location", self.path_archivo)
 
+                self.pipeline.add(audiobin)
                 self.pipeline.add(vorbisenc)
                 self.pipeline.add(theoraenc)
                 self.pipeline.add(oggmux)
                 self.pipeline.add(queuemux)
                 self.pipeline.add(archivo)
-
-                archivo.set_property("location", self.path_archivo)
 
                 audiobin.link(vorbisenc)
                 vorbisenc.link(oggmux)
@@ -404,17 +381,44 @@ class JAMediaWebCamVideo(gobject.GObject):
                 pass
 
             elif self.formato == "mpeg":
-                out = mpeg_out_bin(self.path_archivo)
-                #out.sync_state_with_parent()
-                self.pipeline.add(out)
-                self.tee.link(out)
+                from AudioBins import Audio_src_Bin
+                from AudioBins import mp2_bin
+                from VideoBins import mpeg2_bin
+
+                audiobin = Audio_src_Bin()
+                mp2 = mp2_bin()
+                mpeg2 = mpeg2_bin()
+
+                muxor = gst.element_factory_make('mpegtsmux', 'muxor')
+
+                queuemux = gst.element_factory_make('queue', "queuemux")
+                queuemux.set_property("max-size-buffers", 1000)
+                queuemux.set_property("max-size-bytes", 0)
+                queuemux.set_property("max-size-time", 0)
+
+                archivo = gst.element_factory_make('filesink', "filesink")
+                archivo.set_property("location", self.path_archivo)
+
+                self.pipeline.add(audiobin)
+                self.pipeline.add(mp2)
+                self.pipeline.add(mpeg2)
+                self.pipeline.add(muxor)
+                self.pipeline.add(queuemux)
+                self.pipeline.add(archivo)
+
+                audiobin.link(mp2)
+                mp2.link(muxor)
+                self.tee.link(mpeg2)
+                mpeg2.link(muxor)
+                muxor.link(queuemux)
+                queuemux.link(archivo)
+
                 self.__new_handle(True, [])
                 self.play()
 
         else:
             # "Volcado a red lan"
             video_out = Out_lan_smokeenc_bin(self.formato)
-            video_out.sync_state_with_parent()
             self.pipeline.add(video_out)
 
             self.tee.link(video_out)

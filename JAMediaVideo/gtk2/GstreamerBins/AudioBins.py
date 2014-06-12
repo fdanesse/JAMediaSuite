@@ -90,3 +90,35 @@ class Vorbis_bin(gst.Bin):
             queue.get_static_pad("sink")))
         self.add_pad(gst.GhostPad("src",
             vorbisenc.get_static_pad("src")))
+
+
+class mp2_bin(gst.Bin):
+    """
+    Comprime Audio utilizando ffenc_mp2.
+    """
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('mp2_bin')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        audioconvert = gst.element_factory_make('audioconvert', "audioconvert")
+        ffenc_mp2 = gst.element_factory_make('ffenc_mp2', 'ffenc_mp2')
+
+        self.add(queue)
+        self.add(audioconvert)
+        self.add(ffenc_mp2)
+
+        queue.link(audioconvert)
+        audioconvert.link(ffenc_mp2)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            ffenc_mp2.get_static_pad("src")))
