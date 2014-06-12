@@ -106,9 +106,6 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.balance = Balance_bin()
 
-        self.tee = gst.element_factory_make('tee', "tee")
-        self.tee.set_property('pull-mode', 1)
-
         self.pipeline.add(camara)
         self.pipeline.add(self.balance)
 
@@ -120,6 +117,9 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         else:
             camara.link(self.balance)
+
+        self.tee = gst.element_factory_make('tee', "tee")
+        self.tee.set_property('pull-mode', 1)
 
         self.pipeline.add(self.tee)
 
