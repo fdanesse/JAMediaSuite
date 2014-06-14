@@ -782,6 +782,8 @@ class BasePanel(gtk.HPaned):
         usuario en la toolbar correspondiente de la aplicacion.
         """
 
+        self.emit("cancel-toolbars")
+
         if accion == "Izquierda" or accion == "Derecha":
             if self.jamediawebcam:
                 self.jamediawebcam.rotar(accion)
@@ -793,7 +795,7 @@ class BasePanel(gtk.HPaned):
                 self.imageplayer.rotar(accion)
 
             else:
-                print self.set_accion, modo, accion
+                print "Accion sin definir:", self.set_accion, modo, accion
 
         elif accion == "Stop":
             if modo == "video":
@@ -804,14 +806,18 @@ class BasePanel(gtk.HPaned):
                 gobject.timeout_add(1000, self.__re_sensitive)
 
             elif modo == "foto":
-                #self.get_toplevel().toolbar.set_sensitive(False)
+                self.get_toplevel().toolbar.set_sensitive(False)
                 self.__re_init_video_web_cam()
                 self.info_label.set_text("")
                 self.info_label.hide()
-                #gobject.timeout_add(1000, self.__re_sensitive)
+                gobject.timeout_add(300, self.__re_sensitive)
+
+            elif modo == "jamediaconverter":
+                self.jamediaconvert.tareas_pendientes = []
+                # FIXME: Considerar detener la conversíon en progreso
 
             else:
-                print self.set_accion, accion, modo
+                print "Accion sin definir:", self.set_accion, modo, accion
 
         elif accion == "Filmar":  # and modo == "video":
             self.get_toplevel().toolbar.set_sensitive(False)
@@ -826,16 +832,14 @@ class BasePanel(gtk.HPaned):
             self.get_toplevel().toolbar.set_sensitive(False)
             rafaga = self.rafagas_setting.get_rafaga()
             self.jamediawebcam.fotografiar(get_imagenes_directory(), rafaga)
-            gobject.timeout_add(500, self.__re_sensitive)
+            gobject.timeout_add(300, self.__re_sensitive)
 
         # FIXME: Desactivadas por ahora
         #elif accion == "Centrar" or accion == "Acercar" or accion == "Alejar":
         #    self.imageplayer.set_zoom(accion)
 
         else:
-            print self.set_accion, accion
-
-        self.emit("cancel-toolbars")
+            print "Accion sin definir:", self.set_accion, modo, accion
 
     def config_show(self, tipo):
         """

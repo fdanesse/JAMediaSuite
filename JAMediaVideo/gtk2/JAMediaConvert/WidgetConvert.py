@@ -104,8 +104,8 @@ class WidgetConvert(gtk.HPaned):
             self.get_toplevel().set_sensitive(True)
 
         else:
-            #gobject.idle_add(self.__run_stack_tareas)
-            print "Accion sin definir:", self.__accion_tareas, accion
+            # Al recibir end, continúa
+            gobject.idle_add(self.__run_stack_tareas)
 
     def __run_stack_tareas(self):
 

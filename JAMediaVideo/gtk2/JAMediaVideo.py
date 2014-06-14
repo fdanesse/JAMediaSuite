@@ -127,7 +127,7 @@ class JAMediaVideo(gtk.Window):
 
     def __set_accion(self, widget, modo, accion):
         """
-        Acciones sobre Base Panel.
+        Acciones de la toolbar que se aplican sobre Base Panel.
         """
 
         self.__cancel_toolbars()

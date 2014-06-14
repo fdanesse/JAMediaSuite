@@ -165,12 +165,7 @@ class Toolbar(gtk.EventBox):
             self.__set_converter_accion)
 
     def __set_converter_accion(self, toolbar, accion):
-
-        if accion == "Salir":
-            self.emit("accion", "jamediaconverter", accion)
-
-        else:
-            print self.__set_converter_accion, toolbar, accion
+        self.emit("accion", "jamediaconverter", accion)
 
     def __set_jamediaimagenes_accion(self, toolbar, accion):
 
@@ -996,6 +991,16 @@ class ToolbarConverter(gtk.EventBox):
         toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
+        archivo = os.path.join(BASE_PATH,
+            "Iconos", "stop.svg")
+        self.boton_stop = get_boton(
+            archivo, flip=False, pixels=24)
+        self.boton_stop.set_sensitive(False)
+        self.boton_stop.set_tooltip_text("Detener")
+        self.boton_stop.connect("clicked",
+            self.__emit_senial, "Stop")
+        toolbar.insert(self.boton_stop, -1)
+
         item = gtk.ToolItem()
         item.set_expand(True)
         self.info = gtk.Label("")
@@ -1020,6 +1025,8 @@ class ToolbarConverter(gtk.EventBox):
         self.show_all()
 
     def __emit_senial(self, widget, senial):
+        self.boton_menu.set_sensitive(False)
+        self.boton_stop.set_sensitive(False)
         self.emit('accion', senial)
 
     def set_info(self, info):
@@ -1027,3 +1034,4 @@ class ToolbarConverter(gtk.EventBox):
 
     def activate_conversor(self, valor):
         self.boton_menu.set_sensitive(not valor)
+        self.boton_stop.set_sensitive(valor)

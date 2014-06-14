@@ -319,7 +319,7 @@ class Lista(gtk.TreeView):
         self.permitir_select = True
         self.valor_select = False
         self.ultimo_select = False
-        self.timer_select = False
+        #self.timer_select = False
 
         self.__setear_columnas()
 
@@ -342,9 +342,9 @@ class Lista(gtk.TreeView):
         if self.valor_select != valor:
             self.valor_select = valor
 
-            if self.timer_select:
-                gobject.source_remove(self.timer_select)
-                self.timer_select = False
+            #if self.timer_select:
+            #    gobject.source_remove(self.timer_select)
+            #    self.timer_select = False
 
             gobject.timeout_add(3, self.__select)
             self.scroll_to_cell(self.get_model().get_path(_iter))
@@ -456,6 +456,9 @@ class Lista(gtk.TreeView):
 
         self.permitir_select = False
         self.get_model().clear()
+        self.valor_select = False
+        self.ultimo_select = False
+        #self.timer_select = False
         self.permitir_select = True
 
     def agregar_items(self, elementos):
