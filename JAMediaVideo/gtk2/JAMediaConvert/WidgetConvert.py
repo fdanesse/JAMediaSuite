@@ -33,9 +33,6 @@ from Globales import get_audio_directory
 from Globales import get_imagenes_directory
 from Globales import get_video_directory
 
-gobject.threads_init()
-gtk.gdk.threads_init()
-
 
 class WidgetConvert(gtk.HPaned):
 
@@ -44,7 +41,9 @@ class WidgetConvert(gtk.HPaned):
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
     "in-run": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN, ))}
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN, )),
+    "pendientes": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -70,6 +69,10 @@ class WidgetConvert(gtk.HPaned):
             "nueva-seleccion", self.__selecction_file)
         self.scrolltareas.connect(
             'accion-tarea', self.__accion_tareas)
+        self.scrolltareas.connect("tareas", self.__info_num_tareas)
+
+    def __info_num_tareas(self, widget, num):
+        self.emit("pendientes", "Archivos a Procesar: %s" % num)
 
     def __accion_tareas(self, widget, widgetarchivo, accion):
         """
@@ -96,10 +99,13 @@ class WidgetConvert(gtk.HPaned):
                 self.__selecction_file(False, filepath)
 
             self.scrolltareas.copy_tarea(widgetarchivo.get_tareas())
+            self.emit("pendientes", "Archivos a Procesar: %s" % len(
+                self.scrolltareas.vbox.get_children()))
             self.get_toplevel().set_sensitive(True)
 
         else:
-            gobject.idle_add(self.__run_stack_tareas)
+            #gobject.idle_add(self.__run_stack_tareas)
+            print "Accion sin definir:", self.__accion_tareas, accion
 
     def __run_stack_tareas(self):
 
@@ -111,12 +117,16 @@ class WidgetConvert(gtk.HPaned):
                 tarea.show()
                 tarea.in_run(False)
 
+            self.emit("pendientes", "No Hay Tareas Pendientes.")
+
         else:
             widgetarchivo = self.tareas_pendientes[0]
             self.tareas_pendientes.remove(widgetarchivo)
 
             self.emit("in-run", True)
             self.playerlist.set_sensitive(False)
+            self.emit("pendientes", "Tareas Pendientes: %s" % len(
+                self.tareas_pendientes))
 
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.hide()
@@ -139,6 +149,8 @@ class WidgetConvert(gtk.HPaned):
             return
 
         self.scrolltareas.crear_tarea(path)
+        self.emit("pendientes", "Archivos a Procesar: %s" % len(
+            self.scrolltareas.vbox.get_children()))
 
     def __re_emit_accion_list(self, widget, lista, accion, _iter):
         """
@@ -156,6 +168,8 @@ class WidgetConvert(gtk.HPaned):
         self.tareas_pendientes = []
         self.scrolltareas.limpiar()
         self.playerlist.limpiar()
+        #self.emit("pendientes", "Archivos a Procesar: %s" % len(
+        #    self.scrolltareas.vbox.get_children()))
 
     def salir(self):
 
@@ -174,6 +188,9 @@ class WidgetConvert(gtk.HPaned):
                 widgetarchivo.destroy()
                 break
 
+        #self.emit("pendientes", "Archivos a Procesar: %s" % len(
+        #    self.scrolltareas.vbox.get_children()))
+
 
 class ScrollTareas(gtk.ScrolledWindow):
     """
@@ -184,7 +201,9 @@ class ScrollTareas(gtk.ScrolledWindow):
     __gsignals__ = {
     'accion-tarea': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-        gobject.TYPE_STRING))}
+        gobject.TYPE_STRING)),
+    "tareas": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_INT, ))}
 
     def __init__(self):
 
@@ -199,6 +218,13 @@ class ScrollTareas(gtk.ScrolledWindow):
         self.get_child().modify_bg(0, get_colors("windows"))
 
         self.show_all()
+
+        self.vbox.connect("remove", self.__change_number_tareas)
+        # FIXME: Por algún motivo esto no funciona.
+        #self.vbox.connect("add", self.__change_number_tareas)
+
+    def __change_number_tareas(self, vbox, widget):
+        self.emit("tareas", len(self.vbox.get_children()))
 
     def __accion_tarea(self, widgetarchivo, accion):
         """
@@ -299,7 +325,7 @@ class WidgetArchivo(gtk.Frame):
             self.iz_box.pack_start(audioframe, False, False, 0)
             audioframe.connect("tarea", self.__sensitive_buttons)
 
-        elif "audio" in datosor or \
+        elif "audio" in datos or \
             'application/octet-stream' in datos:
 
             audioframe = AudioFrame(
@@ -397,6 +423,7 @@ class WidgetArchivo(gtk.Frame):
         self.player.connect("info", self.__info_tarea)
 
         gobject.idle_add(self.player.play)
+        return False
 
     def __info_tarea(self, player, info):
 

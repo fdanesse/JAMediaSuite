@@ -994,6 +994,17 @@ class ToolbarConverter(gtk.EventBox):
         toolbar.modify_bg(0, get_colors("toolbars"))
 
         toolbar.insert(get_separador(draw=False,
+            ancho=3, expand=False), -1)
+
+        item = gtk.ToolItem()
+        item.set_expand(True)
+        self.info = gtk.Label("")
+        self.info.modify_fg(0, get_colors("drawingplayer"))
+        self.info.show()
+        item.add(self.info)
+        toolbar.insert(item, -1)
+
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -1010,6 +1021,9 @@ class ToolbarConverter(gtk.EventBox):
 
     def __emit_senial(self, widget, senial):
         self.emit('accion', senial)
+
+    def set_info(self, info):
+        self.info.set_text(info)
 
     def activate_conversor(self, valor):
         self.boton_menu.set_sensitive(not valor)

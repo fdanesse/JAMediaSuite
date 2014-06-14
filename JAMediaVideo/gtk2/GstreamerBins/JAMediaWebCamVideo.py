@@ -120,31 +120,10 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline.add(self.tee)
 
-        #queue = gst.element_factory_make('queue', "queue")
-        #queue.set_property("max-size-buffers", 1000)
-        #queue.set_property("max-size-bytes", 0)
-        #queue.set_property("max-size-time", 0)
-
-        #ffmpegcolorspace = gst.element_factory_make(
-        #    'ffmpegcolorspace', "ffmpegcolorspace")
-        #xvimagesink = gst.element_factory_make(
-        #    'xvimagesink', "xvimagesink")
-        #xvimagesink.set_property(
-        #    "force-aspect-ratio", True)
-
-        #self.pipeline.add(queue)
-        #self.pipeline.add(ffmpegcolorspace)
-        #self.pipeline.add(xvimagesink)
-
         xvimage = xvimage_bin()
         self.pipeline.add(xvimage)
 
         self.balance.link(self.tee)
-
-        #self.tee.link(queue)
-        #queue.link(ffmpegcolorspace)
-        #ffmpegcolorspace.link(xvimagesink)
-
         self.tee.link(xvimage)
 
         fotobin = Foto_bin()

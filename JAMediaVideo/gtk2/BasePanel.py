@@ -93,7 +93,9 @@ class BasePanel(gtk.HPaned):
     "in-run": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN, )),
     "cancel-toolbars": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, ())}
+        gobject.TYPE_NONE, ()),
+    "pendientes": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -199,8 +201,14 @@ class BasePanel(gtk.HPaned):
             "accion-list", self.__re_emit_accion_list)
         self.jamediaconvert.connect(
             "in-run", self.__jamediaconvert_in_run)
+        self.jamediaconvert.connect(
+            "pendientes", self.__jamediaconvert_info)
 
         self.control = False
+
+    def __jamediaconvert_info(self, widget, info):
+
+        self.emit("pendientes", info)
 
     def __jamediaconvert_in_run(self, widget, valor):
 

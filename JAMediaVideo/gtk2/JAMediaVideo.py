@@ -21,9 +21,11 @@
 
 import os
 import sys
-
+import gc
 import gtk
 import gobject
+
+gc.enable()
 
 from Globales import get_colors
 
@@ -76,6 +78,8 @@ class JAMediaVideo(gtk.Window):
         self.base_panel.connect("accion-list", self.__accion_list)
         self.base_panel.connect(
             "in-run", self.__jamediaconvert_in_run)
+        self.base_panel.connect(
+            "pendientes", self.__jamediaconvert_info)
         self.base_panel.connect("cancel-toolbars", self.__cancel_toolbars)
 
         self.toolbar_accion.connect("aviso", self.__update_accions)
@@ -86,6 +90,10 @@ class JAMediaVideo(gtk.Window):
         self.realize()
 
         gobject.idle_add(self.__run)
+
+    def __jamediaconvert_info(self, widget, info):
+
+        self.toolbar.toolbar_converter.set_info(info)
 
     def __update_accions(self, toolbaraccion, accion, uri):
         """
