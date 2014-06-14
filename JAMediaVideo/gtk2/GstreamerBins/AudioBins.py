@@ -22,8 +22,6 @@
 import gst
 import gobject
 
-#gobject.threads_init()
-
 
 class Audio_src_Bin(gst.Bin):
 

@@ -54,9 +54,6 @@ from Globales import get_video_directory
 from Globales import get_imagenes_directory
 from Globales import get_ip
 
-#gobject.threads_init()
-#gtk.gdk.threads_init()
-
 PR = True
 
 

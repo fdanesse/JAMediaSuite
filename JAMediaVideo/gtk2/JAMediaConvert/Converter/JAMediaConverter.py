@@ -49,8 +49,6 @@ def borrar(origen):
 
 PR = True
 
-#gobject.threads_init()
-
 
 class JAMediaConverter(gobject.GObject):
     """

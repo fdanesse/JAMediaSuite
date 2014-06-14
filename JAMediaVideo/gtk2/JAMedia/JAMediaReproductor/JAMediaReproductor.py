@@ -26,8 +26,6 @@ import gst
 from JAMediaBins import JAMedia_Audio_Pipeline
 from JAMediaBins import JAMedia_Video_Pipeline
 
-gobject.threads_init()
-
 PR = False
 
 

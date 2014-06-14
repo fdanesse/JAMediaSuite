@@ -22,8 +22,6 @@
 import gst
 import gobject
 
-gobject.threads_init()
-
 
 class JAMedia_Audio_Pipeline(gst.Pipeline):
     """

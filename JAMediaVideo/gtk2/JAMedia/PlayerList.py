@@ -214,6 +214,8 @@ class ToolbarList(gtk.EventBox):
         gtk.EventBox.__init__(self)
 
         self.mime = mime
+        self.directorio = get_JAMedia_Directory()
+
         toolbar = gtk.Toolbar()
 
         self.modify_bg(0, get_colors("toolbars"))
@@ -264,7 +266,7 @@ class ToolbarList(gtk.EventBox):
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
             mime=self.mime,
             title="Abrir Archivos",
-            path=get_JAMedia_Directory())
+            path=self.directorio)
 
         selector.connect(
             'archivos-seleccionados',
@@ -292,6 +294,7 @@ class ToolbarList(gtk.EventBox):
             archivo = os.path.basename(path)
             items.append([archivo, path])
 
+        self.directorio = os.path.dirname(path)
         self.emit("load", items, tipo)
 
 

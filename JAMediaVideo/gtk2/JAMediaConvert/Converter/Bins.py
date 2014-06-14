@@ -22,8 +22,6 @@
 import gst
 import gobject
 
-#gobject.threads_init()
-
 
 class wav_bin(gst.Bin):
 

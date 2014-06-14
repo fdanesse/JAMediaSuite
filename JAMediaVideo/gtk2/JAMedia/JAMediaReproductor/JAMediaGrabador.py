@@ -24,8 +24,6 @@ import os
 import gobject
 import gst
 
-gobject.threads_init()
-
 
 class JAMediaGrabador(gobject.GObject):
     """
