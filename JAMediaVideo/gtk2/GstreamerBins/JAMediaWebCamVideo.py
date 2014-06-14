@@ -28,12 +28,8 @@ import gtk
 
 from VideoBins import v4l2src_bin
 from VideoBins import Balance_bin
-from VideoBins import Video_Efectos_bin
 from VideoBins import Foto_bin
 from VideoBins import xvimage_bin
-
-from VideoBins import Out_lan_smokeenc_bin
-from VideoBins import In_lan_udpsrc_bin
 
 
 def borrar(origen):
@@ -96,6 +92,7 @@ class JAMediaWebCamVideo(gobject.GObject):
             camara.set_device(device)
 
         else:
+            from VideoBins import In_lan_udpsrc_bin
             camara = In_lan_udpsrc_bin(device)
 
         self.balance = Balance_bin()
@@ -104,6 +101,7 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.pipeline.add(self.balance)
 
         if efectos:
+            from VideoBins import Video_Efectos_bin
             efectos_bin = Video_Efectos_bin(efectos)
             self.pipeline.add(efectos_bin)
             camara.link(efectos_bin)
@@ -227,28 +225,34 @@ class JAMediaWebCamVideo(gobject.GObject):
         if PR:
             print "\tJAMediaWebCamVideo.set_rotacion", rot
         balance = self.pipeline.get_by_name("Balance_bin")
-        balance.set_rotacion(rot)
+        if balance:
+            balance.set_rotacion(rot)
 
     def get_rotacion(self):
 
         if PR:
             print "\tJAMediaWebCamVideo.get_rotacion"
         balance = self.pipeline.get_by_name("Balance_bin")
-        return balance.get_rotacion()
+        if balance:
+            return balance.get_rotacion()
+        else:
+            return 0
 
     def get_config(self):
 
         if PR:
             print "\tJAMediaWebCamVideo.get_config"
         balance = self.pipeline.get_by_name("Balance_bin")
-        return balance.get_config()
+        if balance:
+            return balance.get_config()
+        else:
+            return {}
 
     def set_efecto(self, efecto, propiedad, valor):
 
         if PR:
             print "\tJAMediaWebCamVideo.set_efecto", efecto, propiedad, valor
         ef = self.pipeline.get_by_name("Efectos_bin")
-
         if ef:
             ef.set_efecto(efecto, propiedad, valor)
 
@@ -257,7 +261,8 @@ class JAMediaWebCamVideo(gobject.GObject):
         if PR:
             print "\tJAMediaWebCamVideo.rotar", valor
         balance = self.pipeline.get_by_name('Balance_bin')
-        balance.rotar(valor)
+        if balance:
+            balance.rotar(valor)
 
     def play(self):
 
@@ -279,12 +284,13 @@ class JAMediaWebCamVideo(gobject.GObject):
             print "\tJAMediaWebCamVideo.set_balance"
         balance = self.pipeline.get_by_name("Balance_bin")
 
-        balance.set_balance(
-            brillo=brillo,
-            contraste=contraste,
-            saturacion=saturacion,
-            hue=hue,
-            gamma=gamma)
+        if balance:
+            balance.set_balance(
+                brillo=brillo,
+                contraste=contraste,
+                saturacion=saturacion,
+                hue=hue,
+                gamma=gamma)
 
     def set_formato(self, formato):
         """
@@ -394,6 +400,7 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         else:
             # "Volcado a red lan"
+            from VideoBins import Out_lan_smokeenc_bin
             video_out = Out_lan_smokeenc_bin(self.formato)
             self.pipeline.add(video_out)
 

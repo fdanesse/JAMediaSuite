@@ -33,9 +33,9 @@ class wav_bin(gst.Bin):
 
         audioconvert = gst.element_factory_make(
             "audioconvert", "audioconvert")
-        audioresample = gst.element_factory_make(
-            "audioresample", "audioresample")
-        audioresample.set_property('quality', 10)
+        #audioresample = gst.element_factory_make(
+        #    "audioresample", "audioresample")
+        #audioresample.set_property('quality', 10)
 
         wavenc = gst.element_factory_make(
             "wavenc", "wavenc")
@@ -44,12 +44,13 @@ class wav_bin(gst.Bin):
             "filesink", "filesinkwav")
 
         self.add(audioconvert)
-        self.add(audioresample)
+        #self.add(audioresample)
         self.add(wavenc)
         self.add(filesink)
 
-        audioconvert.link(audioresample)
-        audioresample.link(wavenc)
+        #audioconvert.link(audioresample)
+        #audioresample.link(wavenc)
+        audioconvert.link(wavenc)
         wavenc.link(filesink)
 
         filesink.set_property(
@@ -69,9 +70,9 @@ class mp3_bin(gst.Bin):
 
         audioconvert = gst.element_factory_make(
             "audioconvert", "audioconvert")
-        audioresample = gst.element_factory_make(
-            "audioresample", "audioresample")
-        audioresample.set_property('quality', 10)
+        #audioresample = gst.element_factory_make(
+        #    "audioresample", "audioresample")
+        #audioresample.set_property('quality', 10)
 
         lamemp3enc = gst.element_factory_make(
             "lamemp3enc", "lamemp3enc")
@@ -79,12 +80,13 @@ class mp3_bin(gst.Bin):
             "filesink", "filesinkmp3")
 
         self.add(audioconvert)
-        self.add(audioresample)
+        #self.add(audioresample)
         self.add(lamemp3enc)
         self.add(filesink)
 
-        audioconvert.link(audioresample)
-        audioresample.link(lamemp3enc)
+        #audioconvert.link(audioresample)
+        #audioresample.link(lamemp3enc)
+        audioconvert.link(lamemp3enc)
         lamemp3enc.link(filesink)
 
         filesink.set_property(
@@ -104,9 +106,9 @@ class ogg_bin(gst.Bin):
 
         audioconvert = gst.element_factory_make(
             "audioconvert", "audioconvert")
-        audioresample = gst.element_factory_make(
-            "audioresample", "audioresample")
-        audioresample.set_property('quality', 10)
+        #audioresample = gst.element_factory_make(
+        #    "audioresample", "audioresample")
+        #audioresample.set_property('quality', 10)
 
         vorbisenc = gst.element_factory_make(
             "vorbisenc", "vorbisenc")
@@ -116,13 +118,14 @@ class ogg_bin(gst.Bin):
             "filesink", "filesinkogg")
 
         self.add(audioconvert)
-        self.add(audioresample)
+        #self.add(audioresample)
         self.add(vorbisenc)
         self.add(oggmux)
         self.add(filesink)
 
-        audioconvert.link(audioresample)
-        audioresample.link(vorbisenc)
+        #audioconvert.link(audioresample)
+        #audioresample.link(vorbisenc)
+        audioconvert.link(vorbisenc)
         vorbisenc.link(oggmux)
         oggmux.link(filesink)
 

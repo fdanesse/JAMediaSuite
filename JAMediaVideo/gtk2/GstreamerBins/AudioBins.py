@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import gst
-import gobject
 
 
 class Audio_src_Bin(gst.Bin):
@@ -31,19 +30,15 @@ class Audio_src_Bin(gst.Bin):
 
         self.set_name("Audio_Bin")
 
-        autoaudiosrc = gst.element_factory_make(
-            'autoaudiosrc', "autoaudiosrc")
-        audiorate = gst.element_factory_make(
-            'audiorate', "audiorate")
+        autoaudiosrc = gst.element_factory_make('autoaudiosrc', "autoaudiosrc")
+        audiorate = gst.element_factory_make('audiorate', "audiorate")
 
         capaaudio = gst.Caps(
             "audio/x-raw-int,rate=16000,channels=2,depth=16")
-        filtroaudio = gst.element_factory_make(
-            "capsfilter", "filtroaudio")
+        filtroaudio = gst.element_factory_make("capsfilter", "filtroaudio")
         filtroaudio.set_property("caps", capaaudio)
 
-        audioconvert = gst.element_factory_make(
-            'audioconvert', "audioconvert")
+        audioconvert = gst.element_factory_make('audioconvert', "audioconvert")
 
         self.add(autoaudiosrc)
         self.add(audiorate)

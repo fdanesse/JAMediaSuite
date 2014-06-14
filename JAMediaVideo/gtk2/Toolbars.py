@@ -1004,6 +1004,7 @@ class ToolbarConverter(gtk.EventBox):
         item = gtk.ToolItem()
         item.set_expand(True)
         self.info = gtk.Label("")
+        self.info.set_alignment(0.0, 0.5)
         self.info.modify_fg(0, get_colors("drawingplayer"))
         self.info.show()
         item.add(self.info)

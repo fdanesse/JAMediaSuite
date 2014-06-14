@@ -34,12 +34,10 @@ class v4l2src_bin(gst.Bin):
 
         self.set_name('jamedia_camara_bin')
 
-        camara = gst.element_factory_make(
-            "v4l2src", "v4l2src")
+        camara = gst.element_factory_make("v4l2src", "v4l2src")
 
         caps = gst.Caps('video/x-raw-rgb,framerate=30/1')
-        camerafilter = gst.element_factory_make(
-            "capsfilter", "camera_filter")
+        camerafilter = gst.element_factory_make("capsfilter", "camera_filter")
         camerafilter.set_property("caps", caps)
 
         self.add(camara)
@@ -73,8 +71,7 @@ class xvimage_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        xvimagesink = gst.element_factory_make(
-            'xvimagesink', "xvimagesink")
+        xvimagesink = gst.element_factory_make('xvimagesink', "xvimagesink")
         xvimagesink.set_property("force-aspect-ratio", True)
         xvimagesink.set_property("sync", False)
 
@@ -138,12 +135,9 @@ class Balance_bin(gst.Bin):
             'hue': 50.0,
             'gamma': 10.0}
 
-        videobalance = gst.element_factory_make(
-            "videobalance", "videobalance")
-        gamma = gst.element_factory_make(
-            "gamma", "gamma")
-        videoflip = gst.element_factory_make(
-            "videoflip", "videoflip")
+        videobalance = gst.element_factory_make("videobalance", "videobalance")
+        gamma = gst.element_factory_make("gamma", "gamma")
+        videoflip = gst.element_factory_make("videoflip", "videoflip")
 
         self.add(videobalance)
         self.add(gamma)
@@ -248,7 +242,7 @@ class Video_Efectos_bin(gst.Bin):
         self.set_name('Efectos_bin')
 
         queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-buffers", 10000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
@@ -317,8 +311,7 @@ class Theora_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        theoraenc = gst.element_factory_make(
-            'theoraenc', 'theoraenc')
+        theoraenc = gst.element_factory_make('theoraenc', 'theoraenc')
         theoraenc.set_property("quality", 16)
 
         self.add(queue)
@@ -388,11 +381,8 @@ class Out_lan_smokeenc_bin(gst.Bin):
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
 
-        smokeenc = gst.element_factory_make(
-            'smokeenc', "smokeenc")
-
-        udpsink = gst.element_factory_make(
-            'udpsink', "udpsink")
+        smokeenc = gst.element_factory_make('smokeenc', "smokeenc")
+        udpsink = gst.element_factory_make('udpsink', "udpsink")
 
         udpsink.set_property("host", ip)
         udpsink.set_property("port", 5000)
@@ -424,8 +414,7 @@ class In_lan_udpsrc_bin(gst.Bin):
 
         self.set_name('in_lan_udpsrc_bin')
 
-        udpsrc = gst.element_factory_make(
-            'udpsrc', "udpsrc")
+        udpsrc = gst.element_factory_make('udpsrc', "udpsrc")
         udpsrc.set_property("port", 5000)
 
         queue = gst.element_factory_make('queue', "queue")
@@ -433,8 +422,7 @@ class In_lan_udpsrc_bin(gst.Bin):
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
-        smokedec = gst.element_factory_make(
-            'smokedec', "smokedec")
+        smokedec = gst.element_factory_make('smokedec', "smokedec")
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")

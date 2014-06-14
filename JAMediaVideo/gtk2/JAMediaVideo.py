@@ -152,6 +152,7 @@ class JAMediaVideo(gtk.Window):
         self.__cancel_toolbars()
         self.base_panel.pack_efectos()
         self.toolbar.switch("menu")
+        return False
 
     def __confirmar_salir(self, widget=None, senial=None):
 

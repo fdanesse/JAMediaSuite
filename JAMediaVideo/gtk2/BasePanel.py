@@ -54,7 +54,7 @@ from Globales import get_video_directory
 from Globales import get_imagenes_directory
 from Globales import get_ip
 
-PR = True
+PR = False
 
 
 def ocultar(objeto):
