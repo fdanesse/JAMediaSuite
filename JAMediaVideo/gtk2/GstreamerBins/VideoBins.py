@@ -438,3 +438,37 @@ class In_lan_udpsrc_bin(gst.Bin):
 
         self.add_pad(gst.GhostPad(
             "src", ffmpegcolorspace.get_static_pad("src")))
+
+
+class jpegenc_bin(gst.Bin):
+    """
+    Codifica video a imágenes utilizando jpegenc.
+    """
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('jpegenc_bin')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspace")
+        jpegenc = gst.element_factory_make(
+            'jpegenc', 'jpegenc')
+
+        self.add(queue)
+        self.add(ffmpegcolorspace)
+        self.add(jpegenc)
+
+        queue.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(jpegenc)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            jpegenc.get_static_pad("src")))

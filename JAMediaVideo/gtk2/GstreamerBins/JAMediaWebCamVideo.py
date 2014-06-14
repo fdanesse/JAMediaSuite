@@ -360,7 +360,40 @@ class JAMediaWebCamVideo(gobject.GObject):
                 self.play()
 
             elif self.formato == "avi":
-                pass
+                from AudioBins import Audio_src_Bin
+                from AudioBins import audio_avi_bin
+                from VideoBins import jpegenc_bin
+
+                audiobin = Audio_src_Bin()
+                audio_avi = audio_avi_bin()
+                video_avi = jpegenc_bin()
+
+                avimux = gst.element_factory_make('avimux', "avimux")
+
+                queuemux = gst.element_factory_make('queue', "queuemux")
+                queuemux.set_property("max-size-buffers", 1000)
+                queuemux.set_property("max-size-bytes", 0)
+                queuemux.set_property("max-size-time", 0)
+
+                archivo = gst.element_factory_make('filesink', "filesink")
+                archivo.set_property("location", self.path_archivo)
+
+                self.pipeline.add(audiobin)
+                self.pipeline.add(audio_avi)
+                self.pipeline.add(video_avi)
+                self.pipeline.add(avimux)
+                self.pipeline.add(queuemux)
+                self.pipeline.add(archivo)
+
+                audiobin.link(audio_avi)
+                audio_avi.link(avimux)
+                self.tee.link(video_avi)
+                video_avi.link(avimux)
+                avimux.link(queuemux)
+                queuemux.link(archivo)
+
+                self.__new_handle(True, [])
+                self.play()
 
             elif self.formato == "mpeg":
                 from AudioBins import Audio_src_Bin
