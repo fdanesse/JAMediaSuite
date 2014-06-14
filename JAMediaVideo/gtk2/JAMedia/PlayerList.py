@@ -148,23 +148,21 @@ class PlayerList(gtk.Frame):
             self.emit('nueva-seleccion', False)
 
     def seleccionar_primero(self):
-
         self.lista.seleccionar_primero()
 
     def seleccionar_ultimo(self):
-
         self.lista.seleccionar_ultimo()
 
     def seleccionar_anterior(self):
-
         self.lista.seleccionar_anterior()
 
     def seleccionar_siguiente(self):
-
         self.lista.seleccionar_siguiente()
 
-    def limpiar(self):
+    def select_valor(self, path_origen):
+        self.lista.select_valor(path_origen)
 
+    def limpiar(self):
         self.lista.limpiar()
 
     def set_mime_types(self, mime):
@@ -349,17 +347,18 @@ class Lista(gtk.TreeView):
             #    gobject.source_remove(self.timer_select)
             #    self.timer_select = False
 
-            gobject.timeout_add(3, self.__select)
-            self.scroll_to_cell(self.get_model().get_path(_iter))
+            gobject.timeout_add(3, self.__select,
+                self.get_model().get_path(_iter))
 
         return True
 
-    def __select(self):
+    def __select(self, path):
 
         if self.ultimo_select != self.valor_select:
             self.emit('nueva-seleccion', self.valor_select)
             self.ultimo_select = self.valor_select
 
+        self.scroll_to_cell(path)
         return False
 
     def __setear_columnas(self):
@@ -526,6 +525,20 @@ class Lista(gtk.TreeView):
         if _iter:
             self.get_selection().select_iter(_iter)
             #path = model.get_path(iter)
+
+    def select_valor(self, path_origen):
+
+        model = self.get_model()
+        _iter = model.get_iter_first()
+
+        valor = model.get_value(_iter, 2)
+
+        while valor != path_origen:
+            _iter = model.iter_next(_iter)
+            valor = model.get_value(_iter, 2)
+
+        if _iter:
+            self.get_selection().select_iter(_iter)
 
 
 class My_FileChooser(gtk.FileChooserDialog):

@@ -72,7 +72,7 @@ class WidgetConvert(gtk.HPaned):
         self.scrolltareas.connect("tareas", self.__info_num_tareas)
 
     def __info_num_tareas(self, widget, num):
-        self.emit("pendientes", "Archivos a Procesar: %s" % num)
+        self.__emit_pendientes("Archivos a Procesar: %s" % num)
 
     def __accion_tareas(self, widget, widgetarchivo, accion):
         """
@@ -99,7 +99,7 @@ class WidgetConvert(gtk.HPaned):
                 self.__selecction_file(False, filepath)
 
             self.scrolltareas.copy_tarea(widgetarchivo.get_tareas())
-            self.emit("pendientes", "Archivos a Procesar: %s" % len(
+            self.__emit_pendientes("Archivos a Procesar: %s" % len(
                 self.scrolltareas.vbox.get_children()))
             self.get_toplevel().set_sensitive(True)
 
@@ -111,22 +111,26 @@ class WidgetConvert(gtk.HPaned):
 
         if not self.tareas_pendientes:
             self.emit("in-run", False)
+            widgetarchivo = self.scrolltareas.vbox.get_children()[0]
+            self.playerlist.select_valor(widgetarchivo.path_origen)
             self.playerlist.set_sensitive(True)
 
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.show()
                 tarea.in_run(False)
 
-            self.emit("pendientes", "No Hay Tareas Pendientes.")
+            gobject.timeout_add(6, self.__emit_pendientes,
+                "No Hay Tareas Pendientes.")
 
         else:
             widgetarchivo = self.tareas_pendientes[0]
             self.tareas_pendientes.remove(widgetarchivo)
 
             self.emit("in-run", True)
+            self.playerlist.select_valor(widgetarchivo.path_origen)
             self.playerlist.set_sensitive(False)
-            self.emit("pendientes", "Tareas Pendientes: %s" % len(
-                self.tareas_pendientes))
+            gobject.timeout_add(6, self.__emit_pendientes,
+                "Tareas Pendientes: %s" % len(self.tareas_pendientes))
 
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.hide()
@@ -135,6 +139,10 @@ class WidgetConvert(gtk.HPaned):
             widgetarchivo.show()
             widgetarchivo.play()
 
+        return False
+
+    def __emit_pendientes(self, info):
+        self.emit("pendientes", info)
         return False
 
     def __selecction_file(self, widget, path):
@@ -149,7 +157,7 @@ class WidgetConvert(gtk.HPaned):
             return
 
         self.scrolltareas.crear_tarea(path)
-        self.emit("pendientes", "Archivos a Procesar: %s" % len(
+        self.__emit_pendientes("Archivos a Procesar: %s" % len(
             self.scrolltareas.vbox.get_children()))
 
     def __re_emit_accion_list(self, widget, lista, accion, _iter):
