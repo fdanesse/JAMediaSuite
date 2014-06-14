@@ -242,7 +242,7 @@ class Video_Efectos_bin(gst.Bin):
         self.set_name('Efectos_bin')
 
         queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 10000)
+        queue.set_property("max-size-buffers", 1000)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 

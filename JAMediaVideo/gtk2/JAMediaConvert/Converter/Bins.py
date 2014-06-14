@@ -148,7 +148,7 @@ class mp2_bin(gst.Bin):
         self.set_name('mp2_bin')
 
         queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-buffers", 0)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
@@ -214,7 +214,7 @@ class Vorbis_bin(gst.Bin):
         self.set_name('Vorbis_bin')
 
         queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-buffers", 0)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
@@ -267,3 +267,63 @@ class Theora_bin(gst.Bin):
             queue.get_static_pad("sink")))
         self.add_pad(gst.GhostPad("src",
             theoraenc.get_static_pad("src")))
+
+
+class jpegenc_bin(gst.Bin):
+    """
+    Codifica video a imágenes utilizando jpegenc.
+    """
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('jpegenc_bin')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspace")
+        jpegenc = gst.element_factory_make(
+            'jpegenc', 'jpegenc')
+
+        self.add(queue)
+        self.add(ffmpegcolorspace)
+        self.add(jpegenc)
+
+        queue.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(jpegenc)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            jpegenc.get_static_pad("src")))
+
+
+class audio_avi_bin(gst.Bin):
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('audio_avi_bin')
+
+        queue = gst.element_factory_make('queue', "queue")
+        queue.set_property("max-size-buffers", 0)
+        queue.set_property("max-size-bytes", 0)
+        queue.set_property("max-size-time", 0)
+
+        audioconvert = gst.element_factory_make('audioconvert', "audioconvert")
+
+        self.add(queue)
+        self.add(audioconvert)
+
+        queue.link(audioconvert)
+
+        self.add_pad(gst.GhostPad("sink",
+            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src",
+            audioconvert.get_static_pad("src")))

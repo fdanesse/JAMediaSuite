@@ -65,7 +65,7 @@ class Vorbis_bin(gst.Bin):
         self.set_name('Vorbis_bin')
 
         queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-buffers", 0)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 
@@ -97,7 +97,7 @@ class mp2_bin(gst.Bin):
         self.set_name('mp2_bin')
 
         queue = gst.element_factory_make('queue', "queue")
-        queue.set_property("max-size-buffers", 1000)
+        queue.set_property("max-size-buffers", 0)
         queue.set_property("max-size-bytes", 0)
         queue.set_property("max-size-time", 0)
 

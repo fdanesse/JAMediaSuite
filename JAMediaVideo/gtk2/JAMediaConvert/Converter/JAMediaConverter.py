@@ -122,6 +122,9 @@ class JAMediaConverter(gobject.GObject):
         elif self.codec == "mpeg":
             self.__run_mpeg_out()
 
+        elif self.codec == "avi":
+            self.__run_avi_out()
+
         self.bus = self.player.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
 
@@ -265,6 +268,58 @@ class JAMediaConverter(gobject.GObject):
         theoraenc.link(oggmux)
         vorbisenc.link(oggmux)
         oggmux.link(queuemux)
+        queuemux.link(filesink)
+
+        filesink.set_property('location', self.newpath)
+
+    def __run_avi_out(self):
+
+        # Nueva declaración para player
+        del(self.player)
+        self.player = False
+
+        self.player = gst.Pipeline()
+
+        filesrc = gst.element_factory_make("filesrc", "filesrc")
+        decodebin = gst.element_factory_make("decodebin", "decodebin")
+
+        self.player.add(filesrc)
+        self.player.add(decodebin)
+
+        filesrc.link(decodebin)
+
+        filesrc.set_property('location', self.origen)
+        decodebin.connect('pad-added', self.__on_pad_added)
+
+        # Audio
+        from Bins import audio_avi_bin
+        audio_bin = audio_avi_bin()
+        audio_bin.set_name("audio-out")
+
+        self.player.add(audio_bin)
+
+        #Video
+        from Bins import jpegenc_bin
+        jpegenc = jpegenc_bin()
+        jpegenc.set_name("video-out")
+
+        self.player.add(jpegenc)
+
+        queuemux = gst.element_factory_make('queue', "queuemux")
+        queuemux.set_property("max-size-buffers", 1000)
+        queuemux.set_property("max-size-bytes", 0)
+        queuemux.set_property("max-size-time", 0)
+
+        avimux = gst.element_factory_make("avimux", "avimux")
+        filesink = gst.element_factory_make("filesink", "filesink")
+
+        self.player.add(avimux)
+        self.player.add(queuemux)
+        self.player.add(filesink)
+
+        jpegenc.link(avimux)
+        audio_bin.link(avimux)
+        avimux.link(queuemux)
         queuemux.link(filesink)
 
         filesink.set_property('location', self.newpath)
