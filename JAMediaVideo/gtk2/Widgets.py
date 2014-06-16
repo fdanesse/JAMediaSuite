@@ -322,6 +322,13 @@ class CamaraConfig(gtk.EventBox):
             boton2.set_label("Camara 2")
             box.pack_start(boton2, False, False, 0)
 
+        escritorio = gtk.RadioButton()
+        #escritorio.set_sensitive(False)
+        escritorio.set_group(boton1)
+        escritorio.set_label("Escritorio")
+        escritorio.connect("clicked", self.__set_camara)
+        box.pack_start(escritorio, False, False, 0)
+
         self.boton3 = gtk.RadioButton()
         self.boton3.set_sensitive(False)
         self.boton3.set_group(boton1)
@@ -413,6 +420,14 @@ class CamaraConfig(gtk.EventBox):
 
                     self.emit("set_camara",
                         "device", self.device)
+
+            elif widget.get_label() == "Escritorio":
+
+                if self.device != "Escritorio":
+                    self.device = "Escritorio"
+
+                    self.emit("set_camara",
+                        "device", "Escritorio")
 
             else:
                 device = "/dev/video%s" % str(int(

@@ -53,6 +53,50 @@ class v4l2src_bin(gst.Bin):
         camara.set_property("device", device)
 
 
+class ximagesrc_bin(gst.Bin):
+    """
+    Bin de entrada para escritorio.
+    """
+
+    def __init__(self):
+
+        gst.Bin.__init__(self)
+
+        self.set_name('ximagesrc_bin')
+
+        x = 0
+        y = 0
+        import gtk
+        width = int(gtk.gdk.screen_width())
+        height = int(gtk.gdk.screen_height())
+        resolution = "video/x-raw-yuv,width=600,height=450"
+
+        ximagesrc = gst.element_factory_make("ximagesrc", "ximagesrc")
+        ximagesrc.set_property('startx', x)
+        ximagesrc.set_property('endx', width)
+        ximagesrc.set_property('starty', y)
+        ximagesrc.set_property('endy', height)
+
+        ffmpegcolorspace = gst.element_factory_make(
+            'ffmpegcolorspace', "ffmpegcolorspace")
+        videoscale = gst.element_factory_make("videoscale", "videoscale")
+        video_filter = gst.element_factory_make("capsfilter", "video_filter")
+        video_caps = gst.Caps(resolution)
+        video_filter.set_property("caps", video_caps)
+
+        self.add(ximagesrc)
+        self.add(ffmpegcolorspace)
+        self.add(videoscale)
+        self.add(video_filter)
+
+        ximagesrc.link(ffmpegcolorspace)
+        ffmpegcolorspace.link(videoscale)
+        videoscale.link(video_filter)
+
+        self.add_pad(gst.GhostPad("src",
+            video_filter.get_static_pad("src")))
+
+
 class xvimage_bin(gst.Bin):
     """
     Salida de video a pantalla.

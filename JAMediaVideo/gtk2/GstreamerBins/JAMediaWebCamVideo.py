@@ -26,7 +26,6 @@ import gobject
 import gst
 import gtk
 
-from VideoBins import v4l2src_bin
 from VideoBins import Balance_bin
 from VideoBins import Foto_bin
 from VideoBins import xvimage_bin
@@ -86,14 +85,21 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline = gst.Pipeline()
 
-        camara = v4l2src_bin()
+        camara = gst.Bin()
 
-        if "/dev/video" in device:
-            camara.set_device(device)
+        if "Escritorio" in device:
+            from VideoBins import ximagesrc_bin
+            camara = ximagesrc_bin()
 
         else:
-            from VideoBins import In_lan_udpsrc_bin
-            camara = In_lan_udpsrc_bin(device)
+            if "/dev/video" in device:
+                from VideoBins import v4l2src_bin
+                camara = v4l2src_bin()
+                camara.set_device(device)
+
+            else:
+                from VideoBins import In_lan_udpsrc_bin
+                camara = In_lan_udpsrc_bin(device)
 
         self.balance = Balance_bin()
 

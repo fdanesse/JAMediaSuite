@@ -608,13 +608,19 @@ class BasePanel(gtk.HPaned):
         red y la grabación.
         """
 
-        if not "/dev/video" in device:
-            self.video_out_setting.set_sensitive(False)
-            self.get_toplevel().toolbar.permitir_filmar(False)
-
-        else:
+        if "Escritorio" in device:
             self.video_out_setting.set_sensitive(True)
             self.get_toplevel().toolbar.permitir_filmar(True)
+
+        else:
+            #FIXME: Anular Grabación para cámara Remota:
+            if not "/dev/video" in device:
+                self.video_out_setting.set_sensitive(False)
+                self.get_toplevel().toolbar.permitir_filmar(False)
+
+            else:
+                self.video_out_setting.set_sensitive(True)
+                self.get_toplevel().toolbar.permitir_filmar(True)
 
         self.__re_init_video_web_cam(device=device)
         self.emit("cancel-toolbars")
