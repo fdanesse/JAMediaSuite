@@ -516,15 +516,15 @@ class BasePanel(gtk.HPaned):
         self.jamediawebcam.connect("endfile",
             self.__control_grabacion_end)
 
-        if not "/dev/video" in device:
-            toolbar = self.get_toplevel().toolbar
-            toolbar.toolbar_video.boton_filmar.set_sensitive(False)
-            toolbar.toolbar_fotografia.boton_fotografiar.set_sensitive(False)
+        if "Escritorio" in device:
+            self.get_toplevel().toolbar.permitir_filmar(True)
 
         else:
-            toolbar = self.get_toplevel().toolbar
-            toolbar.toolbar_video.boton_filmar.set_sensitive(True)
-            toolbar.toolbar_fotografia.boton_fotografiar.set_sensitive(True)
+            if "/dev/video" in device:
+                self.get_toplevel().toolbar.permitir_filmar(True)
+
+            else:
+                self.get_toplevel().toolbar.permitir_filmar(False)
 
         self.jamediawebcam.play()
 
@@ -613,14 +613,14 @@ class BasePanel(gtk.HPaned):
             self.get_toplevel().toolbar.permitir_filmar(True)
 
         else:
-            #FIXME: Anular Grabación para cámara Remota:
-            if not "/dev/video" in device:
-                self.video_out_setting.set_sensitive(False)
-                self.get_toplevel().toolbar.permitir_filmar(False)
-
-            else:
+            if "/dev/video" in device:
                 self.video_out_setting.set_sensitive(True)
                 self.get_toplevel().toolbar.permitir_filmar(True)
+
+            else:
+                #FIXME: Anular Grabación para cámara Remota:
+                self.video_out_setting.set_sensitive(False)
+                self.get_toplevel().toolbar.permitir_filmar(False)
 
         self.__re_init_video_web_cam(device=device)
         self.emit("cancel-toolbars")
@@ -689,16 +689,13 @@ class BasePanel(gtk.HPaned):
             self.widget_efectos.reemit_config_efecto(efecto)
 
         self.__update_balance_toolbars(config)
-
         return False
 
     def __update_record(self, widget, info):
-
         self.info_label.show()
         self.info_label.set_text(info)
 
     def __re_sensitive(self):
-
         self.get_toplevel().toolbar.set_sensitive(True)
         return False
 

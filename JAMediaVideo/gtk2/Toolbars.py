@@ -628,6 +628,10 @@ class ToolbarFotografia(gtk.EventBox):
         self.add(toolbar)
         self.show_all()
 
+    def __emit_senial(self, widget, senial):
+
+        self.emit('accion', senial)
+
     def set_estado(self, estado):
 
         if not estado or estado == "Stop":
@@ -638,9 +642,6 @@ class ToolbarFotografia(gtk.EventBox):
             map(activar, self.widget_playing)
             map(desactivar, self.widget_stop)
 
-    def __emit_senial(self, widget, senial):
-
-        self.emit('accion', senial)
 
 '''
 class ToolbarGrabarAudio(gtk.EventBox):
