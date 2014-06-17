@@ -26,10 +26,6 @@ import gobject
 import gst
 import gtk
 
-from VideoBins import Balance_bin
-from VideoBins import Foto_bin
-from VideoBins import xvimage_bin
-
 
 def borrar(origen):
 
@@ -101,6 +97,7 @@ class JAMediaWebCamVideo(gobject.GObject):
                 from VideoBins import In_lan_udpsrc_bin
                 camara = In_lan_udpsrc_bin(device)
 
+        from VideoBins import Balance_bin
         self.balance = Balance_bin()
 
         self.pipeline.add(camara)
@@ -121,12 +118,14 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline.add(self.tee)
 
+        from VideoBins import xvimage_bin
         xvimage = xvimage_bin()
         self.pipeline.add(xvimage)
 
         self.balance.link(self.tee)
         self.tee.link(xvimage)
 
+        from VideoBins import Foto_bin
         fotobin = Foto_bin()
         self.pipeline.add(fotobin)
 

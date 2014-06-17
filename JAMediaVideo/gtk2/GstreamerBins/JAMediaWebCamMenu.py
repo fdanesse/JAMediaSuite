@@ -22,10 +22,6 @@
 import gobject
 import gst
 
-from VideoBins import v4l2src_bin
-from VideoBins import Balance_bin
-from VideoBins import In_lan_udpsrc_bin
-
 PR = False
 
 
@@ -45,39 +41,34 @@ class JAMediaWebCamMenu(gobject.GObject):
         self.ventana_id = ventana_id
         self.pipeline = gst.Pipeline()
 
-        camara = v4l2src_bin()
+        camara = gst.Bin()
 
-        if "/dev/video" in device:
-            camara.set_device(device)
+        if "Escritorio" in device:
+            from VideoBins import ximagesrc_bin
+            camara = ximagesrc_bin()
 
         else:
-            camara = In_lan_udpsrc_bin(device)
+            if "/dev/video" in device:
+                from VideoBins import v4l2src_bin
+                camara = v4l2src_bin()
+                camara.set_device(device)
 
+            else:
+                from VideoBins import In_lan_udpsrc_bin
+                camara = In_lan_udpsrc_bin(device)
+
+        from VideoBins import Balance_bin
         balance = Balance_bin()
 
-        queue = gst.element_factory_make(
-            'queue', "queuexvimage")
-        queue.set_property("max-size-buffers", 1000)
-        queue.set_property("max-size-bytes", 0)
-        queue.set_property("max-size-time", 0)
-
-        ffmpegcolorspace = gst.element_factory_make(
-            'ffmpegcolorspace', "ffmpegcolorspace")
-        xvimagesink = gst.element_factory_make(
-            'xvimagesink', "xvimagesink")
-        xvimagesink.set_property(
-            "force-aspect-ratio", True)
+        from VideoBins import xvimage_bin
+        xvimage = xvimage_bin()
 
         self.pipeline.add(camara)
         self.pipeline.add(balance)
-        self.pipeline.add(queue)
-        self.pipeline.add(ffmpegcolorspace)
-        self.pipeline.add(xvimagesink)
+        self.pipeline.add(xvimage)
 
         camara.link(balance)
-        balance.link(queue)
-        queue.link(ffmpegcolorspace)
-        ffmpegcolorspace.link(xvimagesink)
+        balance.link(xvimage)
 
         self.bus = self.pipeline.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)

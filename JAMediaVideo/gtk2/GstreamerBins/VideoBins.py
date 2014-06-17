@@ -69,7 +69,7 @@ class ximagesrc_bin(gst.Bin):
         import gtk
         width = int(gtk.gdk.screen_width())
         height = int(gtk.gdk.screen_height())
-        resolution = "video/x-raw-yuv,width=600,height=450"
+        resolution = "video/x-raw-yuv,width=640,height=480"  #"video/x-raw-yuv,width=600,height=450"
 
         ximagesrc = gst.element_factory_make("ximagesrc", "ximagesrc")
         ximagesrc.set_property('startx', x)
