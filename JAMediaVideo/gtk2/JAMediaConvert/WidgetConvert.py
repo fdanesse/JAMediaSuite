@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import gc
 import time
 import gtk
 import gobject
@@ -33,6 +34,8 @@ from Globales import describe_archivo
 from Globales import get_audio_directory
 from Globales import get_imagenes_directory
 from Globales import get_video_directory
+
+gc.enable()
 
 PR = True
 
@@ -123,7 +126,7 @@ class WidgetConvert(gtk.HPaned):
 
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.show()
-                tarea.in_run(False)
+                #tarea.in_run(False)
 
             gobject.timeout_add(6, self.__emit_pendientes,
                 "No Hay Tareas Pendientes.")
@@ -132,16 +135,16 @@ class WidgetConvert(gtk.HPaned):
             widgetarchivo = self.tareas_pendientes[0]
             self.tareas_pendientes.remove(widgetarchivo)
 
-            self.emit("in-run", True)
+            #self.emit("in-run", True)
             self.playerlist.select_valor(widgetarchivo.path_origen)
             self.playerlist.set_sensitive(False)
             gobject.timeout_add(6, self.__emit_pendientes,
-                "Tareas Pendientes: %s" % len(self.tareas_pendientes))
+                "Archivos Pendientes: %s" % str(len(self.tareas_pendientes) + 1))
 
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.hide()
 
-            widgetarchivo.in_run(True)
+            #widgetarchivo.in_run(True)
             widgetarchivo.show()
             widgetarchivo.play()
 
@@ -399,19 +402,23 @@ class WidgetArchivo(gtk.Frame):
         if PR:
             print "WidgetConvert", "__play_stack_tareas"
 
+        if self.player:
+            # FIXME: stop hace que la aplicación se cuelgue.
+            #self.player.stop()
+            del(self.player)
+            time.sleep(3)
+            self.player = False
+            gc.collect()
+
         if not self.temp_tareas:
             self.emit("accion-tarea", "end")
+            self.__in_run(False)
             self.buttonsbox.set_info("  Tareas Procesadas  ")
             self.buttonsbox.progress.set_progress(100.0)
             return
 
         codec = self.temp_tareas[0]
         self.temp_tareas.remove(codec)
-
-        #if self.player:
-        #    self.player.stop()
-        #    del(self.player)
-        #    self.player = False
 
         dirpath_destino = ""
 
@@ -424,6 +431,8 @@ class WidgetArchivo(gtk.Frame):
         elif codec in ["ogv", "mpeg", "avi"]:
             dirpath_destino = get_video_directory()
 
+        self.__in_run(True)
+
         gobject.idle_add(self.__new_jamedia_converter,
             codec, dirpath_destino)
 
@@ -431,8 +440,6 @@ class WidgetArchivo(gtk.Frame):
 
         if PR:
             print "WidgetConvert", "__new_jamedia_converter"
-
-        time.sleep(3)
 
         self.player = JAMediaConverter(
             self.path_origen, codec, dirpath_destino)
@@ -450,7 +457,7 @@ class WidgetArchivo(gtk.Frame):
     def __process_tarea(self, player, posicion):
         self.buttonsbox.set_progress(float(posicion))
 
-    def in_run(self, valor):
+    def __in_run(self, valor):
         """
         Cuando se ejecutan tareas, se desactivan las botoneras.
         """

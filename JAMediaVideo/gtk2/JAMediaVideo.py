@@ -92,7 +92,6 @@ class JAMediaVideo(gtk.Window):
         gobject.idle_add(self.__run)
 
     def __jamediaconvert_info(self, widget, info):
-
         self.toolbar.toolbar_converter.set_info(info)
 
     def __update_accions(self, toolbaraccion, accion, uri):
@@ -104,7 +103,6 @@ class JAMediaVideo(gtk.Window):
         self.base_panel.update_accions(accion, uri)
 
     def __jamediaconvert_in_run(self, widget, valor):
-
         self.toolbar.activate_conversor(valor)
 
     def __accion_list(self, widget, lista, accion, _iter):
@@ -138,34 +136,28 @@ class JAMediaVideo(gtk.Window):
             self.base_panel.set_accion(modo, accion)
 
     def __config_show(self, toolbar, tipo):
-
         self.__cancel_toolbars()
         self.base_panel.config_show(tipo)
 
     def __mode_change(self, widget, tipo):
-
         self.__cancel_toolbars()
         self.base_panel.mode_change(tipo)
 
     def __run(self):
-
         self.__cancel_toolbars()
         self.base_panel.pack_efectos()
         self.toolbar.switch("menu")
         return False
 
     def __confirmar_salir(self, widget=None, senial=None):
-
         self.__cancel_toolbars()
         self.toolbar_salir.run("JAMediaVideo")
 
     def __cancel_toolbars(self, widget=False):
-
         self.toolbar_accion.cancelar()
         self.toolbar_salir.cancelar()
 
     def __salir(self, widget=None, senial=None):
-
         self.base_panel.salir()
         gtk.main_quit()
         sys.exit(0)

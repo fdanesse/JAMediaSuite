@@ -194,7 +194,7 @@ class mpeg2_bin(gst.Bin):
             'ffenc_mpeg2video', 'ffenc_mpeg2video')
 
         try:
-            videorate.set_property("max-rate", 30)
+            videorate.set_property("max-rate", 60)
 
         except:
             pass

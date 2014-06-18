@@ -204,15 +204,12 @@ class BasePanel(gtk.HPaned):
         self.control = False
 
     def __jamediaconvert_info(self, widget, info):
-
         self.emit("pendientes", info)
 
     def __jamediaconvert_in_run(self, widget, valor):
-
         self.emit("in-run", valor)
 
     def __re_emit_accion_list(self, widget, lista, accion, _iter):
-
         self.emit("accion-list", lista, accion, _iter)
 
     def __set_volumen(self, widget, valor):
@@ -654,6 +651,8 @@ class BasePanel(gtk.HPaned):
             self.jamediawebcam.stop()
             del(self.jamediawebcam)
             self.jamediawebcam = False
+
+        time.sleep(3)
 
         xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamVideo(

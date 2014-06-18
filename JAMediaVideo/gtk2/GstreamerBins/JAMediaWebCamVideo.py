@@ -329,6 +329,8 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         self.pipeline.remove(fotobin)
 
+        time.sleep(3)
+
         formatos = ["ogv", "avi", "mpeg"]
         if self.formato in formatos:
             self.path_archivo = u"%s.%s" % (
