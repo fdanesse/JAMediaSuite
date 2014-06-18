@@ -78,6 +78,7 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.formato = formato
         self.path_archivo = ""
         self.foto_contador = 0
+        self.rafaga = False
 
         self.pipeline = gst.Pipeline()
 
@@ -279,6 +280,11 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         if PR:
             print "\tJAMediaWebCamVideo.stop"
+
+        if self.rafaga:
+            gobject.source_remove(self.rafaga)
+            self.rafaga = False
+
         self.__new_handle(False, [])
         self.pipeline.set_state(gst.STATE_NULL)
 
@@ -475,7 +481,7 @@ class JAMediaWebCamVideo(gobject.GObject):
             self.emit("stop-rafaga")
 
         else:
-            gobject.timeout_add(int(rafaga * 1000),
+            self.rafaga = gobject.timeout_add(int(rafaga * 1000),
                 self.fotografiar, dir_path, rafaga)
 
         return False
