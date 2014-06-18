@@ -139,6 +139,7 @@ class ogg_bin(gst.Bin):
 class mp2_bin(gst.Bin):
     """
     Comprime Audio utilizando ffenc_mp2.
+        Salida de audio para video avi.
     """
 
     def __init__(self):
@@ -171,6 +172,7 @@ class mp2_bin(gst.Bin):
 class mpeg2_bin(gst.Bin):
     """
     Comprime video utilizando ffenc_mpeg2video.
+        Salida de video para mpeg.
     """
 
     def __init__(self):
@@ -186,15 +188,25 @@ class mpeg2_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
+        videorate = gst.element_factory_make(
+            'videorate', "videorate")
         ffenc_mpeg2video = gst.element_factory_make(
             'ffenc_mpeg2video', 'ffenc_mpeg2video')
 
+        try:
+            videorate.set_property("max-rate", 30)
+
+        except:
+            pass
+
         self.add(queue)
         self.add(ffmpegcolorspace)
+        self.add(videorate)
         self.add(ffenc_mpeg2video)
 
         queue.link(ffmpegcolorspace)
-        ffmpegcolorspace.link(ffenc_mpeg2video)
+        ffmpegcolorspace.link(videorate)
+        videorate.link(ffenc_mpeg2video)
 
         self.add_pad(gst.GhostPad("sink",
             queue.get_static_pad("sink")))
@@ -252,16 +264,26 @@ class Theora_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
+        videorate = gst.element_factory_make(
+            'videorate', "videorate")
         theoraenc = gst.element_factory_make(
             'theoraenc', 'theoraenc')
-        theoraenc.set_property("quality", 16)
+        theoraenc.set_property("quality", 63)
+
+        try:
+            videorate.set_property("max-rate", 30)
+
+        except:
+            pass
 
         self.add(queue)
         self.add(ffmpegcolorspace)
+        self.add(videorate)
         self.add(theoraenc)
 
         queue.link(ffmpegcolorspace)
-        ffmpegcolorspace.link(theoraenc)
+        ffmpegcolorspace.link(videorate)
+        videorate.link(theoraenc)
 
         self.add_pad(gst.GhostPad("sink",
             queue.get_static_pad("sink")))
@@ -272,6 +294,7 @@ class Theora_bin(gst.Bin):
 class jpegenc_bin(gst.Bin):
     """
     Codifica video a imágenes utilizando jpegenc.
+        Salida de video para videos avi.
     """
 
     def __init__(self):
@@ -287,15 +310,25 @@ class jpegenc_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
+        videorate = gst.element_factory_make(
+            'videorate', "videorate")
         jpegenc = gst.element_factory_make(
             'jpegenc', 'jpegenc')
 
+        try:
+            videorate.set_property("max-rate", 30)
+
+        except:
+            pass
+
         self.add(queue)
         self.add(ffmpegcolorspace)
+        self.add(videorate)
         self.add(jpegenc)
 
         queue.link(ffmpegcolorspace)
-        ffmpegcolorspace.link(jpegenc)
+        ffmpegcolorspace.link(videorate)
+        videorate.link(jpegenc)
 
         self.add_pad(gst.GhostPad("sink",
             queue.get_static_pad("sink")))

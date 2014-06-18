@@ -462,7 +462,6 @@ class Video_out_Config(gtk.EventBox):
         box = gtk.VBox()
         frame.add(box)
 
-        #vbox.pack_start(gtk.Label("Resolucion"))
         self.boton3 = gtk.RadioButton()
         self.boton3.set_label("ogv")
         self.boton3.connect("clicked", self.__set_formato)

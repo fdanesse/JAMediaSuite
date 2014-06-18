@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import time
 import gtk
 import gobject
 
@@ -32,6 +33,8 @@ from Globales import describe_archivo
 from Globales import get_audio_directory
 from Globales import get_imagenes_directory
 from Globales import get_video_directory
+
+PR = True
 
 
 class WidgetConvert(gtk.HPaned):
@@ -108,6 +111,9 @@ class WidgetConvert(gtk.HPaned):
             gobject.idle_add(self.__run_stack_tareas)
 
     def __run_stack_tareas(self):
+
+        if PR:
+            print "WidgetConvert", "__run_stack_tareas"
 
         if not self.tareas_pendientes:
             self.emit("in-run", False)
@@ -317,7 +323,6 @@ class WidgetArchivo(gtk.Frame):
         datos = describe_archivo(self.path_origen)
 
         if 'video' in datos or 'application/ogg' in datos:
-
             imageframe = ImageFrame(
                 "  Extraer Imágenes en Formato:  ", self.path_origen)
             self.iz_box.pack_start(imageframe, False, False, 0)
@@ -333,9 +338,7 @@ class WidgetArchivo(gtk.Frame):
             self.iz_box.pack_start(audioframe, False, False, 0)
             audioframe.connect("tarea", self.__sensitive_buttons)
 
-        elif "audio" in datos or \
-            'application/octet-stream' in datos:
-
+        elif "audio" in datos or 'application/octet-stream' in datos:
             audioframe = AudioFrame(
                 "  Convertir Audio a Formato:  ", self.path_origen)
             self.iz_box.pack_start(audioframe, False, False, 0)
@@ -393,6 +396,9 @@ class WidgetArchivo(gtk.Frame):
 
     def __play_stack_tareas(self, player=False):
 
+        if PR:
+            print "WidgetConvert", "__play_stack_tareas"
+
         if not self.temp_tareas:
             self.emit("accion-tarea", "end")
             self.buttonsbox.set_info("  Tareas Procesadas  ")
@@ -423,6 +429,11 @@ class WidgetArchivo(gtk.Frame):
 
     def __new_jamedia_converter(self, codec, dirpath_destino):
 
+        if PR:
+            print "WidgetConvert", "__new_jamedia_converter"
+
+        time.sleep(3)
+
         self.player = JAMediaConverter(
             self.path_origen, codec, dirpath_destino)
 
@@ -434,11 +445,9 @@ class WidgetArchivo(gtk.Frame):
         return False
 
     def __info_tarea(self, player, info):
-
         self.buttonsbox.set_info(info)
 
     def __process_tarea(self, player, posicion):
-
         self.buttonsbox.set_progress(float(posicion))
 
     def in_run(self, valor):
@@ -535,7 +544,6 @@ class ImageFrame(gtk.Frame):
         self.show_all()
 
     def __emit_tarea(self, widget):
-
         self.emit("tarea")
 
 
@@ -562,9 +570,6 @@ class VideoFrame(gtk.Frame):
 
         for formato in ["ogv", "mpeg", "avi"]:
             check = CheckButton(formato)
-            #FIXME: mpeg no graba video
-            if formato == "mpeg":
-                check.set_sensitive(False)
             vbox.pack_start(check, False, False, 0)
             check.connect("tarea", self.__emit_tarea)
 
@@ -577,7 +582,6 @@ class VideoFrame(gtk.Frame):
         self.show_all()
 
     def __emit_tarea(self, widget):
-
         self.emit("tarea")
 
 
@@ -616,7 +620,6 @@ class AudioFrame(gtk.Frame):
         self.show_all()
 
     def __emit_tarea(self, widget):
-
         self.emit("tarea")
 
 
@@ -634,7 +637,6 @@ class CheckButton(gtk.CheckButton):
         self.show_all()
 
     def do_toggled(self):
-
         self.emit('tarea')
 
 
@@ -695,22 +697,18 @@ class ButtonsBox(gtk.Frame):
         self.show_all()
 
     def __emit_accion(self, widget):
-
         self.emit("accion", widget.get_label())
         self.queue_draw()
 
     def set_info(self, info):
-
         self.frame_info.set_label("  %s  " % info)
         self.queue_draw()
 
     def set_progress(self, posicion):
-
         self.progress.set_progress(posicion)
         self.queue_draw()
 
     def activar(self, valor):
-
         event = self.get_child()
         vbox = event.get_child()
 

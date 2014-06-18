@@ -279,8 +279,8 @@ class JAMediaConverter(gobject.GObject):
         self.player = False
 
         self.player = gst.Pipeline()
-        index = gst.index_factory_make("memindex")
-        self.player.set_index(index)
+        #index = gst.index_factory_make("memindex")
+        #self.player.set_index(index)
 
         filesrc = gst.element_factory_make("filesrc", "filesrc")
         decodebin = gst.element_factory_make("decodebin", "decodebin")
