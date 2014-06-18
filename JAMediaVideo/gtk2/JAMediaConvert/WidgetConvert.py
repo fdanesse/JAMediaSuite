@@ -20,8 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import gc
-import time
 import gtk
 import gobject
 
@@ -34,8 +32,6 @@ from Globales import describe_archivo
 from Globales import get_audio_directory
 from Globales import get_imagenes_directory
 from Globales import get_video_directory
-
-gc.enable()
 
 PR = True
 
@@ -139,7 +135,8 @@ class WidgetConvert(gtk.HPaned):
             self.playerlist.select_valor(widgetarchivo.path_origen)
             self.playerlist.set_sensitive(False)
             gobject.timeout_add(6, self.__emit_pendientes,
-                "Archivos Pendientes: %s" % str(len(self.tareas_pendientes) + 1))
+                "Archivos Pendientes: %s" % str(len(
+                self.tareas_pendientes) + 1))
 
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.hide()
@@ -404,11 +401,9 @@ class WidgetArchivo(gtk.Frame):
 
         if self.player:
             # FIXME: stop hace que la aplicación se cuelgue.
-            #self.player.stop()
+            self.player.stop()
             del(self.player)
-            time.sleep(3)
             self.player = False
-            gc.collect()
 
         if not self.temp_tareas:
             self.emit("accion-tarea", "end")

@@ -574,9 +574,9 @@ class BasePanel(gtk.HPaned):
         gobject.timeout_add(500, self.__resensitive_foto)
 
     def __resensitive_foto(self):
-
         toolbar = self.get_toplevel().toolbar
         toolbar.toolbar_fotografia.set_estado("Stop")
+        return False
 
     def __update_balance_toolbars(self, config):
         """

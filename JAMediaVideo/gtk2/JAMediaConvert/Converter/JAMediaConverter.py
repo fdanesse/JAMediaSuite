@@ -29,7 +29,6 @@ import gobject
 def borrar(origen):
 
     try:
-        import os
         import shutil
 
         if os.path.isdir(origen):
@@ -86,7 +85,7 @@ class JAMediaConverter(gobject.GObject):
         self.codec = codec
         self.newpath = ""
 
-        self.player = gst.element_factory_make("playbin2", "playbin2")
+        self.player = False
 
         # path de salida
         location = os.path.basename(self.origen)
@@ -125,12 +124,11 @@ class JAMediaConverter(gobject.GObject):
         elif self.codec == "avi":
             self.__run_avi_out()
 
-        self.bus = self.player.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
-
     def __run_wav_out(self):
 
         from Bins import wav_bin
+
+        self.player = gst.element_factory_make("playbin2", "playbin2")
 
         videoconvert = gst.element_factory_make("fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
@@ -140,9 +138,14 @@ class JAMediaConverter(gobject.GObject):
 
         self.player.set_property("uri", "file://" + self.origen)
 
+        self.bus = self.player.get_bus()
+        self.bus.set_sync_handler(self.__bus_handler)
+
     def __run_mp3_out(self):
 
         from Bins import mp3_bin
+
+        self.player = gst.element_factory_make("playbin2", "playbin2")
 
         videoconvert = gst.element_factory_make("fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
@@ -152,9 +155,14 @@ class JAMediaConverter(gobject.GObject):
 
         self.player.set_property("uri", "file://" + self.origen)
 
+        self.bus = self.player.get_bus()
+        self.bus.set_sync_handler(self.__bus_handler)
+
     def __run_ogg_out(self):
 
         from Bins import ogg_bin
+
+        self.player = gst.element_factory_make("playbin2", "playbin2")
 
         videoconvert = gst.element_factory_make("fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
@@ -164,14 +172,13 @@ class JAMediaConverter(gobject.GObject):
 
         self.player.set_property("uri", "file://" + self.origen)
 
+        self.bus = self.player.get_bus()
+        self.bus.set_sync_handler(self.__bus_handler)
+
     def __run_mpeg_out(self):
 
         # https://github.com/jspiros/hylia-transcoder/
         # blob/master/hylia-transcoder.py
-
-        # Nueva declaración para player
-        del(self.player)
-        self.player = False
 
         self.player = gst.Pipeline()
 
@@ -220,11 +227,10 @@ class JAMediaConverter(gobject.GObject):
 
         filesink.set_property('location', self.newpath)
 
-    def __run_ogv_out(self):
+        self.bus = self.player.get_bus()
+        self.bus.set_sync_handler(self.__bus_handler)
 
-        # Nueva declaración para player
-        del(self.player)
-        self.player = False
+    def __run_ogv_out(self):
 
         self.player = gst.Pipeline()
 
@@ -272,11 +278,10 @@ class JAMediaConverter(gobject.GObject):
 
         filesink.set_property('location', self.newpath)
 
-    def __run_avi_out(self):
+        self.bus = self.player.get_bus()
+        self.bus.set_sync_handler(self.__bus_handler)
 
-        # Nueva declaración para player
-        del(self.player)
-        self.player = False
+    def __run_avi_out(self):
 
         self.player = gst.Pipeline()
         #index = gst.index_factory_make("memindex")
@@ -325,6 +330,9 @@ class JAMediaConverter(gobject.GObject):
         queuemux.link(filesink)
 
         filesink.set_property('location', self.newpath)
+
+        self.bus = self.player.get_bus()
+        self.bus.set_sync_handler(self.__bus_handler)
 
     def __on_pad_added(self, decodebin, pad):
         """
@@ -412,7 +420,7 @@ class JAMediaConverter(gobject.GObject):
                 self.timer += 1
 
         if self.timer > 60:
-            self.stop()
+            #self.stop()
             self.emit("endfile")
             if PR:
                 print "JAMediaConverter No Pudo Procesar:", self.newpath
@@ -456,18 +464,18 @@ class JAMediaConverter(gobject.GObject):
     def play(self):
         self.emit("info", "Procesando ==> %s" % self.codec)
 
-        #if PR:
-        #    print "JAMediaConverter Iniciado: %s ==> %s" % (
-        #        os.path.basename(self.origen), self.codec)
+        if PR:
+            print "JAMediaConverter Iniciado: %s ==> %s" % (
+                os.path.basename(self.origen), self.codec)
 
         self.player.set_state(gst.STATE_PLAYING)
         self.__new_handle(True)
 
     def stop(self):
         self.__new_handle(False)
-        self.player.set_state(gst.STATE_NULL)
+        #self.player.set_state(gst.STATE_NULL)
         self.emit("info", "  Progreso  ")
 
-        #if PR:
-        #    print "JAMediaConverter Detenido: %s" % (
-        #        os.path.basename(self.origen))
+        if PR:
+            print "JAMediaConverter Detenido: %s" % (
+                os.path.basename(self.origen))

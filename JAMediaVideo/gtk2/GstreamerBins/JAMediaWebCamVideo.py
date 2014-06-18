@@ -30,7 +30,6 @@ import gtk
 def borrar(origen):
 
     try:
-        import os
         import shutil
 
         if os.path.isdir(origen):
@@ -328,8 +327,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.tee.unlink(fotobin)
 
         self.pipeline.remove(fotobin)
-
-        time.sleep(3)
 
         formatos = ["ogv", "avi", "mpeg"]
         if self.formato in formatos:
