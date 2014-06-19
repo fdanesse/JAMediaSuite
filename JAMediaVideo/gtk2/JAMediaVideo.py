@@ -120,6 +120,9 @@ class JAMediaVideo(gtk.Window):
             converter = self.base_panel.jamediaconvert
             converter.playerlist.lista.agregar_items([(text, uri)])
 
+        elif accion == "limpiar":
+            pass
+
         else:
             print "Accion en la lista sin definir:", accion
 

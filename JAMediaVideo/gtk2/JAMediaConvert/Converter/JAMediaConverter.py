@@ -471,11 +471,11 @@ class JAMediaConverter(gobject.GObject):
         self.player.set_state(gst.STATE_PLAYING)
         self.__new_handle(True)
 
-    def stop(self):
-        self.__new_handle(False)
-        #self.player.set_state(gst.STATE_NULL)
-        self.emit("info", "  Progreso  ")
+    #def stop(self):
+    #    self.__new_handle(False)
+    #    self.player.set_state(gst.STATE_NULL)
+    #    self.emit("info", "  Progreso  ")
 
-        if PR:
-            print "JAMediaConverter Detenido: %s" % (
-                os.path.basename(self.origen))
+    #    if PR:
+    #        print "JAMediaConverter Detenido: %s" % (
+    #            os.path.basename(self.origen))

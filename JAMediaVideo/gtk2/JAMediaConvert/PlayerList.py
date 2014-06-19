@@ -133,13 +133,13 @@ class PlayerList(gtk.Frame):
         self.emit("accion", lista, accion, _iter)
 
     def __re_emit_nueva_seleccion(self, widget, pista):
-
         self.emit('nueva-seleccion', pista)
 
     def __load_files(self, widget, items, tipo):
 
         if tipo == "load":
             self.lista.limpiar()
+            self.emit("accion", False, "limpiar", False)
 
         if items:
             self.lista.agregar_items(items)
@@ -253,7 +253,6 @@ class ToolbarList(gtk.EventBox):
         self.show_all()
 
     def __clear_list(self, widget):
-
         self.emit("load", [], "load")
 
     def __open_files(self, widget, tipo):

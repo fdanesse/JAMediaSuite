@@ -432,6 +432,7 @@ class BasePanel(gtk.HPaned):
         self.pantalla.hide()
         self.box_config.hide()
         self.jamediaconvert.show()
+        self.emit("in-run", False)
 
     def __jamediaimagenes_run(self):
         """

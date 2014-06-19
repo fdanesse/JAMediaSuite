@@ -131,7 +131,7 @@ class WidgetConvert(gtk.HPaned):
             widgetarchivo = self.tareas_pendientes[0]
             self.tareas_pendientes.remove(widgetarchivo)
 
-            #self.emit("in-run", True)
+            self.emit("in-run", True)
             self.playerlist.select_valor(widgetarchivo.path_origen)
             self.playerlist.set_sensitive(False)
             gobject.timeout_add(6, self.__emit_pendientes,
@@ -172,7 +172,11 @@ class WidgetConvert(gtk.HPaned):
         la lista de archivos.
         """
 
-        self.emit("accion-list", lista, accion, _iter)
+        if accion == "limpiar":
+            self.reset()
+
+        else:
+            self.emit("accion-list", lista, accion, _iter)
 
     def reset(self):
         """
@@ -182,8 +186,6 @@ class WidgetConvert(gtk.HPaned):
         self.tareas_pendientes = []
         self.scrolltareas.limpiar()
         self.playerlist.limpiar()
-        #self.emit("pendientes", "Archivos a Procesar: %s" % len(
-        #    self.scrolltareas.vbox.get_children()))
 
     def salir(self):
 
@@ -201,9 +203,6 @@ class WidgetConvert(gtk.HPaned):
                 self.scrolltareas.vbox.remove(widgetarchivo)
                 widgetarchivo.destroy()
                 break
-
-        #self.emit("pendientes", "Archivos a Procesar: %s" % len(
-        #    self.scrolltareas.vbox.get_children()))
 
 
 class ScrollTareas(gtk.ScrolledWindow):
@@ -401,8 +400,8 @@ class WidgetArchivo(gtk.Frame):
 
         if self.player:
             # FIXME: stop hace que la aplicación se cuelgue.
-            self.player.stop()
-            del(self.player)
+            #self.player.stop()
+            #del(self.player)
             self.player = False
 
         if not self.temp_tareas:
@@ -500,7 +499,7 @@ class WidgetArchivo(gtk.Frame):
 
     def salir(self):
         if self.player:
-            self.player.stop()
+            #self.player.stop()
             del(self.player)
             self.player = False
 

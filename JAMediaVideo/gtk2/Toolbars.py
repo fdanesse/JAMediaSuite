@@ -302,11 +302,9 @@ class Toolbar(gtk.EventBox):
             print "switch:", modo
 
     def permitir_filmar(self, valor):
-
         self.toolbar_video.permitir_filmar(valor)
 
     def activate_conversor(self, valor):
-
         self.toolbar_converter.activate_conversor(valor)
 
 
