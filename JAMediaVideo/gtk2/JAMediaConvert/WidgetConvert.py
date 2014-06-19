@@ -33,7 +33,7 @@ from Globales import get_audio_directory
 from Globales import get_imagenes_directory
 from Globales import get_video_directory
 
-PR = True
+PR = False
 
 
 class WidgetConvert(gtk.HPaned):
@@ -122,7 +122,6 @@ class WidgetConvert(gtk.HPaned):
 
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.show()
-                #tarea.in_run(False)
 
             gobject.timeout_add(6, self.__emit_pendientes,
                 "No Hay Tareas Pendientes.")
@@ -141,7 +140,6 @@ class WidgetConvert(gtk.HPaned):
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.hide()
 
-            #widgetarchivo.in_run(True)
             widgetarchivo.show()
             widgetarchivo.play()
 
@@ -186,12 +184,6 @@ class WidgetConvert(gtk.HPaned):
         self.tareas_pendientes = []
         self.scrolltareas.limpiar()
         self.playerlist.limpiar()
-
-    def salir(self):
-
-        self.tareas_pendientes = []
-        for widgetarchivo in self.scrolltareas.vbox.get_children():
-            widgetarchivo.salir()
 
     def quitar(self, path):
         """
@@ -246,13 +238,6 @@ class ScrollTareas(gtk.ScrolledWindow):
 
         self.emit('accion-tarea', widgetarchivo, accion)
 
-    def __clear(self, widget):
-        """
-        Elimina todas las tareas.
-        """
-
-        self.limpiar()
-
     def copy_tarea(self, tareas):
         """
         Copia una lista de tareas asignada a un archivo,
@@ -274,10 +259,10 @@ class ScrollTareas(gtk.ScrolledWindow):
         if not path in paths:
             widgetarchivo = WidgetArchivo(path)
             self.vbox.pack_start(widgetarchivo, False, False, 2)
-            widgetarchivo.connect('clear-tareas', self.__clear)
+            widgetarchivo.connect('clear-tareas', self.limpiar)
             widgetarchivo.connect('accion-tarea', self.__accion_tarea)
 
-    def limpiar(self):
+    def limpiar(self, widget=False):
         """
         Elimina todas las tareas.
         """
@@ -442,7 +427,8 @@ class WidgetArchivo(gtk.Frame):
         self.player.connect("newposicion", self.__process_tarea)
         self.player.connect("info", self.__info_tarea)
 
-        gobject.idle_add(self.player.play)
+        #gobject.idle_add(self.player.play)
+        self.player.play()
         return False
 
     def __info_tarea(self, player, info):
@@ -499,7 +485,7 @@ class WidgetArchivo(gtk.Frame):
 
     def salir(self):
         if self.player:
-            #self.player.stop()
+            self.player.stop()
             del(self.player)
             self.player = False
 

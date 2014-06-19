@@ -952,4 +952,4 @@ class BasePanel(gtk.HPaned):
             del(self.imageplayer)
             self.imageplayer = False
 
-        self.jamediaconvert.salir()
+        self.jamediaconvert.reset()
