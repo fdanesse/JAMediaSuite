@@ -211,12 +211,12 @@ class Help(gtk.Dialog):
 
         self.helps = []
 
-        for x in range(1, 5):
+        for x in range(1, 6):
             try:
                 help = gtk.Image()
-                #help.set_from_file(
-                #    os.path.join(BASE_PATH,
-                #    "Iconos", "help-%s.svg" % x))
+                help.set_from_file(
+                    os.path.join(BASE_PATH,
+                    "Iconos", "help-%s.svg" % x))
                 tabla1.attach_defaults(help, 0, 5, 1, 2)
 
                 self.helps.append(help)
