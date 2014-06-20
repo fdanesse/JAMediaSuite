@@ -138,10 +138,10 @@ class JAMediaWebCamVideo(gobject.GObject):
 
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
-                gtk.gdk.threads_enter()
-                gtk.gdk.display_get_default().sync()
+                #gtk.gdk.threads_enter()
+                #gtk.gdk.display_get_default().sync()
                 message.src.set_xwindow_id(self.ventana_id)
-                gtk.gdk.threads_leave()
+                #gtk.gdk.threads_leave()
 
         elif message.type == gst.MESSAGE_EOS:
             self.emit("endfile")

@@ -46,7 +46,7 @@ def borrar(origen):
         print "ERROR Al Intentar Borrar un Archivo"
         return False
 
-PR = True
+PR = False
 
 
 class JAMediaConverter(gobject.GObject):
@@ -134,6 +134,7 @@ class JAMediaConverter(gobject.GObject):
         self.player.set_property('video-sink', videoconvert)
 
         wavenc = wav_bin(self.newpath)
+        wavenc.set_name("audio-out")
         self.player.set_property('audio-sink', wavenc)
 
         self.player.set_property("uri", "file://" + self.origen)
@@ -151,6 +152,7 @@ class JAMediaConverter(gobject.GObject):
         self.player.set_property('video-sink', videoconvert)
 
         lamemp3enc = mp3_bin(self.newpath)
+        lamemp3enc.set_name("audio-out")
         self.player.set_property('audio-sink', lamemp3enc)
 
         self.player.set_property("uri", "file://" + self.origen)
@@ -168,6 +170,7 @@ class JAMediaConverter(gobject.GObject):
         self.player.set_property('video-sink', videoconvert)
 
         oggenc = ogg_bin(self.newpath)
+        oggenc.set_name("audio-out")
         self.player.set_property('audio-sink', oggenc)
 
         self.player.set_property("uri", "file://" + self.origen)
@@ -212,7 +215,7 @@ class JAMediaConverter(gobject.GObject):
         queuemux.set_property("max-size-bytes", 0)
         queuemux.set_property("max-size-time", 0)
 
-        muxor = gst.element_factory_make('mpegtsmux', 'muxor')
+        muxor = gst.element_factory_make('mpegtsmux', 'mux')
         #muxor = gst.element_factory_make("ffmux_mpeg", 'muxor')
         filesink = gst.element_factory_make("filesink", "filesink")
 
@@ -264,7 +267,7 @@ class JAMediaConverter(gobject.GObject):
         queuemux.set_property("max-size-bytes", 0)
         queuemux.set_property("max-size-time", 0)
 
-        oggmux = gst.element_factory_make("oggmux", "oggmux")
+        oggmux = gst.element_factory_make("oggmux", "mux")
         filesink = gst.element_factory_make("filesink", "filesink")
 
         self.player.add(oggmux)
@@ -317,7 +320,7 @@ class JAMediaConverter(gobject.GObject):
         queuemux.set_property("max-size-bytes", 0)
         queuemux.set_property("max-size-time", 0)
 
-        avimux = gst.element_factory_make("avimux", "avimux")
+        avimux = gst.element_factory_make("avimux", "mux")
         filesink = gst.element_factory_make("filesink", "filesink")
 
         self.player.add(avimux)
@@ -402,6 +405,9 @@ class JAMediaConverter(gobject.GObject):
         la barra de progreso del reproductor.
         """
 
+        if PR:
+            print "__handle", time.time()
+
         valor1 = None
         valor2 = None
         pos = None
@@ -420,7 +426,7 @@ class JAMediaConverter(gobject.GObject):
                 self.timer += 1
 
         if self.timer > 60:
-            #self.stop()
+            self.stop()
             self.emit("endfile")
             if PR:
                 print "JAMediaConverter No Pudo Procesar:", self.newpath
@@ -471,11 +477,27 @@ class JAMediaConverter(gobject.GObject):
         self.player.set_state(gst.STATE_PLAYING)
         self.__new_handle(True)
 
-    #def stop(self):
-    #    self.__new_handle(False)
-    #    self.player.set_state(gst.STATE_NULL)
-    #    self.emit("info", "  Progreso  ")
+    def stop(self):
+        self.__new_handle(False)
+        #self.player.set_state(gst.STATE_NULL)
+        self.emit("info", "  Progreso  ")
 
-    #    if PR:
-    #        print "JAMediaConverter Detenido: %s" % (
-    #            os.path.basename(self.origen))
+        bins = [
+            "filesrc", "decodebin",
+            "queuemux, mux", "filesink",
+            'audio-out', 'video-out']
+
+        for b in bins:
+            elemento = self.player.get_by_name(b)
+
+            if elemento:
+                if PR:
+                    print "JAMediaConverter Quitando Elemento:", elemento
+
+                self.player.unlink(elemento)
+                try:
+                    self.player.remove(elemento)
+                except:
+                    pass
+                elemento.unparent()
+                del(elemento)

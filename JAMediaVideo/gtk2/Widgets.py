@@ -163,9 +163,9 @@ class Credits(gtk.Dialog):
         self.set_border_width(15)
 
         imagen = gtk.Image()
-        #imagen.set_from_file(
-        #    os.path.join(BASE_PATH,
-        #    "Iconos", "JAMediaCredits.svg"))
+        imagen.set_from_file(
+            os.path.join(BASE_PATH,
+            "Iconos", "JAMediaVideoCredits.svg"))
 
         self.vbox.pack_start(imagen, True, True, 0)
         self.vbox.show_all()

@@ -188,60 +188,61 @@ class ToolbarAccion(gtk.EventBox):
 
         uri = self.lista.get_model().get_value(self.iter, 2)
 
-        if describe_acceso_uri(uri):
-            if self.accion == "Quitar":
-                path = self.lista.get_model().get_path(self.iter)
-                path = (path[0] - 1, )
-                self.lista.get_model().remove(self.iter)
-                self.__reselect(path)
+        if self.accion == "Quitar":
+            path = self.lista.get_model().get_path(self.iter)
+            path = (path[0] - 1, )
+            self.lista.get_model().remove(self.iter)
+            self.__reselect(path)
 
-            elif self.accion == "Copiar":
-                if os.path.isfile(uri):
-                    copiar(uri, get_my_files_directory())
+        else:
+            if describe_acceso_uri(uri):
+                if self.accion == "Copiar":
+                    if os.path.isfile(uri):
+                        copiar(uri, get_my_files_directory())
 
-            elif self.accion == "Borrar":
-                if os.path.isfile(uri):
-                    if borrar(uri):
-                        path = self.lista.get_model().get_path(self.iter)
-                        path = (path[0] - 1, )
-                        self.lista.get_model().remove(self.iter)
-                        self.__reselect(path)
+                elif self.accion == "Borrar":
+                    if os.path.isfile(uri):
+                        if borrar(uri):
+                            path = self.lista.get_model().get_path(self.iter)
+                            path = (path[0] - 1, )
+                            self.lista.get_model().remove(self.iter)
+                            self.__reselect(path)
 
-            elif self.accion == "Mover":
-                if os.path.isfile(uri):
-                    if mover(uri, get_my_files_directory()):
-                        path = self.lista.get_model().get_path(self.iter)
-                        path = (path[0] - 1, )
-                        self.lista.get_model().remove(self.iter)
-                        self.__reselect(path)
+                elif self.accion == "Mover":
+                    if os.path.isfile(uri):
+                        if mover(uri, get_my_files_directory()):
+                            path = self.lista.get_model().get_path(self.iter)
+                            path = (path[0] - 1, )
+                            self.lista.get_model().remove(self.iter)
+                            self.__reselect(path)
 
-        #Streaming no se usan en JAMediaVideo
-        #else:
-        #    if self.accion == "Quitar":
-        #        path = self.lista.get_model().get_path(self.iter)
-        #        path = (path[0] - 1, )
-        #        self.lista.get_model().remove(self.iter)
-        #        self.__reselect(path)
+            #Streaming no se usan en JAMediaVideo
+            #else:
+            #    if self.accion == "Quitar":
+            #        path = self.lista.get_model().get_path(self.iter)
+            #        path = (path[0] - 1, )
+            #        self.lista.get_model().remove(self.iter)
+            #        self.__reselect(path)
 
-        #    elif self.accion == "Borrar":
-        #        self.emit("accion-stream", "Borrar", uri)
-        #        path = self.lista.get_model().get_path(self.iter)
-        #        path = (path[0] - 1, )
-        #        self.lista.get_model().remove(self.iter)
-        #        self.__reselect(path)
+            #    elif self.accion == "Borrar":
+            #        self.emit("accion-stream", "Borrar", uri)
+            #        path = self.lista.get_model().get_path(self.iter)
+            #        path = (path[0] - 1, )
+            #        self.lista.get_model().remove(self.iter)
+            #        self.__reselect(path)
 
-        #    elif self.accion == "Copiar":
-        #        self.emit("accion-stream", "Copiar", uri)
+            #    elif self.accion == "Copiar":
+            #        self.emit("accion-stream", "Copiar", uri)
 
-        #    elif self.accion == "Mover":
-        #        self.emit("accion-stream", "Mover", uri)
-        #        path = self.lista.get_model().get_path(self.iter)
-        #        path = (path[0] - 1, )
-        #        self.lista.get_model().remove(self.iter)
-        #        self.__reselect(path)
+            #    elif self.accion == "Mover":
+            #        self.emit("accion-stream", "Mover", uri)
+            #        path = self.lista.get_model().get_path(self.iter)
+            #        path = (path[0] - 1, )
+            #        self.lista.get_model().remove(self.iter)
+            #        self.__reselect(path)
 
-        #    elif self.accion == "Grabar":
-        #        self.emit("Grabar", uri)
+            #    elif self.accion == "Grabar":
+            #        self.emit("Grabar", uri)
 
         self.emit("aviso", self.accion, uri)
         self.label.set_text("")
@@ -251,7 +252,6 @@ class ToolbarAccion(gtk.EventBox):
         self.hide()
 
     def __reselect(self, path):
-
         try:
             if path[0] > -1:
                 self.lista.get_selection().select_iter(

@@ -133,12 +133,13 @@ class WidgetConvert(gtk.HPaned):
             self.emit("in-run", True)
             self.playerlist.select_valor(widgetarchivo.path_origen)
             self.playerlist.set_sensitive(False)
-            gobject.timeout_add(6, self.__emit_pendientes,
-                "Archivos Pendientes: %s" % str(len(
-                self.tareas_pendientes) + 1))
 
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.hide()
+
+            gobject.timeout_add(6, self.__emit_pendientes,
+                "Archivos Pendientes: %s" % str(len(
+                self.tareas_pendientes) + 1))
 
             widgetarchivo.show()
             widgetarchivo.play()
@@ -385,8 +386,8 @@ class WidgetArchivo(gtk.Frame):
 
         if self.player:
             # FIXME: stop hace que la aplicación se cuelgue.
-            #self.player.stop()
-            #del(self.player)
+            self.player.stop()
+            del(self.player)
             self.player = False
 
         if not self.temp_tareas:
@@ -427,7 +428,6 @@ class WidgetArchivo(gtk.Frame):
         self.player.connect("newposicion", self.__process_tarea)
         self.player.connect("info", self.__info_tarea)
 
-        #gobject.idle_add(self.player.play)
         self.player.play()
         return False
 
