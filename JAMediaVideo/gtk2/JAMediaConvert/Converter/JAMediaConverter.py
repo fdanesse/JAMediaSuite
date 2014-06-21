@@ -484,7 +484,7 @@ class JAMediaConverter(gobject.GObject):
 
         bins = [
             "filesrc", "decodebin",
-            "queuemux, mux", "filesink",
+            "queuemux", "mux", "filesink",
             'audio-out', 'video-out']
 
         for b in bins:

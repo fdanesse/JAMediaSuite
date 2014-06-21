@@ -36,7 +36,7 @@ class v4l2src_bin(gst.Bin):
 
         camara = gst.element_factory_make("v4l2src", "v4l2src")
 
-        caps = gst.Caps('video/x-raw-rgb,framerate=30/1')
+        caps = gst.Caps('video/x-raw-yuv,framerate=30/1')
         camerafilter = gst.element_factory_make("capsfilter", "camera_filter")
         camerafilter.set_property("caps", caps)
 
@@ -120,7 +120,7 @@ class xvimage_bin(gst.Bin):
 
         xvimagesink = gst.element_factory_make('xvimagesink', "xvimagesink")
         xvimagesink.set_property("force-aspect-ratio", True)
-        xvimagesink.set_property("sync", False)
+        xvimagesink.set_property("synchronous", False)
 
         try:
             videorate.set_property("max-rate", 30)
