@@ -121,19 +121,15 @@ class PlayerControl(gtk.EventBox):
             rotacion=False)
 
     def __clickenstop(self, widget=None, event=None):
-
         self.emit("activar", "stop")
 
     def __clickenplay_pausa(self, widget=None, event=None):
-
         self.emit("activar", "pausa-play")
 
     def __clickenatras(self, widget=None, event=None):
-
         self.emit("activar", "atras")
 
     def __clickensiguiente(self, widget=None, event=None):
-
         self.emit("activar", "siguiente")
 
 

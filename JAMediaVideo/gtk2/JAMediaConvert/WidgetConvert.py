@@ -413,6 +413,8 @@ class WidgetArchivo(gtk.Frame):
 
         self.__in_run(True)
 
+        gtk.gdk.flush()
+
         gobject.idle_add(self.__new_jamedia_converter,
             codec, dirpath_destino)
 
