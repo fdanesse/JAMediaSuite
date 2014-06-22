@@ -21,13 +21,44 @@
 
 import os
 import time
+import datetime
 import gtk
-from gtk import gdk
 import gobject
 
-from Globales import get_colors
+from Widgets import Visor
+from Widgets import BarraProgreso
+from Widgets import ControlVolumen
+from Widgets import MouseSpeedDetector
+from Widgets import DialogoDescarga
+from Widgets import MenuList
+from Widgets import My_FileChooser
+
+from PlayerList import Lista
+from PlayerControls import PlayerControl
+#from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
+from Toolbars import ToolbarSalir
+from Toolbars import Toolbar
+from Toolbars import ToolbarAccion
+from ToolbarConfig import ToolbarConfig
+from Toolbars import ToolbarGrabar
+from Toolbars import ToolbarInfo
+from Toolbars import ToolbarAddStream
+from Toolbars import ToolbarLista
+
 from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 from JAMediaReproductor.JAMediaGrabador import JAMediaGrabador
+
+from Globales import get_colors
+from Globales import set_listas_default
+from Globales import eliminar_streaming
+from Globales import add_stream
+from Globales import describe_uri
+from Globales import get_data_directory
+from Globales import get_my_files_directory
+from Globales import get_tube_directory
+from Globales import get_audio_directory
+from Globales import get_video_directory
+from Globales import get_streamings
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -85,22 +116,6 @@ class JAMediaPlayer(gtk.EventBox):
         """
 
         self.get_toplevel().set_sensitive(False)
-
-        from Widgets import Visor
-        from Widgets import BarraProgreso
-        from Widgets import ControlVolumen
-
-        from PlayerList import Lista
-        from PlayerControls import PlayerControl
-        #from GstreamerWidgets.Widgets import WidgetsGstreamerEfectos
-
-        from Toolbars import ToolbarSalir
-        from Toolbars import Toolbar
-        from Toolbars import ToolbarAccion
-        from Toolbars import ToolbarConfig
-        from Toolbars import ToolbarGrabar
-        from Toolbars import ToolbarInfo
-        from Toolbars import ToolbarAddStream
 
         self.pantalla = Visor()
         self.barradeprogreso = BarraProgreso()
@@ -180,8 +195,7 @@ class JAMediaPlayer(gtk.EventBox):
             gtk.POLICY_AUTOMATIC)
         self.scroll_config.add_with_viewport(self.vbox_config)
         self.scroll_config.get_child().modify_bg(0, get_colors("window"))
-        self.vbox_config.pack_start(
-            self.toolbar_config, False, False, 0)
+        self.vbox_config.pack_start(self.toolbar_config, False, False, 0)
         #self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
 
         # Lista de Reproducción
@@ -279,15 +293,13 @@ class JAMediaPlayer(gtk.EventBox):
         #   #function-gdk--display-get-default
         icono = os.path.join(BASE_PATH,
             "Iconos", "jamedia_cursor.svg")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
+        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono,
             -1, 24)
-        self.jamedia_cursor = gdk.Cursor(
-            gdk.display_get_default(), pixbuf, 0, 0)
+        self.jamedia_cursor = gtk.gdk.Cursor(
+            gtk.gdk.display_get_default(), pixbuf, 0, 0)
 
         self.cursor_root = self.get_parent_window().get_cursor()
         self.get_parent_window().set_cursor(self.jamedia_cursor)
-
-        from Widgets import MouseSpeedDetector
 
         self.mouse_listener = MouseSpeedDetector(self)
         self.mouse_listener.connect(
@@ -314,11 +326,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.get_toplevel().set_sensitive(False)
 
-        from Globales import set_listas_default
-
         set_listas_default()
-
-        from Toolbars import ToolbarLista
 
         self.toolbar_list = ToolbarLista()
         self.toolbar_list.connect(
@@ -400,15 +408,16 @@ class JAMediaPlayer(gtk.EventBox):
 
         if self.mouse_in_visor:  # Solo cuando el mouse está sobre el Visor.
             if estado == "moviendose":
-                if self.get_parent_window().get_cursor() != self.jamedia_cursor:
+                if self.get_parent_window().get_cursor(
+                    ) != self.jamedia_cursor:
                     self.get_parent_window().set_cursor(
                         self.jamedia_cursor)
                     return
 
             elif estado == "detenido":
-                if self.get_parent_window().get_cursor() != gdk.BLANK_CURSOR:
+                if self.get_parent_window().get_cursor() != gtk.gdk.BLANK_CURSOR:
                     self.get_parent_window().set_cursor(
-                        gdk.Cursor(gdk.BLANK_CURSOR))
+                        gtk.gdk.Cursor(gtk.gdk.BLANK_CURSOR))
                     return
 
             elif estado == "fuera":
@@ -564,8 +573,6 @@ class JAMediaPlayer(gtk.EventBox):
         self.__cancel_toolbars_flotantes()
 
         # FIXME: Agregar control de conexión para evitar errores.
-        from Widgets import DialogoDescarga
-
         dialog = DialogoDescarga(parent=self.get_toplevel())
         dialog.run()
 
@@ -577,9 +584,6 @@ class JAMediaPlayer(gtk.EventBox):
         """
 
         lista = self.toolbar_list.label.get_text()
-
-        from Globales import eliminar_streaming
-        from Globales import add_stream
 
         if accion == "Borrar":
             eliminar_streaming(url, lista)
@@ -609,7 +613,6 @@ class JAMediaPlayer(gtk.EventBox):
         que pasa toolbaraddstream en add-stream.
         """
 
-        from Globales import add_stream
         add_stream(tipo, [nombre, url])
 
         if "Tv" in tipo or "TV" in tipo:
@@ -837,17 +840,17 @@ class JAMediaPlayer(gtk.EventBox):
         Actualiza las toolbars de balance en video.
         """
 
-        if not self.player:
-            return False
+        config = {}
 
-        config = self.player.get_balance()
+        if self.player:
+            config = self.player.get_balance()
 
         self.toolbar_config.set_balance(
-            brillo=config['brillo'],
-            contraste=config['contraste'],
-            saturacion=config['saturacion'],
-            hue=config['hue'],
-            gamma=config['gamma'])
+            brillo=config.get('brillo', 50.0),
+            contraste=config.get('contraste', 50.0),
+            saturacion=config.get('saturacion', 50.0),
+            hue=config.get('hue', 50.0),
+            gamma=config.get('gamma', 10.0))
 
         return False
 
@@ -911,7 +914,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         volumen = 1.0
         if self.player:
-            volumen = float("{:.1f}".format(self.volumen.get_value()*10))
+            volumen = float("{:.1f}".format(self.volumen.get_value() * 10))
             self.player.stop()
             del(self.player)
 
@@ -930,7 +933,7 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.player.load(path)
         self.player.set_volumen(volumen)
-        self.volumen.set_value(volumen/10)
+        self.volumen.set_value(volumen / 10)
 
         if visible:
             self.scroll_config.show()
@@ -969,8 +972,6 @@ class JAMediaPlayer(gtk.EventBox):
             valor = model.get_value(iter, 2)
 
             if valor:
-                from Globales import describe_uri
-
                 descripcion = describe_uri(valor)
 
                 if descripcion:
@@ -982,12 +983,6 @@ class JAMediaPlayer(gtk.EventBox):
             self.toolbaraddstream])
 
         self.toolbar_list.boton_agregar.hide()
-
-        from Globales import get_data_directory
-        from Globales import get_my_files_directory
-        from Globales import get_tube_directory
-        from Globales import get_audio_directory
-        from Globales import get_video_directory
 
         if indice == 0:
             archivo = os.path.join(
@@ -1060,8 +1055,6 @@ class JAMediaPlayer(gtk.EventBox):
                 "JAM-Video")
 
         elif indice == 9:
-            from Widgets import My_FileChooser
-
             directorio = None
 
             if ultimopath:
@@ -1145,8 +1138,6 @@ class JAMediaPlayer(gtk.EventBox):
 
         self.__cancel_toolbars_flotantes()
 
-        from Globales import get_streamings
-
         items = get_streamings(archivo)
 
         self.toolbar_list.label.set_text(titulo)
@@ -1191,8 +1182,6 @@ class JAMediaPlayer(gtk.EventBox):
             return
 
         elif boton == 3:
-            from Widgets import MenuList
-
             menu = MenuList(widget, boton, pos, tiempo, path, widget.get_model())
             menu.connect('accion', self.__set_accion)
             gtk.Menu.popup(menu, None, None, None, boton, tiempo)
@@ -1234,13 +1223,8 @@ class JAMediaPlayer(gtk.EventBox):
         else:
             tipo = "audio"
 
-        import time
-        import datetime
-
         hora = time.strftime("%H-%M-%S")
         fecha = str(datetime.date.today())
-
-        from Globales import get_my_files_directory
 
         archivo = "%s-%s" % (fecha, hora)
         archivo = os.path.join(get_my_files_directory(), archivo)

@@ -20,16 +20,22 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
-from gtk import gdk
 import gobject
+
+from Widgets import Credits
+from Widgets import Help
 
 from Globales import get_color
 from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 from Globales import get_togle_boton
+from Globales import get_my_files_directory
+from Globales import describe_acceso_uri
+from Globales import copiar
+from Globales import borrar
+from Globales import mover
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -94,13 +100,6 @@ class ToolbarAccion(gtk.Toolbar):
         Ejecuta una accion sobre un archivo o streaming
         en la lista de reprucción cuando el usuario confirma.
         """
-
-        from Globales import get_my_files_directory
-
-        from Globales import describe_acceso_uri
-        from Globales import copiar
-        from Globales import borrar
-        from Globales import mover
 
         uri = self.lista.get_model().get_value(self.iter, 2)
 
@@ -516,15 +515,12 @@ class Toolbar(gtk.Toolbar):
         self.show_all()
 
     def __show_credits(self, widget):
-
-        from Widgets import Credits
         dialog = Credits(parent=self.get_toplevel())
         dialog.run()
         dialog.destroy()
 
     def __show_help(self, widget):
 
-        from Widgets import Help
         dialog = Help(parent=self.get_toplevel())
         dialog.run()
         dialog.destroy()
@@ -610,7 +606,7 @@ class ToolbarInfo(gtk.Toolbar):
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
         self.descarga = get_boton(archivo, flip=False,
-            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE,
+            rotacion=gtk.gdk.PIXBUF_ROTATE_CLOCKWISE,
             pixels=24)
         self.descarga.set_tooltip_text("Actualizar Streamings")
         self.descarga.connect("clicked", self.__emit_actualizar_streamings)
@@ -645,255 +641,6 @@ class ToolbarInfo(gtk.Toolbar):
         """
 
         self.ocultar_controles = not widget.get_active()
-
-
-class ToolbarConfig(gtk.Table):
-    """
-    Toolbar para intercambiar reproductores (mplayer gst) y
-    modificar valores de balance en video.
-    """
-
-    #__gtype_name__ = 'ToolbarConfig'
-
-    __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
-        (gobject.TYPE_FLOAT, gobject.TYPE_STRING))}
-
-    def __init__(self):
-
-        gtk.Table.__init__(self, rows=5, columns=1, homogeneous=True)
-
-        self.modify_bg(0, get_colors("window"))
-
-        self.brillo = ToolbarcontrolValores("Brillo")
-        self.contraste = ToolbarcontrolValores("Contraste")
-        self.saturacion = ToolbarcontrolValores("Saturación")
-        self.hue = ToolbarcontrolValores("Matíz")
-        self.gamma = ToolbarcontrolValores("Gamma")
-
-        self.attach(self.brillo, 0, 1, 0, 1)
-        self.attach(self.contraste, 0, 1, 1, 2)
-        self.attach(self.saturacion, 0, 1, 2, 3)
-        self.attach(self.hue, 0, 1, 3, 4)
-        self.attach(self.gamma, 0, 1, 4, 5)
-
-        self.show_all()
-
-        self.brillo.connect('valor', self.__emit_senial, 'brillo')
-        self.contraste.connect('valor', self.__emit_senial, 'contraste')
-        self.saturacion.connect('valor', self.__emit_senial, 'saturacion')
-        self.hue.connect('valor', self.__emit_senial, 'hue')
-        self.gamma.connect('valor', self.__emit_senial, 'gamma')
-
-    def __emit_senial(self, widget, valor, tipo):
-        """
-        Emite valor, que representa un valor
-        en % float y un valor tipo para:
-            brillo - contraste - saturacion - hue - gamma
-        """
-
-        self.emit('valor', valor, tipo)
-
-    def set_balance(self, brillo=None, contraste=None,
-        saturacion=None, hue=None, gamma=None):
-        """
-        Setea las barras segun valores.
-        """
-
-        if saturacion != None:
-            self.saturacion.set_progress(saturacion)
-
-        if contraste != None:
-            self.contraste.set_progress(contraste)
-
-        if brillo != None:
-            self.brillo.set_progress(brillo)
-
-        if hue != None:
-            self.hue.set_progress(hue)
-
-        if gamma != None:
-            self.gamma.set_progress(gamma)
-
-
-class ToolbarcontrolValores(gtk.Toolbar):
-    """
-    Toolbar con escala para modificar
-    valores de balance en video, utilizada
-    por ToolbarBalanceConfig.
-    """
-
-    __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
-
-    def __init__(self, label):
-
-        gtk.Toolbar.__init__(self)
-
-        self.modify_bg(0, get_colors("window"))
-
-        self.titulo = label
-
-        self.escala = SlicerBalance()
-
-        item = gtk.ToolItem()
-        item.set_expand(True)
-
-        self.frame = gtk.Frame()
-        self.frame.set_border_width(4)
-        self.frame.set_label(self.titulo)
-        self.frame.set_label_align(0.5, 1.0)
-        event = gtk.EventBox()
-        event.set_border_width(4)
-        event.add(self.escala)
-        self.frame.add(event)
-        self.frame.show_all()
-        item.add(self.frame)
-        self.insert(item, -1)
-
-        self.show_all()
-
-        self.escala.connect("user-set-value", self.__user_set_value)
-
-    def __user_set_value(self, widget=None, valor=None):
-        """
-        Recibe la posicion en la barra de
-        progreso (en % float), y re emite los valores.
-        """
-
-        self.emit('valor', valor)
-        self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
-
-    def set_progress(self, valor):
-        """
-        Establece valores en la escala.
-        """
-
-        self.escala.set_progress(valor)
-        self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
-
-
-class SlicerBalance(gtk.EventBox):
-    """
-    Barra deslizable para cambiar valores de Balance en Video.
-    """
-
-    __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
-
-    def __init__(self):
-
-        gtk.EventBox.__init__(self)
-
-        self.modify_bg(0, get_colors("window"))
-
-        self.escala = BalanceBar(gtk.Adjustment(0.0, 0.0,
-            101.0, 0.1, 1.0, 1.0))
-
-        self.add(self.escala)
-        self.show_all()
-
-        self.escala.connect('user-set-value', self.__emit_valor)
-
-    def set_progress(self, valor=0.0):
-        """
-        El reproductor modifica la escala.
-        """
-
-        self.escala.ajuste.set_value(valor)
-        self.escala.queue_draw()
-
-    def __emit_valor(self, widget, valor):
-        """
-        El usuario modifica la escala.
-        Y se emite la señal con el valor (% float).
-        """
-
-        self.emit("user-set-value", valor)
-
-
-class BalanceBar(gtk.HScale):
-    """
-    Escala de SlicerBalance.
-    """
-
-    __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
-
-    def __init__(self, ajuste):
-
-        gtk.HScale.__init__(self)
-
-        self.modify_bg(0, get_colors("window"))
-
-        self.ajuste = ajuste
-        self.set_digits(0)
-        self.set_draw_value(False)
-
-        self.ancho, self.borde = (7, 10)
-
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            16, 16)
-        self.pixbuf = pixbuf.rotate_simple(
-            gdk.PIXBUF_ROTATE_CLOCKWISE)
-
-        self.connect("expose_event", self.__expose)
-
-        self.show_all()
-
-    def do_motion_notify_event(self, event):
-        """
-        Cuando el usuario se desplaza por la barra de progreso.
-        Se emite el valor en % (float).
-        """
-
-        if event.state == gdk.MOD2_MASK | \
-            gdk.BUTTON1_MASK:
-
-            rect = self.get_allocation()
-            valor = float(event.x * 100 / rect.width)
-            if valor >= 0.0 and valor <= 100.0:
-                self.ajuste.set_value(valor)
-                self.queue_draw()
-                self.emit("user-set-value", valor)
-
-    def __expose(self, widget, event):
-        """
-        Dibuja el estado de la barra de progreso.
-        """
-
-        x, y, w, h = self.get_allocation()
-        ancho, borde = (self.ancho, self.borde)
-
-        gc = gtk.gdk.Drawable.new_gc(self.window)
-
-        gc.set_rgb_fg_color(gdk.color_parse("#ffffff"))
-        self.window.draw_rectangle(gc, True, x, y, w, h)
-
-        gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
-        ww = w - borde * 2
-        xx = x + w / 2 - ww / 2
-        hh = ancho
-        yy = y + h / 2 - ancho / 2
-        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
-
-        ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
-        self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
-
-        # La Imagen
-        imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        yimage = yy + hh / 2 - imgh / 2
-
-        self.window.draw_pixbuf(gc, self.pixbuf, 0, 0, ximage, yimage,
-            imgw, imgh, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
-
-        return True
 
 
 class ToolbarAddStream(gtk.Toolbar):
@@ -1015,7 +762,7 @@ class ToolbarAddStream(gtk.Toolbar):
         self.hide()
 
 
-class ToolbarSalir(gtk.Toolbar):
+class ToolbarSalir(gtk.EventBox):
     """
     Toolbar para confirmar salir de la aplicación.
     """
@@ -1026,11 +773,14 @@ class ToolbarSalir(gtk.Toolbar):
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
+        gtk.EventBox.__init__(self)
+
+        toolbar = gtk.Toolbar()
 
         self.modify_bg(0, get_colors("window"))
+        toolbar.modify_bg(0, get_colors("window"))
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -1039,18 +789,18 @@ class ToolbarSalir(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
         self.label = gtk.Label("")
         self.label.show()
         item.add(self.label)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -1059,12 +809,21 @@ class ToolbarSalir(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__emit_salir)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
+        self.add(toolbar)
         self.show_all()
+
+    def __emit_salir(self, widget):
+        """
+        Confirma Salir de la aplicación.
+        """
+
+        self.cancelar()
+        self.emit('salir')
 
     def run(self, nombre_aplicacion):
         """
@@ -1074,14 +833,6 @@ class ToolbarSalir(gtk.Toolbar):
 
         self.label.set_text("¿Salir de %s?" % (nombre_aplicacion))
         self.show()
-
-    def __emit_salir(self, widget):
-        """
-        Confirma Salir de la aplicación.
-        """
-
-        self.cancelar()
-        self.emit('salir')
 
     def cancelar(self, widget=None):
         """

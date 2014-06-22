@@ -20,10 +20,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
 import gobject
+import sys
 
+from JAMediaPlayer import JAMediaPlayer
+
+from Globales import describe_archivo
 from Globales import get_colors
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
@@ -60,7 +63,6 @@ class JAMedia(gtk.Window):
 
         self.pistas = []
 
-        from JAMediaPlayer import JAMediaPlayer
         self.jamediaplayer = JAMediaPlayer()
 
         self.add(self.jamediaplayer)
@@ -94,8 +96,6 @@ class JAMedia(gtk.Window):
         return False
 
     def __salir(self, widget=None, senial=None):
-
-        import sys
         #import commands
 
         #try:
@@ -114,8 +114,6 @@ def get_item_list(path):
         if os.path.isfile(path):
             archivo = os.path.basename(path)
 
-            from Globales import describe_archivo
-
             datos = describe_archivo(path)
 
             if 'audio' in datos or \
@@ -127,9 +125,6 @@ def get_item_list(path):
     return False
 
 if __name__ == "__main__":
-
-    import sys
-
     items = []
 
     if len(sys.argv) > 1:
