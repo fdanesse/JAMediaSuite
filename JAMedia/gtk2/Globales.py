@@ -365,6 +365,18 @@ def get_my_files_directory():
     return DIRECTORIO_MIS_ARCHIVOS
 
 
+def get_JAMedia_Directory():
+
+    import os
+
+    path = os.path.join(os.environ["HOME"], "JAMediaDatos")
+
+    if not os.path.exists(path):
+        make_base_directory()
+
+    return path
+
+
 def eliminar_streaming(url, lista):
     """
     Elimina un Streaming de una lista de jamedia.

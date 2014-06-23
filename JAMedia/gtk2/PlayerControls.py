@@ -20,9 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
-from gtk import gdk
 import gobject
 
 from Globales import get_colors
@@ -30,7 +28,7 @@ from Globales import get_colors
 BASE_PATH = os.path.dirname(__file__)
 
 
-class PlayerControl(gtk.HBox):
+class PlayerControl(gtk.EventBox):
     """
     Controles de reproduccion: play/pausa, stop, siguiente, atras.
     """
@@ -41,8 +39,11 @@ class PlayerControl(gtk.HBox):
 
     def __init__(self):
 
-        gtk.HBox.__init__(self)
+        gtk.EventBox.__init__(self)
 
+        self.modify_bg(0, get_colors("barradeprogreso"))
+
+        vbox = gtk.HBox()
         self.botonatras = JAMediaToolButton(pixels=24)
 
         archivo = os.path.join(BASE_PATH,
@@ -55,7 +56,7 @@ class PlayerControl(gtk.HBox):
 
         self.botonatras.set_tooltip_text("Anterior")
         self.botonatras.connect("clicked", self.__clickenatras)
-        self.pack_start(self.botonatras, False, True, 0)
+        vbox.pack_start(self.botonatras, False, True, 0)
 
         self.botonplay = JAMediaToolButton(pixels=24)
         archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
@@ -67,7 +68,7 @@ class PlayerControl(gtk.HBox):
 
         self.botonplay.set_tooltip_text("Reproducir")
         self.botonplay.connect("clicked", self.__clickenplay_pausa)
-        self.pack_start(self.botonplay, False, True, 0)
+        vbox.pack_start(self.botonplay, False, True, 0)
 
         self.botonsiguiente = JAMediaToolButton(pixels=24)
         archivo = os.path.join(BASE_PATH, "Iconos", "siguiente.svg")
@@ -79,7 +80,7 @@ class PlayerControl(gtk.HBox):
 
         self.botonsiguiente.set_tooltip_text("Siguiente")
         self.botonsiguiente.connect("clicked", self.__clickensiguiente)
-        self.pack_start(self.botonsiguiente, False, True, 0)
+        vbox.pack_start(self.botonsiguiente, False, True, 0)
 
         self.botonstop = JAMediaToolButton(pixels=24)
         archivo = os.path.join(BASE_PATH, "Iconos", "stop.svg")
@@ -91,8 +92,9 @@ class PlayerControl(gtk.HBox):
 
         self.botonstop.set_tooltip_text("Detener Reproducción")
         self.botonstop.connect("clicked", self.__clickenstop)
-        self.pack_start(self.botonstop, False, True, 0)
+        vbox.pack_start(self.botonstop, False, True, 0)
 
+        self.add(vbox)
         self.show_all()
 
     def set_paused(self):
@@ -154,7 +156,7 @@ class JAMediaToolButton(gtk.ToolButton):
             pixbuf = None
 
         else:
-            pixbuf = gdk.pixbuf_new_from_file(os.path.join(archivo))
+            pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(archivo))
 
             if flip:
                 pixbuf = pixbuf.flip(True)

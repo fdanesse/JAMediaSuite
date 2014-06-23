@@ -277,6 +277,9 @@ class JAMediaReproductor(gobject.GObject):
         Carga un archivo o stream en el pipe de gst.
         """
 
+        if not uri:
+            return
+
         if os.path.exists(uri):
             #direccion = gst.filename_to_uri(uri)
             direccion = "file://" + uri

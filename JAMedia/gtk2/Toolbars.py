@@ -30,7 +30,6 @@ from Globales import get_color
 from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
-from Globales import get_togle_boton
 from Globales import get_my_files_directory
 from Globales import describe_acceso_uri
 from Globales import copiar
@@ -40,7 +39,7 @@ from Globales import mover
 BASE_PATH = os.path.dirname(__file__)
 
 
-class ToolbarAccion(gtk.Toolbar):
+class ToolbarAccion(gtk.EventBox):
     """
     Toolbar para que el usuario confirme las
     acciones que se realizan sobre items que se
@@ -53,19 +52,25 @@ class ToolbarAccion(gtk.Toolbar):
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
     "accion-stream": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
+        gobject.TYPE_STRING)),
+    "aviso": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING))}
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
+        gtk.EventBox.__init__(self)
+
+        toolbar = gtk.Toolbar()
 
         self.modify_bg(0, get_colors("window"))
+        toolbar.modify_bg(0, get_colors("window"))
 
         self.lista = None
         self.accion = None
         self.iter = None
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -74,13 +79,13 @@ class ToolbarAccion(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
         item = gtk.ToolItem()
         self.label = gtk.Label("")
         self.label.show()
         item.add(self.label)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "dialog-ok.svg")
@@ -88,11 +93,12 @@ class ToolbarAccion(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__realizar_accion)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
+        self.add(toolbar)
         self.show_all()
 
     def __realizar_accion(self, widget):
@@ -103,108 +109,73 @@ class ToolbarAccion(gtk.Toolbar):
 
         uri = self.lista.get_model().get_value(self.iter, 2)
 
-        if describe_acceso_uri(uri):
-            if self.accion == "Quitar":
-                path = self.lista.get_model().get_path(self.iter)
-                path = (path[0] - 1, )
+        if self.accion == "Quitar":
+            path = self.lista.get_model().get_path(self.iter)
+            path = (path[0] - 1, )
+            self.lista.get_model().remove(self.iter)
+            self.__reselect(path)
 
-                self.lista.get_model().remove(self.iter)
-
-                try:
-                    self.lista.get_selection().select_iter(
-                        self.lista.get_model().get_iter(path))
-
-                except:
-                    self.lista.seleccionar_primero()
-
-            elif self.accion == "Copiar":
-                if os.path.isfile(uri):
-                    copiar(uri, get_my_files_directory())
-
-            elif self.accion == "Borrar":
-                if os.path.isfile(uri):
-                    if borrar(uri):
-                        path = self.lista.get_model().get_path(self.iter)
-                        path = (path[0] - 1, )
-
-                        self.lista.get_model().remove(self.iter)
-
-                        try:
-                            self.lista.get_selection().select_iter(
-                                self.lista.get_model().get_iter(path))
-
-                        except:
-                            self.lista.seleccionar_primero()
-
-            elif self.accion == "Mover":
-                if os.path.isfile(uri):
-                    if mover(uri, get_my_files_directory()):
-                        path = self.lista.get_model().get_path(self.iter)
-                        path = (path[0] - 1, )
-
-                        self.lista.get_model().remove(self.iter)
-
-                        try:
-                            self.lista.get_selection().select_iter(
-                                self.lista.get_model().get_iter(path))
-
-                        except:
-                            self.lista.seleccionar_primero()
         else:
-            if self.accion == "Quitar":
-                path = self.lista.get_model().get_path(self.iter)
-                path = (path[0] - 1, )
+            if describe_acceso_uri(uri):
+                if self.accion == "Copiar":
+                    if os.path.isfile(uri):
+                        copiar(uri, get_my_files_directory())
 
-                self.lista.get_model().remove(self.iter)
+                elif self.accion == "Borrar":
+                    if os.path.isfile(uri):
+                        if borrar(uri):
+                            path = self.lista.get_model().get_path(self.iter)
+                            path = (path[0] - 1, )
+                            self.lista.get_model().remove(self.iter)
+                            self.__reselect(path)
 
-                try:
-                    self.lista.get_selection().select_iter(
-                        self.lista.get_model().get_iter(path))
+                elif self.accion == "Mover":
+                    if os.path.isfile(uri):
+                        if mover(uri, get_my_files_directory()):
+                            path = self.lista.get_model().get_path(self.iter)
+                            path = (path[0] - 1, )
+                            self.lista.get_model().remove(self.iter)
+                            self.__reselect(path)
 
-                except:
-                    self.lista.seleccionar_primero()
+            else:
+                if self.accion == "Borrar":
+                    self.emit("accion-stream", "Borrar", uri)
+                    path = self.lista.get_model().get_path(self.iter)
+                    path = (path[0] - 1, )
+                    self.lista.get_model().remove(self.iter)
+                    self.__reselect(path)
 
-            elif self.accion == "Borrar":
-                self.emit("accion-stream", "Borrar", uri)
-                path = self.lista.get_model().get_path(self.iter)
-                path = (path[0] - 1, )
+                elif self.accion == "Copiar":
+                    self.emit("accion-stream", "Copiar", uri)
 
-                self.lista.get_model().remove(self.iter)
+                elif self.accion == "Mover":
+                    self.emit("accion-stream", "Mover", uri)
+                    path = self.lista.get_model().get_path(self.iter)
+                    path = (path[0] - 1, )
+                    self.lista.get_model().remove(self.iter)
+                    self.__reselect(path)
 
-                try:
-                    self.lista.get_selection().select_iter(
-                        self.lista.get_model().get_iter(path))
+                elif self.accion == "Grabar":
+                    self.emit("Grabar", uri)
 
-                except:
-                    self.lista.seleccionar_primero()
-
-            elif self.accion == "Copiar":
-                self.emit("accion-stream", "Copiar", uri)
-
-            elif self.accion == "Mover":
-                self.emit("accion-stream", "Mover", uri)
-                path = self.lista.get_model().get_path(self.iter)
-                path = (path[0] - 1, )
-
-                self.lista.get_model().remove(self.iter)
-
-                try:
-                    self.lista.get_selection().select_iter(
-                        self.lista.get_model().get_iter(path))
-
-                except:
-                    self.lista.seleccionar_primero()
-
-            elif self.accion == "Grabar":
-                self.emit("Grabar", uri)
-
+        self.emit("aviso", self.accion, uri)
         self.label.set_text("")
         self.lista = None
         self.accion = None
         self.iter = None
         self.hide()
 
-    def set_accion(self, lista, accion, iter):
+    def __reselect(self, path):
+        try:
+            if path[0] > -1:
+                self.lista.get_selection().select_iter(
+                    self.lista.get_model().get_iter(path))
+            else:
+                self.lista.seleccionar_primero()
+        except:
+            self.lista.seleccionar_primero()
+
+    def set_accion(self, lista, accion, _iter):
         """
         Configura una accion sobre un archivo o
         streaming y muestra toolbaraccion para que
@@ -213,7 +184,7 @@ class ToolbarAccion(gtk.Toolbar):
 
         self.lista = lista
         self.accion = accion
-        self.iter = iter
+        self.iter = _iter
 
         if self.lista and self.accion and self.iter:
             uri = self.lista.get_model().get_value(self.iter, 2)
@@ -223,7 +194,7 @@ class ToolbarAccion(gtk.Toolbar):
                 texto = os.path.basename(uri)
 
             if len(texto) > 30:
-                texto = str(texto[0:30]) + " . . . "
+                texto = " . . . " + str(texto[len(texto) - 30:-1])
 
             self.label.set_text("¿%s?: %s" % (accion, texto))
             self.show_all()
@@ -338,6 +309,7 @@ class ToolbarGrabar(gtk.EventBox):
             self.show()
 
 
+'''
 class ToolbarLista(gtk.Toolbar):
     """
     Toolbar de la lista de reproduccion, que contiene
@@ -452,6 +424,7 @@ class ToolbarLista(gtk.Toolbar):
 
     def __emit_add_stream(self, widget):
         self.emit("add_stream")
+'''
 
 
 class Toolbar(gtk.Toolbar):

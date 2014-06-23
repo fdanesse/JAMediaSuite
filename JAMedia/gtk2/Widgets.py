@@ -31,7 +31,7 @@ from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
 
-
+'''
 class My_FileChooser(gtk.FileChooserDialog):
     """
     Selector de Archivos para poder cargar archivos
@@ -135,8 +135,8 @@ class My_FileChooser(gtk.FileChooserDialog):
     def __salir(self, widget):
 
         self.destroy()
-
-
+'''
+'''
 class MenuList(gtk.Menu):
     """
     Menu con opciones para operar sobre el archivo o
@@ -242,7 +242,7 @@ class MenuList(gtk.Menu):
 
         iter = widget.get_model().get_iter(path)
         self.emit('accion', widget, accion, iter)
-
+'''
 
 class JAMediaButton(gtk.EventBox):
     """
