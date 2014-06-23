@@ -427,7 +427,7 @@ class ToolbarLista(gtk.Toolbar):
 '''
 
 
-class Toolbar(gtk.Toolbar):
+class Toolbar(gtk.EventBox):
     """
     Toolbar principal de JAMedia.
     """
@@ -440,11 +440,14 @@ class Toolbar(gtk.Toolbar):
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
+        gtk.EventBox.__init__(self)
+
+        toolbar = gtk.Toolbar()
 
         self.modify_bg(0, get_colors("barradeprogreso"))
+        toolbar.modify_bg(0, get_colors("barradeprogreso"))
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -453,7 +456,7 @@ class Toolbar(gtk.Toolbar):
             pixels=35)
         boton.set_tooltip_text("Autor")
         boton.connect("clicked", self.__show_credits)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "configurar.svg")
@@ -461,7 +464,7 @@ class Toolbar(gtk.Toolbar):
             pixels=24)
         self.configurar.set_tooltip_text("Configuraciones")
         self.configurar.connect("clicked", self.__emit_config)
-        self.insert(self.configurar, -1)
+        toolbar.insert(self.configurar, -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "JAMedia-help.svg")
@@ -469,9 +472,9 @@ class Toolbar(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Ayuda")
         boton.connect("clicked", self.__show_help)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -480,11 +483,12 @@ class Toolbar(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.__salir)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
+        self.add(toolbar)
         self.show_all()
 
     def __show_credits(self, widget):
@@ -515,7 +519,7 @@ class Toolbar(gtk.Toolbar):
         self.emit('salir')
 
 
-class ToolbarInfo(gtk.Toolbar):
+class ToolbarInfo(gtk.EventBox):
     """
     Informa al usuario sobre el reproductor
     que se esta utilizando.
@@ -533,13 +537,16 @@ class ToolbarInfo(gtk.Toolbar):
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
+        gtk.EventBox.__init__(self)
+
+        toolbar = gtk.Toolbar()
 
         self.modify_bg(0, get_colors("barradeprogreso"))
+        toolbar.modify_bg(0, get_colors("barradeprogreso"))
 
         self.ocultar_controles = False
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -548,7 +555,7 @@ class ToolbarInfo(gtk.Toolbar):
             pixels=24)
         self.boton_izquierda.set_tooltip_text("Izquierda")
         self.boton_izquierda.connect("clicked", self.__emit_rotar)
-        self.insert(self.boton_izquierda, -1)
+        toolbar.insert(self.boton_izquierda, -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "rotar.svg")
@@ -556,25 +563,25 @@ class ToolbarInfo(gtk.Toolbar):
             pixels=24)
         self.boton_derecha.set_tooltip_text("Derecha")
         self.boton_derecha.connect("clicked", self.__emit_rotar)
-        self.insert(self.boton_derecha, -1)
+        toolbar.insert(self.boton_derecha, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
         item = gtk.ToolItem()
         label = gtk.Label("Ocultar Controles:")
         label.show()
         item.add(label)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         switch = gtk.CheckButton()
         item = gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
         archivo = os.path.join(BASE_PATH,
             "Iconos", "iconplay.svg")
@@ -583,8 +590,9 @@ class ToolbarInfo(gtk.Toolbar):
             pixels=24)
         self.descarga.set_tooltip_text("Actualizar Streamings")
         self.descarga.connect("clicked", self.__emit_actualizar_streamings)
-        self.insert(self.descarga, -1)
+        toolbar.insert(self.descarga, -1)
 
+        self.add(toolbar)
         self.show_all()
 
         switch.connect('button-press-event', self.__set_controles_view)
@@ -616,7 +624,7 @@ class ToolbarInfo(gtk.Toolbar):
         self.ocultar_controles = not widget.get_active()
 
 
-class ToolbarAddStream(gtk.Toolbar):
+class ToolbarAddStream(gtk.EventBox):
     """
     Toolbar para agregar streamings.
     """
@@ -630,13 +638,16 @@ class ToolbarAddStream(gtk.Toolbar):
 
     def __init__(self):
 
-        gtk.Toolbar.__init__(self)
+        gtk.EventBox.__init__(self)
+
+        toolbar = gtk.Toolbar()
 
         self.modify_bg(0, get_colors("window"))
+        toolbar.modify_bg(0, get_colors("window"))
 
         self.tipo = None
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -645,9 +656,9 @@ class ToolbarAddStream(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         frame = gtk.Frame()
@@ -661,9 +672,9 @@ class ToolbarAddStream(gtk.Toolbar):
         frame.show_all()
         item = gtk.ToolItem()
         item.add(frame)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         frame = gtk.Frame()
@@ -678,9 +689,9 @@ class ToolbarAddStream(gtk.Toolbar):
         item = gtk.ToolItem()
         self.url.show()
         item.add(frame)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         archivo = os.path.join(BASE_PATH,
@@ -689,11 +700,12 @@ class ToolbarAddStream(gtk.Toolbar):
             pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__emit_add_stream)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
+        toolbar.insert(get_separador(draw=False,
             ancho=0, expand=True), -1)
 
+        self.add(toolbar)
         self.show_all()
 
     def __emit_add_stream(self, widget):
