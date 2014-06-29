@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   Globals.py por:
+#   Globales.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   Uruguay
 
@@ -24,39 +24,36 @@ radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista
 webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
 
 
-def get_color(color):
-    """
-    Devuelve Colores predefinidos.
-    """
-
-    from gtk import gdk
-
-    colors = {
-        "GRIS": gdk.Color(60156, 60156, 60156),
-        "AMARILLO": gdk.Color(65000, 65000, 40275),
-        "NARANJA": gdk.Color(65000, 26000, 0),
-        "BLANCO": gdk.Color(65535, 65535, 65535),
-        "NEGRO": gdk.Color(0, 0, 0),
-        "ROJO": gdk.Color(65000, 0, 0),
-        "VERDE": gdk.Color(0, 65000, 0),
-        "AZUL": gdk.Color(0, 0, 65000),
-        }
-
-    return colors.get(color, None)
-
-
 def get_colors(key):
 
     from gtk import gdk
 
     _dict = {
         "window": "#ffffff",
-        "barradeprogreso": "#778899",
+        "toolbars": "#778899",
         "widgetvideoitem": "#f0e6aa",
         "drawingplayer": "#000000",
+        "naranaja": "#ff6600",
         }
 
     return gdk.color_parse(_dict.get(key, "#ffffff"))
+
+
+def get_ip():
+    """
+    Devuelve ip.
+    """
+
+    import socket
+
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("gmail.com", 80))
+
+        return s.getsockname()[0]
+
+    except:
+        return ""
 
 
 def describe_archivo(archivo):
@@ -195,35 +192,27 @@ def make_base_directory():
     import os
     import commands
 
-    if not os.path.exists(os.path.join(
-        os.environ["HOME"], "JAMediaDatos")):
-        os.mkdir(os.path.join(
-            os.environ["HOME"], "JAMediaDatos"))
-        os.chmod(os.path.join(
-            os.environ["HOME"], "JAMediaDatos"), 0755)
+    if not os.path.exists(os.path.join(os.environ["HOME"], "JAMediaDatos")):
+        os.mkdir(os.path.join(os.environ["HOME"], "JAMediaDatos"))
+        os.chmod(os.path.join(os.environ["HOME"], "JAMediaDatos"), 0755)
 
     # unificar directorios de JAMedia,
     # JAMediaVideo y JAMediaImagenes
-    directorio_viejo = os.path.join(
-        os.environ["HOME"], ".JAMediaDatos")
-    directorio_nuevo = os.path.join(
-        os.environ["HOME"], "JAMediaDatos")
+    directorio_viejo = os.path.join(os.environ["HOME"], ".JAMediaDatos")
+    directorio_nuevo = os.path.join(os.environ["HOME"], "JAMediaDatos")
 
     if os.path.exists(directorio_viejo):
         for elemento in os.listdir(directorio_viejo):
-            commands.getoutput(
-                'mv %s %s' % (os.path.join(directorio_viejo,
+            commands.getoutput('mv %s %s' % (os.path.join(directorio_viejo,
                 elemento), directorio_nuevo))
 
         commands.getoutput('rm -r %s' % (directorio_viejo))
 
     # Directorios JAMedia
-    DIRECTORIO_MIS_ARCHIVOS = os.path.join(
-        os.environ["HOME"],
+    DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "MisArchivos")
 
-    DIRECTORIO_DATOS = os.path.join(
-        os.environ["HOME"],
+    DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Datos")
 
     if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
@@ -235,8 +224,7 @@ def make_base_directory():
         os.chmod(DIRECTORIO_DATOS, 0755)
 
     # Directorio JAMediaTube
-    DIRECTORIO_YOUTUBE = os.path.join(
-        os.environ["HOME"],
+    DIRECTORIO_YOUTUBE = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "YoutubeVideos")
 
     if not os.path.exists(DIRECTORIO_YOUTUBE):
@@ -244,24 +232,21 @@ def make_base_directory():
         os.chmod(DIRECTORIO_YOUTUBE, 0755)
 
     # Directorios JAMediaVideo
-    AUDIO_JAMEDIA_VIDEO = os.path.join(
-        os.environ["HOME"],
+    AUDIO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Audio")
 
     if not os.path.exists(AUDIO_JAMEDIA_VIDEO):
         os.mkdir(AUDIO_JAMEDIA_VIDEO)
         os.chmod(AUDIO_JAMEDIA_VIDEO, 0755)
 
-    VIDEO_JAMEDIA_VIDEO = os.path.join(
-        os.environ["HOME"],
+    VIDEO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Videos")
 
     if not os.path.exists(VIDEO_JAMEDIA_VIDEO):
         os.mkdir(VIDEO_JAMEDIA_VIDEO)
         os.chmod(VIDEO_JAMEDIA_VIDEO, 0755)
 
-    IMAGENES_JAMEDIA_VIDEO = os.path.join(
-        os.environ["HOME"],
+    IMAGENES_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Fotos")
 
     if not os.path.exists(IMAGENES_JAMEDIA_VIDEO):
@@ -387,24 +372,19 @@ def eliminar_streaming(url, lista):
     DIRECTORIO_DATOS = get_data_directory()
 
     if lista == "Radios":
-        path = os.path.join(
-            DIRECTORIO_DATOS, "MisRadios.JAMedia")
+        path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
 
     elif lista == "TVs":
-        path = os.path.join(
-            DIRECTORIO_DATOS, "MisTvs.JAMedia")
+        path = os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
 
     elif lista == "JAM-Radio":
-        path = os.path.join(
-            DIRECTORIO_DATOS, "JAMediaRadio.JAMedia")
+        path = os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia")
 
     elif lista == "JAM-TV":
-        path = os.path.join(
-            DIRECTORIO_DATOS, "JAMediaTV.JAMedia")
+        path = os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia")
 
     elif lista == "WebCams":
-        path = os.path.join(
-            DIRECTORIO_DATOS, "JAMediaWebCams.JAMedia")
+        path = os.path.join(DIRECTORIO_DATOS, "JAMediaWebCams.JAMedia")
 
     else:
         return
@@ -473,11 +453,7 @@ def set_listas_default():
 
     # verificar si las listas están vacías,
     # si lo están se descargan las de JAMedia
-    archivo = shelve.open(
-        os.path.join(
-            DIRECTORIO_DATOS,
-            "JAMediaTV.JAMedia"))
-
+    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"))
     lista = archivo.items()
     archivo.close()
 
@@ -486,22 +462,16 @@ def set_listas_default():
             # Streamings JAMediatv
             lista_canales = descarga_lista_de_streamings(canales)
 
-            guarda_lista_de_streamings(
-                os.path.join(
-                DIRECTORIO_DATOS,
-                "JAMediaTV.JAMedia"),
-                lista_canales)
+            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
+                "JAMediaTV.JAMedia"), lista_canales)
 
         except:
             print "Error al descargar Streamings de TV."
 
     # verificar si las listas están vacías,
     # si lo están se descargan las de JAMedia
-    archivo = shelve.open(
-        os.path.join(
-            DIRECTORIO_DATOS,
-            "JAMediaRadio.JAMedia"))
-
+    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS,
+        "JAMediaRadio.JAMedia"))
     lista = archivo.items()
     archivo.close()
 
@@ -510,22 +480,16 @@ def set_listas_default():
             # Streamings JAMediaradio
             lista_radios = descarga_lista_de_streamings(radios)
 
-            guarda_lista_de_streamings(
-                os.path.join(
-                    DIRECTORIO_DATOS,
-                    "JAMediaRadio.JAMedia"),
-                    lista_radios)
+            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
+                "JAMediaRadio.JAMedia"), lista_radios)
 
         except:
             print "Error al descargar Streamings de Radios."
 
     # verificar si las listas están vacías,
     # si lo están se descargan las de JAMedia
-    archivo = shelve.open(
-        os.path.join(
-            DIRECTORIO_DATOS,
-            "JAMediaWebCams.JAMedia"))
-
+    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS,
+        "JAMediaWebCams.JAMedia"))
     lista = archivo.items()
     archivo.close()
 
@@ -534,11 +498,8 @@ def set_listas_default():
             # Streamings JAMediaWebCams
             lista_webcams = descarga_lista_de_streamings(webcams)
 
-            guarda_lista_de_streamings(
-                os.path.join(
-                    DIRECTORIO_DATOS,
-                    "JAMediaWebCams.JAMedia"),
-                    lista_webcams)
+            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
+                "JAMediaWebCams.JAMedia"), lista_webcams)
 
         except:
             print "Error al descargar Streamings de WebCams."
@@ -546,8 +507,7 @@ def set_listas_default():
 
 def get_streaming_default():
     """
-    Descarga los streaming desde la web de JAMedia
-    cuando el usuario lo solicita.
+    Descarga los streaming desde la web de JAMedia.
     """
 
     import os
@@ -557,17 +517,10 @@ def get_streaming_default():
     try:
         # Streamings JAMediatv
         lista_canales = descarga_lista_de_streamings(canales)
-
-        clear_lista_de_streamings(
-            os.path.join(
-                DIRECTORIO_DATOS,
-                "JAMediaTV.JAMedia"))
-
-        guarda_lista_de_streamings(
-            os.path.join(
-                DIRECTORIO_DATOS,
-                "JAMediaTV.JAMedia"),
-                lista_canales)
+        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
+            "JAMediaTV.JAMedia"))
+        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
+            "JAMediaTV.JAMedia"), lista_canales)
 
     except:
         print "Error al descargar Streamings de TV."
@@ -575,17 +528,10 @@ def get_streaming_default():
     try:
         # Streamings JAMediaradio
         lista_radios = descarga_lista_de_streamings(radios)
-
-        clear_lista_de_streamings(
-            os.path.join(
-                DIRECTORIO_DATOS,
-                "JAMediaRadio.JAMedia"))
-
-        guarda_lista_de_streamings(
-            os.path.join(
-                DIRECTORIO_DATOS,
-                "JAMediaRadio.JAMedia"),
-                lista_radios)
+        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
+            "JAMediaRadio.JAMedia"))
+        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
+            "JAMediaRadio.JAMedia"), lista_radios)
 
     except:
         print "Error al descargar Streamings de Radios."
@@ -593,17 +539,10 @@ def get_streaming_default():
     try:
         # Streamings JAMediaWebCams
         lista_webcams = descarga_lista_de_streamings(webcams)
-
-        clear_lista_de_streamings(
-            os.path.join(
-                DIRECTORIO_DATOS,
-                "JAMediaWebCams.JAMedia"))
-
-        guarda_lista_de_streamings(
-            os.path.join(
-                DIRECTORIO_DATOS,
-                "JAMediaWebCams.JAMedia"),
-                lista_webcams)
+        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
+            "JAMediaWebCams.JAMedia"))
+        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
+            "JAMediaWebCams.JAMedia"), lista_webcams)
 
     except:
         print "Error al descargar Streamings de webcams."
@@ -611,9 +550,8 @@ def get_streaming_default():
 
 def descarga_lista_de_streamings(url):
     """
-    Recibe la web donde se publican los streamings
-    de radio o televisión de JAMedia y devuelve la lista
-    de streamings.
+    Recibe la web donde se publican los streamings de radio o televisión de
+    JAMedia y devuelve la lista de streamings.
 
     Un streaming se representa por una lista:
         [nombre, url]
@@ -667,12 +605,7 @@ def descarga_lista_de_streamings(url):
 
 
 def clear_lista_de_streamings(path):
-    """
-    Limpia la lista de streamings en un archivo.
-    """
-
     import shelve
-
     archivo = shelve.open(path)
     archivo.clear()
     archivo.close()
@@ -745,33 +678,6 @@ def get_separador(draw=False, ancho=0, expand=False):
 
     return separador
 
-
-def get_togle_boton(archivo, flip=False,
-    color=get_color("GRIS"), pixels=24):
-    # Gdk.Color(65000, 65000, 65000)
-    """
-    Devuelve un toggletoolbutton generico.
-    """
-
-    import gtk
-
-    boton = gtk.ToggleToolButton()
-    imagen = gtk.Image()
-    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-        archivo, pixels, pixels)
-
-    if flip:
-        pixbuf = pixbuf.flip(True)
-
-    imagen.set_from_pixbuf(pixbuf)
-    boton.set_icon_widget(imagen)
-
-    imagen.show()
-    boton.show()
-
-    return boton
-
-
 def get_boton(archivo, flip=False, rotacion=None,
     pixels=24, tooltip_text=None):
     """
@@ -783,8 +689,7 @@ def get_boton(archivo, flip=False, rotacion=None,
     boton = gtk.ToolButton()
 
     imagen = gtk.Image()
-    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-        archivo, pixels, pixels)
+    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(archivo, pixels, pixels)
 
     if flip:
         pixbuf = pixbuf.flip(True)

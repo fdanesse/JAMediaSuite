@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   WidgetsEfectosGood.py por:
+#   Good.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   Uruguay
 
@@ -20,40 +20,65 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 """
-    Widgets con controles de configuración para cada uno de
-    los efectos gráficos disponibles en gstreamer.
+Widgets con controles de configuración para cada uno de los efectos gráficos
+    disponibles en gstreamer.
+
+    Contiene:
+        Radioactv
+        Agingtv
+
+    Debido a que no son configurables No Contiene:
+        edgetv
+        warptv
+        shagadelictv
+
+        dicetv          (Solo se puede configurar square-bits de 0-5)
+        rippletv        (Solo se puede configurar el modo 0-1)
+        vertigotv       (Solo se puede configurar speed y zoom-speed)
+        streaktv        (Solo se puede configurar feedback true-false)
+
+        optv            Es bien feo
+        revtv           Feo
 """
 
 import os
-
 import gtk
 import gobject
-from gtk import gdk
-
-from Widgets import JAMediaButton
-from Widgets import get_color
-from Widgets import get_separador
 
 BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(BASE_PATH)
 
-"""
-Contiene:
-    Radioactv
-    Agingtv
 
-No Contiene (Debido a que no son configurables):
-    edgetv
-    warptv
-    shagadelictv
+def get_separador(draw=False, ancho=0, expand=False):
+    """
+    Devuelve un separador generico.
+    """
 
-    dicetv          (Solo se puede configurar square-bits de 0-5)
-    rippletv        (Solo se puede configurar el modo 0-1)
-    vertigotv       (Solo se puede configurar speed y zoom-speed)
-    streaktv        (Solo se puede configurar feedback true-false)
+    separador = gtk.SeparatorToolItem()
+    separador.props.draw = draw
+    separador.set_size_request(ancho, -1)
+    separador.set_expand(expand)
 
-    optv            Es bien feo
-    revtv           Feo
-"""
+    return separador
+
+
+def get_color(color):
+    """
+    Devuelve Colores predefinidos.
+    """
+
+    colors = {
+        "GRIS": gtk.gdk.Color(60156, 60156, 60156),
+        "AMARILLO": gtk.gdk.Color(65000, 65000, 40275),
+        "NARANJA": gtk.gdk.Color(65000, 26000, 0),
+        "BLANCO": gtk.gdk.Color(65535, 65535, 65535),
+        "NEGRO": gtk.gdk.Color(0, 0, 0),
+        "ROJO": gtk.gdk.Color(65000, 0, 0),
+        "VERDE": gtk.gdk.Color(0, 65000, 0),
+        "AZUL": gtk.gdk.Color(0, 0, 65000),
+        }
+
+    return colors.get(color, None)
 
 
 class Radioactv(gtk.VBox):
@@ -99,10 +124,12 @@ class Radioactv(gtk.VBox):
 
         gtk.VBox.__init__(self)
 
+        self.control = True
+
         frame1 = gtk.Frame()
         frame1.set_label("Color:")
         frame1.set_border_width(4)
-        frame1.modify_bg(0, gdk.color_parse("#ffffff"))
+        frame1.modify_bg(0, gtk.gdk.color_parse("#ffffff"))
         frame1.set_label_align(0.5, 1.0)
         frame1.add(self.__get_widgets_colors())
 
@@ -112,174 +139,135 @@ class Radioactv(gtk.VBox):
         frame2.set_label_align(0.5, 1.0)
         frame2.add(self.__get_widgets_modo())
 
-        interval = ToolbarcontrolValores('interval')
-        interval.connect('valor', self.__set_interval)
+        #self.interval = ToolbarcontrolValores('interval')
+        #self.interval.connect('valor', self.__set_interval)
 
         self.pack_start(frame1, False, False, 0)
         self.pack_start(frame2, False, False, 0)
-        self.pack_start(interval, False, False, 0)
-        self.pack_start(self.__get_toolbar_on_off(), False, False, 0)
+        #self.pack_start(self.interval, False, False, 0)
 
         self.show_all()
+
+        self.control = False
 
     def __get_widgets_colors(self):
         """
         Cuatro botones para seleccionar el color.
         """
 
-        color_widgets = gtk.HBox()
+        hbox = gtk.HBox()
 
-        white = JAMediaButton()
-        white.connect('clicked', self.__set_color, 3)
-        white.set_colores(colornormal=get_color("BLANCO"))
-        white.set_tooltip('Blanco')
+        self.white = gtk.RadioButton()
+        self.white.set_label("W")
+        self.white.connect('toggled', self.__set_color, 3)
+        self.white.modify_bg(0, get_color("BLANCO"))
+        self.white.set_tooltip_text('Blanco')
+        hbox.pack_start(self.white, False, False, 0)
 
-        red = JAMediaButton()
-        red.connect('clicked', self.__set_color, 0)
-        red.set_colores(colornormal=get_color("ROJO"))
-        red.set_tooltip('Rojo')
+        self.red = gtk.RadioButton()
+        self.red.set_label("R")
+        self.red.connect('toggled', self.__set_color, 0)
+        self.red.modify_bg(0, get_color("ROJO"))
+        self.red.set_tooltip_text('Rojo')
+        hbox.pack_start(self.red, False, False, 0)
+        self.red.set_group(self.white)
 
-        green = JAMediaButton()
-        green.connect('clicked', self.__set_color, 1)
-        green.set_colores(colornormal=get_color("VERDE"))
-        green.set_tooltip('Verde')
+        self.green = gtk.RadioButton()
+        self.green.set_label("G")
+        self.green.connect('toggled', self.__set_color, 1)
+        self.green.modify_bg(0, get_color("VERDE"))
+        self.green.set_tooltip_text('VERDE')
+        hbox.pack_start(self.green, False, False, 0)
+        self.green.set_group(self.white)
 
-        blue = JAMediaButton()
-        blue.connect('clicked', self.__set_color, 2)
-        blue.set_colores(colornormal=get_color("AZUL"))
-        blue.set_tooltip('Azul')
+        self.blue = gtk.RadioButton()
+        self.blue.set_label("B")
+        self.blue.connect('toggled', self.__set_color, 2)
+        self.blue.modify_bg(0, get_color("AZUL"))
+        self.blue.set_tooltip_text('AZUL')
+        hbox.pack_start(self.blue, False, False, 0)
+        self.blue.set_group(self.white)
 
-        self.botones_colores = [
-            white,
-            red,
-            green,
-            blue]
-
-        for button in self.botones_colores:
-            button.set_tamanio(24, 24)
-            button.set_border_width(4)
-            color_widgets.pack_start(button, True, True, 0)
-            button.connect('clicked', self.__clicked_color)
-
-        return color_widgets
+        return hbox
 
     def __get_widgets_modo(self):
         """
         Cuatro botones para seleccinar el modo.
         """
 
-        modo_widgets = gtk.HBox()
+        hbox = gtk.HBox()
 
-        white = JAMediaButton()
-        white.connect('clicked', self.__set_modo, 0)
-        white.set_label(0)
-        white.set_tooltip('normal')
+        self.modo0 = gtk.RadioButton()
+        self.modo0.set_label("0")
+        self.modo0.set_tooltip_text('normal')
+        self.modo0.connect('toggled', self.__set_modo, 0)
+        hbox.pack_start(self.modo0, False, False, 0)
 
-        red = JAMediaButton()
-        red.connect('clicked', self.__set_modo, 1)
-        red.set_label(1)
-        red.set_tooltip('strobe1')
+        self.modo1 = gtk.RadioButton()
+        self.modo1.set_label("1")
+        self.modo1.set_tooltip_text('strobe1')
+        self.modo1.connect('toggled', self.__set_modo, 1)
+        self.modo1.set_group(self.modo0)
+        hbox.pack_start(self.modo1, False, False, 0)
 
-        green = JAMediaButton()
-        green.connect('clicked', self.__set_modo, 2)
-        green.set_label(2)
-        green.set_tooltip('strobe2')
+        self.modo2 = gtk.RadioButton()
+        self.modo2.set_label("2")
+        self.modo2.set_tooltip_text('strobe2')
+        self.modo2.connect('toggled', self.__set_modo, 2)
+        self.modo2.set_group(self.modo0)
+        hbox.pack_start(self.modo2, False, False, 0)
 
-        blue = JAMediaButton()
-        blue.connect('clicked', self.__set_modo, 3)
-        blue.set_label(3)
-        blue.set_tooltip('trigger')
+        self.modo3 = gtk.RadioButton()
+        self.modo3.set_label("3")
+        self.modo3.set_tooltip_text('strobe3')
+        self.modo3.connect('toggled', self.__set_modo, 3)
+        self.modo3.set_group(self.modo0)
+        hbox.pack_start(self.modo3, False, False, 0)
 
-        self.botones_modo = [
-            white,
-            red,
-            green,
-            blue]
+        return hbox
 
-        for button in self.botones_modo:
-            button.set_tamanio(24, 24)
-            button.set_border_width(4)
-            modo_widgets.pack_start(button, True, True, 0)
-            button.connect('clicked', self.__clicked_modo)
+    #def __set_interval(self, widget, valor):
 
-        return modo_widgets
+    #    if self.control:
+    #        return
 
-    def __get_toolbar_on_off(self):
-        """
-        En modo 3, se puede desactivar y activar el efecto.
-        switch activa y desactiva el efecto si modo == 3.
-        """
+    #    interval = long(2147483647 * valor / 100.0)
+    #    self.emit('propiedad', 'interval', interval)
 
-        toolbar = gtk.Toolbar()
+    def __set_color(self, widget, color):
+        if self.control:
+            return
 
-        toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
+        if widget.get_active():
+            self.emit('propiedad', 'color', color)
 
-        #toolbar.insert(get_separador(draw=False,
-        #    ancho=0, expand=True), -1)
+    def __set_modo(self, widget, mode):
+        if self.control:
+            return
 
-        item = gtk.ToolItem()
-        label = gtk.Label("on:")
-        label.show()
-        item.add(label)
-        toolbar.insert(item, -1)
+        if widget.get_active():
+            self.emit('propiedad', 'mode', mode)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+    def reemit_config(self):
+        widgets = [self.red, self.green, self.blue, self.white]
+        for widget in widgets:
+            if widget.get_active():
+                widget.set_active(True)
+                self.__set_color(widget, widgets.index(widget))
+                break
 
-        self.switch = gtk.CheckButton()
-        self.switch.set_active(True)
-        self.switch.show()
-        item = gtk.ToolItem()
-        item.set_expand(False)
-        item.add(self.switch)
-        toolbar.insert(item, -1)
+        for widget in [self.modo0, self.modo1, self.modo2, self.modo3]:
+            if widget.get_active():
+                widget.set_active(True)
+                self.__set_modo(widget, int(widget.get_label()))
+                break
 
-        self.switch.connect('button-press-event', self.__set_trigger)
-
-        return toolbar
-
-    def __clicked_color(self, widget, void):
-
-        for boton in self.botones_colores:
-
-            if not boton == widget:
-                boton.des_seleccionar()
-
-    def __clicked_modo(self, widget, void):
-
-        for boton in self.botones_modo:
-
-            if not boton == widget:
-                boton.des_seleccionar()
-
-    def __set_interval(self, widget, valor):
-        """
-        Setea el intervalo.
-        """
-
-        interval = int(3 * valor / 100.0)
-        self.emit('propiedad', 'interval', interval)
-
-    def __set_color(self, widget, void, color):
-        """
-        void = <class 'gi.overrides.gdk.EventButton'>
-        """
-
-        self.emit('propiedad', 'color', color)
-
-    def __set_modo(self, widget, void, valor):
-        """
-        void = <class 'gi.overrides.gdk.EventButton'>
-        """
-
-        self.emit('propiedad', 'mode', valor)
-
-    def __set_trigger(self, widget, valor):
-        """
-        Activa y desactiva el efecto.
-        """
-
-        self.emit("propiedad", 'trigger', not widget.get_active())
+    def reset(self):
+        self.control = True
+        #self.interval.set_progress(0.0)
+        self.white.set_active(True)
+        self.modo0.set_active(True)
+        self.control = False
 
 
 class Agingtv(gtk.VBox):
@@ -317,32 +305,35 @@ class Agingtv(gtk.VBox):
 
         gtk.VBox.__init__(self)
 
-        interval = ToolbarcontrolValores('scratch-lines')
-        interval.connect('valor', self.__set_scratch_lines)
+        self.control = True
 
-        self.pack_start(interval, False, False, 0)
-        # FIXME: Desactivo porque no funciona bien.
-        #self.pack_start(self.get_toolbar_color_aging(), False, False, 0)
+        self.switch_dusts = False
+        self.switch_pits = False
+        self.scratch_lines = ToolbarcontrolValores('scratch-lines')
+        self.scratch_lines.connect('valor', self.__set_scratch_lines)
+
+        self.pack_start(self.scratch_lines, False, False, 0)
         self.pack_start(self.__get_toolbar_pits(), False, False, 0)
         self.pack_start(self.__get_toolbar_dusts(), False, False, 0)
 
+        self.reset()
         self.show_all()
 
+        self.control = False
+
     def __get_toolbar_dusts(self):
-
         toolbar = gtk.Toolbar()
-        toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
+        toolbar.modify_bg(0, gtk.gdk.color_parse("#ffffff"))
 
-        switch = gtk.CheckButton()
-        switch.set_active(True)
-        switch.show()
+        self.switch_dusts = gtk.CheckButton()
+        self.switch_dusts.set_active(True)
+        self.switch_dusts.show()
         item = gtk.ToolItem()
         item.set_expand(False)
-        item.add(switch)
+        item.add(self.switch_dusts)
         toolbar.insert(item, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
         label = gtk.Label("dusts")
@@ -350,25 +341,23 @@ class Agingtv(gtk.VBox):
         item.add(label)
         toolbar.insert(item, -1)
 
-        switch.connect('button-press-event', self.__set_dusts)
+        self.switch_dusts.connect('toggled', self.__set_dusts)
 
         return toolbar
 
     def __get_toolbar_pits(self):
-
         toolbar = gtk.Toolbar()
-        toolbar.modify_bg(0, gdk.color_parse("#ffffff"))
+        toolbar.modify_bg(0, gtk.gdk.color_parse("#ffffff"))
 
-        switch = gtk.CheckButton()
-        switch.set_active(True)
-        switch.show()
+        self.switch_pits = gtk.CheckButton()
+        self.switch_pits.set_active(True)
+        self.switch_pits.show()
         item = gtk.ToolItem()
         item.set_expand(False)
-        item.add(switch)
+        item.add(self.switch_pits)
         toolbar.insert(item, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
         label = gtk.Label("pits")
@@ -376,29 +365,44 @@ class Agingtv(gtk.VBox):
         item.add(label)
         toolbar.insert(item, -1)
 
-        switch.connect('button-press-event', self.__set_pits)
+        self.switch_pits.connect('toggled', self.__set_pits)
 
         return toolbar
 
     def __set_scratch_lines(self, widget, valor):
-        """
-        Setea el intervalo.
-        """
+        if self.control:
+            return
 
-        interval = int(20 * valor / 100.0)
+        interval = int(20.0 * valor / 100.0)
         self.emit('propiedad', 'scratch-lines', interval)
 
-    def __set_color_aging(self, widget, valor):
+    def __set_pits(self, widget, x=False):
+        if self.control:
+            return
 
-        self.emit("propiedad", 'color-aging', not widget.get_active())
+        self.emit("propiedad", 'pits', widget.get_active())
 
-    def __set_pits(self, widget, valor):
+    def __set_dusts(self, widget, x=False):
+        if self.control:
+            return
 
-        self.emit("propiedad", 'pits', not widget.get_active())
+        self.emit("propiedad", 'dusts', widget.get_active())
 
-    def __set_dusts(self, widget, valor):
+    def reemit_config(self):
+        self.__set_scratch_lines(False, self.scratch_lines.get_progress())
 
-        self.emit("propiedad", 'dusts', not widget.get_active())
+        self.switch_dusts.set_active(self.switch_dusts.get_active())
+        self.__set_dusts(self.switch_dusts)
+
+        self.switch_pits.set_active(self.switch_pits.get_active())
+        self.__set_pits(self.switch_pits)
+
+    def reset(self):
+        self.control = True
+        self.scratch_lines.set_progress(35.0)
+        self.switch_dusts.set_active(True)
+        self.switch_pits.set_active(True)
+        self.control = False
 
 
 class ToolbarcontrolValores(gtk.Toolbar):
@@ -416,7 +420,7 @@ class ToolbarcontrolValores(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.modify_bg(0, gtk.gdk.color_parse("#ffffff"))
 
         self.titulo = label
 
@@ -427,7 +431,7 @@ class ToolbarcontrolValores(gtk.Toolbar):
 
         self.frame = gtk.Frame()
         self.frame.set_label(self.titulo)
-        self.frame.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.frame.modify_bg(0, gtk.gdk.color_parse("#ffffff"))
         self.frame.set_border_width(4)
         self.frame.set_label_align(0.5, 1.0)
         self.frame.add(self.escala)
@@ -445,6 +449,8 @@ class ToolbarcontrolValores(gtk.Toolbar):
         progreso (en % float), y re emite los valores.
         """
 
+        if valor > 99.4:
+            valor = 100.0
         self.emit('valor', valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
@@ -455,6 +461,9 @@ class ToolbarcontrolValores(gtk.Toolbar):
 
         self.escala.set_progress(valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
+
+    def get_progress(self):
+        return self.escala.get_progress()
 
 
 class SlicerBalance(gtk.EventBox):
@@ -470,7 +479,7 @@ class SlicerBalance(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.modify_bg(0, gtk.gdk.color_parse("#ffffff"))
 
         self.escala = BalanceBar(gtk.Adjustment(0.0, 0.0,
             101.0, 0.1, 1.0, 1.0))
@@ -487,6 +496,9 @@ class SlicerBalance(gtk.EventBox):
 
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
+
+    def get_progress(self):
+        return self.escala.ajuste.get_value()
 
     def __emit_valor(self, widget, valor):
         """
@@ -510,7 +522,7 @@ class BalanceBar(gtk.HScale):
 
         gtk.HScale.__init__(self)
 
-        self.modify_bg(0, gdk.color_parse("#ffffff"))
+        self.modify_bg(0, gtk.gdk.color_parse("#ffffff"))
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -518,12 +530,8 @@ class BalanceBar(gtk.HScale):
 
         self.ancho, self.borde = (7, 10)
 
-        icono = os.path.join(os.path.dirname(BASE_PATH),
-            "Iconos", "iconplay.svg")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            16, 16)
-        self.pixbuf = pixbuf.rotate_simple(
-            gdk.PIXBUF_ROTATE_CLOCKWISE)
+        icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
+        self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 16, 16)
 
         self.connect("expose_event", self.__expose)
 
@@ -535,11 +543,10 @@ class BalanceBar(gtk.HScale):
         Se emite el valor en % (float).
         """
 
-        if event.state == gdk.MOD2_MASK | \
-            gdk.BUTTON1_MASK:
-
+        if event.state == gtk.gdk.MOD2_MASK | gtk.gdk.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
+
             if valor >= 0.0 and valor <= 100.0:
                 self.ajuste.set_value(valor)
                 self.queue_draw()
@@ -555,10 +562,10 @@ class BalanceBar(gtk.HScale):
 
         gc = gtk.gdk.Drawable.new_gc(self.window)
 
-        gc.set_rgb_fg_color(gdk.color_parse("#ffffff"))
+        gc.set_rgb_fg_color(gtk.gdk.color_parse("#ffffff"))
         self.window.draw_rectangle(gc, True, x, y, w, h)
 
-        gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
+        gc.set_rgb_fg_color(gtk.gdk.Color(0, 0, 0))
         ww = w - borde * 2
         xx = x + w / 2 - ww / 2
         hh = ancho
@@ -566,7 +573,7 @@ class BalanceBar(gtk.HScale):
         self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
 
         ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
+        gc.set_rgb_fg_color(gtk.gdk.Color(65000, 26000, 0))
         self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
 
         # La Imagen

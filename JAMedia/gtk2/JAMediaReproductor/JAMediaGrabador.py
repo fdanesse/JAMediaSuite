@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gobject
 import gst
 
@@ -28,10 +27,6 @@ gobject.threads_init()
 
 
 class JAMediaGrabador(gobject.GObject):
-    """
-    Graba en formato ogg desde un streaming de radio o tv.
-    Convierte un archivo de audio o video a ogg.
-    """
 
     __gsignals__ = {
     "update": (gobject.SIGNAL_RUN_CLEANUP,
@@ -50,6 +45,7 @@ class JAMediaGrabador(gobject.GObject):
 
         self.patharchivo = archivo
         self.actualizador = False
+        self.estado = None
         self.control = 0
         self.tamanio = 0
         self.uri = ""
@@ -61,22 +57,18 @@ class JAMediaGrabador(gobject.GObject):
 
         self.pipeline = gst.Pipeline()
 
-        self.player = gst.element_factory_make(
-            "uridecodebin", "uridecodebin")
+        self.player = gst.element_factory_make("uridecodebin", "uridecodebin")
+        self.player.set_property("buffer-size", 40000)
         self.player.set_property("download", True)
 
         self.pipeline.add(self.player)
 
         # AUDIO
-        audioconvert = gst.element_factory_make(
-            'audioconvert', 'audioconvert')
-
+        audioconvert = gst.element_factory_make('audioconvert', 'audioconvert')
         audioresample = gst.element_factory_make(
             'audioresample', 'audioresample')
         audioresample.set_property('quality', 10)
-
-        vorbisenc = gst.element_factory_make(
-            'vorbisenc', 'vorbisenc')
+        vorbisenc = gst.element_factory_make('vorbisenc', 'vorbisenc')
 
         self.pipeline.add(audioconvert)
         self.pipeline.add(audioresample)
@@ -90,17 +82,14 @@ class JAMediaGrabador(gobject.GObject):
         # VIDEO
         videoconvert = gst.element_factory_make(
             'ffmpegcolorspace', 'videoconvert')
-
-        videorate = gst.element_factory_make(
-            'videorate', 'videorate')
+        videorate = gst.element_factory_make('videorate', 'videorate')
 
         try:
             videorate.set_property('max-rate', 30)
         except:
             pass
 
-        theoraenc = gst.element_factory_make(
-            'theoraenc', 'theoraenc')
+        theoraenc = gst.element_factory_make('theoraenc', 'theoraenc')
 
         if self.tipo == "video":
             self.pipeline.add(videoconvert)
@@ -113,10 +102,8 @@ class JAMediaGrabador(gobject.GObject):
         self.video_sink = videoconvert.get_static_pad('sink')
 
         # MUXOR y ARCHIVO
-        oggmux = gst.element_factory_make(
-            'oggmux', "oggmux")
-        self.archivo = gst.element_factory_make(
-            'filesink', "filesink")
+        oggmux = gst.element_factory_make('oggmux', "oggmux")
+        self.archivo = gst.element_factory_make('filesink', "filesink")
 
         self.pipeline.add(oggmux)
         self.pipeline.add(self.archivo)
@@ -129,36 +116,20 @@ class JAMediaGrabador(gobject.GObject):
         oggmux.link(self.archivo)
 
         self.bus = self.pipeline.get_bus()
-
-        self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message', self.__sync_message)
+        #self.bus.add_signal_watch()
+        #self.bus.enable_sync_message_emission()
+        #self.bus.connect('sync-message', self.__bus_handler)
+        self.bus.set_sync_handler(self.__bus_handler)
 
         self.player.connect('pad-added', self.__pad_added)
         #self.player.connect("source-setup", self.__source_setup)
 
         gobject.idle_add(self.load, uri)
 
-    def load(self, uri):
-
-        print "JAMediaGrabador:", uri
-
-        if gst.uri_is_valid(uri):
-            self.archivo.set_property("location", self.patharchivo)
-            self.uri = uri
-            self.player.set_property("uri", self.uri)
-            self.__play()
-            self.__new_handle(True, [])
-
-        else:
-            print "JAMediaGrabador: uri inválida"
-            self.emit("endfile")
-
-        return False
-
     def __pad_added(self, uridecodebin, pad):
         """
-        Agregar elementos en forma dinámica según
-        sean necesarios. https://wiki.ubuntu.com/Novacut/GStreamer1.0
+        Agregar elementos en forma dinámica:
+            https://wiki.ubuntu.com/Novacut/GStreamer1.0
         """
 
         caps = pad.get_caps()
@@ -172,45 +143,62 @@ class JAMediaGrabador(gobject.GObject):
             if not self.video_sink.is_linked():
                 pad.link(self.video_sink)
 
-    def __play(self, widget=None, event=None):
+    def __pause(self):
+        self.player.set_state(gst.STATE_PAUSED)
 
+    def __play(self):
         self.pipeline.set_state(gst.STATE_PLAYING)
 
-    def stop(self, widget=None, event=None):
-        """
-        Detiene y limpia el pipe.
-        """
-
-        self.pipeline.set_state(gst.STATE_NULL)
-        self.__new_handle(False, [])
-
-        if os.path.exists(self.patharchivo):
-            os.chmod(self.patharchivo, 0755)
-
-    def __sync_message(self, bus, message):
-        """
-        Captura los messages en el bus del pipe gst.
-        """
-
+    def __bus_handler(self, bus, message):
         if message.type == gst.MESSAGE_EOS:
-            self.__new_handle(False, [])
+            self.__new_handle(False)
             self.emit("endfile")
 
+        elif message.type == gst.MESSAGE_BUFFERING:
+            buf = int(message.structure["buffer-percent"])
+            if buf < 100 and self.estado == gst.STATE_PLAYING:
+                #self.emit("loading-buffer", buf)
+                self.__pause()
+
+            elif buf > 99 and self.estado != gst.STATE_PLAYING:
+                #self.emit("loading-buffer", buf)
+                self.__play()
+
+        elif message.type == gst.MESSAGE_STATE_CHANGED:
+            old, new, pending = message.parse_state_changed()
+
+            if self.estado != new:
+                self.estado = new
+                '''
+                if new == gst.STATE_PLAYING:
+                    #self.emit("estado", "playing")
+                    self.__new_handle(True)
+
+                elif new == gst.STATE_PAUSED:
+                    #self.emit("estado", "paused")
+                    self.__new_handle(False)
+
+                elif new == gst.STATE_NULL:
+                    #self.emit("estado", "None")
+                    self.__new_handle(False)
+
+                else:
+                    #self.emit("estado", "paused")
+                    self.__new_handle(False)
+                '''
         elif message.type == gst.MESSAGE_LATENCY:
             self.player.recalculate_latency()
 
         elif message.type == gst.MESSAGE_ERROR:
+            err, debug = message.parse_error()
             print "JAMediaGrabador ERROR:"
-            print message.parse_error()
-            print
-            #self.__new_handle(False, [])
+            print "\t%s" % err
+            print "\t%s" % debug
+            self.__new_handle(False)
 
-    def __new_handle(self, reset, data):
-        """
-        Elimina o reinicia la funcion que
-        envia los datos de actualizacion.
-        """
+        return gst.BUS_PASS
 
+    def __new_handle(self, reset):
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
@@ -220,11 +208,6 @@ class JAMediaGrabador(gobject.GObject):
                 500, self.__handle)
 
     def __handle(self):
-        """
-        Consulta el estado y progreso de
-        la grabacion.
-        """
-
         if os.path.exists(self.patharchivo):
             tamanio = os.path.getsize(self.patharchivo)
             tam = int(tamanio) / 1024.0 / 1024.0
@@ -234,12 +217,10 @@ class JAMediaGrabador(gobject.GObject):
                 self.tamanio = tamanio
 
                 texto = str(self.uri)
-
                 if len(self.uri) > 25:
                     texto = str(self.uri[0:25]) + " . . . "
 
                 info = "Grabando: %s %.2f Mb" % (texto, tam)
-
                 self.emit('update', info)
 
             else:
@@ -251,6 +232,29 @@ class JAMediaGrabador(gobject.GObject):
             return False
 
         return True
+
+    def stop(self):
+        self.pipeline.set_state(gst.STATE_NULL)
+        self.__new_handle(False)
+
+        if os.path.exists(self.patharchivo):
+            os.chmod(self.patharchivo, 0755)
+
+    def load(self, uri):
+        print "JAMediaGrabador:", uri
+
+        if gst.uri_is_valid(uri):
+            self.archivo.set_property("location", self.patharchivo)
+            self.uri = uri
+            self.player.set_property("uri", self.uri)
+            self.__play()
+            self.__new_handle(True)
+
+        else:
+            print "JAMediaGrabador: uri inválida"
+            self.emit("endfile")
+
+        return False
 
     #def __source_setup(self, player, source):
 
@@ -300,7 +304,7 @@ class JAMediaGrabador(gobject.GObject):
         self.bus.connect('message', self.__on_message)
 
         self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message', self.__sync_message)
+        self.bus.connect('sync-message', self.__bus_handler)
 
         #self.player.connect("about-to-finish", self.__about_to_finish)
         #self.player.connect("audio-tags-changed", self.__audio_tags_changed)

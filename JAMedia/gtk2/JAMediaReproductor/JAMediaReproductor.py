@@ -30,9 +30,6 @@ PR = False
 
 
 class JAMediaReproductor(gobject.GObject):
-    """
-    Reproductor de Streaming de Radio y Television.
-    """
 
     __gsignals__ = {
     "endfile": (gobject.SIGNAL_RUN_CLEANUP,
@@ -41,22 +38,21 @@ class JAMediaReproductor(gobject.GObject):
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
     "newposicion": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_INT,)),
-    #"video": (gobject.SIGNAL_RUN_CLEANUP,
-    #    gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,)),
+    "video": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,)),
+    "loading-buffer": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_INT, )),
         }
 
     # Estados: playing, paused, None
 
     def __init__(self, ventana_id):
-        """
-        Recibe el id de un DrawingArea
-        para mostrar el video.
-        """
 
         gobject.GObject.__init__(self)
 
         self.nombre = "JAMediaReproductor"
 
+        self.video = False
         self.ventana_id = ventana_id
         self.progressbar = True
         self.estado = None
@@ -66,8 +62,8 @@ class JAMediaReproductor(gobject.GObject):
         self.player = None
         self.bus = None
 
-        self.player = gst.element_factory_make(
-            "playbin2", "player")
+        self.player = gst.element_factory_make("playbin2", "player")
+        self.player.set_property("buffer-size", 40000)
 
         self.audio_bin = JAMedia_Audio_Pipeline()
         self.video_bin = JAMedia_Video_Pipeline()
@@ -77,12 +73,24 @@ class JAMediaReproductor(gobject.GObject):
 
         self.bus = self.player.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.add_signal_watch()
+        #self.bus.enable_sync_message_emission()
+        #self.bus.connect('sync-message', self.__bus_handler)
 
     def __bus_handler(self, bus, message):
-
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
                 message.src.set_xwindow_id(self.ventana_id)
+
+        elif message.type == gst.MESSAGE_BUFFERING:
+            buf = int(message.structure["buffer-percent"])
+            if buf < 100 and self.estado == gst.STATE_PLAYING:
+                self.emit("loading-buffer", buf)
+                self.__pause()
+
+            elif buf > 99 and self.estado != gst.STATE_PLAYING:
+                self.emit("loading-buffer", buf)
+                self.__play()
 
         elif message.type == gst.MESSAGE_STATE_CHANGED:
             old, new, pending = message.parse_state_changed()
@@ -119,60 +127,26 @@ class JAMediaReproductor(gobject.GObject):
             self.__new_handle(False)
 
         elif message.type == gst.MESSAGE_LATENCY:
-        #    http://cgit.collabora.com/git/farstream.git/
-        #       tree/examples/gui/fs-gui.py
-        #    print "\n gst.MESSAGE_LATENCY"
             self.player.recalculate_latency()
 
-        #elif message.type == gst.MESSAGE_TAG:
-        #    taglist = message.parse_tag()
-        #    datos = taglist.keys()
+        elif message.type == gst.MESSAGE_TAG:
+            taglist = message.parse_tag()
+            datos = taglist.keys()
 
-        #    #for dato in datos:
-        #    #    print dato, taglist[dato]
-
-        #    if 'audio-codec' in datos and not 'video-codec' in datos:
-        #        if self.video_in_stream == True or \
-        #            self.video_in_stream == None:
-
-        #            self.video_in_stream = False
-        #            self.emit("video", False)
-        #            #self.audio_pipeline.agregar_visualizador('monoscope')
-
-        #    elif 'video-codec' in datos:
-        #        if self.video_in_stream == False or \
-        #            self.video_in_stream == None:
-
-        #            self.video_in_stream = True
-        #            self.emit("video", True)
-        #            #self.audio_pipeline.quitar_visualizador()
-
-        #else:
-        #    print message.type, message.src
+            if 'video-codec' in datos:
+                if self.video == False or self.video == None:
+                    self.video = True
+                    self.emit("video", self.video)
 
         return gst.BUS_PASS
 
     def __play(self):
-        """
-        Pone el pipe de gst en gst.STATE_PLAYING
-        """
-
         self.player.set_state(gst.STATE_PLAYING)
 
     def __pause(self):
-        """
-        Pone el pipe de gst en gst.STATE_PAUSED
-        """
-
         self.player.set_state(gst.STATE_PAUSED)
 
     def __new_handle(self, reset):
-        """
-        Elimina o reinicia la funcion que
-        envia los datos de actualizacion para
-        la barra de progreso del reproductor.
-        """
-
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
@@ -181,11 +155,6 @@ class JAMediaReproductor(gobject.GObject):
             self.actualizador = gobject.timeout_add(500, self.__handle)
 
     def __handle(self):
-        """
-        Envia los datos de actualizacion para
-        la barra de progreso del reproductor.
-        """
-
         if not self.progressbar:
             return True
 
@@ -227,13 +196,7 @@ class JAMediaReproductor(gobject.GObject):
         return True
 
     def pause_play(self):
-        """
-        Llama a play() o pause()
-        segun el estado actual del pipe de gst.
-        """
-
-        if self.estado == gst.STATE_PAUSED \
-            or self.estado == gst.STATE_NULL \
+        if self.estado == gst.STATE_PAUSED or self.estado == gst.STATE_NULL \
             or self.estado == gst.STATE_READY:
             self.__play()
 
@@ -241,42 +204,22 @@ class JAMediaReproductor(gobject.GObject):
             self.__pause()
 
     def rotar(self, valor):
-        """
-        Rota el Video.
-        """
-
         self.video_bin.rotar(valor)
 
     def set_balance(self, brillo=False, contraste=False,
         saturacion=False, hue=False, gamma=False):
-        """
-        Seteos de balance en video.
-        Recibe % en float y convierte a los valores del filtro.
-        """
-
         self.video_bin.set_balance(brillo=brillo, contraste=contraste,
             saturacion=saturacion, hue=hue, gamma=gamma)
 
     def get_balance(self):
-        """
-        Retorna los valores actuales de balance en % float.
-        """
-
         return self.video_bin.get_balance()
 
     def stop(self):
-        """
-        Pone el pipe de gst en gst.STATE_NULL
-        """
-
+        self.__new_handle(False)
         self.player.set_state(gst.STATE_NULL)
         self.emit("newposicion", 0)
 
     def load(self, uri):
-        """
-        Carga un archivo o stream en el pipe de gst.
-        """
-
         if not uri:
             return
 
@@ -296,11 +239,6 @@ class JAMediaReproductor(gobject.GObject):
         return False
 
     def set_position(self, posicion):
-        """
-        Permite desplazarse por
-        la pista que se esta reproduciendo.
-        """
-
         if not self.progressbar:
             return
 
@@ -338,12 +276,7 @@ class JAMediaReproductor(gobject.GObject):
         #self.player.set_state(gst.STATE_PLAYING)
 
     def set_volumen(self, volumen):
-        """
-        Cambia el volúmen de Reproducción. (Recibe float 0.0 - 10.0)
-        """
-
         self.player.set_property('volume', volumen / 10)
 
     def get_volumen(self):
-
         return self.player.get_property('volume') * 10

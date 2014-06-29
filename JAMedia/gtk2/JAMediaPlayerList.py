@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   PlayerList.py por:
+#   JAMediaPlayerList.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   Uruguay
 
@@ -20,22 +20,38 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
-from gtk import gdk
 import gobject
 
-from Globales import describe_uri
-from Globales import describe_archivo
 from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
-from Globales import get_JAMedia_Directory
+
+from Globales import get_ip
+from Globales import describe_uri
+from Globales import describe_archivo
 from Globales import describe_acceso_uri
+from Globales import get_streamings
+from Globales import stream_en_archivo
+
+from Globales import get_JAMedia_Directory
+from Globales import get_data_directory
 from Globales import get_my_files_directory
+from Globales import get_tube_directory
+from Globales import get_audio_directory
+from Globales import get_video_directory
 
 BASE_PATH = os.path.dirname(__file__)
-BASE_PATH = os.path.dirname(BASE_PATH)
+
+
+def ocultar(objeto):
+    if objeto.get_visible():
+        objeto.hide()
+
+
+def mostrar(objeto):
+    if not objeto.get_visible():
+        objeto.show()
 
 
 class PlayerList(gtk.Frame):
@@ -43,25 +59,29 @@ class PlayerList(gtk.Frame):
     __gsignals__ = {
     "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
-    "accion": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
+        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
+    "menu_activo": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, []),
+    "add_stream": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
 
         gtk.Frame.__init__(self)
 
-        self.modify_bg(0, get_colors("window"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+
+        self.directorio = get_JAMedia_Directory()
 
         vbox = gtk.VBox()
 
-        self.toolbar = ToolbarList()
+        self.toolbar = JAMediaToolbarList()
         self.lista = Lista()
 
         scroll = gtk.ScrolledWindow()
-        scroll.set_policy(
-            gtk.POLICY_AUTOMATIC,
-            gtk.POLICY_AUTOMATIC)
+        scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         scroll.add(self.lista)
 
         vbox.pack_start(self.toolbar, False, False, 0)
@@ -72,21 +92,71 @@ class PlayerList(gtk.Frame):
 
         self.set_size_request(150, -1)
 
-        self.toolbar.connect("load", self.__load_files)
-        self.lista.connect("nueva-seleccion",
-            self.__re_emit_nueva_seleccion)
-        self.lista.connect("button-press-event",
-            self.__click_derecho_en_lista)
+        self.toolbar.connect("cargar_lista", self.cargar_lista)
+        self.toolbar.connect("add_stream", self.__emit_add_stream)
+        self.toolbar.connect("menu_activo", self.__emit_menu_activo)
+
+        self.lista.connect("nueva-seleccion", self.__emit_nueva_seleccion)
+        self.lista.connect("button-press-event", self.__click_derecho_en_lista)
+
+    def __emit_add_stream(self, widget):
+        # El usuario agregará una dirección de streaming
+        self.emit("add_stream", self.toolbar.label.get_text())
+
+    def __emit_menu_activo(self, widget=False):
+        # hay un menu contextual presente
+        self.emit("menu_activo")
+
+    def __emit_accion_list(self, widget, lista, accion, _iter):
+        # borrar, copiar, mover, grabar, etc . . .
+        self.emit("accion-list", lista, accion, _iter)
+
+    def __emit_nueva_seleccion(self, widget, pista):
+        # item seleccionado en la lista
+        self.emit('nueva-seleccion', pista)
+
+    def __seleccionar_lista_de_stream(self, archivo, titulo):
+        items = get_streamings(archivo)
+        self.__load_list(items, "load", titulo)
+
+    def __seleccionar_lista_de_archivos(self, directorio, titulo):
+        archivos = sorted(os.listdir(directorio))
+        lista = []
+
+        for path in archivos:
+            archivo = os.path.join(directorio, path)
+            if os.path.isfile(archivo):
+                lista.append(archivo)
+
+        self.__load_files(False, lista, titulo)
+
+    def __load_files(self, widget, archivos, titulo=False):
+        items = []
+        archivos.sort()
+
+        for path in archivos:
+            archivo = os.path.basename(path)
+            items.append([archivo, path])
+            self.directorio = os.path.dirname(path)
+
+        self.__load_list(items, "load", titulo)
+        # FIXME: Mostrar clear y add para agregar archivos a la lista
+
+    def __load_list(self, items, tipo, titulo=False):
+        if tipo == "load":
+            self.lista.limpiar()
+            self.emit("accion-list", False, "limpiar", False)
+
+        if items:
+            self.lista.agregar_items(items)
+
+        else:
+            self.emit('nueva-seleccion', False)
+
+        if titulo != False:
+            self.toolbar.label.set_text(titulo)
 
     def __click_derecho_en_lista(self, widget, event):
-        """
-        Esto es para abrir un menu de opciones cuando
-        el usuario hace click derecho sobre un elemento en
-        la lista de reproduccion, permitiendo copiar, mover y
-        borrar el archivo o streaming o simplemente quitarlo
-        de la lista.
-        """
-
         boton = event.button
         pos = (event.x, event.y)
         tiempo = event.time
@@ -106,46 +176,15 @@ class PlayerList(gtk.Frame):
         # * La coordenada X en relación con el fondo de la celda
         # * La coordenada Y en relación con el fondo de la celda
 
-        if boton == 1:
+        if boton == 1 or boton == 2:
             return
 
         elif boton == 3:
+            self.__emit_menu_activo()
             menu = MenuList(
                 widget, boton, pos, tiempo, path, widget.get_model())
-            menu.connect('accion', self.__set_accion)
+            menu.connect('accion', self.__emit_accion_list)
             gtk.Menu.popup(menu, None, None, None, boton, tiempo)
-
-        elif boton == 2:
-            return
-
-    def __set_accion(self, widget, lista, accion, _iter):
-        """
-        Responde a la seleccion del usuario sobre el menu
-        que se despliega al hacer click derecho sobre un elemento
-        en la lista de reproduccion.
-
-        Recibe la lista de reproduccion, una accion a realizar
-        sobre el elemento seleccionado en ella y el elemento
-        seleccionado y pasa todo a toolbar_accion para pedir
-        confirmacion al usuario sobre la accion a realizar.
-        """
-
-        self.emit("accion", lista, accion, _iter)
-
-    def __re_emit_nueva_seleccion(self, widget, pista):
-        self.emit('nueva-seleccion', pista)
-
-    def __load_files(self, widget, items, tipo):
-
-        if tipo == "load":
-            self.lista.limpiar()
-            self.emit("accion", False, "limpiar", False)
-
-        if items:
-            self.lista.agregar_items(items)
-
-        else:
-            self.emit('nueva-seleccion', False)
 
     def seleccionar_primero(self):
         self.lista.seleccionar_primero()
@@ -166,32 +205,19 @@ class PlayerList(gtk.Frame):
         self.lista.limpiar()
 
     def set_mime_types(self, mime):
-        """
-        Setea el tipo de elementos admitidos en la lista.
-        """
-
-        self.toolbar.mime = mime
+        self.mime = mime
 
     def get_selected_path(self):
-        """
-        Devuelve el valor del path seleccionado.
-        """
-
         modelo, _iter = self.lista.get_selection().get_selected()
         valor = self.lista.get_model().get_value(_iter, 2)
         return valor
 
     def get_items_paths(self):
-        """
-        Devuelve la lista de archivos en la lista.
-        """
-
         filepaths = []
         model = self.lista.get_model()
         item = model.get_iter_first()
 
         self.lista.get_selection().select_iter(item)
-        first_path = model.get_path(item)
 
         while item:
             filepaths.append(model.get_value(item, 2))
@@ -199,107 +225,65 @@ class PlayerList(gtk.Frame):
 
         return filepaths
 
+    def setup_init(self):
+        ocultar(self.toolbar.boton_agregar)
 
-class ToolbarList(gtk.EventBox):
+    def cargar_lista(self, widget, indice):
+        _dict = {
+            0: os.path.join(get_data_directory(), 'JAMediaRadio.JAMedia'),
+            1: os.path.join(get_data_directory(), 'JAMediaTV.JAMedia'),
+            2: os.path.join(get_data_directory(), 'MisRadios.JAMedia'),
+            3: os.path.join(get_data_directory(), 'MisTvs.JAMedia'),
+            4: os.path.join(get_data_directory(), 'JAMediaWebCams.JAMedia'),
+            5: get_my_files_directory(),
+            6: get_tube_directory(),
+            7: get_audio_directory(),
+            8: get_video_directory(),
+            }
 
-    __gsignals__ = {
-    "load": (gobject.SIGNAL_RUN_CLEANUP,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-        gobject.TYPE_STRING))}
+        ocultar(self.toolbar.boton_agregar)
+        if indice == 0:
+            self.__seleccionar_lista_de_stream(_dict[0], "JAM-Radio")
 
-    def __init__(self, mime=["audio/*", "video/*", "image/*"]):
+        elif indice == 1:
+            self.__seleccionar_lista_de_stream(_dict[1], "JAM-TV")
 
-        gtk.EventBox.__init__(self)
+        elif indice == 2:
+            self.__seleccionar_lista_de_stream(_dict[2], "Radios")
+            mostrar(self.toolbar.boton_agregar)
 
-        self.mime = mime
-        self.directorio = get_JAMedia_Directory()
+        elif indice == 3:
+            self.__seleccionar_lista_de_stream(_dict[3], "TVs")
+            mostrar(self.toolbar.boton_agregar)
 
-        toolbar = gtk.Toolbar()
+        elif indice == 4:
+            self.__seleccionar_lista_de_stream(_dict[4], "WebCams")
 
-        self.modify_bg(0, get_colors("toolbars"))
-        toolbar.modify_bg(0, get_colors("toolbars"))
+        elif indice == 5:
+            self.__seleccionar_lista_de_archivos(_dict[indice], "Archivos")
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        elif indice == 6:
+            self.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Tube")
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "document-open.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Abrir Archivos")
-        boton.connect("clicked", self.__open_files, "load")
-        toolbar.insert(boton, -1)
+        elif indice == 7:
+            self.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Audio")
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "document-new.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Agregar Archivos")
-        boton.connect("clicked", self.__open_files, "add")
-        toolbar.insert(boton, -1)
+        elif indice == 8:
+            self.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Video")
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "clear.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
-        boton.set_tooltip_text("Limpiar Lista")
-        boton.connect("clicked", self.__clear_list)
-        toolbar.insert(boton, -1)
+        elif indice == 9:
+            selector = My_FileChooser(parent=self.get_toplevel(),
+                filter_type=[], action=gtk.FILE_CHOOSER_ACTION_OPEN,
+                mime=self.mime, title="Abrir Archivos", path=self.directorio)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+            selector.connect('load-files', self.__load_files, "Archivos")
+            selector.run()
 
-        self.add(toolbar)
-        self.show_all()
-
-    def __clear_list(self, widget):
-
-        self.emit("load", [], "load")
-
-    def __open_files(self, widget, tipo):
-
-        selector = My_FileChooser(
-            parent=self.get_toplevel(),
-            filter_type=[],
-            action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            mime=self.mime,
-            title="Abrir Archivos",
-            path=self.directorio)
-
-        selector.connect(
-            'archivos-seleccionados',
-            self.__cargar_directorio, tipo)
-
-        selector.run()
-
-        if selector:
-            selector.destroy()
-
-    def __cargar_directorio(self, widget, archivos, tipo):
-        """
-        Recibe una lista de archivos y setea la lista
-        de reproduccion con ellos.
-        """
-
-        if not archivos:
-            return
-
-        items = []
-        archivos.sort()
-
-        for archivo in archivos:
-            path = archivo
-            archivo = os.path.basename(path)
-            items.append([archivo, path])
-
-        self.directorio = os.path.dirname(path)
-        self.emit("load", items, tipo)
+            if selector:
+                selector.destroy()
 
 
 class Lista(gtk.TreeView):
-    """
-    Lista generica.
-    """
 
     __gsignals__ = {
     "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
@@ -307,12 +291,10 @@ class Lista(gtk.TreeView):
 
     def __init__(self):
 
-        gtk.TreeView.__init__(self, gtk.ListStore(
-            gdk.Pixbuf,
-            gobject.TYPE_STRING,
-            gobject.TYPE_STRING))
+        gtk.TreeView.__init__(self, gtk.ListStore(gtk.gdk.Pixbuf,
+            gobject.TYPE_STRING, gobject.TYPE_STRING))
 
-        self.modify_bg(0, get_colors("window"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_property("rules-hint", True)
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
@@ -320,7 +302,6 @@ class Lista(gtk.TreeView):
         self.permitir_select = True
         self.valor_select = False
         self.ultimo_select = False
-        #self.timer_select = False
 
         self.__setear_columnas()
 
@@ -330,10 +311,6 @@ class Lista(gtk.TreeView):
         self.show_all()
 
     def __selecciones(self, path, column):
-        """
-        Cuando se selecciona un item en la lista.
-        """
-
         if not self.permitir_select:
             return True
 
@@ -342,18 +319,12 @@ class Lista(gtk.TreeView):
 
         if self.valor_select != valor:
             self.valor_select = valor
-
-            #if self.timer_select:
-            #    gobject.source_remove(self.timer_select)
-            #    self.timer_select = False
-
             gobject.timeout_add(3, self.__select,
                 self.get_model().get_path(_iter))
 
         return True
 
     def __select(self, path):
-
         if self.ultimo_select != self.valor_select:
             self.emit('nueva-seleccion', self.valor_select)
             self.ultimo_select = self.valor_select
@@ -362,13 +333,11 @@ class Lista(gtk.TreeView):
         return False
 
     def __setear_columnas(self):
-
         self.append_column(self.__construir_columa_icono('', 0, True))
         self.append_column(self.__construir_columa('Archivo', 1, True))
         self.append_column(self.__construir_columa('', 2, False))
 
     def __construir_columa(self, text, index, visible):
-
         render = gtk.CellRendererText()
         render.set_property("background", get_colors("window"))
         render.set_property("foreground", get_colors("drawingplayer"))
@@ -378,11 +347,9 @@ class Lista(gtk.TreeView):
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
-
         return columna
 
     def __construir_columa_icono(self, text, index, visible):
-
         render = gtk.CellRendererPixbuf()
         render.set_property("cell-background", get_colors("toolbars"))
 
@@ -390,18 +357,16 @@ class Lista(gtk.TreeView):
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
-
         return columna
 
     def __ejecutar_agregar_elemento(self, elementos):
-        """
-        Agrega los items a la lista, uno a uno, actualizando.
-        """
+        self.permitir_select = False
+        self.set_sensitive(False)
 
         if not elementos:
             self.permitir_select = True
             self.seleccionar_primero()
-            self.get_toplevel().set_sensitive(True)
+            self.set_sensitive(True)
             return False
 
         texto, path = elementos[0]
@@ -416,27 +381,28 @@ class Lista(gtk.TreeView):
 
                 if 'video' in tipo or 'application/ogg' in tipo:
                     icono = os.path.join(BASE_PATH, "Iconos", "video.svg")
-                    pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
+                    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+                        icono, 24, -1)
 
-                elif 'audio' in tipo or \
-                    'application/octet-stream' in tipo:
+                elif 'audio' in tipo or 'application/octet-stream' in tipo:
                     icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
-                    pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
+                    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+                        icono, 24, -1)
 
                 else:
                     icono = path
                     if "image" in tipo:
-                        pixbuf = gdk.pixbuf_new_from_file_at_size(
+                        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                             icono, 50, -1)
 
                     else:
                         try:
-                            pixbuf = gdk.pixbuf_new_from_file_at_size(
+                            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                                 icono, 24, -1)
                         except:
                             icono = os.path.join(BASE_PATH,
                                 "Iconos", "sonido.svg")
-                            pixbuf = gdk.pixbuf_new_from_file_at_size(
+                            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                                 icono, 24, -1)
             else:
                 icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
@@ -444,7 +410,7 @@ class Lista(gtk.TreeView):
 
         else:
             icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
-            pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
+            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
 
         self.get_model().append([pixbuf, texto, path])
         elementos.remove(elementos[0])
@@ -456,23 +422,13 @@ class Lista(gtk.TreeView):
         self.get_model().clear()
         self.valor_select = False
         self.ultimo_select = False
-        #self.timer_select = False
         self.permitir_select = True
 
     def agregar_items(self, elementos):
-        """
-        Recibe lista de: [texto para mostrar, path oculto] y
-        Comienza secuencia de agregado a la lista.
-        """
-
-        self.get_toplevel().set_sensitive(False)
-        self.permitir_select = False
-
         gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
 
     def seleccionar_siguiente(self, widget=None):
         modelo, _iter = self.get_selection().get_selected()
-
         try:
             self.get_selection().select_iter(
                 self.get_model().iter_next(_iter))
@@ -533,31 +489,20 @@ class Lista(gtk.TreeView):
 
 
 class My_FileChooser(gtk.FileChooserDialog):
-    """
-    Selector de Archivos para poder cargar archivos
-    desde cualquier dispositivo o directorio.
-    """
 
     __gsignals__ = {
-    'archivos-seleccionados': (gobject.SIGNAL_RUN_CLEANUP,
+    'load-files': (gobject.SIGNAL_RUN_CLEANUP,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self, parent=None, action=None,
         filter_type=[], title=None, path=None, mime=[]):
 
-        gtk.FileChooserDialog.__init__(self,
-            title=title,
-            parent=parent,
-            action=action,
-            #flags=gtk.DIALOG_MODAL,
-            )
+        gtk.FileChooserDialog.__init__(self, title=title, parent=parent,
+            action=action)
 
-        self.modify_bg(0, get_colors("window"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_resizable(True)
         self.set_size_request(320, 240)
-
-        #if not path:
-        #    path = "file:///media"
 
         self.set_current_folder_uri("file://%s" % path)
         self.set_select_multiple(True)
@@ -567,12 +512,10 @@ class My_FileChooser(gtk.FileChooserDialog):
         boton_abrir_directorio = gtk.Button("Abrir")
         boton_seleccionar_todo = gtk.Button("Seleccionar Todos")
         boton_salir = gtk.Button("Salir")
-
         boton_salir.connect("clicked", self.__salir)
-        boton_abrir_directorio.connect("clicked",
-            self.__file_activated)
-        boton_seleccionar_todo.connect("clicked",
-            self.__seleccionar_todos_los_archivos)
+
+        boton_abrir_directorio.connect("clicked", self.__file_activated)
+        boton_seleccionar_todo.connect("clicked", self.__select_all)
 
         hbox.pack_end(boton_salir, True, True, 5)
         hbox.pack_end(boton_seleccionar_todo, True, True, 5)
@@ -605,32 +548,20 @@ class My_FileChooser(gtk.FileChooserDialog):
         self.connect("realize", self.__resize)
 
     def __resize(self, widget):
-
         self.resize(437, 328)
 
     def __file_activated(self, widget):
-        """
-        Cuando se hace doble click sobre un archivo.
-        """
-
-        self.emit('archivos-seleccionados', self.get_filenames())
+        self.emit('load-files', self.get_filenames())
         self.__salir(None)
 
-    def __seleccionar_todos_los_archivos(self, widget):
-
+    def __select_all(self, widget):
         self.select_all()
 
     def __salir(self, widget):
-
         self.destroy()
 
 
 class MenuList(gtk.Menu):
-    """
-    Menu con opciones para operar sobre el archivo o
-    el streaming seleccionado en la lista de reproduccion
-    al hacer click derecho sobre él.
-    """
 
     __gsignals__ = {
     'accion': (gobject.SIGNAL_RUN_CLEANUP,
@@ -646,73 +577,74 @@ class MenuList(gtk.Menu):
 
         quitar = gtk.MenuItem("Quitar de la Lista")
         self.append(quitar)
-        quitar.connect_object("activate", self.__set_accion,
+        quitar.connect_object("activate", self.__emit_accion,
             widget, path, "Quitar")
 
         my_files_directory = get_my_files_directory()
 
         if describe_acceso_uri(uri):
-            tipo = describe_archivo(uri)
             lectura, escritura, ejecucion = describe_acceso_uri(uri)
 
             if lectura and os.path.dirname(uri) != my_files_directory:
                 copiar = gtk.MenuItem("Copiar a JAMedia")
                 self.append(copiar)
-                copiar.connect_object("activate", self.__set_accion,
+                copiar.connect_object("activate", self.__emit_accion,
                     widget, path, "Copiar")
 
             if escritura and os.path.dirname(uri) != my_files_directory:
                 mover = gtk.MenuItem("Mover a JAMedia")
                 self.append(mover)
-                mover.connect_object("activate", self.__set_accion,
+                mover.connect_object("activate", self.__emit_accion,
                     widget, path, "Mover")
 
             if escritura:
                 borrar = gtk.MenuItem("Borrar el Archivo")
                 self.append(borrar)
-                borrar.connect_object("activate", self.__set_accion,
+                borrar.connect_object("activate", self.__emit_accion,
                     widget, path, "Borrar")
 
-            if "audio" in tipo or "video" in tipo or "application/ogg" in tipo:
-                editar = gtk.MenuItem("Editar o Convertir Archivo")
-                self.append(editar)
-                editar.connect_object("activate", self.__set_accion,
-                    widget, path, "Editar")
+            #tipo = describe_archivo(uri)
+            #if "audio" in tipo or "video" in tipo or "application/ogg" in tipo:
+            #    editar = gtk.MenuItem("Editar o Convertir Archivo")
+            #    self.append(editar)
+            #    editar.connect_object("activate", self.__emit_accion,
+            #        widget, path, "Editar")
 
-        #else:
-        #    borrar = gtk.MenuItem("Borrar Streaming")
-        #    self.append(borrar)
-        #    borrar.connect_object("activate", self.__set_accion,
-        #        widget, path, "Borrar")
+        else:
+            borrar = gtk.MenuItem("Borrar Streaming")
+            self.append(borrar)
+            borrar.connect_object("activate", self.__emit_accion,
+                widget, path, "Borrar")
 
-        #    data_directory = get_data_directory()
+            listas = [
+                os.path.join(get_data_directory(), "JAMediaTV.JAMedia"),
+                os.path.join(get_data_directory(), "JAMediaRadio.JAMedia"),
+                os.path.join(get_data_directory(), "MisRadios.JAMedia"),
+                os.path.join(get_data_directory(), "MisTvs.JAMedia"),
+                os.path.join(get_data_directory(), "JAMediaWebCams.JAMedia"),
+                ]
 
-        #    listas = [
-        #        os.path.join(data_directory, "JAMediaTV.JAMedia"),
-        #        os.path.join(data_directory, "JAMediaRadio.JAMedia"),
-        #        os.path.join(data_directory, "MisRadios.JAMedia"),
-        #        os.path.join(data_directory, "MisTvs.JAMedia")
-        #        ]
+            jtv = stream_en_archivo(uri, listas[0])
+            jr = stream_en_archivo(uri, listas[1])
+            r = stream_en_archivo(uri, listas[2])
+            tv = stream_en_archivo(uri, listas[3])
+            webcam = stream_en_archivo(uri, listas[4])
 
-        #    if (stream_en_archivo(uri, listas[0]) and \
-        #        not stream_en_archivo(uri, listas[3])) or \
-        #        (stream_en_archivo(uri, listas[1]) and \
-        #        not stream_en_archivo(uri, listas[2])):
+            if (jtv and not tv) or (jr and not r):
+                copiar = gtk.MenuItem("Copiar a JAMedia")
+                self.append(copiar)
+                copiar.connect_object("activate", self.__emit_accion,
+                    widget, path, "Copiar")
 
-        #        copiar = gtk.MenuItem("Copiar a JAMedia")
-        #        self.append(copiar)
-        #        copiar.connect_object("activate", self.__set_accion,
-        #            widget, path, "Copiar")
+                mover = gtk.MenuItem("Mover a JAMedia")
+                self.append(mover)
+                mover.connect_object("activate", self.__emit_accion,
+                    widget, path, "Mover")
 
-        #        mover = gtk.MenuItem("Mover a JAMedia")
-        #        self.append(mover)
-        #        mover.connect_object("activate", self.__set_accion,
-        #            widget, path, "Mover")
-
-        #    grabar = gtk.MenuItem("Grabar")
-        #    self.append(grabar)
-        #    grabar.connect_object("activate", self.__set_accion,
-        #        widget, path, "Grabar")
+            grabar = gtk.MenuItem("Grabar")
+            self.append(grabar)
+            grabar.connect_object("activate", self.__emit_accion,
+                widget, path, "Grabar")
 
         self.show_all()
         self.attach_to_widget(widget, self.__null)
@@ -720,17 +652,111 @@ class MenuList(gtk.Menu):
     def __null(self):
         pass
 
-    def __set_accion(self, widget, path, accion):
-        """
-        Responde a la seleccion del usuario sobre el menu
-        que se despliega al hacer click derecho sobre un elemento
-        en la lista de reproduccion.
-
-        Recibe la lista de reproduccion, una accion a realizar
-        sobre el elemento seleccionado en ella y el elemento
-        seleccionado y pasa todo a toolbar_accion para pedir
-        confirmacion al usuario sobre la accion a realizar.
-        """
-
+    def __emit_accion(self, widget, path, accion):
         _iter = widget.get_model().get_iter(path)
         self.emit('accion', widget, accion, _iter)
+
+
+class JAMediaToolbarList(gtk.EventBox):
+
+    __gsignals__ = {
+    "cargar_lista": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, (gobject.TYPE_INT,)),
+    "add_stream": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, []),
+    "menu_activo": (gobject.SIGNAL_RUN_CLEANUP,
+        gobject.TYPE_NONE, [])}
+
+    def __init__(self):
+
+        gtk.EventBox.__init__(self)
+
+        toolbar = gtk.Toolbar()
+
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        toolbar.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+
+        archivo = os.path.join(BASE_PATH, "Iconos", "lista.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
+        boton.set_tooltip_text("Selecciona una Lista")
+        boton.connect("clicked", self.__get_menu)
+        toolbar.insert(boton, -1)
+
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
+
+        item = gtk.ToolItem()
+        self.label = gtk.Label("")
+        self.label.modify_fg(0, get_colors("drawingplayer"))
+        self.label.show()
+        item.add(self.label)
+        toolbar.insert(item, -1)
+
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
+
+        archivo = os.path.join(BASE_PATH, "Iconos", "agregar.svg")
+        self.boton_agregar = get_boton(archivo, flip=False, pixels=24)
+        self.boton_agregar.set_tooltip_text("Agregar Streaming")
+        self.boton_agregar.connect("clicked", self.__emit_add_stream)
+        toolbar.insert(self.boton_agregar, -1)
+
+        self.add(toolbar)
+        self.show_all()
+
+    def __get_menu(self, widget):
+        self.emit("menu_activo")
+        ip = get_ip()
+        menu = gtk.Menu()
+
+        if ip:
+            item = gtk.MenuItem("JAMedia Radio")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 0)
+
+            item = gtk.MenuItem("JAMedia TV")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 1)
+
+            item = gtk.MenuItem("Mis Emisoras")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 2)
+
+            item = gtk.MenuItem("Mis Canales")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 3)
+
+            item = gtk.MenuItem("Web Cams")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 4)
+
+        item = gtk.MenuItem("Mis Archivos")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 5)
+
+        item = gtk.MenuItem("JAMediaTube")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 6)
+
+        item = gtk.MenuItem("Audio-JAMediaVideo")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 7)
+
+        item = gtk.MenuItem("Video-JAMediaVideo")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 8)
+
+        item = gtk.MenuItem("Archivos Externos")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 9)
+
+        menu.show_all()
+        menu.attach_to_widget(widget, self.__null)
+        gtk.Menu.popup(menu, None, None, None, 1, 0)
+
+    def __null(self):
+        pass
+
+    def __emit_load_list(self, indice):
+        self.emit("cargar_lista", indice)
+
+    def __emit_add_stream(self, widget):
+        self.emit("add_stream")

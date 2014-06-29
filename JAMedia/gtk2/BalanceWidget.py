@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   ToolbarConfig.py por:
+#   BalanceWidget.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   Uruguay
 
@@ -36,7 +36,7 @@ Contiene Widgets para controlar:
             para setear los valores en los widgets.
 
     Conéctese a la señal:
-        'valor': gobject.TYPE_FLOAT, gobject.TYPE_STRING
+        'balance-valor': gobject.TYPE_FLOAT, gobject.TYPE_STRING
 
             para obtener los valores del widgets de cada propiedad según
             cambios del usuario sobre el widget.
@@ -51,10 +51,10 @@ from Globales import get_colors
 BASE_PATH = os.path.dirname(__file__)
 
 
-class ToolbarConfig(gtk.EventBox):
+class BalanceWidget(gtk.EventBox):
 
     __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
+    'balance-valor': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
         (gobject.TYPE_FLOAT, gobject.TYPE_STRING))}
 
     def __init__(self):
@@ -63,8 +63,8 @@ class ToolbarConfig(gtk.EventBox):
 
         tabla = gtk.Table(rows=5, columns=1, homogeneous=True)
 
-        self.modify_bg(0, get_colors("window"))
-        tabla.modify_bg(0, get_colors("window"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        tabla.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
         self.brillo = ToolbarcontrolValores("Brillo")
         self.contraste = ToolbarcontrolValores("Contraste")
@@ -90,20 +90,10 @@ class ToolbarConfig(gtk.EventBox):
         self.gamma.connect('valor', self.__emit_senial, 'gamma')
 
     def __emit_senial(self, widget, valor, tipo):
-        """
-        Emite valor, que representa un valor
-        en % float y un valor tipo para:
-            brillo - contraste - saturacion - hue - gamma
-        """
-
-        self.emit('valor', valor, tipo)
+        self.emit('balance-valor', valor, tipo)
 
     def set_balance(self, brillo=50.0, contraste=50.0,
         saturacion=50.0, hue=50.0, gamma=10.0):
-        """
-        Setea las barras segun valores.
-        """
-
         if saturacion != None:
             self.saturacion.set_progress(saturacion)
 
@@ -121,9 +111,6 @@ class ToolbarConfig(gtk.EventBox):
 
 
 class ToolbarcontrolValores(gtk.Toolbar):
-    """
-    Toolbar con escala para modificar valores de balance y gamma en video.
-    """
 
     __gsignals__ = {
     'valor': (gobject.SIGNAL_RUN_CLEANUP,
@@ -133,7 +120,7 @@ class ToolbarcontrolValores(gtk.Toolbar):
 
         gtk.Toolbar.__init__(self)
 
-        self.modify_bg(0, get_colors("window"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
         self.titulo = label
 
@@ -145,9 +132,12 @@ class ToolbarcontrolValores(gtk.Toolbar):
         self.frame = gtk.Frame()
         self.frame.set_border_width(4)
         self.frame.set_label(self.titulo)
+        self.frame.get_property("label-widget").modify_fg(
+            0, get_colors("drawingplayer"))
         self.frame.set_label_align(0.5, 1.0)
         event = gtk.EventBox()
         event.set_border_width(4)
+        event.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         event.add(self.escala)
         self.frame.add(event)
         self.frame.show_all()
@@ -159,29 +149,17 @@ class ToolbarcontrolValores(gtk.Toolbar):
         self.escala.connect("user-set-value", self.__user_set_value)
 
     def __user_set_value(self, widget=None, valor=None):
-        """
-        Recibe la posicion en la barra de
-        progreso (en % float), y re emite los valores.
-        """
-
         if valor > 99.4:
             valor = 100.0
         self.emit('valor', valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
     def set_progress(self, valor):
-        """
-        Establece valores en la escala.
-        """
-
         self.escala.set_progress(valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
 
 class SlicerBalance(gtk.EventBox):
-    """
-    Barra deslizable para cambiar valores de Balance o gamma en Video.
-    """
 
     __gsignals__ = {
     "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
@@ -191,7 +169,7 @@ class SlicerBalance(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, get_colors("window"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
         self.escala = BalanceBar(gtk.Adjustment(0.0, 0.0,
             101.0, 0.1, 1.0, 1.0))
@@ -201,27 +179,15 @@ class SlicerBalance(gtk.EventBox):
 
         self.escala.connect('user-set-value', self.__emit_valor)
 
-    def set_progress(self, valor=0.0):
-        """
-        El reproductor modifica la escala.
-        """
+    def __emit_valor(self, widget, valor):
+        self.emit("user-set-value", valor)
 
+    def set_progress(self, valor=0.0):
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
 
-    def __emit_valor(self, widget, valor):
-        """
-        El usuario modifica la escala.
-        Y se emite la señal con el valor (% float).
-        """
-
-        self.emit("user-set-value", valor)
-
 
 class BalanceBar(gtk.HScale):
-    """
-    Escala de SlicerBalance.
-    """
 
     __gsignals__ = {
     "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
@@ -231,7 +197,7 @@ class BalanceBar(gtk.HScale):
 
         gtk.HScale.__init__(self)
 
-        self.modify_bg(0, get_colors("window"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -239,45 +205,23 @@ class BalanceBar(gtk.HScale):
 
         self.ancho, self.borde = (7, 10)
 
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "controlslicer.svg")
-        self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono,
-            16, 16)
+        icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
+        self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 16, 16)
 
         self.connect("expose_event", self.__expose)
 
         self.show_all()
 
-    def do_motion_notify_event(self, event):
-        """
-        Cuando el usuario se desplaza por la barra de progreso.
-        Se emite el valor en % (float).
-        """
-
-        if event.state == gtk.gdk.MOD2_MASK | \
-            gtk.gdk.BUTTON1_MASK:
-
-            rect = self.get_allocation()
-            valor = float(event.x * 100 / rect.width)
-            if valor >= 0.0 and valor <= 100.0:
-                self.ajuste.set_value(valor)
-                self.queue_draw()
-                self.emit("user-set-value", valor)
-
     def __expose(self, widget, event):
-        """
-        Dibuja el estado de la barra de progreso.
-        """
-
         x, y, w, h = self.get_allocation()
         ancho, borde = (self.ancho, self.borde)
 
         gc = gtk.gdk.Drawable.new_gc(self.window)
 
-        gc.set_rgb_fg_color(gtk.gdk.color_parse("#ffffff"))
+        gc.set_rgb_fg_color(get_colors("window"))
         self.window.draw_rectangle(gc, True, x, y, w, h)
 
-        gc.set_rgb_fg_color(gtk.gdk.Color(0, 0, 0))
+        gc.set_rgb_fg_color(get_colors("drawingplayer"))
         ww = w - borde * 2
         xx = x + w / 2 - ww / 2
         hh = ancho
@@ -285,7 +229,7 @@ class BalanceBar(gtk.HScale):
         self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
 
         ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(gtk.gdk.Color(65000, 26000, 0))
+        gc.set_rgb_fg_color(get_colors("naranaja"))
         self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
 
         # La Imagen
@@ -296,3 +240,18 @@ class BalanceBar(gtk.HScale):
             imgw, imgh, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
         return True
+
+    def do_motion_notify_event(self, event):
+        """
+        Cuando el usuario se desplaza por la barra de progreso.
+        Se emite el valor en % (float).
+        """
+
+        if event.state == gtk.gdk.MOD2_MASK | gtk.gdk.BUTTON1_MASK:
+            rect = self.get_allocation()
+            valor = float(event.x * 100 / rect.width)
+
+            if valor >= 0.0 and valor <= 100.0:
+                self.ajuste.set_value(valor)
+                self.queue_draw()
+                self.emit("user-set-value", valor)

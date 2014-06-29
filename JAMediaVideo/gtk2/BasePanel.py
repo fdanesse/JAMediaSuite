@@ -112,13 +112,9 @@ class BasePanel(gtk.HPaned):
         self.jamediaconvert = WidgetConvert()
 
         scroll = gtk.ScrolledWindow()
-        scroll.set_policy(
-            gtk.POLICY_AUTOMATIC,
-            gtk.POLICY_NEVER)
-        scroll.add_with_viewport(
-            self.efectos_en_pipe)
-        scroll.get_child().modify_bg(
-            0, get_colors("drawingplayer"))
+        scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_NEVER)
+        scroll.add_with_viewport(self.efectos_en_pipe)
+        scroll.get_child().modify_bg(0, get_colors("drawingplayer"))
 
         vbox = gtk.VBox()
         vbox.pack_start(self.info_label, False, False, 0)
