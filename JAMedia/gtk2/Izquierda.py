@@ -44,17 +44,17 @@ def mostrar(objeto):
 class Izquierda(gtk.EventBox):
 
     __gsignals__ = {
-    "show-controls": (gobject.SIGNAL_RUN_CLEANUP,
+    "show-controls": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-    'rotar': (gobject.SIGNAL_RUN_CLEANUP,
+    'rotar': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    'actualizar_streamings': (gobject.SIGNAL_RUN_CLEANUP,
+    'actualizar_streamings': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    'stop-record': (gobject.SIGNAL_RUN_CLEANUP,
+    'stop-record': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "seek": (gobject.SIGNAL_RUN_CLEANUP,
+    "seek": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
-    "volumen": (gobject.SIGNAL_RUN_CLEANUP,
+    "volumen": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self):

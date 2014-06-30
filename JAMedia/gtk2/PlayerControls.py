@@ -45,7 +45,7 @@ class PlayerControls(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "accion-controls": (gobject.SIGNAL_RUN_FIRST,
+    "accion-controls": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -105,13 +105,9 @@ class PlayerControls(gtk.EventBox):
                 self.siguiente, self.stop])
 
     def set_paused(self):
-        #archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
-        #self.play.set_imagen(archivo=archivo, flip=False, rotacion=False)
         self.play.set_paused(self.pix_play)
 
     def set_playing(self):
-        #archivo = os.path.join(BASE_PATH, "Iconos", "pausa.svg")
-        #self.play.set_imagen(archivo=archivo, flip=False, rotacion=False)
         self.play.set_playing(self.pix_paused)
 
 
@@ -129,12 +125,7 @@ class JAMediaToolButton(gtk.ToolButton):
         self.imagen.show()
 
         self.imagen.set_size_request(self.pixels, self.pixels)
-
         self.show_all()
-
-    def __redraw(self):
-        self.queue_draw()
-        return False
 
     def set_imagen(self, archivo=None, flip=False, rotacion=False):
         pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
@@ -150,8 +141,6 @@ class JAMediaToolButton(gtk.ToolButton):
 
     def set_playing(self, pixbuf):
         self.imagen.set_from_pixbuf(pixbuf)
-        gobject.idle_add(self.__redraw)
 
     def set_paused(self, pixbuf):
         self.imagen.set_from_pixbuf(pixbuf)
-        gobject.idle_add(self.__redraw)

@@ -57,14 +57,14 @@ def mostrar(objeto):
 class PlayerList(gtk.Frame):
 
     __gsignals__ = {
-    "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
+    "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
-    "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    "menu_activo": (gobject.SIGNAL_RUN_CLEANUP,
+    "menu_activo": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "add_stream": (gobject.SIGNAL_RUN_CLEANUP,
+    "add_stream": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
@@ -286,7 +286,7 @@ class PlayerList(gtk.Frame):
 class Lista(gtk.TreeView):
 
     __gsignals__ = {
-    "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
+    "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
@@ -491,7 +491,7 @@ class Lista(gtk.TreeView):
 class My_FileChooser(gtk.FileChooserDialog):
 
     __gsignals__ = {
-    'load-files': (gobject.SIGNAL_RUN_CLEANUP,
+    'load-files': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self, parent=None, action=None,
@@ -564,7 +564,7 @@ class My_FileChooser(gtk.FileChooserDialog):
 class MenuList(gtk.Menu):
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_CLEANUP,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
@@ -660,11 +660,11 @@ class MenuList(gtk.Menu):
 class JAMediaToolbarList(gtk.EventBox):
 
     __gsignals__ = {
-    "cargar_lista": (gobject.SIGNAL_RUN_CLEANUP,
+    "cargar_lista": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_INT,)),
-    "add_stream": (gobject.SIGNAL_RUN_CLEANUP,
+    "add_stream": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "menu_activo": (gobject.SIGNAL_RUN_CLEANUP,
+    "menu_activo": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, [])}
 
     def __init__(self):

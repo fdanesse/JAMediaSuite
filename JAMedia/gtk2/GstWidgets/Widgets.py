@@ -69,10 +69,10 @@ class VideoEfectos(gtk.Frame):
     """
 
     __gsignals__ = {
-    "click_efecto": (gobject.SIGNAL_RUN_CLEANUP,
+    "click_efecto": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_BOOLEAN)),
-    'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
@@ -114,10 +114,10 @@ class GstreamerVideoEfectos(gtk.VBox):
     """
 
     __gsignals__ = {
-    'agregar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'agregar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_BOOLEAN)),
-    'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
@@ -182,10 +182,10 @@ class Efecto_widget_Config(gtk.EventBox):
     """
 
     __gsignals__ = {
-    'agregar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'agregar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_BOOLEAN)),
-    'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 

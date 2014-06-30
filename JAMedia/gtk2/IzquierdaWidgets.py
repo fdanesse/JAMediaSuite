@@ -48,7 +48,7 @@ class ToolbarGrabar(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "stop": (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE, [])}
+    "stop": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
@@ -116,7 +116,7 @@ class ToolbarGrabar(gtk.EventBox):
 class VideoVisor(gtk.DrawingArea):
 
     __gsignals__ = {
-    "ocultar_controles": (gobject.SIGNAL_RUN_CLEANUP,
+    "ocultar_controles": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
 
     def __init__(self):
@@ -160,9 +160,9 @@ class VideoVisor(gtk.DrawingArea):
 class ToolbarInfo(gtk.EventBox):
 
     __gsignals__ = {
-    'rotar': (gobject.SIGNAL_RUN_CLEANUP,
+    'rotar': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    'actualizar_streamings': (gobject.SIGNAL_RUN_CLEANUP,
+    'actualizar_streamings': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -303,8 +303,6 @@ class BufferInfo(gtk.EventBox):
 
         self.modify_bg(gtk.STATE_NORMAL, get_colors("windows"))
         self.set_border_width(4)
-        #self.set_label(" Cargando Buffer ... ")
-        #self.set_label_align(0.0, 0.5)
 
         self.escala = ProgressBar(
             gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
@@ -324,8 +322,6 @@ class BufferInfo(gtk.EventBox):
         frame.add(box)
         self.add(frame)
         self.show_all()
-
-        #self.set_size_request(-1, 24)
 
     def set_progress(self, valor=0.0):
         if self.valor != valor:

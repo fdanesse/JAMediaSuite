@@ -54,7 +54,7 @@ BASE_PATH = os.path.dirname(__file__)
 class BalanceWidget(gtk.EventBox):
 
     __gsignals__ = {
-    'balance-valor': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
+    'balance-valor': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
         (gobject.TYPE_FLOAT, gobject.TYPE_STRING))}
 
     def __init__(self):
@@ -113,7 +113,7 @@ class BalanceWidget(gtk.EventBox):
 class ToolbarcontrolValores(gtk.Toolbar):
 
     __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_CLEANUP,
+    'valor': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self, label):
@@ -162,7 +162,7 @@ class ToolbarcontrolValores(gtk.Toolbar):
 class SlicerBalance(gtk.EventBox):
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
@@ -190,7 +190,7 @@ class SlicerBalance(gtk.EventBox):
 class BalanceBar(gtk.HScale):
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):

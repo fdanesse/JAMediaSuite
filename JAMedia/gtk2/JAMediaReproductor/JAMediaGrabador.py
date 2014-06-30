@@ -29,9 +29,9 @@ gobject.threads_init()
 class JAMediaGrabador(gobject.GObject):
 
     __gsignals__ = {
-    "update": (gobject.SIGNAL_RUN_CLEANUP,
+    "update": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "endfile": (gobject.SIGNAL_RUN_CLEANUP,
+    "endfile": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, [])}
 
     def __init__(self, uri, archivo, tipo):

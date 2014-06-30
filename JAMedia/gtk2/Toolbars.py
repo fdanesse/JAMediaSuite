@@ -44,7 +44,7 @@ class Toolbar(gtk.EventBox):
     """
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_CLEANUP,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -111,9 +111,9 @@ class ToolbarAccion(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "grabar": (gobject.SIGNAL_RUN_CLEANUP,
+    "grabar": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    "accion-stream": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion-stream": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING))}
 
@@ -261,7 +261,7 @@ class ToolbarSalir(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "salir": (gobject.SIGNAL_RUN_CLEANUP,
+    "salir": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -322,7 +322,7 @@ class ToolbarAddStream(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "add-stream": (gobject.SIGNAL_RUN_CLEANUP,
+    "add-stream": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_STRING))}
 

@@ -22,25 +22,29 @@
 import os
 import gobject
 import gst
+import gtk
 
 from JAMediaBins import JAMedia_Audio_Pipeline
 from JAMediaBins import JAMedia_Video_Pipeline
 
 PR = False
 
+gobject.threads_init()
+gtk.gdk.threads_init()
+
 
 class JAMediaReproductor(gobject.GObject):
 
     __gsignals__ = {
-    "endfile": (gobject.SIGNAL_RUN_CLEANUP,
+    "endfile": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "estado": (gobject.SIGNAL_RUN_CLEANUP,
+    "estado": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "newposicion": (gobject.SIGNAL_RUN_CLEANUP,
+    "newposicion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_INT,)),
-    "video": (gobject.SIGNAL_RUN_CLEANUP,
+    "video": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,)),
-    "loading-buffer": (gobject.SIGNAL_RUN_CLEANUP,
+    "loading-buffer": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_INT, )),
         }
 
@@ -63,7 +67,7 @@ class JAMediaReproductor(gobject.GObject):
         self.bus = None
 
         self.player = gst.element_factory_make("playbin2", "player")
-        self.player.set_property("buffer-size", 40000)
+        self.player.set_property("buffer-size", 50000)
 
         self.audio_bin = JAMedia_Audio_Pipeline()
         self.video_bin = JAMedia_Video_Pipeline()
@@ -80,7 +84,10 @@ class JAMediaReproductor(gobject.GObject):
     def __bus_handler(self, bus, message):
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
+                gtk.gdk.threads_enter()
+                gtk.gdk.display_get_default().sync()
                 message.src.set_xwindow_id(self.ventana_id)
+                gtk.gdk.threads_leave()
 
         elif message.type == gst.MESSAGE_BUFFERING:
             buf = int(message.structure["buffer-percent"])

@@ -44,24 +44,24 @@ def mostrar(objeto):
 class Derecha(gtk.EventBox):
 
     __gsignals__ = {
-    "cargar-reproducir": (gobject.SIGNAL_RUN_CLEANUP,
+    "cargar-reproducir": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    "menu_activo": (gobject.SIGNAL_RUN_CLEANUP,
+    "menu_activo": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "add_stream": (gobject.SIGNAL_RUN_CLEANUP,
+    "add_stream": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    "accion-controls": (gobject.SIGNAL_RUN_FIRST,
+    "accion-controls": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    'balance-valor': (gobject.SIGNAL_RUN_CLEANUP,
+    'balance-valor': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,
         gobject.TYPE_STRING)),
-    "add_remove_efecto": (gobject.SIGNAL_RUN_CLEANUP,
+    "add_remove_efecto": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_BOOLEAN)),
-    'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 

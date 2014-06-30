@@ -184,7 +184,7 @@ class MouseSpeedDetector(gobject.GObject):
     """
 
     __gsignals__ = {
-        'estado': (gobject.SIGNAL_RUN_CLEANUP,
+        'estado': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, parent):

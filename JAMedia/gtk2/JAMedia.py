@@ -43,10 +43,9 @@ from Globales import get_my_files_directory
 
 
 gobject.threads_init()
-gtk.threads_init()
-gtk.gdk.threads_init()
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
+
 
 def ocultar(objeto):
     if objeto.get_visible():
@@ -79,6 +78,7 @@ class JAMedia(gtk.Window):
 
         gtk.Window.__init__(self)
 
+        self.set_sensitive(False)
         self.set_title("JAMedia")
         self.set_icon_from_file(os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg"))
@@ -231,6 +231,7 @@ class JAMedia(gtk.Window):
         self.__cancel_toolbars()
         self.toolbar.configurar.set_sensitive(False)
         self.base_panel.setup_init()
+        self.set_sensitive(True)
         return False
 
     def __accion_toolbar(self, widget, accion):

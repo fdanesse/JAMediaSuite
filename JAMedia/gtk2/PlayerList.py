@@ -38,9 +38,9 @@ BASE_PATH = os.path.dirname(__file__)
 class PlayerList(gtk.Frame):
 
     __gsignals__ = {
-    "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
+    "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
-    "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
@@ -172,7 +172,7 @@ class PlayerList(gtk.Frame):
 class ToolbarList(gtk.EventBox):
 
     __gsignals__ = {
-    "load": (gobject.SIGNAL_RUN_CLEANUP,
+    "load": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING))}
 
@@ -252,7 +252,7 @@ class ToolbarList(gtk.EventBox):
 class Lista(gtk.TreeView):
 
     __gsignals__ = {
-    "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
+    "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
@@ -464,7 +464,7 @@ class Lista(gtk.TreeView):
 class My_FileChooser(gtk.FileChooserDialog):
 
     __gsignals__ = {
-    'archivos-seleccionados': (gobject.SIGNAL_RUN_CLEANUP,
+    'archivos-seleccionados': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self, parent=None, action=None,
@@ -537,7 +537,7 @@ class My_FileChooser(gtk.FileChooserDialog):
 class MenuList(gtk.Menu):
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_CLEANUP,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 

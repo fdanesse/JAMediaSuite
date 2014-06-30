@@ -31,9 +31,9 @@ BASE_PATH = os.path.dirname(__file__)
 class ProgressPlayer(gtk.EventBox):
 
     __gsignals__ = {
-    "seek": (gobject.SIGNAL_RUN_CLEANUP,
+    "seek": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
-    "volumen": (gobject.SIGNAL_RUN_CLEANUP,
+    "volumen": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self):
@@ -72,7 +72,7 @@ class BarraProgreso(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
@@ -113,7 +113,7 @@ class ProgressBar(gtk.HScale):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
@@ -205,7 +205,7 @@ class ProgressBar(gtk.HScale):
 class ControlVolumen(gtk.VolumeButton):
 
     __gsignals__ = {
-    "volumen": (gobject.SIGNAL_RUN_CLEANUP,
+    "volumen": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self):

@@ -116,7 +116,7 @@ class Radioactv(gtk.VBox):
     """
 
     __gsignals__ = {
-    "propiedad": (gobject.SIGNAL_RUN_CLEANUP,
+    "propiedad": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_PYOBJECT))}
 
@@ -297,7 +297,7 @@ class Agingtv(gtk.VBox):
     """
 
     __gsignals__ = {
-    "propiedad": (gobject.SIGNAL_RUN_CLEANUP,
+    "propiedad": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_PYOBJECT))}
 
@@ -413,7 +413,7 @@ class ToolbarcontrolValores(gtk.Toolbar):
     """
 
     __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_CLEANUP,
+    'valor': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self, label):
@@ -472,7 +472,7 @@ class SlicerBalance(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
@@ -490,10 +490,6 @@ class SlicerBalance(gtk.EventBox):
         self.escala.connect('user-set-value', self.__emit_valor)
 
     def set_progress(self, valor=0.0):
-        """
-        El reproductor modifica la escala.
-        """
-
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
 
@@ -501,11 +497,6 @@ class SlicerBalance(gtk.EventBox):
         return self.escala.ajuste.get_value()
 
     def __emit_valor(self, widget, valor):
-        """
-        El usuario modifica la escala.
-        Y se emite la señal con el valor (% float).
-        """
-
         self.emit("user-set-value", valor)
 
 
@@ -515,7 +506,7 @@ class BalanceBar(gtk.HScale):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):

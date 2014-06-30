@@ -215,10 +215,6 @@ class Balance_bin(gst.Bin):
             videoflip.get_static_pad("src")))
 
     def rotar(self, valor):
-        """
-        Rota el video.
-        """
-
         videoflip = self.get_by_name("videoflip")
         rot = videoflip.get_property('method')
 
@@ -236,11 +232,9 @@ class Balance_bin(gst.Bin):
             else:
                 rot = 3
 
-        gobject.idle_add(videoflip.set_property,
-            'method', rot)
+        gobject.idle_add(videoflip.set_property, 'method', rot)
 
     def set_rotacion(self, rot):
-
         videoflip = self.get_by_name("videoflip")
         videoflip.set_property('method', rot)
 
@@ -284,11 +278,9 @@ class Balance_bin(gst.Bin):
                 'gamma', valor)
 
     def get_config(self):
-
         return self.config.copy()
 
     def get_rotacion(self):
-
         videoflip = self.get_by_name("videoflip")
         return videoflip.get_property('method')
 

@@ -32,16 +32,16 @@ from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 class BasePanel(gtk.HPaned):
 
     __gsignals__ = {
-    "show-controls": (gobject.SIGNAL_RUN_CLEANUP,
+    "show-controls": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
-    "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    "menu_activo": (gobject.SIGNAL_RUN_CLEANUP,
+    "menu_activo": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "add_stream": (gobject.SIGNAL_RUN_CLEANUP,
+    "add_stream": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    'stop-record': (gobject.SIGNAL_RUN_CLEANUP,
+    'stop-record': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, [])}
 
     def __init__(self):
