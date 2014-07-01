@@ -36,7 +36,6 @@ Descripción:
 """
 
 import os
-
 import gobject
 import gst
 import gtk
@@ -68,7 +67,6 @@ class ImagePlayer(gobject.GObject):
         self.height = rect.height
 
         rot = self.player.get_rotacion()
-
         if self.src_path:
             self.load(self.src_path)
 
@@ -106,18 +104,14 @@ class PlayerBin(gobject.GObject):
         self.player = None
         self.bus = None
 
-        self.player = gst.element_factory_make(
-            "playbin2", "player")
-
+        self.player = gst.element_factory_make("playbin2", "player")
         self.video_bin = Video_Out(width, height)
-
         self.player.set_property('video-sink', self.video_bin)
 
         self.bus = self.player.get_bus()
         self.bus.set_sync_handler(self.__bus_handler)
 
     def __bus_handler(self, bus, message):
-
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
                 message.src.set_xwindow_id(self.ventana_id)
@@ -150,7 +144,6 @@ class PlayerBin(gobject.GObject):
 
     def load(self, uri):
         self.stop()
-
         if not uri:
             return
 
@@ -170,27 +163,19 @@ class Video_Out(gst.Pipeline):
 
         self.set_name('video_out')
 
-        imagefreeze = gst.element_factory_make(
-            'imagefreeze', "imagefreeze")
-
+        imagefreeze = gst.element_factory_make('imagefreeze', "imagefreeze")
         videoconvert = gst.element_factory_make(
             'ffmpegcolorspace', 'ffmpegcolorspace')
 
-        videoflip = gst.element_factory_make(
-            'videoflip', "videoflip")
-
+        videoflip = gst.element_factory_make('videoflip', "videoflip")
         caps = gst.Caps(
             'video/x-raw-rgb,framerate=30/1,width=%s,height=%s' % (
             width,height))
-        filtro = gst.element_factory_make(
-            "capsfilter", "filtro")
+        filtro = gst.element_factory_make("capsfilter", "filtro")
         filtro.set_property("caps", caps)
 
-        ximagesink = gst.element_factory_make(
-            'ximagesink', "ximagesink")
-
-        ximagesink.set_property(
-            "force-aspect-ratio", True)
+        ximagesink = gst.element_factory_make('ximagesink', "ximagesink")
+        ximagesink.set_property("force-aspect-ratio", True)
 
         self.add(imagefreeze)
         self.add(videoconvert)
@@ -206,15 +191,13 @@ class Video_Out(gst.Pipeline):
         self.ghost_pad = gst.GhostPad(
             "sink", imagefreeze.get_static_pad("sink"))
 
-        self.ghost_pad.set_target(
-            imagefreeze.get_static_pad("sink"))
+        self.ghost_pad.set_target(imagefreeze.get_static_pad("sink"))
 
         self.add_pad(self.ghost_pad)
 
     def rotar(self, valor):
         videoflip = self.get_by_name("videoflip")
         rot = videoflip.get_property('method')
-
         if valor == "Derecha":
             if rot < 3:
                 rot += 1

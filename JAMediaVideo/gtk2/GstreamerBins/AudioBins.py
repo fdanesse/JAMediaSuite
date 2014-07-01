@@ -19,6 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import pygst
 import gst
 
 
@@ -49,8 +50,7 @@ class Audio_src_Bin(gst.Bin):
         audiorate.link(filtroaudio)
         filtroaudio.link(audioconvert)
 
-        self.add_pad(gst.GhostPad(
-            "src", audioconvert.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("src", audioconvert.get_static_pad("src")))
 
 
 class Vorbis_bin(gst.Bin):
@@ -79,10 +79,8 @@ class Vorbis_bin(gst.Bin):
         queue.link(audioconvert)
         audioconvert.link(vorbisenc)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            vorbisenc.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", vorbisenc.get_static_pad("src")))
 
 
 class mp2_bin(gst.Bin):
@@ -111,10 +109,8 @@ class mp2_bin(gst.Bin):
         queue.link(audioconvert)
         audioconvert.link(ffenc_mp2)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            ffenc_mp2.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", ffenc_mp2.get_static_pad("src")))
 
 
 class audio_avi_bin(gst.Bin):
@@ -137,7 +133,5 @@ class audio_avi_bin(gst.Bin):
 
         queue.link(audioconvert)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            audioconvert.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", audioconvert.get_static_pad("src")))

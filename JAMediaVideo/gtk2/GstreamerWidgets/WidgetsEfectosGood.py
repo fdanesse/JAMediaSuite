@@ -42,7 +42,6 @@ Widgets con controles de configuración para cada uno de los efectos gráficos
 """
 
 import os
-
 import gtk
 import gobject
 from gtk import gdk
@@ -52,12 +51,10 @@ def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
     """
-
     separador = gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
-
     return separador
 
 
@@ -119,7 +116,7 @@ class Radioactv(gtk.VBox):
     """
 
     __gsignals__ = {
-    "propiedad": (gobject.SIGNAL_RUN_CLEANUP,
+    "propiedad": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_PYOBJECT))}
 
@@ -304,7 +301,7 @@ class Agingtv(gtk.VBox):
     """
 
     __gsignals__ = {
-    "propiedad": (gobject.SIGNAL_RUN_CLEANUP,
+    "propiedad": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_PYOBJECT))}
 
@@ -430,7 +427,7 @@ class ToolbarcontrolValores(gtk.Toolbar):
     """
 
     __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_CLEANUP,
+    'valor': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self, label):
@@ -490,7 +487,7 @@ class SlicerBalance(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
@@ -534,7 +531,7 @@ class BalanceBar(gtk.HScale):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
@@ -549,13 +546,10 @@ class BalanceBar(gtk.HScale):
 
         self.ancho, self.borde = (7, 10)
 
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "controlslicer.svg")
-        self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            16, 16)
+        icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
+        self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 16, 16)
 
         self.connect("expose_event", self.__expose)
-
         self.show_all()
 
     def do_motion_notify_event(self, event):
@@ -564,9 +558,7 @@ class BalanceBar(gtk.HScale):
         Se emite el valor en % (float).
         """
 
-        if event.state == gdk.MOD2_MASK | \
-            gdk.BUTTON1_MASK:
-
+        if event.state == gdk.MOD2_MASK | gdk.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
             if valor >= 0.0 and valor <= 100.0:

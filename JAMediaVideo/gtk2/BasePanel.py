@@ -58,14 +58,12 @@ PR = False
 
 
 def ocultar(objeto):
-
     if objeto:
         if objeto.get_visible():
             objeto.hide()
 
 
 def mostrar(objeto):
-
     if objeto:
         if not objeto.get_visible():
             objeto.show()
@@ -84,14 +82,14 @@ class BasePanel(gtk.HPaned):
     """
 
     __gsignals__ = {
-    "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    "in-run": (gobject.SIGNAL_RUN_CLEANUP,
+    "in-run": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN, )),
-    "cancel-toolbars": (gobject.SIGNAL_RUN_CLEANUP,
+    "cancel-toolbars": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, ()),
-    "pendientes": (gobject.SIGNAL_RUN_CLEANUP,
+    "pendientes": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
@@ -126,18 +124,13 @@ class BasePanel(gtk.HPaned):
 
         # Area Derecha del Panel
         self.box_config = gtk.EventBox()
-        self.box_config.modify_bg(
-            0, get_colors("window"))
+        self.box_config.modify_bg(0, get_colors("window"))
         self.vbox_config = gtk.VBox()
 
         scroll = gtk.ScrolledWindow()
-        scroll.set_policy(
-            gtk.POLICY_NEVER,
-            gtk.POLICY_AUTOMATIC)
-        scroll.add_with_viewport(
-            self.vbox_config)
-        scroll.get_child().modify_bg(
-            0, get_colors("window"))
+        scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        scroll.add_with_viewport(self.vbox_config)
+        scroll.get_child().modify_bg(0, get_colors("window"))
         self.box_config.add(scroll)
 
         self.camara_setting = CamaraConfig()
@@ -148,54 +141,29 @@ class BasePanel(gtk.HPaned):
         self.player_control = PlayerControl()
         self.widget_efectos = False  # WidgetsGstreamerEfectos()
 
-        self.vbox_config.pack_start(
-            self.camara_setting, False, False, 0)
-        self.vbox_config.pack_start(
-            self.video_out_setting, False, False, 0)
-        self.vbox_config.pack_start(
-            self.rafagas_setting, False, False, 0)
-        self.vbox_config.pack_start(
-            self.balance_config_widget, False, False, 0)
-        #self.derecha_vbox.pack_start(
-        #    self.widget_efectos, True, True, 0)
+        self.vbox_config.pack_start(self.camara_setting, False, False, 0)
+        self.vbox_config.pack_start(self.video_out_setting, False, False, 0)
+        self.vbox_config.pack_start(self.rafagas_setting, False, False, 0)
+        self.vbox_config.pack_start(self.balance_config_widget, False, False, 0)
+        #self.derecha_vbox.pack_start(self.widget_efectos, True, True, 0)
 
-        self.vbox_config.pack_start(
-            self.playerlist, True, True, 0)
-
-        self.vbox_config.pack_end(
-            self.player_control, False, True, 0)
-
-        self.pack2(self.box_config,
-            resize=False, shrink=False)
-
+        self.vbox_config.pack_start(self.playerlist, True, True, 0)
+        self.vbox_config.pack_end(self.player_control, False, True, 0)
+        self.pack2(self.box_config, resize=False, shrink=False)
         self.show_all()
 
-        self.pantalla.connect("button_press_event",
-            self.__clicks_en_pantalla)
-        self.balance_config_widget.connect(
-            'valor', self.__set_balance)
-        self.camara_setting.connect(
-            "set_camara", self.__set_camara)
-        self.video_out_setting.connect(
-            "set_video_out", self.__set_video_out)
-
-        self.player_control.connect(
-            "activar", self.__accion_player)
-        self.playerlist.connect(
-            "nueva-seleccion", self.__play_item)
-        self.playerlist.connect(
-            "accion", self.__re_emit_accion_list)
-        self.progressplayer.connect(
-            "user-set-value", self.__user_set_progress)
-        self.progressplayer.connect(
-            "volumen", self.__set_volumen)
-
-        self.jamediaconvert.connect(
-            "accion-list", self.__re_emit_accion_list)
-        self.jamediaconvert.connect(
-            "in-run", self.__jamediaconvert_in_run)
-        self.jamediaconvert.connect(
-            "pendientes", self.__jamediaconvert_info)
+        self.pantalla.connect("button_press_event", self.__clicks_en_pantalla)
+        self.balance_config_widget.connect('valor', self.__set_balance)
+        self.camara_setting.connect("set_camara", self.__set_camara)
+        self.video_out_setting.connect("set_video_out", self.__set_video_out)
+        self.player_control.connect("activar", self.__accion_player)
+        self.playerlist.connect("nueva-seleccion", self.__play_item)
+        self.playerlist.connect("accion", self.__re_emit_accion_list)
+        self.progressplayer.connect("user-set-value", self.__user_set_progress)
+        self.progressplayer.connect("volumen", self.__set_volumen)
+        self.jamediaconvert.connect("accion-list", self.__re_emit_accion_list)
+        self.jamediaconvert.connect("in-run", self.__jamediaconvert_in_run)
+        self.jamediaconvert.connect("pendientes", self.__jamediaconvert_info)
 
         self.control = False
 
@@ -269,14 +237,10 @@ class BasePanel(gtk.HPaned):
             xid = self.pantalla.get_property('window').xid
             self.player = JAMediaReproductor(xid)
 
-            self.player.connect(
-                "endfile", self.__endfile)
-            self.player.connect(
-                "estado", self.__cambioestadoreproductor)
-            self.player.connect(
-                "newposicion", self.__update_progress)
-            #self.player.connect(
-            #    "video", self.__set_video)
+            self.player.connect("endfile", self.__endfile)
+            self.player.connect("estado", self.__cambioestadoreproductor)
+            self.player.connect("newposicion", self.__update_progress)
+            #self.player.connect("video", self.__set_video)
 
             if path:
                 self.player.load(path)
@@ -296,10 +260,8 @@ class BasePanel(gtk.HPaned):
             Recibe la señal de fin de archivo desde el reproductor
             y llama a seleccionar_siguiente en la lista de reproduccion.
         """
-
         self.player_control.set_paused()
-        gobject.idle_add(
-            self.playerlist.seleccionar_siguiente)
+        gobject.idle_add(self.playerlist.seleccionar_siguiente)
 
     def __cambioestadoreproductor(self, widget=None, valor=None):
         """
@@ -323,7 +285,6 @@ class BasePanel(gtk.HPaned):
             Recibe el progreso de la reproduccion desde el reproductor
             y actualiza la barra de progreso.
         """
-
         self.progressplayer.set_progress(float(valor))
 
     def __set_efecto(self, widget, efecto, propiedad=None, valor=None):
@@ -351,7 +312,6 @@ class BasePanel(gtk.HPaned):
         """
         Agrega los widgets con efectos a la paleta de configuración.
         """
-
         self.widget_efectos.cargar_efectos(efectos)
         return False
 
@@ -363,7 +323,6 @@ class BasePanel(gtk.HPaned):
         """
 
         if event.type.value_name == "GDK_2BUTTON_PRESS":
-
             ventana = self.get_toplevel()
             ventana.set_sensitive(False)
             screen = ventana.get_screen()
@@ -390,15 +349,13 @@ class BasePanel(gtk.HPaned):
             ventana.toolbar.toolbar_fotografia.modify_bg(0, color)
             ventana.toolbar.toolbar_jamedia.modify_bg(0, color)
             ventana.toolbar.toolbar_jamediaimagenes.modify_bg(0, color)
-
             ventana.set_sensitive(True)
 
         self.emit("cancel-toolbars")
 
     def __set_balance(self, widget, valor, tipo):
         """
-        Setea valores en Balance de Video.
-        valor es % float
+        Setea valores en Balance de Video. valor es % float
         """
 
         if tipo == "saturacion":
@@ -472,11 +429,8 @@ class BasePanel(gtk.HPaned):
             self.jamediawebcam = False
 
         xid = self.pantalla.get_property('window').xid
-        self.jamediawebcam = JAMediaWebCamMenu(xid,
-            device=device)
-
+        self.jamediawebcam = JAMediaWebCamMenu(xid, device=device)
         self.jamediawebcam.play()
-
         self.control = False
 
     def __camara_video_run(self):
@@ -503,12 +457,9 @@ class BasePanel(gtk.HPaned):
             xid, device=device, formato=salida,
             efectos=[])
 
-        self.jamediawebcam.connect("update",
-            self.__update_record)
-        self.jamediawebcam.connect("stop-rafaga",
-            self.__recibe_stop_rafaga)
-        self.jamediawebcam.connect("endfile",
-            self.__control_grabacion_end)
+        self.jamediawebcam.connect("update", self.__update_record)
+        self.jamediawebcam.connect("stop-rafaga", self.__recibe_stop_rafaga)
+        self.jamediawebcam.connect("endfile", self.__control_grabacion_end)
 
         if "Escritorio" in device:
             self.get_toplevel().toolbar.permitir_filmar(True)
@@ -521,7 +472,6 @@ class BasePanel(gtk.HPaned):
                 self.get_toplevel().toolbar.permitir_filmar(False)
 
         self.jamediawebcam.play()
-
         self.control = False
 
     def __control_grabacion_end(self, widget):
@@ -551,23 +501,17 @@ class BasePanel(gtk.HPaned):
             xid, device=device, formato=salida,
             efectos=[])
 
-        self.jamediawebcam.connect("update",
-            self.__update_record)
-        self.jamediawebcam.connect("stop-rafaga",
-            self.__recibe_stop_rafaga)
-
+        self.jamediawebcam.connect("update", self.__update_record)
+        self.jamediawebcam.connect("stop-rafaga", self.__recibe_stop_rafaga)
         gobject.idle_add(self.jamediawebcam.play)
-
         self.control = False
 
     def __recibe_stop_rafaga(self, widget):
         """
         Cuando la camara dejará de fotografiar.
         """
-
         self.info_label.set_text("")
         self.info_label.hide()
-
         gobject.timeout_add(500, self.__resensitive_foto)
 
     def __resensitive_foto(self):
@@ -579,7 +523,6 @@ class BasePanel(gtk.HPaned):
         """
         Actualiza las toolbars de balance en video.
         """
-
         self.balance_config_widget.set_balance(
             brillo=config.get('brillo', False),
             contraste=config.get('contraste', False),
@@ -591,7 +534,6 @@ class BasePanel(gtk.HPaned):
         """
         Setea la salida de video para camara de filmación y fotografía.
         """
-
         self.jamediawebcam.set_formato(formato)
         self.emit("cancel-toolbars")
 
@@ -656,13 +598,9 @@ class BasePanel(gtk.HPaned):
             xid, device=device, formato=salida,
             efectos=efectos)
 
-        self.jamediawebcam.connect("update",
-            self.__update_record)
-        self.jamediawebcam.connect("stop-rafaga",
-            self.__recibe_stop_rafaga)
-        self.jamediawebcam.connect("endfile",
-            self.__control_grabacion_end)
-
+        self.jamediawebcam.connect("update", self.__update_record)
+        self.jamediawebcam.connect("stop-rafaga", self.__recibe_stop_rafaga)
+        self.jamediawebcam.connect("endfile", self.__control_grabacion_end)
         self.jamediawebcam.play()
         self.__re_config(rot, config, efectos)
 
@@ -701,7 +639,6 @@ class BasePanel(gtk.HPaned):
         se detienen los reproductores y se quita la tarea de ese
         archivo en el conversor.
         """
-
         if accion in ["Quitar", "Borrar", "Mover"]:
             if self.player:
                 self.player.stop()
@@ -919,20 +856,15 @@ class BasePanel(gtk.HPaned):
         """
 
         self.widget_efectos = WidgetsGstreamerVideoEfectos()
-
-        self.vbox_config.pack_start(
-            self.widget_efectos, False, False, 0)
+        self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
 
         gobject.idle_add(self.__cargar_efectos,
             list(get_jamedia_video_efectos()))
 
-        self.widget_efectos.connect(
-            "click_efecto", self.__set_efecto)
-        self.widget_efectos.connect(
-            "configurar_efecto", self.__set_efecto)
+        self.widget_efectos.connect("click_efecto", self.__set_efecto)
+        self.widget_efectos.connect("configurar_efecto", self.__set_efecto)
 
     def salir(self):
-
         if self.jamediawebcam:
             self.jamediawebcam.stop()
             del(self.jamediawebcam)

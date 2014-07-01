@@ -19,6 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import pygst
 import gst
 import gobject
 
@@ -45,8 +46,7 @@ class v4l2src_bin(gst.Bin):
 
         camara.link(camerafilter)
 
-        self.add_pad(gst.GhostPad("src",
-            camerafilter.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("src", camerafilter.get_static_pad("src")))
 
     def set_device(self, device):
         camara = self.get_by_name("v4l2src")
@@ -93,8 +93,7 @@ class ximagesrc_bin(gst.Bin):
         ffmpegcolorspace.link(videoscale)
         videoscale.link(video_filter)
 
-        self.add_pad(gst.GhostPad("src",
-            video_filter.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("src", video_filter.get_static_pad("src")))
 
 
 class xvimage_bin(gst.Bin):
@@ -115,8 +114,7 @@ class xvimage_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', "videorate")
+        videorate = gst.element_factory_make('videorate', "videorate")
 
         xvimagesink = gst.element_factory_make('xvimagesink', "xvimagesink")
         xvimagesink.set_property("force-aspect-ratio", True)
@@ -137,8 +135,7 @@ class xvimage_bin(gst.Bin):
         ffmpegcolorspace.link(videorate)
         videorate.link(xvimagesink)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
 
 
 class Foto_bin(gst.Bin):
@@ -155,8 +152,7 @@ class Foto_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             "ffmpegcolorspace", "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', "videorate")
+        videorate = gst.element_factory_make('videorate', "videorate")
         gdkpixbufsink = gst.element_factory_make(
             "gdkpixbufsink", "gdkpixbufsink")
         gdkpixbufsink.set_property("post-messages", False)
@@ -176,8 +172,7 @@ class Foto_bin(gst.Bin):
         ffmpegcolorspace.link(videorate)
         videorate.link(gdkpixbufsink)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
 
 
 class Balance_bin(gst.Bin):
@@ -209,10 +204,8 @@ class Balance_bin(gst.Bin):
         videobalance.link(gamma)
         gamma.link(videoflip)
 
-        self.add_pad(gst.GhostPad("sink",
-            videobalance.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            videoflip.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", videobalance.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", videoflip.get_static_pad("src")))
 
     def rotar(self, valor):
         videoflip = self.get_by_name("videoflip")
@@ -250,32 +243,27 @@ class Balance_bin(gst.Bin):
         if brillo:
             self.config['brillo'] = brillo
             valor = (2.0 * brillo / 100.0) - 1.0
-            balance.set_property(
-                'brightness', valor)
+            balance.set_property('brightness', valor)
 
         if contraste:
             self.config['contraste'] = contraste
             valor = 2.0 * contraste / 100.0
-            balance.set_property(
-                'contrast', valor)
+            balance.set_property('contrast', valor)
 
         if saturacion:
             self.config['saturacion'] = saturacion
             valor = 2.0 * saturacion / 100.0
-            balance.set_property(
-                'saturation', valor)
+            balance.set_property('saturation', valor)
 
         if hue:
             self.config['hue'] = hue
             valor = (2.0 * hue / 100.0) - 1.0
-            balance.set_property(
-                'hue', valor)
+            balance.set_property('hue', valor)
 
         if gamma:
             self.config['gamma'] = gamma
             valor = (10.0 * gamma / 100.0)
-            gammabin.set_property(
-                'gamma', valor)
+            gammabin.set_property('gamma', valor)
 
     def get_config(self):
         return self.config.copy()
@@ -314,8 +302,7 @@ class Video_Efectos_bin(gst.Bin):
             ffmpegcolorspaceefecto = gst.element_factory_make(
                 'ffmpegcolorspace', "ffmpegcolorspace%s" % cont)
 
-            ef = gst.element_factory_make(
-                efecto, efecto)
+            ef = gst.element_factory_make(efecto, efecto)
 
             elementos.append(ffmpegcolorspaceefecto)
             elementos.append(ef)
@@ -332,18 +319,14 @@ class Video_Efectos_bin(gst.Bin):
         queue.link(elementos[0])
         elementos[-1].link(ffmpegout)
 
-        self.add_pad(gst.GhostPad(
-            "sink", queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad(
-            "src", ffmpegout.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", ffmpegout.get_static_pad("src")))
 
     def set_efecto(self, efecto, propiedad, valor):
         """
         Setea propiedades de efectos en el pipe.
         """
-
         ef = self.get_by_name(efecto)
-
         if ef:
             ef.set_property(propiedad, valor)
 
@@ -366,8 +349,7 @@ class Theora_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', "videorate")
+        videorate = gst.element_factory_make('videorate', "videorate")
         theoraenc = gst.element_factory_make('theoraenc', 'theoraenc')
         theoraenc.set_property("quality", 63)
 
@@ -386,10 +368,8 @@ class Theora_bin(gst.Bin):
         ffmpegcolorspace.link(videorate)
         videorate.link(theoraenc)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            theoraenc.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", theoraenc.get_static_pad("src")))
 
 
 class mpeg2_bin(gst.Bin):
@@ -410,8 +390,7 @@ class mpeg2_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        #videorate = gst.element_factory_make(
-        #    'videorate', "videorate")
+        #videorate = gst.element_factory_make('videorate', "videorate")
         ffenc_mpeg2video = gst.element_factory_make(
             'ffenc_mpeg2video', 'ffenc_mpeg2video')
 
@@ -431,8 +410,7 @@ class mpeg2_bin(gst.Bin):
         #videorate.link(ffenc_mpeg2video)
         ffmpegcolorspace.link(ffenc_mpeg2video)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
         self.add_pad(gst.GhostPad("src",
             ffenc_mpeg2video.get_static_pad("src")))
 
@@ -456,8 +434,7 @@ class Out_lan_smokeenc_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', "videorate")
+        videorate = gst.element_factory_make('videorate', "videorate")
 
         try:
             videorate.set_property("max-rate", 30)
@@ -482,8 +459,7 @@ class Out_lan_smokeenc_bin(gst.Bin):
         videorate.link(smokeenc)
         smokeenc.link(udpsink)
 
-        self.add_pad(gst.GhostPad(
-            "sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
 
 
 class In_lan_udpsrc_bin(gst.Bin):
@@ -545,10 +521,8 @@ class jpegenc_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', "videorate")
-        jpegenc = gst.element_factory_make(
-            'jpegenc', 'jpegenc')
+        videorate = gst.element_factory_make('videorate', "videorate")
+        jpegenc = gst.element_factory_make('jpegenc', 'jpegenc')
 
         try:
             videorate.set_property("max-rate", 30)
@@ -565,7 +539,5 @@ class jpegenc_bin(gst.Bin):
         ffmpegcolorspace.link(videorate)
         videorate.link(jpegenc)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            jpegenc.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", jpegenc.get_static_pad("src")))

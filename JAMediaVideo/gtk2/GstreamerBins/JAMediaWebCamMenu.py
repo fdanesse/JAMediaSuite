@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import gobject
+import pygst
 import gst
 
 PR = False
@@ -28,7 +29,7 @@ PR = False
 class JAMediaWebCamMenu(gobject.GObject):
 
     __gsignals__ = {
-    "estado": (gobject.SIGNAL_RUN_FIRST,
+    "estado": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, ventana_id, device="/dev/video0"):
@@ -74,7 +75,6 @@ class JAMediaWebCamMenu(gobject.GObject):
         self.bus.set_sync_handler(self.__bus_handler)
 
     def __bus_handler(self, bus, message):
-
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
                 message.src.set_xwindow_id(self.ventana_id)
@@ -86,21 +86,18 @@ class JAMediaWebCamMenu(gobject.GObject):
         return gst.BUS_PASS
 
     def get_rotacion(self):
-
         if PR:
             print "\tJAMediaWebCamMenu.get_rotacion"
         balance = self.pipeline.get_by_name("Balance_bin")
         return balance.get_rotacion()
 
     def set_rotacion(self, rot):
-
         if PR:
             print "\tJAMediaWebCamMenu.set_rotacion"
         balance = self.pipeline.get_by_name("Balance_bin")
         balance.set_rotacion(rot)
 
     def get_config(self):
-
         if PR:
             print "\tJAMediaWebCamMenu.get_config"
         balance = self.pipeline.get_by_name("Balance_bin")
@@ -108,7 +105,6 @@ class JAMediaWebCamMenu(gobject.GObject):
 
     def set_balance(self, brillo=None, contraste=None,
         saturacion=None, hue=None, gamma=None):
-
         if PR:
             print "\tJAMediaWebCamMenu.set_balance"
         balance = self.pipeline.get_by_name("Balance_bin")

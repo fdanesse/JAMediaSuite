@@ -52,14 +52,14 @@ class Toolbar(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "salir": (gobject.SIGNAL_RUN_FIRST,
+    "salir": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "config-show": (gobject.SIGNAL_RUN_FIRST,
+    "config-show": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    "accion": (gobject.SIGNAL_RUN_FIRST,
+    "accion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING)),
-    "mode-change": (gobject.SIGNAL_RUN_FIRST,
+    "mode-change": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
@@ -292,7 +292,7 @@ class ToolbarPrincipal(gtk.EventBox):
     """
 
     __gsignals__ = {
-    'menu': (gobject.SIGNAL_RUN_FIRST,
+    'menu': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -363,7 +363,7 @@ class ToolbarVideo(gtk.EventBox):
     """
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_FIRST,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -465,7 +465,7 @@ class ToolbarFotografia(gtk.EventBox):
     """
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_FIRST,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -558,11 +558,11 @@ class ToolbarGrabarAudio(gtk.EventBox):
     """
 
     __gsignals__ = {
-    'salir': (gobject.SIGNAL_RUN_FIRST,
+    'salir': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    'accion': (gobject.SIGNAL_RUN_FIRST,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    'rotar': (gobject.SIGNAL_RUN_FIRST,
+    'rotar': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -713,7 +713,7 @@ class ToolbarGrabarAudio(gtk.EventBox):
 class ToolbarJAMedia(gtk.EventBox):
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_FIRST,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -767,7 +767,7 @@ class ToolbarJAMedia(gtk.EventBox):
 class ToolbarJAMediaImagenes(gtk.EventBox):
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_FIRST,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -841,7 +841,7 @@ class ToolbarJAMediaImagenes(gtk.EventBox):
 class ToolbarConverter(gtk.EventBox):
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_FIRST,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):

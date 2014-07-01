@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
 from gtk import gdk
 import gobject
@@ -55,7 +54,6 @@ class ProgressBar(gtk.EventBox):
         """
         El reproductor modifica la escala.
         """
-
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
 
@@ -89,11 +87,8 @@ class BalanceBar(gtk.HScale):
 
         self.ancho, self.borde = (7, 10)
 
-        #icono = os.path.join(BASE_PATH,
-        #    "Iconos", "controlslicer.svg")
-        #self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-        #    16, 16)
-
+        #icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
+        #self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 16, 16)
         self.connect("expose_event", self.__expose)
 
         self.show_all()

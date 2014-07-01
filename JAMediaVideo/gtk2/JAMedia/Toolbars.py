@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
 import gobject
 
@@ -43,7 +42,7 @@ class ToolbarSalir(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "salir": (gobject.SIGNAL_RUN_CLEANUP,
+    "salir": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -55,19 +54,15 @@ class ToolbarSalir(gtk.EventBox):
         self.modify_bg(0, get_colors("window"))
         toolbar.modify_bg(0, get_colors("window"))
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "button-cancel.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "button-cancel.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         toolbar.insert(boton, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
         self.label = gtk.Label("")
@@ -75,19 +70,15 @@ class ToolbarSalir(gtk.EventBox):
         item.add(self.label)
         toolbar.insert(item, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "dialog-ok.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "dialog-ok.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__emit_salir)
         toolbar.insert(boton, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         self.add(toolbar)
         self.show_all()
@@ -96,7 +87,6 @@ class ToolbarSalir(gtk.EventBox):
         """
         Confirma Salir de la aplicación.
         """
-
         self.cancelar()
         self.emit('salir')
 
@@ -105,7 +95,6 @@ class ToolbarSalir(gtk.EventBox):
         La toolbar se muestra y espera confirmación
         del usuario.
         """
-
         self.label.set_text("¿Salir de %s?" % (nombre_aplicacion))
         self.show()
 
@@ -113,7 +102,6 @@ class ToolbarSalir(gtk.EventBox):
         """
         Cancela salir de la aplicación.
         """
-
         self.label.set_text("")
         self.hide()
 
@@ -127,12 +115,12 @@ class ToolbarAccion(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "Grabar": (gobject.SIGNAL_RUN_CLEANUP,
+    "Grabar": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "accion-stream": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion-stream": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING)),
-    "aviso": (gobject.SIGNAL_RUN_CLEANUP,
+    "aviso": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING))}
 
@@ -149,13 +137,10 @@ class ToolbarAccion(gtk.EventBox):
         self.accion = None
         self.iter = None
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "button-cancel.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "button-cancel.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         toolbar.insert(boton, -1)
@@ -166,16 +151,13 @@ class ToolbarAccion(gtk.EventBox):
         item.add(self.label)
         toolbar.insert(item, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "dialog-ok.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "dialog-ok.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__realizar_accion)
         toolbar.insert(boton, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         self.add(toolbar)
         self.show_all()
@@ -291,7 +273,6 @@ class ToolbarAccion(gtk.EventBox):
         un archivo o streaming en la lista de
         reproduccion.
         """
-
         self.label.set_text("")
         self.lista = None
         self.accion = None

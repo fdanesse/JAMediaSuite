@@ -43,7 +43,6 @@ Contiene Widgets para controlar:
 """
 
 import os
-
 import gtk
 from gtk import gdk
 import gobject
@@ -57,7 +56,7 @@ BASE_PATH = os.path.dirname(BASE_PATH)
 class ToolbarConfig(gtk.EventBox):
 
     __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
+    'valor': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
         (gobject.TYPE_FLOAT, gobject.TYPE_STRING))}
 
     def __init__(self):
@@ -98,7 +97,6 @@ class ToolbarConfig(gtk.EventBox):
         en % float y un valor tipo para:
             brillo - contraste - saturacion - hue - gamma
         """
-
         self.emit('valor', valor, tipo)
 
     def set_balance(self, brillo=None, contraste=None,
@@ -129,7 +127,7 @@ class ToolbarcontrolValores(gtk.Toolbar):
     """
 
     __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_CLEANUP,
+    'valor': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self, label):
@@ -166,7 +164,6 @@ class ToolbarcontrolValores(gtk.Toolbar):
         Recibe la posicion en la barra de
         progreso (en % float), y re emite los valores.
         """
-
         if valor > 99.4:
             valor = 100.0
         self.emit('valor', valor)
@@ -176,7 +173,6 @@ class ToolbarcontrolValores(gtk.Toolbar):
         """
         Establece valores en la escala.
         """
-
         self.escala.set_progress(valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
@@ -187,7 +183,7 @@ class SlicerBalance(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
@@ -208,7 +204,6 @@ class SlicerBalance(gtk.EventBox):
         """
         El reproductor modifica la escala.
         """
-
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
 
@@ -217,7 +212,6 @@ class SlicerBalance(gtk.EventBox):
         El usuario modifica la escala.
         Y se emite la señal con el valor (% float).
         """
-
         self.emit("user-set-value", valor)
 
 
@@ -227,7 +221,7 @@ class BalanceBar(gtk.HScale):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
@@ -242,10 +236,8 @@ class BalanceBar(gtk.HScale):
 
         self.ancho, self.borde = (7, 10)
 
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "controlslicer.svg")
-        self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            16, 16)
+        icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
+        self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 16, 16)
 
         self.connect("expose_event", self.__expose)
 
@@ -257,9 +249,7 @@ class BalanceBar(gtk.HScale):
         Se emite el valor en % (float).
         """
 
-        if event.state == gdk.MOD2_MASK | \
-            gdk.BUTTON1_MASK:
-
+        if event.state == gdk.MOD2_MASK | gdk.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
             if valor >= 0.0 and valor <= 100.0:

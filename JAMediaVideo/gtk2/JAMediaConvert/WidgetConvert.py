@@ -39,12 +39,12 @@ PR = False
 class WidgetConvert(gtk.HPaned):
 
     __gsignals__ = {
-    "accion-list": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    "in-run": (gobject.SIGNAL_RUN_CLEANUP,
+    "in-run": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN, )),
-    "pendientes": (gobject.SIGNAL_RUN_CLEANUP,
+    "pendientes": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self):
@@ -65,12 +65,9 @@ class WidgetConvert(gtk.HPaned):
 
         self.show_all()
 
-        self.playerlist.connect(
-            "accion", self.__re_emit_accion_list)
-        self.playerlist.connect(
-            "nueva-seleccion", self.__selecction_file)
-        self.scrolltareas.connect(
-            'accion-tarea', self.__accion_tareas)
+        self.playerlist.connect("accion", self.__re_emit_accion_list)
+        self.playerlist.connect("nueva-seleccion", self.__selecction_file)
+        self.scrolltareas.connect('accion-tarea', self.__accion_tareas)
         self.scrolltareas.connect("tareas", self.__info_num_tareas)
 
     def __info_num_tareas(self, widget, num):
@@ -170,7 +167,6 @@ class WidgetConvert(gtk.HPaned):
         Cuando el usuario selecciona opciones en el menu emergente de
         la lista de archivos.
         """
-
         if accion == "limpiar":
             self.reset()
 
@@ -181,7 +177,6 @@ class WidgetConvert(gtk.HPaned):
         """
         Limpia la lista de archivos y el widget de tareas.
         """
-
         self.tareas_pendientes = []
         self.scrolltareas.limpiar()
         self.playerlist.limpiar()
@@ -190,7 +185,6 @@ class WidgetConvert(gtk.HPaned):
         """
         Quita el Widget de tareas de un archivo en particular.
         """
-
         for widgetarchivo in self.scrolltareas.vbox.get_children():
             if widgetarchivo.path_origen == path:
                 self.scrolltareas.vbox.remove(widgetarchivo)
@@ -208,16 +202,14 @@ class ScrollTareas(gtk.ScrolledWindow):
     'accion-tarea': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING)),
-    "tareas": (gobject.SIGNAL_RUN_CLEANUP,
+    "tareas": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_INT, ))}
 
     def __init__(self):
 
         gtk.ScrolledWindow.__init__(self)
 
-        self.set_policy(
-            gtk.POLICY_AUTOMATIC,
-            gtk.POLICY_AUTOMATIC)
+        self.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 
         self.vbox = gtk.VBox()
         self.add_with_viewport(self.vbox)
@@ -236,7 +228,6 @@ class ScrollTareas(gtk.ScrolledWindow):
         """
         Cuando se hace click sobre un botón de acciones.
         """
-
         self.emit('accion-tarea', widgetarchivo, accion)
 
     def copy_tarea(self, tareas):
@@ -244,7 +235,6 @@ class ScrollTareas(gtk.ScrolledWindow):
         Copia una lista de tareas asignada a un archivo,
         a todos los archivos abiertos en el widget de tareas.
         """
-
         for widgetarchivo in self.vbox.get_children():
             widgetarchivo.copy_tarea(tareas)
 
@@ -252,7 +242,6 @@ class ScrollTareas(gtk.ScrolledWindow):
         """
         Crear el widget de tareas para un determinado archivo.
         """
-
         paths = []
         for child in self.vbox.get_children():
             paths.append(child.path_origen)
@@ -267,7 +256,6 @@ class ScrollTareas(gtk.ScrolledWindow):
         """
         Elimina todas las tareas.
         """
-
         for child in self.vbox.get_children():
             child.salir()
             self.vbox.remove(child)
@@ -300,10 +288,8 @@ class WidgetArchivo(gtk.Frame):
         self.iz_box = gtk.VBox()
         self.buttonsbox = ButtonsBox()
 
-        self.panel.pack1(self.iz_box,
-            resize=False, shrink=True)
-        self.panel.pack2(self.buttonsbox,
-            resize=True, shrink=False)
+        self.panel.pack1(self.iz_box, resize=False, shrink=True)
+        self.panel.pack2(self.buttonsbox, resize=True, shrink=False)
 
         datos = describe_archivo(self.path_origen)
 
@@ -342,7 +328,6 @@ class WidgetArchivo(gtk.Frame):
         Botones de acciones iniciar y copiar tarea,
         se activan solo si hay una tarea configurada.
         """
-
         for frame in self.iz_box.get_children():
             event = frame.get_child()
             vbox = event.get_child()
@@ -412,11 +397,8 @@ class WidgetArchivo(gtk.Frame):
             dirpath_destino = get_video_directory()
 
         self.__in_run(True)
-
         gtk.gdk.flush()
-
-        gobject.idle_add(self.__new_jamedia_converter,
-            codec, dirpath_destino)
+        gobject.idle_add(self.__new_jamedia_converter, codec, dirpath_destino)
 
     def __new_jamedia_converter(self, codec, dirpath_destino):
 
@@ -443,7 +425,6 @@ class WidgetArchivo(gtk.Frame):
         """
         Cuando se ejecutan tareas, se desactivan las botoneras.
         """
-
         for frame in self.iz_box.get_children():
             vbox = frame.get_child()
 
@@ -456,9 +437,7 @@ class WidgetArchivo(gtk.Frame):
         """
         Devuelve las tareas configuradas para un determinado archivo.
         """
-
         tareas = []
-
         for frame in self.iz_box.get_children():
             event = frame.get_child()
             vbox = event.get_child()
@@ -473,7 +452,6 @@ class WidgetArchivo(gtk.Frame):
         """
         Setea una lista de tareas a realizar.
         """
-
         for frame in self.iz_box.get_children():
             event = frame.get_child()
             vbox = event.get_child()

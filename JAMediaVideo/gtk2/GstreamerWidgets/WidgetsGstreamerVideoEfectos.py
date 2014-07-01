@@ -72,10 +72,10 @@ class WidgetsGstreamerVideoEfectos(gtk.Frame):
     """
 
     __gsignals__ = {
-    "click_efecto": (gobject.SIGNAL_RUN_CLEANUP,
+    "click_efecto": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_BOOLEAN)),
-    'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
@@ -96,26 +96,18 @@ class WidgetsGstreamerVideoEfectos(gtk.Frame):
         self.show_all()
 
     def __configurar_efecto(self, widget, efecto, propiedad, valor):
-
         self.emit('configurar_efecto', efecto, propiedad, valor)
 
     def __emit_click_efecto(self, widget, nombre_efecto, valor):
-
         self.emit('click_efecto', nombre_efecto, valor)
 
     def cargar_efectos(self, elementos):
-        """
-        Agrega los widgets de efectos.
-        """
-
         self.gstreamer_efectos.cargar_efectos(elementos)
 
     def clear(self):
-
         self.gstreamer_efectos.clear()
 
     def reemit_config_efecto(self, efecto):
-
         self.gstreamer_efectos.reemit_config_efecto(efecto)
 
 
@@ -126,17 +118,15 @@ class GstreamerVideoEfectos(gtk.VBox):
     """
 
     __gsignals__ = {
-    'agregar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'agregar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_BOOLEAN)),
-    'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
     def __init__(self):
-
         gtk.VBox.__init__(self)
-
         self.show_all()
 
     def cargar_efectos(self, elementos):
@@ -168,13 +158,10 @@ class GstreamerVideoEfectos(gtk.VBox):
 
         self.show_all()
         elementos.remove(elementos[0])
-
         gobject.idle_add(self.cargar_efectos, elementos)
-
         return False
 
     def __configurar_efecto(self, widget, efecto, propiedad, valor):
-
         self.emit('configurar_efecto', efecto, propiedad, valor)
 
     def __agregar_efecto(self, widget, nombre_efecto, valor):
@@ -182,16 +169,13 @@ class GstreamerVideoEfectos(gtk.VBox):
         Cuando se hace click en el botón del efecto
         se envía la señal 'agregar-efecto'.
         """
-
         self.emit('agregar_efecto', nombre_efecto, valor)
 
     def clear(self):
-
         for child in self.get_children():
             child.clear()
 
     def reemit_config_efecto(self, efecto):
-
         for child in self.get_children():
             if child.botonefecto.get_label() == efecto:
                 child.reemit_config_efecto(efecto)
@@ -204,10 +188,10 @@ class Efecto_widget_Config(gtk.EventBox):
     """
 
     __gsignals__ = {
-    'agregar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'agregar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_BOOLEAN)),
-    'configurar_efecto': (gobject.SIGNAL_RUN_CLEANUP,
+    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
@@ -228,7 +212,6 @@ class Efecto_widget_Config(gtk.EventBox):
         self.botonefecto.set_tooltip_text(nombre)
 
         box.pack_start(self.botonefecto, False, False, 0)
-
         self.widget_config = get_widget_config_efecto(nombre)
 
         if self.widget_config:
@@ -239,7 +222,6 @@ class Efecto_widget_Config(gtk.EventBox):
         self.show_all()
 
     def __set_efecto(self, widget, propiedad, valor):
-
         if not self.botonefecto.get_active():
             self.botonefecto.set_active(True)
 
@@ -248,9 +230,7 @@ class Efecto_widget_Config(gtk.EventBox):
             propiedad, valor)
 
     def __efecto_click(self, widget):
-
         activo = widget.get_active()
-
         if not activo and self.widget_config:
             self.widget_config.reset()
             widget.set_active(False)
@@ -259,14 +239,12 @@ class Efecto_widget_Config(gtk.EventBox):
             widget.get_tooltip_text(), activo)
 
     def clear(self):
-
         if self.widget_config:
             self.widget_config.reset()
 
         self.botonefecto.set_active(False)
 
     def reemit_config_efecto(self, efecto):
-
         if self.widget_config:
             self.widget_config.reemit_config()
 

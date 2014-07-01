@@ -47,7 +47,6 @@ class Info_Label(gtk.EventBox):
         self.show_all()
 
     def set_text(self, text):
-
         self.label.set_text(text)
 
 
@@ -67,7 +66,6 @@ class Efectos_en_Pipe(gtk.EventBox):
         #self.set_size_request(-1, 15)
 
     def clear(self):
-
         for child in self.box.get_children():
             self.box.remove(child)
             child.destroy()
@@ -75,14 +73,12 @@ class Efectos_en_Pipe(gtk.EventBox):
         self.hide()
 
     def add_efecto(self, efecto):
-
         button = gtk.Button(efecto)
         button.set_tooltip_text(efecto)
         self.box.pack_start(button, False, False, 0)
         self.show_all()
 
     def remover_efecto(self, efecto):
-
         for button in self.box.get_children():
             if button.get_tooltip_text() == efecto:
                 self.box.remove(button)
@@ -93,7 +89,6 @@ class Efectos_en_Pipe(gtk.EventBox):
             self.hide()
 
     def get_efectos(self):
-
         efectos = []
         for button in self.box.get_children():
             efectos.append(button.get_label())
@@ -102,13 +97,9 @@ class Efectos_en_Pipe(gtk.EventBox):
 
 
 class Visor(gtk.DrawingArea):
-    """
-    Visor generico para utilizar como area de
-    reproduccion de videos o dibujar.
-    """
 
     __gsignals__ = {
-    "ocultar_controles": (gobject.SIGNAL_RUN_CLEANUP,
+    "ocultar_controles": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
 
     def __init__(self):
@@ -153,9 +144,7 @@ class Credits(gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self,
-            parent=parent,
-            #flags=gtk.DIALOG_MODAL,
+        gtk.Dialog.__init__(self, parent=parent,
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)
@@ -175,9 +164,7 @@ class Help(gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self,
-            parent=parent,
-            #flags=gtk.DIALOG_MODAL,
+        gtk.Dialog.__init__(self, parent=parent,
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.set_decorated(False)
@@ -187,38 +174,29 @@ class Help(gtk.Dialog):
         tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)
 
         vbox = gtk.HBox()
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "play.svg")
-        self.anterior = get_boton(
-            archivo, flip=True,
-            pixels=24,
+        archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
+        self.anterior = get_boton(archivo, flip=True, pixels=24,
             tooltip_text="Anterior")
         self.anterior.connect("clicked", self.__switch)
         self.anterior.show()
         vbox.pack_start(self.anterior, False, False, 0)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "play.svg")
-        self.siguiente = get_boton(
-            archivo,
-            pixels=24,
+        archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
+        self.siguiente = get_boton(archivo, pixels=24,
             tooltip_text="Siguiente")
         self.siguiente.connect("clicked", self.__switch)
         self.siguiente.show()
         vbox.pack_end(self.siguiente, False, False, 0)
 
         tabla1.attach_defaults(vbox, 0, 5, 0, 1)
-
         self.helps = []
 
         for x in range(1, 6):
             try:
                 help = gtk.Image()
-                help.set_from_file(
-                    os.path.join(BASE_PATH,
+                help.set_from_file(os.path.join(BASE_PATH,
                     "Iconos", "help-%s.svg" % x))
                 tabla1.attach_defaults(help, 0, 5, 1, 2)
-
                 self.helps.append(help)
 
             except:
@@ -226,16 +204,13 @@ class Help(gtk.Dialog):
 
         self.vbox.pack_start(tabla1, True, True, 0)
         self.vbox.show_all()
-
         self.__switch(None)
 
     def __ocultar(self, objeto):
-
         if objeto.get_visible():
             objeto.hide()
 
     def __switch(self, widget):
-
         if not widget:
             map(self.__ocultar, self.helps[1:])
             self.anterior.hide()
@@ -271,7 +246,6 @@ class Help(gtk.Dialog):
                 self.siguiente.hide()
 
     def __get_index_visible(self):
-
         for help in self.helps:
             if help.get_visible():
                 return self.helps.index(help)
@@ -280,7 +254,7 @@ class Help(gtk.Dialog):
 class CamaraConfig(gtk.EventBox):
 
     __gsignals__ = {
-    'set_camara': (gobject.SIGNAL_RUN_CLEANUP, gobject.TYPE_NONE,
+    'set_camara': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
         (gobject.TYPE_STRING, gobject.TYPE_STRING))}
 
     def __init__(self):
@@ -345,10 +319,8 @@ class CamaraConfig(gtk.EventBox):
         self.boton.set_sensitive(False)
         self.boton.connect("clicked", self.__update_ip)
         self.imagen = gtk.Image()
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "dialog-ok.svg")
-        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-            archivo, 16, 16)
+        archivo = os.path.join(BASE_PATH, "Iconos", "dialog-ok.svg")
+        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(archivo, 16, 16)
         self.imagen.set_from_pixbuf(pixbuf)
 
         self.boton.set_image(self.imagen)
@@ -363,7 +335,6 @@ class CamaraConfig(gtk.EventBox):
         boton1.set_active(True)
 
     def __update_ip(self, widget):
-
         if self.boton3.get_active():
             self.__set_camara(self.boton3)
 
@@ -417,17 +388,13 @@ class CamaraConfig(gtk.EventBox):
 
                 if self.device != device:
                     self.device = device
-
-                    self.emit("set_camara",
-                        "device", self.device)
+                    self.emit("set_camara", "device", self.device)
 
             elif widget.get_label() == "Escritorio":
 
                 if self.device != "Escritorio":
                     self.device = "Escritorio"
-
-                    self.emit("set_camara",
-                        "device", "Escritorio")
+                    self.emit("set_camara", "device", "Escritorio")
 
             else:
                 device = "/dev/video%s" % str(int(
@@ -435,15 +402,13 @@ class CamaraConfig(gtk.EventBox):
 
                 if self.device != device:
                     self.device = device
-
-                    self.emit("set_camara",
-                        "device", self.device)
+                    self.emit("set_camara", "device", self.device)
 
 
 class Video_out_Config(gtk.EventBox):
 
     __gsignals__ = {
-    'set_video_out': (gobject.SIGNAL_RUN_CLEANUP,
+    'set_video_out': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING))}
 
@@ -543,31 +508,26 @@ class Video_out_Config(gtk.EventBox):
             self.__set_formato(self.boton3)
 
     def __set_formato(self, widget):
-
         if widget.get_active():
             if widget.get_label() == "Estación Remota":
                 formato = self.ip_text.get_text()
 
                 if self.formato != formato:
                     self.formato = formato
-
-                    self.emit("set_video_out",
-                        "formato", self.formato)
+                    self.emit("set_video_out", "formato", self.formato)
 
             else:
                 formato = widget.get_label()
 
                 if self.formato != formato:
                     self.formato = formato
-
-                    self.emit("set_video_out",
-                        "formato", self.formato)
+                    self.emit("set_video_out", "formato", self.formato)
 
 
 class Rafagas_Config(gtk.EventBox):
 
     __gsignals__ = {
-    'set_video_out': (gobject.SIGNAL_RUN_CLEANUP,
+    'set_video_out': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_STRING))}
 
@@ -599,7 +559,6 @@ class Rafagas_Config(gtk.EventBox):
         self.show_all()
 
     def __set(self, widget):
-
         signo = widget.get_label()
         valor = float(self.label.get_text())
 
@@ -613,7 +572,6 @@ class Rafagas_Config(gtk.EventBox):
         self.label.set_text(str(valor))
 
     def get_rafaga(self):
-
         if self.rafaga.get_active():
             return float(self.label.get_text())
 

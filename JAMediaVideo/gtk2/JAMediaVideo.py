@@ -37,7 +37,7 @@ from BasePanel import BasePanel
 BASE_PATH = os.path.dirname(__file__)
 
 gobject.threads_init()
-gtk.gdk.threads_init()
+#gtk.gdk.threads_init()
 
 
 class JAMediaVideo(gtk.Window):
@@ -76,10 +76,8 @@ class JAMediaVideo(gtk.Window):
 
         self.toolbar_salir.connect('salir', self.__salir)
         self.base_panel.connect("accion-list", self.__accion_list)
-        self.base_panel.connect(
-            "in-run", self.__jamediaconvert_in_run)
-        self.base_panel.connect(
-            "pendientes", self.__jamediaconvert_info)
+        self.base_panel.connect("in-run", self.__jamediaconvert_in_run)
+        self.base_panel.connect("pendientes", self.__jamediaconvert_info)
         self.base_panel.connect("cancel-toolbars", self.__cancel_toolbars)
 
         self.toolbar_accion.connect("aviso", self.__update_accions)
@@ -99,14 +97,12 @@ class JAMediaVideo(gtk.Window):
         Cuando se confirma una accion desde toolbar_accion, se
         acualiza la interfaz ya que puede que ese archivo ya no esté allí.
         """
-
         self.base_panel.update_accions(accion, uri)
 
     def __jamediaconvert_in_run(self, widget, valor):
         self.toolbar.activate_conversor(valor)
 
     def __accion_list(self, widget, lista, accion, _iter):
-
         self.__cancel_toolbars()
         acciones = ["Copiar", "Quitar", "Borrar", "Mover"]
 
@@ -130,7 +126,6 @@ class JAMediaVideo(gtk.Window):
         """
         Acciones de la toolbar que se aplican sobre Base Panel.
         """
-
         self.__cancel_toolbars()
         if accion == "Salir":
             self.toolbar.switch("menu")
@@ -167,6 +162,5 @@ class JAMediaVideo(gtk.Window):
 
 
 if __name__ == "__main__":
-
     JAMediaVideo()
     gtk.main()

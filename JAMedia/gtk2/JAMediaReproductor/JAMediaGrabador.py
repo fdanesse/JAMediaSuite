@@ -20,7 +20,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import sys
 import gobject
+import pygst
 import gst
 
 gobject.threads_init()
@@ -116,15 +118,53 @@ class JAMediaGrabador(gobject.GObject):
         oggmux.link(self.archivo)
 
         self.bus = self.pipeline.get_bus()
-        #self.bus.add_signal_watch()
-        #self.bus.enable_sync_message_emission()
-        #self.bus.connect('sync-message', self.__bus_handler)
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        self.bus.connect('message', self.__on_mensaje)          # ****
+        self.bus.enable_sync_message_emission()                 # ****
+        self.bus.connect('sync-message', self.__sync_message)   # ****
 
         self.player.connect('pad-added', self.__pad_added)
-        #self.player.connect("source-setup", self.__source_setup)
 
         gobject.idle_add(self.load, uri)
+
+    def __on_mensaje(self, bus, message):
+        if message.type == gst.MESSAGE_EOS:
+            self.__new_handle(False)
+            self.emit("endfile")
+
+        elif message.type == gst.MESSAGE_BUFFERING:
+            buf = int(message.structure["buffer-percent"])
+            if buf < 100 and self.estado == gst.STATE_PLAYING:
+                #self.emit("loading-buffer", buf)
+                self.__pause()
+
+            elif buf > 99 and self.estado != gst.STATE_PLAYING:
+                #self.emit("loading-buffer", buf)
+                self.__play()
+
+        elif message.type == gst.MESSAGE_ERROR:
+            err, debug = message.parse_error()
+            print "JAMediaGrabador ERROR:"
+            print "\t%s" % err
+            print "\t%s" % debug
+            self.__new_handle(False)
+
+    def __sync_message(self, bus, message):
+        if message.type == gst.MESSAGE_STATE_CHANGED:
+            old, new, pending = message.parse_state_changed()
+            if self.estado != new:
+                self.estado = new
+
+        elif message.type == gst.MESSAGE_LATENCY:
+            self.player.recalculate_latency()
+
+        elif message.type == gst.MESSAGE_ERROR:
+            err, debug = message.parse_error()
+            print "JAMediaGrabador ERROR:"
+            print "\t%s" % err
+            print "\t%s" % debug
+            self.__new_handle(False)
 
     def __pad_added(self, uridecodebin, pad):
         """
@@ -148,7 +188,7 @@ class JAMediaGrabador(gobject.GObject):
 
     def __play(self):
         self.pipeline.set_state(gst.STATE_PLAYING)
-
+    '''
     def __bus_handler(self, bus, message):
         if message.type == gst.MESSAGE_EOS:
             self.__new_handle(False)
@@ -169,7 +209,7 @@ class JAMediaGrabador(gobject.GObject):
 
             if self.estado != new:
                 self.estado = new
-                '''
+                """
                 if new == gst.STATE_PLAYING:
                     #self.emit("estado", "playing")
                     self.__new_handle(True)
@@ -185,7 +225,7 @@ class JAMediaGrabador(gobject.GObject):
                 else:
                     #self.emit("estado", "paused")
                     self.__new_handle(False)
-                '''
+                """
         elif message.type == gst.MESSAGE_LATENCY:
             self.player.recalculate_latency()
 
@@ -197,7 +237,7 @@ class JAMediaGrabador(gobject.GObject):
             self.__new_handle(False)
 
         return gst.BUS_PASS
-
+    '''
     def __new_handle(self, reset):
         if self.actualizador:
             gobject.source_remove(self.actualizador)
@@ -215,7 +255,6 @@ class JAMediaGrabador(gobject.GObject):
             if self.tamanio != tamanio:
                 self.control = 0
                 self.tamanio = tamanio
-
                 texto = str(self.uri)
                 if len(self.uri) > 25:
                     texto = str(self.uri[0:25]) + " . . . "
@@ -236,13 +275,11 @@ class JAMediaGrabador(gobject.GObject):
     def stop(self):
         self.pipeline.set_state(gst.STATE_NULL)
         self.__new_handle(False)
-
         if os.path.exists(self.patharchivo):
             os.chmod(self.patharchivo, 0755)
 
     def load(self, uri):
         print "JAMediaGrabador:", uri
-
         if gst.uri_is_valid(uri):
             self.archivo.set_property("location", self.patharchivo)
             self.uri = uri
@@ -251,65 +288,10 @@ class JAMediaGrabador(gobject.GObject):
             self.__new_handle(True)
 
         else:
-            print "JAMediaGrabador: uri inválida"
+            print "JAMediaGrabador: uri inválida:", uri
             self.emit("endfile")
 
         return False
-
-    #def __source_setup(self, player, source):
-
-    #    self.uri = source.get_property('location')
-    #    # print "Grabando:", self.uri
-
-    #def __about_to_finish(self, player):
-
-        #print "\n>>>", "about-to-finish"
-    #    pass
-
-    #def __audio_tags_changed(self, player, otro):
-
-        #print "\n>>>", "audio-tags-changed"
-    #    pass
-
-'''
-    def __mp3_reset(self):
-        """
-        Grabar audio mp3
-        """
-
-        self.player = gst.element_factory_make("playbin", "player")
-
-        audioconvert = gst.element_factory_make('audioconvert', "audioconvert")
-        mp3enc = gst.element_factory_make('lamemp3enc', "lamemp3enc")
-
-        self.archivo = gst.element_factory_make('filesink', "archivo")
-
-        jamedia_sink = gst.Bin()
-        jamedia_sink.add(audioconvert)
-
-        pad = audioconvert.get_static_pad('sink')
-        ghostpad = gst.GhostPad.new('sink', pad)
-        jamedia_sink.add_pad(ghostpad)
-
-        jamedia_sink.add(mp3enc)
-        jamedia_sink.add(self.archivo)
-
-        audioconvert.link(mp3enc)
-        mp3enc.link(self.archivo)
-
-        self.player.set_property('audio-sink', jamedia_sink)
-
-        self.bus = self.player.get_bus()
-        self.bus.add_signal_watch()
-        self.bus.connect('message', self.__on_message)
-
-        self.bus.enable_sync_message_emission()
-        self.bus.connect('sync-message', self.__bus_handler)
-
-        #self.player.connect("about-to-finish", self.__about_to_finish)
-        #self.player.connect("audio-tags-changed", self.__audio_tags_changed)
-        self.player.connect("source-setup", self.__source_setup)
-'''
 
 
 def update(grabador, datos):
@@ -317,14 +299,10 @@ def update(grabador, datos):
 
 
 def end(grabador):
-    import sys
     sys.exit(0)
 
 
 if __name__ == "__main__":
-
-    import sys
-
     print "Iniciando Grabador . . ."
 
     if not len(sys.argv) == 4:

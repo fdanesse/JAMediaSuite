@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
 from gtk import gdk
 import gobject
@@ -41,9 +40,9 @@ BASE_PATH = os.path.dirname(BASE_PATH)
 class PlayerList(gtk.Frame):
 
     __gsignals__ = {
-    "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
+    "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
-    "accion": (gobject.SIGNAL_RUN_CLEANUP,
+    "accion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
@@ -59,9 +58,7 @@ class PlayerList(gtk.Frame):
         self.lista = Lista()
 
         scroll = gtk.ScrolledWindow()
-        scroll.set_policy(
-            gtk.POLICY_AUTOMATIC,
-            gtk.POLICY_AUTOMATIC)
+        scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         scroll.add(self.lista)
 
         vbox.pack_start(self.toolbar, False, False, 0)
@@ -73,8 +70,7 @@ class PlayerList(gtk.Frame):
         self.set_size_request(150, -1)
 
         self.toolbar.connect("load", self.__load_files)
-        self.lista.connect("nueva-seleccion",
-            self.__re_emit_nueva_seleccion)
+        self.lista.connect("nueva-seleccion", self.__re_emit_nueva_seleccion)
         self.lista.connect("button-press-event",
             self.__click_derecho_en_lista)
 
@@ -129,14 +125,12 @@ class PlayerList(gtk.Frame):
         seleccionado y pasa todo a toolbar_accion para pedir
         confirmacion al usuario sobre la accion a realizar.
         """
-
         self.emit("accion", lista, accion, _iter)
 
     def __re_emit_nueva_seleccion(self, widget, pista):
         self.emit('nueva-seleccion', pista)
 
     def __load_files(self, widget, items, tipo):
-
         if tipo == "load":
             self.lista.limpiar()
             self.emit("accion", False, "limpiar", False)
@@ -169,14 +163,12 @@ class PlayerList(gtk.Frame):
         """
         Setea el tipo de elementos admitidos en la lista.
         """
-
         self.toolbar.mime = mime
 
     def get_selected_path(self):
         """
         Devuelve el valor del path seleccionado.
         """
-
         modelo, _iter = self.lista.get_selection().get_selected()
         valor = self.lista.get_model().get_value(_iter, 2)
         return valor
@@ -185,7 +177,6 @@ class PlayerList(gtk.Frame):
         """
         Devuelve la lista de archivos en la lista.
         """
-
         filepaths = []
         model = self.lista.get_model()
         item = model.get_iter_first()
@@ -203,7 +194,7 @@ class PlayerList(gtk.Frame):
 class ToolbarList(gtk.EventBox):
 
     __gsignals__ = {
-    "load": (gobject.SIGNAL_RUN_CLEANUP,
+    "load": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING))}
 
@@ -219,45 +210,35 @@ class ToolbarList(gtk.EventBox):
         self.modify_bg(0, get_colors("toolbars"))
         toolbar.modify_bg(0, get_colors("toolbars"))
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "document-open.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "document-open.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Abrir Archivos")
         boton.connect("clicked", self.__open_files, "load")
         toolbar.insert(boton, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "document-new.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "document-new.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Agregar Archivos")
         boton.connect("clicked", self.__open_files, "add")
         toolbar.insert(boton, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "clear.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "clear.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Limpiar Lista")
         boton.connect("clicked", self.__clear_list)
         toolbar.insert(boton, -1)
 
-        toolbar.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         self.add(toolbar)
         self.show_all()
 
     def __clear_list(self, widget):
-
         self.emit("load", [], "load")
 
     def __open_files(self, widget, tipo):
-
         selector = My_FileChooser(
             parent=self.get_toplevel(),
             filter_type=[],
@@ -266,8 +247,7 @@ class ToolbarList(gtk.EventBox):
             title="Abrir Archivos",
             path=self.directorio)
 
-        selector.connect(
-            'archivos-seleccionados',
+        selector.connect('archivos-seleccionados',
             self.__cargar_directorio, tipo)
 
         selector.run()
@@ -302,7 +282,7 @@ class Lista(gtk.TreeView):
     """
 
     __gsignals__ = {
-    "nueva-seleccion": (gobject.SIGNAL_RUN_CLEANUP,
+    "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
@@ -353,7 +333,6 @@ class Lista(gtk.TreeView):
         return True
 
     def __select(self, path):
-
         if self.ultimo_select != self.valor_select:
             self.emit('nueva-seleccion', self.valor_select)
             self.ultimo_select = self.valor_select
@@ -362,13 +341,11 @@ class Lista(gtk.TreeView):
         return False
 
     def __setear_columnas(self):
-
         self.append_column(self.__construir_columa_icono('', 0, True))
         self.append_column(self.__construir_columa('Archivo', 1, True))
         self.append_column(self.__construir_columa('', 2, False))
 
     def __construir_columa(self, text, index, visible):
-
         render = gtk.CellRendererText()
         render.set_property("background", get_colors("window"))
         render.set_property("foreground", get_colors("drawingplayer"))
@@ -378,11 +355,9 @@ class Lista(gtk.TreeView):
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
-
         return columna
 
     def __construir_columa_icono(self, text, index, visible):
-
         render = gtk.CellRendererPixbuf()
         render.set_property("cell-background", get_colors("toolbars"))
 
@@ -390,7 +365,6 @@ class Lista(gtk.TreeView):
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
-
         return columna
 
     def __ejecutar_agregar_elemento(self, elementos):
@@ -464,15 +438,12 @@ class Lista(gtk.TreeView):
         Recibe lista de: [texto para mostrar, path oculto] y
         Comienza secuencia de agregado a la lista.
         """
-
         self.get_toplevel().set_sensitive(False)
         self.permitir_select = False
-
         gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
 
     def seleccionar_siguiente(self, widget=None):
         modelo, _iter = self.get_selection().get_selected()
-
         try:
             self.get_selection().select_iter(
                 self.get_model().iter_next(_iter))
@@ -484,7 +455,6 @@ class Lista(gtk.TreeView):
 
     def seleccionar_anterior(self, widget=None):
         modelo, _iter = self.get_selection().get_selected()
-
         try:
             # HACK porque: model no tiene iter_previous
             #self.get_selection().select_iter(
@@ -507,7 +477,6 @@ class Lista(gtk.TreeView):
     def seleccionar_ultimo(self, widget=None):
         model = self.get_model()
         item = model.get_iter_first()
-
         _iter = None
 
         while item:
@@ -521,7 +490,6 @@ class Lista(gtk.TreeView):
     def select_valor(self, path_origen):
         model = self.get_model()
         _iter = model.get_iter_first()
-
         valor = model.get_value(_iter, 2)
 
         while valor != path_origen:
@@ -539,18 +507,14 @@ class My_FileChooser(gtk.FileChooserDialog):
     """
 
     __gsignals__ = {
-    'archivos-seleccionados': (gobject.SIGNAL_RUN_CLEANUP,
+    'archivos-seleccionados': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
 
     def __init__(self, parent=None, action=None,
         filter_type=[], title=None, path=None, mime=[]):
 
-        gtk.FileChooserDialog.__init__(self,
-            title=title,
-            parent=parent,
-            action=action,
-            #flags=gtk.DIALOG_MODAL,
-            )
+        gtk.FileChooserDialog.__init__(self, title=title, parent=parent,
+            action=action)
 
         self.modify_bg(0, get_colors("window"))
         self.set_resizable(True)
@@ -569,8 +533,7 @@ class My_FileChooser(gtk.FileChooserDialog):
         boton_salir = gtk.Button("Salir")
 
         boton_salir.connect("clicked", self.__salir)
-        boton_abrir_directorio.connect("clicked",
-            self.__file_activated)
+        boton_abrir_directorio.connect("clicked", self.__file_activated)
         boton_seleccionar_todo.connect("clicked",
             self.__seleccionar_todos_los_archivos)
 
@@ -579,7 +542,6 @@ class My_FileChooser(gtk.FileChooserDialog):
         hbox.pack_end(boton_abrir_directorio, True, True, 5)
 
         self.set_extra_widget(hbox)
-
         hbox.show_all()
 
         if filter_type:
@@ -605,23 +567,19 @@ class My_FileChooser(gtk.FileChooserDialog):
         self.connect("realize", self.__resize)
 
     def __resize(self, widget):
-
         self.resize(437, 328)
 
     def __file_activated(self, widget):
         """
         Cuando se hace doble click sobre un archivo.
         """
-
         self.emit('archivos-seleccionados', self.get_filenames())
         self.__salir(None)
 
     def __seleccionar_todos_los_archivos(self, widget):
-
         self.select_all()
 
     def __salir(self, widget):
-
         self.destroy()
 
 
@@ -633,7 +591,7 @@ class MenuList(gtk.Menu):
     """
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_CLEANUP,
+    'accion': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
@@ -731,6 +689,5 @@ class MenuList(gtk.Menu):
         seleccionado y pasa todo a toolbar_accion para pedir
         confirmacion al usuario sobre la accion a realizar.
         """
-
         _iter = widget.get_model().get_iter(path)
         self.emit('accion', widget, accion, _iter)

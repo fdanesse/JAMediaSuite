@@ -23,12 +23,12 @@ import os
 import time
 import datetime
 import gobject
+import pygst
 import gst
 import gtk
 
 
 def borrar(origen):
-
     try:
         import shutil
 
@@ -54,11 +54,11 @@ PR = True
 class JAMediaWebCamVideo(gobject.GObject):
 
     __gsignals__ = {
-    "endfile": (gobject.SIGNAL_RUN_CLEANUP,
+    "endfile": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "stop-rafaga": (gobject.SIGNAL_RUN_CLEANUP,
+    "stop-rafaga": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "update": (gobject.SIGNAL_RUN_CLEANUP,
+    "update": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, ventana_id, device="/dev/video0",
@@ -135,7 +135,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.bus.set_sync_handler(self.__bus_handler)
 
     def __bus_handler(self, bus, message):
-
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
                 #gtk.gdk.threads_enter()
@@ -181,7 +180,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         Elimina o reinicia la funcion que
         envia los datos de actualizacion.
         """
-
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
@@ -226,7 +224,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         return True
 
     def set_rotacion(self, rot):
-
         if PR:
             print "\tJAMediaWebCamVideo.set_rotacion", rot
         balance = self.pipeline.get_by_name("Balance_bin")
@@ -234,7 +231,6 @@ class JAMediaWebCamVideo(gobject.GObject):
             balance.set_rotacion(rot)
 
     def get_rotacion(self):
-
         if PR:
             print "\tJAMediaWebCamVideo.get_rotacion"
         balance = self.pipeline.get_by_name("Balance_bin")
@@ -244,7 +240,6 @@ class JAMediaWebCamVideo(gobject.GObject):
             return 0
 
     def get_config(self):
-
         if PR:
             print "\tJAMediaWebCamVideo.get_config"
         balance = self.pipeline.get_by_name("Balance_bin")
@@ -254,7 +249,6 @@ class JAMediaWebCamVideo(gobject.GObject):
             return {}
 
     def set_efecto(self, efecto, propiedad, valor):
-
         if PR:
             print "\tJAMediaWebCamVideo.set_efecto", efecto, propiedad, valor
         ef = self.pipeline.get_by_name("Efectos_bin")
@@ -262,7 +256,6 @@ class JAMediaWebCamVideo(gobject.GObject):
             ef.set_efecto(efecto, propiedad, valor)
 
     def rotar(self, valor):
-
         if PR:
             print "\tJAMediaWebCamVideo.rotar", valor
         balance = self.pipeline.get_by_name('Balance_bin')
@@ -270,13 +263,11 @@ class JAMediaWebCamVideo(gobject.GObject):
             balance.rotar(valor)
 
     def play(self):
-
         if PR:
             print "\tJAMediaWebCamVideo.play"
         self.pipeline.set_state(gst.STATE_PLAYING)
 
     def stop(self):
-
         if PR:
             print "\tJAMediaWebCamVideo.stop"
 
@@ -289,7 +280,6 @@ class JAMediaWebCamVideo(gobject.GObject):
 
     def set_balance(self, brillo=False, contraste=False,
         saturacion=False, hue=False, gamma=False):
-
         if PR:
             print "\tJAMediaWebCamVideo.set_balance"
         balance = self.pipeline.get_by_name("Balance_bin")
@@ -306,7 +296,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         """
         Setea formato de salida [ogv, avi, mpeg, ip]
         """
-
         if PR:
             print "\tJAMediaWebCamVideo.set_formato", formato
         self.formato = formato
@@ -454,12 +443,10 @@ class JAMediaWebCamVideo(gobject.GObject):
         return False
 
     def fotografiar(self, dir_path, rafaga):
-
         if PR:
             print "\tJAMediaWebCamVideo.fotografiar"
 
         gdkpixbufsink = self.pipeline.get_by_name("gdkpixbufsink")
-
         pixbuf = gdkpixbufsink.get_property('last-pixbuf')
 
         if pixbuf and pixbuf != None:
@@ -472,8 +459,7 @@ class JAMediaWebCamVideo(gobject.GObject):
             pixbuf.save(archivo, "png", options={})
             self.foto_contador += 1
 
-            self.emit('update', "%s" % str(
-                os.path.basename(archivo)))
+            self.emit('update', "%s" % str(os.path.basename(archivo)))
 
         if rafaga < 1.0:
             # FIXME: La primera vez que fotografía no envía la señal

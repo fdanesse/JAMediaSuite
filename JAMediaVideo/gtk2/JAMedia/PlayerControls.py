@@ -20,7 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
 from gtk import gdk
 import gobject
@@ -37,7 +36,7 @@ class PlayerControl(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "activar": (gobject.SIGNAL_RUN_FIRST,
+    "activar": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
@@ -49,13 +48,8 @@ class PlayerControl(gtk.EventBox):
         vbox = gtk.HBox()
         self.botonatras = JAMediaToolButton(pixels=24)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "siguiente.svg")
-
-        self.botonatras.set_imagen(
-            archivo=archivo,
-            flip=True,
-            rotacion=False)
+        archivo = os.path.join(BASE_PATH, "Iconos", "siguiente.svg")
+        self.botonatras.set_imagen(archivo=archivo, flip=True, rotacion=False)
 
         self.botonatras.set_tooltip_text("Anterior")
         self.botonatras.connect("clicked", self.__clickenatras)
@@ -64,10 +58,7 @@ class PlayerControl(gtk.EventBox):
         self.botonplay = JAMediaToolButton(pixels=24)
         archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
 
-        self.botonplay.set_imagen(
-            archivo=archivo,
-            flip=False,
-            rotacion=False)
+        self.botonplay.set_imagen(archivo=archivo, flip=False, rotacion=False)
 
         self.botonplay.set_tooltip_text("Reproducir")
         self.botonplay.connect("clicked", self.__clickenplay_pausa)
@@ -76,9 +67,7 @@ class PlayerControl(gtk.EventBox):
         self.botonsiguiente = JAMediaToolButton(pixels=24)
         archivo = os.path.join(BASE_PATH, "Iconos", "siguiente.svg")
 
-        self.botonsiguiente.set_imagen(
-            archivo=archivo,
-            flip=False,
+        self.botonsiguiente.set_imagen(archivo=archivo, flip=False,
             rotacion=False)
 
         self.botonsiguiente.set_tooltip_text("Siguiente")
@@ -88,10 +77,7 @@ class PlayerControl(gtk.EventBox):
         self.botonstop = JAMediaToolButton(pixels=24)
         archivo = os.path.join(BASE_PATH, "Iconos", "stop.svg")
 
-        self.botonstop.set_imagen(
-            archivo=archivo,
-            flip=False,
-            rotacion=False)
+        self.botonstop.set_imagen(archivo=archivo, flip=False, rotacion=False)
 
         self.botonstop.set_tooltip_text("Detener Reproducción")
         self.botonstop.connect("clicked", self.__clickenstop)
@@ -101,24 +87,12 @@ class PlayerControl(gtk.EventBox):
         self.show_all()
 
     def set_paused(self):
-
-        archivo = os.path.join(
-            BASE_PATH, "Iconos", "play.svg")
-
-        self.botonplay.set_imagen(
-            archivo=archivo,
-            flip=False,
-            rotacion=False)
+        archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
+        self.botonplay.set_imagen(archivo=archivo, flip=False, rotacion=False)
 
     def set_playing(self):
-
-        archivo = os.path.join(
-            BASE_PATH, "Iconos", "pausa.svg")
-
-        self.botonplay.set_imagen(
-            archivo=archivo,
-            flip=False,
-            rotacion=False)
+        archivo = os.path.join(BASE_PATH, "Iconos", "pausa.svg")
+        self.botonplay.set_imagen(archivo=archivo, flip=False, rotacion=False)
 
     def __clickenstop(self, widget=None, event=None):
         self.emit("activar", "stop")
@@ -150,11 +124,9 @@ class JAMediaToolButton(gtk.ToolButton):
         self.imagen.show()
 
         self.imagen.set_size_request(pixels, pixels)
-
         self.show_all()
 
     def set_imagen(self, archivo=None, flip=False, rotacion=False):
-
         if archivo == None:
             pixbuf = None
 
@@ -180,15 +152,11 @@ class Imagen_Button(gtk.DrawingArea):
         gtk.DrawingArea.__init__(self)
 
         self.modify_bg(0, get_colors("toolbars"))
-
         self.pixbuf = None
-
         self.connect("expose-event", self.__expose_event)
-
         self.show_all()
 
     def __expose_event(self, widget, event):
-
         if not self.pixbuf:
             return True
 
@@ -200,10 +168,8 @@ class Imagen_Button(gtk.DrawingArea):
 
         gc = gtk.gdk.Drawable.new_gc(self.window)
         self.window.draw_pixbuf(gc, scaledPixbuf, 0, 0, 0, 0)
-
         return True
 
     def set_imagen(self, pixbuf):
-
         self.pixbuf = pixbuf
         self.queue_draw()

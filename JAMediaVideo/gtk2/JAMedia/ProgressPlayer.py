@@ -33,9 +33,9 @@ BASE_PATH = os.path.dirname(BASE_PATH)
 class ProgressPlayer(gtk.EventBox):
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
-    "volumen": (gobject.SIGNAL_RUN_CLEANUP,
+    "volumen": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self):
@@ -53,23 +53,18 @@ class ProgressPlayer(gtk.EventBox):
 
         self.add(hbox)
 
-        self.barraprogreso.connect(
-            "user-set-value", self.__user_set_value)
-        self.volumen.connect(
-            "volumen", self.__set_volumen)
+        self.barraprogreso.connect("user-set-value", self.__user_set_value)
+        self.volumen.connect("volumen", self.__set_volumen)
 
         self.show_all()
 
     def __user_set_value(self, widget=None, valor=None):
-
         self.emit("user-set-value", valor)
 
     def __set_volumen(self, widget, valor):
-
         self.emit('volumen', valor)
 
     def set_progress(self, valor):
-
         self.barraprogreso.set_progress(valor)
 
 
@@ -79,7 +74,7 @@ class BarraProgreso(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
@@ -103,7 +98,6 @@ class BarraProgreso(gtk.EventBox):
         """
         El reproductor modifica la escala.
         """
-
         if self.escala.presed:
             return
 
@@ -116,7 +110,6 @@ class BarraProgreso(gtk.EventBox):
         """
         El usuario modifica la escala.
         """
-
         if self.valor != valor:
             self.valor = valor
             self.emit("user-set-value", valor)
@@ -128,7 +121,7 @@ class ProgressBar(gtk.HScale):
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    "user-set-value": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
@@ -145,10 +138,8 @@ class ProgressBar(gtk.HScale):
         self.presed = False
         self.ancho, self.borde = (10, 10)
 
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "controlslicer.svg")
-        self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-            24, 24)
+        icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
+        self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 24, 24)
 
         self.connect("button-press-event", self.__button_press_event)
         self.connect("button-release-event", self.__button_release_event)
@@ -158,11 +149,9 @@ class ProgressBar(gtk.HScale):
         self.show_all()
 
     def __button_press_event(self, widget, event):
-
         self.presed = True
 
     def __button_release_event(self, widget, event):
-
         self.presed = False
 
     def __motion_notify_event(self, widget, event):
@@ -171,9 +160,7 @@ class ProgressBar(gtk.HScale):
         Se emite el valor en % (float).
         """
 
-        if event.state == gdk.MOD2_MASK | \
-            gdk.BUTTON1_MASK:
-
+        if event.state == gdk.MOD2_MASK | gdk.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
 
@@ -230,7 +217,7 @@ class ControlVolumen(gtk.VolumeButton):
     """
 
     __gsignals__ = {
-    "volumen": (gobject.SIGNAL_RUN_CLEANUP,
+    "volumen": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     def __init__(self):
@@ -239,13 +226,11 @@ class ControlVolumen(gtk.VolumeButton):
 
         self.connect("value-changed", self.__value_changed)
         self.show_all()
-
         self.set_value(0.1)
 
     def __value_changed(self, widget, valor):
         """
         Cuando el usuario desplaza la escala.
         """
-
         valor = int(valor * 10)
         self.emit('volumen', valor)
