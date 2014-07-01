@@ -19,14 +19,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import pygst
 import gst
 import gobject
 
+gobject.threads_init()
+
 
 class JAMedia_Audio_Pipeline(gst.Pipeline):
-    """
-    Gestor de Audio de JAMedia.
-    """
 
     def __init__(self):
 
@@ -34,27 +34,18 @@ class JAMedia_Audio_Pipeline(gst.Pipeline):
 
         self.set_name('jamedia_audio_pipeline')
 
-        audioconvert = gst.element_factory_make(
-            "audioconvert", "audioconvert")
+        convert = gst.element_factory_make("audioconvert", "convert")
+        sink = gst.element_factory_make("autoaudiosink", "sink")
 
-        autoaudiosink = gst.element_factory_make(
-            "autoaudiosink", "autoaudiosink")
+        self.add(convert)
+        self.add(sink)
 
-        self.add(audioconvert)
-        self.add(autoaudiosink)
+        convert.link(sink)
 
-        audioconvert.link(autoaudiosink)
-
-        self.add_pad(
-            gst.GhostPad(
-                "sink",
-                audioconvert.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("sink", convert.get_static_pad("sink")))
 
 
 class JAMedia_Video_Pipeline(gst.Pipeline):
-    """
-    Gestor de Video de JAMedia.
-    """
 
     def __init__(self):
 
@@ -70,53 +61,38 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
             'gamma': 10.0,
             'rotacion': 0}
 
-        videoconvert = gst.element_factory_make(
-            'ffmpegcolorspace', 'videoconvert')
-        videorate = gst.element_factory_make(
-            'videorate', 'videorate')
-        videobalance = gst.element_factory_make(
-            'videobalance', "videobalance")
-        gamma = gst.element_factory_make(
-            'gamma', "gamma")
-        videoflip = gst.element_factory_make(
-            'videoflip', "videoflip")
-        pantalla = gst.element_factory_make(
-            'xvimagesink', "pantalla")
-        pantalla.set_property(
-            "force-aspect-ratio", True)
+        convert = gst.element_factory_make('ffmpegcolorspace', 'convert')
+        rate = gst.element_factory_make('videorate', 'rate')
+        videobalance = gst.element_factory_make('videobalance', "videobalance")
+        gamma = gst.element_factory_make('gamma', "gamma")
+        videoflip = gst.element_factory_make('videoflip', "videoflip")
+        pantalla = gst.element_factory_make('xvimagesink', "pantalla")
+        pantalla.set_property("force-aspect-ratio", True)
 
-        try:  # FIXME: xo no posee esta propiedad
-            videorate.set_property('max-rate', 30)
+        try: # FIXME: xo no posee esta propiedad
+            rate.set_property('max-rate', 30)
 
         except:
             pass
 
-        self.add(videoconvert)
-        self.add(videorate)
+        self.add(convert)
+        self.add(rate)
         self.add(videobalance)
         self.add(gamma)
         self.add(videoflip)
         self.add(pantalla)
 
-        videoconvert.link(videorate)
-        videorate.link(videobalance)
+        convert.link(rate)
+        rate.link(videobalance)
         videobalance.link(gamma)
         gamma.link(videoflip)
         videoflip.link(pantalla)
 
-        self.ghost_pad = gst.GhostPad(
-            "sink", videoconvert.get_static_pad("sink"))
-
-        self.ghost_pad.set_target(
-            videoconvert.get_static_pad("sink"))
-
+        self.ghost_pad = gst.GhostPad("sink", convert.get_static_pad("sink"))
+        self.ghost_pad.set_target(convert.get_static_pad("sink"))
         self.add_pad(self.ghost_pad)
 
     def rotar(self, valor):
-        """
-        Rota el Video.
-        """
-
         videoflip = self.get_by_name("videoflip")
         rot = videoflip.get_property('method')
 
@@ -138,44 +114,30 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
 
     def set_balance(self, brillo=None, contraste=None,
         saturacion=None, hue=None, gamma=None):
-        """
-        Seteos de balance en video.
-        Recibe % en float y convierte a los valores del filtro.
-        """
-
         if brillo:
             self.config['brillo'] = brillo
             valor = (2.0 * brillo / 100.0) - 1.0
-            self.get_by_name("videobalance").set_property(
-                'brightness', valor)
+            self.get_by_name("videobalance").set_property('brightness', valor)
 
         if contraste:
             self.config['contraste'] = contraste
             valor = 2.0 * contraste / 100.0
-            self.get_by_name("videobalance").set_property(
-                'contrast', valor)
+            self.get_by_name("videobalance").set_property('contrast', valor)
 
         if saturacion:
             self.config['saturacion'] = saturacion
             valor = 2.0 * saturacion / 100.0
-            self.get_by_name("videobalance").set_property(
-                'saturation', valor)
+            self.get_by_name("videobalance").set_property('saturation', valor)
 
         if hue:
             self.config['hue'] = hue
             valor = (2.0 * hue / 100.0) - 1.0
-            self.get_by_name("videobalance").set_property(
-                'hue', valor)
+            self.get_by_name("videobalance").set_property('hue', valor)
 
         if gamma:
             self.config['gamma'] = gamma
             valor = (10.0 * gamma / 100.0)
-            self.get_by_name("gamma").set_property(
-                'gamma', valor)
+            self.get_by_name("gamma").set_property('gamma', valor)
 
     def get_balance(self):
-        """
-        Retorna los valores actuales de balance en % float.
-        """
-
         return self.config

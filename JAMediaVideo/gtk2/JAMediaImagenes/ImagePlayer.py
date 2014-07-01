@@ -109,8 +109,28 @@ class PlayerBin(gobject.GObject):
         self.player.set_property('video-sink', self.video_bin)
 
         self.bus = self.player.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        #self.bus.connect('message', self.__on_mensaje)          # ****
+        self.bus.enable_sync_message_emission()                 # ****
+        self.bus.connect('sync-message', self.__sync_message)   # ****
 
+    def __sync_message(self, bus, message):
+        if message.type == gst.MESSAGE_ELEMENT:
+            if message.structure.get_name() == 'prepare-xwindow-id':
+                gtk.gdk.threads_enter()
+                gtk.gdk.display_get_default().sync()
+                message.src.set_xwindow_id(self.ventana_id)
+                gtk.gdk.threads_leave()
+
+        elif message.type == gst.MESSAGE_ERROR:
+            err, debug = message.parse_error()
+            if PR:
+                print "ImagePlayer ERROR:"
+                print "\t%s" % err
+                print "\t%s" % debug
+
+    '''
     def __bus_handler(self, bus, message):
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
@@ -124,6 +144,7 @@ class PlayerBin(gobject.GObject):
                 print "\t%s" % debug
 
         return gst.BUS_PASS
+    '''
 
     def __play(self):
         self.player.set_state(gst.STATE_PLAYING)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   BasePanel.py por:
+#   ProgressPlayer.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   Uruguay
 #
@@ -22,7 +22,6 @@
 import os
 import gobject
 import gtk
-from gtk import gdk
 
 from Globales import get_colors
 
@@ -33,7 +32,7 @@ BASE_PATH = os.path.dirname(BASE_PATH)
 class ProgressPlayer(gtk.EventBox):
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_LAST,
+    "seek": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
     "volumen": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
@@ -42,7 +41,7 @@ class ProgressPlayer(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, get_colors("toolbars"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
 
         self.barraprogreso = BarraProgreso()
         self.volumen = ControlVolumen()
@@ -59,7 +58,7 @@ class ProgressPlayer(gtk.EventBox):
         self.show_all()
 
     def __user_set_value(self, widget=None, valor=None):
-        self.emit("user-set-value", valor)
+        self.emit("seek", valor)
 
     def __set_volumen(self, widget, valor):
         self.emit('volumen', valor)
@@ -81,7 +80,7 @@ class BarraProgreso(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
-        self.modify_bg(0, get_colors("toolbars"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
 
         self.escala = ProgressBar(
             gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
@@ -94,10 +93,12 @@ class BarraProgreso(gtk.EventBox):
         self.escala.connect('user-set-value', self.__emit_valor)
         self.set_size_request(-1, 24)
 
+    def __emit_valor(self, widget, valor):
+        if self.valor != valor:
+            self.valor = valor
+            self.emit("user-set-value", self.valor)
+
     def set_progress(self, valor=0):
-        """
-        El reproductor modifica la escala.
-        """
         if self.escala.presed:
             return
 
@@ -105,14 +106,6 @@ class BarraProgreso(gtk.EventBox):
             self.valor = valor
             self.escala.ajuste.set_value(valor)
             self.escala.queue_draw()
-
-    def __emit_valor(self, widget, valor):
-        """
-        El usuario modifica la escala.
-        """
-        if self.valor != valor:
-            self.valor = valor
-            self.emit("user-set-value", valor)
 
 
 class ProgressBar(gtk.HScale):
@@ -128,7 +121,7 @@ class ProgressBar(gtk.HScale):
 
         gtk.HScale.__init__(self)
 
-        self.modify_bg(0, get_colors("toolbars"))
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -139,7 +132,7 @@ class ProgressBar(gtk.HScale):
         self.ancho, self.borde = (10, 10)
 
         icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
-        self.pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 24, 24)
+        self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 24, 24)
 
         self.connect("button-press-event", self.__button_press_event)
         self.connect("button-release-event", self.__button_release_event)
@@ -160,7 +153,7 @@ class ProgressBar(gtk.HScale):
         Se emite el valor en % (float).
         """
 
-        if event.state == gdk.MOD2_MASK | gdk.BUTTON1_MASK:
+        if event.state == gtk.gdk.MOD2_MASK | gtk.gdk.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
 
@@ -184,7 +177,7 @@ class ProgressBar(gtk.HScale):
         self.window.draw_rectangle(gc, True, x, y, w, h)
 
         # vacio
-        gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
+        gc.set_rgb_fg_color(get_colors("drawingplayer"))
         ww = w - borde * 2
         xx = x + w / 2 - ww / 2
         hh = ancho
@@ -193,7 +186,7 @@ class ProgressBar(gtk.HScale):
 
         # progreso
         ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
+        gc.set_rgb_fg_color(get_colors("naranaja"))
         self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
 
         # borde de progreso
@@ -211,10 +204,6 @@ class ProgressBar(gtk.HScale):
 
 
 class ControlVolumen(gtk.VolumeButton):
-    """
-    Botón con escala para controlar el volúmen
-    de reproducción en los reproductores.
-    """
 
     __gsignals__ = {
     "volumen": (gobject.SIGNAL_RUN_LAST,
@@ -224,13 +213,17 @@ class ControlVolumen(gtk.VolumeButton):
 
         gtk.VolumeButton.__init__(self)
 
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+
         self.connect("value-changed", self.__value_changed)
         self.show_all()
+
         self.set_value(0.1)
 
     def __value_changed(self, widget, valor):
         """
         Cuando el usuario desplaza la escala.
         """
+
         valor = int(valor * 10)
         self.emit('volumen', valor)

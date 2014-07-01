@@ -31,7 +31,7 @@ from JAMediaConvert.WidgetConvert import WidgetConvert
 
 from JAMedia.PlayerList import PlayerList
 from JAMedia.ToolbarConfig import ToolbarConfig
-from JAMedia.PlayerControls import PlayerControl
+from JAMedia.PlayerControls import PlayerControls
 from JAMedia.ProgressPlayer import ProgressPlayer
 from JAMedia.JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 
@@ -138,7 +138,7 @@ class BasePanel(gtk.HPaned):
         self.rafagas_setting = Rafagas_Config()
         self.balance_config_widget = ToolbarConfig()
         self.playerlist = PlayerList()
-        self.player_control = PlayerControl()
+        self.player_control = PlayerControls()
         self.widget_efectos = False  # WidgetsGstreamerEfectos()
 
         self.vbox_config.pack_start(self.camara_setting, False, False, 0)
@@ -156,10 +156,10 @@ class BasePanel(gtk.HPaned):
         self.balance_config_widget.connect('valor', self.__set_balance)
         self.camara_setting.connect("set_camara", self.__set_camara)
         self.video_out_setting.connect("set_video_out", self.__set_video_out)
-        self.player_control.connect("activar", self.__accion_player)
+        self.player_control.connect("accion-controls", self.__accion_player)
         self.playerlist.connect("nueva-seleccion", self.__play_item)
         self.playerlist.connect("accion", self.__re_emit_accion_list)
-        self.progressplayer.connect("user-set-value", self.__user_set_progress)
+        self.progressplayer.connect("seek", self.__user_set_progress)
         self.progressplayer.connect("volumen", self.__set_volumen)
         self.jamediaconvert.connect("accion-list", self.__re_emit_accion_list)
         self.jamediaconvert.connect("in-run", self.__jamediaconvert_in_run)
@@ -231,6 +231,15 @@ class BasePanel(gtk.HPaned):
 
             volumen = float("{:.1f}".format(
                 self.progressplayer.volumen.get_value() * 10))
+
+            try:
+                self.player.disconnect_by_func(self.__endfile)
+                self.player.disconnect_by_func(self.__cambioestadoreproductor)
+                self.player.disconnect_by_func(self.__update_progress)
+                #self.player.disconnect_by_func(self.__set_video)
+            except:
+                pass
+
             self.player.stop()
             del(self.player)
 
@@ -419,15 +428,7 @@ class BasePanel(gtk.HPaned):
             print "__camara_menu_run"
 
         self.control = True
-
         device = self.camara_setting.device
-
-        #FIXME: No debiera ser necesario
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            del(self.jamediawebcam)
-            self.jamediawebcam = False
-
         xid = self.pantalla.get_property('window').xid
         self.jamediawebcam = JAMediaWebCamMenu(xid, device=device)
         self.jamediawebcam.play()
@@ -442,20 +443,11 @@ class BasePanel(gtk.HPaned):
             print "__camara_video_run"
 
         self.control = True
-
         device = self.camara_setting.device
         salida = self.video_out_setting.formato
-
-        #FIXME: No debiera ser necesario
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            del(self.jamediawebcam)
-            self.jamediawebcam = False
-
         xid = self.pantalla.get_property('window').xid
-        self.jamediawebcam = JAMediaWebCamVideo(
-            xid, device=device, formato=salida,
-            efectos=[])
+        self.jamediawebcam = JAMediaWebCamVideo(xid, device=device,
+            formato=salida, efectos=[])
 
         self.jamediawebcam.connect("update", self.__update_record)
         self.jamediawebcam.connect("stop-rafaga", self.__recibe_stop_rafaga)
@@ -486,20 +478,11 @@ class BasePanel(gtk.HPaned):
             print "__camara_foto_run"
 
         self.control = True
-
         device = self.camara_setting.device
         salida = self.video_out_setting.formato
-
-        #FIXME: No debiera ser necesario
-        if self.jamediawebcam:
-            self.jamediawebcam.stop()
-            del(self.jamediawebcam)
-            self.jamediawebcam = False
-
         xid = self.pantalla.get_property('window').xid
-        self.jamediawebcam = JAMediaWebCamVideo(
-            xid, device=device, formato=salida,
-            efectos=[])
+        self.jamediawebcam = JAMediaWebCamVideo(xid, device=device,
+            formato=salida, efectos=[])
 
         self.jamediawebcam.connect("update", self.__update_record)
         self.jamediawebcam.connect("stop-rafaga", self.__recibe_stop_rafaga)
@@ -587,6 +570,9 @@ class BasePanel(gtk.HPaned):
             salida = self.video_out_setting.formato
 
         if self.jamediawebcam:
+            self.jamediawebcam.disconnect_by_func(self.__update_record)
+            self.jamediawebcam.disconnect_by_func(self.__recibe_stop_rafaga)
+            self.jamediawebcam.disconnect_by_func(self.__control_grabacion_end)
             self.jamediawebcam.stop()
             del(self.jamediawebcam)
             self.jamediawebcam = False
@@ -594,9 +580,8 @@ class BasePanel(gtk.HPaned):
         time.sleep(3)
 
         xid = self.pantalla.get_property('window').xid
-        self.jamediawebcam = JAMediaWebCamVideo(
-            xid, device=device, formato=salida,
-            efectos=efectos)
+        self.jamediawebcam = JAMediaWebCamVideo(xid, device=device,
+            formato=salida, efectos=efectos)
 
         self.jamediawebcam.connect("update", self.__update_record)
         self.jamediawebcam.connect("stop-rafaga", self.__recibe_stop_rafaga)
@@ -605,7 +590,6 @@ class BasePanel(gtk.HPaned):
         self.__re_config(rot, config, efectos)
 
     def __re_config(self, rot, config, efectos):
-
         if PR:
             print "__re_config", rot, config, efectos
 
@@ -657,17 +641,33 @@ class BasePanel(gtk.HPaned):
             print "Mode_Change:", tipo
 
         self.get_toplevel().toolbar.set_sensitive(False)
-
         self.jamediaconvert.reset()
         self.jamediaconvert.hide()
         self.pantalla.show()
 
         if self.jamediawebcam:
+            try:
+                self.jamediawebcam.disconnect_by_func(self.__update_record)
+                self.jamediawebcam.disconnect_by_func(
+                    self.__recibe_stop_rafaga)
+                self.jamediawebcam.disconnect_by_func(
+                    self.__control_grabacion_end)
+            except:
+                pass
+
             self.jamediawebcam.stop()
             del(self.jamediawebcam)
             self.jamediawebcam = False
 
         if self.player:
+            try:
+                self.player.disconnect_by_func(self.__endfile)
+                self.player.disconnect_by_func(self.__cambioestadoreproductor)
+                self.player.disconnect_by_func(self.__update_progress)
+                #self.player.disconnect_by_func(self.__set_video)
+            except:
+                pass
+
             self.player.stop()
             del(self.player)
             self.player = False
@@ -845,8 +845,7 @@ class BasePanel(gtk.HPaned):
             print self.config_show, "Falta definir:", tipo
 
         if self.jamediawebcam:
-            self.__update_balance_toolbars(
-                self.jamediawebcam.get_config())
+            self.__update_balance_toolbars(self.jamediawebcam.get_config())
 
         self.emit("cancel-toolbars")
 
@@ -866,11 +865,28 @@ class BasePanel(gtk.HPaned):
 
     def salir(self):
         if self.jamediawebcam:
+            try:
+                self.jamediawebcam.disconnect_by_func(self.__update_record)
+                self.jamediawebcam.disconnect_by_func(
+                    self.__recibe_stop_rafaga)
+                self.jamediawebcam.disconnect_by_func(
+                    self.__control_grabacion_end)
+            except:
+                pass
+
             self.jamediawebcam.stop()
             del(self.jamediawebcam)
             self.jamediawebcam = False
 
         if self.player:
+            try:
+                self.player.disconnect_by_func(self.__endfile)
+                self.player.disconnect_by_func(self.__cambioestadoreproductor)
+                self.player.disconnect_by_func(self.__update_progress)
+                #self.player.disconnect_by_func(self.__set_video)
+            except:
+                pass
+
             self.player.stop()
             del(self.player)
             self.player = False

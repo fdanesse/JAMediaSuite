@@ -48,7 +48,7 @@ def borrar(origen):
         return False
 
 
-PR = True
+PR = False
 
 
 class JAMediaWebCamVideo(gobject.GObject):
@@ -132,8 +132,41 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.tee.link(fotobin)
 
         self.bus = self.pipeline.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        self.bus.connect('message', self.__on_mensaje)          # ****
+        self.bus.enable_sync_message_emission()                 # ****
+        self.bus.connect('sync-message', self.__sync_message)   # ****
 
+    def __sync_message(self, bus, message):
+        if message.type == gst.MESSAGE_ELEMENT:
+            if message.structure.get_name() == 'prepare-xwindow-id':
+                gtk.gdk.threads_enter()
+                gtk.gdk.display_get_default().sync()
+                message.src.set_xwindow_id(self.ventana_id)
+                gtk.gdk.threads_leave()
+
+        elif message.type == gst.MESSAGE_LATENCY:
+            self.pipeline.recalculate_latency()
+
+        elif message.type == gst.MESSAGE_ERROR:
+            print "JAMediaWebCamVideo ERROR:"
+            print message.parse_error()
+
+        elif message.type == gst.MESSAGE_STATE_CHANGED:
+            old, new, pending = message.parse_state_changed()
+            if self.estado != new:
+                self.estado = new
+
+    def __on_mensaje(self, bus, message):
+        if message.type == gst.MESSAGE_EOS:
+            self.emit("endfile")
+
+        elif message.type == gst.MESSAGE_ERROR:
+            print "JAMediaWebCamVideo ERROR:"
+            print message.parse_error()
+
+    '''
     def __bus_handler(self, bus, message):
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
@@ -174,12 +207,9 @@ class JAMediaWebCamVideo(gobject.GObject):
                 #    self.emit("estado", "paused")
 
         return gst.BUS_PASS
+    '''
 
     def __new_handle(self, reset, data):
-        """
-        Elimina o reinicia la funcion que
-        envia los datos de actualizacion.
-        """
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
@@ -189,10 +219,6 @@ class JAMediaWebCamVideo(gobject.GObject):
                 250, self.__handle)
 
     def __handle(self):
-        """
-        Consulta el estado y progreso de la grabacion.
-        """
-
         # Control de archivo de salida
         if os.path.exists(self.path_archivo):
             tamanio = os.path.getsize(self.path_archivo)

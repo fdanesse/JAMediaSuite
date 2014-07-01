@@ -33,7 +33,7 @@ BASE_PATH = os.path.dirname(BASE_PATH)
 class ProgressBar(gtk.EventBox):
 
     #__gsignals__ = {
-    #"user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    #"user-set-value": (gobject.SIGNAL_RUN_LAST,
     #    gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self):
@@ -51,28 +51,17 @@ class ProgressBar(gtk.EventBox):
         #self.escala.connect('user-set-value', self.__emit_valor)
 
     def set_progress(self, valor=0.0):
-        """
-        El reproductor modifica la escala.
-        """
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
 
     #def __emit_valor(self, widget, valor):
-    #    """
-    #    El usuario modifica la escala.
-    #    Y se emite la señal con el valor (% float).
-    #    """
-
     #    self.emit("user-set-value", valor)
 
 
 class BalanceBar(gtk.HScale):
-    """
-    Escala de SlicerBalance.
-    """
 
     #__gsignals__ = {
-    #"user-set-value": (gobject.SIGNAL_RUN_CLEANUP,
+    #"user-set-value": (gobject.SIGNAL_RUN_LAST,
     #    gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
@@ -110,10 +99,6 @@ class BalanceBar(gtk.HScale):
     #            self.emit("user-set-value", valor)
 
     def __expose(self, widget, event):
-        """
-        Dibuja el estado de la barra de progreso.
-        """
-
         x, y, w, h = self.get_allocation()
         ancho, borde = (self.ancho, self.borde)
 

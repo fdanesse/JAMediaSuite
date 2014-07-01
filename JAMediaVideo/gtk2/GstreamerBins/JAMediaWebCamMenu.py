@@ -22,15 +22,12 @@
 import gobject
 import pygst
 import gst
+import gtk
 
 PR = False
 
 
 class JAMediaWebCamMenu(gobject.GObject):
-
-    __gsignals__ = {
-    "estado": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self, ventana_id, device="/dev/video0"):
 
@@ -72,8 +69,13 @@ class JAMediaWebCamMenu(gobject.GObject):
         balance.link(xvimage)
 
         self.bus = self.pipeline.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        #self.bus.connect('message', self.__on_mensaje)          # ****
+        self.bus.enable_sync_message_emission()                 # ****
+        self.bus.connect('sync-message', self.__sync_message)   # ****
 
+    '''
     def __bus_handler(self, bus, message):
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
@@ -84,6 +86,22 @@ class JAMediaWebCamMenu(gobject.GObject):
             print message.parse_error()
 
         return gst.BUS_PASS
+    '''
+
+    def __sync_message(self, bus, message):
+        if message.type == gst.MESSAGE_ELEMENT:
+            if message.structure.get_name() == 'prepare-xwindow-id':
+                gtk.gdk.threads_enter()
+                gtk.gdk.display_get_default().sync()
+                message.src.set_xwindow_id(self.ventana_id)
+                gtk.gdk.threads_leave()
+
+        elif message.type == gst.MESSAGE_ERROR:
+            err, debug = message.parse_error()
+            if PR:
+                print "JAMediaWebCamMenu ERROR:"
+                print "\t%s" % err
+                print "\t%s" % debug
 
     def get_rotacion(self):
         if PR:
