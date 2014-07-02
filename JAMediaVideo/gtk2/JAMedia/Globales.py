@@ -28,6 +28,7 @@ def get_colors(key):
         "window": "#ffffff",
         "toolbars": "#f0e6aa",
         "drawingplayer": "#000000",
+        "naranaja": "#ff6600",
         }
 
     return gdk.color_parse(_dict.get(key, "#ffffff"))

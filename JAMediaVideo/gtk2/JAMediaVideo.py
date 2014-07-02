@@ -88,6 +88,7 @@ class JAMediaVideo(gtk.Window):
         self.realize()
 
         gobject.idle_add(self.__run)
+        print "JAMediaVideo process:", os.getpid()
 
     def __jamediaconvert_info(self, widget, info):
         self.toolbar.toolbar_converter.set_info(info)

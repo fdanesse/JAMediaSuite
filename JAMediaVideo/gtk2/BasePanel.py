@@ -366,7 +366,6 @@ class BasePanel(gtk.HPaned):
         """
         Setea valores en Balance de Video. valor es % float
         """
-
         if tipo == "saturacion":
             self.jamediawebcam.set_balance(saturacion=valor)
 
@@ -388,7 +387,6 @@ class BasePanel(gtk.HPaned):
         """
         Cambia a modo Conversor y Extractor.
         """
-
         if PR:
             print "__jamediaconvert_run"
         self.pantalla.hide()
@@ -400,7 +398,6 @@ class BasePanel(gtk.HPaned):
         """
         Cambia a modo visor de imágenes.
         """
-
         if PR:
             print "__jamediaimagenes_run"
         self.imageplayer = ImagePlayer(self.pantalla)
@@ -410,7 +407,6 @@ class BasePanel(gtk.HPaned):
         """
         Cambia a modo reproductor.
         """
-
         if PR:
             print "__jamedia_run"
         xid = self.pantalla.get_property('window').xid
@@ -423,10 +419,8 @@ class BasePanel(gtk.HPaned):
         """
         Cambia a modo Cámara básica del menú.
         """
-
         if PR:
             print "__camara_menu_run"
-
         self.control = True
         device = self.camara_setting.device
         xid = self.pantalla.get_property('window').xid
@@ -438,10 +432,8 @@ class BasePanel(gtk.HPaned):
         """
         Cambia modo Cámara de video.
         """
-
         if PR:
             print "__camara_video_run"
-
         self.control = True
         device = self.camara_setting.device
         salida = self.video_out_setting.formato
@@ -473,10 +465,8 @@ class BasePanel(gtk.HPaned):
         """
         Cambia a modo Cámara de Fotografía.
         """
-
         if PR:
             print "__camara_foto_run"
-
         self.control = True
         device = self.camara_setting.device
         salida = self.video_out_setting.formato
@@ -570,9 +560,13 @@ class BasePanel(gtk.HPaned):
             salida = self.video_out_setting.formato
 
         if self.jamediawebcam:
-            self.jamediawebcam.disconnect_by_func(self.__update_record)
-            self.jamediawebcam.disconnect_by_func(self.__recibe_stop_rafaga)
-            self.jamediawebcam.disconnect_by_func(self.__control_grabacion_end)
+            try:
+                self.jamediawebcam.disconnect_by_func(self.__update_record)
+                self.jamediawebcam.disconnect_by_func(self.__recibe_stop_rafaga)
+                self.jamediawebcam.disconnect_by_func(
+                    self.__control_grabacion_end)
+            except:
+                pass
             self.jamediawebcam.stop()
             del(self.jamediawebcam)
             self.jamediawebcam = False
@@ -853,7 +847,6 @@ class BasePanel(gtk.HPaned):
         """
         Empaqueta los widgets de efectos gstreamer.
         """
-
         self.widget_efectos = WidgetsGstreamerVideoEfectos()
         self.vbox_config.pack_start(self.widget_efectos, False, False, 0)
 

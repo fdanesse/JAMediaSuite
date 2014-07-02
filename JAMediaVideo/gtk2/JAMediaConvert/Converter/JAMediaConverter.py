@@ -22,15 +22,17 @@
 import os
 import time
 import datetime
+import pygst
 import gst
 import gobject
 
+gobject.threads_init()
+#gtk.gdk.threads_init()
+
 
 def borrar(origen):
-
     try:
         import shutil
-
         if os.path.isdir(origen):
             shutil.rmtree("%s" % (os.path.join(origen)))
 
@@ -63,11 +65,11 @@ class JAMediaConverter(gobject.GObject):
     """
 
     __gsignals__ = {
-    "endfile": (gobject.SIGNAL_RUN_FIRST,
+    "endfile": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "newposicion": (gobject.SIGNAL_RUN_FIRST,
+    "newposicion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_INT,)),
-    "info": (gobject.SIGNAL_RUN_FIRST,
+    "info": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
 
     def __init__(self, origen, codec, dirpath_destino):
@@ -125,11 +127,8 @@ class JAMediaConverter(gobject.GObject):
             self.__run_avi_out()
 
     def __run_wav_out(self):
-
         from Bins import wav_bin
-
         self.player = gst.element_factory_make("playbin2", "playbin2")
-
         videoconvert = gst.element_factory_make("fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
 
@@ -140,14 +139,15 @@ class JAMediaConverter(gobject.GObject):
         self.player.set_property("uri", "file://" + self.origen)
 
         self.bus = self.player.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        self.bus.connect('message', self.__on_mensaje)          # ****
+        #self.bus.enable_sync_message_emission()                 # ****
+        #self.bus.connect('sync-message', self.__sync_message)   # ****
 
     def __run_mp3_out(self):
-
         from Bins import mp3_bin
-
         self.player = gst.element_factory_make("playbin2", "playbin2")
-
         videoconvert = gst.element_factory_make("fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
 
@@ -158,33 +158,34 @@ class JAMediaConverter(gobject.GObject):
         self.player.set_property("uri", "file://" + self.origen)
 
         self.bus = self.player.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        self.bus.connect('message', self.__on_mensaje)          # ****
+        #self.bus.enable_sync_message_emission()                 # ****
+        #self.bus.connect('sync-message', self.__sync_message)   # ****
 
     def __run_ogg_out(self):
-
         from Bins import ogg_bin
-
         self.player = gst.element_factory_make("playbin2", "playbin2")
-
         videoconvert = gst.element_factory_make("fakesink", "video-out")
         self.player.set_property('video-sink', videoconvert)
 
         oggenc = ogg_bin(self.newpath)
         oggenc.set_name("audio-out")
         self.player.set_property('audio-sink', oggenc)
-
         self.player.set_property("uri", "file://" + self.origen)
 
         self.bus = self.player.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        self.bus.connect('message', self.__on_mensaje)          # ****
+        #self.bus.enable_sync_message_emission()                 # ****
+        #self.bus.connect('sync-message', self.__sync_message)   # ****
 
     def __run_mpeg_out(self):
-
         # https://github.com/jspiros/hylia-transcoder/
         # blob/master/hylia-transcoder.py
-
         self.player = gst.Pipeline()
-
         filesrc = gst.element_factory_make("filesrc", "filesrc")
         decodebin = gst.element_factory_make("decodebin", "decodebin")
 
@@ -198,14 +199,12 @@ class JAMediaConverter(gobject.GObject):
 
         # Audio
         from Bins import mp2_bin
-
         mp2 = mp2_bin()
         mp2.set_name("audio-out")
         self.player.add(mp2)
 
         #Video
         from Bins import mpeg2_bin
-
         mpeg2 = mpeg2_bin()
         mpeg2.set_name("video-out")
         self.player.add(mpeg2)
@@ -231,12 +230,14 @@ class JAMediaConverter(gobject.GObject):
         filesink.set_property('location', self.newpath)
 
         self.bus = self.player.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        self.bus.connect('message', self.__on_mensaje)          # ****
+        #self.bus.enable_sync_message_emission()                 # ****
+        #self.bus.connect('sync-message', self.__sync_message)   # ****
 
     def __run_ogv_out(self):
-
         self.player = gst.Pipeline()
-
         filesrc = gst.element_factory_make("filesrc", "filesrc")
         decodebin = gst.element_factory_make("decodebin", "decodebin")
 
@@ -252,14 +253,12 @@ class JAMediaConverter(gobject.GObject):
         from Bins import Vorbis_bin
         vorbisenc = Vorbis_bin()
         vorbisenc.set_name("audio-out")
-
         self.player.add(vorbisenc)
 
         #Video
         from Bins import Theora_bin
         theoraenc = Theora_bin()
         theoraenc.set_name("video-out")
-
         self.player.add(theoraenc)
 
         queuemux = gst.element_factory_make('queue', "queuemux")
@@ -282,14 +281,16 @@ class JAMediaConverter(gobject.GObject):
         filesink.set_property('location', self.newpath)
 
         self.bus = self.player.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        self.bus.connect('message', self.__on_mensaje)          # ****
+        #self.bus.enable_sync_message_emission()                 # ****
+        #self.bus.connect('sync-message', self.__sync_message)   # ****
 
     def __run_avi_out(self):
-
         self.player = gst.Pipeline()
         #index = gst.index_factory_make("memindex")
         #self.player.set_index(index)
-
         filesrc = gst.element_factory_make("filesrc", "filesrc")
         decodebin = gst.element_factory_make("decodebin", "decodebin")
 
@@ -305,14 +306,12 @@ class JAMediaConverter(gobject.GObject):
         from Bins import audio_avi_bin
         audio_bin = audio_avi_bin()
         audio_bin.set_name("audio-out")
-
         self.player.add(audio_bin)
 
         #Video
         from Bins import jpegenc_bin
         jpegenc = jpegenc_bin()
         jpegenc.set_name("video-out")
-
         self.player.add(jpegenc)
 
         queuemux = gst.element_factory_make('queue', "queuemux")
@@ -335,14 +334,17 @@ class JAMediaConverter(gobject.GObject):
         filesink.set_property('location', self.newpath)
 
         self.bus = self.player.get_bus()
-        self.bus.set_sync_handler(self.__bus_handler)
+        #self.bus.set_sync_handler(self.__bus_handler)
+        self.bus.add_signal_watch()                             # ****
+        self.bus.connect('message', self.__on_mensaje)          # ****
+        #self.bus.enable_sync_message_emission()                 # ****
+        #self.bus.connect('sync-message', self.__sync_message)   # ****
 
     def __on_pad_added(self, decodebin, pad):
         """
         Agregar elementos en forma dinámica según sean necesarios.
             https://wiki.ubuntu.com/Novacut/GStreamer1.0
         """
-
         string = str(pad.get_caps())
 
         #text = "Detectando Capas en la Fuente:"
@@ -354,26 +356,23 @@ class JAMediaConverter(gobject.GObject):
         #print text
         if string.startswith('audio/'):
             audioconvert = self.player.get_by_name('audio-out')
-
             if audioconvert:
                 sink = audioconvert.get_static_pad('sink')
                 pad.link(sink)
 
         elif string.startswith('video/'):
             videoconvert = self.player.get_by_name('video-out')
-
             if videoconvert:
                 sink = videoconvert.get_static_pad('sink')
                 pad.link(sink)
 
-    def __bus_handler(self, bus, mensaje):
-
-        if mensaje.type == gst.MESSAGE_EOS:
+    def __on_mensaje(self, bus, message):
+        if message.type == gst.MESSAGE_EOS:
             self.__new_handle(False)
             self.emit("endfile")
 
-        elif mensaje.type == gst.MESSAGE_ERROR:
-            err, debug = mensaje.parse_error()
+        elif message.type == gst.MESSAGE_ERROR:
+            err, debug = message.parse_error()
             self.__new_handle(False)
             if PR:
                 print "JAMediaConverter ERROR:"
@@ -382,15 +381,7 @@ class JAMediaConverter(gobject.GObject):
                 print "\t%s" % debug
             self.emit("endfile")
 
-        return gst.BUS_PASS
-
     def __new_handle(self, reset):
-        """
-        Elimina o reinicia la funcion que
-        envia los datos de actualizacion para
-        la barra de progreso del reproductor.
-        """
-
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
@@ -400,11 +391,6 @@ class JAMediaConverter(gobject.GObject):
                 500, self.__handle)
 
     def __handle(self):
-        """
-        Envia los datos de actualizacion para
-        la barra de progreso del reproductor.
-        """
-
         if PR:
             print "__handle", time.time()
 
@@ -455,9 +441,6 @@ class JAMediaConverter(gobject.GObject):
 
         pos = int(posicion * 100 / duracion)
 
-        #if pos < 0 or pos > self.duracion:
-        #    return True
-
         if self.duracion != duracion:
             self.duracion = duracion
 
@@ -469,7 +452,6 @@ class JAMediaConverter(gobject.GObject):
 
     def play(self):
         self.emit("info", "Procesando ==> %s" % self.codec)
-
         if PR:
             print "JAMediaConverter Iniciado: %s ==> %s" % (
                 os.path.basename(self.origen), self.codec)
@@ -479,25 +461,5 @@ class JAMediaConverter(gobject.GObject):
 
     def stop(self):
         self.__new_handle(False)
-        #self.player.set_state(gst.STATE_NULL)
+        self.player.set_state(gst.STATE_NULL)
         self.emit("info", "  Progreso  ")
-
-        bins = [
-            "filesrc", "decodebin",
-            "queuemux", "mux", "filesink",
-            'audio-out', 'video-out']
-
-        for b in bins:
-            elemento = self.player.get_by_name(b)
-
-            if elemento:
-                if PR:
-                    print "JAMediaConverter Quitando Elemento:", elemento
-
-                self.player.unlink(elemento)
-                try:
-                    self.player.remove(elemento)
-                except:
-                    pass
-                elemento.unparent()
-                del(elemento)

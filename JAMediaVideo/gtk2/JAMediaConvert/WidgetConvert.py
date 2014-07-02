@@ -84,7 +84,6 @@ class WidgetConvert(gtk.HPaned):
 
         elif accion == "Ejecutar Tareas en la Lista":
             self.tareas_pendientes = []
-
             for tarea in self.scrolltareas.vbox.get_children():
                 tarea.hide()
                 self.tareas_pendientes.append(tarea)
@@ -93,7 +92,6 @@ class WidgetConvert(gtk.HPaned):
 
         elif accion == "Copiar Tarea a Toda la Lista":
             self.get_toplevel().set_sensitive(False)
-
             for filepath in self.playerlist.get_items_paths():
                 self.__selecction_file(False, filepath)
 
@@ -107,13 +105,13 @@ class WidgetConvert(gtk.HPaned):
             gobject.idle_add(self.__run_stack_tareas)
 
     def __run_stack_tareas(self):
-
         if PR:
             print "WidgetConvert", "__run_stack_tareas"
 
         if not self.tareas_pendientes:
             self.emit("in-run", False)
             widgetarchivo = self.scrolltareas.vbox.get_children()[0]
+            widgetarchivo.salir()
             self.playerlist.select_valor(widgetarchivo.path_origen)
             self.playerlist.set_sensitive(True)
 
@@ -125,8 +123,8 @@ class WidgetConvert(gtk.HPaned):
 
         else:
             widgetarchivo = self.tareas_pendientes[0]
+            widgetarchivo.salir()
             self.tareas_pendientes.remove(widgetarchivo)
-
             self.emit("in-run", True)
             self.playerlist.select_valor(widgetarchivo.path_origen)
             self.playerlist.set_sensitive(False)
@@ -151,7 +149,6 @@ class WidgetConvert(gtk.HPaned):
         """
         Cuando el usuario selecciona un archivo en la lista.
         """
-
         if not path:
             return
 
@@ -365,12 +362,13 @@ class WidgetArchivo(gtk.Frame):
             print "Tarea sin Definir:", self.__set_accion, accion
 
     def __play_stack_tareas(self, player=False):
-
         if PR:
             print "WidgetConvert", "__play_stack_tareas"
 
         if self.player:
-            # FIXME: stop hace que la aplicación se cuelgue.
+            self.player.disconnect_by_func(self.__play_stack_tareas)
+            self.player.disconnect_by_func(self.__process_tarea)
+            self.player.disconnect_by_func(self.__info_tarea)
             self.player.stop()
             del(self.player)
             self.player = False
@@ -380,11 +378,10 @@ class WidgetArchivo(gtk.Frame):
             self.__in_run(False)
             self.buttonsbox.set_info("  Tareas Procesadas  ")
             self.buttonsbox.progress.set_progress(100.0)
-            return
+            return False
 
         codec = self.temp_tareas[0]
         self.temp_tareas.remove(codec)
-
         dirpath_destino = ""
 
         if codec in ["jpg", "png"]:
@@ -397,11 +394,10 @@ class WidgetArchivo(gtk.Frame):
             dirpath_destino = get_video_directory()
 
         self.__in_run(True)
-        gtk.gdk.flush()
         gobject.idle_add(self.__new_jamedia_converter, codec, dirpath_destino)
+        return False
 
     def __new_jamedia_converter(self, codec, dirpath_destino):
-
         if PR:
             print "WidgetConvert", "__new_jamedia_converter"
 
@@ -465,6 +461,9 @@ class WidgetArchivo(gtk.Frame):
 
     def salir(self):
         if self.player:
+            self.player.disconnect_by_func(self.__play_stack_tareas)
+            self.player.disconnect_by_func(self.__process_tarea)
+            self.player.disconnect_by_func(self.__info_tarea)
             self.player.stop()
             del(self.player)
             self.player = False

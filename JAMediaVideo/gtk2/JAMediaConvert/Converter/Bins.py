@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   JAMediaBins.py por:
+#   Bins.py por:
 #   Flavio Danesse <fdanesse@gmail.com>
 #   Uruguay
 #
@@ -19,6 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import pygst
 import gst
 import gobject
 
@@ -31,17 +32,13 @@ class wav_bin(gst.Bin):
 
         self.set_name('audio-out')
 
-        audioconvert = gst.element_factory_make(
-            "audioconvert", "audioconvert")
+        audioconvert = gst.element_factory_make("audioconvert", "audioconvert")
         #audioresample = gst.element_factory_make(
         #    "audioresample", "audioresample")
         #audioresample.set_property('quality', 10)
 
-        wavenc = gst.element_factory_make(
-            "wavenc", "wavenc")
-
-        filesink = gst.element_factory_make(
-            "filesink", "filesinkwav")
+        wavenc = gst.element_factory_make("wavenc", "wavenc")
+        filesink = gst.element_factory_make("filesink", "filesinkwav")
 
         self.add(audioconvert)
         #self.add(audioresample)
@@ -53,8 +50,7 @@ class wav_bin(gst.Bin):
         audioconvert.link(wavenc)
         wavenc.link(filesink)
 
-        filesink.set_property(
-            'location', location)
+        filesink.set_property('location', location)
 
         pad = audioconvert.get_static_pad("sink")
         self.add_pad(gst.GhostPad("sink", pad))
@@ -68,16 +64,13 @@ class mp3_bin(gst.Bin):
 
         self.set_name('audio-out')
 
-        audioconvert = gst.element_factory_make(
-            "audioconvert", "audioconvert")
+        audioconvert = gst.element_factory_make("audioconvert", "audioconvert")
         #audioresample = gst.element_factory_make(
         #    "audioresample", "audioresample")
         #audioresample.set_property('quality', 10)
 
-        lamemp3enc = gst.element_factory_make(
-            "lamemp3enc", "lamemp3enc")
-        filesink = gst.element_factory_make(
-            "filesink", "filesinkmp3")
+        lamemp3enc = gst.element_factory_make("lamemp3enc", "lamemp3enc")
+        filesink = gst.element_factory_make("filesink", "filesinkmp3")
 
         self.add(audioconvert)
         #self.add(audioresample)
@@ -89,8 +82,7 @@ class mp3_bin(gst.Bin):
         audioconvert.link(lamemp3enc)
         lamemp3enc.link(filesink)
 
-        filesink.set_property(
-            'location', location)
+        filesink.set_property('location', location)
 
         pad = audioconvert.get_static_pad("sink")
         self.add_pad(gst.GhostPad("sink", pad))
@@ -104,18 +96,14 @@ class ogg_bin(gst.Bin):
 
         self.set_name('audio-out')
 
-        audioconvert = gst.element_factory_make(
-            "audioconvert", "audioconvert")
+        audioconvert = gst.element_factory_make("audioconvert", "audioconvert")
         #audioresample = gst.element_factory_make(
         #    "audioresample", "audioresample")
         #audioresample.set_property('quality', 10)
 
-        vorbisenc = gst.element_factory_make(
-            "vorbisenc", "vorbisenc")
-        oggmux = gst.element_factory_make(
-            "oggmux", "oggmux")
-        filesink = gst.element_factory_make(
-            "filesink", "filesinkogg")
+        vorbisenc = gst.element_factory_make("vorbisenc", "vorbisenc")
+        oggmux = gst.element_factory_make("oggmux", "oggmux")
+        filesink = gst.element_factory_make("filesink", "filesinkogg")
 
         self.add(audioconvert)
         #self.add(audioresample)
@@ -129,8 +117,7 @@ class ogg_bin(gst.Bin):
         vorbisenc.link(oggmux)
         oggmux.link(filesink)
 
-        filesink.set_property(
-            'location', location)
+        filesink.set_property('location', location)
 
         pad = audioconvert.get_static_pad("sink")
         self.add_pad(gst.GhostPad("sink", pad))
@@ -163,10 +150,8 @@ class mp2_bin(gst.Bin):
         queue.link(audioconvert)
         audioconvert.link(ffenc_mp2)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            ffenc_mp2.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", ffenc_mp2.get_static_pad("src")))
 
 
 class mpeg2_bin(gst.Bin):
@@ -188,8 +173,7 @@ class mpeg2_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', "videorate")
+        videorate = gst.element_factory_make('videorate', "videorate")
         ffenc_mpeg2video = gst.element_factory_make(
             'ffenc_mpeg2video', 'ffenc_mpeg2video')
 
@@ -208,8 +192,7 @@ class mpeg2_bin(gst.Bin):
         ffmpegcolorspace.link(videorate)
         videorate.link(ffenc_mpeg2video)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
         self.add_pad(gst.GhostPad("src",
             ffenc_mpeg2video.get_static_pad("src")))
 
@@ -240,10 +223,8 @@ class Vorbis_bin(gst.Bin):
         queue.link(audioconvert)
         audioconvert.link(vorbisenc)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            vorbisenc.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", vorbisenc.get_static_pad("src")))
 
 
 class Theora_bin(gst.Bin):
@@ -264,10 +245,8 @@ class Theora_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', "videorate")
-        theoraenc = gst.element_factory_make(
-            'theoraenc', 'theoraenc')
+        videorate = gst.element_factory_make('videorate', "videorate")
+        theoraenc = gst.element_factory_make('theoraenc', 'theoraenc')
         theoraenc.set_property("quality", 63)
 
         try:
@@ -285,10 +264,8 @@ class Theora_bin(gst.Bin):
         ffmpegcolorspace.link(videorate)
         videorate.link(theoraenc)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            theoraenc.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", theoraenc.get_static_pad("src")))
 
 
 class jpegenc_bin(gst.Bin):
@@ -310,10 +287,8 @@ class jpegenc_bin(gst.Bin):
 
         ffmpegcolorspace = gst.element_factory_make(
             'ffmpegcolorspace', "ffmpegcolorspace")
-        videorate = gst.element_factory_make(
-            'videorate', "videorate")
-        jpegenc = gst.element_factory_make(
-            'jpegenc', 'jpegenc')
+        videorate = gst.element_factory_make('videorate', "videorate")
+        jpegenc = gst.element_factory_make('jpegenc', 'jpegenc')
 
         try:
             videorate.set_property("max-rate", 30)
@@ -330,10 +305,8 @@ class jpegenc_bin(gst.Bin):
         ffmpegcolorspace.link(videorate)
         videorate.link(jpegenc)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            jpegenc.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", jpegenc.get_static_pad("src")))
 
 
 class audio_avi_bin(gst.Bin):
@@ -356,7 +329,5 @@ class audio_avi_bin(gst.Bin):
 
         queue.link(audioconvert)
 
-        self.add_pad(gst.GhostPad("sink",
-            queue.get_static_pad("sink")))
-        self.add_pad(gst.GhostPad("src",
-            audioconvert.get_static_pad("src")))
+        self.add_pad(gst.GhostPad("sink", queue.get_static_pad("sink")))
+        self.add_pad(gst.GhostPad("src", audioconvert.get_static_pad("src")))
