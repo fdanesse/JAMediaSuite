@@ -97,7 +97,7 @@ class BarraProgreso(gtk.EventBox):
             self.valor = valor
             self.emit("user-set-value", self.valor)
 
-    def set_progress(self, valor=0):
+    def set_progress(self, valor=0.0):
         if self.escala.presed:
             return
 

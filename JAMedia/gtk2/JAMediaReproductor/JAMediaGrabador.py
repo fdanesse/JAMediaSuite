@@ -118,11 +118,10 @@ class JAMediaGrabador(gobject.GObject):
         oggmux.link(self.archivo)
 
         self.bus = self.pipeline.get_bus()
-        #self.bus.set_sync_handler(self.__bus_handler)
-        self.bus.add_signal_watch()                             # ****
-        self.bus.connect('message', self.__on_mensaje)          # ****
-        self.bus.enable_sync_message_emission()                 # ****
-        self.bus.connect('sync-message', self.__sync_message)   # ****
+        self.bus.add_signal_watch()
+        self.bus.connect('message', self.__on_mensaje)
+        self.bus.enable_sync_message_emission()
+        self.bus.connect('sync-message', self.__sync_message)
 
         self.player.connect('pad-added', self.__pad_added)
 
@@ -188,56 +187,7 @@ class JAMediaGrabador(gobject.GObject):
 
     def __play(self):
         self.pipeline.set_state(gst.STATE_PLAYING)
-    '''
-    def __bus_handler(self, bus, message):
-        if message.type == gst.MESSAGE_EOS:
-            self.__new_handle(False)
-            self.emit("endfile")
 
-        elif message.type == gst.MESSAGE_BUFFERING:
-            buf = int(message.structure["buffer-percent"])
-            if buf < 100 and self.estado == gst.STATE_PLAYING:
-                #self.emit("loading-buffer", buf)
-                self.__pause()
-
-            elif buf > 99 and self.estado != gst.STATE_PLAYING:
-                #self.emit("loading-buffer", buf)
-                self.__play()
-
-        elif message.type == gst.MESSAGE_STATE_CHANGED:
-            old, new, pending = message.parse_state_changed()
-
-            if self.estado != new:
-                self.estado = new
-                """
-                if new == gst.STATE_PLAYING:
-                    #self.emit("estado", "playing")
-                    self.__new_handle(True)
-
-                elif new == gst.STATE_PAUSED:
-                    #self.emit("estado", "paused")
-                    self.__new_handle(False)
-
-                elif new == gst.STATE_NULL:
-                    #self.emit("estado", "None")
-                    self.__new_handle(False)
-
-                else:
-                    #self.emit("estado", "paused")
-                    self.__new_handle(False)
-                """
-        elif message.type == gst.MESSAGE_LATENCY:
-            self.player.recalculate_latency()
-
-        elif message.type == gst.MESSAGE_ERROR:
-            err, debug = message.parse_error()
-            print "JAMediaGrabador ERROR:"
-            print "\t%s" % err
-            print "\t%s" % debug
-            self.__new_handle(False)
-
-        return gst.BUS_PASS
-    '''
     def __new_handle(self, reset):
         if self.actualizador:
             gobject.source_remove(self.actualizador)

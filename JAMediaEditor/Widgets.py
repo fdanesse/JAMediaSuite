@@ -88,22 +88,18 @@ class Menu(Gtk.MenuBar):
 
         # Items del Menú Proyectos
         item = Gtk.MenuItem('Nuevo . . .')
-        item.connect("activate",
-            self.__emit_accion_proyecto, "Nuevo Proyecto")
+        item.connect("activate", self.__emit_accion_proyecto, "Nuevo Proyecto")
         menu_proyectos.append(item)
         item.add_accelerator("activate", accel_group,
             ord('N'), Gdk.ModifierType.SHIFT_MASK |
-            Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Abrir . . .')
-        item.connect("activate",
-            self.__emit_accion_proyecto, "Abrir Proyecto")
+        item.connect("activate", self.__emit_accion_proyecto, "Abrir Proyecto")
         menu_proyectos.append(item)
         item.add_accelerator("activate", accel_group,
             ord('O'), Gdk.ModifierType.SHIFT_MASK |
-            Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Editar . . .')
         item.connect("activate",
@@ -111,8 +107,7 @@ class Menu(Gtk.MenuBar):
         self.dict_proyecto["Editar Proyecto"] = item
         menu_proyectos.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('E'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('E'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Cerrar')
         item.connect("activate",
@@ -121,8 +116,7 @@ class Menu(Gtk.MenuBar):
         menu_proyectos.append(item)
         item.add_accelerator("activate", accel_group,
             ord('W'), Gdk.ModifierType.SHIFT_MASK |
-            Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Guardar')
         item.connect("activate",
@@ -131,102 +125,81 @@ class Menu(Gtk.MenuBar):
         menu_proyectos.append(item)
         item.add_accelerator("activate", accel_group,
             ord('S'), Gdk.ModifierType.SHIFT_MASK |
-            Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Construir . . .')
-        item.connect("activate",
-            self.__emit_accion_proyecto, "Construir")
+        item.connect("activate", self.__emit_accion_proyecto, "Construir")
         self.dict_proyecto["Construir"] = item
         menu_proyectos.append(item)
 
         # Items del Menú Archivos
         item = Gtk.MenuItem('Nuevo')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Nuevo Archivo")
+        item.connect("activate", self.__emit_accion_archivo, "Nuevo Archivo")
         menu_archivos.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('N'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('N'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Abrir . . .')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Abrir Archivo")
+        item.connect("activate", self.__emit_accion_archivo, "Abrir Archivo")
         menu_archivos.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('O'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('O'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         #item = Gtk.MenuItem('Cerrar')
-        #item.connect("activate",
-        #    self.__emit_accion_archivo, "Cerrar Archivo")
+        #item.connect("activate", self.__emit_accion_archivo, "Cerrar Archivo")
         #self.dict_archivo['Cerrar'] = item
         #menu_archivos.append(item)
         #item.add_accelerator("activate", accel_group,
-        #    ord('W'), Gdk.ModifierType.CONTROL_MASK,
-        #    Gtk.AccelFlags.VISIBLE)
+        #    ord('W'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Guardar')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Guardar Archivo")
+        item.connect("activate", self.__emit_accion_archivo, "Guardar Archivo")
         menu_archivos.append(item)
         self.dict_archivo['Guardar'] = item
         item.add_accelerator("activate", accel_group,
-            ord('S'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('S'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Guardar Como ...')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Guardar Como")
+        item.connect("activate", self.__emit_accion_archivo, "Guardar Como")
         #self.dict_archivo['Guardar Como'] = item
         menu_archivos.append(item)
 
         # Items del Menú Edición
         item = Gtk.MenuItem('Deshacer')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Deshacer")
+        item.connect("activate", self.__emit_accion_archivo, "Deshacer")
         menu_edicion.append(item)
         self.dict_archivo['Deshacer'] = item
         item.add_accelerator("activate", accel_group,
-            ord('Z'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('Z'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Rehacer')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Rehacer")
+        item.connect("activate", self.__emit_accion_archivo, "Rehacer")
         menu_edicion.append(item)
         self.dict_archivo['Rehacer'] = item
         item.add_accelerator("activate", accel_group,
             ord('Z'), Gdk.ModifierType.CONTROL_MASK |
-            Gdk.ModifierType.SHIFT_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            Gdk.ModifierType.SHIFT_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Cortar')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Cortar")
+        item.connect("activate", self.__emit_accion_archivo, "Cortar")
         menu_edicion.append(item)
         self.dict_archivo['Cortar'] = item
         item.add_accelerator("activate", accel_group,
-            ord('X'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('X'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Copiar')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Copiar")
+        item.connect("activate", self.__emit_accion_archivo, "Copiar")
         menu_edicion.append(item)
         self.dict_archivo['Copiar'] = item
         item.add_accelerator("activate", accel_group,
-            ord('C'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('C'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Pegar')
-        item.connect("activate",
-            self.__emit_accion_archivo, "Pegar")
+        item.connect("activate", self.__emit_accion_archivo, "Pegar")
         self.dict_archivo['Pegar'] = item
         menu_edicion.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('V'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('V'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Seleccionar Todo')
         item.connect("activate",
@@ -234,14 +207,12 @@ class Menu(Gtk.MenuBar):
         self.dict_archivo['Seleccionar Todo'] = item
         menu_edicion.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('A'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('A'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         # Items del menú Ver
         item = Gtk.MenuItem()
         try:
             item.get_child().destroy()
-
         except:
             pass
 
@@ -252,15 +223,13 @@ class Menu(Gtk.MenuBar):
         label = Gtk.Label("Numeros de línea")
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate",
-            self.__emit_accion_ver, "Numeracion")
+        item.connect("activate", self.__emit_accion_ver, "Numeracion")
         #self.dict_archivo['Numeracion'] = item
         menu_ver.append(item)
 
         item = Gtk.MenuItem()
         try:
             item.get_child().destroy()
-
         except:
             pass
 
@@ -271,14 +240,12 @@ class Menu(Gtk.MenuBar):
         label = Gtk.Label("Panel inferior")
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate",
-            self.__emit_accion_ver, "Panel inferior")
+        item.connect("activate", self.__emit_accion_ver, "Panel inferior")
         menu_ver.append(item)
 
         item = Gtk.MenuItem()
         try:
             item.get_child().destroy()
-
         except:
             pass
 
@@ -289,56 +256,45 @@ class Menu(Gtk.MenuBar):
         label = Gtk.Label("Panel lateral")
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate",
-            self.__emit_accion_ver, "Panel lateral")
+        item.connect("activate", self.__emit_accion_ver, "Panel lateral")
         menu_ver.append(item)
 
         # Items del Menú Código
         item = Gtk.MenuItem('Aumentar')
-        item.connect("activate",
-            self.__emit_accion_codigo, "Aumentar")
+        item.connect("activate", self.__emit_accion_codigo, "Aumentar")
         self.dict_archivo['Aumentar'] = item
         menu_codigo.append(item)
         item.add_accelerator("activate", accel_group,
-            ord("+"), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord("+"), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Disminuir')
-        item.connect("activate",
-            self.__emit_accion_codigo, "Disminuir")
+        item.connect("activate", self.__emit_accion_codigo, "Disminuir")
         self.dict_archivo['Disminuir'] = item
         menu_codigo.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('-'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('-'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Formato de Texto . . .')
-        item.connect("activate",
-            self.__emit_accion_codigo, "Formato")
+        item.connect("activate", self.__emit_accion_codigo, "Formato")
         #self.dict_archivo['Formato'] = item
         menu_codigo.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('T'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('T'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Identar')
-        item.connect("activate",
-            self.__emit_accion_codigo, "Identar")
+        item.connect("activate", self.__emit_accion_codigo, "Identar")
         self.dict_archivo['Identar'] = item
         menu_codigo.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('I'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('I'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('De Identar')
-        item.connect("activate",
-            self.__emit_accion_codigo, "De Identar")
+        item.connect("activate", self.__emit_accion_codigo, "De Identar")
         self.dict_archivo['De Identar'] = item
         menu_codigo.append(item)
         item.add_accelerator("activate", accel_group,
             ord('I'), Gdk.ModifierType.CONTROL_MASK |
-            Gdk.ModifierType.SHIFT_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            Gdk.ModifierType.SHIFT_MASK, Gtk.AccelFlags.VISIBLE)
 
         #item = Gtk.MenuItem('Identar con Espacios')
         #item.connect("activate", self.__emit_accion_codigo,
@@ -353,26 +309,21 @@ class Menu(Gtk.MenuBar):
         #menu_codigo.append(item)
 
         item = Gtk.MenuItem('Buscar Texto . . .')
-        item.connect("activate",
-            self.__emit_accion_codigo, "Buscar Texto")
+        item.connect("activate", self.__emit_accion_codigo, "Buscar Texto")
         self.dict_archivo['Buscar Texto'] = item
         menu_codigo.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('B'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('B'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Reemplazar Texto . . .')
-        item.connect("activate",
-            self.__emit_accion_codigo, "Reemplazar Texto")
+        item.connect("activate", self.__emit_accion_codigo, "Reemplazar Texto")
         self.dict_archivo['Reemplazar Texto'] = item
         menu_codigo.append(item)
         item.add_accelerator("activate", accel_group,
-            ord('R'), Gdk.ModifierType.CONTROL_MASK,
-            Gtk.AccelFlags.VISIBLE)
+            ord('R'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
         item = Gtk.MenuItem('Chequear sintaxis')
-        item.connect("activate",
-            self.__emit_accion_codigo, "Chequear")
+        item.connect("activate", self.__emit_accion_codigo, "Chequear")
         self.dict_archivo['Chequear'] = item
         menu_codigo.append(item)
 
@@ -388,42 +339,33 @@ class Menu(Gtk.MenuBar):
         self.show_all()
 
     def __emit_run_jamediapygihack(self, widget):
-
         self.emit('run_jamediapygihack')
 
     def __run_about(self, widget):
-
         dialog = Credits(parent=self.get_toplevel())
         dialog.run()
         dialog.destroy()
 
     def __emit_accion_codigo(self, widget, accion):
-
         self.emit('accion_codigo', accion)
 
     def __emit_accion_ver(self, widget, accion):
-
         valor = not widget.get_children()[0].get_children()[0].get_active()
         widget.get_children()[0].get_children()[0].set_active(valor)
-
         self.emit('accion_ver', accion, valor)
 
     def __emit_accion_archivo(self, widget, accion):
-
         self.emit('accion_archivo', accion)
 
     def __emit_accion_proyecto(self, widget, accion):
-
         self.emit('accion_proyecto', accion)
 
     def activar_proyecto(self, sensitive):
         """
         Activa o desactiva opciones.
         """
-
         if sensitive:
             map(self.__activar, self.dict_proyecto.values())
-
         else:
             map(self.__desactivar, self.dict_proyecto.values())
 
@@ -437,25 +379,21 @@ class Menu(Gtk.MenuBar):
 
         if _dict['rehacer']:
             activar.append(self.dict_archivo['Rehacer'])
-
         else:
             desactivar.append(self.dict_archivo['Rehacer'])
 
         if _dict['deshacer']:
             activar.append(self.dict_archivo['Deshacer'])
-
         else:
             desactivar.append(self.dict_archivo['Deshacer'])
 
         if _dict['modificado']:
             activar.append(self.dict_archivo['Guardar'])
-
         else:
             desactivar.append(self.dict_archivo['Guardar'])
 
         if _dict['clipboard_texto']:
             activar.append(self.dict_archivo['Pegar'])
-
         else:
             desactivar.append(self.dict_archivo['Pegar'])
 
@@ -464,7 +402,6 @@ class Menu(Gtk.MenuBar):
                 self.dict_archivo['Cortar'],
                 self.dict_archivo['Copiar'],
                 ])
-
         else:
             desactivar.extend([
                 self.dict_archivo['Cortar'],
@@ -482,7 +419,6 @@ class Menu(Gtk.MenuBar):
                 self.dict_archivo['Disminuir'],
                 self.dict_archivo['Aumentar'],
                 ])
-
         else:
             desactivar.extend([
                 self.dict_archivo['Identar'],
@@ -499,12 +435,10 @@ class Menu(Gtk.MenuBar):
         map(self.__desactivar, desactivar)
 
     def __activar(self, option):
-
         if not option.get_sensitive():
             option.set_sensitive(True)
 
     def __desactivar(self, option):
-
         if option.get_sensitive():
             option.set_sensitive(False)
 
@@ -516,9 +450,7 @@ class DialogoBuscar(Gtk.Dialog):
     def __init__(self, view, parent_window=None,
         title="Buscar Texto", texto=None):
 
-        Gtk.Dialog.__init__(self,
-            title=title,
-            parent=parent_window,
+        Gtk.Dialog.__init__(self, title=title, parent=parent_window,
             flags=Gtk.DialogFlags.MODAL)
 
         self.set_border_width(15)
@@ -548,10 +480,8 @@ class DialogoBuscar(Gtk.Dialog):
         self.boton_anterior.set_sensitive(False)
         self.boton_siguiente.set_sensitive(False)
 
-        self.boton_anterior.connect('clicked',
-            self.__buscar, 'Atras')
-        self.boton_siguiente.connect('clicked',
-            self.__buscar, 'Adelante')
+        self.boton_anterior.connect('clicked', self.__buscar, 'Atras')
+        self.boton_siguiente.connect('clicked', self.__buscar, 'Adelante')
         self.boton_cerrar.connect('clicked', self.__destroy)
         self.entrada.connect("changed", self.__changed)
 
@@ -562,12 +492,9 @@ class DialogoBuscar(Gtk.Dialog):
 
     def __update(self, texto, selection):
         """
-        Cuando se abre el dialogo selecciona
-        la primer ocurrencia de lo buscado.
+        Cuando se abre el dialogo selecciona la primer ocurrencia.
         """
-
         _buffer = self.view.get_buffer()
-
         start, end = _buffer.get_bounds()
         contenido = _buffer.get_text(start, end, 0)
         numero = len(contenido)
@@ -586,43 +513,34 @@ class DialogoBuscar(Gtk.Dialog):
 
     def __changed(self, widget):
         """
-        Habilita y deshabilita los botones
-        de busqueda y reemplazo.
+        Habilita y deshabilita los botones de busqueda y reemplazo.
         """
-
-        self.boton_anterior.set_sensitive(
-            bool(self.entrada.get_text()))
-        self.boton_siguiente.set_sensitive(
-            bool(self.entrada.get_text()))
+        self.boton_anterior.set_sensitive(bool(self.entrada.get_text()))
+        self.boton_siguiente.set_sensitive(bool(self.entrada.get_text()))
 
     def __buscar(self, widget, direccion):
         """
         Busca el texto en el buffer.
         """
-
         texto = self.entrada.get_text()
         _buffer = self.view.get_buffer()
         inicio, fin = _buffer.get_bounds()
 
         texto_actual = _buffer.get_text(inicio, fin, 0)
-
         posicion = _buffer.get_iter_at_mark(_buffer.get_insert())
 
         if texto:
             if texto in texto_actual:
                 inicio = posicion
-
                 if direccion == 'Adelante':
                     if inicio.get_offset() == _buffer.get_char_count():
                         inicio = _buffer.get_start_iter()
 
                 elif direccion == 'Atras':
                     if _buffer.get_selection_bounds():
-
                         start, end = _buffer.get_selection_bounds()
                         contenido = _buffer.get_text(start, end, 0)
                         numero = len(contenido)
-
                         if end.get_offset() == numero:
                             inicio = _buffer.get_end_iter()
 
@@ -630,18 +548,14 @@ class DialogoBuscar(Gtk.Dialog):
                             inicio = _buffer.get_selection_bounds()[0]
 
                 self.__seleccionar_texto(texto, inicio, direccion)
-
             else:
                 _buffer.select_range(posicion, posicion)
 
     def __seleccionar_texto(self, texto, inicio, direccion):
         """
-        Selecciona el texto solicitado,
-        y mueve el scrolled sí es necesario
+        Selecciona el texto solicitado, y mueve el scroll sí es necesario.
         """
-
         _buffer = self.view.get_buffer()
-
         if direccion == 'Adelante':
             match = inicio.forward_search(texto, 0, None)
 
@@ -663,7 +577,6 @@ class DialogoBuscar(Gtk.Dialog):
             self.__seleccionar_texto(texto, inicio, direccion)
 
     def __destroy(self, widget):
-
         self.destroy()
 
 
@@ -674,13 +587,10 @@ class DialogoReemplazar(Gtk.Dialog):
     def __init__(self, view, parent_window=None,
         title="Reemplazar Texto", texto=None):
 
-        Gtk.Dialog.__init__(self,
-            title=title,
-            parent=parent_window,
+        Gtk.Dialog.__init__(self, title=title, parent=parent_window,
             flags=Gtk.DialogFlags.MODAL)
 
         self.set_border_width(15)
-
         self.view = view
 
         # Entries.
@@ -691,14 +601,12 @@ class DialogoReemplazar(Gtk.Dialog):
         hbox.pack_start(Gtk.Label("Buscar:"), True, True, 3)
         hbox.pack_start(self.buscar_entry, False, False, 0)
         hbox.show_all()
-
         self.vbox.pack_start(hbox, False, False, 3)
 
         hbox = Gtk.HBox()
         hbox.pack_start(Gtk.Label("Reemplazar:"), True, True, 3)
         hbox.pack_start(self.reemplazar_entry, False, False, 0)
         hbox.show_all()
-
         self.vbox.pack_start(hbox, False, False, 10)
 
         # Buttons.
@@ -711,15 +619,13 @@ class DialogoReemplazar(Gtk.Dialog):
         hbox.pack_start(self.button_buscar, True, True, 3)
         hbox.pack_start(cerrar, True, True, 0)
         hbox.show_all()
-
         self.vbox.pack_start(hbox, False, False, 0)
 
         self.reemplazar.set_sensitive(False)
         self.button_buscar.set_sensitive(False)
 
         cerrar.connect("clicked", self.__destroy)
-        self.button_buscar.connect('clicked',
-            self.__buscar, 'Adelante')
+        self.button_buscar.connect('clicked', self.__buscar, 'Adelante')
         self.reemplazar.connect("clicked", self.__reemplazar)
 
         if texto:
@@ -731,12 +637,9 @@ class DialogoReemplazar(Gtk.Dialog):
 
     def __update(self, texto, selection):
         """
-        Cuando se abre el dialogo selecciona
-        la primer ocurrencia de lo buscado.
+        Cuando se abre el dialogo selecciona la primer ocurrencia.
         """
-
         _buffer = self.view.get_buffer()
-
         start, end = _buffer.get_bounds()
         contenido = _buffer.get_text(start, end, 0)
         numero = len(contenido)
@@ -753,16 +656,12 @@ class DialogoReemplazar(Gtk.Dialog):
         """
         Habilita y deshabilita los botones de busqueda y reemplazo.
         """
-
-        self.button_buscar.set_sensitive(
-            bool(self.buscar_entry.get_text()))
-
+        self.button_buscar.set_sensitive(bool(self.buscar_entry.get_text()))
         _buffer = self.view.get_buffer()
         select = _buffer.get_selection_bounds()
 
         if len(select) == 2:
             select = True
-
         else:
             select = False
 
@@ -783,63 +682,51 @@ class DialogoReemplazar(Gtk.Dialog):
             inicio, fin = _buffer.get_bounds()
 
             texto_actual = _buffer.get_text(inicio, fin, 0)
-
             posicion = _buffer.get_iter_at_mark(_buffer.get_insert())
 
             if texto:
                 if texto in texto_actual:
                     inicio = posicion
-
                     if direccion == 'Adelante':
                         if inicio.get_offset() == _buffer.get_char_count():
                             inicio = _buffer.get_start_iter()
 
                     elif direccion == 'Atras':
                         if _buffer.get_selection_bounds():
-
                             start, end = _buffer.get_selection_bounds()
                             contenido = _buffer.get_text(start, end, 0)
                             numero = len(contenido)
 
                             if end.get_offset() == numero:
                                 inicio = _buffer.get_end_iter()
-
                             else:
                                 inicio = _buffer.get_selection_bounds()[0]
 
                     self.__seleccionar_texto(texto, inicio, direccion)
-
                 else:
                     buffer.select_range(posicion, posicion)
         except:
-            # print "Error en __buscar de DialogoReemplazar"
+            # FIXME: "Error en __buscar de DialogoReemplazar"
             # Cuando se reemplaza texto y llega al final del archivo,
             # al parecer no afecta en nada a la aplicación.
             pass
 
     def __destroy(self, widget=None, event=None):
-
         self.destroy()
 
     def __reemplazar(self, widget):
-
         _buffer = self.view.get_buffer()
         inicio, fin = _buffer.get_selection_bounds()
         texto_reemplazo = self.reemplazar_entry.get_text()
-
         _buffer.delete(inicio, fin)
         _buffer.insert_at_cursor(texto_reemplazo)
-
         self.button_buscar.clicked()
 
     def __seleccionar_texto(self, texto, inicio, direccion):
         """
-        Selecciona el texto solicitado,
-        y mueve el scrolled sí es necesario.
+        Selecciona el texto solicitado, y mueve el scroll sí es necesario.
         """
-
         _buffer = self.view.get_buffer()
-
         if direccion == 'Adelante':
             match = inicio.forward_search(texto, 0, None)
 
@@ -862,11 +749,6 @@ class DialogoReemplazar(Gtk.Dialog):
 
 
 class My_FileChooser(Gtk.FileChooserDialog):
-    """
-    Selector de Archivos para poder cargar archivos
-    desde cualquier dispositivo o directorio y poder
-    hacer "guardar como" sobre un archivo abierto.
-    """
 
     __gtype_name__ = 'JAMediaEditorMy_FileChooser'
 
@@ -874,45 +756,32 @@ class My_FileChooser(Gtk.FileChooserDialog):
     'load': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
-    def __init__(self,
-        parent_window=None,
-        action_type=None,
-        filter_type=[],
-        title=None,
-        path=None,
-        mime_type=[]):
+    def __init__(self, parent_window=None, action_type=None, filter_type=[],
+        title=None, path=None, mime_type=[]):
 
-        Gtk.FileChooserDialog.__init__(self,
-            parent=parent_window,
-            action=action_type,
-            flags=Gtk.DialogFlags.MODAL,
-            title=title)
+        Gtk.FileChooserDialog.__init__(self, parent=parent_window,
+            action=action_type, flags=Gtk.DialogFlags.MODAL, title=title)
 
         self.set_default_size(640, 480)
         self.set_select_multiple(False)
 
         if os.path.isfile(path):
             self.set_filename(path)
-
         else:
             self.set_current_folder_uri("file://%s" % path)
 
         if filter_type:
             _filter = Gtk.FileFilter()
             _filter.set_name("Filtro")
-
             for fil in filter_type:
                 _filter.add_pattern(fil)
-
             self.add_filter(_filter)
 
         elif mime_type:
             _filter = Gtk.FileFilter()
             _filter.set_name("Filtro")
-
             for mime in mime_type:
                 _filter.add_mime_type(mime)
-
             self.add_filter(_filter)
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -930,28 +799,23 @@ class My_FileChooser(Gtk.FileChooserDialog):
 
         hbox.pack_end(salir, True, True, 5)
         hbox.pack_end(abrir, True, True, 5)
-
         self.set_extra_widget(hbox)
 
         salir.connect("clicked", self.__salir)
         abrir.connect("clicked", self.__abrir)
-
         self.show_all()
-
         self.connect("file-activated", self.__file_activated)
 
     def __file_activated(self, widget):
         """
         Cuando se hace doble click sobre un archivo.
         """
-
         self.__abrir(None)
 
     def __abrir(self, widget):
         """
         Emite el path del archivo seleccionado.
         """
-
         if not self.get_filename():
             self.__salir(None)
             return
@@ -965,14 +829,9 @@ class My_FileChooser(Gtk.FileChooserDialog):
             return
 
         self.emit('load', direccion)
-
         self.__salir()
 
     def __salir(self, widget=None):
-        """
-        Se auto destruye.
-        """
-
         self.destroy()
 
 
@@ -984,17 +843,11 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
     'load': (GObject.SIGNAL_RUN_FIRST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
-    def __init__(self,
-        parent_window=None,
-        filter_type=[],
-        title=None,
-        path=None,
-        mime_type=[]):
+    def __init__(self, parent_window=None, filter_type=[], title=None,
+        path=None, mime_type=[]):
 
-        Gtk.FileChooserDialog.__init__(self,
-            parent=parent_window,
-            action=Gtk.FileChooserAction.OPEN,
-            flags=Gtk.DialogFlags.MODAL,
+        Gtk.FileChooserDialog.__init__(self, parent=parent_window,
+            action=Gtk.FileChooserAction.OPEN, flags=Gtk.DialogFlags.MODAL,
             title=title)
 
         self.set_default_size(640, 480)
@@ -1002,26 +855,21 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
 
         if os.path.isfile(path):
             self.set_filename(path)
-
         else:
             self.set_current_folder_uri("file://%s" % path)
 
         if filter_type:
             _filter = Gtk.FileFilter()
             _filter.set_name("Filtro")
-
             for fil in filter_type:
                 _filter.add_pattern(fil)
-
             self.add_filter(_filter)
 
         elif mime_type:
             _filter = Gtk.FileFilter()
             _filter.set_name("Filtro")
-
             for mime in mime_type:
                 _filter.add_mime_type(mime)
-
             self.add_filter(_filter)
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -1031,21 +879,17 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
 
         hbox.pack_end(salir, True, True, 5)
         hbox.pack_end(abrir, True, True, 5)
-
         self.set_extra_widget(hbox)
 
         salir.connect("clicked", self.__salir)
         abrir.connect("clicked", self.__abrir)
-
         self.show_all()
-
         self.connect("file-activated", self.__file_activated)
 
     def __file_activated(self, widget):
         """
         Cuando se hace doble click sobre un archivo.
         """
-
         self.__abrir(None)
 
     def __abrir(self, widget):
@@ -1054,14 +898,12 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
         """
 
         files = self.get_filenames()
-
         if not files:
             self.__salir(None)
             return
 
         for _file in files:
             direccion = str(_file).replace("//", "/")
-
             if os.path.exists(direccion) and os.path.isfile(direccion):
                 self.emit('load', direccion)
 
@@ -1081,9 +923,7 @@ class DialogoAlertaSinGuardar(Gtk.Dialog):
 
     def __init__(self, parent_window=None):
 
-        Gtk.Dialog.__init__(self,
-            title="ATENCION !",
-            parent=parent_window,
+        Gtk.Dialog.__init__(self, title="ATENCION !", parent=parent_window,
             flags=Gtk.DialogFlags.MODAL,
             buttons=[
                 "Guardar y Continuar", Gtk.ResponseType.ACCEPT,
@@ -1102,17 +942,14 @@ class DialogoAlertaSinGuardar(Gtk.Dialog):
 
 class DialogoSobreEscritura(Gtk.Dialog):
     """
-    Diálogo para Alertar al usuario sobre la
-    reescritura de un archivo existente.
+    Diálogo para Alertar al usuario sobre reescritura de un archivo.
     """
 
     __gtype_name__ = 'JAMediaEditorDialogoSobreEscritura'
 
     def __init__(self, parent_window=None):
 
-        Gtk.Dialog.__init__(self,
-            title="ATENCION !",
-            parent=parent_window,
+        Gtk.Dialog.__init__(self, title="ATENCION !", parent=parent_window,
             flags=Gtk.DialogFlags.MODAL,
             buttons=[
                 "Guardar", Gtk.ResponseType.ACCEPT,
@@ -1136,8 +973,7 @@ class DialogoErrores(Gtk.Dialog):
 
     def __init__(self, view, parent_window=None):
 
-        Gtk.Dialog.__init__(self,
-            parent=parent_window,
+        Gtk.Dialog.__init__(self, parent=parent_window,
             flags=Gtk.DialogFlags.MODAL,
             buttons=["Aceptar", Gtk.ResponseType.ACCEPT])
 
@@ -1145,13 +981,8 @@ class DialogoErrores(Gtk.Dialog):
         self.set_border_width(15)
 
         errores = ErroresTreeview(view)
-
         scroll = Gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scroll.add(errores)
 
         label = Gtk.Label("Errores")
@@ -1170,22 +1001,18 @@ class ErroresTreeview(Gtk.TreeView):
     def __init__(self, view):
 
         Gtk.TreeView.__init__(self,
-            Gtk.ListStore(GObject.TYPE_STRING,
-            GObject.TYPE_STRING))
+            Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_STRING))
 
         self.view = view
 
-        columna = Gtk.TreeViewColumn("Línea",
-            Gtk.CellRendererText(), text=0)
+        columna = Gtk.TreeViewColumn("Línea", Gtk.CellRendererText(), text=0)
         self.append_column(columna)
 
-        columna = Gtk.TreeViewColumn("Error",
-            Gtk.CellRendererText(), text=1)
+        columna = Gtk.TreeViewColumn("Error", Gtk.CellRendererText(), text=1)
         self.append_column(columna)
 
         _buffer = view.get_buffer()
         start, end = _buffer.get_bounds()
-
         texto = _buffer.get_text(start, end, True)
 
         path = os.path.join("/dev/shm", "check_temp.py")
@@ -1194,18 +1021,14 @@ class ErroresTreeview(Gtk.TreeView):
         arch.close()
 
         check = os.path.join(BASE_PATH, "Check1.py")
-        errores = commands.getoutput(
-            'python %s %s' % (check, path))
+        errores = commands.getoutput('python %s %s' % (check, path))
 
         for linea in errores.splitlines():
             try:
                 item_str = linea.split("%s:" % path)[1]
-
                 #if not path in item_str:
                 numero = item_str.split(":")[0].strip()
-                comentario = item_str.replace(
-                    item_str.split()[0], "").strip()
-
+                comentario = item_str.replace(item_str.split()[0], "").strip()
                 item = [numero, comentario]
                 self.get_model().append(item)
 
@@ -1213,18 +1036,14 @@ class ErroresTreeview(Gtk.TreeView):
                 pass
 
         check = os.path.join(BASE_PATH, "Check2.py")
-        errores = commands.getoutput(
-            'python %s %s' % (check, path))
+        errores = commands.getoutput('python %s %s' % (check, path))
 
         for linea in errores.splitlines():
             try:
                 item_str = linea.split("%s:" % path)[1]
-
                 #if not path in item_str:
                 numero = item_str.split(":")[0].strip()
-                comentario = item_str.replace(
-                    item_str.split()[0], "").strip()
-
+                comentario = item_str.replace(item_str.split()[0], "").strip()
                 item = [numero, comentario]
                 self.get_model().append(item)
 
@@ -1232,19 +1051,15 @@ class ErroresTreeview(Gtk.TreeView):
                 pass
 
         self.show_all()
-
         self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
         self.get_selection().set_select_function(
             self.__clicked, self.get_model())
 
     def __clicked(self, treeselection,
         model, path, is_selected, listore):
-
         iter_sel = model.get_iter(path)
         linea = model.get_value(iter_sel, 0)
-
         self.view._marcar_error(int(linea))
-
         return True
 
 
@@ -1270,9 +1085,7 @@ class Estructura_Menu(Gtk.Menu):
         filepath = modelo.get_value(_iter, 2)
 
         lectura, escritura, ejecucion = self.__verificar_permisos(filepath)
-
         if os.path.exists(filepath):
-
             if os.path.isfile(filepath):
                 datos = commands.getoutput(
                     'file - ik %s%s%s' % ("\"", filepath, "\""))
@@ -1295,12 +1108,10 @@ class Estructura_Menu(Gtk.Menu):
             elif os.path.isdir(filepath):
                 if filepath == modelo.get_value(iterfirst, 2):
                     self.__get_item(widget, path, "eliminar proyecto")
-
                     self.__get_item(widget, path, "Crear Directorio")
 
                     if escritura and "copiar" in accion_previa or \
                         "cortar" in accion_previa:
-
                         self.__get_item(widget, path, "pegar")
 
                     self.__get_item(widget, path, "buscar")
@@ -1314,7 +1125,6 @@ class Estructura_Menu(Gtk.Menu):
 
                     if escritura and "copiar" in accion_previa or \
                         "cortar" in accion_previa:
-
                         self.__get_item(widget, path, "pegar")
 
                     if escritura:
@@ -1348,7 +1158,6 @@ class Estructura_Menu(Gtk.Menu):
                 r = os.access(path, os.R_OK)
                 w = os.access(path, os.W_OK)
                 x = os.access(path, os.X_OK)
-
                 return r, w, x
 
             else:
@@ -1364,44 +1173,29 @@ class Estructura_Menu(Gtk.Menu):
         """
         Agrega un item al menu.
         """
-
         item = Gtk.MenuItem("%s%s" % (accion[0].upper(), accion[1:]))
-
         self.append(item)
-
-        item.connect_object(
-            "activate",
-            self.__set_accion,
-            widget,
-            path,
-            accion)
+        item.connect_object("activate", self.__set_accion, widget,
+            path, accion)
 
     def __set_accion(self, widget, path, accion):
         """
         Responde a la seleccion del usuario sobre el menu.
-
-        Recibe la lista sobre la que ha hecho click,
-        una accion a realizar sobre el elemento seleccionado en ella y
-        el elemento seleccionado y emite una señal con todo para pedir
-        confirmacion al usuario sobre la accion a realizar.
         """
-
         _iter = widget.get_model().get_iter(path)
         self.emit('accion', widget, accion, _iter)
 
 
 class DialogoEliminar(Gtk.Dialog):
     """
-    Diálogo para confirmar la eliminación
-    del archivo / directorio seleccionado
+    Diálogo para confirmar la eliminación del archivo / directorio seleccionado
     """
 
     __gtype_name__ = 'JAMediaEditorDialogoEliminar'
 
     def __init__(self, tipo="Archivo", parent_window=None):
 
-        Gtk.Dialog.__init__(self,
-            parent=parent_window,
+        Gtk.Dialog.__init__(self, parent=parent_window,
             flags=Gtk.DialogFlags.MODAL,
             buttons=[
                 "Si, eliminar!", Gtk.ResponseType.ACCEPT,
@@ -1430,8 +1224,7 @@ class BusquedaGrep(Gtk.Dialog):
 
     def __init__(self, path=None, parent_window=None):
 
-        Gtk.Dialog.__init__(self,
-            parent=parent_window,
+        Gtk.Dialog.__init__(self, parent=parent_window,
             flags=Gtk.DialogFlags.MODAL,
             buttons=[
                 "Cerrar", Gtk.ResponseType.ACCEPT])
@@ -1450,11 +1243,7 @@ class BusquedaGrep(Gtk.Dialog):
         hbox.pack_start(buscar, False, False, 0)
 
         scroll = Gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scroll.add(self.treeview)
 
         scroll.show_all()
@@ -1468,16 +1257,13 @@ class BusquedaGrep(Gtk.Dialog):
             self.__re_emit_nueva_seleccion)
 
     def __re_emit_nueva_seleccion(self, widget, valor):
-
         self.emit("nueva-seleccion", valor)
 
     def __buscar(self, widget):
         """
         Realiza la búsqueda solicitada.
         """
-
         text = self.entry.get_text().strip()
-
         if text:
             if os.path.isdir(self.path):
                 result = commands.getoutput(
@@ -1492,7 +1278,6 @@ class BusquedaGrep(Gtk.Dialog):
             items = []
             for line in result:
                 dat = line.split(":")
-
                 if os.path.isdir(self.path):
                     if len(dat) == 3:
                         items.append([dat[0], dat[1], dat[2].strip()])
@@ -1516,24 +1301,19 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
     def __init__(self):
 
         Gtk.TreeView.__init__(self, Gtk.ListStore(
-            GObject.TYPE_STRING, GObject.TYPE_STRING,
-            GObject.TYPE_STRING))
+            GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_STRING))
 
         self.set_property("rules-hint", True)
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
 
         self.__setear_columnas()
-
         self.treeselection = self.get_selection()
-
         self.show_all()
 
     def do_row_activated(self, path, treviewcolumn):
-
         model = self.get_model()
         _iter = model.get_iter(path)
-
         valor = [
             model.get_value(_iter, 0),
             model.get_value(_iter, 1),
@@ -1542,7 +1322,6 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
         self.emit("nueva-seleccion", valor)
 
     def __setear_columnas(self):
-
         self.append_column(
             self.__construir_columa('Archivo', 0, True))
         self.append_column(
@@ -1551,44 +1330,34 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
             self.__construir_columa('Línea', 2, True))
 
     def __construir_columa(self, text, index, visible):
-
         render = Gtk.CellRendererText()
-
         columna = Gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', True)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-
         return columna
 
     def limpiar(self):
-
         self.get_model().clear()
 
     def agregar_items(self, elementos):
-
         self.__ejecutar_agregar_elemento(elementos)
 
     def __ejecutar_agregar_elemento(self, elementos):
         """
         Agrega los items a la lista, uno a uno, actualizando.
         """
-
         if not elementos:
             self.seleccionar_primero()
             return False
 
         self.get_model().append(elementos[0])
-
         elementos.remove(elementos[0])
-
         GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
-
         return False
 
     def seleccionar_primero(self, widget=None):
-
         self.treeselection.select_path(0)
 
 
@@ -1598,18 +1367,15 @@ class Credits(Gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
-            parent=parent,
+        Gtk.Dialog.__init__(self, parent=parent,
             flags=Gtk.DialogFlags.MODAL,
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
         self.set_border_width(15)
 
         imagen = Gtk.Image()
-
-        imagen.set_from_file(
-            os.path.join(BASE_PATH,
-                "Iconos", "JAMediaEditorCredits.svg"))
+        imagen.set_from_file(os.path.join(BASE_PATH,
+            "Iconos", "JAMediaEditorCredits.svg"))
 
         self.vbox.pack_start(imagen, False, False, 0)
         self.vbox.show_all()

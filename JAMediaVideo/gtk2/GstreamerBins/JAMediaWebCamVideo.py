@@ -132,11 +132,10 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.tee.link(fotobin)
 
         self.bus = self.pipeline.get_bus()
-        #self.bus.set_sync_handler(self.__bus_handler)
-        self.bus.add_signal_watch()                             # ****
-        self.bus.connect('message', self.__on_mensaje)          # ****
-        self.bus.enable_sync_message_emission()                 # ****
-        self.bus.connect('sync-message', self.__sync_message)   # ****
+        self.bus.add_signal_watch()
+        self.bus.connect('message', self.__on_mensaje)
+        self.bus.enable_sync_message_emission()
+        self.bus.connect('sync-message', self.__sync_message)
 
     def __sync_message(self, bus, message):
         if message.type == gst.MESSAGE_ELEMENT:
@@ -165,49 +164,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         elif message.type == gst.MESSAGE_ERROR:
             print "JAMediaWebCamVideo ERROR:"
             print message.parse_error()
-
-    '''
-    def __bus_handler(self, bus, message):
-        if message.type == gst.MESSAGE_ELEMENT:
-            if message.structure.get_name() == 'prepare-xwindow-id':
-                #gtk.gdk.threads_enter()
-                #gtk.gdk.display_get_default().sync()
-                message.src.set_xwindow_id(self.ventana_id)
-                #gtk.gdk.threads_leave()
-
-        elif message.type == gst.MESSAGE_EOS:
-            self.emit("endfile")
-
-        #elif message.type == gst.MESSAGE_QOS:
-        #    print "gst.MESSAGE_QOS"
-
-        elif message.type == gst.MESSAGE_LATENCY:
-            self.pipeline.recalculate_latency()
-
-        elif message.type == gst.MESSAGE_ERROR:
-            print "JAMediaWebCamVideo ERROR:"
-            print message.parse_error()
-
-        elif message.type == gst.MESSAGE_STATE_CHANGED:
-            old, new, pending = message.parse_state_changed()
-
-            if self.estado != new:
-                self.estado = new
-                #FIXME: No lo estoy utilizando
-                #if new == gst.STATE_PLAYING:
-                #    self.emit("estado", "playing")
-
-                #elif new == gst.STATE_PAUSED:
-                #    self.emit("estado", "paused")
-
-                #elif new == gst.STATE_NULL:
-                #    self.emit("estado", "None")
-
-                #else:
-                #    self.emit("estado", "paused")
-
-        return gst.BUS_PASS
-    '''
 
     def __new_handle(self, reset, data):
         if self.actualizador:

@@ -25,10 +25,15 @@ import os
 from gi.repository import Gtk
 from gi.repository import GObject
 
+from InfoNotebook import InfoNotebook
+from WorkPanel import WorkPanel
+from Toolbars import ToolbarProyecto
+from Toolbars import ToolbarArchivo
+from Toolbars import ToolbarBusquedas
+
 home = os.environ["HOME"]
 
-BatovideWorkSpace = os.path.join(
-    home, 'BatovideWorkSpace')
+BatovideWorkSpace = os.path.join(home, 'BatovideWorkSpace')
 
 
 class BasePanel(Gtk.Paned):
@@ -57,19 +62,11 @@ class BasePanel(Gtk.Paned):
 
     def __init__(self):
 
-        Gtk.Paned.__init__(self,
-            orientation=Gtk.Orientation.HORIZONTAL)
+        Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
         self.set_border_width(5)
 
         self.proyecto = {}
-
-        from InfoNotebook import InfoNotebook
-        from WorkPanel import WorkPanel
-
-        from Toolbars import ToolbarProyecto
-        from Toolbars import ToolbarArchivo
-        from Toolbars import ToolbarBusquedas
 
         self.workpanel = WorkPanel()
         self.infonotebook = InfoNotebook()
@@ -79,74 +76,53 @@ class BasePanel(Gtk.Paned):
         self.toolbararchivo = ToolbarArchivo()
         toolbarbusquedas = ToolbarBusquedas()
 
-        self.infonotebook_box = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL)
+        self.infonotebook_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        self.infonotebook_box.pack_start(
-            self.toolbarproyecto, False, False, 0)
-        self.infonotebook_box.pack_start(
-            self.infonotebook, True, True, 0)
-        self.infonotebook_box.pack_end(
-            toolbarbusquedas, False, False, 0)
+        self.infonotebook_box.pack_start(self.toolbarproyecto, False, False, 0)
+        self.infonotebook_box.pack_start(self.infonotebook, True, True, 0)
+        self.infonotebook_box.pack_end(toolbarbusquedas, False, False, 0)
 
-        workpanel_box = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL)
+        workpanel_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        workpanel_box.pack_start(
-            self.toolbararchivo, False, False, 0)
-        workpanel_box.pack_end(
-            self.workpanel, True, True, 0)
+        workpanel_box.pack_start(self.toolbararchivo, False, False, 0)
+        workpanel_box.pack_end(self.workpanel, True, True, 0)
 
-        self.pack1(self.infonotebook_box,
-            resize=False, shrink=False)
-        self.pack2(workpanel_box,
-            resize=True, shrink=True)
+        self.pack1(self.infonotebook_box, resize=False, shrink=False)
+        self.pack2(workpanel_box, resize=True, shrink=True)
 
         self.show_all()
 
         self.infonotebook_box.set_size_request(230, -1)
 
-        self.workpanel.connect('new_select',
-            self.__set_introspeccion)
-        self.workpanel.connect('ejecucion',
-            self.__re_emit_ejecucion)
-        self.workpanel.connect('update',
-            self.__re_emit_update)
+        self.workpanel.connect('new_select', self.__set_introspeccion)
+        self.workpanel.connect('ejecucion', self.__re_emit_ejecucion)
+        self.workpanel.connect('update', self.__re_emit_update)
 
-        self.toolbararchivo.connect('accion',
-            self.set_accion_archivo)
-        self.toolbarproyecto.connect('accion',
-            self.set_accion_proyecto)
+        self.toolbararchivo.connect('accion', self.set_accion_archivo)
+        self.toolbarproyecto.connect('accion', self.set_accion_proyecto)
 
         toolbarbusquedas.connect("buscar", self.__buscar)
         toolbarbusquedas.connect("accion", self.__buscar_mas)
 
         self.infonotebook.connect('new_select', self.__set_linea)
         self.infonotebook.connect('open', self.__abrir_archivo)
-        self.infonotebook.connect('search_on_grep',
-            self.__search_grep)
-        self.infonotebook.connect('remove_proyect',
-            self.__remove_proyect)
+        self.infonotebook.connect('search_on_grep', self.__search_grep)
+        self.infonotebook.connect('remove_proyect', self.__remove_proyect)
 
     def __re_emit_update(self, widget, dict):
-
         self.emit("update", dict)
 
     def __search_grep(self, widget, datos, parent):
         """
-        Cuando se hace una busqueda grep en la
-        estructura del proyecto y luego se selecciona
-        una linea en los resultados de dicha búsqueda.
-
+        Cuando se hace una busqueda grep en la estructura del proyecto y luego
+        se selecciona una linea en los resultados de dicha búsqueda.
             Se abre el archivo
             Se selecciona y
             Se abre el dialogo buscar.
         """
-
         self.__abrir_archivo(None, datos[0])
 
         paginas = self.workpanel.notebook_sourceview.get_n_pages()
-
         for indice in range(paginas):
             sourceview = self.workpanel.notebook_sourceview.get_nth_page(
                 indice).get_child()
@@ -160,32 +136,25 @@ class BasePanel(Gtk.Paned):
 
         from Widgets import DialogoBuscar
 
-        dialogo = DialogoBuscar(sourceview,
-            parent_window=parent,
+        dialogo = DialogoBuscar(sourceview, parent_window=parent,
             title="Buscar Texto", texto=datos[2])
 
         dialogo.run()
-
         dialogo.destroy()
-
         sourceview.set_show_line_numbers(visible)
 
     def __buscar(self, widget, texto):
         """
         Recibe el texto a buscar.
         """
-
         self.seleccionado_actual = 0
         self.infonotebook.buscar(texto)
 
     def __buscar_mas(self, widget, accion, texto):
         """
-        Cuando se hace click en anterior o
-        siguiente en la toolbar de busquedas.
+        Cuando se hace click en anterior o siguiente en toolbar de busquedas.
         """
-
         self.infonotebook.buscar(texto)
-
         if self.infonotebook.get_current_page() == 0:
             tree = self.infonotebook.introspeccion
             seleccion = self.infonotebook.introspeccion.get_selection()
@@ -219,29 +188,23 @@ class BasePanel(Gtk.Paned):
         Recibe la linea seleccionada en instrospeccion y
         y la pasa a workpanel para ser seleccionada en el código.
         """
-
         self.workpanel.set_linea(index, texto)
 
     def __re_emit_ejecucion(self, widget, tipo, valor):
         """
         Cuando se ejecutan o detienen archivos en terminales.
         """
-
         self.emit("ejecucion", tipo, valor)
 
     def __set_introspeccion(self, widget, view, tipo):
         """
         Cuando se selecciona una lengüeta en el Notebook:
-        Recibe nombre y contenido de archivo para
-        realizar introspeccion sobre él.
+            Recibe nombre y contenido de archivo para realizar
+            introspeccion sobre él.
         """
-
         path = self.proyecto.get("path", False)
-
         if path:
-            codeviews = self.workpanel.get_archivos_de_proyecto(
-                path)
-
+            codeviews = self.workpanel.get_archivos_de_proyecto(path)
             if codeviews:
                 self.infonotebook.set_path_estructura(path)
 
@@ -273,27 +236,18 @@ class BasePanel(Gtk.Paned):
 
     def __cargar_proyecto(self, proyecto):
         """
-        Carga los datos del proyecto en la interfaz
-        de la aplicación.
+        Carga los datos del proyecto en la interfaz de la aplicación.
         """
-
         self.proyecto = proyecto
-
         path = proyecto.get("path", False)
         main = proyecto.get("main", False)
-
-        # Deshabilitado porque: Cuando se carga un proyecto, se
+        # FIXME: Deshabilitado porque: Cuando se carga un proyecto, se
         # ejecuta esta funcion dos veces.
         # self.infonotebook.set_path_estructura(path)
         self.workpanel.abrir_archivo(os.path.join(path, main))
-
         self.emit("proyecto_abierto", True)
 
     def __abrir_archivo(self, widget, archivo):
-        """
-        Abre un archivo.
-        """
-
         if archivo:
             import commands
             datos = commands.getoutput(
@@ -302,19 +256,13 @@ class BasePanel(Gtk.Paned):
             if "text" in datos or "x-python" in datos or \
                 "x-empty" in datos or "svg+xml" in datos or \
                 "application/xml" in datos:
-
                 self.workpanel.abrir_archivo(archivo)
 
         else:
             self.workpanel.abrir_archivo(None)
 
     def __abrir_proyecto(self, widget, archivo):
-        """
-        Abrir archivo de un proyecto.
-        """
-
         extension = os.path.splitext(os.path.split(archivo)[1])[1]
-
         if not extension == ".ide":
             return
 
@@ -323,7 +271,6 @@ class BasePanel(Gtk.Paned):
 
         pro = codecs.open(archivo, "r", "utf-8")
         proyecto = json.JSONDecoder("utf-8").decode(pro.read())
-
         proyecto["path"] = os.path.dirname(archivo)
 
         # Validación de datos del proyecto.
@@ -338,7 +285,6 @@ class BasePanel(Gtk.Paned):
                 return
 
         anterior_cerrado = self.cerrar_proyecto()
-
         # El proyecto se carga sólo si se cerró el anterior.
         if anterior_cerrado:
             self.__cargar_proyecto(proyecto)
@@ -347,7 +293,6 @@ class BasePanel(Gtk.Paned):
         """
         Guarda todos los archivos del proyecto abierto.
         """
-
         if not self.proyecto:
             return
 
@@ -361,14 +306,12 @@ class BasePanel(Gtk.Paned):
         """
         Guarda el proyecto actual.
         """
-
         # Todo Proyecto Requiere un Nombre.
         if not proyecto.get("nombre", False):
             return
 
         # Seteo automático del path del proyecto.
         path = False
-
         if proyecto.get("path", False):
             path = proyecto["path"]
 
@@ -379,13 +322,11 @@ class BasePanel(Gtk.Paned):
             os.mkdir(path)
 
         proyecto["path"] = path
-
         # Seteo automático del main del proyecto.
         if not proyecto.get("main", False):
             proyecto["main"] = "Main.py"
 
         main_path = os.path.join(proyecto["path"], proyecto["main"])
-
         if not os.path.exists(main_path):
             arch = open(main_path, "w")
             arch.write("#!/usr/bin/env python\n# -*- coding: utf-8 -*-")
@@ -408,44 +349,29 @@ class BasePanel(Gtk.Paned):
         try:
             for autor in proyecto["autores"]:
                 arch.write(u"%s %s\n" % (autor[0], autor[1]))
-
         except:
             pass
 
         arch.close()
-
         # Guardar el Proyecto.
         proyecto_file = os.path.join(path, "proyecto.ide")
 
         import json
         archivo = open(proyecto_file, "w")
-        archivo.write(
-            json.dumps(
-                proyecto,
-                indent=4,
-                separators=(", ", ":"),
-                sort_keys=True
-            )
-        )
+        archivo.write(json.dumps(proyecto, indent=4,
+            separators=(", ", ":"), sort_keys=True))
         archivo.close()
 
     def __remove_proyect(self, widget):
         """
         Cuando se elimina el proyecto desde la vista de estructura.
         """
-
         self.workpanel.remove_proyect(self.proyecto["path"])
-
         self.infonotebook.set_path_estructura(None)
         self.proyecto = {}
-
         return True
 
     def cerrar_proyecto(self):
-        """
-        Cierra el proyecto.
-        """
-
         if not self.proyecto:
             self.proyecto = {}
             self.infonotebook.set_path_estructura(False)
@@ -512,34 +438,26 @@ class BasePanel(Gtk.Paned):
         Cuando se hace click en la toolbar de proyecto o
         se manda ejecutar una acción desde el menú.
         """
-
         if accion == "Nuevo Proyecto":
             from DialogoProyecto import DialogoProyecto
-
-            dialog = DialogoProyecto(
-                parent_window=self.get_toplevel(),
+            dialog = DialogoProyecto(parent_window=self.get_toplevel(),
                 title="Crear Nuevo Proyecto")
 
             response = dialog.run()
-
             nuevoproyecto = False
-
             if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
                 nuevoproyecto = dialog.get_proyecto()
 
             dialog.destroy()
-
             # El Proyecto se crea solo cuando se ha cerrado el anterior.
             if nuevoproyecto:
                 anterior_cerrado = True
-
                 #FIXME: No se puede Crear un proyecto con el mismo
                 # nombre de uno existente
                 if nuevoproyecto["nombre"] in os.listdir(BatovideWorkSpace):
                     return
 
                 anterior_cerrado = self.cerrar_proyecto()
-
                 if anterior_cerrado:
                     self.__guardar_proyecto(nuevoproyecto)
                     self.__abrir_proyecto(None,
@@ -548,14 +466,10 @@ class BasePanel(Gtk.Paned):
         elif accion == "Editar Proyecto":
             if self.proyecto:
                 from DialogoProyecto import DialogoProyecto
-
-                dialog = DialogoProyecto(
-                    parent_window=self.get_toplevel(),
-                    title="Editar Proyecto",
-                    accion="editar")
+                dialog = DialogoProyecto(parent_window=self.get_toplevel(),
+                    title="Editar Proyecto", accion="editar")
 
                 dialog.set_proyecto(self.proyecto)
-
                 response = dialog.run()
 
                 if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
@@ -568,13 +482,9 @@ class BasePanel(Gtk.Paned):
 
         elif accion == "Abrir Proyecto":
             from Widgets import My_FileChooser
-
-            filechooser = My_FileChooser(
-                parent_window=self.get_toplevel(),
-                action_type=Gtk.FileChooserAction.OPEN,
-                filter_type=["*.ide"],
-                title="Abrir proyecto",
-                path=BatovideWorkSpace)
+            filechooser = My_FileChooser(parent_window=self.get_toplevel(),
+                action_type=Gtk.FileChooserAction.OPEN, filter_type=["*.ide"],
+                title="Abrir proyecto", path=BatovideWorkSpace)
 
             filechooser.connect('load', self.__abrir_proyecto)
 
@@ -597,16 +507,12 @@ class BasePanel(Gtk.Paned):
 
         elif accion == "Construir":
             self.get_toplevel().set_sensitive(False)
-
             from Widget_Setup import DialogoSetup
-
-            dialog = DialogoSetup(
-                parent_window=self.get_toplevel(),
+            dialog = DialogoSetup(parent_window=self.get_toplevel(),
                 proyecto=self.proyecto)
 
             dialog.run()
             dialog.destroy()
-
             self.get_toplevel().set_sensitive(True)
 
         else:
@@ -616,23 +522,19 @@ class BasePanel(Gtk.Paned):
         """
         Cuando se hace click en una opción del menú Código.
         """
-
         self.workpanel.set_accion_codigo(accion)
 
     def set_accion_ver(self, widget, accion, valor):
         """
         Cuando se hace click en una opción del menú ver.
         """
-
         if accion == "Panel lateral":
             if not valor:
                 self.infonotebook_box.hide()
-
             else:
                 self.infonotebook_box.show()
 
         elif accion == "Numeracion" or accion == "Panel inferior":
-
             self.workpanel.set_accion_ver(accion, valor)
 
     def set_accion_archivo(self, widget, accion):
@@ -649,17 +551,13 @@ class BasePanel(Gtk.Paned):
 
             if not path:
                 path = BatovideWorkSpace
-
                 if self.proyecto:
                     path = self.proyecto["path"]
 
             from Widgets import Multiple_FileChooser
-
             filechooser = Multiple_FileChooser(
-                parent_window=self.get_toplevel(),
-                title="Abrir Archivo",
-                path=path,
-                mime_type=["text/*", "image/svg+xml"])
+                parent_window=self.get_toplevel(), title="Abrir Archivo",
+                path=path, mime_type=["text/*", "image/svg+xml"])
 
             filechooser.connect('load', self.__abrir_archivo)
 
@@ -687,12 +585,10 @@ class BasePanel(Gtk.Paned):
         """
         Cuando se abre el editor con archivo como parámetro.
         """
-
         self.__abrir_proyecto(None, ide_file)
 
     def external_open_file(self, archivo):
         """
         Cuando se abre el editor con archivo como parámetro.
         """
-
         self.__abrir_archivo(None, archivo)
