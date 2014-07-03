@@ -65,7 +65,6 @@ class BasePanel(Gtk.Paned):
         Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
         self.set_border_width(5)
-
         self.proyecto = {}
 
         self.workpanel = WorkPanel()

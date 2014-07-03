@@ -23,6 +23,7 @@
 import os
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GdkPixbuf
 
@@ -35,7 +36,7 @@ BASE_PATH = os.path.dirname(__file__)
 icons = os.path.join(BASE_PATH, "Iconos")
 
 
-class ToolbarProyecto(Gtk.Toolbar):
+class ToolbarProyecto(Gtk.EventBox):
     """
     Toolbar para el proyecto.
     """
@@ -48,10 +49,11 @@ class ToolbarProyecto(Gtk.Toolbar):
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        Gtk.EventBox.__init__(self)
 
         from collections import OrderedDict
         self.dict_proyecto = OrderedDict()
+        toolbar = Gtk.Toolbar()
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         nuevo_proyecto = get_boton(icon_path, pixels=get_pixels(0.5),
@@ -92,19 +94,20 @@ class ToolbarProyecto(Gtk.Toolbar):
         self.dict_proyecto["Detener Ejecución"] = [detener_ejecucion,
             "media-playback-stop.svg"]
 
-        self.insert(nuevo_proyecto, - 1)
-        self.insert(abrir_proyecto, - 1)
-        self.insert(editar_proyecto, - 1)
-        self.insert(guardar_proyecto, - 1)
-        self.insert(cerrar_proyecto, - 1)
+        toolbar.insert(nuevo_proyecto, - 1)
+        toolbar.insert(abrir_proyecto, - 1)
+        toolbar.insert(editar_proyecto, - 1)
+        toolbar.insert(guardar_proyecto, - 1)
+        toolbar.insert(cerrar_proyecto, - 1)
 
-        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
 
-        self.insert(ejecutar_proyecto, - 1)
-        self.insert(detener_ejecucion, - 1)
+        toolbar.insert(ejecutar_proyecto, - 1)
+        toolbar.insert(detener_ejecucion, - 1)
 
-        self.insert(get_separador(draw=False, ancho=0, expand=True), - 1)
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), - 1)
 
+        self.add(toolbar)
         self.show_all()
 
         for key in self.dict_proyecto.keys():
@@ -112,6 +115,8 @@ class ToolbarProyecto(Gtk.Toolbar):
 
         self.activar_proyecto(False)
         self.activar_ejecucion(None)
+
+        self.set_size_request(240, -1)
 
     def __emit_accion(self, widget):
         self.emit("accion", widget.TOOLTIP)
@@ -163,7 +168,7 @@ class ToolbarProyecto(Gtk.Toolbar):
             option.set_sensitive(False)
 
 
-class ToolbarArchivo(Gtk.Toolbar):
+class ToolbarArchivo(Gtk.EventBox):
     """
     Toolbar para el archivo
     """
@@ -176,10 +181,11 @@ class ToolbarArchivo(Gtk.Toolbar):
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        Gtk.EventBox.__init__(self)
 
         from collections import OrderedDict
         self.dict_archivo = OrderedDict()
+        toolbar = Gtk.Toolbar()
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         nuevo_archivo = get_boton(os.path.join(icons, icon_path),
@@ -244,26 +250,27 @@ class ToolbarArchivo(Gtk.Toolbar):
         self.dict_archivo["Seleccionar Todo"] = [seleccionar_todo,
             "edit-select-all.svg"]
 
-        self.insert(get_separador(draw=False, ancho=10, expand=False), - 1)
+        toolbar.insert(get_separador(draw=False, ancho=10, expand=False), - 1)
 
-        self.insert(nuevo_archivo, - 1)
-        self.insert(abrir_archivo, - 1)
-        self.insert(guardar_archivo, - 1)
-        self.insert(guardar_como, - 1)
-        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
-        self.insert(ejecutar, - 1)
-        self.insert(detener, - 1)
-        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
-        self.insert(deshacer, - 1)
-        self.insert(rehacer, - 1)
-        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
-        self.insert(copiar, - 1)
-        self.insert(cortar, - 1)
-        self.insert(pegar, - 1)
-        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
-        self.insert(seleccionar_todo, - 1)
+        toolbar.insert(nuevo_archivo, - 1)
+        toolbar.insert(abrir_archivo, - 1)
+        toolbar.insert(guardar_archivo, - 1)
+        toolbar.insert(guardar_como, - 1)
+        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        toolbar.insert(ejecutar, - 1)
+        toolbar.insert(detener, - 1)
+        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        toolbar.insert(deshacer, - 1)
+        toolbar.insert(rehacer, - 1)
+        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        toolbar.insert(copiar, - 1)
+        toolbar.insert(cortar, - 1)
+        toolbar.insert(pegar, - 1)
+        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        toolbar.insert(seleccionar_todo, - 1)
 
-        self.insert(get_separador(draw=False, ancho=0, expand=True), - 1)
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), - 1)
+        self.add(toolbar)
         self.show_all()
 
         for key in self.dict_archivo.keys():
@@ -359,7 +366,7 @@ class ToolbarArchivo(Gtk.Toolbar):
             option.set_sensitive(False)
 
 
-class ToolbarBusquedas(Gtk.Toolbar):
+class ToolbarBusquedas(Gtk.EventBox):
 
     __gtype_name__ = 'JAMediaEditorToolbarBusquedas'
 
@@ -372,13 +379,15 @@ class ToolbarBusquedas(Gtk.Toolbar):
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        Gtk.EventBox.__init__(self)
+
+        toolbar = Gtk.Toolbar()
 
         self.anterior = get_boton(os.path.join(icons, "go-next-rtl.svg"),
             pixels=get_pixels(0.5), tooltip_text="Anterior")
 
         self.anterior.connect("clicked", self.__emit_accion)
-        self.insert(self.anterior, - 1)
+        toolbar.insert(self.anterior, - 1)
 
         item = Gtk.ToolItem()
         item.set_expand(True)
@@ -387,15 +396,16 @@ class ToolbarBusquedas(Gtk.Toolbar):
         self.entry.show()
 
         item.add(self.entry)
-        self.insert(item, - 1)
+        toolbar.insert(item, - 1)
 
         self.siguiente = get_boton(os.path.join(icons, "go-next.svg"),
             pixels=get_pixels(0.5), tooltip_text="Siguiente")
 
         self.siguiente.connect("clicked", self.__emit_accion)
-        self.insert(self.siguiente, - 1)
+        toolbar.insert(self.siguiente, - 1)
 
         self.entry.connect("changed", self.__emit_buscar)
+        self.add(toolbar)
         self.show_all()
 
         self.anterior.set_sensitive(False)
@@ -422,7 +432,7 @@ class ToolbarBusquedas(Gtk.Toolbar):
         self.emit("buscar", widget.get_text())
 
 
-class ToolbarEstado(Gtk.Toolbar):
+class ToolbarEstado(Gtk.EventBox):
     """
     Barra de estado.
     """
@@ -431,9 +441,13 @@ class ToolbarEstado(Gtk.Toolbar):
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
+        toolbar = Gtk.Toolbar()
+        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
+
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         item = Gtk.ToolItem()
         item.set_expand(True)
@@ -441,9 +455,10 @@ class ToolbarEstado(Gtk.Toolbar):
         self.label.set_alignment(0.0, 0.5)
         self.label.show()
         item.add(self.label)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
         #self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
+        self.add(toolbar)
         self.show_all()
 
     def set_info(self, _dict):

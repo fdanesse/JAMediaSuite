@@ -2,11 +2,30 @@
 /*https://developer.gnome.org/gtk3/3.0/GtkCssProvider.html*/
 /*background: url{../images/imagen.png} no-repeat;*/
 
-GtkWindow, GtkToolbar {
+WindowJAMediaEditor, JAMediaEditorBasePanel, JAMediaEditorInfoNotebook,
+JAMediaEditorToolbarBusquedas, JAMediaEditorToolbarProyecto,
+JAMediaEditorToolbarArchivo, JAMediaEditorWorkPanel, ToolbarTerminal,
+JAMediaEditorNotebook_SourceView, JAMediaTerminal, NoteBookTerminal,
+Terminal, DialogoFormato {
+    background-color: #f0e6aa;
+}
+
+JAMediaEditorIntrospeccion, JAMediaEditorEstructura_Proyecto {
     background-color: #edf5ff;
     color: #000000;
 }
 
+JAMediaEditorMenu, JAMediaEditorToolbarEstado {
+    background-color: #000000;
+    color: #f0e6aa;
+}
+
+TreeViewFonts, TreeViewTamanio {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/*
 JAMediaEditorDialogoProyecto {
     background-color: #edf5ff;
     color: #000000;
@@ -40,3 +59,4 @@ ToolbarTerminal, JAMediaEditorToolbarBusquedas {
         from(shade(#edf5ff, 1.00)),
         to(shade(#edf5ff, 0.50)));
 }
+*/

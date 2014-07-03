@@ -30,9 +30,7 @@ from gi.repository import Gdk
 from gi.repository import GLib
 
 home = os.environ["HOME"]
-
-BatovideWorkSpace = os.path.join(
-    home, 'BatovideWorkSpace')
+BatovideWorkSpace = os.path.join(home, 'BatovideWorkSpace')
 
 
 class SourceView(GtkSource.View):
@@ -106,7 +104,6 @@ class SourceView(GtkSource.View):
                     nombre = nombre[0:13] + " . . . "
 
                 GLib.idle_add(self.__set_label, nombre)
-
                 self.control = os.path.getmtime(self.archivo)
 
         else:
@@ -135,12 +132,9 @@ class SourceView(GtkSource.View):
         """
         Setea la etiqueta en notebook con el nombre del archivo.
         """
-
         scroll = self.get_parent()
         notebook = scroll.get_parent()
-
         paginas = notebook.get_n_pages()
-
         for indice in range(paginas):
             page = notebook.get_children()[indice]
 
@@ -155,13 +149,11 @@ class SourceView(GtkSource.View):
         """
         Setea los colores del texto según tipo de archivo.
         """
-
         self.lenguaje = False
         self.get_buffer().set_highlight_syntax(False)
         self.get_buffer().set_language(None)
 
         import mimetypes
-
         tipo = mimetypes.guess_type(archivo)[0]
         #FIXME: HACK para forzar detección vala por ejemplo
         extension = os.path.splitext(
@@ -179,24 +171,19 @@ class SourceView(GtkSource.View):
         """
         Abre un Filechooser para guardar como.
         """
-
         parent = self.get_parent().get_parent()
         parent = parent.get_parent().get_parent()
         proyecto = parent.get_parent().proyecto
 
         if proyecto:
             defaultpath = proyecto["path"]
-
         else:
             defaultpath = BatovideWorkSpace
 
         from Widgets import My_FileChooser
-
-        filechooser = My_FileChooser(
-            parent_window=self.get_toplevel(),
+        filechooser = My_FileChooser(parent_window=self.get_toplevel(),
             action_type=Gtk.FileChooserAction.SAVE,
-            title="Guardar Archivo Como . . .",
-            path=defaultpath)
+            title="Guardar Archivo Como . . .", path=defaultpath)
 
         filechooser.connect('load', self.__guardar_como)
 
@@ -205,13 +192,11 @@ class SourceView(GtkSource.View):
         Si el archivo tiene cambios, lo guarda,
         de lo contrario ejecuta Guardar Como.
         """
-
         if self.archivo and self.archivo != None:
             _buffer = self.get_buffer()
 
             if _buffer.get_modified() and \
                 os.path.exists(self.archivo):
-
                 self.__procesar_y_guardar()
 
             elif not os.path.exists(self.archivo):
@@ -221,9 +206,7 @@ class SourceView(GtkSource.View):
             return self.guardar_archivo_como()
 
     def __procesar_y_guardar(self):
-
         _buffer = self.get_buffer()
-
         inicio, fin = _buffer.get_bounds()
         texto = _buffer.get_text(inicio, fin, 0)
 
@@ -253,10 +236,8 @@ class SourceView(GtkSource.View):
 
     def __limpiar_codigo(self, texto):
         """
-        Cuando se guarda un archivo,
-        se limpia el código en él.
+        Cuando se guarda un archivo, se limpia el código en él.
         """
-
         limpio = ''
         for line in texto.splitlines():
             # Eliminar espacios al final de la linea.
@@ -267,16 +248,11 @@ class SourceView(GtkSource.View):
         return limpio
 
     def __guardar_como(self, widget, archivo):
-        """
-        Ejecuta guardar Como.
-        """
-
         if archivo and archivo != None:
             archivo = os.path.join(archivo.replace("//", "/"))
 
             if os.path.exists(archivo):
                 from Widgets import DialogoSobreEscritura
-
                 dialog = DialogoSobreEscritura(
                     parent_window=self.get_toplevel())
 
@@ -284,24 +260,19 @@ class SourceView(GtkSource.View):
                 dialog.destroy()
 
                 if respuesta == Gtk.ResponseType.ACCEPT:
-                    self.archivo = os.path.join(
-                        archivo.replace("//", "/"))
-
+                    self.archivo = os.path.join(archivo.replace("//", "/"))
                     self.__procesar_y_guardar()
 
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
 
             else:
-                self.archivo = os.path.join(
-                    archivo.replace("//", "/"))
-
+                self.archivo = os.path.join(archivo.replace("//", "/"))
                 self.__procesar_y_guardar()
 
     def set_formato(self, fuente, tamanio):
         """
         Setea el formato de la fuente.
-
         Recibe fuente o tamaño.
             fuente es: 'Monospace 10'
         """
@@ -309,17 +280,13 @@ class SourceView(GtkSource.View):
         if not fuente or not tamanio:
             return
 
-        self.modify_font(
-            Pango.FontDescription(
-            "%s %s" % (fuente, tamanio)))
+        self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
 
     def set_accion(self, accion, valor=True):
         """
         Ejecuta acciones sobre el código.
         """
-
         _buffer = self.get_buffer()
-
         if accion == "Deshacer":
             if _buffer.can_undo():
                 _buffer.undo()
@@ -334,33 +301,27 @@ class SourceView(GtkSource.View):
 
         elif accion == "Copiar":
             clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-
             if _buffer.get_selection_bounds():
                 inicio, fin = _buffer.get_selection_bounds()
                 texto = _buffer.get_text(inicio, fin, 0)
-
                 clipboard.set_text(texto, -1)
 
         elif accion == "Pegar":
             clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
             texto = clipboard.wait_for_text()
-
             if texto != None:
                 if _buffer.get_selection_bounds():
                     start, end = _buffer.get_selection_bounds()
-                    texto_seleccion = _buffer.get_text(
-                        start, end, 0)
+                    texto_seleccion = _buffer.get_text(start, end, 0)
                     _buffer.delete(start, end)
 
                 _buffer.insert_at_cursor(texto)
 
         elif accion == "Cortar":
             clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-
             if _buffer.get_selection_bounds():
                 start, end = _buffer.get_selection_bounds()
-                texto_seleccion = _buffer.get_text(
-                    start, end, 0)
+                texto_seleccion = _buffer.get_text(start, end, 0)
                 _buffer.delete(start, end)
                 clipboard.set_text(texto_seleccion, -1)
 
@@ -373,19 +334,14 @@ class SourceView(GtkSource.View):
                 texto = None
 
             from Widgets import DialogoBuscar
-
-            dialogo = DialogoBuscar(self,
-                parent_window=self.get_toplevel(),
+            dialogo = DialogoBuscar(self, parent_window=self.get_toplevel(),
                 title="Buscar Texto", texto=texto)
 
             dialogo.run()
-
             dialogo.destroy()
 
         elif accion == "Reemplazar Texto":
-
             texto = ""
-
             try:
                 inicio, fin = _buffer.get_selection_bounds()
                 texto = _buffer.get_text(inicio, fin, 0)
@@ -394,25 +350,20 @@ class SourceView(GtkSource.View):
                 texto = None
 
             from Widgets import DialogoReemplazar
-
-            dialogo = DialogoReemplazar(self,
-                parent_window=self.get_toplevel(),
+            dialogo = DialogoReemplazar(self, parent_window=self.get_toplevel(),
                 title="Reemplazar Texto", texto=texto)
 
             dialogo.run()
-
             dialogo.destroy()
 
         elif accion == "Cerrar Archivo":
             if _buffer.get_modified():
                 from Widgets import DialogoAlertaSinGuardar
-
                 dialog = DialogoAlertaSinGuardar(
                     parent_window=self.get_toplevel())
 
                 respuesta = dialog.run()
                 dialog.destroy()
-
                 if respuesta == Gtk.ResponseType.ACCEPT:
                     self.guardar()
 
@@ -455,7 +406,6 @@ class SourceView(GtkSource.View):
                     self.get_toplevel().set_sensitive(False)
 
                     from Widgets import DialogoErrores
-
                     dialogo = DialogoErrores(self,
                         parent_window=self.get_toplevel())
 
@@ -488,20 +438,16 @@ class SourceView(GtkSource.View):
 
     def __identar(self):
         """
-        Agrega la identación especificada en el
-        texto seleccionado o en la linea en que el
-        usuario se encuentra parado.
+        Agrega la identación especificada en el texto seleccionado o en la
+        linea en que el usuario se encuentra parado.
         """
-
         _buffer = self.get_buffer()
-
         if _buffer.get_selection_bounds():
             start, end = _buffer.get_selection_bounds()
             #texto = buffer.get_text(start, end, True)
 
             id_0 = start.get_line()
             id_1 = end.get_line()
-
             for _id in range(id_0, id_1 + 1):
                 _iter = _buffer.get_iter_at_line(_id)
                 _buffer.insert(_iter, self.tab)
@@ -518,12 +464,9 @@ class SourceView(GtkSource.View):
         Saca una tabulación a las líneas seleccionadas o en
         la linea donde se encuentra parado el usuario.
         """
-
         _buffer = self.get_buffer()
-
         if _buffer.get_selection_bounds():
             start, end = _buffer.get_selection_bounds()
-
             id_0 = start.get_line()
             id_1 = end.get_line()
 
@@ -531,7 +474,6 @@ class SourceView(GtkSource.View):
                 line_iter = _buffer.get_iter_at_line(_id)
                 chars = line_iter.get_chars_in_line()
                 line_end_iter = _buffer.get_iter_at_line_offset(_id, chars - 1)
-
                 texto = _buffer.get_text(line_iter, line_end_iter, True)
 
                 if texto.startswith(self.tab):
@@ -548,26 +490,21 @@ class SourceView(GtkSource.View):
             line_end_iter = _buffer.get_iter_at_line_offset(_id, chars - 1)
 
             texto = _buffer.get_text(line_iter, line_end_iter, True)
-
             if texto.startswith(self.tab):
                 _buffer.delete(line_iter,
                     _buffer.get_iter_at_line_offset(_id, len(self.tab)))
 
     def __cerrar(self):
         """
-        Cierra la página en el Notebook_SourceView
-        que contiene este sourceview.
+        Cierra la página en el Notebook_SourceView de este sourceview.
         """
 
         self.get_toplevel().set_sensitive(False)
-
         self.new_handle(False)
 
         scroll = self.get_parent()
         notebook = scroll.get_parent()
-
         paginas = notebook.get_n_pages()
-
         if paginas:
             for indice in range(paginas):
                 page = notebook.get_children()[indice]
@@ -580,7 +517,6 @@ class SourceView(GtkSource.View):
         """
         Selecciona el error en la línea especificada.
         """
-
         # FIXME: Esto no funciona en la última línea.
         if not linea > -1:
             return
@@ -592,7 +528,6 @@ class SourceView(GtkSource.View):
         linea_iter_next = _buffer.get_iter_at_line(linea)
 
         #texto = buffer.get_text(linea_iter, linea_iter_next, True)
-
         _buffer.select_range(linea_iter, linea_iter_next)
         self.scroll_to_iter(linea_iter_next, 0.1, 1, 1, 0.1)
 
@@ -600,15 +535,12 @@ class SourceView(GtkSource.View):
         """
         Tabulador Inteligente.
         """
-
         if event.keyval == 65421:
             _buffer = self.get_buffer()
-
             textmark = _buffer.get_insert()
             textiter = _buffer.get_iter_at_mark(textmark)
 
             _id = textiter.get_line()
-
             line_iter = _buffer.get_iter_at_line(_id)
             chars = line_iter.get_chars_in_line()
 
@@ -618,7 +550,6 @@ class SourceView(GtkSource.View):
                 end_iter = _buffer.get_iter_at_line_offset(_id, chars - 1)
 
                 texto = _buffer.get_text(start_iter, end_iter, True)
-
                 if texto == ":":
                     # Tola la linea.
                     line_end_iter = _buffer.get_iter_at_line_offset(
@@ -632,16 +563,13 @@ class SourceView(GtkSource.View):
                     GLib.idle_add(self.__forzar_identacion, tabs + 1)
 
     def __forzar_identacion(self, tabs):
-
         _buffer = self.get_buffer()
-
         textmark = _buffer.get_insert()
         textiter = _buffer.get_iter_at_mark(textmark)
         _id = textiter.get_line()
 
         line_iter = _buffer.get_iter_at_line(_id)
         chars = line_iter.get_chars_in_line()
-
         _buffer.delete(line_iter,
             _buffer.get_iter_at_line_offset(_id, chars - 1))
 
@@ -654,15 +582,12 @@ class SourceView(GtkSource.View):
         """
         Alerta sobre cambios externos al archivo.
         """
-
         if self.archivo:
             if os.path.exists(self.archivo):
                 if self.control:
 
                     if self.control != os.path.getmtime(self.archivo):
-
-                        dialogo = Gtk.Dialog(
-                            parent=self.get_toplevel(),
+                        dialogo = Gtk.Dialog(parent=self.get_toplevel(),
                             flags=Gtk.DialogFlags.MODAL,
                             buttons=[
                                 "Recargar", Gtk.ResponseType.ACCEPT,
@@ -694,9 +619,7 @@ class SourceView(GtkSource.View):
                     self.control = os.path.getmtime(self.archivo)
 
             elif not os.path.exists(self.archivo):
-
-                dialogo = Gtk.Dialog(
-                    parent=self.get_toplevel(),
+                dialogo = Gtk.Dialog(parent=self.get_toplevel(),
                     flags=Gtk.DialogFlags.MODAL,
                     buttons=[
                         "Guardar", Gtk.ResponseType.ACCEPT,
@@ -729,33 +652,26 @@ class SourceView(GtkSource.View):
 
     def __senialar(self, valor=False):
         """
-        Pinta la etiqueta cuando el archivo
-        contiene cambios sin guardar.
+        Pinta la etiqueta cuando el archivo contiene cambios sin guardar.
         """
-
         color = Gdk.Color(0, 0, 0)
-
         if valor:
             color = Gdk.Color(65000, 26000, 0)
 
         scroll = self.get_parent()
-
         if not scroll:
             return
 
         notebook = scroll.get_parent()
-
         if not notebook:
             return
 
         paginas = notebook.get_n_pages()
-
         if not paginas:
             return
 
         for indice in range(paginas):
             page = notebook.get_children()[indice]
-
             if page == scroll:
                 pag = notebook.get_children()[indice]
                 label = notebook.get_tab_label(pag).get_children()[0]
@@ -763,22 +679,18 @@ class SourceView(GtkSource.View):
                 return
 
     def new_handle(self, reset):
-
         if self.actualizador:
             GLib.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = GLib.timeout_add(
-                1000, self.__handle)
+            self.actualizador = GLib.timeout_add(1000, self.__handle)
 
     def __handle(self):
         """
         Emite una señal con el estado general del archivo.
         """
-
         self.new_handle(False)
-
         self.__control_cambios()
 
         _buffer = self.get_buffer()
@@ -821,11 +733,8 @@ class SourceView(GtkSource.View):
             }
 
         self.emit('update', _dict)
-
         self.__senialar(modificado)
-
         self.new_handle(True)
-
         return False
 
 
@@ -844,7 +753,6 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         self.priority = 1
 
         from SpyderHack.SpyderHack import SpyderHack
-
         self.spyder_hack = SpyderHack()
 
     def do_get_name(self):
@@ -872,24 +780,20 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         expresion = ''
         # Auto completado se hace sobre "."
         if texto_de_linea_en_edicion.endswith("."):
-
             expresion = str(texto_de_linea_en_edicion.split()[-1][:-1]).strip()
-
             if expresion:
                 # Caso: class V(Gtk.
                 if "(" in expresion:
                     expresion = expresion.split("(")[-1].strip()
 
                 lista = self.__get_list(expresion)
-
                 opciones = []
                 self.opciones = []
 
                 for item in lista:
                     self.opciones.append(item)
-                    opciones.append(
-                        GtkSource.CompletionItem.new(
-                            item, item, None, None))
+                    opciones.append(GtkSource.CompletionItem.new(
+                        item, item, None, None))
 
                 context.add_proposals(self, opciones, True)
 
@@ -913,7 +817,6 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         """
         Devuelve la lista de opciones para autocompletado.
         """
-
         if self.archivo:
             workpath = os.path.dirname(self.archivo)
 
@@ -923,8 +826,7 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
 
         else:
             home = os.environ["HOME"]
-            workpath = os.path.join(
-                home, 'BatovideWorkSpace')
+            workpath = os.path.join(home, 'BatovideWorkSpace')
 
         return self.spyder_hack.Run(workpath, expresion, self.buffer)
 
