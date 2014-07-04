@@ -44,10 +44,8 @@ class DialogoProyecto(Gtk.Dialog):
     def __init__(self, parent_window=None,
         title="Crear Proyecto Nuevo", accion="nuevo"):
 
-        Gtk.Dialog.__init__(self,
-            title=title,
-            parent=parent_window,
-            flags=Gtk.DialogFlags.MODAL,
+        Gtk.Dialog.__init__(self, title=title,
+            parent=parent_window, flags=Gtk.DialogFlags.MODAL,
             buttons=[
                 "Guardar", Gtk.ResponseType.ACCEPT,
                 "Cancelar", Gtk.ResponseType.CANCEL])
@@ -56,7 +54,6 @@ class DialogoProyecto(Gtk.Dialog):
 
         if accion == "nuevo":
             self.set_size_request(600, 150)
-
         else:
             self.set_size_request(600, 450)
 
@@ -78,13 +75,9 @@ class DialogoProyecto(Gtk.Dialog):
         self.descripcion.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
 
         scroll_descripcion = Gtk.ScrolledWindow()
-
-        scroll_descripcion.set_policy(
-            Gtk.PolicyType.NEVER,
+        scroll_descripcion.set_policy(Gtk.PolicyType.NEVER,
             Gtk.PolicyType.AUTOMATIC)
-
         scroll_descripcion.add_with_viewport(self.descripcion)
-
         scroll_descripcion.set_size_request(200, 100)
 
         self.licencia = Gtk.ComboBoxText()
@@ -96,11 +89,7 @@ class DialogoProyecto(Gtk.Dialog):
 
         # Scroll
         scroll = Gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC)
-
+        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(self.box)
 
         self.vbox.pack_start(scroll, True, True, 0)
@@ -150,7 +139,6 @@ class DialogoProyecto(Gtk.Dialog):
             self.licencia.append_text(licencia)
 
         self.licencia.set_active(0)
-
         self.show_all()
 
         if accion == "nuevo":
@@ -169,10 +157,8 @@ class DialogoProyecto(Gtk.Dialog):
                 break
 
     def __show_options(self, button):
-
         options = False
         for widget in self.internal_widgets[2:]:
-
             if widget.get_visible():
                 widget.hide()
                 options = False
@@ -195,15 +181,12 @@ class DialogoProyecto(Gtk.Dialog):
         """
         En el campo versión solo pueden haber numeros y puntos.
         """
-
         text = widget.get_text()
         items = text.split(".")
-
         valores = []
 
         for item in items:
             item = item.strip()
-
             try:
                 valores.append(int(item))
 
@@ -214,7 +197,6 @@ class DialogoProyecto(Gtk.Dialog):
             valores.append(0)
 
         version = "%s.%s.%s" % (valores[0], valores[1], valores[2])
-
         self.version.set_text(version)
 
     def __check_nombre(self, widget, event):
@@ -241,36 +223,20 @@ class DialogoProyecto(Gtk.Dialog):
             boton.set_sensitive(False)
 
     def __get_label(self, text):
-        """
-        Recibe un texto y
-        devuelve un Gtk.Label con él.
-        """
-
         label = Gtk.Label(text)
-
         return label
 
     def __get_pack_box(self, widgets):
-        """
-        Recibe una lista de Widgets y
-        devuelve un box, con esos widgets empaquetados.
-        """
-
         box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-
         box.pack_start(widgets[0], False, False, 5)
-
         for widget in widgets[1:]:
             box.pack_start(widget, True, True, 5)
-
         return box
 
     def get_proyecto(self):
         """
-        Devuelve un diccionario con la definición
-        del proyecto.
+        Devuelve un diccionario con la definición del proyecto.
         """
-
         _buffer = self.descripcion.get_buffer()
 
         nombre = self.nombre.get_text()
@@ -279,8 +245,7 @@ class DialogoProyecto(Gtk.Dialog):
         mimetypes = self.mimetypes.get_text()
         categories = self.categories.get_text()
 
-        text = _buffer.get_text(
-            _buffer.get_start_iter(),
+        text = _buffer.get_text(_buffer.get_start_iter(),
             _buffer.get_end_iter(), True)
 
         version = self.version.get_text()
@@ -347,7 +312,6 @@ class DialogoProyecto(Gtk.Dialog):
         # Setear Combo para archivo Main.
         if diccionario.get("path", False):
             import glob
-
             arch = glob.glob("%s/*.py" % diccionario["path"])
             self.main.remove_all()
 
@@ -358,7 +322,6 @@ class DialogoProyecto(Gtk.Dialog):
         item = model.get_iter_first()
 
         count = 0
-
         while item:
             if model.get_value(item, 0) == diccionario["main"]:
                 self.main.set_active(count)
@@ -370,7 +333,6 @@ class DialogoProyecto(Gtk.Dialog):
         # Setear sensibilidad en el boton aceptar.
         for button in self.get_action_area().get_children():
             if self.get_response_for_widget(button) == Gtk.ResponseType.ACCEPT:
-
                 nombre = self.nombre.get_text()
                 if nombre:
                     nombre.strip()
@@ -393,32 +355,25 @@ class WidgetAutores(Gtk.Box):
 
     def __init__(self):
 
-        Gtk.Box.__init__(self,
-            orientation=Gtk.Orientation.VERTICAL)
+        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
 
         self.__agregar(None)
-
         self.show_all()
 
     def __agregar(self, widget):
         """
         Función para agregar información de un autor.
         """
-
         box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
         entry1 = Gtk.Entry()
         entry2 = Gtk.Entry()
 
-        remover = get_boton(
-            os.path.join(icons, "list-remove.svg"),
-            pixels=get_pixels(1.0),
-            tooltip_text="Eliminar")
+        remover = get_boton(os.path.join(icons, "list-remove.svg"),
+            pixels=get_pixels(1.0), tooltip_text="Eliminar")
 
-        agregar = get_boton(
-            os.path.join(icons, "gtk-add.svg"),
-            pixels=get_pixels(1.0),
-            tooltip_text="Agregar")
+        agregar = get_boton(os.path.join(icons, "gtk-add.svg"),
+            pixels=get_pixels(1.0), tooltip_text="Agregar")
 
         frame1 = Gtk.Frame()
         frame1.set_label("Nombre")
@@ -437,14 +392,12 @@ class WidgetAutores(Gtk.Box):
 
         agregar.connect("clicked", self.__agregar)
         remover.connect("clicked", self.__quitar)
-
         self.show_all()
 
     def __quitar(self, widget):
         """
         Función para eliminar informacion de un autor.
         """
-
         if len(self.get_children()) == 1:
             widget.get_parent().get_children()[0].get_child().set_text("")
             widget.get_parent().get_children()[1].get_child().set_text("")
@@ -457,7 +410,6 @@ class WidgetAutores(Gtk.Box):
         Devuelve una lista de tuplas (nombre, mail),
         con todos los autores definidos.
         """
-
         autores = []
 
         for autor in self.get_children():
@@ -475,10 +427,6 @@ class WidgetAutores(Gtk.Box):
         return autores
 
     def set_autores(self, autores):
-        """
-        Setea los autores.
-        """
-
         for x in range(len(autores) - 1):
             self.__agregar(None)
 

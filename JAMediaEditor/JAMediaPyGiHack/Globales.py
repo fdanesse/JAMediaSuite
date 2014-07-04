@@ -127,24 +127,15 @@ BASEDICT = {
 '''
 
 
-def set_dict(dict):
+def set_dict(_dict):
     """
-    Crea el json base desde donde opera
-    la función get_dict()
+    Crea el json base desde donde opera la función get_dict()
     """
-
     import json
-
     archivo = os.path.join(WorkPath, "JAMediaPyGiHack.cfg")
     archivo = open(archivo, "w")
-    archivo.write(
-            json.dumps(
-                dict,
-                indent=4,
-                separators=(", ", ":"),
-                sort_keys=True
-            )
-        )
+    archivo.write(json.dumps(_dict, indent=4, separators=(", ", ":"),
+        sort_keys=True))
     archivo.close()
 
 
@@ -152,7 +143,6 @@ def get_dict():
     """
     Devuelve Los módulos.
     """
-
     #import json
     #import codecs
 
@@ -170,26 +160,16 @@ def get_dict():
 
 
 def get_separador(draw=False, ancho=0, expand=False):
-    """
-    Devuelve un separador generico.
-    """
-
     from gi.repository import Gtk
-
     separador = Gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
-
     return separador
 
 
 def get_boton(archivo, flip=False, rotacion=None,
     pixels=0, tooltip_text=None):
-    """
-    Devuelve un toolbutton generico.
-    """
-
     from gi.repository import Gtk
     from gi.repository import GdkPixbuf
 
@@ -197,10 +177,8 @@ def get_boton(archivo, flip=False, rotacion=None,
         pixels = get_pixels(1)
 
     boton = Gtk.ToolButton()
-
     imagen = Gtk.Image()
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-        archivo, pixels, pixels)
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixels, pixels)
 
     if flip:
         pixbuf = pixbuf.flip(True)

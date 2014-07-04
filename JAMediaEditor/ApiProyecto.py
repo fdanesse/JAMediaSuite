@@ -34,14 +34,11 @@ def colectdir(direccion, directorios):
     """
 
     if os.path.exists(direccion) and os.path.isdir(direccion):
-
         for direct in os.listdir(direccion):
             directorio = os.path.join(direccion, direct)
 
             if os.path.isdir(directorio):
-
                 leer = True
-
                 # Rechazar Directorios preestablecidos como no distribuibles.
                 for _dir in RECHAZADirs:
                     if _dir in directorio:
@@ -62,11 +59,8 @@ def colectfiles(directorio, manifest_list):
 
     for archivo in os.listdir(directorio):
         fil = os.path.join(directorio, archivo)
-
         if os.path.isfile(fil):
-
             agregar = True
-
             # Rechazar Archivos según nombres preestablecidos
             for _file in RECHAZAFiles:
                 if _file in fil:
@@ -78,7 +72,6 @@ def colectfiles(directorio, manifest_list):
 
             # Rechazar Archivos según extensiones preestablecidos
             extension = os.path.splitext(os.path.split(archivo)[1])[1]
-
             for rechazar in RECHAZAExtension:
                 if rechazar in extension:
                     agregar = False

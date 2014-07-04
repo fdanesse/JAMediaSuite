@@ -25,13 +25,15 @@ from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import WebKit
 
-BASE_PATH = os.path.dirname(__file__)
-
 from JAMediaTerminal.Terminal import Terminal
 from JAMediaGstreamer.JAMediaGstreamer import JAMediaGstreamer
 
 from Widgets import ToolbarTry
 from ApiWidget import ApiWidget
+
+from Globales import get_boton
+
+BASE_PATH = os.path.dirname(__file__)
 
 
 def get_pixels(centimetros):
@@ -73,44 +75,6 @@ def get_pixels(centimetros):
     return res[centimetros]
 
 
-def get_boton(archivo, flip=False, rotacion=None, pixels=0, tooltip_text=None):
-    """
-    Devuelve un toolbutton generico.
-    """
-
-    from gi.repository import Gtk
-    from gi.repository import GdkPixbuf
-
-    if not pixels:
-        pixels = get_pixels(1)
-
-    boton = Gtk.ToolButton()
-
-    imagen = Gtk.Image()
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-        archivo, pixels, pixels)
-
-    if flip:
-        pixbuf = pixbuf.flip(True)
-
-    if rotacion:
-        pixbuf = pixbuf.rotate_simple(rotacion)
-
-    imagen.set_from_pixbuf(pixbuf)
-    boton.set_icon_widget(imagen)
-
-    imagen.show()
-    boton.show()
-
-    if tooltip_text:
-        boton.set_tooltip_text(tooltip_text)
-        boton.TOOLTIP = tooltip_text
-
-    return boton
-
-BASEPATH = os.path.dirname(__file__)
-
-
 class BasePanel(Gtk.Paned):
 
     __gtype_name__ = 'PygiHackBasePanel'
@@ -142,13 +106,11 @@ class BasePanel(Gtk.Paned):
         self.connect("realize", self.__do_realize)
 
     def __do_realize(self, widget):
-
         self.set_accion("ver", "Terminal", False)
         self.set_accion("ver", "Apis PyGiHack", True)
         self.base_notebook.import_modulo("python-gi", "Gtk")
 
     def set_accion(self, menu, wid_lab, valor):
-
         if menu == "ver":
             if wid_lab == "Terminal":
                 if valor == True:
@@ -167,7 +129,6 @@ class BasePanel(Gtk.Paned):
             self.emit("update", wid_lab)
 
     def import_modulo(self, paquete, modulo):
-
         self.base_notebook.import_modulo(paquete, modulo)
 
 
@@ -180,26 +141,19 @@ class BaseNotebook(Gtk.Notebook):
         Gtk.Notebook.__init__(self)
 
         self.set_scrollable(True)
-
         self.show_all()
-
         #self.connect('switch_page', self.__switch_page)
 
     def import_modulo(self, paquete, modulo):
         """
         Crea una lengüeta para el módulo que se cargará.
         """
-
-        if paquete == "python-gi" or paquete == "python" or \
-            paquete == "Otros":
-
+        if paquete == "python-gi" or paquete == "python" or paquete == "Otros":
             hbox = Gtk.HBox()
             label = Gtk.Label(modulo)
 
-            boton = get_boton(
-                os.path.join(BASE_PATH,
-                "Iconos", "button-cancel.svg"),
-                pixels=get_pixels(0.5),
+            boton = get_boton(os.path.join(BASE_PATH,
+                "Iconos", "button-cancel.svg"), pixels=get_pixels(0.5),
                 tooltip_text="Cerrar")
 
             hbox.pack_start(label, False, False, 0)
@@ -213,18 +167,14 @@ class BaseNotebook(Gtk.Notebook):
             self.show_all()
 
             boton.connect("clicked", self.__cerrar)
-
             self.set_current_page(-1)
-
             self.set_tab_reorderable(introspectionwidget, True)
 
     def __cerrar(self, widget):
         """
         Elimina la Lengüeta.
         """
-
         paginas = self.get_n_pages()
-
         for indice in range(paginas):
             boton = self.get_tab_label(
                 self.get_children()[indice]).get_children()[1]
@@ -249,11 +199,9 @@ class IntrospectionWidget(Gtk.Box):
         self.pack_end(self.toolbartray, False, False, 0)
 
         self.show_all()
-
         self.introspection_panel.connect('info-try', self.__set_info_tray)
 
     def __set_info_tray(self, widget, info):
-
         self.toolbartray.set_info(info)
 
 
@@ -270,11 +218,7 @@ class IntrospectionPanel(Gtk.Paned):
         Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
         scroll = Gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         apiwidget = ApiWidget(paquete, modulo)
         scroll.add(apiwidget)
         scroll.set_size_request(250, -1)
@@ -284,11 +228,9 @@ class IntrospectionPanel(Gtk.Paned):
         self.pack2(self.infonotebook, resize=True, shrink=True)
 
         self.show_all()
-
         apiwidget.connect('update', self.__update)
 
     def __update(self, widget, tupla):
-
         if tupla:
             webdoc = ''
             objeto, gdoc, doc, _type, modulo_path, tipo = tupla
@@ -299,7 +241,6 @@ class IntrospectionPanel(Gtk.Paned):
             self.infonotebook.set_gdoc('')
             self.infonotebook.set_doc('')
             self.infonotebook.set_webdoc('')
-
             self.emit("info-try", '')
             return
 
@@ -314,20 +255,19 @@ class IntrospectionPanel(Gtk.Paned):
                 os.remove(os.path.join('/dev/shm', f))
 
         import commands
-
         if tipo == "python-gi":
             if modulo == "gi":
-                arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_doc.py")
+                arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_doc.py")
                 commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
                 arch = os.path.join('/dev/shm', "Make_doc.py")
 
             else:
-                arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_gi_doc.py")
+                arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_gi_doc.py")
                 commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
                 arch = os.path.join('/dev/shm', "Make_gi_doc.py")
 
         elif tipo == "python" or tipo == "Otros":
-            arch0 = os.path.join(BASEPATH, "SpyderHack", "Make_doc.py")
+            arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_doc.py")
             commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
             arch = os.path.join('/dev/shm', "Make_doc.py")
 
@@ -346,7 +286,6 @@ class IntrospectionPanel(Gtk.Paned):
                     webdoc = archivo
 
         self.infonotebook.set_webdoc(webdoc)
-
         self.emit("info-try", "%s %s %s %s" % (
             objeto, _type, modulo_path, tipo))
 
@@ -366,9 +305,7 @@ class InfoNotebook(Gtk.Notebook):
         label = Gtk.Label("Web Doc")
         label.set_angle(-90)
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.webview = WebKit.WebView()
         self.webview.set_settings(WebKit.WebSettings())
         self.webview.set_zoom_level(0.8)
@@ -379,9 +316,7 @@ class InfoNotebook(Gtk.Notebook):
         label = Gtk.Label("__gdoc__")
         label.set_angle(-90)
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.gdoc = Gtk.TextView()
         self.gdoc.set_editable(False)
         self.gdoc.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
@@ -392,9 +327,7 @@ class InfoNotebook(Gtk.Notebook):
         label = Gtk.Label("__doc__")
         label.set_angle(-90)
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.doc = Gtk.TextView()
         self.doc.set_editable(False)
         self.doc.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)

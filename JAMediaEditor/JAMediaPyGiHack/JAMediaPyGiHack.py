@@ -59,24 +59,18 @@ class JAMediaPyGiHack(Gtk.EventBox):
         self.base_panel.connect("update", self.__update)
 
     def __emit_salir(self, widget):
-
         self.emit('salir')
 
     def __update(self, widget, view):
-
         if view == "Terminal":
             pass
-
-        elif view == "Gstreamer - Inspect 1.0" or \
-            view == "Apis PyGiHack":
+        elif view == "Gstreamer - Inspect 1.0" or view == "Apis PyGiHack":
             self.toolbar.update(view)
 
     def __set_accion(self, widget, menu, wid_lab, valor):
-
         self.base_panel.set_accion(menu, wid_lab, valor)
 
     def __import(self, widget, paquete, modulo):
-
         self.base_panel.import_modulo(paquete, modulo)
 
 
@@ -89,9 +83,7 @@ class Ventana(Gtk.Window):
         Gtk.Window.__init__(self)
 
         self.set_title("JAMediaPygiHack")
-
-        self.set_icon_from_file(
-            os.path.join(BASE_PATH,
+        self.set_icon_from_file(os.path.join(BASE_PATH,
             "Iconos", "PygiHack.svg"))
 
         self.set_resizable(True)
@@ -110,7 +102,6 @@ class Ventana(Gtk.Window):
         self.connect("delete-event", self.__salir)
 
     def __salir(self, widget=None, senial=None):
-
         import sys
         sys.exit(0)
 

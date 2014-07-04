@@ -42,8 +42,7 @@ class ApiWidget(Gtk.TreeView):
     def __init__(self, paquete, modulo):
 
         Gtk.TreeView.__init__(self,
-            Gtk.TreeStore(
-                GdkPixbuf.Pixbuf, GObject.TYPE_STRING))
+            Gtk.TreeStore(GdkPixbuf.Pixbuf, GObject.TYPE_STRING))
 
         self.objetos = {}
         self.old_update = False
@@ -66,11 +65,9 @@ class ApiWidget(Gtk.TreeView):
             self.__selecciones, self.get_model())
 
         self.show_all()
-
         self.__load(paquete, modulo)
 
     def __construir_columnas(self):
-
         celda_de_imagen = Gtk.CellRendererPixbuf()
         columna = Gtk.TreeViewColumn(None, celda_de_imagen, pixbuf=0)
         columna.set_property('resizable', False)
@@ -89,10 +86,9 @@ class ApiWidget(Gtk.TreeView):
         """
         Cuando se presiona una tecla.
         """
-
         tecla = event.get_keycode()[1]
-        model, iter = self.get_selection().get_selected()
-        path = self.get_model().get_path(iter)
+        model, _iter = self.get_selection().get_selected()
+        path = self.get_model().get_path(_iter)
 
         if tecla == 22:
             if self.row_expanded(path):
@@ -112,13 +108,11 @@ class ApiWidget(Gtk.TreeView):
         """
         Cuando se hace doble click en "Clases", "Funciones", etc . . .
         """
-
         #iter = treeview.get_model().get_iter(path)
         #valor = treeview.get_model().get_value(iter, 1)
 
         if treeview.row_expanded(path):
             treeview.collapse_row(path)
-
         elif not treeview.row_expanded(path):
             treeview.expand_to_path(path)
 
@@ -127,9 +121,8 @@ class ApiWidget(Gtk.TreeView):
         """
         Cuando se selecciona una clase, funcion, etc . . .
         """
-
-        iter = modelo.get_iter(path)
-        datos = modelo.get_value(iter, 1)
+        _iter = modelo.get_iter(path)
+        datos = modelo.get_value(_iter, 1)
 
         if not is_selected and self.old_update != datos:
             self.old_update = datos
@@ -143,7 +136,6 @@ class ApiWidget(Gtk.TreeView):
         Llena el treeview con los datos de un paquete.
         (Clases, funciones, constantes y otros.)
         """
-
         self.get_model().clear()
 
         import commands
@@ -151,12 +143,10 @@ class ApiWidget(Gtk.TreeView):
         import codecs
 
         self.objetos = {}
-
         if tipo == "python-gi":
             if modulo == "gi":
                 ejecutable = os.path.join(BASE_PATH,
                     'SpyderHack', 'Dir_Modulo.py')
-
             else:
                 ejecutable = os.path.join(BASE_PATH,
                     'SpyderHack', 'Dir_Gi_Modulo.py')
@@ -166,19 +156,16 @@ class ApiWidget(Gtk.TreeView):
                 'SpyderHack', 'Dir_Modulo.py')
 
         commands.getoutput('python %s %s' % (ejecutable, modulo))
-
         path = os.path.join("/dev/shm", "spyder_hack_out.json")
-
         archivo = codecs.open(path, "r", "utf-8")
-        dict = json.JSONDecoder("utf-8").decode(archivo.read())
+        _dict = json.JSONDecoder("utf-8").decode(archivo.read())
         archivo.close()
 
-        if dict.get(modulo, False):
-            iter = self.get_model().get_iter_first()
-            self.__add_modulo_dict(dict[modulo], iter, tipo)
+        if _dict.get(modulo, False):
+            _iter = self.get_model().get_iter_first()
+            self.__add_modulo_dict(_dict[modulo], _iter, tipo)
 
-    def __add_modulo_dict(self, dict, iter, tipo):
-
+    def __add_modulo_dict(self, _dict, _iter, tipo):
         ### Iconos Representativos
         icono = os.path.join(BASE_PATH, "Iconos", "class.svg")
         pixbufclase = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
@@ -189,52 +176,39 @@ class ApiWidget(Gtk.TreeView):
         icono = os.path.join(BASE_PATH, "Iconos", "otros.svg")
         pixbufotros = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, -1, 18)
 
-        modulo_path = dict.get("PATH", '')
+        modulo_path = _dict.get("PATH", '')
 
-        if dict.get("CLASES", False):
-            newiter = self.get_model().append(
-                iter, [pixbufclase, 'Clases'])
-
-            for lista in dict.get("CLASES", []):
+        if _dict.get("CLASES", False):
+            newiter = self.get_model().append(_iter, [pixbufclase, 'Clases'])
+            for lista in _dict.get("CLASES", []):
                 self.__add(newiter, None, lista, modulo_path, tipo)
 
-        if dict.get("FUNCIONES", False):
-            newiter = self.get_model().append(
-                iter, [pixbuffunc, 'Funciones'])
-
-            for lista in dict.get("FUNCIONES", []):
+        if _dict.get("FUNCIONES", False):
+            newiter = self.get_model().append(_iter, [pixbuffunc, 'Funciones'])
+            for lista in _dict.get("FUNCIONES", []):
                 self.__add(newiter, None, lista, modulo_path, tipo)
 
-        if dict.get("CONSTANTES", False):
+        if _dict.get("CONSTANTES", False):
             newiter = self.get_model().append(
-                iter, [pixbufconst, 'Constantes'])
-
-            for lista in dict.get("CONSTANTES", []):
+                _iter, [pixbufconst, 'Constantes'])
+            for lista in _dict.get("CONSTANTES", []):
                 self.__add(newiter, None, lista, modulo_path, tipo)
 
-        if dict.get("DESCONOCIDOS", False):
-            newiter = self.get_model().append(
-                iter, [pixbufotros, 'Otros'])
-
-            for lista in dict.get("DESCONOCIDOS", []):
+        if _dict.get("DESCONOCIDOS", False):
+            newiter = self.get_model().append(_iter, [pixbufotros, 'Otros'])
+            for lista in _dict.get("DESCONOCIDOS", []):
                 self.__add(newiter, None, lista, modulo_path, tipo)
 
-        for key in dict.keys():
+        for key in _dict.keys():
             if key not in ["CLASES", "FUNCIONES",
                 "CONSTANTES", "DESCONOCIDOS", "PATH"]:
-
-                newiter = self.get_model().append(iter, [None, key])
-
+                newiter = self.get_model().append(_iter, [None, key])
                 try:
-                    self.__add_modulo_dict(dict[key], newiter, tipo)
-
+                    self.__add_modulo_dict(_dict[key], newiter, tipo)
                 except:
-                    print "Key no Esperado:", type(dict[key]), key
+                    print "Key no Esperado:", type(_dict[key]), key
 
-    def __add(self, iter, pixbuf, lista, modulo_path, tipo):
-
-        self.get_model().append(iter, [pixbuf, lista[0]])
-        self.objetos[lista[0]] = (
-            lista[0], lista[1],
-            lista[2], lista[3],
+    def __add(self, _iter, pixbuf, lista, modulo_path, tipo):
+        self.get_model().append(_iter, [pixbuf, lista[0]])
+        self.objetos[lista[0]] = (lista[0], lista[1], lista[2], lista[3],
             modulo_path, tipo)

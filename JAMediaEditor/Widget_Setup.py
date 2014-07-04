@@ -33,28 +33,44 @@ BASEPATH = os.path.dirname(__file__)
 
 
 def get_boton(stock, tooltip):
-    """
-    Devuelve un botón generico.
-    """
-
     boton = Gtk.ToolButton.new_from_stock(stock)
     boton.set_tooltip_text(tooltip)
     boton.TOOLTIP = tooltip
-
     return boton
 
 
 def get_separador(draw=False, ancho=0, expand=False):
-    """
-    Devuelve un separador generico.
-    """
-
     separador = Gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
-
     return separador
+
+
+def get_scroll(sourceview):
+    scroll = Gtk.ScrolledWindow()
+    scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+    scroll.add(sourceview)
+    return scroll
+
+
+def get_text(_buffer):
+    """
+    Devuelve el contenido de un text buffer.
+    """
+    inicio, fin = _buffer.get_bounds()
+    texto = _buffer.get_text(inicio, fin, 0)
+    return texto
+
+
+def escribir_archivo(archivo, contenido):
+    """
+    Escribe los archivos de instalación.
+    """
+    arch = open(archivo, "w")
+    arch.write(contenido)
+    arch.close()
+
 
 HELP_TEXT = """
 Guía para Realizar Modificaciones en Archivos Instaladores:
@@ -177,10 +193,8 @@ class DialogoSetup(Gtk.Dialog):
 
     def __init__(self, parent_window=None, proyecto=None):
 
-        Gtk.Dialog.__init__(self,
-            title="Generador de Instaladores",
-            parent=parent_window,
-            flags=Gtk.DialogFlags.MODAL,
+        Gtk.Dialog.__init__(self, title="Generador de Instaladores",
+            parent=parent_window, flags=Gtk.DialogFlags.MODAL,
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
         self.set_size_request(640, 480)
@@ -198,18 +212,12 @@ class DialogoSetup(Gtk.Dialog):
         self.__format_help(buffer_help, tags_table)
 
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC,Gtk.PolicyType.AUTOMATIC)
         scroll.add(help)
 
-        hpaned = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
-        hpaned.__gtype_name__ = 'JAMediaEditorPanelWidget_setup'
-
-        hpaned.pack1(self.notebook,
-            resize=False, shrink=False)
-        hpaned.pack2(scroll,
-            resize=False, shrink=True)
+        hpaned = HPanel()
+        hpaned.pack1(self.notebook, resize=False, shrink=False)
+        hpaned.pack2(scroll, resize=False, shrink=True)
 
         self.vbox.pack_start(hpaned, True, True, 0)
 
@@ -219,12 +227,10 @@ class DialogoSetup(Gtk.Dialog):
         self.connect("realize", self.__reescalar, scroll)
 
     def __reescalar(self, widget, scroll):
-
         rect = self.get_allocation()
         scroll.set_size_request(rect.width / 3, -1)
 
     def __format_help(self, buffer_help, tags_table):
-
         from gi.repository import Gdk
         from gi.repository import Pango
 
@@ -234,16 +240,13 @@ class DialogoSetup(Gtk.Dialog):
 
         tag2 = Gtk.TextTag.new("2")
         tag2.set_property("weight", Pango.Weight.BOLD)
-        tag2.set_property("background-gdk",
-            Gdk.Color(0, 0, 0))
-        tag2.set_property("foreground-gdk",
-            Gdk.Color(65000, 65000, 65000))
+        tag2.set_property("background-gdk", Gdk.Color(0, 0, 0))
+        tag2.set_property("foreground-gdk", Gdk.Color(65000, 65000, 65000))
         tags_table.add(tag2)
 
         tag3 = Gtk.TextTag.new("3")
         tag3.set_property("weight", Pango.Weight.BOLD)
-        tag3.set_property("background-gdk",
-            Gdk.Color(60000, 60000, 60000))
+        tag3.set_property("background-gdk", Gdk.Color(60000, 60000, 60000))
         tags_table.add(tag3)
 
         tit2 = [3, 60, 83]
@@ -258,7 +261,6 @@ class DialogoSetup(Gtk.Dialog):
             self.__apply_tag(buffer_help, id, tag3)
 
     def __apply_tag(self, buffer_help, id, tag):
-
         iter_inicio = buffer_help.get_iter_at_line(id)
         iter_fin = buffer_help.get_iter_at_line(id + 1)
         buffer_help.apply_tag(tag, iter_inicio, iter_fin)
@@ -285,8 +287,7 @@ class Notebook_Setup(Gtk.Notebook):
 
         box = Gtk.VBox()
 
-        gnome_widget_icon = Widget_icon(
-            tipo="gnome", proyecto=proyecto)
+        gnome_widget_icon = Widget_icon(tipo="gnome", proyecto=proyecto)
 
         box.pack_start(gnome_widget_icon, False, False, 0)
         box.pack_start(self.gnome_notebook, True, True, 0)
@@ -295,8 +296,7 @@ class Notebook_Setup(Gtk.Notebook):
 
         box = Gtk.VBox()
 
-        ceibal_widget_icon = Widget_icon(
-            tipo="ceibal", proyecto=proyecto)
+        ceibal_widget_icon = Widget_icon(tipo="ceibal", proyecto=proyecto)
 
         box.pack_start(ceibal_widget_icon, False, False, 0)
         box.pack_start(self.ceibal_notebook, True, True, 0)
@@ -305,8 +305,7 @@ class Notebook_Setup(Gtk.Notebook):
 
         box = Gtk.VBox()
 
-        sugar_widget_icon = Widget_icon(
-            tipo="sugar", proyecto=proyecto)
+        sugar_widget_icon = Widget_icon(tipo="sugar", proyecto=proyecto)
 
         box.pack_start(sugar_widget_icon, False, False, 0)
         box.pack_start(self.sugar_notebook, True, True, 0)
@@ -327,10 +326,8 @@ class Notebook_Setup(Gtk.Notebook):
 
     def __switch_page(self, widget, widget_child, indice):
         """
-        Cuando el usuario selecciona una lengüeta,
-        Reconstruye el instalador.
+        Cuando el usuario selecciona una lengüeta, Reconstruye el instalador.
         """
-
         notebook = widget_child.get_children()[1]
         if notebook.iconpath:
             notebook.setup_install(notebook.iconpath)
@@ -339,15 +336,11 @@ class Notebook_Setup(Gtk.Notebook):
         """
         Construye los instaladores.
         """
-
         if tipo == "gnome":
             self.gnome_notebook.make()
-
-            dialog = DialogoInstall(
-                parent_window=self.get_toplevel(),
+            dialog = DialogoInstall(parent_window=self.get_toplevel(),
                 dirpath=self.gnome_notebook.activitydirpath,
                 destino_path=self.proyecto["path"])
-
             dialog.run()
             dialog.destroy()
 
@@ -365,21 +358,15 @@ class Notebook_Setup(Gtk.Notebook):
 
         elif tipo == "sugar":
             self.sugar_notebook.make()
-
-            dialog = DialogoInfoInstall(
-                parent_window=self.get_toplevel(),
+            dialog = DialogoInfoInstall(parent_window=self.get_toplevel(),
                 distpath=os.path.join(self.proyecto["path"], "dist"))
-
             dialog.run()
             dialog.destroy()
 
         elif tipo == "ceibal":
             self.ceibal_notebook.make()
-
-            dialog = DialogoInfoInstall(
-                parent_window=self.get_toplevel(),
+            dialog = DialogoInfoInstall(parent_window=self.get_toplevel(),
                 distpath=os.path.join(self.proyecto["path"], "dist"))
-
             dialog.run()
             dialog.destroy()
 
@@ -387,7 +374,6 @@ class Notebook_Setup(Gtk.Notebook):
         """
         Setea el icono de la aplicación.
         """
-
         if valor == "gnome":
             self.gnome_notebook.setup_install(iconpath)
 
@@ -417,43 +403,37 @@ class Gnome_Notebook(Gtk.Notebook):
         self.setupcfg = Setup_SourceView()
         self.setupcfg.get_buffer().set_text("")
 
-        self.append_page(
-            self.get_scroll(self.setupcfg),
+        self.append_page(get_scroll(self.setupcfg),
             Gtk.Label("setup.cfg"))
 
         self.setupdesktop = Setup_SourceView()
         self.setupdesktop.get_buffer().set_text("")
 
-        self.append_page(
-            self.get_scroll(self.setupdesktop),
+        self.append_page(get_scroll(self.setupdesktop),
             Gtk.Label("%s.desktop" % self.proyecto["nombre"]))
 
         self.setupmanifest = Setup_SourceView()
         self.setupmanifest.get_buffer().set_text("")
 
-        self.append_page(
-            self.get_scroll(self.setupmanifest),
+        self.append_page(get_scroll(self.setupmanifest),
             Gtk.Label("MANIFEST"))
 
         self.setuppy = Setup_SourceView()
         self.setuppy.get_buffer().set_text("")
 
-        self.append_page(
-            self.get_scroll(self.setuppy),
+        self.append_page(get_scroll(self.setuppy),
             Gtk.Label("setup.py"))
 
         self.lanzador = Setup_SourceView()
         self.lanzador.get_buffer().set_text("")
 
-        self.append_page(
-            self.get_scroll(self.lanzador),
+        self.append_page(get_scroll(self.lanzador),
             Gtk.Label("lanzador"))
 
         self.desinstalador = Setup_SourceView()
         self.desinstalador.get_buffer().set_text("")
 
-        self.append_page(
-            self.get_scroll(self.desinstalador),
+        self.append_page(get_scroll(self.desinstalador),
             Gtk.Label("desinstalador"))
 
         # Comenzar a generar el temporal
@@ -464,11 +444,9 @@ class Gnome_Notebook(Gtk.Notebook):
 
     def setup_install(self, iconpath):
         """
-        Recolecta la información necesaria para generar los
-        archivos de instalación y los presenta al usuario para
-        posibles correcciones.
+        Recolecta la información necesaria para generar los archivos de
+        instalación y los presenta al usuario para posibles correcciones.
         """
-
         # Borrar anteriores
         if os.path.exists(self.activitydirpath):
             commands.getoutput("rm -r %s" % self.activitydirpath)
@@ -505,10 +483,8 @@ class Gnome_Notebook(Gtk.Notebook):
         self.iconpath = iconpath
 
         if not self.proyecto["path"] in iconpath:
-            newpath = os.path.join(
-                self.activitydirpath,
+            newpath = os.path.join(self.activitydirpath,
                 os.path.basename(iconpath))
-
             shutil.copyfile(iconpath, newpath)
             iconpath = newpath
 
@@ -539,7 +515,6 @@ class Gnome_Notebook(Gtk.Notebook):
             self.activitydirpath)
 
         manifest = ""
-
         for item in manifest_list:
             manifest = "%s\n%s" % (item, manifest)
 
@@ -550,7 +525,6 @@ class Gnome_Notebook(Gtk.Notebook):
 
         autores = ""
         mails = ""
-
         for autor in self.proyecto["autores"]:
             autores = "%s%s - " % (autores, autor[0])
             mails = "%s%s - " % (mails, autor[1])
@@ -571,7 +545,6 @@ class Gnome_Notebook(Gtk.Notebook):
 
             if key.startswith("/"):
                 newkey = ""
-
                 for l in key[1:]:
                     newkey = "%s%s" % (newkey, l)
 
@@ -587,11 +560,9 @@ class Gnome_Notebook(Gtk.Notebook):
             setup_py = "%s]),\n\n\t\t" % (str(setup_py[:-5]))
 
         setup_py = "%s])\n\n" % (str(setup_py[:-5]))
-
         setup_py = "%s%s\n" % (setup_py, "import commands")
         setup_py = "%s%s\n" % (setup_py, "commands.getoutput(\"chmod -R 755 /usr/local/share/%s\")" % self.proyecto["nombre"])
         setup_py = "%s%s\n" % (setup_py, "commands.getoutput(\"chmod 755 /usr/share/applications/%s.desktop\")" % self.proyecto["nombre"])
-
         self.setuppy.get_buffer().set_text(setup_py)
 
         # lanzador.
@@ -604,58 +575,25 @@ class Gnome_Notebook(Gtk.Notebook):
         desinstalador = "%sprint commands.getoutput(\"rm /usr/share/applications/%s.desktop\")\n" % (desinstalador, self.proyecto["nombre"])
         desinstalador = "%sprint commands.getoutput(\"rm /usr/local/bin/%s_run\")\n" % (desinstalador, self.proyecto["nombre"].lower())
         desinstalador = "%sprint commands.getoutput(\"rm /usr/local/bin/%s_uninstall\")\n" % (desinstalador, self.proyecto["nombre"].lower())
-
         self.desinstalador.get_buffer().set_text(desinstalador)
 
     def make(self):
         """
         Construye los archivos instaladores para su distribución.
         """
+        cfg = get_text(self.setupcfg.get_buffer())
+        desktop = get_text(self.setupdesktop.get_buffer())
+        manifest = get_text(self.setupmanifest.get_buffer())
+        setuppy = get_text(self.setuppy.get_buffer())
+        lanzador = get_text(self.lanzador.get_buffer())
+        desinstalador = get_text(self.desinstalador.get_buffer())
 
-        cfg = self.__get_text(self.setupcfg.get_buffer())
-        desktop = self.__get_text(self.setupdesktop.get_buffer())
-        manifest = self.__get_text(self.setupmanifest.get_buffer())
-        setuppy = self.__get_text(self.setuppy.get_buffer())
-        lanzador = self.__get_text(self.lanzador.get_buffer())
-        desinstalador = self.__get_text(self.desinstalador.get_buffer())
-
-        self.__escribir_archivo(self.archivo_setup_cfg, cfg)
-        self.__escribir_archivo(self.archivo_desktop, desktop)
-        self.__escribir_archivo(self.archivo_manifest, manifest)
-        self.__escribir_archivo(self.archivo_setup_py, setuppy)
-        self.__escribir_archivo(self.archivo_lanzador, lanzador)
-        self.__escribir_archivo(self.archivo_desinstalador, desinstalador)
-
-    def __get_text(self, _buffer):
-        """
-        Devuelve el contenido de un text buffer.
-        """
-
-        inicio, fin = _buffer.get_bounds()
-        texto = _buffer.get_text(inicio, fin, 0)
-
-        return texto
-
-    def __escribir_archivo(self, archivo, contenido):
-        """
-        Escribe los archivos de instalación.
-        """
-
-        arch = open(archivo, "w")
-        arch.write(contenido)
-        arch.close()
-
-    def get_scroll(self, sourceview):
-
-        scroll = Gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-
-        scroll.add(sourceview)
-
-        return scroll
+        escribir_archivo(self.archivo_setup_cfg, cfg)
+        escribir_archivo(self.archivo_desktop, desktop)
+        escribir_archivo(self.archivo_manifest, manifest)
+        escribir_archivo(self.archivo_setup_py, setuppy)
+        escribir_archivo(self.archivo_lanzador, lanzador)
+        escribir_archivo(self.archivo_desinstalador, desinstalador)
 
 
 class Sugar_Notebook(Gtk.Notebook):
@@ -677,37 +615,20 @@ class Sugar_Notebook(Gtk.Notebook):
         self.activity_sourceview = Setup_SourceView()
         self.setup_sourceview = Setup_SourceView()
 
-        self.append_page(
-            self.get_scroll(self.activity_sourceview),
+        self.append_page(get_scroll(self.activity_sourceview),
             Gtk.Label("activity.info"))
 
-        self.append_page(
-            self.get_scroll(self.setup_sourceview),
+        self.append_page(get_scroll(self.setup_sourceview),
             Gtk.Label("setup.py"))
 
         self.show_all()
 
-    def get_scroll(self, sourceview):
-
-        scroll = Gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-
-        scroll.add(sourceview)
-
-        return scroll
-
     def setup_install(self, iconpath):
         """
-        Recolecta la información necesaria para generar los
-        archivos de instalación y los presenta al usuario para
-        posibles correcciones.
+        Recolecta la información necesaria para generar los archivos de
+        instalación y los presenta al usuario para posibles correcciones.
         """
-
         self.iconpath = iconpath
-
         main_path = os.path.join(self.proyecto["path"], self.proyecto["main"])
         extension = os.path.splitext(os.path.split(main_path)[1])[1]
         main_name = self.proyecto["main"].split(extension)[0]
@@ -724,7 +645,6 @@ class Sugar_Notebook(Gtk.Notebook):
         self.setup_sourceview.get_buffer().set_text(setup)
 
     def __generar_temporal_dir(self, iconpath):
-
         # Comenzar a generar el temporal
         activitydirpath = os.path.join("/tmp",
             "%s.activity" % self.proyecto["nombre"])
@@ -753,18 +673,17 @@ class Sugar_Notebook(Gtk.Notebook):
         """
         Construye los archivos instaladores para su distribución.
         """
-
         activitydirpath, activityinfodirpath = self.__generar_temporal_dir(
             self.iconpath)
 
         infopath = os.path.join(activityinfodirpath, "activity.info")
         setuppath = os.path.join(activitydirpath, "setup.py")
 
-        activity = self.__get_text(self.activity_sourceview.get_buffer())
-        setup = self.__get_text(self.setup_sourceview.get_buffer())
+        activity = get_text(self.activity_sourceview.get_buffer())
+        setup = get_text(self.setup_sourceview.get_buffer())
 
-        self.__escribir_archivo(infopath, activity)
-        self.__escribir_archivo(setuppath, setup)
+        escribir_archivo(infopath, activity)
+        escribir_archivo(setuppath, setup)
 
         # Borrar archivos innecesarios
         nombre = self.proyecto["nombre"]
@@ -772,9 +691,7 @@ class Sugar_Notebook(Gtk.Notebook):
         desinstalador = ("%s_uninstall" % nombre).lower()
         desktop = "%s.desktop" % nombre
 
-        borrar = [
-            ejecutable, desinstalador,
-            "MANIFEST", desktop, "setup.cfg",
+        borrar = [ejecutable, desinstalador, "MANIFEST", desktop, "setup.cfg",
             ".git", "build", "dist"]
 
         for arch in borrar:
@@ -816,7 +733,6 @@ class Sugar_Notebook(Gtk.Notebook):
         zipped.close()
 
         distpath = os.path.join(self.proyecto["path"], "dist")
-
         if not os.path.exists(distpath):
             os.mkdir(distpath)
 
@@ -829,25 +745,6 @@ class Sugar_Notebook(Gtk.Notebook):
 
         if os.path.exists(activitydirpath):
             shutil.rmtree(activitydirpath, ignore_errors=False, onerror=None)
-
-    def __get_text(self, _buffer):
-        """
-        Devuelve el contenido de un text buffer.
-        """
-
-        inicio, fin = _buffer.get_bounds()
-        texto = _buffer.get_text(inicio, fin, 0)
-
-        return texto
-
-    def __escribir_archivo(self, archivo, contenido):
-        """
-        Escribe los archivos de instalación.
-        """
-
-        arch = open(archivo, "w")
-        arch.write(contenido)
-        arch.close()
 
 
 class Setup_SourceView(GtkSource.View):
@@ -862,11 +759,8 @@ class Setup_SourceView(GtkSource.View):
         GtkSource.View.__init__(self)
 
         self.set_buffer(GtkSource.Buffer())
-
         from gi.repository import Pango
-
         self.modify_font(Pango.FontDescription('Monospace 10'))
-
         self.show_all()
 
 
@@ -909,9 +803,7 @@ class Widget_icon(Gtk.Frame):
         toolbar.insert(item, -1)
 
         toolbar.insert(get_separador(draw=False, ancho=10, expand=False), -1)
-
         toolbar.insert(boton, -1)
-
         toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         item = Gtk.ToolItem()
@@ -921,7 +813,6 @@ class Widget_icon(Gtk.Frame):
         toolbar.insert(get_separador(draw=False, ancho=10, expand=False), -1)
 
         self.add(toolbar)
-
         self.show_all()
 
         boton.connect("clicked", self.__open_filechooser)
@@ -931,26 +822,20 @@ class Widget_icon(Gtk.Frame):
         """
         Manda construir el instalador.
         """
-
         self.emit("make")
 
     def __open_filechooser(self, widget):
         """
         Abre un filechooser para seleccionar un ícono.
         """
-
         mime = "image/*"
-
         if self.tipo == "sugar":
             mime = "image/svg+xml"
 
         from Widgets import My_FileChooser
-
-        filechooser = My_FileChooser(
-            parent_window=self.get_toplevel(),
+        filechooser = My_FileChooser(parent_window=self.get_toplevel(),
             action_type=Gtk.FileChooserAction.OPEN,
-            title="Seleccionar Icono . . .",
-            path=self.proyecto["path"],
+            title="Seleccionar Icono . . .", path=self.proyecto["path"],
             mime_type=[mime])
 
         filechooser.connect('load', self.__emit_icon_path)
@@ -959,9 +844,7 @@ class Widget_icon(Gtk.Frame):
         """
         Cuando el usuario selecciona un icono para la aplicación.
         """
-
         from gi.repository import GdkPixbuf
-
         iconpath = str(iconpath).replace("//", "/")
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(iconpath, 50, 50)
@@ -978,15 +861,10 @@ class DialogoInstall(Gtk.Dialog):
 
     __gtype_name__ = 'JAMediaEditorDialogoInstall'
 
-    def __init__(self,
-        parent_window=None,
-        dirpath=None,
-        destino_path=None):
+    def __init__(self, parent_window=None, dirpath=None, destino_path=None):
 
-        Gtk.Dialog.__init__(self,
-            parent=parent_window,
-            title="Generador de Instaladores",
-            flags=Gtk.DialogFlags.MODAL,
+        Gtk.Dialog.__init__(self, parent=parent_window,
+            title="Generador de Instaladores", flags=Gtk.DialogFlags.MODAL,
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
         self.set_size_request(640, 480)
@@ -996,11 +874,9 @@ class DialogoInstall(Gtk.Dialog):
         self.dirpath = dirpath
 
         from JAMediaTerminal.Terminal import Terminal
-
         self.terminal = Terminal()
 
         self.vbox.pack_start(self.terminal, True, True, 0)
-
         self.terminal.toolbar.hide()
 
         notebook = self.terminal.notebook
@@ -1009,7 +885,6 @@ class DialogoInstall(Gtk.Dialog):
         cerrar.set_sensitive(False)
 
         self.maximize()
-
         self.terminal.connect("reset", self.__end_make)
 
         GLib.idle_add(self.__run_gnome_install)
@@ -1019,22 +894,16 @@ class DialogoInstall(Gtk.Dialog):
         Cuando Finaliza el proceso de construcción del
         instalador, se informa al usuario.
         """
-
-        dialog = DialogoInfoInstall(
-            parent_window=self.get_toplevel(),
+        dialog = DialogoInfoInstall(parent_window=self.get_toplevel(),
             distpath=os.path.join(self.destino_path, "dist"))
-
         dialog.run()
         dialog.destroy()
 
     def __run_gnome_install(self):
         """
-        Ejecuta: python setup.py sdist
-        Construyendo el instalador gnome.
+        Ejecuta: python setup.py sdist Construyendo el instalador gnome.
         """
-
         python_path = "/usr/bin/python"
-
         if os.path.exists(os.path.join("/bin", "python")):
             python_path = os.path.join("/bin", "python")
 
@@ -1047,11 +916,8 @@ class DialogoInstall(Gtk.Dialog):
         elif os.path.exists(os.path.join("/usr/local", "python")):
             python_path = os.path.join("/usr/local", "python")
 
-        self.terminal.ejecute_script(
-            self.dirpath,
-            python_path,
-            os.path.join(self.dirpath, "setup.py"),
-            "sdist")
+        self.terminal.ejecute_script(self.dirpath, python_path,
+            os.path.join(self.dirpath, "setup.py"), "sdist")
 
         return False
 
@@ -1066,19 +932,15 @@ class DialogoInfoInstall(Gtk.Dialog):
 
     def __init__(self, parent_window=None, distpath=None):
 
-        Gtk.Dialog.__init__(self,
-            title="Generador de Instaladores",
-            parent=parent_window,
-            flags=Gtk.DialogFlags.MODAL,
+        Gtk.Dialog.__init__(self, title="Generador de Instaladores",
+            parent=parent_window, flags=Gtk.DialogFlags.MODAL,
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
         self.set_size_request(420, 180)
         self.set_border_width(15)
 
         label = Gtk.Label(u"Proceso de Construcción de Instalador Culminado.\nPuedes Encontrar el Instalador de tu Proyecto en:\n\n%s" % (distpath))
-
         label.show()
-
         self.vbox.pack_start(label, True, True, 0)
 
 
@@ -1101,25 +963,18 @@ class Ceibal_Notebook(Gtk.Notebook):
         self.install = Setup_SourceView()
         self.install.get_buffer().set_text("")
 
-        self.append_page(
-            self.get_scroll(self.install),
-            Gtk.Label("install.py"))
-
+        self.append_page(get_scroll(self.install), Gtk.Label("install.py"))
         self.show_all()
 
     def setup_install(self, iconpath):
         """
-        Recolecta la información necesaria para generar los
-        archivos de instalación y los presenta al usuario para
-        posibles correcciones.
+        Recolecta la información necesaria para generar los archivos de
+        instalación y los presenta al usuario para posibles correcciones.
         """
-
         self.iconpath = iconpath
-
         activitydirpath, iconpath = self.__generar_temporal_dir(iconpath)
 
         import shelve
-
         archivo = shelve.open(os.path.join(BASEPATH, "plantilla"))
         text = u"%s" % archivo.get('install', "")
         archivo.close()
@@ -1132,7 +987,6 @@ class Ceibal_Notebook(Gtk.Notebook):
         self.install.get_buffer().set_text(text)
 
     def __generar_temporal_dir(self, iconpath):
-
         # Comenzar a generar el temporal
         activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
 
@@ -1151,20 +1005,18 @@ class Ceibal_Notebook(Gtk.Notebook):
             iconpath = newpath
 
         iconpath = iconpath.split(self.proyecto["path"])[-1]
-
         return (activitydirpath, iconpath)
 
     def make(self):
         """
         Construye los archivos instaladores para su distribución.
         """
-
         activitydirpath, iconpath = self.__generar_temporal_dir(self.iconpath)
 
         # Escribir instalador.
         archivo_install = os.path.join(activitydirpath, "install.py")
-        install = self.__get_text(self.install.get_buffer())
-        self.__escribir_archivo(archivo_install, install)
+        install = get_text(self.install.get_buffer())
+        escribir_archivo(archivo_install, install)
 
         # Generar archivo de distribución "*.zip"
         zippath = "%s.zip" % (activitydirpath)
@@ -1191,7 +1043,6 @@ class Ceibal_Notebook(Gtk.Notebook):
                         ignore_errors=False, onerror=None)
 
         for (archiveDirPath, dirNames, fileNames) in os.walk(activitydirpath):
-
             if not archiveDirPath.split("/")[-1] in RECHAZADirs:
                 for fileName in fileNames:
                     if not fileName in RECHAZAFiles:
@@ -1206,7 +1057,6 @@ class Ceibal_Notebook(Gtk.Notebook):
         zipped.close()
 
         distpath = os.path.join(self.proyecto["path"], "dist")
-
         if not os.path.exists(distpath):
             os.mkdir(distpath)
 
@@ -1219,33 +1069,13 @@ class Ceibal_Notebook(Gtk.Notebook):
             shutil.rmtree(activitydirpath,
                 ignore_errors=False, onerror=None)
 
-    def __get_text(self, _buffer):
-        """
-        Devuelve el contenido de un text buffer.
-        """
 
-        inicio, fin = _buffer.get_bounds()
-        texto = _buffer.get_text(inicio, fin, 0)
+class HPanel(Gtk.Paned):
 
-        return texto
+    __gtype_name__ = 'JAMediaEditorPanelWidget_setup'
 
-    def __escribir_archivo(self, archivo, contenido):
-        """
-        Escribe los archivos de instalación.
-        """
+    def __init__(self):
 
-        arch = open(archivo, "w")
-        arch.write(contenido)
-        arch.close()
+        Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
-    def get_scroll(self, sourceview):
-
-        scroll = Gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
-
-        scroll.add(sourceview)
-
-        return scroll
+        self.show_all()

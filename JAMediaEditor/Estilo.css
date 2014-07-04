@@ -6,18 +6,32 @@ WindowJAMediaEditor, JAMediaEditorBasePanel, JAMediaEditorInfoNotebook,
 JAMediaEditorToolbarBusquedas, JAMediaEditorToolbarProyecto,
 JAMediaEditorToolbarArchivo, JAMediaEditorWorkPanel, ToolbarTerminal,
 JAMediaEditorNotebook_SourceView, JAMediaTerminal, NoteBookTerminal,
-Terminal, DialogoFormato {
+Terminal, DialogoFormato, JAMediaEditorDialogoProyecto, PygiHackMenu,
+JAMediaEditorDialogoSetup, JAMediaPyGiHack, PygiHackToolbar, PygiHackBasePanel,
+PygiHackBaseNotebook, PygiHackIntrospectionPanel, PygiHackInfoNotebook,
+JAMediaTerminal2, NoteBookTerminal2, Terminal2, ToolbarTerminal2,
+DialogoFormato2, JAMediaGstreamerPyGiHack{
     background-color: #f0e6aa;
+    color: #000000;
 }
 
-JAMediaEditorIntrospeccion, JAMediaEditorEstructura_Proyecto {
+JAMediaEditorIntrospeccion, JAMediaEditorEstructura_Proyecto,
+JAMediaEditorDialogoBuscar, JAMediaEditorDialogoReemplazar,
+JAMediaEditorMy_FileChooser, Multiple_FileChooser, JAMediaEditorDialogoErrores,
+JAMediaEditorDialogoAlertaSinGuardar, JAMediaEditorDialogoSobreEscritura,
+JAMediaEditorDialogoEliminar, JAMediaEditorBusquedaGrep, JAMediaEditorCredits,
+GtkViewport, GtkFrame, JAMediaEditorPanelWidget_setup,
+JAMediaEditorNotebook_Setup, JAMediaEditorGnome_Notebook,
+JAMediaEditorSugar_Notebook, JAMediaEditorDialogoInstall,
+JAMediaEditorCeibal_Notebook, JAMediaEditorDialogoInfoInstall,
+JAMediaEditorWidget_icon {
     background-color: #edf5ff;
     color: #000000;
 }
 
-JAMediaEditorMenu, JAMediaEditorToolbarEstado {
+JAMediaEditorMenu, JAMediaEditorToolbarEstado, PygiHackToolbarTry {
     background-color: #000000;
-    color: #f0e6aa;
+    color: #ffffff;
 }
 
 TreeViewFonts, TreeViewTamanio {

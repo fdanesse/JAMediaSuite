@@ -22,6 +22,7 @@
 import os
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GObject
 
 BASE_PATH = os.path.dirname(__file__)
@@ -32,7 +33,7 @@ from Globales import get_separador
 from Globales import get_boton
 
 
-class Toolbar(Gtk.Toolbar):
+class Toolbar(Gtk.EventBox):
 
     __gtype_name__ = 'PygiHackToolbar'
 
@@ -48,21 +49,18 @@ class Toolbar(Gtk.Toolbar):
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.insert(
-            get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        toolbar = Gtk.Toolbar()
 
-        archivo = os.path.join(
-            BASE_PATH,
-            "Iconos", "PygiHack.svg")
-        boton = get_boton(
-            archivo, flip=False,
-            pixels=32)
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
+
+        archivo = os.path.join(BASE_PATH, "Iconos", "PygiHack.svg")
+        boton = get_boton(archivo, flip=False, pixels=32)
         boton.set_tooltip_text("Créditos")
         boton.connect("clicked", self.__show_credits)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
         item = Gtk.ToolItem()
         item.set_expand(True)
@@ -71,74 +69,63 @@ class Toolbar(Gtk.Toolbar):
         self.menu.connect("accion-menu", self.__emit_accion_menu)
         self.menu.show()
         item.add(self.menu)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
-        archivo = os.path.join(
-            BASE_PATH,
-            "Iconos", "button-cancel.svg")
-        boton = get_boton(
-            archivo, flip=False,
-            pixels=32)
+        archivo = os.path.join(BASE_PATH, "Iconos", "button-cancel.svg")
+        boton = get_boton(archivo, flip=False, pixels=32)
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.__emit_salir)
-        self.insert(boton, -1)
+        toolbar.insert(boton, -1)
 
-        self.insert(
-            get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
+        self.add(toolbar)
         self.show_all()
 
     def __emit_salir(self, widget):
-
         self.emit('salir')
 
     def update(self, view):
-
         self.menu.update(view)
 
     def __emit_accion_menu(self, widget, menu, wid_lab, valor):
-
         self.emit("accion-menu", menu, wid_lab, valor)
 
     def __emit_import(self, widget, paquete, modulo):
-
         self.emit("import", paquete, modulo)
 
     def __show_credits(self, widget):
-
         dialog = Credits(self.get_toplevel())
         dialog.run()
         dialog.destroy()
 
 
-class ToolbarTry(Gtk.Toolbar):
+class ToolbarTry(Gtk.EventBox):
 
     __gtype_name__ = 'PygiHackToolbarTry'
 
     def __init__(self):
 
-        Gtk.Toolbar.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.insert(
-            get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        toolbar = Gtk.Toolbar()
+
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
 
         item = Gtk.ToolItem()
         item.set_expand(False)
         self.label = Gtk.Label("Info:")
         self.label.show()
         item.add(self.label)
-        self.insert(item, -1)
+        toolbar.insert(item, -1)
 
-        self.insert(
-            get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
+        self.add(toolbar)
         self.show_all()
 
     def set_info(self, info):
-
         self.label.set_text("Info: %s" % info)
 
 
@@ -273,40 +260,31 @@ class Menu(Gtk.MenuBar):
         self.show_all()
 
     def update(self, view):
-
         if view == "Gstreamer - Inspect 1.0":
             self.item_abrir.set_sensitive(False)
-
         elif view == "Apis PyGiHack":
             self.item_abrir.set_sensitive(True)
 
     def __emit_accion_menu(self, widget, menu):
-
         valor = not widget.get_children()[0].get_children()[0].get_active()
         widget.get_children()[0].get_children()[0].set_active(valor)
         label = widget.get_children()[0].get_children()[1]
         self.emit("accion-menu", menu, label.get_text(), valor)
 
     def __emit_accion_menu2(self, widget, menu):
-
         valor = not widget.get_children()[0].get_children()[0].get_active()
-
         if valor:
             widget.get_children()[0].get_children()[0].set_active(valor)
             label = widget.get_children()[0].get_children()[1]
             self.emit("accion-menu", menu, label.get_text(), valor)
 
     def __emit_import(self, widget, menu):
-
         import commands
-
         disponible = False
-
         if menu == "python-gi":
             if widget.get_label() == "gi":
                 ejecutable = os.path.join(
                     BASE_PATH, "SpyderHack", "Check.py")
-
             else:
                 ejecutable = os.path.join(BASE_PATH,
                     "SpyderHack", "Gi_Check.py")
@@ -327,36 +305,27 @@ class Menu(Gtk.MenuBar):
 
         if 'True' in ret:
             disponible = True
-
         else:
             disponible = False
 
         if disponible:
             self.emit("import", menu, widget.get_label())
-
         else:
-            dialog = Gtk.Dialog(
-                parent=self.get_toplevel(),
+            dialog = Gtk.Dialog(parent=self.get_toplevel(),
                 flags=Gtk.DialogFlags.MODAL,
                 buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
             dialog.set_border_width(15)
-
-            dialog.vbox.pack_start(
-                Gtk.Label(
-                    "%s no se Encuentra Disponible" % widget.get_label()),
-                    True, True, 0)
+            dialog.vbox.pack_start(Gtk.Label(
+                "%s no se Encuentra Disponible" % widget.get_label()),
+                True, True, 0)
 
             dialog.vbox.show_all()
-
             dialog.run()
-
             dialog.destroy()
-
             widget.destroy()
 
     def __set_add_menu(self, widget):
-
         print "Agregar un Item en:", widget.get_label()
 
 
@@ -366,18 +335,14 @@ class Credits(Gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        Gtk.Dialog.__init__(self,
-            parent=parent,
-            flags=Gtk.DialogFlags.MODAL,
+        Gtk.Dialog.__init__(self, parent=parent, flags=Gtk.DialogFlags.MODAL,
             buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
         self.set_border_width(15)
 
         imagen = Gtk.Image()
-        imagen.set_from_file(
-            os.path.join(BASE_PATH,
-                "Iconos", "PyGiHackCredits.svg"))
+        imagen.set_from_file(os.path.join(BASE_PATH,
+            "Iconos", "PyGiHackCredits.svg"))
 
         self.vbox.pack_start(imagen, True, True, 0)
-
         self.vbox.show_all()

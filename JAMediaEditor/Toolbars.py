@@ -54,6 +54,7 @@ class ToolbarProyecto(Gtk.EventBox):
         from collections import OrderedDict
         self.dict_proyecto = OrderedDict()
         toolbar = Gtk.Toolbar()
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         nuevo_proyecto = get_boton(icon_path, pixels=get_pixels(0.5),
@@ -186,6 +187,7 @@ class ToolbarArchivo(Gtk.EventBox):
         from collections import OrderedDict
         self.dict_archivo = OrderedDict()
         toolbar = Gtk.Toolbar()
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         nuevo_archivo = get_boton(os.path.join(icons, icon_path),
@@ -382,6 +384,7 @@ class ToolbarBusquedas(Gtk.EventBox):
         Gtk.EventBox.__init__(self)
 
         toolbar = Gtk.Toolbar()
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
 
         self.anterior = get_boton(os.path.join(icons, "go-next-rtl.svg"),
             pixels=get_pixels(0.5), tooltip_text="Anterior")
