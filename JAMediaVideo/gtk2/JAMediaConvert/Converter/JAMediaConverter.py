@@ -462,4 +462,6 @@ class JAMediaConverter(gobject.GObject):
     def stop(self):
         self.__new_handle(False)
         self.player.set_state(gst.STATE_NULL)
+        if os.path.exists(self.newpath):
+            os.chmod(self.newpath, 0755)
         self.emit("info", "  Progreso  ")

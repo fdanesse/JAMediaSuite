@@ -257,6 +257,9 @@ class JAMediaWebCamVideo(gobject.GObject):
             gobject.source_remove(self.rafaga)
             self.rafaga = False
 
+        if os.path.exists(self.path_archivo):
+            os.chmod(self.path_archivo, 0755)
+
         self.__new_handle(False, [])
         self.pipeline.set_state(gst.STATE_NULL)
 
@@ -441,6 +444,7 @@ class JAMediaWebCamVideo(gobject.GObject):
             pixbuf.save(archivo, "png", options={})
             self.foto_contador += 1
 
+            os.chmod(archivo, 0755)
             self.emit('update', "%s" % str(os.path.basename(archivo)))
 
         if rafaga < 1.0:

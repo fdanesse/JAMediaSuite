@@ -350,7 +350,8 @@ class SourceView(GtkSource.View):
                 texto = None
 
             from Widgets import DialogoReemplazar
-            dialogo = DialogoReemplazar(self, parent_window=self.get_toplevel(),
+            dialogo = DialogoReemplazar(self,
+                parent_window=self.get_toplevel(),
                 title="Reemplazar Texto", texto=texto)
 
             dialogo.run()

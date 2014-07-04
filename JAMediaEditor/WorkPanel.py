@@ -255,8 +255,7 @@ class WorkPanel(Gtk.Paned):
 
 class Notebook_SourceView(Gtk.Notebook):
     """
-    Notebook contenedor de sourceview para
-    archivos abiertos.
+    Notebook contenedor de sourceview para archivos abiertos.
     """
 
     __gtype_name__ = 'JAMediaEditorNotebook_SourceView'
@@ -317,7 +316,6 @@ class Notebook_SourceView(Gtk.Notebook):
         paginas = self.get_children()
         for pagina in paginas:
             view = pagina.get_child()
-
             if view != widget_child.get_child():
                 view.new_handle(False)
 
@@ -342,7 +340,6 @@ class Notebook_SourceView(Gtk.Notebook):
             paginas = self.get_children()
             for pagina in paginas:
                 view = pagina.get_child()
-
                 # FIXME: No permitir abrir dos veces el mismo archivo?
                 if view.archivo:
                     arch1 = os.path.join(view.archivo)
