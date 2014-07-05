@@ -38,13 +38,13 @@ class Toolbar(Gtk.EventBox):
     __gtype_name__ = 'PygiHackToolbar'
 
     __gsignals__ = {
-    'import': (GObject.SIGNAL_RUN_FIRST,
+    'import': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING)),
-    'accion-menu': (GObject.SIGNAL_RUN_FIRST,
+    'accion-menu': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING, GObject.TYPE_BOOLEAN)),
-    'salir': (GObject.SIGNAL_RUN_FIRST,
+    'salir': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -137,10 +137,10 @@ class Menu(Gtk.MenuBar):
     __gtype_name__ = 'PygiHackMenu'
 
     __gsignals__ = {
-     'import': (GObject.SIGNAL_RUN_FIRST,
+     'import': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING)),
-    'accion-menu': (GObject.SIGNAL_RUN_FIRST,
+    'accion-menu': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING, GObject.TYPE_BOOLEAN))}
 

@@ -100,6 +100,13 @@ class WorkPanel(Gtk.Paned):
         self.ejecucion = terminal
         self.terminal.set_sensitive(False)
 
+    def __re_emit_new_select(self, widget, view, tipo):
+        """
+        Recibe nombre y contenido de archivo seleccionado
+        en Notebook_SourceView y los envia BasePanel.
+        """
+        self.emit('new_select', view, tipo)
+
     def get_default_path(self):
         """
         Devuelve el Directorio del archivo seleccionado en sourceview.
@@ -112,13 +119,6 @@ class WorkPanel(Gtk.Paned):
         y la pasa a notebook_sourceview para seleccionarla.
         """
         self.notebook_sourceview.set_linea(index, texto)
-
-    def __re_emit_new_select(self, widget, view, tipo):
-        """
-        Recibe nombre y contenido de archivo seleccionado
-        en Notebook_SourceView y los envia BasePanel.
-        """
-        self.emit('new_select', view, tipo)
 
     def abrir_archivo(self, archivo):
         """
@@ -286,6 +286,47 @@ class Notebook_SourceView(Gtk.Notebook):
 
         GLib.idle_add(self.abrir_archivo, False)
 
+    def __switch_page(self, widget, widget_child, indice):
+        """
+        Cuando el usuario selecciona una lengüeta en el notebook.
+        """
+        # Detener inspectores y activar solo el seleccionado
+        paginas = self.get_children()
+        for pagina in paginas:
+            view = pagina.get_child()
+            view.new_handle(False)
+
+        view = widget_child.get_child()
+        if self.ultimo_view_activo != view:
+            self.ultimo_view_activo = view
+            view.new_handle(True)
+            tipo = False
+            if view.lenguaje:
+                tipo = view.lenguaje.get_name().lower()
+
+            self.emit('new_select', view, tipo)
+
+    def __re_emit_update(self, widget, _dict):
+        self.emit("update", _dict)
+
+    def __re_emit_force_select(self, widget, view, lenguaje):
+        self.emit('new_select', view, lenguaje)
+
+    def __cerrar(self, widget):
+        """
+        Cerrar el archivo seleccionado.
+        """
+        notebook = widget.get_parent().get_parent()
+        paginas = notebook.get_n_pages()
+        for indice in range(paginas):
+            boton = self.get_tab_label(
+                self.get_children()[indice]).get_children()[1]
+
+            if boton == widget:
+                self.get_children()[
+                    indice].get_child().set_accion("Cerrar Archivo")
+                break
+
     def set_linea(self, index, texto):
         """
         Recibe la linea seleccionada en instrospeccion y
@@ -306,109 +347,72 @@ class Notebook_SourceView(Gtk.Notebook):
             _buffer.select_range(match_end, match_start)
             view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
 
-    def __switch_page(self, widget, widget_child, indice):
-        """
-        Cuando el usuario selecciona una lengüeta en
-        el notebook, se emite la señal 'new_select'.
-        """
-
-        # Detener inspectores y activar solo el seleccionado
-        paginas = self.get_children()
-        for pagina in paginas:
-            view = pagina.get_child()
-            if view != widget_child.get_child():
-                view.new_handle(False)
-
-        view = widget_child.get_child()
-        view.new_handle(True)
-
-        if view != self.ultimo_view_activo:
-            self.ultimo_view_activo = view
-            #FIXME: HACK tipo es lenguaje (para introspeccion)
-            tipo = False
-            if view.lenguaje:
-                tipo = view.lenguaje.get_name().lower()
-
-            self.emit('new_select', view, tipo)
-
     def abrir_archivo(self, archivo):
         """
         Abre un archivo y agrega una página para él, con su código.
         """
+        #try:
+        paginas = self.get_children()
+        for pagina in paginas:
+            view = pagina.get_child()
+            if view.archivo:
+                #arch1 = os.path.join(view.archivo)
+                arch1 = view.archivo
+                #arch2 = os.path.join(archivo)
+                #if arch1 == arch2:
+                if arch1 == archivo:
+                    return False
 
-        try:
-            paginas = self.get_children()
+        sourceview = SourceView(self.config)
+
+        hbox = Gtk.HBox()
+        label = Gtk.Label("Sin Título")
+
+        boton = get_boton(os.path.join(icons, "button-cancel.svg"),
+            pixels=get_pixels(0.5), tooltip_text="Cerrar")
+
+        hbox.pack_start(label, False, False, 0)
+        hbox.pack_start(boton, False, False, 0)
+
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC,
+            Gtk.PolicyType.AUTOMATIC)
+        scroll.add(sourceview)
+        self.append_page(scroll, hbox)
+
+        label.show()
+        boton.show()
+        self.show_all()
+
+        boton.connect("clicked", self.__cerrar)
+        self.set_current_page(-1)
+        self.set_tab_reorderable(scroll, True)
+
+        sourceview.set_archivo(archivo)
+
+        """
+        # FIXME: Cuando se abre un archivo, se cierra el vacío por default.
+        if len(paginas) > 1:
             for pagina in paginas:
                 view = pagina.get_child()
-                # FIXME: No permitir abrir dos veces el mismo archivo?
-                if view.archivo:
-                    arch1 = os.path.join(view.archivo)
-                    arch2 = os.path.join(archivo)
 
-                    if arch1 == arch2:
-                        return
+                if not view.archivo:
+                    buffer = view.get_buffer()
+                    inicio, fin = buffer.get_bounds()
+                    buf = buffer.get_text(inicio, fin, 0)
 
-            sourceview = SourceView(self.config)
+                    if not buf:
+                        self.remove(pagina)
+                        break
+        """
 
-            hbox = Gtk.HBox()
-            label = Gtk.Label("Sin Título")
+        sourceview.connect("update", self.__re_emit_update)
+        sourceview.connect("force-select", self.__re_emit_force_select)
 
-            boton = get_boton(os.path.join(icons, "button-cancel.svg"),
-                pixels=get_pixels(0.5), tooltip_text="Cerrar")
-
-            hbox.pack_start(label, False, False, 0)
-            hbox.pack_start(boton, False, False, 0)
-
-            # Se hace posteriormente
-            # if archivo:
-            #    if os.path.exists(archivo):
-            #        nombre = str(os.path.basename(archivo))
-
-            #        if len(nombre) > 13:
-            #            nombre = nombre[0:13] + " . . . "
-
-            #        label.set_text(nombre)
-
-            sourceview.set_archivo(archivo)
-            scroll = Gtk.ScrolledWindow()
-            scroll.set_policy(Gtk.PolicyType.AUTOMATIC,
-                Gtk.PolicyType.AUTOMATIC)
-            scroll.add(sourceview)
-            self.append_page(scroll, hbox)
-
-            label.show()
-            boton.show()
-            self.show_all()
-
-            boton.connect("clicked", self.__cerrar)
-            self.set_current_page(-1)
-            self.set_tab_reorderable(scroll, True)
-
-            '''
-            # Cuando se abre un archivo, se cierra el vacío por default.
-            if len(paginas) > 1:
-                for pagina in paginas:
-                    view = pagina.get_child()
-
-                    if not view.archivo:
-                        buffer = view.get_buffer()
-                        inicio, fin = buffer.get_bounds()
-                        buf = buffer.get_text(inicio, fin, 0)
-
-                        if not buf:
-                            self.remove(pagina)
-                            break
-            '''
-
-            sourceview.connect("update", self.__re_emit_update)
-
-        except:
-            pass
+        #except:
+        #    print "FIXME: No se ha podido abrir:", archivo
 
         return False
-
-    def __re_emit_update(self, widget, _dict):
-        self.emit("update", _dict)
 
     def guardar_archivo(self):
         paginas = self.get_children()
@@ -478,26 +482,11 @@ class Notebook_SourceView(Gtk.Notebook):
         else:
             sourceview.set_accion(accion)
 
-    def __cerrar(self, widget):
-        """
-        Cerrar el archivo seleccionado.
-        """
-        notebook = widget.get_parent().get_parent()
-        paginas = notebook.get_n_pages()
-        for indice in range(paginas):
-            boton = self.get_tab_label(
-                self.get_children()[indice]).get_children()[1]
-
-            if boton == widget:
-                self.get_children()[
-                    indice].get_child().set_accion("Cerrar Archivo")
-                break
-
     def do_page_removed(self, scroll, num):
         paginas = self.get_children()
-        if not paginas:
-            self.abrir_archivo(False)
-
+        # FIXME: Abrir archivo vacío
+        #if not paginas:
+        #    self.abrir_archivo(False)
         self.get_toplevel().set_sensitive(True)
 
     def get_archivos_de_proyecto(self, proyecto_path):

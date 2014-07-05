@@ -44,7 +44,7 @@ class ToolbarProyecto(Gtk.EventBox):
     __gtype_name__ = 'JAMediaEditorToolbarProyecto'
 
     __gsignals__ = {
-    "accion": (GObject.SIGNAL_RUN_FIRST,
+    "accion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
@@ -177,7 +177,7 @@ class ToolbarArchivo(Gtk.EventBox):
     __gtype_name__ = 'JAMediaEditorToolbarArchivo'
 
     __gsignals__ = {
-    "accion": (GObject.SIGNAL_RUN_FIRST,
+    "accion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
@@ -373,10 +373,10 @@ class ToolbarBusquedas(Gtk.EventBox):
     __gtype_name__ = 'JAMediaEditorToolbarBusquedas'
 
     __gsignals__ = {
-    "accion": (GObject.SIGNAL_RUN_FIRST,
+    "accion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING)),
-    "buscar": (GObject.SIGNAL_RUN_FIRST,
+    "buscar": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):

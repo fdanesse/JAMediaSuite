@@ -39,16 +39,16 @@ class Menu(Gtk.MenuBar):
     __gtype_name__ = 'JAMediaEditorMenu'
 
     __gsignals__ = {
-    'accion_proyecto': (GObject.SIGNAL_RUN_FIRST,
+    'accion_proyecto': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
-    'accion_archivo': (GObject.SIGNAL_RUN_FIRST,
+    'accion_archivo': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
-    'accion_ver': (GObject.SIGNAL_RUN_FIRST,
+    'accion_ver': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_BOOLEAN)),
-    'accion_codigo': (GObject.SIGNAL_RUN_FIRST,
+    'accion_codigo': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
-    'run_jamediapygihack': (GObject.SIGNAL_RUN_FIRST,
+    'run_jamediapygihack': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self, accel_group):
@@ -753,7 +753,7 @@ class My_FileChooser(Gtk.FileChooserDialog):
     __gtype_name__ = 'JAMediaEditorMy_FileChooser'
 
     __gsignals__ = {
-    'load': (GObject.SIGNAL_RUN_FIRST,
+    'load': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self, parent_window=None, action_type=None, filter_type=[],
@@ -840,7 +840,7 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
     __gtype_name__ = 'JAMediaEditorMultiple_FileChooser'
 
     __gsignals__ = {
-    'load': (GObject.SIGNAL_RUN_FIRST,
+    'load': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self, parent_window=None, filter_type=[], title=None,
@@ -1059,7 +1059,7 @@ class ErroresTreeview(Gtk.TreeView):
         model, path, is_selected, listore):
         iter_sel = model.get_iter(path)
         linea = model.get_value(iter_sel, 0)
-        self.view._marcar_error(int(linea))
+        self.view.marcar_error(int(linea))
         return True
 
 
@@ -1219,7 +1219,7 @@ class BusquedaGrep(Gtk.Dialog):
     __gtype_name__ = 'JAMediaEditorBusquedaGrep'
 
     __gsignals__ = {
-    "nueva-seleccion": (GObject.SIGNAL_RUN_FIRST,
+    "nueva-seleccion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self, path=None, parent_window=None):
@@ -1295,7 +1295,7 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
     __gtype_name__ = 'JAMediaEditorTreeViewBusquedaGrep'
 
     __gsignals__ = {
-    "nueva-seleccion": (GObject.SIGNAL_RUN_FIRST,
+    "nueva-seleccion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self):

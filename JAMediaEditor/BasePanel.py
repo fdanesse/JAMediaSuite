@@ -24,6 +24,7 @@ import os
 
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import GLib
 
 from InfoNotebook import InfoNotebook
 from WorkPanel import WorkPanel
@@ -119,6 +120,8 @@ class BasePanel(Gtk.Paned):
             Se selecciona y
             Se abre el dialogo buscar.
         """
+        print "FIXME:", self.__search_grep
+        '''
         self.__abrir_archivo(None, datos[0])
 
         paginas = self.workpanel.notebook_sourceview.get_n_pages()
@@ -141,7 +144,7 @@ class BasePanel(Gtk.Paned):
         dialogo.run()
         dialogo.destroy()
         sourceview.set_show_line_numbers(visible)
-
+        '''
     def __buscar(self, widget, texto):
         """
         Recibe el texto a buscar.
@@ -201,25 +204,8 @@ class BasePanel(Gtk.Paned):
             Recibe nombre y contenido de archivo para realizar
             introspeccion sobre él.
         """
-        path = self.proyecto.get("path", False)
-        if path:
-            codeviews = self.workpanel.get_archivos_de_proyecto(path)
-            if codeviews:
-                self.infonotebook.set_path_estructura(path)
-
-            else:
-                self.proyecto = {}
-                self.emit("proyecto_abierto", False)
-                self.infonotebook.set_path_estructura(False)
-
-        elif not path:
-            self.proyecto = {}
-            self.emit("proyecto_abierto", False)
-            self.infonotebook.set_path_estructura(False)
-
         nombre = "Introspección"
         text = ''
-
         if view:
             _buffer = view.get_buffer()
             archivo = view.archivo
@@ -232,6 +218,29 @@ class BasePanel(Gtk.Paned):
 
         # Setear Introspeción.
         self.infonotebook.set_introspeccion(nombre, text, view, tipo)
+        GLib.idle_add(self.__set_estructura, view, tipo)
+
+    def __set_estructura(self, view, tipo):
+        # FIXME: Verifica si hay archivos de proyecto y si los hay, actualiza
+        # la vista de estructura. Otro punto de vista sería actualizar según
+        # que archivo se ha seleccionado, en este caso, la vista de proyecto
+        # solo sería activa si el archivo seleccionado está en el proyecto.
+        path = self.proyecto.get("path", False)
+        if path:
+            codeviews = self.workpanel.get_archivos_de_proyecto(path)
+            if codeviews:
+                self.infonotebook.set_path_estructura(path)
+                self.emit("proyecto_abierto", True)
+
+            else:
+                self.proyecto = {}
+                self.emit("proyecto_abierto", False)
+                self.infonotebook.set_path_estructura(False)
+
+        else:
+            self.proyecto = {}
+            self.emit("proyecto_abierto", False)
+            self.infonotebook.set_path_estructura(False)
 
     def __cargar_proyecto(self, proyecto):
         """
@@ -240,11 +249,7 @@ class BasePanel(Gtk.Paned):
         self.proyecto = proyecto
         path = proyecto.get("path", False)
         main = proyecto.get("main", False)
-        # FIXME: Deshabilitado porque: Cuando se carga un proyecto, se
-        # ejecuta esta funcion dos veces.
-        # self.infonotebook.set_path_estructura(path)
-        self.workpanel.abrir_archivo(os.path.join(path, main))
-        self.emit("proyecto_abierto", True)
+        self.__abrir_archivo(False, os.path.join(path, main))
 
     def __abrir_archivo(self, widget, archivo):
         if archivo:
@@ -258,7 +263,7 @@ class BasePanel(Gtk.Paned):
                 self.workpanel.abrir_archivo(archivo)
 
         else:
-            self.workpanel.abrir_archivo(None)
+            self.workpanel.abrir_archivo(False)
 
     def __abrir_proyecto(self, widget, archivo):
         extension = os.path.splitext(os.path.split(archivo)[1])[1]
@@ -341,15 +346,13 @@ class BasePanel(Gtk.Paned):
 
         # Seteo automático de autores.
         autores_path = os.path.join(proyecto["path"], "AUTHORS")
-
         arch = open(autores_path, "w")
-        # FIXME: UnicodeEncodeError: 'ascii' codec can't encode
-        # character u'\xed' in position 13: ordinal not in range(128)
         try:
             for autor in proyecto["autores"]:
                 arch.write(u"%s %s\n" % (autor[0], autor[1]))
         except:
-            pass
+            print "FIXME: UnicodeEncodeError: 'ascii' codec can't encode"
+            print "character u'\xed' in position 13: ordinal not in range(128)"
 
         arch.close()
         # Guardar el Proyecto.
@@ -366,7 +369,7 @@ class BasePanel(Gtk.Paned):
         Cuando se elimina el proyecto desde la vista de estructura.
         """
         self.workpanel.remove_proyect(self.proyecto["path"])
-        self.infonotebook.set_path_estructura(None)
+        self.infonotebook.set_path_estructura(False)
         self.proyecto = {}
         return True
 
@@ -374,7 +377,6 @@ class BasePanel(Gtk.Paned):
         if not self.proyecto:
             self.proyecto = {}
             self.infonotebook.set_path_estructura(False)
-            self.emit("proyecto_abierto", False)
             return True
 
         codeviews = self.workpanel.get_archivos_de_proyecto(
@@ -384,18 +386,15 @@ class BasePanel(Gtk.Paned):
             # Cerrar Archivos. Esto pedirá guardar si hay cambios en él.
             for view in codeviews:
                 view.set_accion("Cerrar Archivo")
-
         else:
             self.proyecto = {}
             self.infonotebook.set_path_estructura(False)
-            self.emit("proyecto_abierto", False)
             return True
 
         # Si algún archivo ha debido guardarse, no se ha cerrado.
         if not self.proyecto:
             self.proyecto = {}
             self.infonotebook.set_path_estructura(False)
-            self.emit("proyecto_abierto", False)
             return True
 
         codeviews = self.workpanel.get_archivos_de_proyecto(
@@ -405,31 +404,25 @@ class BasePanel(Gtk.Paned):
             # Cerrar Archivos.
             for view in codeviews:
                 view.set_accion("Cerrar Archivo")
-
         else:
             self.proyecto = {}
             self.infonotebook.set_path_estructura(False)
-            self.emit("proyecto_abierto", False)
             return True
 
         # Si todavía hay archivos abiertos, el usuario no desea cerrarlos.
         if not self.proyecto:
             self.proyecto = {}
             self.infonotebook.set_path_estructura(False)
-            self.emit("proyecto_abierto", False)
             return True
 
         codeviews = self.workpanel.get_archivos_de_proyecto(
             self.proyecto["path"])
 
         if codeviews:
-            #self.emit("proyecto_abierto", True)
             return False
-
         else:
             self.proyecto = {}
             self.infonotebook.set_path_estructura(False)
-            self.emit("proyecto_abierto", False)
             return True
 
     def set_accion_proyecto(self, widget, accion):
@@ -450,10 +443,8 @@ class BasePanel(Gtk.Paned):
             dialog.destroy()
             # El Proyecto se crea solo cuando se ha cerrado el anterior.
             if nuevoproyecto:
-                anterior_cerrado = True
-                #FIXME: No se puede Crear un proyecto con el mismo
-                # nombre de uno existente
                 if nuevoproyecto["nombre"] in os.listdir(BatovideWorkSpace):
+                    print "FIXME: Ya existe un Proyecto con este Nombre"
                     return
 
                 anterior_cerrado = self.cerrar_proyecto()
@@ -484,7 +475,6 @@ class BasePanel(Gtk.Paned):
             filechooser = My_FileChooser(parent_window=self.get_toplevel(),
                 action_type=Gtk.FileChooserAction.OPEN, filter_type=["*.ide"],
                 title="Abrir proyecto", path=BatovideWorkSpace)
-
             filechooser.connect('load', self.__abrir_proyecto)
 
         elif accion == "Guardar Proyecto":

@@ -44,11 +44,11 @@ class ToolbarTerminal(Gtk.Toolbar):
     __gtype_name__ = 'ToolbarTerminal'
 
     __gsignals__ = {
-    "accion": (GObject.SIGNAL_RUN_FIRST,
+    "accion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "reset": (GObject.SIGNAL_RUN_FIRST,
+    "reset": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    "formato": (GObject.SIGNAL_RUN_FIRST,
+    "formato": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -218,7 +218,7 @@ class TreeViewFonts(Gtk.TreeView):
     __gtype_name__ = 'TreeViewFonts'
 
     __gsignals__ = {
-    "nueva-seleccion": (GObject.SIGNAL_RUN_FIRST,
+    "nueva-seleccion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self, fuente):
@@ -299,7 +299,7 @@ class TreeViewTamanio(Gtk.TreeView):
     __gtype_name__ = 'TreeViewTamanio'
 
     __gsignals__ = {
-    "nueva-seleccion": (GObject.SIGNAL_RUN_FIRST,
+    "nueva-seleccion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_INT, ))}
 
     def __init__(self, tamanio):

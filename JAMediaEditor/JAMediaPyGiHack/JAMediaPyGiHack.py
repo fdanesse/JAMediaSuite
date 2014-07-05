@@ -35,7 +35,7 @@ class JAMediaPyGiHack(Gtk.EventBox):
     __gtype_name__ = 'JAMediaPyGiHack'
 
     __gsignals__ = {
-    'salir': (GObject.SIGNAL_RUN_FIRST,
+    'salir': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self):

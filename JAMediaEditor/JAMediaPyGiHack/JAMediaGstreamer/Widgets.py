@@ -41,7 +41,7 @@ class TextView(Gtk.TextView):
 class Lista(Gtk.TreeView):
 
     __gsignals__ = {
-    "nueva-seleccion":(GObject.SIGNAL_RUN_FIRST,
+    "nueva-seleccion":(GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self):

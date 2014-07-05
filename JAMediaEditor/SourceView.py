@@ -42,7 +42,10 @@ class SourceView(GtkSource.View):
 
     __gsignals__ = {
     'update': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
+    "force-select": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING))}
 
     def __init__(self, config):
 
@@ -78,55 +81,6 @@ class SourceView(GtkSource.View):
         self.show_all()
 
         self.connect("key-press-event", self.__key_press_event)
-
-    def set_archivo(self, archivo):
-        """
-        Setea el archivo cuyo codigo debe mostrarse.
-        """
-
-        if archivo:
-            archivo = os.path.join(archivo.replace("//", "/"))
-
-            if os.path.exists(archivo):
-                self.archivo = archivo
-                texto_file = open(self.archivo, 'r')
-                texto = texto_file.read()
-                texto_file.close()
-
-                self.set_buffer(GtkSource.Buffer())
-                self.get_buffer().begin_not_undoable_action()
-                self.__set_lenguaje(archivo)
-                self.get_buffer().set_text(texto)
-
-                nombre = os.path.basename(self.archivo)
-
-                if len(nombre) > 13:
-                    nombre = nombre[0:13] + " . . . "
-
-                GLib.idle_add(self.__set_label, nombre)
-                self.control = os.path.getmtime(self.archivo)
-
-        else:
-            self.set_buffer(GtkSource.Buffer())
-            self.get_buffer().begin_not_undoable_action()
-
-        self.get_buffer().end_not_undoable_action()
-        self.get_buffer().set_modified(False)
-
-        # FIXME: Anular Autocompletado, no es importante.
-        #completion = self.get_completion()
-
-        #prov_words = GtkSource.CompletionWords.new(None, None)
-        #prov_words.register(self.get_buffer())
-
-        #autocompletado = AutoCompletado(
-        #    self.get_buffer(), self.archivo, self)
-        #completion.add_provider(autocompletado)
-
-        #completion.set_property("remember-info-visibility", True)
-        #completion.set_property("select-on-show", True)
-        #completion.set_property("show-headers", True)
-        #completion.set_property("show-icons", True)
 
     def __set_label(self, nombre):
         """
@@ -167,43 +121,14 @@ class SourceView(GtkSource.View):
                     self.get_buffer().set_highlight_syntax(True)
                     break
 
-    def guardar_archivo_como(self):
-        """
-        Abre un Filechooser para guardar como.
-        """
-        parent = self.get_parent().get_parent()
-        parent = parent.get_parent().get_parent()
-        proyecto = parent.get_parent().proyecto
+        GLib.timeout_add(3, self.__force_emit_new_select)
 
-        if proyecto:
-            defaultpath = proyecto["path"]
-        else:
-            defaultpath = BatovideWorkSpace
-
-        from Widgets import My_FileChooser
-        filechooser = My_FileChooser(parent_window=self.get_toplevel(),
-            action_type=Gtk.FileChooserAction.SAVE,
-            title="Guardar Archivo Como . . .", path=defaultpath)
-
-        filechooser.connect('load', self.__guardar_como)
-
-    def guardar(self):
-        """
-        Si el archivo tiene cambios, lo guarda,
-        de lo contrario ejecuta Guardar Como.
-        """
-        if self.archivo and self.archivo != None:
-            _buffer = self.get_buffer()
-
-            if _buffer.get_modified() and \
-                os.path.exists(self.archivo):
-                self.__procesar_y_guardar()
-
-            elif not os.path.exists(self.archivo):
-                return self.guardar_archivo_como()
-
-        else:
-            return self.guardar_archivo_como()
+    def __force_emit_new_select(self):
+        lenguaje = False
+        if self.lenguaje:
+            lenguaje = self.lenguaje.get_name().lower()
+        self.emit("force-select", self, lenguaje)
+        return False
 
     def __procesar_y_guardar(self):
         _buffer = self.get_buffer()
@@ -223,12 +148,6 @@ class SourceView(GtkSource.View):
         archivo.close()
 
         self.set_archivo(self.archivo)
-
-        # Forzando actualización de Introspección.
-        # FIXME: Esto debiera hacerse al cargar el archivo.
-        # FIXME: Forzando Introspección.
-        self.get_parent().get_parent().emit(
-            'new_select', self, self.lenguaje)
 
         # Devolver el scroll a donde estaba.
         linea_iter = self.get_buffer().get_iter_at_line(_id)
@@ -269,173 +188,6 @@ class SourceView(GtkSource.View):
             else:
                 self.archivo = os.path.join(archivo.replace("//", "/"))
                 self.__procesar_y_guardar()
-
-    def set_formato(self, fuente, tamanio):
-        """
-        Setea el formato de la fuente.
-        Recibe fuente o tamaño.
-            fuente es: 'Monospace 10'
-        """
-
-        if not fuente or not tamanio:
-            return
-
-        self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
-
-    def set_accion(self, accion, valor=True):
-        """
-        Ejecuta acciones sobre el código.
-        """
-        _buffer = self.get_buffer()
-        if accion == "Deshacer":
-            if _buffer.can_undo():
-                _buffer.undo()
-
-        elif accion == "Rehacer":
-            if _buffer.can_redo():
-                _buffer.redo()
-
-        elif accion == "Seleccionar Todo":
-            inicio, fin = _buffer.get_bounds()
-            _buffer.select_range(inicio, fin)
-
-        elif accion == "Copiar":
-            clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-            if _buffer.get_selection_bounds():
-                inicio, fin = _buffer.get_selection_bounds()
-                texto = _buffer.get_text(inicio, fin, 0)
-                clipboard.set_text(texto, -1)
-
-        elif accion == "Pegar":
-            clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-            texto = clipboard.wait_for_text()
-            if texto != None:
-                if _buffer.get_selection_bounds():
-                    start, end = _buffer.get_selection_bounds()
-                    texto_seleccion = _buffer.get_text(start, end, 0)
-                    _buffer.delete(start, end)
-
-                _buffer.insert_at_cursor(texto)
-
-        elif accion == "Cortar":
-            clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-            if _buffer.get_selection_bounds():
-                start, end = _buffer.get_selection_bounds()
-                texto_seleccion = _buffer.get_text(start, end, 0)
-                _buffer.delete(start, end)
-                clipboard.set_text(texto_seleccion, -1)
-
-        elif accion == "Buscar Texto":
-            try:
-                inicio, fin = _buffer.get_selection_bounds()
-                texto = _buffer.get_text(inicio, fin, 0)
-
-            except:
-                texto = None
-
-            from Widgets import DialogoBuscar
-            dialogo = DialogoBuscar(self, parent_window=self.get_toplevel(),
-                title="Buscar Texto", texto=texto)
-
-            dialogo.run()
-            dialogo.destroy()
-
-        elif accion == "Reemplazar Texto":
-            texto = ""
-            try:
-                inicio, fin = _buffer.get_selection_bounds()
-                texto = _buffer.get_text(inicio, fin, 0)
-
-            except:
-                texto = None
-
-            from Widgets import DialogoReemplazar
-            dialogo = DialogoReemplazar(self,
-                parent_window=self.get_toplevel(),
-                title="Reemplazar Texto", texto=texto)
-
-            dialogo.run()
-            dialogo.destroy()
-
-        elif accion == "Cerrar Archivo":
-            if _buffer.get_modified():
-                from Widgets import DialogoAlertaSinGuardar
-                dialog = DialogoAlertaSinGuardar(
-                    parent_window=self.get_toplevel())
-
-                respuesta = dialog.run()
-                dialog.destroy()
-                if respuesta == Gtk.ResponseType.ACCEPT:
-                    self.guardar()
-
-                elif respuesta == Gtk.ResponseType.CANCEL:
-                    return
-
-                elif respuesta == Gtk.ResponseType.CLOSE:
-                    self.__cerrar()
-
-            else:
-                self.__cerrar()
-
-        elif accion == "Numeracion":
-            self.set_show_line_numbers(valor)
-
-        elif accion == "Identar":
-            self.__identar()
-
-        elif accion == "Identar con Espacios":
-            # FIXME: convertir . . .
-            self.tab = '    '
-            #self.__identar()
-
-        elif accion == "Identar con Tabulaciones":
-            # FIXME: convertir . . .
-            self.tab = '\t'
-            #self.__identar()
-
-        elif accion == "De Identar":
-            self.__de_identar()
-
-        elif accion == "Chequear":
-            if self.lenguaje:
-                if self.lenguaje.get_name() == "Python":
-                    numeracion = self.get_show_line_numbers()
-                    self.set_show_line_numbers(True)
-
-                    # HACK: No se debe permitir usar
-                    # la interfaz de la aplicación.
-                    self.get_toplevel().set_sensitive(False)
-
-                    from Widgets import DialogoErrores
-                    dialogo = DialogoErrores(self,
-                        parent_window=self.get_toplevel())
-
-                    dialogo.run()
-                    dialogo.destroy()
-
-                    self.set_show_line_numbers(numeracion)
-
-                    # HACK: No se debe permitir usar
-                    # la interfaz de la aplicación.
-                    self.get_toplevel().set_sensitive(True)
-                    return
-
-            dialogo = Gtk.Dialog(parent=self.get_toplevel(),
-                flags=Gtk.DialogFlags.MODAL,
-                buttons=["OK", Gtk.ResponseType.ACCEPT])
-
-            dialogo.set_size_request(300, 100)
-            dialogo.set_border_width(15)
-
-            lab = "El Archivo no Contiene Código python\n"
-            lab = "%s%s" % (lab, "o Todavía no ha Sido Guardado.")
-            label = Gtk.Label(lab)
-            label.show()
-
-            dialogo.vbox.pack_start(label, True, True, 0)
-
-            dialogo.run()
-            dialogo.destroy()
 
     def __identar(self):
         """
@@ -506,31 +258,13 @@ class SourceView(GtkSource.View):
         scroll = self.get_parent()
         notebook = scroll.get_parent()
         paginas = notebook.get_n_pages()
+
         if paginas:
             for indice in range(paginas):
                 page = notebook.get_children()[indice]
-
                 if page == scroll:
                     notebook.remove_page(indice)
                     break
-
-    def _marcar_error(self, linea):
-        """
-        Selecciona el error en la línea especificada.
-        """
-        # FIXME: Esto no funciona en la última línea.
-        if not linea > -1:
-            return
-
-        _buffer = self.get_buffer()
-        start, end = _buffer.get_bounds()
-
-        linea_iter = _buffer.get_iter_at_line(linea - 1)
-        linea_iter_next = _buffer.get_iter_at_line(linea)
-
-        #texto = buffer.get_text(linea_iter, linea_iter_next, True)
-        _buffer.select_range(linea_iter, linea_iter_next)
-        self.scroll_to_iter(linea_iter_next, 0.1, 1, 1, 0.1)
 
     def __key_press_event(self, widget, event):
         """
@@ -679,14 +413,6 @@ class SourceView(GtkSource.View):
                 label.modify_fg(0, color)
                 return
 
-    def new_handle(self, reset):
-        if self.actualizador:
-            GLib.source_remove(self.actualizador)
-            self.actualizador = False
-
-        if reset:
-            self.actualizador = GLib.timeout_add(1000, self.__handle)
-
     def __handle(self):
         """
         Emite una señal con el estado general del archivo.
@@ -738,7 +464,283 @@ class SourceView(GtkSource.View):
         self.new_handle(True)
         return False
 
+    def set_archivo(self, archivo):
+        """
+        Setea el archivo cuyo codigo debe mostrarse.
+        """
+        if archivo:
+            archivo = os.path.join(archivo.replace("//", "/"))
 
+            if os.path.exists(archivo):
+                self.archivo = archivo
+                texto_file = open(self.archivo, 'r')
+                texto = texto_file.read()
+                texto_file.close()
+
+                self.set_buffer(GtkSource.Buffer())
+                self.get_buffer().begin_not_undoable_action()
+                self.__set_lenguaje(archivo)
+                self.get_buffer().set_text(texto)
+
+                nombre = os.path.basename(self.archivo)
+
+                if len(nombre) > 13:
+                    nombre = nombre[0:13] + " . . . "
+
+                GLib.idle_add(self.__set_label, nombre)
+                self.control = os.path.getmtime(self.archivo)
+
+        else:
+            self.set_buffer(GtkSource.Buffer())
+            self.get_buffer().begin_not_undoable_action()
+
+        self.get_buffer().end_not_undoable_action()
+        self.get_buffer().set_modified(False)
+
+        # FIXME: Anular Autocompletado, no es importante.
+        #completion = self.get_completion()
+
+        #prov_words = GtkSource.CompletionWords.new(None, None)
+        #prov_words.register(self.get_buffer())
+
+        #autocompletado = AutoCompletado(
+        #    self.get_buffer(), self.archivo, self)
+        #completion.add_provider(autocompletado)
+
+        #completion.set_property("remember-info-visibility", True)
+        #completion.set_property("select-on-show", True)
+        #completion.set_property("show-headers", True)
+        #completion.set_property("show-icons", True)
+
+    def guardar_archivo_como(self):
+        """
+        Abre un Filechooser para guardar como.
+        """
+        parent = self.get_parent().get_parent()
+        parent = parent.get_parent().get_parent()
+        proyecto = parent.get_parent().proyecto
+
+        if proyecto:
+            defaultpath = proyecto["path"]
+        else:
+            defaultpath = BatovideWorkSpace
+
+        from Widgets import My_FileChooser
+        filechooser = My_FileChooser(parent_window=self.get_toplevel(),
+            action_type=Gtk.FileChooserAction.SAVE,
+            title="Guardar Archivo Como . . .", path=defaultpath)
+
+        filechooser.connect('load', self.__guardar_como)
+
+    def guardar(self):
+        """
+        Si el archivo tiene cambios, lo guarda,
+        de lo contrario ejecuta Guardar Como.
+        """
+        if self.archivo and self.archivo != None:
+            _buffer = self.get_buffer()
+
+            if _buffer.get_modified() and os.path.exists(self.archivo):
+                self.__procesar_y_guardar()
+
+            elif not os.path.exists(self.archivo):
+                return self.guardar_archivo_como()
+
+        else:
+            return self.guardar_archivo_como()
+
+    def set_formato(self, fuente, tamanio):
+        """
+        Setea el formato de la fuente. Recibe fuente o tamaño.
+            fuente es: 'Monospace 10'
+        """
+        if not fuente or not tamanio:
+            return
+        self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
+
+    def set_accion(self, accion, valor=True):
+        """
+        Ejecuta acciones sobre el código.
+        """
+        _buffer = self.get_buffer()
+        if accion == "Deshacer":
+            if _buffer.can_undo():
+                _buffer.undo()
+
+        elif accion == "Rehacer":
+            if _buffer.can_redo():
+                _buffer.redo()
+
+        elif accion == "Seleccionar Todo":
+            inicio, fin = _buffer.get_bounds()
+            _buffer.select_range(inicio, fin)
+
+        elif accion == "Copiar":
+            clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+            if _buffer.get_selection_bounds():
+                inicio, fin = _buffer.get_selection_bounds()
+                texto = _buffer.get_text(inicio, fin, 0)
+                clipboard.set_text(texto, -1)
+
+        elif accion == "Pegar":
+            clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+            texto = clipboard.wait_for_text()
+            if texto != None:
+                if _buffer.get_selection_bounds():
+                    start, end = _buffer.get_selection_bounds()
+                    texto_seleccion = _buffer.get_text(start, end, 0)
+                    _buffer.delete(start, end)
+
+                _buffer.insert_at_cursor(texto)
+
+        elif accion == "Cortar":
+            clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+            if _buffer.get_selection_bounds():
+                start, end = _buffer.get_selection_bounds()
+                texto_seleccion = _buffer.get_text(start, end, 0)
+                _buffer.delete(start, end)
+                clipboard.set_text(texto_seleccion, -1)
+
+        elif accion == "Buscar Texto":
+            try:
+                inicio, fin = _buffer.get_selection_bounds()
+                texto = _buffer.get_text(inicio, fin, 0)
+
+            except:
+                texto = None
+
+            from Widgets import DialogoBuscar
+            dialogo = DialogoBuscar(self, parent_window=self.get_toplevel(),
+                title="Buscar Texto", texto=texto)
+
+            dialogo.run()
+            dialogo.destroy()
+
+        elif accion == "Reemplazar Texto":
+            texto = ""
+            try:
+                inicio, fin = _buffer.get_selection_bounds()
+                texto = _buffer.get_text(inicio, fin, 0)
+
+            except:
+                texto = None
+
+            from Widgets import DialogoReemplazar
+            dialogo = DialogoReemplazar(self,
+                parent_window=self.get_toplevel(),
+                title="Reemplazar Texto", texto=texto)
+
+            dialogo.run()
+            dialogo.destroy()
+
+        elif accion == "Cerrar Archivo":
+            if _buffer.get_modified():
+                from Widgets import DialogoAlertaSinGuardar
+                dialog = DialogoAlertaSinGuardar(
+                    parent_window=self.get_toplevel())
+
+                respuesta = dialog.run()
+                dialog.destroy()
+                if respuesta == Gtk.ResponseType.ACCEPT:
+                    self.guardar()
+
+                elif respuesta == Gtk.ResponseType.CANCEL:
+                    return
+
+                elif respuesta == Gtk.ResponseType.CLOSE:
+                    self.__cerrar()
+
+            else:
+                self.__cerrar()
+
+        elif accion == "Numeracion":
+            self.set_show_line_numbers(valor)
+
+        elif accion == "Identar":
+            self.__identar()
+
+        elif accion == "Identar con Espacios":
+            # FIXME: convertir . . .
+            self.tab = '    '
+            #self.__identar()
+
+        elif accion == "Identar con Tabulaciones":
+            # FIXME: convertir . . .
+            self.tab = '\t'
+            #self.__identar()
+
+        elif accion == "De Identar":
+            self.__de_identar()
+
+        elif accion == "Chequear":
+            if self.lenguaje:
+                if self.lenguaje.get_name() == "Python":
+                    numeracion = self.get_show_line_numbers()
+                    self.set_show_line_numbers(True)
+
+                    # HACK: FIXME: No se debe permitir usar
+                    # la interfaz de la aplicación.
+                    self.get_toplevel().set_sensitive(False)
+
+                    from Widgets import DialogoErrores
+                    dialogo = DialogoErrores(self,
+                        parent_window=self.get_toplevel())
+
+                    dialogo.run()
+                    dialogo.destroy()
+
+                    self.set_show_line_numbers(numeracion)
+
+                    # HACK: FIXME: No se debe permitir usar
+                    # la interfaz de la aplicación.
+                    self.get_toplevel().set_sensitive(True)
+                    return
+
+            dialogo = Gtk.Dialog(parent=self.get_toplevel(),
+                flags=Gtk.DialogFlags.MODAL,
+                buttons=["OK", Gtk.ResponseType.ACCEPT])
+
+            dialogo.set_size_request(300, 100)
+            dialogo.set_border_width(15)
+
+            lab = "El Archivo no Contiene Código python\n"
+            lab = "%s%s" % (lab, "o Todavía no ha Sido Guardado.")
+            label = Gtk.Label(lab)
+            label.show()
+
+            dialogo.vbox.pack_start(label, True, True, 0)
+
+            dialogo.run()
+            dialogo.destroy()
+
+    def marcar_error(self, linea):
+        """
+        Selecciona el error en la línea especificada.
+        """
+        # FIXME: Esto no funciona en la última línea.
+        if not linea > -1:
+            return
+
+        _buffer = self.get_buffer()
+        start, end = _buffer.get_bounds()
+
+        linea_iter = _buffer.get_iter_at_line(linea - 1)
+        linea_iter_next = _buffer.get_iter_at_line(linea)
+
+        #texto = buffer.get_text(linea_iter, linea_iter_next, True)
+        _buffer.select_range(linea_iter, linea_iter_next)
+        self.scroll_to_iter(linea_iter_next, 0.1, 1, 1, 0.1)
+
+    def new_handle(self, reset):
+        if self.actualizador:
+            GLib.source_remove(self.actualizador)
+            self.actualizador = False
+
+        if reset:
+            self.actualizador = GLib.timeout_add(1000, self.__handle)
+
+
+'''
 class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
 
     __gtype_name__ = 'AutoCompletado'
@@ -832,3 +834,4 @@ class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
         return self.spyder_hack.Run(workpath, expresion, self.buffer)
 
 GObject.type_register(AutoCompletado)
+'''

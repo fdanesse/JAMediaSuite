@@ -36,15 +36,15 @@ class InfoNotebook(Gtk.Notebook):
     __gtype_name__ = 'JAMediaEditorInfoNotebook'
 
     __gsignals__ = {
-    'new_select': (GObject.SIGNAL_RUN_FIRST,
+    'new_select': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_INT,
         GObject.TYPE_STRING)),
-    'open': (GObject.SIGNAL_RUN_FIRST,
+    'open': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-    'search_on_grep': (GObject.SIGNAL_RUN_FIRST,
+    'search_on_grep': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_PYOBJECT)),
-    'remove_proyect': (GObject.SIGNAL_RUN_FIRST,
+    'remove_proyect': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -272,35 +272,25 @@ class InfoNotebook(Gtk.Notebook):
 
     def set_path_estructura(self, path):
         """
-        Setea estructura de directorios y
-        archivos del proyecto según path.
+        Setea estructura de directorios y archivos del proyecto según path.
         """
         self.estructura_proyecto.set_path_estructura(path)
         self.path_actual = path
 
     def set_introspeccion(self, nombre, texto, view, tipo):
         """
-        Recibe nombre y contenido de archivo para
-        realizar introspeccion sobre él.
+        Recibe nombre y contenido de archivo para realizar introspeccion.
         """
-        if not nombre:
-            nombre = "Introspección"
-
-        if len(nombre) > 13:
-            nombre = str(nombre[0:13]) + " . . . "
-
-        if self.get_nth_page(0):
-            self.set_tab_label_text(self.get_nth_page(0), nombre)
-
-        self.introspeccion.set_introspeccion(
-            nombre, texto, view, tipo)
+        if len(nombre) > 15:
+            nombre = str(nombre[0:16]) + " . . . "
+        self.set_tab_label_text(self.get_nth_page(0), nombre)
+        self.introspeccion.set_introspeccion(nombre, texto, view, tipo)
 
     def buscar(self, texto):
         """
         Recibe el texto a buscar y realiza la busqueda en el treeview activo.
         """
-        # FIXME: Modificar esto para obtener la
-        # lengüeta activa y hacer buscar sobre ella.
+        print "FIXME: Modificar esto para obtener la lengüeta activa y hacer buscar sobre ella."
         if self.get_current_page() == 0:
             self.introspeccion.buscar(texto)
 
@@ -316,7 +306,7 @@ class Introspeccion(Gtk.TreeView):
     __gtype_name__ = 'JAMediaEditorIntrospeccion'
 
     __gsignals__ = {
-    'new_select': (GObject.SIGNAL_RUN_FIRST,
+    'new_select': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_INT,
         GObject.TYPE_STRING))}
 
@@ -332,6 +322,67 @@ class Introspeccion(Gtk.TreeView):
         self.posibles = []
         self.set_headers_visible(False)
         self.show_all()
+
+    def __append(self, _iter, key, color, texto):
+        new_iter = self.get_model().append(_iter, [int(key), texto, color])
+        return new_iter
+
+    def __get_datos_introspeccion(self, texto, tipo):
+        from collections import OrderedDict
+        _dict = OrderedDict()
+
+        if tipo == "python":
+            bloqueo = False
+            lineas = texto.splitlines()
+            contador = -1
+
+            buscar = ["class", "def", "import", "from"]
+
+            for linea in lineas:
+                temp = linea.strip()
+                contador += 1
+
+                # FIXME: Corregir casos con varias comillas
+                # Bloquear comentarios multilinea.
+                if temp:
+                    if temp.startswith("\'\'\'") or \
+                        temp.startswith("\"\"\"") or \
+                        temp.endswith("\'\'\'") or \
+                        temp.endswith("\"\"\""):
+                        bloqueo = bool(not bloqueo)
+
+                    if bloqueo:
+                        continue
+
+                    #elif temp and not bloqueo:
+                    if temp.split()[0] in buscar:
+                        l = linea.strip().split(":")[0]
+
+                        if temp.split()[0] == "class" or \
+                            temp.split()[0] == "def":
+                            l = "%s:" % l
+
+                        _dict[str(contador)] = l
+
+        return _dict
+
+    def __set_columnas(self):
+        """
+        Crea y agrega las columnas.
+        """
+        render = Gtk.CellRendererText()
+        columna = Gtk.TreeViewColumn('Indice', render, text=0)
+        columna.set_property('visible', False)
+        columna.set_property('resizable', False)
+        self.append_column(columna)
+
+        render = Gtk.CellRendererText()
+        columna = Gtk.TreeViewColumn('Datos', render, text=1)
+        columna.add_attribute(render, 'foreground-gdk', 2)
+        columna.set_property('visible', True)
+        columna.set_property('resizable', True)
+        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        self.append_column(columna)
 
     def do_row_activated(self, path, column):
         """
@@ -378,68 +429,11 @@ class Introspeccion(Gtk.TreeView):
                     color = Gdk.color_parse("#000091")
                     new_funcion = self.__append(new_class, key, color, temp)
 
-        self.expand_all()
+        else:
+            print "FIXME: Completar Introspección para otros lenguajes"
+            print self.set_introspeccion, nombre, tipo
 
-    def __append(self, _iter, key, color, texto):
-        new_iter = self.get_model().append(_iter, [int(key), texto, color])
-        return new_iter
-
-    def __get_datos_introspeccion(self, texto, tipo):
-        from collections import OrderedDict
-        _dict = OrderedDict()
-
-        if tipo == "python":
-            bloqueo = False
-            lineas = texto.splitlines()
-            contador = -1
-
-            buscar = ["class", "def", "import", "from"]
-
-            for linea in lineas:
-                temp = linea.strip()
-                contador += 1
-
-                # FIXME: Corregir casos con varias comillas
-                # Bloquear comentarios multilinea.
-                if temp:
-                    if temp.startswith("\'\'\'") or \
-                        temp.startswith("\"\"\"") or \
-                        temp.endswith("\'\'\'") or \
-                        temp.endswith("\"\"\""):
-                        bloqueo = bool(not bloqueo)
-
-                    if bloqueo:
-                        continue
-
-                    elif temp and not bloqueo:
-                        if temp.split()[0] in buscar:
-                            l = linea.strip().split(":")[0]
-
-                            if temp.split()[0] == "class" or \
-                                temp.split()[0] == "def":
-                                l = "%s:" % l
-
-                            _dict[str(contador)] = l
-
-        return _dict
-
-    def __set_columnas(self):
-        """
-        Crea y agrega las columnas.
-        """
-        render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn('Indice', render, text=0)
-        columna.set_property('visible', False)
-        columna.set_property('resizable', False)
-        self.append_column(columna)
-
-        render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn('Datos', render, text=1)
-        columna.add_attribute(render, 'foreground-gdk', 2)
-        columna.set_property('visible', True)
-        columna.set_property('resizable', True)
-        columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-        self.append_column(columna)
+        GLib.idle_add(self.expand_all)
 
     def key_press_event(self, widget, event):
         """
@@ -559,7 +553,7 @@ class Estructura_Proyecto(Gtk.TreeView):
     __gtype_name__ = 'JAMediaEditorEstructura_Proyecto'
 
     __gsignals__ = {
-    'open': (GObject.SIGNAL_RUN_FIRST,
+    'open': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
     def __init__(self):
@@ -576,26 +570,6 @@ class Estructura_Proyecto(Gtk.TreeView):
         self.posibles = []
         self.connect("key-press-event", self.__key_press_event)
         self.show_all()
-
-    def set_path_estructura(self, path):
-        """
-        Carga la estructura de directorios y archivos del proyecto.
-        """
-        if self.get_model():
-            self.get_model().clear()
-        else:
-            return
-
-        if not path:
-            return
-
-        _iter = self.get_model().get_iter_first()
-        self.get_model().append(_iter, [Gtk.STOCK_DIRECTORY,
-            os.path.basename(path), path])
-
-        estructura = []
-        estructura.append((path, None))
-        GLib.idle_add(self.__load_estructura, estructura)
 
     def __set_columnas(self):
         """
@@ -630,7 +604,6 @@ class Estructura_Proyecto(Gtk.TreeView):
             una lista de tuplas que contienen:
                 (directorio, path en el modelo donde debe agregarse).
         """
-
         if not estructura:
             self.expand_all()
             return False
@@ -684,28 +657,6 @@ class Estructura_Proyecto(Gtk.TreeView):
         # Recursividad en la función.
         self.__load_estructura(estructura)
         return False
-
-    def do_row_activated(self, path, column):
-        """
-        Cuando se hace doble click sobre una fila
-        """
-        _iter = self.get_model().get_iter(path)
-        direccion = self.get_model().get_value(_iter, 2)
-
-        if os.path.isdir(direccion):
-            if self.row_expanded(path):
-                self.collapse_row(path)
-            else:
-                self.expand_to_path(path)
-
-        elif os.path.isfile(os.path.join(direccion)):
-            import commands
-            datos = commands.getoutput(
-                'file -ik %s%s%s' % ("\"", direccion, "\""))
-
-            if "text" in datos or "x-python" in datos or \
-                "x-empty" in datos or "svg+xml" in datos:
-                self.emit('open', direccion)
 
     def __key_press_event(self, widget, event):
         """
@@ -767,6 +718,48 @@ class Estructura_Proyecto(Gtk.TreeView):
             pass
 
         return False
+
+    def set_path_estructura(self, path):
+        """
+        Carga la estructura de directorios y archivos del proyecto.
+        """
+        if self.get_model():
+            self.get_model().clear()
+        else:
+            return
+
+        if not path:
+            return
+
+        _iter = self.get_model().get_iter_first()
+        self.get_model().append(_iter, [Gtk.STOCK_DIRECTORY,
+            os.path.basename(path), path])
+
+        estructura = []
+        estructura.append((path, None))
+        GLib.idle_add(self.__load_estructura, estructura)
+
+    def do_row_activated(self, path, column):
+        """
+        Cuando se hace doble click sobre una fila
+        """
+        _iter = self.get_model().get_iter(path)
+        direccion = self.get_model().get_value(_iter, 2)
+
+        if os.path.isdir(direccion):
+            if self.row_expanded(path):
+                self.collapse_row(path)
+            else:
+                self.expand_to_path(path)
+
+        elif os.path.isfile(os.path.join(direccion)):
+            import commands
+            datos = commands.getoutput(
+                'file -ik %s%s%s' % ("\"", direccion, "\""))
+
+            if "text" in datos or "x-python" in datos or \
+                "x-empty" in datos or "svg+xml" in datos:
+                self.emit('open', direccion)
 
     def buscar(self, texto):
         """

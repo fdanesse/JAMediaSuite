@@ -772,9 +772,9 @@ class Widget_icon(Gtk.Frame):
     __gtype_name__ = 'JAMediaEditorWidget_icon'
 
     __gsignals__ = {
-     'iconpath': (GObject.SIGNAL_RUN_FIRST,
+     'iconpath': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
-     'make': (GObject.SIGNAL_RUN_FIRST,
+     'make': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self, tipo="gnome", proyecto=None):

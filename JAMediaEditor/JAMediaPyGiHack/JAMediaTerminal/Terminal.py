@@ -46,9 +46,9 @@ class Terminal(Gtk.EventBox):
     __gtype_name__ = 'JAMediaTerminal2'
 
     __gsignals__ = {
-    "ejecucion": (GObject.SIGNAL_RUN_FIRST,
+    "ejecucion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
-    "reset": (GObject.SIGNAL_RUN_FIRST,
+    "reset": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_PYOBJECT, GObject.TYPE_INT))}
 
@@ -163,7 +163,7 @@ class NoteBookTerminal(Gtk.Notebook):
     __gtype_name__ = 'NoteBookTerminal2'
 
     __gsignals__ = {
-    "reset": (GObject.SIGNAL_RUN_FIRST,
+    "reset": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_INT))}
 
@@ -327,7 +327,7 @@ class VTETerminal(Vte.Terminal):
     __gtype_name__ = 'Terminal2'
 
     __gsignals__ = {
-    "reset": (GObject.SIGNAL_RUN_FIRST,
+    "reset": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self, path=os.environ["HOME"], interprete="/bin/bash",
