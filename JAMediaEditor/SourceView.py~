@@ -497,7 +497,7 @@ class SourceView(GtkSource.View):
         self.get_buffer().end_not_undoable_action()
         self.get_buffer().set_modified(False)
 
-        self.new_handle(True)
+        self.new_handler(True)
         # FIXME: Anular Autocompletado, no es importante.
         #completion = self.get_completion()
 

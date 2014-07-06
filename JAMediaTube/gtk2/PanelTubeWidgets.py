@@ -20,9 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
-from gtk import gdk
 import gobject
 
 from Globales import get_colors
@@ -62,22 +60,17 @@ class Mini_Toolbar(gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "lista.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "lista.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Lista de Búsquedas")
         boton.connect("clicked", self.__get_menu)
         self.insert(boton, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "play.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24,
-            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
+        archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
+        boton = get_boton(archivo, flip=False, pixels=24,
+            rotacion=gtk.gdk.PIXBUF_ROTATE_CLOCKWISE)
         boton.set_tooltip_text("Guardar Lista")
         boton.connect("clicked", self.__emit_guardar)
         self.insert(boton, -1)
@@ -86,40 +79,31 @@ class Mini_Toolbar(gtk.Toolbar):
 
     def __emit_guardar(self, widget):
         """
-        Emite guardar, para que se guarden todos
-        los videos en un archivo shelve.
+        Para que se guarden todos los videos en un archivo shelve.
         """
-
         self.emit('guardar')
 
     def __emit_abrir(self, key):
         """
-        Emite abrir, para que se carguen todos
-        los videos desde un archivo shelve.
+        Para que se carguen todos los videos desde un archivo shelve.
         """
-
         self.emit('abrir', key)
 
     def __get_menu(self, widget):
         """
-        El menu con las listas de videos
-        almacenadas en archivos shelve.
+        El menu con las listas de videos almacenadas en archivos shelve.
         """
-
         from Globales import get_data_directory
         import shelve
 
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
+        dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
 
         keys = dict_tube.keys()
-
         dict_tube.close()
 
         if keys:
             self.emit("menu_activo")
-
             menu = gtk.Menu()
 
             administrar = gtk.MenuItem('Administrar')
@@ -130,7 +114,6 @@ class Mini_Toolbar(gtk.Toolbar):
             menu.append(cargar)
 
             menu_listas = gtk.Menu()
-
             cargar.set_submenu(menu_listas)
 
             for key in keys:
@@ -143,7 +126,6 @@ class Mini_Toolbar(gtk.Toolbar):
             gtk.Menu.popup(menu, None, None, None, 1, 0)
 
     def __administrar(self, widget):
-
         from TubeListDialog import TubeListDialog
         dialogo = TubeListDialog(parent=self.get_toplevel())
         dialogo.run()
@@ -156,7 +138,6 @@ class Mini_Toolbar(gtk.Toolbar):
         """
         Recibe un entero y actualiza la información.
         """
-
         if valor != self.numero:
             self.numero = valor
             text = "%s: %s" % (self.texto, str(self.numero))
@@ -165,8 +146,7 @@ class Mini_Toolbar(gtk.Toolbar):
 
 class ToolbarAccionListasVideos(gtk.Toolbar):
     """
-    Toolbar para que el usuario confirme "borrar"
-    lista de video de JAMediaTube.
+    Toolbar para que el usuario confirme "borrar" lista de video.
     """
 
     __gsignals__ = {
@@ -181,19 +161,15 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
 
         self.objetos = None
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "button-cancel.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "button-cancel.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
         self.label = gtk.Label("")
@@ -202,19 +178,15 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "dialog-ok.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "dialog-ok.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__realizar_accion)
         self.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         self.show_all()
 
@@ -222,21 +194,17 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
         """
         Confirma borrar.
         """
-
         objetos = self.objetos
         self.cancelar()
-
         gobject.idle_add(self.__emit_ok, objetos)
 
     def __emit_ok(self, objetos):
-
         self.emit('ok', objetos)
 
     def set_accion(self, objetos):
         """
         Configura borrar.
         """
-
         self.objetos = objetos
         self.label.set_text("¿Eliminar?")
         self.show_all()
@@ -245,7 +213,6 @@ class ToolbarAccionListasVideos(gtk.Toolbar):
         """
         Cancela borrar.
         """
-
         self.objetos = None
         self.label.set_text("")
         self.hide()
@@ -268,21 +235,16 @@ class Toolbar_Videos_Izquierda(gtk.Toolbar):
 
         self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "alejar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "alejar.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Borrar Lista")
         boton.connect("clicked", self.__emit_borrar)
         self.insert(boton, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "iconplay.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Enviar a Descargas")
         boton.connect("clicked", self.__emit_adescargas)
         self.insert(boton, -1)
@@ -291,17 +253,14 @@ class Toolbar_Videos_Izquierda(gtk.Toolbar):
 
     def __emit_adescargas(self, widget):
         """
-        Para pasar los videos encontrados a la
-        lista de descargas.
+        Para pasar los videos encontrados a la lista de descargas.
         """
-
         self.emit('mover_videos')
 
     def __emit_borrar(self, widget):
         """
         Para borrar todos los videos de la lista.
         """
-
         self.emit('borrar')
 
 
@@ -324,30 +283,23 @@ class Toolbar_Videos_Derecha(gtk.Toolbar):
 
         self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        boton = get_boton(archivo, flip=True,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "iconplay.svg")
+        boton = get_boton(archivo, flip=True, pixels=24)
         boton.set_tooltip_text("Quitar de Descargas")
         boton.connect("clicked", self.__emit_aencontrados)
         self.insert(boton, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "alejar.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "alejar.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Borrar Lista")
         boton.connect("clicked", self.__emit_borrar)
         self.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "iconplay.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24,
-            rotacion=gdk.PIXBUF_ROTATE_CLOCKWISE)
+        archivo = os.path.join(BASE_PATH, "Iconos", "iconplay.svg")
+        boton = get_boton(archivo, flip=False, pixels=24,
+            rotacion=gtk.gdk.PIXBUF_ROTATE_CLOCKWISE)
         boton.set_tooltip_text("Descargar")
         boton.connect("clicked", self.__emit_comenzar_descarga)
         self.insert(boton, -1)
@@ -356,25 +308,20 @@ class Toolbar_Videos_Derecha(gtk.Toolbar):
 
     def __emit_comenzar_descarga(self, widget):
         """
-        Emite la señal para comenzar a descargar
-        los videos en la lista de descargas.
+        Para comenzar a descargar los videos en la lista de descargas.
         """
-
         self.emit('comenzar_descarga')
 
     def __emit_aencontrados(self, widget):
         """
-        Para pasar los videos en descarga a la
-        lista de encontrados.
+        Para pasar los videos en descarga a la lista de encontrados.
         """
-
         self.emit('mover_videos')
 
     def __emit_borrar(self, widget):
         """
         Para borrar todos los videos de la lista.
         """
-
         self.emit('borrar')
 
 
@@ -411,21 +358,16 @@ class Toolbar_Guardar(gtk.Toolbar):
         item.add(self.entrytext)
         self.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "button-cancel.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "button-cancel.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "dialog-ok.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "dialog-ok.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Guardar")
         boton.connect("clicked", self.__emit_ok)
         self.insert(boton, -1)
@@ -433,14 +375,11 @@ class Toolbar_Guardar(gtk.Toolbar):
         self.show_all()
 
     def __emit_ok(self, widget):
-
         texto = self.entrytext.get_text().replace(" ", "_")
         self.cancelar()
-
         if texto:
             self.emit("ok", texto)
 
     def cancelar(self, widget=None):
-
         self.entrytext.set_text("")
         self.hide()

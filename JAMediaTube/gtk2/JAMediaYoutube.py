@@ -19,11 +19,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# https://developers.google.com/youtube/1.0/developers_guide_python?hl=es#RetrievingVideos
+# https://developers.google.com/youtube/1.0/developers_guide_python?hl=
+# es#RetrievingVideos
 # http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
 
 import os
-
 import gtk
 import gobject
 
@@ -37,9 +37,8 @@ youtubedl = os.path.join(BASE_PATH, "youtube-dl")
 
 def Buscar(palabras):
     """
-    Recibe una cadena de texto, separa las palabras,
-    busca videos que coincidan con ellas y devuelve
-    un feed no mayor a 50 videos.
+    Recibe una cadena de texto, separa las palabras, busca videos que
+    coincidan con ellas y devuelve un feed no mayor a 50 videos.
     """
 
     import gdata.youtube
@@ -65,29 +64,22 @@ def Buscar(palabras):
 
 def DetalleFeed(feed):
     """
-    Recibe un feed de videos y devuelve una
-    lista con diccionarios por video.
+    Recibe un feed de videos y devuelve una lista con diccionarios por video.
     """
-
     videos = []
-
     for entry in feed.entry:
         videos.append(DetalleVideo(entry))
-
     return videos
 
 
 def DetalleVideo(entry):
     """
-    Recibe un video en un feed y devuelve
-    un diccionario con su información.
+    Recibe un video en un feed y devuelve un diccionario con su información.
     """
-
     metadata = entry.media.__dict__
     entrada = entry.__dict__
 
     video = {}
-
     video["id"] = entrada['_GDataEntry__id'].text
     video["titulo"] = metadata['title'].text
     video["descripcion"] = metadata['description'].text
@@ -99,13 +91,10 @@ def DetalleVideo(entry):
 
     try:
         previews = []
-
         for thumbnail in metadata['thumbnail']:
             tubn = [thumbnail.url, thumbnail.height, thumbnail.width]
             previews.append(tubn)
-
         video["previews"] = previews
-
     except:
         pass
 
@@ -176,7 +165,6 @@ class JAMediaYoutube(gtk.Widget):
         self.codec = 0
 
     def __get_titulo(self, titulo):
-
         texto = ""
         excluir = ["\\", "/", ",", ".", "&",
         "¿", "?", "@", "#", "$", "\'", ":", ";", "|",
@@ -193,7 +181,6 @@ class JAMediaYoutube(gtk.Widget):
         """
         Inicia la descarga de un archivo.
         """
-
         self.datos_originales = [url, titulo]
 
         self.ultimosdatos = False
@@ -210,7 +197,7 @@ class JAMediaYoutube(gtk.Widget):
         self.estado = True
         # http://youtu.be/XWDZMMMbvhA => codigo compartir
         # url del video => 'http://www.youtube.com/watch?v=XWDZMMMbvhA'
-        # HACK: 5 de octubre 2012
+        # FIXME: HACK: 5 de octubre 2012
         # self.url = url
         self.url = "http://youtu.be/" + url.split(
             "http://www.youtube.com/watch?v=")[1]
@@ -222,13 +209,10 @@ class JAMediaYoutube(gtk.Widget):
         destino = os.path.join(get_tube_directory(), archivo)
 
         estructura = "%s %s -i -R %s -f %s --no-part -o %s" % (
-            youtubedl, self.url, 1,
-            self.codecs[self.codec][0], destino)
+            youtubedl, self.url, 1, self.codecs[self.codec][0], destino)
 
-        self.youtubedl = subprocess.Popen(
-            estructura, shell=True,
-            stdout=open(self.STDOUT, "w+b"),
-            stderr=open(self.STDOUT, "r+b"),
+        self.youtubedl = subprocess.Popen(estructura, shell=True,
+            stdout=open(self.STDOUT, "w+b"), stderr=open(self.STDOUT, "r+b"),
             universal_newlines=True)
 
         self.salida = open(self.STDOUT, "r")
@@ -237,16 +221,13 @@ class JAMediaYoutube(gtk.Widget):
             gobject.source_remove(self.actualizador)
             self.actualizador = False
 
-        self.actualizador = gobject.timeout_add(
-            500, self.__get_progress)
+        self.actualizador = gobject.timeout_add(500, self.__get_progress)
 
     def __get_progress(self):
         """
         Actualiza el Progreso de la descarga.
         """
-
         progress = self.salida.readline()
-
         if progress:
             if "100.0%" in progress.split():
                 self.estado = False
@@ -262,7 +243,6 @@ class JAMediaYoutube(gtk.Widget):
             self.contador += 1
 
         if self.contador > 15:
-
             if self.codec + 1 < len(self.codecs):
                 self.end()
                 self.codec += 1
@@ -272,12 +252,10 @@ class JAMediaYoutube(gtk.Widget):
         return self.estado
 
     def reset(self):
-
         self.end()
         self.codec = 0
 
     def end(self):
-
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
@@ -292,10 +270,9 @@ class JAMediaYoutube(gtk.Widget):
 
         self.estado = False
 
+
 if __name__ == "__main__":
-
     import sys
-
     entrada = sys.argv[1:]
     palabras = ""
 
@@ -308,8 +285,9 @@ if __name__ == "__main__":
         for item in video.items():
             print item
 
+
 '''
-Ejemplo de detalles en un video.
+Ejemplo: detalles en un video.
 Corresponde a def DetalleVideo(entry)
 
 metadata {

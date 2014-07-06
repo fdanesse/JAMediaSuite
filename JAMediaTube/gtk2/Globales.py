@@ -21,16 +21,13 @@
 
 
 def get_colors(key):
-
     from gtk import gdk
-
     _dict = {
         "window": "#f0e6aa",
         "download": "#e9b96e",
         "widgetvideoitem": "#ffffff",
         "drawingplayer": "#778899",
         }
-
     return gdk.color_parse(_dict.get(key, "#ffffff"))
 
 
@@ -38,23 +35,18 @@ def make_base_directory():
     """
     Crea toda la estructura de Directorios de JAMedia.
     """
-
     import os
     import commands
 
     if not os.path.exists(os.path.join(
         os.environ["HOME"], "JAMediaDatos")):
-        os.mkdir(os.path.join(
-            os.environ["HOME"], "JAMediaDatos"))
-        os.chmod(os.path.join(
-            os.environ["HOME"], "JAMediaDatos"), 0755)
+        os.mkdir(os.path.join(os.environ["HOME"], "JAMediaDatos"))
+        os.chmod(os.path.join(os.environ["HOME"], "JAMediaDatos"), 0755)
 
     # unificar directorios de JAMedia,
     # JAMediaVideo y JAMediaImagenes
-    directorio_viejo = os.path.join(
-        os.environ["HOME"], ".JAMediaDatos")
-    directorio_nuevo = os.path.join(
-        os.environ["HOME"], "JAMediaDatos")
+    directorio_viejo = os.path.join(os.environ["HOME"], ".JAMediaDatos")
+    directorio_nuevo = os.path.join(os.environ["HOME"], "JAMediaDatos")
 
     if os.path.exists(directorio_viejo):
         for elemento in os.listdir(directorio_viejo):
@@ -65,12 +57,10 @@ def make_base_directory():
         commands.getoutput('rm -r %s' % (directorio_viejo))
 
     # Directorios JAMedia
-    DIRECTORIO_MIS_ARCHIVOS = os.path.join(
-        os.environ["HOME"],
+    DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "MisArchivos")
 
-    DIRECTORIO_DATOS = os.path.join(
-        os.environ["HOME"],
+    DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Datos")
 
     if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
@@ -82,8 +72,7 @@ def make_base_directory():
         os.chmod(DIRECTORIO_DATOS, 0755)
 
     # Directorio JAMediaTube
-    DIRECTORIO_YOUTUBE = os.path.join(
-        os.environ["HOME"],
+    DIRECTORIO_YOUTUBE = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "YoutubeVideos")
 
     if not os.path.exists(DIRECTORIO_YOUTUBE):
@@ -91,24 +80,21 @@ def make_base_directory():
         os.chmod(DIRECTORIO_YOUTUBE, 0755)
 
     # Directorios JAMediaVideo
-    AUDIO_JAMEDIA_VIDEO = os.path.join(
-        os.environ["HOME"],
+    AUDIO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Audio")
 
     if not os.path.exists(AUDIO_JAMEDIA_VIDEO):
         os.mkdir(AUDIO_JAMEDIA_VIDEO)
         os.chmod(AUDIO_JAMEDIA_VIDEO, 0755)
 
-    VIDEO_JAMEDIA_VIDEO = os.path.join(
-        os.environ["HOME"],
+    VIDEO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Videos")
 
     if not os.path.exists(VIDEO_JAMEDIA_VIDEO):
         os.mkdir(VIDEO_JAMEDIA_VIDEO)
         os.chmod(VIDEO_JAMEDIA_VIDEO, 0755)
 
-    IMAGENES_JAMEDIA_VIDEO = os.path.join(
-        os.environ["HOME"],
+    IMAGENES_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Fotos")
 
     if not os.path.exists(IMAGENES_JAMEDIA_VIDEO):
@@ -120,15 +106,11 @@ def get_data_directory():
     """
     Devuelve el Directorio de Datos de JAMedia y JAMediaTube.
     """
-
     import os
-
     DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Datos")
-
     if not os.path.exists(DIRECTORIO_DATOS):
         make_base_directory()
-
     return DIRECTORIO_DATOS
 
 
@@ -136,15 +118,11 @@ def get_tube_directory():
     """
     Devuelve el Directorio de Videos de JAMediaTube.
     """
-
     import os
-
     DIRECTORIO_YOUTUBE = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "YoutubeVideos")
-
     if not os.path.exists(DIRECTORIO_YOUTUBE):
         make_base_directory()
-
     return DIRECTORIO_YOUTUBE
 
 
@@ -153,15 +131,11 @@ def describe_archivo(archivo):
     Devuelve el tipo de un archivo (imagen, video, texto).
     -z, --uncompress para ver dentro de los zip.
     """
-
     import commands
-
     datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
     retorno = ""
-
     for dat in datos.split(":")[1:]:
         retorno += " %s" % (dat)
-
     return retorno
 
 
@@ -169,14 +143,11 @@ def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
     """
-
     import gtk
-
     separador = gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
-
     return separador
 
 
@@ -185,19 +156,14 @@ def get_boton(archivo, flip=False, rotacion=None,
     """
     Devuelve un toolbutton generico.
     """
-
     import gtk
-    from gtk import gdk
 
     boton = gtk.ToolButton()
-
     imagen = gtk.Image()
-    pixbuf = gdk.pixbuf_new_from_file_at_size(
-        archivo, pixels, pixels)
+    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(archivo, pixels, pixels)
 
     if flip:
         pixbuf = pixbuf.flip(True)
-
     if rotacion:
         pixbuf = pixbuf.rotate_simple(rotacion)
 

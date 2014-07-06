@@ -20,9 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
-from gtk import gdk
 import gobject
 
 from JAMedia.JAMediaPlayer import JAMediaPlayer
@@ -42,22 +40,17 @@ class Tube_Player(JAMediaPlayer):
     def __init__(self):
 
         JAMediaPlayer.__init__(self)
-
         self.show_all()
 
     def confirmar_salir(self, widget=None, senial=None):
         """
-        Salteandose confirmación para salir
-        y maneteniendose activa la reproducción y
-        grabación de JAMedia.
+        Salteandose confirmación para salir y manteniendose activa la
+        reproducción y grabación de JAMedia.
         """
-
         map(self.__ocultar, [self.toolbaraddstream])
-
         self.emit('salir')
 
     def __ocultar(self, objeto):
-
         if objeto.get_visible():
             objeto.hide()
 
@@ -79,57 +72,44 @@ class Toolbar(gtk.Toolbar):
 
         self.modify_bg(0, get_colors("drawingplayer"))
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "JAMediaTube.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=35)
+        archivo = os.path.join(BASE_PATH, "Iconos", "JAMediaTube.svg")
+        boton = get_boton(archivo, flip=False, pixels=35)
         boton.set_tooltip_text("Autor")
         boton.connect("clicked", self.__show_credits)
         self.insert(boton, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "JAMedia.svg")
-        self.jamedia = get_boton(archivo, flip=False,
-            pixels=35)
+        archivo = os.path.join(BASE_PATH, "Iconos", "JAMedia.svg")
+        self.jamedia = get_boton(archivo, flip=False, pixels=35)
         self.jamedia.set_tooltip_text("Cambiar a JAMedia")
         self.jamedia.connect("clicked", self.__emit_switch)
         self.insert(self.jamedia, -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "JAMedia-help.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "JAMedia-help.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Ayuda")
         boton.connect("clicked", self.__show_help)
         self.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "button-cancel.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "button-cancel.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Salir")
         boton.connect("clicked", self.__salir)
         self.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         self.show_all()
 
     def __show_credits(self, widget):
-
         dialog = Credits(parent=self.get_toplevel())
         dialog.run()
         dialog.destroy()
 
     def __show_help(self, widget):
-
         dialog = Help(parent=self.get_toplevel())
         dialog.run()
         dialog.destroy()
@@ -138,14 +118,9 @@ class Toolbar(gtk.Toolbar):
         """
         Cambia de JAMediaTube a JAMedia.
         """
-
         self.emit('switch')
 
     def __salir(self, widget):
-        """
-        Cuando se hace click en el boton salir.
-        """
-
         self.emit('salir')
 
 
@@ -164,8 +139,7 @@ class Toolbar_Busqueda(gtk.Toolbar):
 
         self.modify_bg(0, get_colors("window"))
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         item = gtk.ToolItem()
         label = gtk.Label("Buscar por: ")
@@ -173,42 +147,33 @@ class Toolbar_Busqueda(gtk.Toolbar):
         item.add(label)
         self.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
         self.entrytext = gtk.Entry()
         self.entrytext.set_size_request(400, -1)
         self.entrytext.set_max_length(50)
-        self.entrytext.set_tooltip_text(
-            "Escribe lo que Buscas")
+        self.entrytext.set_tooltip_text("Escribe lo que Buscas")
         self.entrytext.show()
-        self.entrytext.connect('activate',
-            self.__activate_entrytext)
+        self.entrytext.connect('activate', self.__activate_entrytext)
         item.add(self.entrytext)
         self.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "dialog-ok.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "dialog-ok.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Comenzar Búsqueda")
         boton.connect("clicked", self.__emit_buscar)
         self.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         self.show_all()
 
     def __emit_buscar(self, widget=None):
-
         texto = self.entrytext.get_text()
         self.entrytext.set_text("")
-
         if texto:
             self.emit("comenzar_busqueda", texto)
 
@@ -216,7 +181,6 @@ class Toolbar_Busqueda(gtk.Toolbar):
         """
         Cuando se da enter en el entrytext.
         """
-
         self.__emit_buscar()
 
 
@@ -231,22 +195,18 @@ class Alerta_Busqueda(gtk.Toolbar):
 
         self.modify_bg(0, get_colors("window"))
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         imagen = gtk.Image()
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "yt_videos_black.png")
-        pixbuf = gdk.pixbuf_new_from_file_at_size(
-            icono, -1, 24)
+        icono = os.path.join(BASE_PATH, "Iconos", "yt_videos_black.png")
+        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, -1, 24)
         imagen.set_from_pixbuf(pixbuf)
         imagen.show()
         item = gtk.ToolItem()
         item.add(imagen)
         self.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
         item.set_expand(True)
@@ -296,7 +256,7 @@ class WidgetVideoItem(gtk.EventBox):
                     # FIXME: Porque Falla si no hay Conexión.
                     import urllib
                     fileimage, headers = urllib.urlretrieve(url, archivo)
-                    pixbuf = gdk.pixbuf_new_from_file_at_size(
+                    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                         fileimage, 200, 150)
                     imagen.set_from_pixbuf(pixbuf)
 
@@ -315,7 +275,7 @@ class WidgetVideoItem(gtk.EventBox):
 
             else:
                 import base64
-                loader = gdk.PixbufLoader()
+                loader = gtk.gdk.PixbufLoader()
                 loader.set_size(200, 150)
                 image_string = base64.b64decode(self.videodict["previews"])
                 loader.write(image_string)
@@ -326,26 +286,19 @@ class WidgetVideoItem(gtk.EventBox):
 
         vbox.pack_start(gtk.Label("%s: %s" % ("id",
             self.videodict["id"])), True, True, 0)
-
         vbox.pack_start(gtk.Label("%s: %s" % ("Título",
             self.videodict["titulo"])), True, True, 0)
-
         vbox.pack_start(gtk.Label("%s: %s" % ("Categoría",
             self.videodict["categoria"])), True, True, 0)
-
         #vbox.pack_start(gtk.Label("%s: %s" % ("Etiquetas",
         #    self.videodict["etiquetas"])), True, True, 0)
-
         #vbox.pack_start(gtk.Label("%s: %s" % ("Descripción",
         #   self.videodict["descripcion"])), True, True, 0)
-
         vbox.pack_start(gtk.Label("%s: %s %s" % ("Duración",
             int(float(self.videodict["duracion"]) / 60.0), "Minutos")),
             True, True, 0)
-
         #vbox.pack_start(gtk.Label("%s: %s" % ("Reproducción en la Web",
         #   self.videodict["flash player"])), True, True, 0)
-
         vbox.pack_start(gtk.Label("%s: %s" % ("url",
             self.videodict["url"])), True, True, 0)
 
@@ -360,12 +313,9 @@ class WidgetVideoItem(gtk.EventBox):
         self.connect("button_press_event", self.__button_press)
 
     def __button_press(self, widget, event):
-
     #    self.modify_bg(0, self.colorclicked)
-
     #    if event.button == 1:
     #        self.emit("clicked", event)
-
     #    elif event.button == 3:
             self.emit("click_derecho", event)
 
@@ -402,8 +352,7 @@ class Toolbar_Descarga(gtk.VBox):
         from JAMediaYoutube import JAMediaYoutube
         self.jamediayoutube = JAMediaYoutube()
 
-        self.toolbar.insert(
-            get_separador(draw=False,
+        self.toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
@@ -444,8 +393,7 @@ class Toolbar_Descarga(gtk.VBox):
 
         self.show_all()
 
-        self.jamediayoutube.connect(
-            "progress_download",
+        self.jamediayoutube.connect("progress_download",
             self.__progress_download)
 
     def download(self, video_item):
@@ -473,8 +421,7 @@ class Toolbar_Descarga(gtk.VBox):
         if self.actualizador:
             gobject.source_remove(self.actualizador)
 
-        self.actualizador = gobject.timeout_add(
-            1000, self.__handle)
+        self.actualizador = gobject.timeout_add(1000, self.__handle)
 
         self.show_all()
 
@@ -627,7 +574,6 @@ class ProgressBar(gtk.HScale):
         self.connect("expose_event", self.expose)
 
     def expose(self, widget, event):
-
         x, y, w, h = self.get_allocation()
         ancho, borde = (self.ancho, self.borde)
 
@@ -638,7 +584,7 @@ class ProgressBar(gtk.HScale):
         self.window.draw_rectangle(gc, True, x, y, w, h)
 
         # vacio
-        gc.set_rgb_fg_color(gdk.Color(0, 0, 0))
+        gc.set_rgb_fg_color(gtk.gdk.Color(0, 0, 0))
         ww = w - borde * 2
         xx = x + w / 2 - ww / 2
         hh = ancho
@@ -647,7 +593,7 @@ class ProgressBar(gtk.HScale):
 
         # progreso
         ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(gdk.Color(65000, 26000, 0))
+        gc.set_rgb_fg_color(gtk.gdk.Color(65000, 26000, 0))
         self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
 
         # borde de progreso
@@ -663,10 +609,7 @@ class Credits(gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self,
-            parent=parent,
-            #flags=gtk.DialogFlags.MODAL,
-            title="",
+        gtk.Dialog.__init__(self, parent=parent, title="",
             buttons=("Cerrar", gtk.RESPONSE_OK))
 
         self.set_decorated(False)
@@ -674,8 +617,7 @@ class Credits(gtk.Dialog):
         self.set_border_width(15)
 
         imagen = gtk.Image()
-        imagen.set_from_file(
-            os.path.join(BASE_PATH,
+        imagen.set_from_file(os.path.join(BASE_PATH,
             "Iconos", "JAMediaTubeCredits.svg"))
 
         self.vbox.pack_start(imagen, True, True, 0)
@@ -688,10 +630,7 @@ class Help(gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self,
-            parent=parent,
-            #flags=gtk.DialogFlags.MODAL,
-            title="",
+        gtk.Dialog.__init__(self, parent=parent, title="",
             buttons=("Cerrar", gtk.RESPONSE_OK))
 
         self.set_decorated(False)
@@ -701,21 +640,15 @@ class Help(gtk.Dialog):
         tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)
 
         vbox = gtk.HBox()
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "play.svg")
-        self.anterior = get_boton(
-            archivo, flip=True,
-            pixels=24,
+        archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
+        self.anterior = get_boton(archivo, flip=True, pixels=24,
             tooltip_text="Anterior")
         self.anterior.connect("clicked", self.__switch)
         self.anterior.show()
         vbox.pack_start(self.anterior, False, False, 0)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "play.svg")
-        self.siguiente = get_boton(
-            archivo,
-            pixels=24,
+        archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
+        self.siguiente = get_boton(archivo, pixels=24,
             tooltip_text="Siguiente")
         self.siguiente.connect("clicked", self.__switch)
         self.siguiente.show()
@@ -724,11 +657,9 @@ class Help(gtk.Dialog):
         tabla1.attach_defaults(vbox, 0, 5, 0, 1)
 
         self.helps = []
-
         for x in range(1, 3):
             help = gtk.Image()
-            help.set_from_file(
-                os.path.join(BASE_PATH,
+            help.set_from_file(os.path.join(BASE_PATH,
                 "Iconos", "help-%s.svg" % x))
             tabla1.attach_defaults(help, 0, 5, 1, 2)
 
@@ -740,12 +671,10 @@ class Help(gtk.Dialog):
         self.__switch(None)
 
     def __ocultar(self, objeto):
-
         if objeto.get_visible():
             objeto.hide()
 
     def __switch(self, widget):
-
         if not widget:
             map(self.__ocultar, self.helps[1:])
             self.anterior.hide()
@@ -770,18 +699,15 @@ class Help(gtk.Dialog):
 
             if new_index > 0:
                 self.anterior.show()
-
             else:
                 self.anterior.hide()
 
             if new_index < self.helps.index(self.helps[-1]):
                 self.siguiente.show()
-
             else:
                 self.siguiente.hide()
 
     def __get_index_visible(self):
-
         for help in self.helps:
             if help.get_visible():
                 return self.helps.index(help)
@@ -804,19 +730,15 @@ class ToolbarSalir(gtk.Toolbar):
 
         self.modify_bg(gtk.STATE_NORMAL, get_colors("download"))
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "button-cancel.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "button-cancel.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Cancelar")
         boton.connect("clicked", self.cancelar)
         self.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         item = gtk.ToolItem()
         self.label = gtk.Label("")
@@ -824,28 +746,22 @@ class ToolbarSalir(gtk.Toolbar):
         item.add(self.label)
         self.insert(item, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        archivo = os.path.join(BASE_PATH,
-            "Iconos", "dialog-ok.svg")
-        boton = get_boton(archivo, flip=False,
-            pixels=24)
+        archivo = os.path.join(BASE_PATH, "Iconos", "dialog-ok.svg")
+        boton = get_boton(archivo, flip=False, pixels=24)
         boton.set_tooltip_text("Aceptar")
         boton.connect("clicked", self.__emit_salir)
         self.insert(boton, -1)
 
-        self.insert(get_separador(draw=False,
-            ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         self.show_all()
 
     def run(self, nombre_aplicacion):
         """
-        La toolbar se muestra y espera confirmación
-        del usuario.
+        La toolbar se muestra y espera confirmación.
         """
-
         self.label.set_text("¿Salir de %s?" % (nombre_aplicacion))
         self.show()
 
@@ -853,7 +769,6 @@ class ToolbarSalir(gtk.Toolbar):
         """
         Confirma Salir de la aplicación.
         """
-
         self.cancelar()
         self.emit('salir')
 
@@ -861,6 +776,5 @@ class ToolbarSalir(gtk.Toolbar):
         """
         Cancela salir de la aplicación.
         """
-
         self.label.set_text("")
         self.hide()

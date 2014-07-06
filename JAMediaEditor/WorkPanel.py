@@ -355,11 +355,9 @@ class Notebook_SourceView(Gtk.Notebook):
         paginas = self.get_children()
         for pagina in paginas:
             view = pagina.get_child()
-            if view.archivo:
-                #arch1 = os.path.join(view.archivo)
-                arch1 = view.archivo
-                #arch2 = os.path.join(archivo)
-                #if arch1 == arch2:
+            if view.archivo and archivo:
+                arch1 = os.path.join(view.archivo)
+                arch2 = os.path.join(archivo)
                 if arch1 == archivo:
                     return False
 
@@ -375,10 +373,11 @@ class Notebook_SourceView(Gtk.Notebook):
         hbox.pack_start(boton, False, False, 0)
 
         scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scroll.add(sourceview)
         self.append_page(scroll, hbox)
+
+        sourceview.set_archivo(archivo)
 
         label.show()
         boton.show()
@@ -388,7 +387,7 @@ class Notebook_SourceView(Gtk.Notebook):
         self.set_current_page(-1)
         self.set_tab_reorderable(scroll, True)
 
-        sourceview.set_archivo(archivo)
+
 
         """
         # FIXME: Cuando se abre un archivo, se cierra el vacío por default.
@@ -484,9 +483,8 @@ class Notebook_SourceView(Gtk.Notebook):
 
     def do_page_removed(self, scroll, num):
         paginas = self.get_children()
-        # FIXME: Abrir archivo vacío
-        #if not paginas:
-        #    self.abrir_archivo(False)
+        if not paginas:
+            self.abrir_archivo(False)
         self.get_toplevel().set_sensitive(True)
 
     def get_archivos_de_proyecto(self, proyecto_path):
@@ -523,7 +521,7 @@ class Notebook_SourceView(Gtk.Notebook):
         """
         Devuelve el Directorio del archivo seleccionado.
         """
-        path = None
+        path = False
         pagina = self.get_current_page()
         if pagina > -1:
             view = self.get_children()[pagina].get_children()[0]

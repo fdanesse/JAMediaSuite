@@ -20,9 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
-from gtk import gdk
 import gobject
 
 from Globales import get_colors
@@ -97,36 +95,31 @@ class PanelTube(gtk.HPaned):
         event.add(self.encontrados)
         scroll.add_with_viewport(event)
         scroll.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-        scroll.get_child().modify_bg(
-            gtk.STATE_NORMAL, get_colors("window"))
+        scroll.get_child().modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         #scroll.add_with_viewport(self.encontrados)
         box = gtk.VBox()
 
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("drawingplayer"))
         event.add(self.toolbar_encontrados)
-        box.pack_start(
-            event, False, False, 0)
+        box.pack_start(event, False, False, 0)
 
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("drawingplayer"))
         event.add(self.toolbar_guardar_encontrados)
-        box.pack_start(
-            event, False, False, 0)
+        box.pack_start(event, False, False, 0)
 
         box.pack_start(scroll, True, True, 0)
 
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("drawingplayer"))
         event.add(self.toolbar_accion_izquierda)
-        box.pack_start(
-            event, False, False, 0)
+        box.pack_start(event, False, False, 0)
 
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("drawingplayer"))
         event.add(self.toolbar_videos_izquierda)
-        box.pack_start(
-            event, False, False, 0)
+        box.pack_start(event, False, False, 0)
 
         self.pack1(box, resize=False, shrink=False)
 
@@ -137,36 +130,31 @@ class PanelTube(gtk.HPaned):
         event.add(self.descargar)
         scroll.add_with_viewport(event)
         scroll.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-        scroll.get_child().modify_bg(
-            gtk.STATE_NORMAL, get_colors("window"))
+        scroll.get_child().modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         #scroll.add_with_viewport(self.descargar)
         box = gtk.VBox()
 
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("drawingplayer"))
         event.add(self.toolbar_descargar)
-        box.pack_start(
-            event, False, False, 0)
+        box.pack_start(event, False, False, 0)
 
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("drawingplayer"))
         event.add(self.toolbar_guardar_descargar)
-        box.pack_start(
-            event, False, False, 0)
+        box.pack_start(event, False, False, 0)
 
         box.pack_start(scroll, True, True, 0)
 
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("drawingplayer"))
         event.add(self.toolbar_accion_derecha)
-        box.pack_start(
-            event, False, False, 0)
+        box.pack_start(event, False, False, 0)
 
         event = gtk.EventBox()
         event.modify_bg(0, get_colors("drawingplayer"))
         event.add(self.toolbar_videos_derecha)
-        box.pack_start(
-            event, False, False, 0)
+        box.pack_start(event, False, False, 0)
 
         self.pack2(box, resize=False, shrink=False)
 
@@ -212,36 +200,31 @@ class PanelTube(gtk.HPaned):
         gobject.timeout_add(300, self.__update)
 
     def __ejecutar_cancel_toolbars(self, widget):
-
         map(self.__cancel_toolbars, self.toolbars_flotantes)
 
     def __abrir_lista_shelve(self, widget, key):
         """
-        Agrega a la lista, todos los videos almacenados en
-        un archivo shelve.
+        Agrega a la lista, los videos almacenados en un archivo shelve.
         """
-
         from Globales import get_data_directory
         import shelve
 
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
+        dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
 
-        dict = dict_tube.get(key, [])
-
+        _dict = dict_tube.get(key, [])
         dict_tube.close()
 
         videos = []
-        for item in dict.keys():
-            videos.append(dict[item])
+        for item in _dict.keys():
+            videos.append(_dict[item])
 
         self.emit('open_shelve_list', videos, widget)
 
     def __show_toolbar_guardar(self, widget):
         """
-        Muestra la toolbar para escribir nombre de archivo
-        donde se guardarán los videos de la lista correspondiente.
+        Muestra la toolbar para escribir nombre de archivo donde se guardarán
+        los videos de la lista correspondiente.
         """
 
         map(self.__cancel_toolbars, self.toolbars_flotantes)
@@ -258,7 +241,6 @@ class PanelTube(gtk.HPaned):
         """
         Guarda todos los videos de la lista bajo la key según key_name.
         """
-
         origen = False
 
         if widget == self.toolbar_guardar_encontrados:
@@ -279,20 +261,16 @@ class PanelTube(gtk.HPaned):
             from Globales import get_data_directory
             import shelve
 
-            dict_tube = shelve.open(
-                os.path.join(get_data_directory(),
+            dict_tube = shelve.open(os.path.join(get_data_directory(),
                 "List.tube"))
 
-            dict = {}
+            _dict = {}
             for elemento in videos:
-                dict[elemento["id"]] = elemento
+                _dict[elemento["id"]] = elemento
 
             # Alerta de Sobre Escritura.
             if key_name in dict_tube.keys():
-                dialog = gtk.Dialog(
-                parent=self.get_toplevel(),
-                #flags=gtk.DialogFlags.MODAL,
-                title="",
+                dialog = gtk.Dialog(parent=self.get_toplevel(), title="",
                 buttons=(
                     "Suplantar", gtk.RESPONSE_ACCEPT,
                     "Cancelar", gtk.RESPONSE_CANCEL))
@@ -308,21 +286,16 @@ class PanelTube(gtk.HPaned):
                 dialog.vbox.show_all()
 
                 response = dialog.run()
-
                 dialog.destroy()
 
                 if response == gtk.RESPONSE_CANCEL:
                     dict_tube.close()
                     return
 
-            dict_tube[key_name] = dict
-
+            dict_tube[key_name] = _dict
             dict_tube.close()
 
-            dialog = gtk.Dialog(
-                parent=self.get_toplevel(),
-                #flags=gtk.DialogFlags.MODAL,
-                title="",
+            dialog = gtk.Dialog(parent=self.get_toplevel(), title="",
                 buttons=("OK", gtk.RESPONSE_CANCEL))
 
             dialog.set_border_width(15)
@@ -334,25 +307,20 @@ class PanelTube(gtk.HPaned):
             dialog.vbox.show_all()
 
             dialog.run()
-
             dialog.destroy()
 
     def __comenzar_descarga(self, widget):
         """
-        Envia la señal descargar para comenzar la
-        descarga de un video en la lista, cuando el
-        usuario hace click en el boton descargar.
+        Envia la señal descargar para comenzar la descarga de un video en la
+        lista, cuando el usuario hace click en el boton descargar.
         """
-
         map(self.__cancel_toolbars, self.toolbars_flotantes)
-
         self.emit('download')
 
     def __mover_videos(self, widget):
         """
         Pasa todos los videos de una lista a otra.
         """
-
         self.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
 
@@ -369,19 +337,13 @@ class PanelTube(gtk.HPaned):
             text = TipEncontrados
 
         elementos = origen.get_children()
-
-        gobject.idle_add(
-            self.__ejecutar_mover_videos,
-            origen,
-            destino,
-            text,
-            elementos)
+        gobject.idle_add(self.__ejecutar_mover_videos, origen, destino,
+            text, elementos)
 
     def __ejecutar_mover_videos(self, origen, destino, text, elementos):
         """
         Ejecuta secuencia que pasa videos desde una lista a otra.
         """
-
         if not elementos:
             self.set_sensitive(True)
             self.get_toplevel().toolbar_busqueda.set_sensitive(True)
@@ -393,44 +355,33 @@ class PanelTube(gtk.HPaned):
             elementos[0].set_tooltip_text(text)
 
         elementos.remove(elementos[0])
-
-        gobject.idle_add(
-            self.__ejecutar_mover_videos,
-            origen,
-            destino,
-            text,
-            elementos)
+        gobject.idle_add(self.__ejecutar_mover_videos, origen, destino,
+            text, elementos)
 
     def __ejecutar_borrar(self, widget, objetos):
         """
         Elimina una lista de videos.
         """
-
         self.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
-
         gobject.idle_add(self.__run_borrar, objetos)
 
     def __run_borrar(self, objetos):
-
         for objeto in objetos:
             objeto.destroy()
-
         self.set_sensitive(True)
         self.get_toplevel().toolbar_busqueda.set_sensitive(True)
 
     def __set_borrar(self, widget, objetos=None):
         """
-        Llama a toolbar accion para pedir confirmacion
-        sobre borrar un video o una lista de videos de la lista.
+        Llama a toolbar accion para pedir confirmacion sobre borrar un video
+        o una lista de videos de la lista.
         """
-
         map(self.__cancel_toolbars, self.toolbars_flotantes)
 
         if widget == self.toolbar_videos_izquierda:
             if not objetos or objetos == None:
                 objetos = self.encontrados.get_children()
-
             if not objetos or objetos == None:
                 return  # No se abre confirmacion.
 
@@ -439,7 +390,6 @@ class PanelTube(gtk.HPaned):
         elif widget == self.toolbar_videos_derecha:
             if not objetos or objetos == None:
                 objetos = self.descargar.get_children()
-
             if not objetos or objetos == None:
                 return  # No se abre confirmacion.
 
@@ -450,46 +400,34 @@ class PanelTube(gtk.HPaned):
 
     def __update(self):
         """
-        Actualiza información en toolbars de
-        videos encontrados y en descaga.
+        Actualiza información en toolbars de videos encontrados y en descaga.
         """
-
         encontrados = len(self.encontrados.get_children())
         endescargas = len(self.descargar.get_children())
         self.toolbar_encontrados.set_info(encontrados)
         self.toolbar_descargar.set_info(endescargas)
-
         return True
 
     def __get_scroll(self):
-
         scroll = gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            gtk.POLICY_AUTOMATIC,
-            gtk.POLICY_AUTOMATIC)
-
+        scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         return scroll
 
     def __cancel_toolbars(self, widget):
         """
-        Cuando se activa un menú o se muestra una toolbar
-        flotante, se ocultan todas las demás y se envía la señal
-        para ocultar otras toolbars flotantes en la raíz de la aplicación.
+        Cuando se activa un menú o se muestra una toolbar flotante, se ocultan
+        todas las demás y se envía la señal para ocultar otras toolbars
+        flotantes en la raíz de la aplicación.
         """
-
         self.emit("cancel_toolbar")
-
         widget.cancelar()
 
     def cancel_toolbars_flotantes(self):
         """
-        Óculta las toolbars flotantes, se llama desde la
-        raíz de la aplicación cuando va a presentar una toolbar
-        flotante allí, de este modo nunca habrá más de una
-        toolbar flotante visible.
+        Óculta las toolbars flotantes, se llama desde la raíz de la aplicación
+        cuando va a presentar una toolbar flotante allí, de este modo nunca
+        habrá más de una toolbar flotante visible.
         """
-
         for toolbar in self.toolbars_flotantes:
             toolbar.cancelar()
 
@@ -497,5 +435,4 @@ class PanelTube(gtk.HPaned):
         """
         Las toolbar accion deben estar ocultas inicialmente.
         """
-
         map(self.__cancel_toolbars, self.toolbars_flotantes)

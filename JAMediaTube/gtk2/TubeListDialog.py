@@ -20,9 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 import gtk
-from gtk import gdk
 import gobject
 
 from Globales import get_colors
@@ -36,10 +34,7 @@ class TubeListDialog(gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self,
-            parent=parent,
-            #flags=gtk.DialogFlags.MODAL,
-            title="",
+        gtk.Dialog.__init__(self, parent=parent, title="",
             buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
 
         self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
@@ -51,25 +46,20 @@ class TubeListDialog(gtk.Dialog):
         self.actualizando = False
 
         self.panel = gtk.HPaned()
-        self.panel.modify_bg(gtk.STATE_NORMAL,
-            get_colors("widgetvideoitem"))
+        self.panel.modify_bg(gtk.STATE_NORMAL, get_colors("widgetvideoitem"))
 
         self.listas = Lista()
         self.videos = gtk.VBox()
 
         scroll = self.__get_scroll()
-        scroll.set_policy(
-            gtk.POLICY_NEVER,
-            gtk.POLICY_AUTOMATIC)
+        scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         scroll.add_with_viewport(self.listas)
-        scroll.get_child().modify_bg(gtk.STATE_NORMAL,
-            get_colors("download"))
+        scroll.get_child().modify_bg(gtk.STATE_NORMAL, get_colors("download"))
         self.panel.pack1(scroll, resize=False, shrink=True)
 
         scroll = self.__get_scroll()
         scroll.add_with_viewport(self.videos)
-        scroll.get_child().modify_bg(gtk.STATE_NORMAL,
-            get_colors("download"))
+        scroll.get_child().modify_bg(gtk.STATE_NORMAL, get_colors("download"))
         self.panel.pack2(scroll, resize=True, shrink=False)
 
         self.label = gtk.Label("")
@@ -83,12 +73,6 @@ class TubeListDialog(gtk.Dialog):
         self.connect("realize", self.__do_realize)
 
     def __click_derecho_en_lista(self, widget, event):
-        """
-        Esto es para abrir un menu de opciones cuando
-        el usuario hace click derecho sobre un elemento en
-        la lista.
-        """
-
         boton = event.button
         pos = (event.x, event.y)
         #tiempo = event.time
@@ -97,7 +81,6 @@ class TubeListDialog(gtk.Dialog):
         try:
             path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
                 int(pos[0]), int(pos[1]))
-
         except:
             return
 
@@ -109,9 +92,7 @@ class TubeListDialog(gtk.Dialog):
             borrar = gtk.MenuItem("Eliminar")
             menu.append(borrar)
 
-            borrar.connect_object(
-                "activate", self.__eliminar,
-                widget, path)
+            borrar.connect_object("activate", self.__eliminar, widget, path)
 
             menu.show_all()
             menu.attach_to_widget(widget, self.__null)
@@ -138,33 +119,25 @@ class TubeListDialog(gtk.Dialog):
 
         new_box = gtk.VBox()
         new_box.show_all()
-        self.videos.pack_start(
-            new_box,
-            True, True, 0)
+        self.videos.pack_start(new_box, True, True, 0)
 
-        iter = widget.get_model().get_iter(path)
-        key = widget.get_model().get_value(iter, 2)
+        _iter = widget.get_model().get_iter(path)
+        key = widget.get_model().get_value(_iter, 2)
 
         from Globales import get_data_directory
         import shelve
 
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
+        dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
 
         del(dict_tube[key])
-
         keys = dict_tube.keys()
-
         dict_tube.close()
 
-        widget.get_model().remove(iter)
+        widget.get_model().remove(_iter)
 
         if not keys:
-            dialog = gtk.Dialog(
-                parent=self.get_toplevel(),
-                #flags=gtk.DialogFlags.MODAL,
-                title="",
+            dialog = gtk.Dialog(parent=self.get_toplevel(), title="",
                 buttons=("OK", gtk.RESPONSE_ACCEPT))
 
             dialog.set_border_width(15)
@@ -176,15 +149,13 @@ class TubeListDialog(gtk.Dialog):
             dialog.vbox.show_all()
 
             dialog.run()
-
             dialog.destroy()
-
             self.destroy()
 
     def __select_list(self, widget, valor):
         """
-        Cuando se selecciona una lista, se cargan
-        los videos que contiene en self.videos.
+        Cuando se selecciona una lista, se cargan los videos que contiene en
+        self.videos.
         """
 
         self.actualizando = True
@@ -197,15 +168,12 @@ class TubeListDialog(gtk.Dialog):
 
         new_box = gtk.VBox()
         new_box.show_all()
-        self.videos.pack_start(
-            new_box,
-            True, True, 0)
+        self.videos.pack_start(new_box, True, True, 0)
 
         from Globales import get_data_directory
         import shelve
 
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
+        dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
 
         videos = []
@@ -213,13 +181,12 @@ class TubeListDialog(gtk.Dialog):
             videos.append(dict_tube[valor][item])
 
         dict_tube.close()
-
         gobject.idle_add(self.__add_videos, videos)
 
     def __add_videos(self, videos):
         """
-        Se crean los video_widgets de videos y
-        se agregan al panel, segun destino.
+        Se crean los video_widgets de videos y se agregan al panel,
+        segun destino.
         """
 
         if not videos:
@@ -243,7 +210,6 @@ class TubeListDialog(gtk.Dialog):
         try:
             self.videos.get_children()[0].pack_start(
                 videowidget, False, False, 1)
-
         except:
             return False
 
@@ -253,7 +219,6 @@ class TubeListDialog(gtk.Dialog):
         """
         Cuando se hace click derecho sobre un video item.
         """
-
         boton = event.button
         #pos = (event.x, event.y)
         tiempo = event.time
@@ -262,9 +227,7 @@ class TubeListDialog(gtk.Dialog):
         borrar = gtk.MenuItem("Eliminar")
         menu.append(borrar)
 
-        borrar.connect_object(
-            "activate", self.__eliminar_video,
-            widget)
+        borrar.connect_object("activate", self.__eliminar_video, widget)
 
         menu.show_all()
         menu.attach_to_widget(widget, self.__null)
@@ -272,24 +235,22 @@ class TubeListDialog(gtk.Dialog):
         gtk.Menu.popup(menu, None, None, None, boton, tiempo)
 
     def __eliminar_video(self, widget):
-
         from Globales import get_data_directory
         import shelve
 
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
+        dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
 
         if len(dict_tube[self.listas.valor_select].keys()) == 1:
-            modelo, iter = self.listas.treeselection.get_selected()
-            path = modelo.get_path(iter)
+            modelo, _iter = self.listas.treeselection.get_selected()
+            path = modelo.get_path(_iter)
             self.__eliminar(self.listas, path)
 
         else:
             videos = {}
-            for id in dict_tube[self.listas.valor_select].keys():
-                if id != widget.videodict["id"]:
-                    videos[id] = dict_tube[self.listas.valor_select][id]
+            for _id in dict_tube[self.listas.valor_select].keys():
+                if _id != widget.videodict["id"]:
+                    videos[_id] = dict_tube[self.listas.valor_select][_id]
 
             dict_tube[self.listas.valor_select] = videos
 
@@ -303,16 +264,13 @@ class TubeListDialog(gtk.Dialog):
         """
         Carga la lista de Albums de Descargas en self.listas.
         """
-
         from Globales import get_data_directory
         import shelve
 
-        dict_tube = shelve.open(
-            os.path.join(get_data_directory(),
+        dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
 
         keys = dict_tube.keys()
-
         dict_tube.close()
 
         lista = []
@@ -322,20 +280,12 @@ class TubeListDialog(gtk.Dialog):
         self.listas.agregar_items(lista)
 
     def __get_scroll(self):
-
         scroll = gtk.ScrolledWindow()
-
-        scroll.set_policy(
-            gtk.POLICY_AUTOMATIC,
-            gtk.POLICY_AUTOMATIC)
-
+        scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         return scroll
 
 
 class Lista(gtk.TreeView):
-    """
-    Lista generica.
-    """
 
     __gsignals__ = {
     "nueva-seleccion": (gobject.SIGNAL_RUN_FIRST,
@@ -352,9 +302,7 @@ class Lista(gtk.TreeView):
         self.permitir_select = True
         self.valor_select = None
 
-        self.modelo = gtk.ListStore(
-            gdk.Pixbuf,
-            gobject.TYPE_STRING,
+        self.modelo = gtk.ListStore(gtk.gdk.Pixbuf, gobject.TYPE_STRING,
             gobject.TYPE_STRING)
 
         self.__setear_columnas()
@@ -370,7 +318,6 @@ class Lista(gtk.TreeView):
         """
         Cuando se selecciona un item en la lista.
         """
-
         if not self.permitir_select:
             return True
 
@@ -386,36 +333,28 @@ class Lista(gtk.TreeView):
         return True
 
     def __setear_columnas(self):
-
         self.append_column(self.__construir_columa_icono('', 0, True))
         self.append_column(self.__construir_columa('Nombre', 1, True))
         self.append_column(self.__construir_columa('', 2, False))
 
     def __construir_columa(self, text, index, visible):
-
         render = gtk.CellRendererText()
-
         columna = gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
-
         return columna
 
     def __construir_columa_icono(self, text, index, visible):
-
         render = gtk.CellRendererPixbuf()
-
         columna = gtk.TreeViewColumn(text, render, pixbuf=index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
-
         return columna
 
     def limpiar(self):
-
         self.permitir_select = False
         self.modelo.clear()
         self.permitir_select = True
@@ -425,17 +364,14 @@ class Lista(gtk.TreeView):
         Recibe lista de: [texto para mostrar, path oculto] y
         Comienza secuencia de agregado a la lista.
         """
-
         self.get_toplevel().set_sensitive(False)
         self.permitir_select = False
-
         gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
 
     def __ejecutar_agregar_elemento(self, elementos):
         """
         Agrega los items a la lista, uno a uno, actualizando.
         """
-
         if not elementos:
             self.permitir_select = True
             self.seleccionar_primero()
@@ -443,24 +379,17 @@ class Lista(gtk.TreeView):
             return False
 
         texto, path = elementos[0]
-
-        icono = os.path.join(BASE_PATH,
-            "Iconos", "video.svg")
+        icono = os.path.join(BASE_PATH, "Iconos", "video.svg")
 
         try:
-            pixbuf = gdk.pixbuf_new_from_file_at_size(icono,
-                24, -1)
+            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
             self.modelo.append([pixbuf, texto, path])
-
         except:
             pass
 
         elementos.remove(elementos[0])
-
         gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
-
         return False
 
     def seleccionar_primero(self, widget=None):
-
         self.treeselection.select_path(0)

@@ -53,6 +53,7 @@ class ToolbarSalir(gtk.EventBox):
 
         self.modify_bg(0, get_colors("window"))
         toolbar.modify_bg(0, get_colors("window"))
+        toolbar.modify_fg(0, get_colors("drawingplayer"))
 
         toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
@@ -132,6 +133,7 @@ class ToolbarAccion(gtk.EventBox):
 
         self.modify_bg(0, get_colors("window"))
         toolbar.modify_bg(0, get_colors("window"))
+        toolbar.modify_fg(0, get_colors("drawingplayer"))
 
         self.lista = None
         self.accion = None
