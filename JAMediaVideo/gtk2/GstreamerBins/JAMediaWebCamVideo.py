@@ -31,16 +31,12 @@ import gtk
 def borrar(origen):
     try:
         import shutil
-
         if os.path.isdir(origen):
             shutil.rmtree("%s" % (os.path.join(origen)))
-
         elif os.path.isfile(origen):
             os.remove("%s" % (os.path.join(origen)))
-
         else:
             return False
-
         return True
 
     except:
@@ -171,8 +167,7 @@ class JAMediaWebCamVideo(gobject.GObject):
             self.actualizador = False
 
         if reset:
-            self.actualizador = gobject.timeout_add(
-                250, self.__handle)
+            self.actualizador = gobject.timeout_add(250, self.__handle)
 
     def __handle(self):
         # Control de archivo de salida
@@ -267,15 +262,11 @@ class JAMediaWebCamVideo(gobject.GObject):
         saturacion=False, hue=False, gamma=False):
         if PR:
             print "\tJAMediaWebCamVideo.set_balance"
-        balance = self.pipeline.get_by_name("Balance_bin")
 
+        balance = self.pipeline.get_by_name("Balance_bin")
         if balance:
-            balance.set_balance(
-                brillo=brillo,
-                contraste=contraste,
-                saturacion=saturacion,
-                hue=hue,
-                gamma=gamma)
+            balance.set_balance(brillo=brillo, contraste=contraste,
+                saturacion=saturacion, hue=hue, gamma=gamma)
 
     def set_formato(self, formato):
         """
@@ -291,15 +282,12 @@ class JAMediaWebCamVideo(gobject.GObject):
         self.formato, puede ser:
             "", "192.168.1.2", "ogv", "mpeg", "avi"
         """
-
         if PR:
             print "\tJAMediaWebCamVideo.filmar"
 
         self.stop()
-
         fotobin = self.pipeline.get_by_name("Foto_bin")
         self.tee.unlink(fotobin)
-
         self.pipeline.remove(fotobin)
 
         formatos = ["ogv", "avi", "mpeg"]
@@ -437,8 +425,7 @@ class JAMediaWebCamVideo(gobject.GObject):
         if pixbuf and pixbuf != None:
             fecha = datetime.date.today()
             hora = time.strftime("%H-%M-%S")
-            archivo = os.path.join(
-                dir_path, "JV_%s-%s-%s.png" % (
+            archivo = os.path.join(dir_path, "JV_%s-%s-%s.png" % (
                 fecha, hora, str(self.foto_contador)))
 
             pixbuf.save(archivo, "png", options={})
@@ -450,7 +437,6 @@ class JAMediaWebCamVideo(gobject.GObject):
         if rafaga < 1.0:
             # FIXME: La primera vez que fotografía no envía la señal
             self.emit("stop-rafaga")
-
         else:
             self.rafaga = gobject.timeout_add(int(rafaga * 1000),
                 self.fotografiar, dir_path, rafaga)

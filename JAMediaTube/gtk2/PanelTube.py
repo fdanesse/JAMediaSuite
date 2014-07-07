@@ -69,7 +69,6 @@ class PanelTube(gtk.HPaned):
         """
         Crea y Empaqueta todo.
         """
-
         from PanelTubeWidgets import Mini_Toolbar
         from PanelTubeWidgets import ToolbarAccionListasVideos
         from PanelTubeWidgets import Toolbar_Videos_Izquierda
@@ -211,7 +210,6 @@ class PanelTube(gtk.HPaned):
 
         dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
-
         _dict = dict_tube.get(key, [])
         dict_tube.close()
 
@@ -226,13 +224,10 @@ class PanelTube(gtk.HPaned):
         Muestra la toolbar para escribir nombre de archivo donde se guardarán
         los videos de la lista correspondiente.
         """
-
         map(self.__cancel_toolbars, self.toolbars_flotantes)
-
         if widget == self.toolbar_encontrados:
             self.toolbar_guardar_encontrados.show()
             self.toolbar_guardar_encontrados.entrytext.child_focus(True)
-
         elif widget == self.toolbar_descargar:
             self.toolbar_guardar_descargar.show()
             self.toolbar_guardar_descargar.entrytext.child_focus(True)
@@ -242,17 +237,14 @@ class PanelTube(gtk.HPaned):
         Guarda todos los videos de la lista bajo la key según key_name.
         """
         origen = False
-
         if widget == self.toolbar_guardar_encontrados:
             origen = self.encontrados
-
         elif widget == self.toolbar_guardar_descargar:
             origen = self.descargar
 
         videos = []
         if origen:
             video_items = origen.get_children()
-
             if video_items:
                 for video in video_items:
                     videos.append(video.videodict)
@@ -323,14 +315,12 @@ class PanelTube(gtk.HPaned):
         """
         self.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
-
         map(self.__cancel_toolbars, self.toolbars_flotantes)
 
         if widget == self.toolbar_videos_izquierda:
             origen = self.encontrados
             destino = self.descargar
             text = TipDescargas
-
         elif widget == self.toolbar_videos_derecha:
             origen = self.descargar
             destino = self.encontrados
@@ -378,7 +368,6 @@ class PanelTube(gtk.HPaned):
         o una lista de videos de la lista.
         """
         map(self.__cancel_toolbars, self.toolbars_flotantes)
-
         if widget == self.toolbar_videos_izquierda:
             if not objetos or objetos == None:
                 objetos = self.encontrados.get_children()

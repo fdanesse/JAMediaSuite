@@ -129,11 +129,9 @@ class TubeListDialog(gtk.Dialog):
 
         dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
-
         del(dict_tube[key])
         keys = dict_tube.keys()
         dict_tube.close()
-
         widget.get_model().remove(_iter)
 
         if not keys:
@@ -157,9 +155,7 @@ class TubeListDialog(gtk.Dialog):
         Cuando se selecciona una lista, se cargan los videos que contiene en
         self.videos.
         """
-
         self.actualizando = True
-
         self.panel.set_sensitive(False)
 
         for child in self.videos.get_children():
@@ -188,7 +184,6 @@ class TubeListDialog(gtk.Dialog):
         Se crean los video_widgets de videos y se agregan al panel,
         segun destino.
         """
-
         if not videos:
             self.label.set_text("%s Videos Listados." % len(
                 self.videos.get_children()[0].get_children()))
@@ -197,7 +192,6 @@ class TubeListDialog(gtk.Dialog):
             return False
 
         self.label.set_text("Listando Videos . . .  Quedan %s" % len(videos))
-
         video = videos[0]
 
         from Widgets import WidgetVideoItem
@@ -245,7 +239,6 @@ class TubeListDialog(gtk.Dialog):
             modelo, _iter = self.listas.treeselection.get_selected()
             path = modelo.get_path(_iter)
             self.__eliminar(self.listas, path)
-
         else:
             videos = {}
             for _id in dict_tube[self.listas.valor_select].keys():
@@ -253,7 +246,6 @@ class TubeListDialog(gtk.Dialog):
                     videos[_id] = dict_tube[self.listas.valor_select][_id]
 
             dict_tube[self.listas.valor_select] = videos
-
             widget.destroy()
             self.label.set_text("%s Videos Listados." % len(
                 self.videos.get_children()[0].get_children()))
@@ -269,7 +261,6 @@ class TubeListDialog(gtk.Dialog):
 
         dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
-
         keys = dict_tube.keys()
         dict_tube.close()
 

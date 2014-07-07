@@ -40,7 +40,6 @@ def Buscar(palabras):
     Recibe una cadena de texto, separa las palabras, busca videos que
     coincidan con ellas y devuelve un feed no mayor a 50 videos.
     """
-
     import gdata.youtube
     import gdata.youtube.service
 
@@ -57,7 +56,6 @@ def Buscar(palabras):
     try:  # FIXME: Porque Falla si no hay Conexión.
         feed = yt_service.YouTubeQuery(query)
         return DetalleFeed(feed)
-
     except:
         return []
 
@@ -238,7 +236,6 @@ class JAMediaYoutube(gtk.Widget):
         if self.ultimosdatos != progress:
             self.ultimosdatos = progress
             self.contador = 0
-
         else:
             self.contador += 1
 

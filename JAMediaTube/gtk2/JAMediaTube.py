@@ -24,6 +24,8 @@ import gtk
 import gobject
 import commands
 
+from JAMedia.JAMedia import JAMedia
+
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
@@ -113,8 +115,7 @@ class JAMediaTube(gtk.Window):
         self.box_tube.pack_start(self.alerta_busqueda, False, False, 0)
         self.box_tube.pack_start(self.paneltube, True, True, 0)
 
-        from Widgets import Tube_Player
-        self.jamedia = Tube_Player()
+        self.jamedia = JAMedia()
 
         boxbase.pack_start(self.box_tube, True, True, 0)
         boxbase.pack_start(self.jamedia, True, True, 0)
@@ -131,12 +132,6 @@ class JAMediaTube(gtk.Window):
         """
         Inicializa la aplicación a su estado fundamental.
         """
-
-        self.jamedia.setup_init()
-        self.jamedia.pack_standar()
-        #self.jamedia.pack_efectos()
-        #self.jamedia.switch_reproductor(None, "JAMediaReproductor")
-
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
 
@@ -145,7 +140,6 @@ class JAMediaTube(gtk.Window):
         if self.pistas:
             self.jamedia.set_nueva_lista(self.pistas)
             self.__switch(None, 'jamedia')
-
         else:
             self.__switch(None, 'jamediatube')
 
@@ -181,20 +175,16 @@ class JAMediaTube(gtk.Window):
         Carga una lista de videos almacenada en un archivo en el area del
         panel correspondiente según que toolbarwidget haya lanzado la señal.
         """
-
         self.paneltube.set_sensitive(False)
         self.toolbar_busqueda.set_sensitive(False)
 
         destino = False
-
         if toolbarwidget == self.paneltube.toolbar_encontrados:
             destino = self.paneltube.encontrados
-
         elif toolbarwidget == self.paneltube.toolbar_descargar:
             destino = self.paneltube.descargar
 
         objetos = destino.get_children()
-
         for objeto in objetos:
             objeto.get_parent().remove(objeto)
             objeto.destroy()
@@ -205,16 +195,13 @@ class JAMediaTube(gtk.Window):
         """
         Comienza descarga de un video.
         """
-
         if self.toolbar_descarga.estado:
             return
 
         videos = self.paneltube.descargar.get_children()
-
         if videos:
             videos[0].get_parent().remove(videos[0])
             self.toolbar_descarga.download(videos[0])
-
         else:
             self.toolbar_descarga.hide()
 
@@ -222,12 +209,9 @@ class JAMediaTube(gtk.Window):
         """
         Ejecuta drop sobre un destino.
         """
-
         videoitem = gtk.drag_get_source_widget(drag_context)
-
         if videoitem.get_parent() == destino:
             return
-
         else:
             # E try siguiente es para evitar problemas cuando:
             # El drag termina luego de que el origen se ha
@@ -235,13 +219,11 @@ class JAMediaTube(gtk.Window):
             try:
                 videoitem.get_parent().remove(videoitem)
                 destino.pack_start(videoitem, False, False, 1)
-
             except:
                 return
 
             if destino == self.paneltube.descargar:
                 text = TipDescargas
-
             elif destino == self.paneltube.encontrados:
                 text = TipEncontrados
 
@@ -252,17 +234,14 @@ class JAMediaTube(gtk.Window):
         Muestra la alerta de busqueda y lanza secuencia de busqueda y
         agregado de videos al panel.
         """
-
         self.paneltube.set_sensitive(False)
         self.toolbar_busqueda.set_sensitive(False)
-
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
         map(self.__mostrar, [self.alerta_busqueda])
         self.alerta_busqueda.label.set_text("Buscando: %s" % (palabras))
 
         objetos = self.paneltube.encontrados.get_children()
-
         for objeto in objetos:
             objeto.get_parent().remove(objeto)
             objeto.destroy()
@@ -273,23 +252,19 @@ class JAMediaTube(gtk.Window):
         """
         Lanza la Búsqueda y comienza secuencia que agrega los videos al panel.
         """
-
         # FIXME: Reparar (Si no hay conexión)
         from JAMediaYoutube import Buscar
-
         for video in Buscar(palabras):
             self.videos_temp.append(video)
 
         gobject.idle_add(self.__add_videos, self.videos_temp,
             self.paneltube.encontrados)
-
         return False
 
     def __add_videos(self, videos, destino):
         """
         Se crean los video_widgets y se agregan al panel, segun destino.
         """
-
         if len(self.videos_temp) < 1:
             # self.videos_temp contiene solo los videos
             # encontrados en las búsquedas, no los que se cargan
@@ -302,24 +277,19 @@ class JAMediaTube(gtk.Window):
             return False
 
         video = videos[0]
-
         from Widgets import WidgetVideoItem
-
         videowidget = WidgetVideoItem(video)
         text = TipEncontrados
 
         if destino == self.paneltube.encontrados:
             text = TipEncontrados
-
         elif destino == self.paneltube.descargar:
             text = TipDescargas
 
         videowidget.set_tooltip_text(text)
         videowidget.show_all()
-
         videowidget.drag_source_set(gtk.gdk.BUTTON1_MASK, target,
             gtk.gdk.ACTION_MOVE)
-
         videos.remove(video)
         destino.pack_start(videowidget, False, False, 1)
 
@@ -328,18 +298,15 @@ class JAMediaTube(gtk.Window):
             texto = str(texto[0:50]) + " . . . "
 
         self.alerta_busqueda.label.set_text(texto)
-
         gobject.idle_add(self.__add_videos, videos, destino)
 
     def __switch(self, widget, valor):
         """
         Cambia entre la vista de descargas y la de reproduccion.
         """
-
         if valor == 'jamediatube':
             map(self.__ocultar, [self.jamedia])
             map(self.__mostrar, [self.box_tube])
-
         elif valor == 'jamedia':
             map(self.__ocultar, [self.box_tube])
             map(self.__mostrar, [self.jamedia])
@@ -377,16 +344,12 @@ def get_item_list(path):
     if os.path.exists(path):
         if os.path.isfile(path):
             archivo = os.path.basename(path)
-
             from Globales import describe_archivo
-
             datos = describe_archivo(path)
-            if 'audio' in datos or \
-                'video' in datos or \
+            if 'audio' in datos or 'video' in datos or \
                 'application/ogg' in datos or \
                 'application/octet-stream' in datos:
                     return [archivo, path]
-
     return False
 
 if __name__ == "__main__":
@@ -414,7 +377,6 @@ if __name__ == "__main__":
         if items:
             jamediatube = JAMediaTube()
             jamediatube.set_pistas(items)
-
         else:
             jamediatube = JAMediaTube()
 

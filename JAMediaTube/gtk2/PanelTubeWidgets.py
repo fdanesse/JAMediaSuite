@@ -98,7 +98,6 @@ class Mini_Toolbar(gtk.Toolbar):
 
         dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
-
         keys = dict_tube.keys()
         dict_tube.close()
 

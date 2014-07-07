@@ -50,10 +50,8 @@ def make_base_directory():
 
     if os.path.exists(directorio_viejo):
         for elemento in os.listdir(directorio_viejo):
-            commands.getoutput(
-                'mv %s %s' % (os.path.join(directorio_viejo,
+            commands.getoutput('mv %s %s' % (os.path.join(directorio_viejo,
                 elemento), directorio_nuevo))
-
         commands.getoutput('rm -r %s' % (directorio_viejo))
 
     # Directorios JAMedia

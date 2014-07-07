@@ -23,36 +23,11 @@ import os
 import gtk
 import gobject
 
-from JAMedia.JAMediaPlayer import JAMediaPlayer
-
 from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
-
-
-class Tube_Player(JAMediaPlayer):
-    """
-    JAMedia con pequeñas adaptaciones.
-    """
-
-    def __init__(self):
-
-        JAMediaPlayer.__init__(self)
-        self.show_all()
-
-    def confirmar_salir(self, widget=None, senial=None):
-        """
-        Salteandose confirmación para salir y manteniendose activa la
-        reproducción y grabación de JAMedia.
-        """
-        map(self.__ocultar, [self.toolbaraddstream])
-        self.emit('salir')
-
-    def __ocultar(self, objeto):
-        if objeto.get_visible():
-            objeto.hide()
 
 
 class Toolbar(gtk.Toolbar):
@@ -241,7 +216,6 @@ class WidgetVideoItem(gtk.EventBox):
         vbox = gtk.VBox()
 
         keys = self.videodict.keys()
-
         if "previews" in keys:
             imagen = gtk.Image()
             hbox.pack_start(imagen, False, False, 3)
@@ -266,7 +240,6 @@ class WidgetVideoItem(gtk.EventBox):
                     image_string = base64.b64encode(pixbuf_file.read())
                     pixbuf_file.close()
                     self.videodict["previews"] = image_string
-
                 except:
                     print "No hay Conexión a Internet."
 
@@ -374,8 +347,7 @@ class Toolbar_Descarga(gtk.VBox):
         #    ancho = 0, expand = True), -1)
 
         # FIXME: BUG. Las descargas no se cancelan.
-        #archivo = os.path.join(BASE_PATH,
-        #    "Iconos","stop.png")
+        #archivo = os.path.join(BASE_PATH, "Iconos","stop.png")
         #boton = G.get_boton(archivo, flip = False,
         #    pixels = G.get_pixels(1))
         #boton.set_tooltip_text("Cancelar")
@@ -400,7 +372,6 @@ class Toolbar_Descarga(gtk.VBox):
         """
         Comienza a descargar un video-item.
         """
-
         self.estado = True
         self.progress = 0.0
         self.datostemporales = None
@@ -429,11 +400,9 @@ class Toolbar_Descarga(gtk.VBox):
         """
         Verifica que se esté descargando el archivo.
         """
-
         if self.ultimosdatos != self.datostemporales:
             self.ultimosdatos = self.datostemporales
             self.contadortestigo = 0
-
         else:
             self.contadortestigo += 1
 
@@ -449,7 +418,6 @@ class Toolbar_Descarga(gtk.VBox):
         """
         Muestra el progreso de la descarga.
         """
-
         self.datostemporales = progress
         datos = progress.split(" ")
 
@@ -468,7 +436,6 @@ class Toolbar_Descarga(gtk.VBox):
 
             if "%" in datos[2]:
                 porciento = datos[2].split("%")[0]
-
             elif "%" in datos[3]:
                 porciento = datos[3].split("%")[0]
 
@@ -478,7 +445,6 @@ class Toolbar_Descarga(gtk.VBox):
             if porciento >= 100.0:  # nunca llega
                 self.__cancel_download()
                 return False
-
             else:
                 dat = progress.split("[download]")[1]
                 if self.label_progreso.get_text() != dat:
@@ -497,12 +463,10 @@ class Toolbar_Descarga(gtk.VBox):
         """
         Cancela la descarga actual.
         """
-
         # FIXME: No funciona correctamente, la descarga continúa.
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
-
         try:
             self.jamediayoutube.reset()
 
@@ -511,13 +475,11 @@ class Toolbar_Descarga(gtk.VBox):
 
         try:
             self.video_item.destroy()
-
         except:
             pass
 
         self.estado = False
         self.emit("end")
-
         return False
 
 
@@ -547,7 +509,6 @@ class Progreso_Descarga(gtk.EventBox):
         """
         El reproductor modifica la escala.
         """
-
         if self.valor != valor:
             self.valor = valor
             self.escala.ajuste.set_value(valor)
@@ -688,7 +649,6 @@ class Help(gtk.Dialog):
             if widget == self.siguiente:
                 if index < len(self.helps) - 1:
                     new_index += 1
-
             elif widget == self.anterior:
                 if index > 0:
                     new_index -= 1
