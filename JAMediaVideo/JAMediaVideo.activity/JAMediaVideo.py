@@ -28,12 +28,14 @@ import gobject
 gc.enable()
 
 from Globales import get_colors
-from Globales import describe_archivo
 
 from Toolbars import Toolbar
 from JAMedia.Toolbars import ToolbarSalir
 from JAMedia.Toolbars import ToolbarAccion
 from BasePanel import BasePanel
+
+from Globales import describe_archivo
+from sugar.activity import activity
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -41,25 +43,25 @@ gobject.threads_init()
 #gtk.gdk.threads_init()
 
 
-class JAMediaVideo(gtk.Window):
+class JAMediaVideo(activity.Activity):
 
-    def __init__(self):
+    def __init__(self, handle):
 
-        gtk.Window.__init__(self)
+        activity.Activity.__init__(self, handle)
 
         self.set_title("JAMediaVideo")
-        self.set_icon_from_file(os.path.join(BASE_PATH,
-            "Iconos", "JAMediaVideo.svg"))
-        self.set_resizable(True)
-        self.set_default_size(437, 328)
+        #self.set_icon_from_file(os.path.join(BASE_PATH,
+        #    "Iconos", "JAMediaVideo.svg"))
+        #self.set_resizable(True)
+        #self.set_default_size(437, 328)
         self.set_border_width(4)
         self.modify_bg(0, get_colors("toolbars"))
-        self.set_position(gtk.WIN_POS_CENTER)
+        #self.set_position(gtk.WIN_POS_CENTER)
 
         self.pistas = []
 
         vbox = gtk.VBox()
-        self.add(vbox)
+        self.set_canvas(vbox)
         self.show_all()
 
         self.toolbar = Toolbar()
@@ -151,12 +153,10 @@ class JAMediaVideo(gtk.Window):
         if self.pistas:
             if self.pistas[0] == "jamedia":
                 self.toolbar.switch("Reproducir")
-                lista = self.base_panel.playerlist.lista
-                gobject.idle_add(lista.agregar_items, [self.pistas[1]])
+                gobject.idle_add(self.base_panel.playerlist.lista.agregar_items, self.pistas[1])
             elif self.pistas[0] == "jamediaimagenes":
                 self.toolbar.switch("Ver")
-                lista = self.base_panel.playerlist.lista
-                gobject.idle_add(lista.agregar_items, [self.pistas[1]])
+                gobject.idle_add(self.base_panel.playerlist.lista.agregar_items, self.pistas[1])
         else:
             self.toolbar.switch("menu")
         self.pistas = []
@@ -175,29 +175,28 @@ class JAMediaVideo(gtk.Window):
         gtk.main_quit()
         sys.exit(0)
 
-    def set_pistas(self, pistas):
-        self.pistas = pistas
+    def read_file(self, file_path):
+        if os.path.exists(file_path):
+            if os.path.isfile(file_path):
+
+                datos = describe_archivo(file_path)
+                if 'audio' in datos or 'video' in datos or \
+                    'application/ogg' in datos or \
+                    'application/octet-stream' in datos:
+
+                    texto = "Archivo desde Journal"
+                    elemento = [texto, file_path]
+                    self.pistas = ["jamedia", [elemento]]
+
+                elif "image" in datos:
+                    texto = "Archivo desde Journal"
+                    elemento = [texto, file_path]
+                    self.pistas = ["jamediaimagenes", [elemento]]
+
+    def write_file(self, file_path):
+        self.__salir()
 
 
-def get_item_list(file_path):
-    if os.path.exists(file_path):
-        if os.path.isfile(file_path):
-            texto = os.path.basename(file_path)
-            datos = describe_archivo(file_path)
-            if 'audio' in datos or 'video' in datos or \
-                'application/ogg' in datos or \
-                'application/octet-stream' in datos:
-                return ["jamedia", [texto, file_path]]
-            elif "image" in datos:
-                return ["jamediaimagenes", [texto, file_path]]
-    return False
-
-
-if __name__ == "__main__":
-    jamediavideo = JAMediaVideo()
-    if len(sys.argv) > 1:
-        lista = get_item_list(sys.argv[1])
-        if lista:
-            jamediavideo.set_pistas(lista)
-            print lista
-    gtk.main()
+#if __name__ == "__main__":
+#    JAMediaVideo()
+#    gtk.main()
