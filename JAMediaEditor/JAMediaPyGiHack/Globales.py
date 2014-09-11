@@ -26,7 +26,7 @@ WorkPath = os.environ["HOME"]
 
 # http://docs.python.org/2.7/py-modindex.html
 BASEDICT = {
-    "python": [
+    "python": sorted([
         '__builtin__', '__future__', '__main__',
         'abc', 'aifc', 'anydbm', 'argparse', 'array',
         'ast', 'asynchat', 'asyncore', 'atexit', 'audioop',
@@ -78,7 +78,7 @@ BASEDICT = {
         'urlparse', 'user', 'UserDict', 'UserList', 'UserString',
         'uu', 'uuid', 'warnings', 'wave', 'weakref', 'webbrowser',
         'whichdb', 'wsgiref', 'xdrlib', 'xml', 'xmlrpclib',
-        'zipfile', 'zipimport', 'zlib'],
+        'zipfile', 'zipimport', 'zlib', 'six', 'pip']),
 
     "python-gi": sorted([
         'AccountsService', 'Atk', 'Atspi', 'Cally', 'Clutter',
@@ -95,7 +95,7 @@ BASEDICT = {
         'Soup', 'SoupGNOME', 'TelepathyGLib', 'TelepathyLogger',
         'Totem', 'UPowerGlib', 'Unity', 'Vte', 'WebKit', 'Wnck',
         'cairo', 'fontconfig', 'freetype2', 'libxml2', 'xfixes',
-        'xft', 'xlib', 'xrandr', 'gi']),
+        'xft', 'xlib', 'xrandr', 'gi', 'GUdev']),
 
     "Otros": sorted([
         'cairo', 'gobject', 'gst', 'pygame', 'pygst',
@@ -103,7 +103,8 @@ BASEDICT = {
         'numpy', 'pango', 'webkit', 'gtksourceview2', 'ssl',
         'gio', 'vte', 'gconf', 'smtplib', 'feedparser',
         'twitter', 'pangocairo', 'matplotlib', 'setuptools',
-        'ftplib', 'hippo', 'goocanvas', 'spyderlib', 'pilas']),
+        'ftplib', 'hippo', 'goocanvas', 'spyderlib', 'pilas',
+        'Box2D', 'zope', 'twisted', 'pyggel']),
         }
 
 '''python-gi

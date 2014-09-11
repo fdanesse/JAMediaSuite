@@ -27,7 +27,7 @@ def get_ip():
     import socket
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("gmail.com", 80))
+        s.connect(("google.com", 80))
         ret = s.getsockname()[0]
         s.close()
         return ret
