@@ -57,8 +57,8 @@ class DialogoDescarga(Gtk.Dialog):
             get_streaming_default()
         else:
             print "No estás conectado a Internet"
-
         self.destroy()
+        return False
 
 
 class Credits(Gtk.Dialog):

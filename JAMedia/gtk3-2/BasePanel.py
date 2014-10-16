@@ -19,56 +19,58 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
+from gi.repository import GLib
+from gi.repository import GdkX11
 
 from Widgets import DialogoDescarga
 from Izquierda import Izquierda
-from Derecha import Derecha
+#from Derecha import Derecha
 from Globales import get_colors
-from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
+#from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 
 
-class BasePanel(gtk.HPaned):
+class BasePanel(Gtk.Paned):
 
     __gsignals__ = {
-    "show-controls": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
-    "accion-list": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    "menu_activo": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, []),
-    "add_stream": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    'stop-record': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, [])}
+    "show-controls": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, )),
+    "accion-list": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT)),
+    "menu_activo": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, []),
+    "add_stream": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    'stop-record': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.HPaned.__init__(self)
+        Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
         self.set_border_width(2)
 
         self.player = False
 
         self.izquierda = Izquierda()
-        self.derecha = Derecha()
+        #self.derecha = Derecha()
 
         self.pack1(self.izquierda, resize=True, shrink=True)
-        self.pack2(self.derecha, resize=False, shrink=False)
+        #self.pack2(self.derecha, resize=False, shrink=False)
 
         self.show_all()
 
-        self.derecha.connect("cargar-reproducir", self.__cargar_reproducir)
-        self.derecha.connect("accion-list", self.__emit_accion_list)
-        self.derecha.connect("menu_activo", self.__emit_menu_activo)
-        self.derecha.connect("add_stream", self.__emit_add_stream)
-        self.derecha.connect("accion-controls", self.__accion_controls)
-        self.derecha.connect("balance-valor", self.__accion_balance)
-        #self.derecha.connect("add_remove_efecto", self.__add_remove_efecto)
-        #self.derecha.connect("configurar_efecto", self.__config_efecto)
+        #self.derecha.connect("cargar-reproducir", self.__cargar_reproducir)
+        #self.derecha.connect("accion-list", self.__emit_accion_list)
+        #self.derecha.connect("menu_activo", self.__emit_menu_activo)
+        #self.derecha.connect("add_stream", self.__emit_add_stream)
+        #self.derecha.connect("accion-controls", self.__accion_controls)
+        #self.derecha.connect("balance-valor", self.__accion_balance)
+        ##self.derecha.connect("add_remove_efecto", self.__add_remove_efecto)
+        ##self.derecha.connect("configurar_efecto", self.__config_efecto)
 
         self.izquierda.connect("show-controls", self.__emit_show_controls)
         self.izquierda.connect("rotar", self.__rotar)
@@ -186,7 +188,7 @@ class BasePanel(gtk.HPaned):
         self.izquierda.progress.set_sensitive(False)
         self.__set_video(False, False)
 
-        xid = self.izquierda.video_visor.get_property('window').xid
+        xid = self.izquierda.video_visor.get_property('window').get_xid()
         self.player = JAMediaReproductor(xid)
 
         self.player.connect("endfile", self.__endfile)
@@ -226,7 +228,7 @@ class BasePanel(gtk.HPaned):
         else:
             print "Estado del Reproductor desconocido:", valor
 
-        gobject.idle_add(self.__update_balance)
+        GLib.idle_add(self.__update_balance)
 
     def __update_balance(self):
         config = {}

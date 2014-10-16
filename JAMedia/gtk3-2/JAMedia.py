@@ -35,7 +35,7 @@ from Toolbars import ToolbarAccion
 from Toolbars import ToolbarAddStream
 
 from Widgets import MouseSpeedDetector
-#from BasePanel import BasePanel
+from BasePanel import BasePanel
 
 #from JAMediaReproductor.JAMediaGrabador import JAMediaGrabador
 
@@ -99,14 +99,14 @@ class JAMedia(Gtk.Window):
         self.toolbar_accion = ToolbarAccion()
         self.add_stream = ToolbarAddStream()
 
-        #self.base_panel = BasePanel()
+        self.base_panel = BasePanel()
 
         vbox = Gtk.VBox()
         vbox.pack_start(self.toolbar, False, False, 0)
         vbox.pack_start(self.toolbar_salir, False, False, 0)
         vbox.pack_start(self.toolbar_accion, False, False, 0)
         vbox.pack_start(self.add_stream, False, False, 0)
-        #vbox.pack_start(self.base_panel, True, True, 0)
+        vbox.pack_start(self.base_panel, True, True, 0)
 
         self.add(vbox)
         self.show_all()
@@ -128,11 +128,11 @@ class JAMedia(Gtk.Window):
 
         self.toolbar.connect("accion", self.__accion_toolbar)
 
-        #self.base_panel.connect("show-controls", self.__ocultar_controles)
-        #self.base_panel.connect("accion-list", self.__accion_list)
-        #self.base_panel.connect("menu_activo", self.__cancel_toolbars)
-        #self.base_panel.connect("add_stream", self.__run_add_stream)
-        #self.base_panel.connect("stop-record", self.__detener_grabacion)
+        self.base_panel.connect("show-controls", self.__ocultar_controles)
+        self.base_panel.connect("accion-list", self.__accion_list)
+        self.base_panel.connect("menu_activo", self.__cancel_toolbars)
+        self.base_panel.connect("add_stream", self.__run_add_stream)
+        self.base_panel.connect("stop-record", self.__detener_grabacion)
 
         self.toolbar_accion.connect("accion-stream", self.__accion_stream)
         self.toolbar_accion.connect("grabar", self.__grabar)
@@ -201,7 +201,7 @@ class JAMedia(Gtk.Window):
             del(self.grabador)
             self.grabador = False
 
-        #self.base_panel.izquierda.toolbar_record.stop()
+        self.base_panel.izquierda.toolbar_record.stop()
 
     def __accion_stream(self, widget, accion, url):
         lista = self.base_panel.derecha.lista.toolbar.label.get_text()
@@ -233,7 +233,7 @@ class JAMedia(Gtk.Window):
     def __setup_init(self):
         self.__cancel_toolbars()
         self.toolbar.configurar.set_sensitive(False)
-        #self.base_panel.setup_init()
+        self.base_panel.setup_init()
         self.set_sensitive(True)
         return False
 

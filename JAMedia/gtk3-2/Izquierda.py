@@ -19,15 +19,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
-from IzquierdaWidgets import ToolbarGrabar
-from IzquierdaWidgets import VideoVisor
-#from IzquierdaWidgets import Efectos_en_Pipe
-from IzquierdaWidgets import BufferInfo
-from IzquierdaWidgets import ToolbarInfo
-from ProgressPlayer import ProgressPlayer
+#from IzquierdaWidgets import ToolbarGrabar
+#from IzquierdaWidgets import VideoVisor
+##from IzquierdaWidgets import Efectos_en_Pipe
+#from IzquierdaWidgets import BufferInfo
+#from IzquierdaWidgets import ToolbarInfo
+#from ProgressPlayer import ProgressPlayer
 from Globales import get_colors
 
 
@@ -41,58 +41,58 @@ def mostrar(objeto):
         objeto.show()
 
 
-class Izquierda(gtk.EventBox):
+class Izquierda(Gtk.EventBox):
 
     __gsignals__ = {
-    "show-controls": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-    'rotar': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    'actualizar_streamings': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, []),
-    'stop-record': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, []),
-    "seek": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
-    "volumen": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
+    "show-controls": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
+    'rotar': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'actualizar_streamings': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, []),
+    'stop-record': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, []),
+    "seek": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, )),
+    "volumen": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("drawingplayer"))
 
-        vbox = gtk.VBox()
+        vbox = Gtk.VBox()
 
-        self.toolbar_record = ToolbarGrabar()
-        self.video_visor = VideoVisor()
-        #self.efectos_aplicados = Efectos_en_Pipe()
-        self.buffer_info = BufferInfo()
-        self.toolbar_info = ToolbarInfo()
-        self.progress = ProgressPlayer()
+        #self.toolbar_record = ToolbarGrabar()
+        #self.video_visor = VideoVisor()
+        ##self.efectos_aplicados = Efectos_en_Pipe()
+        #self.buffer_info = BufferInfo()
+        #self.toolbar_info = ToolbarInfo()
+        #self.progress = ProgressPlayer()
 
-        vbox.pack_start(self.toolbar_record, False, False, 0)
-        vbox.pack_start(self.video_visor, True, True, 0)
-        #vbox.pack_start(self.efectos_aplicados, False, False, 0)
-        vbox.pack_start(self.buffer_info, False, False, 0)
-        vbox.pack_start(self.toolbar_info, False, False, 0)
-        vbox.pack_start(self.progress, False, False, 0)
+        #vbox.pack_start(self.toolbar_record, False, False, 0)
+        #vbox.pack_start(self.video_visor, True, True, 0)
+        ##vbox.pack_start(self.efectos_aplicados, False, False, 0)
+        #vbox.pack_start(self.buffer_info, False, False, 0)
+        #vbox.pack_start(self.toolbar_info, False, False, 0)
+        #vbox.pack_start(self.progress, False, False, 0)
 
         self.add(vbox)
         self.show_all()
 
-        self.toolbar_record.connect("stop", self.__emit_stop_record)
+        #self.toolbar_record.connect("stop", self.__emit_stop_record)
 
-        self.video_visor.connect("ocultar_controles", self.__emit_show_controls)
-        self.video_visor.connect("button_press_event", self.__set_fullscreen)
+        #self.video_visor.connect("ocultar_controles", self.__emit_show_controls)
+        #self.video_visor.connect("button_press_event", self.__set_fullscreen)
 
-        self.toolbar_info.connect("rotar", self.__emit_rotar)
-        self.toolbar_info.connect("actualizar_streamings",
-            self.__emit_actualizar_streamings)
+        #self.toolbar_info.connect("rotar", self.__emit_rotar)
+        #self.toolbar_info.connect("actualizar_streamings",
+        #    self.__emit_actualizar_streamings)
 
-        self.progress.connect("seek", self.__emit_seek)
-        self.progress.connect("volumen", self.__emit_volumen)
+        #self.progress.connect("seek", self.__emit_seek)
+        #self.progress.connect("volumen", self.__emit_volumen)
 
     def __emit_volumen(self, widget, valor):
         self.emit('volumen', valor)
@@ -119,11 +119,11 @@ class Izquierda(gtk.EventBox):
 
             if ww == w and hh == h:
                 win.set_border_width(2)
-                gobject.idle_add(self.__set_full, win, False)
+                GLib.idle_add(self.__set_full, win, False)
 
             else:
                 win.set_border_width(0)
-                gobject.idle_add(self.__set_full, win, True)
+                GLib.idle_add(self.__set_full, win, True)
 
             widget.set_sensitive(True)
 
