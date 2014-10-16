@@ -20,8 +20,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GObject
+from gi.repository import GdkPixbuf
+from gi.repository import GLib
 
 from Globales import get_colors
 from Globales import get_separador
@@ -42,25 +45,26 @@ def insensibilizar(objeto):
 BASE_PATH = os.path.dirname(__file__)
 
 
-class ToolbarGrabar(gtk.EventBox):
+class ToolbarGrabar(Gtk.EventBox):
     """
     Informa al usuario cuando se está grabando desde un streaming.
     """
 
     __gsignals__ = {
-    "stop": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])}
+    "stop": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("drawingplayer"))
 
         self.colors = [get_colors("window"), get_colors("naranaja")]
         self.color = self.colors[0]
 
-        self.toolbar = gtk.Toolbar()
-        self.toolbar.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
+        self.toolbar = Gtk.Toolbar()
+        self.toolbar.modify_bg(Gtk.StateType.NORMAL,
+            get_colors("drawingplayer"))
 
         self.toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
@@ -73,8 +77,8 @@ class ToolbarGrabar(gtk.EventBox):
         self.toolbar.insert(get_separador(draw=False,
             ancho=3, expand=False), -1)
 
-        item = gtk.ToolItem()
-        self.label = gtk.Label("Grabador Detenido.")
+        item = Gtk.ToolItem()
+        self.label = Gtk.Label("Grabador Detenido.")
         self.label.modify_fg(0, self.colors[0])
         self.label.show()
         item.add(self.label)
@@ -97,14 +101,14 @@ class ToolbarGrabar(gtk.EventBox):
         elif self.color == self.colors[1]:
             self.color = self.colors[0]
 
-        self.label.modify_fg(0, self.color)
+        self.label.modify_fg(Gtk.StateType.NORMAL, self.color)
 
         if not self.get_visible():
             self.show()
 
     def stop(self):
         self.color = self.colors[0]
-        self.label.modify_fg(0, self.color)
+        self.label.modify_fg(Gtk.StateType.NORMAL, self.color)
         self.label.set_text("Grabador Detenido.")
         self.hide()
 
@@ -113,26 +117,26 @@ class ToolbarGrabar(gtk.EventBox):
         self.__update()
 
 
-class VideoVisor(gtk.DrawingArea):
+class VideoVisor(Gtk.DrawingArea):
 
     __gsignals__ = {
-    "ocultar_controles": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
+    "ocultar_controles": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))}
 
     def __init__(self):
 
-        gtk.DrawingArea.__init__(self)
+        Gtk.DrawingArea.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("drawingplayer"))
 
         self.add_events(
-            gtk.gdk.KEY_PRESS_MASK |
-            gtk.gdk.KEY_RELEASE_MASK |
-            gtk.gdk.POINTER_MOTION_MASK |
-            gtk.gdk.POINTER_MOTION_HINT_MASK |
-            gtk.gdk.BUTTON_MOTION_MASK |
-            gtk.gdk.BUTTON_PRESS_MASK |
-            gtk.gdk.BUTTON_RELEASE_MASK
+            Gdk.EventMask.KEY_PRESS_MASK |
+            Gdk.EventMask.KEY_RELEASE_MASK |
+            Gdk.EventMask.POINTER_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
+            Gdk.EventMask.BUTTON_MOTION_MASK |
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.BUTTON_RELEASE_MASK
         )
 
         self.show_all()
@@ -157,22 +161,22 @@ class VideoVisor(gtk.DrawingArea):
             return
 
 
-class ToolbarInfo(gtk.EventBox):
+class ToolbarInfo(Gtk.EventBox):
 
     __gsignals__ = {
-    'rotar': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    'actualizar_streamings': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, [])}
+    'rotar': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'actualizar_streamings': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        toolbar = gtk.Toolbar()
+        toolbar = Gtk.Toolbar()
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
-        toolbar.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("toolbars"))
+        toolbar.modify_bg(Gtk.StateType.NORMAL, get_colors("toolbars"))
 
         self.ocultar_controles = False
 
@@ -192,8 +196,8 @@ class ToolbarInfo(gtk.EventBox):
 
         toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
-        item = gtk.ToolItem()
-        label = gtk.Label("Ocultar Controles:")
+        item = Gtk.ToolItem()
+        label = Gtk.Label("Ocultar Controles:")
         label.modify_fg(0, get_colors("drawingplayer"))
         label.show()
         item.add(label)
@@ -201,15 +205,15 @@ class ToolbarInfo(gtk.EventBox):
 
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        switch = gtk.CheckButton()
-        item = gtk.ToolItem()
+        switch = Gtk.CheckButton()
+        item = Gtk.ToolItem()
         item.set_expand(False)
         item.add(switch)
         toolbar.insert(item, -1)
 
         archivo = os.path.join(BASE_PATH, "Iconos", "iconplay.svg")
         self.descarga = get_boton(archivo, flip=False,
-            rotacion=gtk.gdk.PIXBUF_ROTATE_CLOCKWISE, pixels=24)
+            rotacion=GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE, pixels=24)
         self.descarga.set_tooltip_text("Actualizar Streamings")
         self.descarga.set_sensitive(False)
         self.descarga.connect("clicked", self.__emit_actualizar_streamings)
@@ -219,14 +223,13 @@ class ToolbarInfo(gtk.EventBox):
         self.show_all()
 
         switch.connect('button-press-event', self.__set_controles_view)
-        gobject.timeout_add(2000, self.__check_ip)
+        GLib.timeout_add(2000, self.__check_ip)
 
     def __check_ip(self):
         if get_ip():
             self.descarga.set_sensitive(True)
         else:
             self.descarga.set_sensitive(False)
-
         return True
 
     def __emit_actualizar_streamings(self, widget):
@@ -249,15 +252,15 @@ class ToolbarInfo(gtk.EventBox):
 
 
 # FIXME: No lo estoy utilizando
-class Efectos_en_Pipe(gtk.EventBox):
+class Efectos_en_Pipe(Gtk.EventBox):
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("drawingplayer"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("drawingplayer"))
 
-        self.box = gtk.HBox()
+        self.box = Gtk.HBox()
 
         self.add(self.box)
         self.show_all()
@@ -272,7 +275,7 @@ class Efectos_en_Pipe(gtk.EventBox):
         self.hide()
 
     def add_efecto(self, efecto):
-        button = gtk.Button(efecto)
+        button = Gtk.Button(efecto)
         button.set_tooltip_text(efecto)
         self.box.pack_start(button, False, False, 0)
         self.show_all()
@@ -295,26 +298,26 @@ class Efectos_en_Pipe(gtk.EventBox):
         return efectos
 
 
-class BufferInfo(gtk.EventBox):
+class BufferInfo(Gtk.EventBox):
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("windows"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("windows"))
         self.set_border_width(4)
 
         self.escala = ProgressBar(
-            gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
+            Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
 
         self.valor = 0
 
-        box = gtk.EventBox()
-        box.modify_bg(gtk.STATE_NORMAL, get_colors("windows"))
+        box = Gtk.EventBox()
+        box.modify_bg(Gtk.StateType.NORMAL, get_colors("windows"))
         box.set_border_width(4)
         box.add(self.escala)
 
-        frame = gtk.Frame()
+        frame = Gtk.Frame()
         frame.set_border_width(4)
         frame.set_label(" Cargando Buffer ... ")
         frame.set_label_align(0.0, 0.5)
@@ -336,13 +339,13 @@ class BufferInfo(gtk.EventBox):
             self.show()
 
 
-class ProgressBar(gtk.HScale):
+class ProgressBar(Gtk.Scale):
 
     def __init__(self, ajuste):
 
-        gtk.HScale.__init__(self)
+        Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("toolbars"))
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -350,18 +353,15 @@ class ProgressBar(gtk.HScale):
 
         self.ancho, self.borde = (10, 10)
 
-        #icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
-        #self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 24, 24)
-
-        self.connect("expose_event", self.__expose)
+        #self.connect("expose_event", self.__expose)
 
         self.show_all()
-
+    '''
     def __expose(self, widget, event):
         x, y, w, h = self.get_allocation()
         ancho, borde = (self.ancho, self.borde)
 
-        gc = gtk.gdk.Drawable.new_gc(self.window)
+        gc = Gtk.gdk.Drawable.new_gc(self.window)
 
         # todo el widget
         gc.set_rgb_fg_color(get_colors("toolbars"))
@@ -389,6 +389,7 @@ class ProgressBar(gtk.HScale):
         #yimage = yy + hh / 2 - imgh / 2
 
         #self.window.draw_pixbuf(gc, self.pixbuf, 0, 0, ximage, yimage,
-        #    imgw, imgh, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+        #    imgw, imgh, Gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
         return True
+    '''
