@@ -20,8 +20,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
 from Widgets import Credits
 from Widgets import Help
@@ -38,23 +38,23 @@ from Globales import mover
 BASE_PATH = os.path.dirname(__file__)
 
 
-class Toolbar(gtk.EventBox):
+class Toolbar(Gtk.EventBox):
     """
     Toolbar principal de JAMedia.
     """
 
     __gsignals__ = {
-    'accion': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
+    'accion': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        toolbar = gtk.Toolbar()
+        toolbar = Gtk.Toolbar()
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
-        toolbar.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("toolbars"))
+        toolbar.modify_bg(Gtk.StateType.NORMAL, get_colors("toolbars"))
 
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
@@ -103,7 +103,7 @@ class Toolbar(gtk.EventBox):
         self.emit('accion', accion)
 
 
-class ToolbarAccion(gtk.EventBox):
+class ToolbarAccion(Gtk.EventBox):
     """
     Toolbar para que el usuario confirme las acciones que se realizan sobre
     items que se seleccionan en la lista de reproduccion.
@@ -111,20 +111,20 @@ class ToolbarAccion(gtk.EventBox):
     """
 
     __gsignals__ = {
-    "grabar": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    "accion-stream": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,
-        gobject.TYPE_STRING))}
+    "grabar": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    "accion-stream": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        toolbar = gtk.Toolbar()
+        toolbar = Gtk.Toolbar()
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-        toolbar.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
+        toolbar.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
 
         self.lista = None
         self.accion = None
@@ -138,8 +138,8 @@ class ToolbarAccion(gtk.EventBox):
         boton.connect("clicked", self.cancelar)
         toolbar.insert(boton, -1)
 
-        item = gtk.ToolItem()
-        self.label = gtk.Label("")
+        item = Gtk.ToolItem()
+        self.label = Gtk.Label("")
         self.label.modify_fg(0, get_colors("drawingplayer"))
         self.label.show()
         item.add(self.label)
@@ -255,23 +255,23 @@ class ToolbarAccion(gtk.EventBox):
         self.hide()
 
 
-class ToolbarSalir(gtk.EventBox):
+class ToolbarSalir(Gtk.EventBox):
     """
     Toolbar para confirmar salir de la aplicación.
     """
 
     __gsignals__ = {
-    "salir": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, [])}
+    "salir": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        toolbar = gtk.Toolbar()
+        toolbar = Gtk.Toolbar()
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-        toolbar.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
+        toolbar.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
 
         toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
@@ -283,8 +283,8 @@ class ToolbarSalir(gtk.EventBox):
 
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        item = gtk.ToolItem()
-        self.label = gtk.Label("")
+        item = Gtk.ToolItem()
+        self.label = Gtk.Label("")
         self.label.modify_fg(0, get_colors("drawingplayer"))
         self.label.show()
         item.add(self.label)
@@ -316,24 +316,24 @@ class ToolbarSalir(gtk.EventBox):
         self.hide()
 
 
-class ToolbarAddStream(gtk.EventBox):
+class ToolbarAddStream(Gtk.EventBox):
     """
     Toolbar para agregar streamings.
     """
 
     __gsignals__ = {
-    "add-stream": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,
-        gobject.TYPE_STRING, gobject.TYPE_STRING))}
+    "add-stream": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING, GObject.TYPE_STRING))}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        toolbar = gtk.Toolbar()
+        toolbar = Gtk.Toolbar()
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-        toolbar.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
+        toolbar.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
 
         self.tipo = None
 
@@ -347,31 +347,31 @@ class ToolbarAddStream(gtk.EventBox):
 
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        frame = gtk.Frame()
+        frame = Gtk.Frame()
         frame.set_label('Nombre')
-        self.nombre = gtk.Entry()
-        event = gtk.EventBox()
-        event.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.nombre = Gtk.Entry()
+        event = Gtk.EventBox()
+        event.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
         event.set_border_width(4)
         event.add(self.nombre)
         frame.add(event)
         frame.show_all()
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         item.add(frame)
         toolbar.insert(item, -1)
 
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        frame = gtk.Frame()
+        frame = Gtk.Frame()
         frame.set_label('URL')
-        self.url = gtk.Entry()
-        event = gtk.EventBox()
-        event.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.url = Gtk.Entry()
+        event = Gtk.EventBox()
+        event.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
         event.set_border_width(4)
         event.add(self.url)
         frame.add(event)
         frame.show_all()
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         self.url.show()
         item.add(frame)
         toolbar.insert(item, -1)

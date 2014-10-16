@@ -20,8 +20,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GObject
+from gi.repository import GLib
 
 from Globales import get_colors
 from Globales import get_boton
@@ -31,24 +33,24 @@ from Globales import get_ip
 BASE_PATH = os.path.dirname(__file__)
 
 
-class DialogoDescarga(gtk.Dialog):
+class DialogoDescarga(Gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self, parent=parent)
+        Gtk.Dialog.__init__(self, parent=parent)
 
         self.set_decorated(False)
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
         self.set_border_width(15)
 
-        label = gtk.Label("*** Descargando Streamings de JAMedia ***")
+        label = Gtk.Label("*** Descargando Streamings de JAMedia ***")
         label.show()
 
         self.vbox.pack_start(label, True, True, 5)
         self.connect("realize", self.__do_realize)
 
     def __do_realize(self, widget):
-        gobject.timeout_add(500, self.__descargar)
+        GLib.timeout_add(500, self.__descargar)
 
     def __descargar(self):
         if get_ip():
@@ -59,18 +61,18 @@ class DialogoDescarga(gtk.Dialog):
         self.destroy()
 
 
-class Credits(gtk.Dialog):
+class Credits(Gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self, parent=parent,
-            buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
+        Gtk.Dialog.__init__(self, parent=parent,
+            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
         self.set_decorated(False)
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("widgetvideoitem"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("widgetvideoitem"))
         self.set_border_width(15)
 
-        imagen = gtk.Image()
+        imagen = Gtk.Image()
         imagen.set_from_file(os.path.join(BASE_PATH,
             "Iconos", "JAMediaCredits.svg"))
 
@@ -78,20 +80,20 @@ class Credits(gtk.Dialog):
         self.vbox.show_all()
 
 
-class Help(gtk.Dialog):
+class Help(Gtk.Dialog):
 
     def __init__(self, parent=None):
 
-        gtk.Dialog.__init__(self, parent=parent,
-            buttons=("Cerrar", gtk.RESPONSE_ACCEPT))
+        Gtk.Dialog.__init__(self, parent=parent,
+            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
 
         self.set_decorated(False)
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("widgetvideoitem"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("widgetvideoitem"))
         self.set_border_width(15)
 
-        tabla1 = gtk.Table(columns=5, rows=2, homogeneous=False)
+        tabla1 = Gtk.Table(columns=5, rows=2, homogeneous=False)
 
-        vbox = gtk.HBox()
+        vbox = Gtk.HBox()
         archivo = os.path.join(BASE_PATH, "Iconos", "play.svg")
         self.anterior = get_boton(archivo, flip=True,
             pixels=24, tooltip_text="Anterior")
@@ -114,7 +116,7 @@ class Help(gtk.Dialog):
 
         for x in range(1, 5):
             try:
-                help = gtk.Image()
+                help = Gtk.Image()
                 help.set_from_file(os.path.join(BASE_PATH,
                     "Iconos", "help-%s.svg" % x))
                 tabla1.attach_defaults(help, 0, 5, 1, 2)
@@ -174,7 +176,7 @@ class Help(gtk.Dialog):
                 return self.helps.index(help)
 
 
-class MouseSpeedDetector(gobject.GObject):
+class MouseSpeedDetector(GObject.GObject):
     """
     Verifica posición y movimiento del mouse.
     estado puede ser:
@@ -184,12 +186,12 @@ class MouseSpeedDetector(gobject.GObject):
     """
 
     __gsignals__ = {
-        'estado': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
+        'estado': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
     def __init__(self, parent):
 
-        gobject.GObject.__init__(self)
+        GObject.GObject.__init__(self)
 
         self.parent = parent
 
@@ -202,7 +204,7 @@ class MouseSpeedDetector(gobject.GObject):
         """
 
         try:
-            display, posx, posy = gtk.gdk.display_get_default(
+            display, posx, posy = Gdk.Display.get_default(
                 ).get_window_at_pointer()
 
         except:
@@ -227,8 +229,8 @@ class MouseSpeedDetector(gobject.GObject):
         """
 
         if self.actualizador:
-            gobject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = gobject.timeout_add(1000, self.__handler)
+            self.actualizador = GLib.timeout_add(1000, self.__handler)
