@@ -12,7 +12,7 @@ import gtk
 
 class X11_Stream(gobject.GObject):
 
-    def __init__(self, ip='192.168.5.22'):
+    def __init__(self, ip='192.168.5.52'):
 
         gobject.GObject.__init__(self)
 
@@ -33,20 +33,6 @@ class X11_Stream(gobject.GObject):
         self.bus.connect('sync-message', self.__sync_message)
 
         self.pipeline.set_state(gst.STATE_PLAYING)
-        self.actualizador = False
-        self.__new_handle(True)
-
-    def __new_handle(self, reset):
-        if self.actualizador:
-            gobject.source_remove(self.actualizador)
-            self.actualizador = False
-
-        if reset:
-            self.actualizador = gobject.timeout_add(500, self.__handle)
-
-    def __handle(self):
-        pass
-        return True
 
     def __sync_message(self, bus, message):
         if message.type == gst.MESSAGE_ELEMENT:
@@ -167,4 +153,5 @@ class Out_lan_smokeenc_bin(gst.Bin):
 
 
 if __name__ == "__main__":
-    X11_Stream('192.168.5.22')
+    X11_Stream('192.168.5.52')
+    gobject.MainLoop()

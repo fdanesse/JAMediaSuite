@@ -525,7 +525,7 @@ class ProgressBar(gtk.HScale):
 
         gtk.HScale.__init__(self, ajuste)
 
-        self.modify_bg(0, get_colors("Toolbar_Descarga"))
+        self.modify_bg(0, get_colors("widgetvideoitem"))
 
         self.ajuste = ajuste
         self.set_digits(0)
