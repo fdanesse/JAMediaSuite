@@ -26,7 +26,7 @@ webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/list
 
 def get_colors(key):
 
-    from gtk import gdk
+    from gi.repository import Gdk
 
     _dict = {
         "window": "#ffffff",
@@ -36,7 +36,7 @@ def get_colors(key):
         "naranaja": "#ff6600",
         }
 
-    return gdk.color_parse(_dict.get(key, "#ffffff"))
+    return Gdk.color_parse(_dict.get(key, "#ffffff"))
 
 
 def get_ip():
@@ -664,14 +664,15 @@ def get_separador(draw=False, ancho=0, expand=False):
     Devuelve un separador generico.
     """
 
-    import gtk
+    from gi.repository import Gtk
 
-    separador = gtk.SeparatorToolItem()
+    separador = Gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
 
     return separador
+
 
 def get_boton(archivo, flip=False, rotacion=None,
     pixels=24, tooltip_text=None):
@@ -679,12 +680,14 @@ def get_boton(archivo, flip=False, rotacion=None,
     Devuelve un toolbutton generico.
     """
 
-    import gtk
+    from gi.repository import Gtk
+    from gi.repository import GdkPixbuf
 
-    boton = gtk.ToolButton()
+    boton = Gtk.ToolButton()
 
-    imagen = gtk.Image()
-    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(archivo, pixels, pixels)
+    imagen = Gtk.Image()
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+        archivo, pixels, pixels)
 
     if flip:
         pixbuf = pixbuf.flip(True)

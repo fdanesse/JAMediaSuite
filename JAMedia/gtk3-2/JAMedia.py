@@ -20,21 +20,22 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
+from gi.repository import GLib
 import time
 import datetime
 import sys
 
-from Toolbars import Toolbar
-from Toolbars import ToolbarSalir
-from Toolbars import ToolbarAccion
-from Toolbars import ToolbarAddStream
+#from Toolbars import Toolbar
+#from Toolbars import ToolbarSalir
+#from Toolbars import ToolbarAccion
+#from Toolbars import ToolbarAddStream
 
-from Widgets import MouseSpeedDetector
-from BasePanel import BasePanel
+#from Widgets import MouseSpeedDetector
+#from BasePanel import BasePanel
 
-from JAMediaReproductor.JAMediaGrabador import JAMediaGrabador
+#from JAMediaReproductor.JAMediaGrabador import JAMediaGrabador
 
 from Globales import get_colors
 from Globales import eliminar_streaming
@@ -42,7 +43,7 @@ from Globales import add_stream
 from Globales import get_my_files_directory
 
 
-gobject.threads_init()
+GObject.threads_init()
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
@@ -72,78 +73,78 @@ Necesita:
 """
 
 
-class JAMedia(gtk.Window):
+class JAMedia(Gtk.Window):
 
     def __init__(self):
 
-        gtk.Window.__init__(self)
+        Gtk.Window.__init__(self)
 
         self.set_sensitive(False)
         self.set_title("JAMedia")
         self.set_icon_from_file(os.path.join(BASE_PATH,
             "Iconos", "JAMedia.svg"))
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
         self.set_resizable(True)
         self.set_border_width(2)
-        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_position(Gtk.WindowPosition.CENTER)
 
         self.grabador = False
         self.mouse_in_visor = False
         self.cursor_root = False
 
-        self.toolbar = Toolbar()
-        self.toolbar_salir = ToolbarSalir()
-        self.toolbar_accion = ToolbarAccion()
-        self.add_stream = ToolbarAddStream()
+        #self.toolbar = Toolbar()
+        #self.toolbar_salir = ToolbarSalir()
+        #self.toolbar_accion = ToolbarAccion()
+        #self.add_stream = ToolbarAddStream()
 
-        self.base_panel = BasePanel()
+        #self.base_panel = BasePanel()
 
-        vbox = gtk.VBox()
-        vbox.pack_start(self.toolbar, False, False, 0)
-        vbox.pack_start(self.toolbar_salir, False, False, 0)
-        vbox.pack_start(self.toolbar_accion, False, False, 0)
-        vbox.pack_start(self.add_stream, False, False, 0)
-        vbox.pack_start(self.base_panel, True, True, 0)
+        vbox = Gtk.VBox()
+        #vbox.pack_start(self.toolbar, False, False, 0)
+        #vbox.pack_start(self.toolbar_salir, False, False, 0)
+        #vbox.pack_start(self.toolbar_accion, False, False, 0)
+        #vbox.pack_start(self.add_stream, False, False, 0)
+        #vbox.pack_start(self.base_panel, True, True, 0)
 
         self.add(vbox)
         self.show_all()
         self.realize()
 
         # Controlador del mouse.
-        #   http://www.pygtk.org/pygtk2reference/class-gdkdisplay.html
+        #   http://www.pyGtk.org/pyGtk2reference/class-gdkdisplay.html
         #   #function-gdk--display-get-default
-        icono = os.path.join(BASE_PATH, "Iconos", "jamedia_cursor.svg")
-        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, -1, 24)
-        self.jamedia_cursor = gtk.gdk.Cursor(
-            gtk.gdk.display_get_default(), pixbuf, 0, 0)
+        #icono = os.path.join(BASE_PATH, "Iconos", "jamedia_cursor.svg")
+        #pixbuf = Gtk.gdk.pixbuf_new_from_file_at_size(icono, -1, 24)
+        #self.jamedia_cursor = Gtk.gdk.Cursor(
+        #    Gtk.gdk.display_get_default(), pixbuf, 0, 0)
 
-        self.cursor_root = self.get_property("window").get_cursor()
-        self.get_property("window").set_cursor(self.jamedia_cursor)
+        #self.cursor_root = self.get_property("window").get_cursor()
+        #self.get_property("window").set_cursor(self.jamedia_cursor)
 
-        self.mouse_listener = MouseSpeedDetector(self)
-        self.mouse_listener.new_handler(True)
+        #self.mouse_listener = MouseSpeedDetector(self)
+        #self.mouse_listener.new_handler(True)
 
-        self.toolbar.connect("accion", self.__accion_toolbar)
+        #self.toolbar.connect("accion", self.__accion_toolbar)
 
-        self.base_panel.connect("show-controls", self.__ocultar_controles)
-        self.base_panel.connect("accion-list", self.__accion_list)
-        self.base_panel.connect("menu_activo", self.__cancel_toolbars)
-        self.base_panel.connect("add_stream", self.__run_add_stream)
-        self.base_panel.connect("stop-record", self.__detener_grabacion)
+        #self.base_panel.connect("show-controls", self.__ocultar_controles)
+        #self.base_panel.connect("accion-list", self.__accion_list)
+        #self.base_panel.connect("menu_activo", self.__cancel_toolbars)
+        #self.base_panel.connect("add_stream", self.__run_add_stream)
+        #self.base_panel.connect("stop-record", self.__detener_grabacion)
 
-        self.toolbar_accion.connect("accion-stream", self.__accion_stream)
-        self.toolbar_accion.connect("grabar", self.__grabar)
-        self.toolbar_salir.connect("salir", self.__salir)
+        #self.toolbar_accion.connect("accion-stream", self.__accion_stream)
+        #self.toolbar_accion.connect("grabar", self.__grabar)
+        #self.toolbar_salir.connect("salir", self.__salir)
 
-        self.add_stream.connect("add-stream", self.__add_stream)
+        #self.add_stream.connect("add-stream", self.__add_stream)
 
-        self.mouse_listener.connect("estado", self.__set_mouse)
-        self.connect("hide", self.__hide_show)
-        self.connect("show", self.__hide_show)
+        #self.mouse_listener.connect("estado", self.__set_mouse)
+        #self.connect("hide", self.__hide_show)
+        #self.connect("show", self.__hide_show)
         self.connect("delete-event", self.__salir)
 
         self.resize(640, 480)
-        gobject.idle_add(self.__setup_init)
+        #GLib.idle_add(self.__setup_init)
         print "JAMedia process:", os.getpid()
 
     def __add_stream(self, widget, tipo, nombre, url):
@@ -265,8 +266,8 @@ class JAMedia(gtk.Window):
                     return
 
             elif estado == "detenido":
-                if win.get_cursor() != gtk.gdk.BLANK_CURSOR:
-                    win.set_cursor(gtk.gdk.Cursor(gtk.gdk.BLANK_CURSOR))
+                if win.get_cursor() != Gtk.gdk.BLANK_CURSOR:
+                    win.set_cursor(Gtk.gdk.Cursor(Gtk.gdk.BLANK_CURSOR))
                     return
 
             elif estado == "fuera":
@@ -319,7 +320,7 @@ class JAMedia(gtk.Window):
     def __salir(self, widget=None, senial=None):
         self.__detener_grabacion()
         self.base_panel.salir()
-        gtk.main_quit()
+        Gtk.main_quit()
         sys.exit(0)
 
     def __cancel_toolbars(self, widget=False):
@@ -332,4 +333,4 @@ class JAMedia(gtk.Window):
 
 if __name__ == "__main__":
     jamedia = JAMedia()
-    gtk.main()
+    Gtk.main()
