@@ -20,32 +20,34 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import gobject
-import gtk
+from gi.repository import GObject
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GdkPixbuf
 
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
 
 
-class ProgressPlayer(gtk.EventBox):
+class ProgressPlayer(Gtk.EventBox):
 
     __gsignals__ = {
-    "seek": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
-    "volumen": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
+    "seek": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, )),
+    "volumen": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("toolbars"))
 
         self.barraprogreso = BarraProgreso()
         self.volumen = ControlVolumen()
 
-        hbox = gtk.HBox()
+        hbox = Gtk.HBox()
         hbox.pack_start(self.barraprogreso, True, True, 0)
         hbox.pack_start(self.volumen, False, False, 0)
 
@@ -66,23 +68,23 @@ class ProgressPlayer(gtk.EventBox):
         self.barraprogreso.set_progress(valor)
 
 
-class BarraProgreso(gtk.EventBox):
+class BarraProgreso(Gtk.EventBox):
     """
     Barra de progreso para mostrar estado de reproduccion.
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
+    "user-set-value": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("toolbars"))
 
         self.escala = ProgressBar(
-            gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
+            Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
 
         self.valor = 0
 
@@ -107,20 +109,20 @@ class BarraProgreso(gtk.EventBox):
             self.escala.queue_draw()
 
 
-class ProgressBar(gtk.HScale):
+class ProgressBar(Gtk.Scale):
     """
     Escala de SlicerBalance.
     """
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
+    "user-set-value": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
 
-        gtk.HScale.__init__(self)
+        Gtk.Scale.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("toolbars"))
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -131,12 +133,11 @@ class ProgressBar(gtk.HScale):
         self.ancho, self.borde = (10, 10)
 
         icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
-        self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 24, 24)
+        self.pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, 24, 24)
 
         self.connect("button-press-event", self.__button_press_event)
         self.connect("button-release-event", self.__button_release_event)
         self.connect("motion-notify-event", self.__motion_notify_event)
-        self.connect("expose_event", self.__expose)
 
         self.show_all()
 
@@ -152,7 +153,8 @@ class ProgressBar(gtk.HScale):
         Se emite el valor en % (float).
         """
 
-        if event.state == gtk.gdk.MOD2_MASK | gtk.gdk.BUTTON1_MASK:
+        if event.state == Gdk.ModifierType.MOD2_MASK | \
+            Gdk.ModifierType.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
 
@@ -161,58 +163,62 @@ class ProgressBar(gtk.HScale):
                 self.queue_draw()
                 self.emit("user-set-value", valor)
 
-    def __expose(self, widget, event):
+    def do_draw(self, contexto):
         """
         Dibuja el estado de la barra de progreso.
         """
 
-        x, y, w, h = self.get_allocation()
-        ancho, borde = (self.ancho, self.borde)
+        rect = self.get_allocation()
+        w, h = (rect.width, rect.height)
 
-        gc = gtk.gdk.Drawable.new_gc(self.window)
+        # Relleno de la barra
+        ww = w - self.borde * 2
+        hh = 10 #h - self.borde * 2
+        Gdk.cairo_set_source_color(contexto, get_colors("drawingplayer"))
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, self.borde, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
 
-        # todo el widget
-        gc.set_rgb_fg_color(get_colors("toolbars"))
-        self.window.draw_rectangle(gc, True, x, y, w, h)
+        # Relleno de la barra segun progreso
+        Gdk.cairo_set_source_color(contexto, get_colors("naranaja"))
+        rect = Gdk.Rectangle()
+        ximage = int(self.get_adjustment().get_value() * ww / 100)
+        rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
+            ximage, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
 
-        # vacio
-        gc.set_rgb_fg_color(get_colors("drawingplayer"))
-        ww = w - borde * 2
-        xx = x + w / 2 - ww / 2
-        hh = ancho
-        yy = y + h / 2 - ancho / 2
-        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
-
-        # progreso
-        ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(get_colors("naranaja"))
-        self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
-
-        # borde de progreso
-        gc.set_rgb_fg_color(get_colors("window"))
-        self.window.draw_rectangle(gc, False, xx, yy, ww, hh)
+        # borde del progreso
+        Gdk.cairo_set_source_color(contexto, get_colors("window"))
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, self.borde, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.stroke()
 
         # La Imagen
         imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        yimage = yy + hh / 2 - imgh / 2
-
-        self.window.draw_pixbuf(gc, self.pixbuf, 0, 0, ximage, yimage,
-            imgw, imgh, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+        imgx = ximage
+        imgy = float(self.borde + hh / 2 - imgh / 2)
+        Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        contexto.paint()
 
         return True
 
 
-class ControlVolumen(gtk.VolumeButton):
+class ControlVolumen(Gtk.VolumeButton):
 
     __gsignals__ = {
-    "volumen": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
+    "volumen": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
 
     def __init__(self):
 
-        gtk.VolumeButton.__init__(self)
+        Gtk.VolumeButton.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("toolbars"))
 
         self.connect("value-changed", self.__value_changed)
         self.show_all()

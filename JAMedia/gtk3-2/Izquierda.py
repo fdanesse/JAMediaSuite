@@ -27,7 +27,7 @@ from IzquierdaWidgets import VideoVisor
 #from IzquierdaWidgets import Efectos_en_Pipe
 from IzquierdaWidgets import BufferInfo
 from IzquierdaWidgets import ToolbarInfo
-#from ProgressPlayer import ProgressPlayer
+from ProgressPlayer import ProgressPlayer
 from Globales import get_colors
 
 
@@ -70,14 +70,14 @@ class Izquierda(Gtk.EventBox):
         #self.efectos_aplicados = Efectos_en_Pipe()
         self.buffer_info = BufferInfo()
         self.toolbar_info = ToolbarInfo()
-        #self.progress = ProgressPlayer()
+        self.progress = ProgressPlayer()
 
         vbox.pack_start(self.toolbar_record, False, False, 0)
         vbox.pack_start(self.video_visor, True, True, 0)
         #vbox.pack_start(self.efectos_aplicados, False, False, 0)
         vbox.pack_start(self.buffer_info, False, False, 0)
         vbox.pack_start(self.toolbar_info, False, False, 0)
-        #vbox.pack_start(self.progress, False, False, 0)
+        vbox.pack_start(self.progress, False, False, 0)
 
         self.add(vbox)
         self.show_all()
@@ -91,8 +91,8 @@ class Izquierda(Gtk.EventBox):
         self.toolbar_info.connect("actualizar_streamings",
             self.__emit_actualizar_streamings)
 
-        #self.progress.connect("seek", self.__emit_seek)
-        #self.progress.connect("volumen", self.__emit_volumen)
+        self.progress.connect("seek", self.__emit_seek)
+        self.progress.connect("volumen", self.__emit_volumen)
 
     def __emit_volumen(self, widget, valor):
         self.emit('volumen', valor)
