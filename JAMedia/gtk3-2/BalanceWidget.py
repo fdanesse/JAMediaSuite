@@ -36,35 +36,37 @@ Contiene Widgets para controlar:
             para setear los valores en los widgets.
 
     Conéctese a la señal:
-        'balance-valor': gobject.TYPE_FLOAT, gobject.TYPE_STRING
+        'balance-valor': GObject.TYPE_FLOAT, GObject.TYPE_STRING
 
             para obtener los valores del widgets de cada propiedad según
             cambios del usuario sobre el widget.
 """
 
 import os
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GObject
+from gi.repository import GdkPixbuf
 
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
 
 
-class BalanceWidget(gtk.EventBox):
+class BalanceWidget(Gtk.EventBox):
 
     __gsignals__ = {
-    'balance-valor': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-        (gobject.TYPE_FLOAT, gobject.TYPE_STRING))}
+    'balance-valor': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,
+        (GObject.TYPE_FLOAT, GObject.TYPE_STRING))}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        tabla = gtk.Table(rows=5, columns=1, homogeneous=True)
+        tabla = Gtk.Table(rows=5, columns=1, homogeneous=True)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-        tabla.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
+        tabla.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
 
         self.brillo = ToolbarcontrolValores("Brillo")
         self.contraste = ToolbarcontrolValores("Contraste")
@@ -110,34 +112,34 @@ class BalanceWidget(gtk.EventBox):
             self.gamma.set_progress(gamma)
 
 
-class ToolbarcontrolValores(gtk.Toolbar):
+class ToolbarcontrolValores(Gtk.Toolbar):
 
     __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
+    'valor': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))}
 
     def __init__(self, label):
 
-        gtk.Toolbar.__init__(self)
+        Gtk.Toolbar.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
 
         self.titulo = label
 
         self.escala = SlicerBalance()
 
-        item = gtk.ToolItem()
+        item = Gtk.ToolItem()
         item.set_expand(True)
 
-        self.frame = gtk.Frame()
+        self.frame = Gtk.Frame()
         self.frame.set_border_width(4)
         self.frame.set_label(self.titulo)
         self.frame.get_property("label-widget").modify_fg(
             0, get_colors("drawingplayer"))
         self.frame.set_label_align(0.5, 1.0)
-        event = gtk.EventBox()
+        event = Gtk.EventBox()
         event.set_border_width(4)
-        event.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        event.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
         event.add(self.escala)
         self.frame.add(event)
         self.frame.show_all()
@@ -159,19 +161,19 @@ class ToolbarcontrolValores(gtk.Toolbar):
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
 
-class SlicerBalance(gtk.EventBox):
+class SlicerBalance(Gtk.EventBox):
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
+    "user-set-value": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
 
-        self.escala = BalanceBar(gtk.Adjustment(0.0, 0.0,
+        self.escala = BalanceBar(Gtk.Adjustment(0.0, 0.0,
             101.0, 0.1, 1.0, 1.0))
 
         self.add(self.escala)
@@ -187,17 +189,17 @@ class SlicerBalance(gtk.EventBox):
         self.escala.queue_draw()
 
 
-class BalanceBar(gtk.HScale):
+class BalanceBar(Gtk.HScale):
 
     __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
+    "user-set-value": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT, ))}
 
     def __init__(self, ajuste):
 
-        gtk.HScale.__init__(self)
+        Gtk.HScale.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
 
         self.ajuste = ajuste
         self.set_digits(0)
@@ -206,38 +208,51 @@ class BalanceBar(gtk.HScale):
         self.ancho, self.borde = (7, 10)
 
         icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
-        self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 16, 16)
-
-        self.connect("expose_event", self.__expose)
+        self.pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, 16, 16)
 
         self.show_all()
 
-    def __expose(self, widget, event):
-        x, y, w, h = self.get_allocation()
-        ancho, borde = (self.ancho, self.borde)
+    def do_draw(self, contexto):
+        """
+        Dibuja el estado de la barra de progreso.
+        """
 
-        gc = gtk.gdk.Drawable.new_gc(self.window)
+        rect = self.get_allocation()
+        w, h = (rect.width, rect.height)
 
-        gc.set_rgb_fg_color(get_colors("window"))
-        self.window.draw_rectangle(gc, True, x, y, w, h)
+        # Relleno de la barra
+        ww = w - self.borde * 2
+        hh = 10 #h - self.borde * 2
+        Gdk.cairo_set_source_color(contexto, get_colors("drawingplayer"))
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, self.borde, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
 
-        gc.set_rgb_fg_color(get_colors("drawingplayer"))
-        ww = w - borde * 2
-        xx = x + w / 2 - ww / 2
-        hh = ancho
-        yy = y + h / 2 - ancho / 2
-        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
+        # Relleno de la barra segun progreso
+        Gdk.cairo_set_source_color(contexto, get_colors("naranaja"))
+        rect = Gdk.Rectangle()
+        ximage = int(self.get_adjustment().get_value() * ww / 100)
+        rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
+            ximage, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
 
-        ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(get_colors("naranaja"))
-        self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
+        # borde del progreso
+        Gdk.cairo_set_source_color(contexto, get_colors("window"))
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, self.borde, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.stroke()
 
         # La Imagen
         imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        yimage = yy + hh / 2 - imgh / 2
-
-        self.window.draw_pixbuf(gc, self.pixbuf, 0, 0, ximage, yimage,
-            imgw, imgh, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+        imgx = ximage
+        imgy = float(self.borde + hh / 2 - imgh / 2)
+        Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        contexto.paint()
 
         return True
 
@@ -247,7 +262,8 @@ class BalanceBar(gtk.HScale):
         Se emite el valor en % (float).
         """
 
-        if event.state == gtk.gdk.MOD2_MASK | gtk.gdk.BUTTON1_MASK:
+        if event.state == Gdk.ModifierType.MOD2_MASK | \
+            Gdk.ModifierType.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
 

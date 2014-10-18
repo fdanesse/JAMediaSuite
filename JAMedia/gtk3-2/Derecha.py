@@ -20,12 +20,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
 from BalanceWidget import BalanceWidget
-from GstWidgets.Widgets import VideoEfectos
-from GstWidgets.VideoEfectos import get_jamedia_video_efectos
+#from GstWidgets.Widgets import VideoEfectos
+#from GstWidgets.VideoEfectos import get_jamedia_video_efectos
 from JAMediaPlayerList import PlayerList
 from PlayerControls import PlayerControls
 from Globales import get_colors
@@ -41,38 +41,38 @@ def mostrar(objeto):
         objeto.show()
 
 
-class Derecha(gtk.EventBox):
+class Derecha(Gtk.EventBox):
 
     __gsignals__ = {
-    "cargar-reproducir": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    "accion-list": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    "menu_activo": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, []),
-    "add_stream": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    "accion-controls": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    'balance-valor': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,
-        gobject.TYPE_STRING)),
-    "add_remove_efecto": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,
-        gobject.TYPE_BOOLEAN)),
-    'configurar_efecto': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,
-        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
+    "cargar-reproducir": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    "accion-list": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
+        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT)),
+    "menu_activo": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, []),
+    "add_stream": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    "accion-controls": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    'balance-valor': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_FLOAT,
+        GObject.TYPE_STRING)),
+    "add_remove_efecto": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_BOOLEAN)),
+    'configurar_efecto': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING, GObject.TYPE_PYOBJECT))}
 
     def __init__(self):
 
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
 
-        vbox = gtk.VBox()
-        conf_box = gtk.VBox()
+        vbox = Gtk.VBox()
+        conf_box = Gtk.VBox()
 
         self.balance = BalanceWidget()
         #self.efectos = VideoEfectos()
@@ -83,10 +83,10 @@ class Derecha(gtk.EventBox):
         conf_box.pack_start(self.balance, False, False, 0)
         #conf_box.pack_start(self.efectos, True, True, 0)
 
-        scroll = gtk.ScrolledWindow()
-        scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(conf_box)
-        scroll.get_child().modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        scroll.get_child().modify_bg(Gtk.StateType.NORMAL, get_colors("window"))
 
         vbox.pack_start(scroll, True, True, 0)
         vbox.pack_start(self.lista, True, True, 0)

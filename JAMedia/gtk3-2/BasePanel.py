@@ -26,7 +26,7 @@ from gi.repository import GdkX11
 
 from Widgets import DialogoDescarga
 from Izquierda import Izquierda
-#from Derecha import Derecha
+from Derecha import Derecha
 from Globales import get_colors
 #from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 
@@ -56,21 +56,21 @@ class BasePanel(Gtk.Paned):
         self.player = False
 
         self.izquierda = Izquierda()
-        #self.derecha = Derecha()
+        self.derecha = Derecha()
 
         self.pack1(self.izquierda, resize=True, shrink=True)
-        #self.pack2(self.derecha, resize=False, shrink=False)
+        self.pack2(self.derecha, resize=False, shrink=False)
 
         self.show_all()
 
-        #self.derecha.connect("cargar-reproducir", self.__cargar_reproducir)
-        #self.derecha.connect("accion-list", self.__emit_accion_list)
-        #self.derecha.connect("menu_activo", self.__emit_menu_activo)
-        #self.derecha.connect("add_stream", self.__emit_add_stream)
-        #self.derecha.connect("accion-controls", self.__accion_controls)
-        #self.derecha.connect("balance-valor", self.__accion_balance)
-        ##self.derecha.connect("add_remove_efecto", self.__add_remove_efecto)
-        ##self.derecha.connect("configurar_efecto", self.__config_efecto)
+        self.derecha.connect("cargar-reproducir", self.__cargar_reproducir)
+        self.derecha.connect("accion-list", self.__emit_accion_list)
+        self.derecha.connect("menu_activo", self.__emit_menu_activo)
+        self.derecha.connect("add_stream", self.__emit_add_stream)
+        self.derecha.connect("accion-controls", self.__accion_controls)
+        self.derecha.connect("balance-valor", self.__accion_balance)
+        #self.derecha.connect("add_remove_efecto", self.__add_remove_efecto)
+        #self.derecha.connect("configurar_efecto", self.__config_efecto)
 
         self.izquierda.connect("show-controls", self.__emit_show_controls)
         self.izquierda.connect("rotar", self.__rotar)

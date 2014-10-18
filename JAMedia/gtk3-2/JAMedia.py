@@ -268,8 +268,8 @@ class JAMedia(Gtk.Window):
                     return
 
             elif estado == "detenido":
-                if win.get_cursor() != Gtk.gdk.BLANK_CURSOR:
-                    win.set_cursor(Gtk.gdk.Cursor(Gtk.gdk.BLANK_CURSOR))
+                if win.get_cursor() != Gdk.CursorType.BLANK_CURSOR:
+                    win.set_cursor(Gdk.Cursor(Gdk.CursorType.BLANK_CURSOR))
                     return
 
             elif estado == "fuera":

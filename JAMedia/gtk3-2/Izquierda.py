@@ -21,6 +21,7 @@
 
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import GLib
 
 from IzquierdaWidgets import ToolbarGrabar
 from IzquierdaWidgets import VideoVisor

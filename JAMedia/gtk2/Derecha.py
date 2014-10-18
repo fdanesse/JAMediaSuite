@@ -24,8 +24,8 @@ import gtk
 import gobject
 
 from BalanceWidget import BalanceWidget
-from GstWidgets.Widgets import VideoEfectos
-from GstWidgets.VideoEfectos import get_jamedia_video_efectos
+#from GstWidgets.Widgets import VideoEfectos
+#from GstWidgets.VideoEfectos import get_jamedia_video_efectos
 from JAMediaPlayerList import PlayerList
 from PlayerControls import PlayerControls
 from Globales import get_colors

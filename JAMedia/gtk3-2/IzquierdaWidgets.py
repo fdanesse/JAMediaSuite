@@ -353,43 +353,44 @@ class ProgressBar(Gtk.Scale):
 
         self.ancho, self.borde = (10, 10)
 
-        #self.connect("expose_event", self.__expose)
-
         self.show_all()
-    '''
-    def __expose(self, widget, event):
-        x, y, w, h = self.get_allocation()
-        ancho, borde = (self.ancho, self.borde)
 
-        gc = Gtk.gdk.Drawable.new_gc(self.window)
+    def do_draw(self, contexto):
+        rect = self.get_allocation()
+        w, h = (rect.width, rect.height)
 
-        # todo el widget
-        gc.set_rgb_fg_color(get_colors("toolbars"))
-        self.window.draw_rectangle(gc, True, x, y, w, h)
+        # Relleno de la barra
+        ww = w - self.borde * 2
+        hh = 10 #h - self.borde * 2
+        Gdk.cairo_set_source_color(contexto, get_colors("drawingplayer"))
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, self.borde, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
 
-        # vacio
-        gc.set_rgb_fg_color(get_colors("drawingplayer"))
-        ww = w - borde * 2
-        xx = x + w / 2 - ww / 2
-        hh = ancho
-        yy = y + h / 2 - ancho / 2
-        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
+        # Relleno de la barra segun progreso
+        Gdk.cairo_set_source_color(contexto, get_colors("naranaja"))
+        rect = Gdk.Rectangle()
+        ximage = int(self.get_adjustment().get_value() * ww / 100)
+        rect.x, rect.y, rect.width, rect.height = (self.borde, self.borde,
+            ximage, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.fill()
 
-        # progreso
-        ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(get_colors("naranaja"))
-        self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
-
-        # borde de progreso
-        gc.set_rgb_fg_color(get_colors("window"))
-        self.window.draw_rectangle(gc, False, xx, yy, ww, hh)
+        # borde del progreso
+        Gdk.cairo_set_source_color(contexto, get_colors("window"))
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = (
+            self.borde, self.borde, ww, hh)
+        Gdk.cairo_rectangle(contexto, rect)
+        contexto.stroke()
 
         # La Imagen
         #imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        #yimage = yy + hh / 2 - imgh / 2
-
-        #self.window.draw_pixbuf(gc, self.pixbuf, 0, 0, ximage, yimage,
-        #    imgw, imgh, Gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
+        #imgx = ximage
+        #imgy = float(self.borde + hh / 2 - imgh / 2)
+        #Gdk.cairo_set_source_pixbuf(contexto, self.pixbuf, imgx, imgy)
+        contexto.paint()
 
         return True
-    '''
