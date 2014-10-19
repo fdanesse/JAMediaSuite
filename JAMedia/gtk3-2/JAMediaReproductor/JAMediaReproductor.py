@@ -20,40 +20,44 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import gobject
-import pygst
-import gst
-import gtk
+
+import gi
+gi.require_version('Gst', '1.0')
+
+from gi.repository import GObject
+from gi.repository import GLib
+from gi.repository import Gst
+from gi.repository import GstVideo
 
 from JAMediaBins import JAMedia_Audio_Pipeline
 from JAMediaBins import JAMedia_Video_Pipeline
 
 PR = False
 
-gobject.threads_init()
-gtk.gdk.threads_init()
+GObject.threads_init()
+Gst.init([])
 
 
-class JAMediaReproductor(gobject.GObject):
+class JAMediaReproductor(GObject.GObject):
 
     __gsignals__ = {
-    "endfile": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, []),
-    "estado": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "newposicion": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_INT,)),
-    "video": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,)),
-    "loading-buffer": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_INT, )),
+    "endfile": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, []),
+    "estado": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "newposicion": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_INT,)),
+    "video": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,)),
+    "loading-buffer": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_INT, )),
         }
 
     # Estados: playing, paused, None
 
     def __init__(self, ventana_id):
 
-        gobject.GObject.__init__(self)
+        GObject.GObject.__init__(self)
 
         self.nombre = "JAMediaReproductor"
 
@@ -67,7 +71,8 @@ class JAMediaReproductor(gobject.GObject):
         self.player = None
         self.bus = None
 
-        self.player = gst.element_factory_make("playbin2", "player")
+        self.player = Gst.ElementFactory.make("playbin", "player")
+        self.player.set_window_handle(self.ventana_id)
         self.player.set_property("buffer-size", 50000)
 
         self.audio_bin = JAMedia_Audio_Pipeline()
@@ -83,28 +88,21 @@ class JAMediaReproductor(gobject.GObject):
         self.bus.connect('sync-message', self.__sync_message)
 
     def __sync_message(self, bus, message):
-        if message.type == gst.MESSAGE_ELEMENT:
-            if message.structure.get_name() == 'prepare-xwindow-id':
-                gtk.gdk.threads_enter()
-                gtk.gdk.display_get_default().sync()
-                message.src.set_xwindow_id(self.ventana_id)
-                gtk.gdk.threads_leave()
-
-        elif message.type == gst.MESSAGE_STATE_CHANGED:
+        if message.type == Gst.MessageType.STATE_CHANGED:
             old, new, pending = message.parse_state_changed()
 
             if self.estado != new:
                 self.estado = new
 
-                if new == gst.STATE_PLAYING:
+                if new == Gst.State.PLAYING:
                     self.emit("estado", "playing")
                     self.__new_handle(True)
 
-                elif new == gst.STATE_PAUSED:
+                elif new == Gst.State.PAUSED:
                     self.emit("estado", "paused")
                     self.__new_handle(False)
 
-                elif new == gst.STATE_NULL:
+                elif new == Gst.State.NULL:
                     self.emit("estado", "None")
                     self.__new_handle(False)
 
@@ -112,7 +110,7 @@ class JAMediaReproductor(gobject.GObject):
                     self.emit("estado", "paused")
                     self.__new_handle(False)
 
-        elif message.type == gst.MESSAGE_TAG:
+        elif message.type == Gst.MessageType.TAG:
             taglist = message.parse_tag()
             datos = taglist.keys()
             if 'video-codec' in datos:
@@ -120,10 +118,10 @@ class JAMediaReproductor(gobject.GObject):
                     self.video = True
                     self.emit("video", self.video)
 
-        elif message.type == gst.MESSAGE_LATENCY:
+        elif message.type == Gst.MessageType.LATENCY:
             self.player.recalculate_latency()
 
-        elif message.type == gst.MESSAGE_ERROR:
+        elif message.type == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
             if PR:
                 print "JAMediaReproductor ERROR:"
@@ -132,11 +130,11 @@ class JAMediaReproductor(gobject.GObject):
             self.__new_handle(False)
 
     def __on_mensaje(self, bus, message):
-        if message.type == gst.MESSAGE_EOS:
+        if message.type == Gst.MessageType.EOS:
             self.__new_handle(False)
             self.emit("endfile")
 
-        elif message.type == gst.MESSAGE_ERROR:
+        elif message.type == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
             if PR:
                 print "JAMediaReproductor ERROR:"
@@ -144,38 +142,43 @@ class JAMediaReproductor(gobject.GObject):
                 print "\t%s" % debug
             self.__new_handle(False)
 
-        elif message.type == gst.MESSAGE_BUFFERING:
+        elif message.type == Gst.MessageType.BUFFERING:
             buf = int(message.structure["buffer-percent"])
-            if buf < 100 and self.estado == gst.STATE_PLAYING:
+            if buf < 100 and self.estado == Gst.State.PLAYING:
                 self.emit("loading-buffer", buf)
                 self.__pause()
 
-            elif buf > 99 and self.estado != gst.STATE_PLAYING:
+            elif buf > 99 and self.estado != Gst.State.PLAYING:
                 self.emit("loading-buffer", buf)
                 self.__play()
 
     def __play(self):
-        self.player.set_state(gst.STATE_PLAYING)
+        self.player.set_state(Gst.State.PLAYING)
 
     def __pause(self):
-        self.player.set_state(gst.STATE_PAUSED)
+        self.player.set_state(Gst.State.PAUSED)
 
     def __new_handle(self, reset):
         if self.actualizador:
-            gobject.source_remove(self.actualizador)
+            GLib.source_remove(self.actualizador)
             self.actualizador = False
 
         if reset:
-            self.actualizador = gobject.timeout_add(500, self.__handle)
+            self.actualizador = GLib.timeout_add(500, self.__handle)
 
     def __handle(self):
         if not self.progressbar:
             return True
 
-        duracion = self.player.query_duration(gst.FORMAT_TIME)[0] / gst.SECOND
-        posicion = self.player.query_position(gst.FORMAT_TIME)[0] / gst.SECOND
+        duracion = self.player.query_duration(Gst.Format.TIME)[0] / Gst.SECOND
+        posicion = self.player.query_position(Gst.Format.TIME)[0] / Gst.SECOND
 
-        pos = posicion * 100 / duracion
+        pos = 0
+        try:
+            pos = int(posicion * 100 / duracion)
+
+        except:
+            pass
 
         if self.duracion != duracion:
             self.duracion = duracion
@@ -187,11 +190,11 @@ class JAMediaReproductor(gobject.GObject):
         return True
 
     def pause_play(self):
-        if self.estado == gst.STATE_PAUSED or self.estado == gst.STATE_NULL \
-            or self.estado == gst.STATE_READY:
+        if self.estado == Gst.State.PAUSED or self.estado == Gst.State.NULL \
+            or self.estado == Gst.State.READY:
             self.__play()
 
-        elif self.estado == gst.STATE_PLAYING:
+        elif self.estado == Gst.State.PLAYING:
             self.__pause()
 
     def rotar(self, valor):
@@ -207,7 +210,7 @@ class JAMediaReproductor(gobject.GObject):
 
     def stop(self):
         self.__new_handle(False)
-        self.player.set_state(gst.STATE_NULL)
+        self.player.set_state(Gst.State.NULL)
         self.emit("newposicion", 0)
 
     def load(self, uri):
@@ -220,14 +223,14 @@ class JAMediaReproductor(gobject.GObject):
         self.emit("loading-buffer", 100)
 
         if os.path.exists(uri):
-            #direccion = gst.filename_to_uri(uri)
-            direccion = "file://" + uri
+            direccion = Gst.filename_to_uri(uri)
+            #direccion = "file://" + uri
             self.player.set_property("uri", direccion)
             self.progressbar = True
             self.__play()
 
         else:
-            if gst.uri_is_valid(uri):
+            if Gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
                 self.progressbar = False
                 self.__play()
@@ -246,30 +249,30 @@ class JAMediaReproductor(gobject.GObject):
 
         posicion = self.duracion * posicion / 100
 
-        # http://pygstdocs.berlios.de/pygst-reference/gst-constants.html
-        #self.player.set_state(gst.STATE_PAUSED)
+        # http://pyGstdocs.berlios.de/pyGst-reference/Gst-constants.html
+        #self.player.set_state(Gst.State.PAUSED)
         # http://nullege.com/codes/show/
-        #   src@d@b@dbr-HEAD@trunk@src@reproductor.py/72/gst.SEEK_TYPE_SET
+        #   src@d@b@dbr-HEAD@trunk@src@reproductor.py/72/Gst.SEEK_TYPE_SET
         #self.player.seek(
         #    1.0,
-        #    gst.FORMAT_TIME,
-        #    gst.SEEK_FLAG_FLUSH,
-        #    gst.SEEK_TYPE_SET,
+        #    Gst.FORMAT_TIME,
+        #    Gst.SEEK_FLAG_FLUSH,
+        #    Gst.SEEK_TYPE_SET,
         #    posicion,
-        #    gst.SEEK_TYPE_SET,
+        #    Gst.SEEK_TYPE_SET,
         #    self.duracion)
 
         # http://nullege.com/codes/show/
-        #   src@c@o@congabonga-HEAD@congaplayer@congalib@engines@gstplay.py/
-        #   104/gst.SEEK_FLAG_ACCURATE
-        event = gst.event_new_seek(
-            1.0, gst.FORMAT_TIME,
-            gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_ACCURATE,
-            gst.SEEK_TYPE_SET, posicion * 1000000000,
-            gst.SEEK_TYPE_NONE, self.duracion * 1000000000)
+        #   src@c@o@congabonga-HEAD@congaplayer@congalib@engines@Gstplay.py/
+        #   104/Gst.SEEK_FLAG_ACCURATE
+        event = Gst.event_new_seek(
+            1.0, Gst.Format.TIME,
+            Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE,
+            Gst.SeekType.SET, posicion * 1000000000,
+            Gst.SeekType.NONE, self.duracion * 1000000000)
 
         self.player.send_event(event)
-        #self.player.set_state(gst.STATE_PLAYING)
+        #self.player.set_state(Gst.State.PLAYING)
 
     def set_volumen(self, volumen):
         self.player.set_property('volume', volumen / 10)

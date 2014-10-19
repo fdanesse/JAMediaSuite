@@ -28,7 +28,7 @@ from Widgets import DialogoDescarga
 from Izquierda import Izquierda
 from Derecha import Derecha
 from Globales import get_colors
-#from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
+from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 
 
 class BasePanel(Gtk.Paned):
