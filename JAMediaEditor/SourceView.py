@@ -163,7 +163,8 @@ class SourceView(GtkSource.View):
             text_line = line.rstrip()
             # Elimina espacios en lineas vacías.
             limpio = "%s%s\n" % (limpio, text_line)
-        limpio = limpio.replace("/t", "    ")
+        # FIXME: Esto no funciona correctamente
+        #limpio = limpio.replace("\t", "    ")
         return limpio
 
     def __guardar_como(self, widget, archivo):

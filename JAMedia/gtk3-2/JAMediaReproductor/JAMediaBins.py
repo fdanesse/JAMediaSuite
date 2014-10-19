@@ -46,8 +46,8 @@ class JAMedia_Audio_Pipeline(Gst.Pipeline):
 
         convert.link(sink)
 
-        pad = convert.get_static_pad("sink")
-        self.add_pad(Gst.GhostPad.new("sink", pad))
+        sink = Gst.GhostPad.new('sink', convert.get_static_pad("sink"))
+        self.add_pad(sink)
 
 
 class JAMedia_Video_Pipeline(Gst.Pipeline):
@@ -93,8 +93,8 @@ class JAMedia_Video_Pipeline(Gst.Pipeline):
         gamma.link(videoflip)
         videoflip.link(pantalla)
 
-        pad = convert.get_static_pad("sink")
-        self.add_pad(Gst.GhostPad.new("sink", pad))
+        sink = Gst.GhostPad.new('sink', convert.get_static_pad("sink"))
+        self.add_pad(sink)
 
     def rotar(self, valor):
         videoflip = self.get_by_name("videoflip")
