@@ -52,9 +52,7 @@ class JAMediaTube(gtk.Window):
             "Iconos", "JAMediaTube.svg"))
         self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_resizable(True)
-        self.set_size_request(640, 480)
         self.set_border_width(2)
-        #self.set_decorated(False)
         self.set_position(gtk.WIN_POS_CENTER)
 
         self.box_tube = None
@@ -71,7 +69,8 @@ class JAMediaTube(gtk.Window):
         self.pistas = []
         self.videos_temp = []
 
-        self.__setup_init()
+        gobject.idle_add(self.__setup_init)
+        print "JAMediaTube process:", os.getpid()
 
     def __setup_init(self):
         """
@@ -166,6 +165,8 @@ class JAMediaTube(gtk.Window):
         self.paneltube.connect('open_shelve_list', self.__open_shelve_list)
         self.toolbar_descarga.connect('end', self.__run_download)
         self.paneltube.connect("cancel_toolbar", self.__cancel_toolbar)
+
+        self.resize(640, 480)
 
     def __cancel_toolbar(self, widget=None):
         self.toolbar_salir.cancelar()
