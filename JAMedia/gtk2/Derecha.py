@@ -19,7 +19,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
 import gtk
 import gobject
 
@@ -163,3 +162,6 @@ class Derecha(gtk.EventBox):
         self.lista.setup_init()
         self.player_controls.activar(False)
         #self.efectos.cargar_efectos(list(get_jamedia_video_efectos()))
+
+    def set_ip(self, valor):
+        self.lista.set_ip(valor)

@@ -27,7 +27,6 @@ from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
 
-from Globales import get_ip
 from Globales import describe_uri
 from Globales import describe_archivo
 from Globales import describe_acceso_uri
@@ -281,6 +280,9 @@ class PlayerList(gtk.Frame):
 
             if selector:
                 selector.destroy()
+
+    def set_ip(self, valor):
+        self.toolbar.ip = valor
 
 
 class Lista(gtk.TreeView):
@@ -671,6 +673,8 @@ class JAMediaToolbarList(gtk.EventBox):
 
         gtk.EventBox.__init__(self)
 
+        self.ip = False
+
         toolbar = gtk.Toolbar()
 
         self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
@@ -704,10 +708,9 @@ class JAMediaToolbarList(gtk.EventBox):
 
     def __get_menu(self, widget):
         self.emit("menu_activo")
-        ip = get_ip()
         menu = gtk.Menu()
 
-        if ip:
+        if self.ip:
             item = gtk.MenuItem("JAMedia Radio")
             menu.append(item)
             item.connect_object("activate", self.__emit_load_list, 0)

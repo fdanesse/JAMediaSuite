@@ -141,3 +141,6 @@ class Izquierda(gtk.EventBox):
         map(ocultar, [self.toolbar_record, self.buffer_info])  #, self.efectos_aplicados])
         self.toolbar_info.set_video(False)
         self.progress.set_sensitive(False)
+
+    def set_ip(self, valor):
+        self.toolbar_info.set_ip(valor)

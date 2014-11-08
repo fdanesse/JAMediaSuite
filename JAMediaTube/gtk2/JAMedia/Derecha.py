@@ -19,13 +19,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
 import gtk
 import gobject
 
 from BalanceWidget import BalanceWidget
-from GstWidgets.Widgets import VideoEfectos
-from GstWidgets.VideoEfectos import get_jamedia_video_efectos
+#from GstWidgets.Widgets import VideoEfectos
+#from GstWidgets.VideoEfectos import get_jamedia_video_efectos
 from JAMediaPlayerList import PlayerList
 from PlayerControls import PlayerControls
 from Globales import get_colors
@@ -163,3 +162,6 @@ class Derecha(gtk.EventBox):
         self.lista.setup_init()
         self.player_controls.activar(False)
         #self.efectos.cargar_efectos(list(get_jamedia_video_efectos()))
+
+    def set_ip(self, valor):
+        self.lista.set_ip(valor)

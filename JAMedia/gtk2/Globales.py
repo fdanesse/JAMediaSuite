@@ -46,9 +46,9 @@ def get_ip():
         s.connect(("google.com", 80))
         ret = s.getsockname()[0]
         s.close()
-        return ret
+        return bool(ret)
     except:
-        return ""
+        return False
 
 
 def describe_archivo(archivo):

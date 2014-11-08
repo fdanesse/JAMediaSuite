@@ -26,6 +26,7 @@ from Widgets import DialogoDescarga
 from Izquierda import Izquierda
 from Derecha import Derecha
 from Globales import get_colors
+from Globales import get_ip
 from JAMediaReproductor.JAMediaReproductor import JAMediaReproductor
 
 
@@ -77,6 +78,8 @@ class BasePanel(gtk.HPaned):
         self.izquierda.connect("volumen", self.__set_volumen)
         self.izquierda.connect("actualizar_streamings",
             self.__actualizar_streamings)
+
+        gobject.timeout_add(5000, self.__check_ip)
 
     def __stop_record(self, widget):
         self.__emit_menu_activo()
@@ -241,6 +244,12 @@ class BasePanel(gtk.HPaned):
             gamma=config.get('gamma', 10.0))
 
         return False
+
+    def __check_ip(self):
+        valor = get_ip()
+        self.izquierda.set_ip(valor)
+        self.derecha.set_ip(valor)
+        return True
 
     def __endfile(self, widget=None, senial=None):
         self.derecha.player_controls.set_paused()

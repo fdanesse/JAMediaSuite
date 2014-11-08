@@ -26,7 +26,6 @@ import gobject
 from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
-from Globales import get_ip
 
 
 def sensibilizar(objeto):
@@ -219,15 +218,6 @@ class ToolbarInfo(gtk.EventBox):
         self.show_all()
 
         switch.connect('button-press-event', self.__set_controles_view)
-        gobject.timeout_add(2000, self.__check_ip)
-
-    def __check_ip(self):
-        if get_ip():
-            self.descarga.set_sensitive(True)
-        else:
-            self.descarga.set_sensitive(False)
-
-        return True
 
     def __emit_actualizar_streamings(self, widget):
         self.emit('actualizar_streamings')
@@ -246,6 +236,9 @@ class ToolbarInfo(gtk.EventBox):
             map(sensibilizar, [self.boton_izquierda, self.boton_derecha])
         else:
             map(insensibilizar, [self.boton_izquierda, self.boton_derecha])
+
+    def set_ip(self, valor):
+        self.descarga.set_sensitive(valor)
 
 
 # FIXME: No lo estoy utilizando
