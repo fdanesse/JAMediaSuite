@@ -380,8 +380,8 @@ class Lista(gtk.TreeView):
 
         texto, path = elementos[0]
         descripcion = describe_uri(path)
-        pixbuf = ""
-        icono = None
+        icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
+        pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
 
         if descripcion:
             if descripcion[2]:
@@ -392,33 +392,20 @@ class Lista(gtk.TreeView):
                     icono = os.path.join(BASE_PATH, "Iconos", "video.svg")
                     pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
 
-                elif 'audio' in tipo or \
-                    'application/octet-stream' in tipo:
-                    icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
-                    pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
+                elif 'audio' in tipo or 'application/octet-stream' in tipo:
+                    pass
 
                 else:
-                    icono = path
                     if "image" in tipo:
-                        pixbuf = gdk.pixbuf_new_from_file_at_size(
-                            icono, 50, -1)
-
-                    else:
+                        icono = path
                         try:
                             pixbuf = gdk.pixbuf_new_from_file_at_size(
-                                icono, 24, -1)
+                                icono, 50, -1)
                         except:
                             icono = os.path.join(BASE_PATH,
                                 "Iconos", "sonido.svg")
-                            pixbuf = gdk.pixbuf_new_from_file_at_size(
+                            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                                 icono, 24, -1)
-            else:
-                icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
-                pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
-
-        else:
-            icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
-            pixbuf = gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
 
         self.get_model().append([pixbuf, texto, path])
         elementos.remove(elementos[0])
