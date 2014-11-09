@@ -119,6 +119,7 @@ class JAMediaToolButton(gtk.ToolButton):
 
         self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
 
+        self.estado = False
         self.pixels = pixels
         self.imagen = gtk.Image()
         self.set_icon_widget(self.imagen)
@@ -128,22 +129,22 @@ class JAMediaToolButton(gtk.ToolButton):
         self.show_all()
 
     def set_imagen(self, archivo=None, flip=False, rotacion=False):
-        # FIXME: Gtk:ERROR:/build/buildd/gtk+2.0-2.24.23/gtk/gtkimage.c:2169:
-        # gtk_image_expose: code should not be reached
-        # Abortado (`core' generado)
         pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
             os.path.join(archivo), self.pixels, self.pixels)
-
         if flip:
             pixbuf = pixbuf.flip(True)
-
         if rotacion:
             pixbuf = pixbuf.rotate_simple(rotacion)
-
         self.imagen.set_from_pixbuf(pixbuf)
 
     def set_playing(self, pixbuf):
+        if self.estado:
+            return
+        self.estado = True
         self.imagen.set_from_pixbuf(pixbuf)
 
     def set_paused(self, pixbuf):
+        if not self.estado:
+            return
+        self.estado = False
         self.imagen.set_from_pixbuf(pixbuf)
