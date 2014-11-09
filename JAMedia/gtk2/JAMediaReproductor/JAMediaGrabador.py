@@ -125,7 +125,7 @@ class JAMediaGrabador(gobject.GObject):
 
         self.player.connect('pad-added', self.__pad_added)
 
-        gobject.idle_add(self.load, uri)
+        self.load(uri)
 
     def __on_mensaje(self, bus, message):
         if message.type == gst.MESSAGE_EOS:
@@ -140,7 +140,7 @@ class JAMediaGrabador(gobject.GObject):
 
             elif buf > 99 and self.estado != gst.STATE_PLAYING:
                 #self.emit("loading-buffer", buf)
-                self.__play()
+                self.play()
 
         elif message.type == gst.MESSAGE_ERROR:
             err, debug = message.parse_error()
@@ -185,14 +185,10 @@ class JAMediaGrabador(gobject.GObject):
     def __pause(self):
         self.player.set_state(gst.STATE_PAUSED)
 
-    def __play(self):
-        self.pipeline.set_state(gst.STATE_PLAYING)
-
     def __new_handle(self, reset):
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
-
         if reset:
             self.actualizador = gobject.timeout_add(
                 500, self.__handle)
@@ -222,6 +218,10 @@ class JAMediaGrabador(gobject.GObject):
 
         return True
 
+    def play(self):
+        self.pipeline.set_state(gst.STATE_PLAYING)
+        self.__new_handle(True)
+
     def stop(self):
         self.pipeline.set_state(gst.STATE_NULL)
         self.__new_handle(False)
@@ -234,13 +234,9 @@ class JAMediaGrabador(gobject.GObject):
             self.archivo.set_property("location", self.patharchivo)
             self.uri = uri
             self.player.set_property("uri", self.uri)
-            self.__play()
-            self.__new_handle(True)
-
         else:
             print "JAMediaGrabador: uri inválida:", uri
             self.emit("endfile")
-
         return False
 
 

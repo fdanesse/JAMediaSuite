@@ -25,6 +25,7 @@ import gobject
 import time
 import datetime
 import sys
+import threading
 
 from Toolbars import Toolbar
 from Toolbars import ToolbarSalir
@@ -188,6 +189,9 @@ class JAMedia(gtk.EventBox):
 
         self.grabador.connect('update', self.__update_grabador)
         self.grabador.connect('endfile', self.__detener_grabacion)
+
+        self._thread = threading.Thread(target=self.grabador.play)
+        self._thread.start()
 
         self.set_sensitive(True)
 

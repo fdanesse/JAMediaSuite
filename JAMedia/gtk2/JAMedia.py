@@ -25,6 +25,7 @@ import gobject
 import time
 import datetime
 import sys
+import threading
 
 from Toolbars import Toolbar
 from Toolbars import ToolbarSalir
@@ -87,6 +88,7 @@ class JAMedia(gtk.Window):
         self.set_border_width(2)
         self.set_position(gtk.WIN_POS_CENTER)
 
+        self._thread = False
         self.grabador = False
         self.mouse_in_visor = False
         self.cursor_root = False
@@ -184,6 +186,9 @@ class JAMedia(gtk.Window):
 
         self.grabador.connect('update', self.__update_grabador)
         self.grabador.connect('endfile', self.__detener_grabacion)
+
+        self._thread = threading.Thread(target=self.grabador.play)
+        self._thread.start()
 
         self.set_sensitive(True)
 
