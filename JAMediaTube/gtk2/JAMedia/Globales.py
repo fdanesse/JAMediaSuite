@@ -25,7 +25,6 @@ webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/list
 
 
 def get_colors(key):
-
     from gtk import gdk
 
     _dict = {
@@ -56,15 +55,11 @@ def describe_archivo(archivo):
     Devuelve el tipo de un archivo (imagen, video, texto).
     -z, --uncompress para ver dentro de los zip.
     """
-
     import commands
-
     datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
     retorno = ""
-
     for dat in datos.split(":")[1:]:
         retorno += " %s" % (dat)
-
     return retorno
 
 
@@ -72,14 +67,11 @@ def describe_uri(uri):
     """
     Explica de que se trata el uri, si existe.
     """
-
     import os
-
     existe = False
 
     try:
         existe = os.path.exists(uri)
-
     except:
         return False
 
@@ -89,7 +81,6 @@ def describe_uri(uri):
         archivo = os.path.isfile(uri)
         enlace = os.path.islink(uri)
         return [unidad, directorio, archivo, enlace]
-
     else:
         return False
 
@@ -98,14 +89,11 @@ def describe_acceso_uri(uri):
     """
     Devuelve los permisos de acceso sobre una uri.
     """
-
     import os
-
     existe = False
 
     try:
         existe = os.access(uri, os.F_OK)
-
     except:
         return False
 
@@ -120,17 +108,14 @@ def describe_acceso_uri(uri):
 
 
 def borrar(origen):
-
     try:
         import os
         import shutil
 
         if os.path.isdir(origen):
             shutil.rmtree("%s" % (os.path.join(origen)))
-
         elif os.path.isfile(origen):
             os.remove("%s" % (os.path.join(origen)))
-
         else:
             return False
 
@@ -142,7 +127,6 @@ def borrar(origen):
 
 
 def mover(origen, destino):
-
     try:
         import os
         if os.path.isdir(origen):
@@ -161,17 +145,14 @@ def mover(origen, destino):
 
 
 def copiar(origen, destino):
-
     try:
         import os
         if os.path.isdir(origen):
             expresion = "cp -r \"" + origen + "\" \"" + destino + "\""
-
         elif os.path.isfile(origen):
             expresion = "cp \"" + origen + "\" \"" + destino + "\""
 
         os.system(expresion)
-
         return True
 
     except:
@@ -183,7 +164,6 @@ def make_base_directory():
     """
     Crea toda la estructura de Directorios de JAMedia.
     """
-
     import os
     import commands
 
@@ -253,15 +233,11 @@ def get_data_directory():
     """
     Devuelve el Directorio de Datos de JAMedia y JAMediaTube.
     """
-
     import os
-
     DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Datos")
-
     if not os.path.exists(DIRECTORIO_DATOS):
         make_base_directory()
-
     return DIRECTORIO_DATOS
 
 
@@ -269,15 +245,11 @@ def get_tube_directory():
     """
     Devuelve el Directorio de Videos de JAMediaTube.
     """
-
     import os
-
     DIRECTORIO_YOUTUBE = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "YoutubeVideos")
-
     if not os.path.exists(DIRECTORIO_YOUTUBE):
         make_base_directory()
-
     return DIRECTORIO_YOUTUBE
 
 
@@ -285,15 +257,11 @@ def get_audio_directory():
     """
     Devuelve el Directorio de Audio de JAMedia y JAMediaTube.
     """
-
     import os
-
     AUDIO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Audio")
-
     if not os.path.exists(AUDIO_JAMEDIA_VIDEO):
         make_base_directory()
-
     return AUDIO_JAMEDIA_VIDEO
 
 
@@ -301,15 +269,11 @@ def get_imagenes_directory():
     """
     Devuelve el Directorio de Imagenes de JAMediaVideo y JAMediaImagenes.
     """
-
     import os
-
     IMAGENES_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Fotos")
-
     if not os.path.exists(IMAGENES_JAMEDIA_VIDEO):
         make_base_directory()
-
     return IMAGENES_JAMEDIA_VIDEO
 
 
@@ -317,15 +281,11 @@ def get_video_directory():
     """
     Devuelve el Directorio de Video de JAMediaVideo.
     """
-
     import os
-
     VIDEO_JAMEDIA_VIDEO = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Videos")
-
     if not os.path.exists(VIDEO_JAMEDIA_VIDEO):
         make_base_directory()
-
     return VIDEO_JAMEDIA_VIDEO
 
 
@@ -333,27 +293,19 @@ def get_my_files_directory():
     """
     Devuelve el Directorio de Archivos del usuario en JAMedia.
     """
-
     import os
-
     DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "MisArchivos")
-
     if not os.path.exists(DIRECTORIO_MIS_ARCHIVOS):
         make_base_directory()
-
     return DIRECTORIO_MIS_ARCHIVOS
 
 
 def get_JAMedia_Directory():
-
     import os
-
     path = os.path.join(os.environ["HOME"], "JAMediaDatos")
-
     if not os.path.exists(path):
         make_base_directory()
-
     return path
 
 
@@ -361,9 +313,7 @@ def eliminar_streaming(url, lista):
     """
     Elimina un Streaming de una lista de jamedia.
     """
-
     import os
-
     DIRECTORIO_DATOS = get_data_directory()
 
     if lista == "Radios":
@@ -385,14 +335,12 @@ def eliminar_streaming(url, lista):
         return
 
     import shelve
-
     archivo = shelve.open(path)
     items = archivo.items()
 
     for item in items:
         if url == str(item[1]):
             del (archivo[item[0]])
-
     archivo.close()
 
 
@@ -400,22 +348,17 @@ def add_stream(tipo, item):
     """
     Agrega un streaming a la lista correspondiente de jamedia.
     """
-
     import os
-
     DIRECTORIO_DATOS = get_data_directory()
 
     if "TV" in tipo or "Tv" in tipo:
         path = os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
-
     elif "Radio" in tipo:
         path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
-
     else:
         return
 
     import shelve
-
     archivo = shelve.open(path)
     archivo[item[0].strip()] = item[1].strip()
     archivo.close()
@@ -426,10 +369,8 @@ def set_listas_default():
     Crea las listas para JAMedia si es que no existen y
     llena las default en caso de estar vacías.
     """
-
     import os
     import shelve
-
     DIRECTORIO_DATOS = get_data_directory()
 
     listas = [
@@ -456,10 +397,8 @@ def set_listas_default():
         try:
             # Streamings JAMediatv
             lista_canales = descarga_lista_de_streamings(canales)
-
             guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
                 "JAMediaTV.JAMedia"), lista_canales)
-
         except:
             print "Error al descargar Streamings de TV."
 
@@ -474,10 +413,8 @@ def set_listas_default():
         try:
             # Streamings JAMediaradio
             lista_radios = descarga_lista_de_streamings(radios)
-
             guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
                 "JAMediaRadio.JAMedia"), lista_radios)
-
         except:
             print "Error al descargar Streamings de Radios."
 
@@ -492,10 +429,8 @@ def set_listas_default():
         try:
             # Streamings JAMediaWebCams
             lista_webcams = descarga_lista_de_streamings(webcams)
-
             guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
                 "JAMediaWebCams.JAMedia"), lista_webcams)
-
         except:
             print "Error al descargar Streamings de WebCams."
 
@@ -612,14 +547,10 @@ def guarda_lista_de_streamings(path, items):
     de JAMedia y una lista de items [nombre, url] y los almacena
     en el archivo.
     """
-
     import shelve
-
     archivo = shelve.open(path)
-
     for item in items:
         archivo[item[0].strip()] = item[1].strip()
-
     archivo.close()
 
 
@@ -628,13 +559,13 @@ def get_streamings(path):
     Recibe el path a un archivo de streamings
     y devuelve la lista de streamings que contiene.
     """
-
     import shelve
-
+    items = []
     archivo = shelve.open(path)
-    items = archivo.items()
+    keys = sorted(archivo.keys())
+    for key in keys:
+        items.append([key, archivo[key]])
     archivo.close()
-
     return items
 
 
@@ -643,19 +574,14 @@ def stream_en_archivo(streaming, path):
     Verifica si un streaming está en
     un archivo de lista de jamedia determinado.
     """
-
     import shelve
-
     archivo = shelve.open(path)
     items = archivo.values()
-
     for item in items:
         if streaming == item:
             archivo.close()
             return True
-
     archivo.close()
-
     return False
 
 
@@ -663,14 +589,11 @@ def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
     """
-
     import gtk
-
     separador = gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
-
     return separador
 
 def get_boton(archivo, flip=False, rotacion=None,
@@ -678,28 +601,22 @@ def get_boton(archivo, flip=False, rotacion=None,
     """
     Devuelve un toolbutton generico.
     """
-
     import gtk
-
     boton = gtk.ToolButton()
-
     imagen = gtk.Image()
     pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(archivo, pixels, pixels)
 
     if flip:
         pixbuf = pixbuf.flip(True)
-
     if rotacion:
         pixbuf = pixbuf.rotate_simple(rotacion)
 
     imagen.set_from_pixbuf(pixbuf)
     boton.set_icon_widget(imagen)
-
     imagen.show()
     boton.show()
 
     if tooltip_text:
         boton.set_tooltip_text(tooltip_text)
         boton.TOOLTIP = tooltip_text
-
     return boton
