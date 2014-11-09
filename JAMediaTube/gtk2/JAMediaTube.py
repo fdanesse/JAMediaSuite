@@ -300,6 +300,7 @@ class JAMediaTube(gtk.Window):
 
         self.alerta_busqueda.label.set_text(texto)
         gobject.idle_add(self.__add_videos, videos, destino)
+        return False
 
     def __switch(self, widget, valor):
         """

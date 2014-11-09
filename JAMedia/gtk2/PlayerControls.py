@@ -128,6 +128,9 @@ class JAMediaToolButton(gtk.ToolButton):
         self.show_all()
 
     def set_imagen(self, archivo=None, flip=False, rotacion=False):
+        # FIXME: Gtk:ERROR:/build/buildd/gtk+2.0-2.24.23/gtk/gtkimage.c:2169:
+        # gtk_image_expose: code should not be reached
+        # Abortado (`core' generado)
         pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
             os.path.join(archivo), self.pixels, self.pixels)
 
