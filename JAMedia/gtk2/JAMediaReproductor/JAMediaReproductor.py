@@ -152,10 +152,7 @@ class JAMediaReproductor(gobject.GObject):
 
             elif buf > 99 and self.estado != gst.STATE_PLAYING:
                 self.emit("loading-buffer", buf)
-                self.__play()
-
-    def __play(self):
-        self.player.set_state(gst.STATE_PLAYING)
+                self.play()
 
     def __pause(self):
         self.player.set_state(gst.STATE_PAUSED)
@@ -186,10 +183,13 @@ class JAMediaReproductor(gobject.GObject):
 
         return True
 
+    def play(self):
+        self.player.set_state(gst.STATE_PLAYING)
+
     def pause_play(self):
         if self.estado == gst.STATE_PAUSED or self.estado == gst.STATE_NULL \
             or self.estado == gst.STATE_READY:
-            self.__play()
+            self.play()
 
         elif self.estado == gst.STATE_PLAYING:
             self.__pause()
@@ -212,7 +212,7 @@ class JAMediaReproductor(gobject.GObject):
 
     def load(self, uri):
         if not uri:
-            return
+            return False
 
         self.duracion = 0.0
         self.posicion = 0.0
@@ -224,13 +224,13 @@ class JAMediaReproductor(gobject.GObject):
             direccion = "file://" + uri
             self.player.set_property("uri", direccion)
             self.progressbar = True
-            self.__play()
+            #self.play()
 
         else:
             if gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
                 self.progressbar = False
-                self.__play()
+                #self.play()
 
         return False
 

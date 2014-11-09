@@ -21,6 +21,7 @@
 
 import gtk
 import gobject
+import threading
 
 from Widgets import DialogoDescarga
 from Izquierda import Izquierda
@@ -52,6 +53,7 @@ class BasePanel(gtk.HPaned):
         self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_border_width(2)
 
+        self._thread = False
         self.player = False
 
         self.izquierda = Izquierda()
@@ -199,6 +201,8 @@ class BasePanel(gtk.HPaned):
         self.player.connect("loading-buffer", self.__loading_buffer)
 
         self.player.load(path)
+        self._thread = threading.Thread(target=self.player.play)
+        self._thread.start()
         self.player.set_volumen(volumen)
         self.izquierda.progress.volumen.set_value(volumen / 10)
         self.derecha.set_sensitive(True)
