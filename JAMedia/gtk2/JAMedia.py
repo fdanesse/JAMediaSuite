@@ -119,8 +119,8 @@ class JAMedia(gtk.Window):
         self.jamedia_cursor = gtk.gdk.Cursor(
             gtk.gdk.display_get_default(), pixbuf, 0, 0)
 
-        self.cursor_root = self.get_property("window").get_cursor()
-        self.get_property("window").set_cursor(self.jamedia_cursor)
+        #self.cursor_root = self.get_property("window").get_cursor()
+        #self.get_property("window").set_cursor(self.jamedia_cursor)
 
         self.mouse_listener = MouseSpeedDetector(self)
         self.mouse_listener.new_handler(True)
@@ -143,10 +143,15 @@ class JAMedia(gtk.Window):
         self.connect("hide", self.__hide_show)
         self.connect("show", self.__hide_show)
         self.connect("delete-event", self.__salir)
+        self.connect("realize", self.__realize)
 
         self.resize(640, 480)
         gobject.idle_add(self.__setup_init)
         print "JAMedia process:", os.getpid()
+
+    def __realize(self, widget):
+        self.cursor_root = self.get_property("window").get_cursor()
+        self.get_property("window").set_cursor(self.jamedia_cursor)
 
     def __add_stream(self, widget, tipo, nombre, url):
         add_stream(tipo, [nombre, url])

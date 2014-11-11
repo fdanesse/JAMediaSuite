@@ -37,17 +37,24 @@ from JAMediaYoutube import Buscar
 from Widgets import WidgetVideoItem
 from Globales import get_colors
 
+from sugar.activity import activity
+
 BASE_PATH = os.path.dirname(__file__)
+
+you_lib = os.path.join(BASE_PATH, "youtube_dl")
+you_file = os.path.join(BASE_PATH, "youtube-dl")
+print commands.getoutput('chmod -R 755 %s' % you_lib)
+print commands.getoutput('chmod 755 %s' % you_file)
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
 
 
-class JAMediaTube(gtk.Window):
+class SugarJAMediaTube(activity.Activity):
 
-    def __init__(self):
+    def __init__(self, handle):
 
-        gtk.Window.__init__(self)
+        activity.Activity.__init__(self, handle, False)
 
         self.set_title("JAMediaTube")
         self.set_icon_from_file(os.path.join(BASE_PATH,
@@ -112,7 +119,7 @@ class JAMediaTube(gtk.Window):
 
         boxbase.pack_start(self.box_tube, True, True, 0)
         boxbase.pack_start(self.jamedia, True, True, 0)
-        self.add(boxbase)
+        self.set_canvas(boxbase)
 
         self.show_all()
         self.realize()
@@ -327,31 +334,17 @@ class JAMediaTube(gtk.Window):
         """
         self.archivos = pistas
 
+    def read_file(self, file_path):
+        items = []
+        path = os.path.realpath(file_path)
+        if os.path.isfile(path):
+            item = check_path(path)
+            if item:
+                items.append(item)
+        self.set_archivos(items)
+
+    def write_file(self, file_path):
+        pass
+
 
 target = [('Mover', gtk.TARGET_SAME_APP, 1)]
-
-
-if __name__ == "__main__":
-    items = []
-    if len(sys.argv) > 1:
-        for campo in sys.argv[1:]:
-            path = os.path.realpath(campo)
-            if os.path.isfile(path):
-                item = check_path(path)
-                if item:
-                    items.append(item)
-            elif os.path.isdir(path):
-                for arch in os.listdir(path):
-                    newpath = os.path.join(path, arch)
-                    if os.path.isfile(newpath):
-                        item = check_path(newpath)
-                        if item:
-                            items.append(item)
-        if items:
-            jamediatube = JAMediaTube()
-            jamediatube.set_archivos(items)
-        else:
-            jamediatube = JAMediaTube()
-    else:
-        jamediatube = JAMediaTube()
-    gtk.main()
