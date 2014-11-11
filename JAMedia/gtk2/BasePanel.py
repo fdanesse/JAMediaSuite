@@ -273,3 +273,6 @@ class BasePanel(gtk.HPaned):
             self.player.stop()
             del(self.player)
             self.player = False
+
+    def set_nueva_lista(self, archivos):
+        self.derecha.set_nueva_lista(archivos)

@@ -284,6 +284,9 @@ class PlayerList(gtk.Frame):
     def set_ip(self, valor):
         self.toolbar.ip = valor
 
+    def set_nueva_lista(self, archivos):
+        self.__load_files(False, archivos, titulo="Archivos")
+
 
 class Lista(gtk.TreeView):
 

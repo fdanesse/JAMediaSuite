@@ -41,7 +41,7 @@ from Globales import get_colors
 from Globales import eliminar_streaming
 from Globales import add_stream
 from Globales import get_my_files_directory
-
+from Globales import describe_archivo
 
 gobject.threads_init()
 
@@ -88,7 +88,7 @@ class JAMedia(gtk.Window):
         self.set_border_width(2)
         self.set_position(gtk.WIN_POS_CENTER)
 
-        self._thread = False
+        self.archivos = []
         self.grabador = False
         self.mouse_in_visor = False
         self.cursor_root = False
@@ -150,16 +150,12 @@ class JAMedia(gtk.Window):
 
     def __add_stream(self, widget, tipo, nombre, url):
         add_stream(tipo, [nombre, url])
-
         if "Tv" in tipo or "TV" in tipo:
             indice = 3
-
         elif "Radio" in tipo:
             indice = 2
-
         else:
             return
-
         self.base_panel.derecha.lista.cargar_lista(None, indice)
 
     def __run_add_stream(self, widget, title):
@@ -173,7 +169,6 @@ class JAMedia(gtk.Window):
         label = self.base_panel.derecha.lista.toolbar.label.get_text()
         if label == "JAM-TV" or label == "TVs" or label == "WebCams":
             tipo = "video"
-
         else:
             tipo = "audio"
 
@@ -187,8 +182,8 @@ class JAMedia(gtk.Window):
         self.grabador.connect('update', self.__update_grabador)
         self.grabador.connect('endfile', self.__detener_grabacion)
 
-        self._thread = threading.Thread(target=self.grabador.play)
-        self._thread.start()
+        _thread = threading.Thread(target=self.grabador.play)
+        _thread.start()
 
         self.set_sensitive(True)
 
@@ -236,6 +231,9 @@ class JAMedia(gtk.Window):
         self.__cancel_toolbars()
         self.toolbar.configurar.set_sensitive(False)
         self.base_panel.setup_init()
+        if self.archivos:
+            self.base_panel.set_nueva_lista(self.archivos)
+            self.archivos = []
         self.set_sensitive(True)
         return False
 
@@ -243,10 +241,8 @@ class JAMedia(gtk.Window):
         self.__cancel_toolbars()
         if accion == "salir":
             self.toolbar_salir.run("JAMedia")
-
         elif accion == "show-config":
             self.base_panel.derecha.show_config()
-
         else:
             print self.__accion_toolbar, accion
 
@@ -260,7 +256,6 @@ class JAMedia(gtk.Window):
         """
         Muestra u oculta el mouse de jamedia según su posición.
         """
-
         win = self.get_property("window")
 
         if self.mouse_in_visor:  # Solo cuando el mouse está sobre el Visor.
@@ -334,7 +329,42 @@ class JAMedia(gtk.Window):
         # borrar, copiar, mover, grabar, etc . . .
         self.toolbar_accion.set_accion(lista, accion, _iter)
 
+    def set_archivos(self, archivos):
+        self.archivos = archivos
+
+
+def check_path(path):
+    if os.path.exists(path):
+        if os.path.isfile(path):
+            datos = describe_archivo(path)
+            if 'audio' in datos or 'video' in datos or \
+                'application/ogg' in datos or \
+                'application/octet-stream' in datos:
+                    return path
+    return False
+
 
 if __name__ == "__main__":
-    jamedia = JAMedia()
+    items = []
+    if len(sys.argv) > 1:
+        for campo in sys.argv[1:]:
+            path = os.path.realpath(campo)
+            if os.path.isfile(path):
+                item = check_path(path)
+                if item:
+                    items.append(item)
+            elif os.path.isdir(path):
+                for arch in sorted(os.listdir(path)):
+                    newpath = os.path.join(path, arch)
+                    if os.path.isfile(newpath):
+                        item = check_path(newpath)
+                        if item:
+                            items.append(item)
+        if items:
+            jamedia = JAMedia()
+            jamedia.set_archivos(items)
+        else:
+            jamedia = JAMedia()
+    else:
+        jamedia = JAMedia()
     gtk.main()

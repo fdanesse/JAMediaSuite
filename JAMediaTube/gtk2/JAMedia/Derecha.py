@@ -165,3 +165,6 @@ class Derecha(gtk.EventBox):
 
     def set_ip(self, valor):
         self.lista.set_ip(valor)
+
+    def set_nueva_lista(self, archivos):
+        self.lista.set_nueva_lista(archivos)

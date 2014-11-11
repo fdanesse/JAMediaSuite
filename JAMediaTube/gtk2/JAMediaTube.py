@@ -20,12 +20,21 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import sys
 import gtk
 import gobject
 import commands
 
+from Widgets import Toolbar
+from Widgets import Toolbar_Busqueda
+from Widgets import Toolbar_Descarga
+from Widgets import Alerta_Busqueda
+from PanelTube import PanelTube
+from Widgets import ToolbarSalir
 from JAMedia.JAMedia import JAMedia
-
+from JAMedia.JAMedia import check_path
+from JAMediaYoutube import Buscar
+from Widgets import WidgetVideoItem
 from Globales import get_colors
 
 BASE_PATH = os.path.dirname(__file__)
@@ -66,7 +75,7 @@ class JAMediaTube(gtk.Window):
 
         self.jamedia = None
 
-        self.pistas = []
+        self.archivos = []
         self.videos_temp = []
 
         gobject.idle_add(self.__setup_init)
@@ -76,14 +85,6 @@ class JAMediaTube(gtk.Window):
         """
         Crea y Empaqueta todo.
         """
-
-        from Widgets import Toolbar
-        from Widgets import Toolbar_Busqueda
-        from Widgets import Toolbar_Descarga
-        from Widgets import Alerta_Busqueda
-        from PanelTube import PanelTube
-        from Widgets import ToolbarSalir
-
         boxbase = gtk.VBox()
 
         self.box_tube = gtk.VBox()
@@ -136,9 +137,10 @@ class JAMediaTube(gtk.Window):
 
         map(self.__ocultar, [self.toolbar_descarga, self.alerta_busqueda])
 
-        if self.pistas:
-            self.jamedia.set_nueva_lista(self.pistas)
+        if self.archivos:
             self.__switch(None, 'jamedia')
+            self.jamedia.base_panel.set_nueva_lista(self.archivos)
+            self.archivos = []
         else:
             self.__switch(None, 'jamediatube')
 
@@ -254,10 +256,8 @@ class JAMediaTube(gtk.Window):
         Lanza la Búsqueda y comienza secuencia que agrega los videos al panel.
         """
         # FIXME: Reparar (Si no hay conexión)
-        from JAMediaYoutube import Buscar
         for video in Buscar(palabras):
             self.videos_temp.append(video)
-
         gobject.idle_add(self.__add_videos, self.videos_temp,
             self.paneltube.encontrados)
         return False
@@ -278,7 +278,6 @@ class JAMediaTube(gtk.Window):
             return False
 
         video = videos[0]
-        from Widgets import WidgetVideoItem
         videowidget = WidgetVideoItem(video)
         text = TipEncontrados
 
@@ -326,63 +325,40 @@ class JAMediaTube(gtk.Window):
         self.toolbar_salir.run("JAMediaTube")
 
     def __salir(self, widget=None, senial=None):
-        #import commands
-        import sys
-        #commands.getoutput('killall mplayer')
         gtk.main_quit()
         sys.exit(0)
 
-    def set_pistas(self, pistas):
+    def set_archivos(self, pistas):
         """
         Cuando se ejecuta pasandole un archivo.
         """
-        self.pistas = pistas
+        self.archivos = pistas
 
 
 target = [('Mover', gtk.TARGET_SAME_APP, 1)]
 
 
-def get_item_list(path):
-    if os.path.exists(path):
-        if os.path.isfile(path):
-            archivo = os.path.basename(path)
-            from Globales import describe_archivo
-            datos = describe_archivo(path)
-            if 'audio' in datos or 'video' in datos or \
-                'application/ogg' in datos or \
-                'application/octet-stream' in datos:
-                    return [archivo, path]
-    return False
-
 if __name__ == "__main__":
-    import sys
     items = []
     if len(sys.argv) > 1:
-
         for campo in sys.argv[1:]:
-            path = os.path.join(campo)
-
+            path = os.path.realpath(campo)
             if os.path.isfile(path):
-                item = get_item_list(path)
+                item = check_path(path)
                 if item:
                     items.append(item)
-
             elif os.path.isdir(path):
                 for arch in os.listdir(path):
                     newpath = os.path.join(path, arch)
-
                     if os.path.isfile(newpath):
-                        item = get_item_list(newpath)
+                        item = check_path(newpath)
                         if item:
                             items.append(item)
-
         if items:
             jamediatube = JAMediaTube()
-            jamediatube.set_pistas(items)
+            jamediatube.set_archivos(items)
         else:
             jamediatube = JAMediaTube()
-
     else:
         jamediatube = JAMediaTube()
-
     gtk.main()
