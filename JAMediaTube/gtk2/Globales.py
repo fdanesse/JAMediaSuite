@@ -19,6 +19,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
+import commands
+
 
 def get_colors(key):
     from gtk import gdk
@@ -35,9 +38,6 @@ def make_base_directory():
     """
     Crea toda la estructura de Directorios de JAMedia.
     """
-    import os
-    import commands
-
     if not os.path.exists(os.path.join(
         os.environ["HOME"], "JAMediaDatos")):
         os.mkdir(os.path.join(os.environ["HOME"], "JAMediaDatos"))
@@ -104,7 +104,6 @@ def get_data_directory():
     """
     Devuelve el Directorio de Datos de JAMedia y JAMediaTube.
     """
-    import os
     DIRECTORIO_DATOS = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "Datos")
     if not os.path.exists(DIRECTORIO_DATOS):
@@ -116,7 +115,6 @@ def get_tube_directory():
     """
     Devuelve el Directorio de Videos de JAMediaTube.
     """
-    import os
     DIRECTORIO_YOUTUBE = os.path.join(os.environ["HOME"],
         "JAMediaDatos", "YoutubeVideos")
     if not os.path.exists(DIRECTORIO_YOUTUBE):
@@ -129,7 +127,6 @@ def describe_archivo(archivo):
     Devuelve el tipo de un archivo (imagen, video, texto).
     -z, --uncompress para ver dentro de los zip.
     """
-    import commands
     datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
     retorno = ""
     for dat in datos.split(":")[1:]:
