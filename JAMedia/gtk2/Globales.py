@@ -31,12 +31,30 @@ radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista
 webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
 
 
+def convert_shelve_to_json(path):
+    print "Convert:", path
+    import shelve
+    _dict = {}
+    try:
+        archivo = shelve.open(path)
+        _dict = dict(archivo)
+        archivo.close()
+        borrar(path)
+        set_dict(path, _dict)
+    except:
+        pass
+    return _dict
+
+
 def get_dict(path):
     if not os.path.exists(path):
         return {}
-    archivo = codecs.open(path, "r", "utf-8")
-    _dict = json.JSONDecoder(encoding="utf-8").decode(archivo.read())
-    archivo.close()
+    try:
+        archivo = codecs.open(path, "r", "utf-8")
+        _dict = json.JSONDecoder(encoding="utf-8").decode(archivo.read())
+        archivo.close()
+    except:
+        _dict = convert_shelve_to_json(path)
     return _dict
 
 
