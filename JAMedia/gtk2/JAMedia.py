@@ -91,7 +91,11 @@ class JAMedia(gtk.Window):
         self.archivos = []
         self.grabador = False
         self.mouse_in_visor = False
-        self.cursor_root = False
+        self.cursor_root = gtk.gdk.Cursor(gtk.gdk.BLANK_CURSOR)
+        icono = os.path.join(BASE_PATH, "Iconos", "jamedia_cursor.svg")
+        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, -1, 24)
+        self.jamedia_cursor = gtk.gdk.Cursor(
+            gtk.gdk.display_get_default(), pixbuf, 0, 0)
 
         self.toolbar = Toolbar()
         self.toolbar_salir = ToolbarSalir()
@@ -107,21 +111,14 @@ class JAMedia(gtk.Window):
         vbox.pack_start(self.add_stream, False, False, 0)
         vbox.pack_start(self.base_panel, True, True, 0)
 
+        self.connect("realize", self.__realize)
+
         self.add(vbox)
         self.show_all()
         self.realize()
 
         # Controlador del mouse.
         #   http://www.pygtk.org/pygtk2reference/class-gdkdisplay.html
-        #   #function-gdk--display-get-default
-        icono = os.path.join(BASE_PATH, "Iconos", "jamedia_cursor.svg")
-        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, -1, 24)
-        self.jamedia_cursor = gtk.gdk.Cursor(
-            gtk.gdk.display_get_default(), pixbuf, 0, 0)
-
-        #self.cursor_root = self.get_property("window").get_cursor()
-        #self.get_property("window").set_cursor(self.jamedia_cursor)
-
         self.mouse_listener = MouseSpeedDetector(self)
         self.mouse_listener.new_handler(True)
 
@@ -143,13 +140,14 @@ class JAMedia(gtk.Window):
         self.connect("hide", self.__hide_show)
         self.connect("show", self.__hide_show)
         self.connect("delete-event", self.__salir)
-        self.connect("realize", self.__realize)
 
         self.resize(640, 480)
+
         gobject.idle_add(self.__setup_init)
         print "JAMedia process:", os.getpid()
+        self.base_panel.checkear_listas()
 
-    def __realize(self, widget):
+    def __realize(self, window):
         self.cursor_root = self.get_property("window").get_cursor()
         self.get_property("window").set_cursor(self.jamedia_cursor)
 

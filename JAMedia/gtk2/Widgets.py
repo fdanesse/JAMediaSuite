@@ -26,6 +26,7 @@ import gobject
 from Globales import get_colors
 from Globales import get_boton
 from Globales import get_streaming_default
+from Globales import set_listas_default
 from Globales import get_ip
 
 BASE_PATH = os.path.dirname(__file__)
@@ -33,13 +34,15 @@ BASE_PATH = os.path.dirname(__file__)
 
 class DialogoDescarga(gtk.Dialog):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, force=True):
 
         gtk.Dialog.__init__(self, parent=parent)
 
         self.set_decorated(False)
         self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_border_width(15)
+
+        self.force = force
 
         label = gtk.Label("*** Descargando Streamings de JAMedia ***")
         label.show()
@@ -51,12 +54,15 @@ class DialogoDescarga(gtk.Dialog):
         gobject.timeout_add(500, self.__descargar)
 
     def __descargar(self):
-        if get_ip():
-            get_streaming_default()
+        if self.force:
+            if get_ip():
+                get_streaming_default()
+            else:
+                print "No estás conectado a Internet"
         else:
-            print "No estás conectado a Internet"
-
+            set_listas_default()
         self.destroy()
+        return False
 
 
 class Credits(gtk.Dialog):

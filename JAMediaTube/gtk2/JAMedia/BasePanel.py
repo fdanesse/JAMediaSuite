@@ -89,9 +89,10 @@ class BasePanel(gtk.HPaned):
 
     def __actualizar_streamings(self, widget):
         self.__emit_menu_activo()
-        # FIXME: Agregar control de conexión para evitar errores.
-        dialog = DialogoDescarga(parent=self.get_toplevel())
+        dialog = DialogoDescarga(parent=self.get_toplevel(), force=True)
         dialog.run()
+        dialog.destroy()
+        # FIXME: Recargar Lista actual
 
     #def __add_remove_efecto(self, widget, efecto, valor):
     #    # Agrega o quita efecto de video.
@@ -276,3 +277,8 @@ class BasePanel(gtk.HPaned):
 
     def set_nueva_lista(self, archivos):
         self.derecha.set_nueva_lista(archivos)
+
+    def checkear_listas(self):
+        dialog = DialogoDescarga(parent=self.get_toplevel(), force=False)
+        dialog.run()
+        dialog.destroy()

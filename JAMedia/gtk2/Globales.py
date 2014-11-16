@@ -19,15 +19,36 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import shelve
 import socket
 import os
 import commands
 import shutil
+import json
+import codecs
 
 canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-tv-2014'
 radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014'
 webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
+
+
+def get_dict(path):
+    if not os.path.exists(path):
+        return {}
+    archivo = codecs.open(path, "r", "utf-8")
+    _dict = json.JSONDecoder(encoding="utf-8").decode(archivo.read())
+    archivo.close()
+    return _dict
+
+
+def set_dict(path, _dict):
+    archivo = open(path, "w")
+    archivo.write(
+        json.dumps(
+            _dict,
+            indent=4,
+            separators=(", ", ":"),
+            sort_keys=True))
+    archivo.close()
 
 
 def get_colors(key):
@@ -151,18 +172,6 @@ def make_base_directory():
     if not os.path.exists(os.path.join(os.environ["HOME"], "JAMediaDatos")):
         os.mkdir(os.path.join(os.environ["HOME"], "JAMediaDatos"))
         os.chmod(os.path.join(os.environ["HOME"], "JAMediaDatos"), 0755)
-
-    # unificar directorios de JAMedia,
-    # JAMediaVideo y JAMediaImagenes
-    directorio_viejo = os.path.join(os.environ["HOME"], ".JAMediaDatos")
-    directorio_nuevo = os.path.join(os.environ["HOME"], "JAMediaDatos")
-
-    if os.path.exists(directorio_viejo):
-        for elemento in os.listdir(directorio_viejo):
-            commands.getoutput('mv %s %s' % (os.path.join(directorio_viejo,
-                elemento), directorio_nuevo))
-
-        commands.getoutput('rm -r %s' % (directorio_viejo))
 
     # Directorios JAMedia
     DIRECTORIO_MIS_ARCHIVOS = os.path.join(os.environ["HOME"],
@@ -291,28 +300,26 @@ def eliminar_streaming(url, lista):
 
     if lista == "Radios":
         path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
-
     elif lista == "TVs":
         path = os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
-
     elif lista == "JAM-Radio":
         path = os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia")
-
     elif lista == "JAM-TV":
         path = os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia")
-
     elif lista == "WebCams":
         path = os.path.join(DIRECTORIO_DATOS, "JAMediaWebCams.JAMedia")
-
     else:
         return
 
-    archivo = shelve.open(path)
-    items = archivo.items()
+    _dict = get_dict(path)
+    cambios = False
+    items = _dict.items()
     for item in items:
         if url == str(item[1]):
-            del (archivo[item[0]])
-    archivo.close()
+            cambios = True
+            del(_dict[item[0]])
+    if cambios:
+        set_dict(path, _dict)
 
 
 def add_stream(tipo, item):
@@ -326,9 +333,9 @@ def add_stream(tipo, item):
         path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
     else:
         return
-    archivo = shelve.open(path)
-    archivo[item[0].strip()] = item[1].strip()
-    archivo.close()
+    _dict = get_dict(path)
+    _dict[item[0].strip()] = item[1].strip()
+    set_dict(path, _dict)
 
 
 def set_listas_default():
@@ -348,15 +355,13 @@ def set_listas_default():
 
     for archivo in listas:
         if not os.path.exists(archivo):
-            jamedialista = shelve.open(archivo)
-            jamedialista.close()
+            jamedialista = set_dict(archivo, {})
             os.chmod(archivo, 0666)
 
     # verificar si las listas están vacías,
     # si lo están se descargan las de JAMedia
-    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"))
-    lista = archivo.items()
-    archivo.close()
+    _dict = get_dict(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"))
+    lista = _dict.items()
 
     if not lista:
         try:
@@ -369,10 +374,8 @@ def set_listas_default():
 
     # verificar si las listas están vacías,
     # si lo están se descargan las de JAMedia
-    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS,
-        "JAMediaRadio.JAMedia"))
-    lista = archivo.items()
-    archivo.close()
+    _dict = get_dict(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"))
+    lista = _dict.items()
 
     if not lista:
         try:
@@ -385,10 +388,8 @@ def set_listas_default():
 
     # verificar si las listas están vacías,
     # si lo están se descargan las de JAMedia
-    archivo = shelve.open(os.path.join(DIRECTORIO_DATOS,
-        "JAMediaWebCams.JAMedia"))
-    lista = archivo.items()
-    archivo.close()
+    _dict = get_dict(os.path.join(DIRECTORIO_DATOS, "JAMediaWebCams.JAMedia"))
+    lista = _dict.items()
 
     if not lista:
         try:
@@ -494,9 +495,7 @@ def descarga_lista_de_streamings(url):
 
 
 def clear_lista_de_streamings(path):
-    archivo = shelve.open(path)
-    archivo.clear()
-    archivo.close()
+    set_dict(path, {})
 
 
 def guarda_lista_de_streamings(path, items):
@@ -505,10 +504,10 @@ def guarda_lista_de_streamings(path, items):
     de JAMedia y una lista de items [nombre, url] y los almacena
     en el archivo.
     """
-    archivo = shelve.open(path)
+    _dict = get_dict(path)
     for item in items:
-        archivo[item[0].strip()] = item[1].strip()
-    archivo.close()
+        _dict[item[0].strip()] = item[1].strip()
+    set_dict(path, _dict)
 
 
 def get_streamings(path):
@@ -517,11 +516,10 @@ def get_streamings(path):
     y devuelve la lista de streamings que contiene.
     """
     items = []
-    archivo = shelve.open(path)
-    keys = sorted(archivo.keys())
+    _dict = get_dict(path)
+    keys = sorted(_dict.keys())
     for key in keys:
-        items.append([key, archivo[key]])
-    archivo.close()
+        items.append([key, _dict[key]])
     return items
 
 
@@ -530,13 +528,11 @@ def stream_en_archivo(streaming, path):
     Verifica si un streaming está en
     un archivo de lista de jamedia determinado.
     """
-    archivo = shelve.open(path)
-    items = archivo.values()
+    _dict = get_dict(path)
+    items = _dict.values()
     for item in items:
         if streaming == item:
-            archivo.close()
             return True
-    archivo.close()
     return False
 
 
