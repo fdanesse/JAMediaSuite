@@ -104,7 +104,7 @@ BASEDICT = {
         'gio', 'vte', 'gconf', 'smtplib', 'feedparser',
         'twitter', 'pangocairo', 'matplotlib', 'setuptools',
         'ftplib', 'hippo', 'goocanvas', 'spyderlib', 'pilas',
-        'Box2D', 'zope', 'twisted', 'pyggel', 'gnash']),
+        'Box2D', 'zope', 'twisted', 'pyggel', 'gnash', 'psutil']),
         }
 
 '''python-gi

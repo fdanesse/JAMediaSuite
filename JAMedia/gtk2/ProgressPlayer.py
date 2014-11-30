@@ -126,7 +126,6 @@ class ProgressBar(gtk.HScale):
         self.set_digits(0)
         self.set_draw_value(False)
 
-        # FIXME: Verificar
         self.presed = False
         self.ancho, self.borde = (10, 10)
 
