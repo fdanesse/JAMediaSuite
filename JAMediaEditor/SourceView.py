@@ -21,6 +21,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import os
+import mimetypes
 
 from gi.repository import Gtk
 from gi.repository import GObject
@@ -28,6 +29,13 @@ from gi.repository import GtkSource
 from gi.repository import Pango
 from gi.repository import Gdk
 from gi.repository import GLib
+
+from Widgets import DialogoSobreEscritura
+from Widgets import My_FileChooser
+from Widgets import DialogoBuscar
+from Widgets import DialogoReemplazar
+from Widgets import DialogoAlertaSinGuardar
+from Widgets import DialogoErrores
 
 home = os.environ["HOME"]
 BatovideWorkSpace = os.path.join(home, 'BatovideWorkSpace')
@@ -89,13 +97,14 @@ class SourceView(GtkSource.View):
         scroll = self.get_parent()
         notebook = scroll.get_parent()
         paginas = notebook.get_n_pages()
+
         for indice in range(paginas):
             page = notebook.get_children()[indice]
-
             if page == scroll:
                 pag = notebook.get_children()[indice]
                 label = notebook.get_tab_label(pag).get_children()[0]
                 label.set_text(nombre)
+                break
 
         return False
 
@@ -107,7 +116,6 @@ class SourceView(GtkSource.View):
         self.get_buffer().set_highlight_syntax(False)
         self.get_buffer().set_language(None)
 
-        import mimetypes
         tipo = mimetypes.guess_type(archivo)[0]
         #FIXME: HACK para forzar detección vala por ejemplo
         extension = os.path.splitext(
@@ -124,6 +132,9 @@ class SourceView(GtkSource.View):
         GLib.timeout_add(3, self.__force_emit_new_select)
 
     def __force_emit_new_select(self):
+        """
+        Forzando Instrospección en Panel Lateral.
+        """
         lenguaje = False
         if self.lenguaje:
             lenguaje = self.lenguaje.get_name().lower()
@@ -172,7 +183,6 @@ class SourceView(GtkSource.View):
             archivo = os.path.join(archivo.replace("//", "/"))
 
             if os.path.exists(archivo):
-                from Widgets import DialogoSobreEscritura
                 dialog = DialogoSobreEscritura(
                     parent_window=self.get_toplevel())
 
@@ -182,7 +192,6 @@ class SourceView(GtkSource.View):
                 if respuesta == Gtk.ResponseType.ACCEPT:
                     self.archivo = os.path.join(archivo.replace("//", "/"))
                     self.__procesar_y_guardar()
-
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
 
@@ -252,7 +261,6 @@ class SourceView(GtkSource.View):
         """
         Cierra la página en el Notebook_SourceView de este sourceview.
         """
-
         self.get_toplevel().set_sensitive(False)
         self.new_handle(False)
 
@@ -375,7 +383,6 @@ class SourceView(GtkSource.View):
 
                 if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
                     self.guardar()
-
                 elif Gtk.ResponseType(response) == Gtk.ResponseType.CANCEL:
                     self.archivo = False
                     self.get_buffer().set_modified(True)
@@ -412,7 +419,7 @@ class SourceView(GtkSource.View):
                 pag = notebook.get_children()[indice]
                 label = notebook.get_tab_label(pag).get_children()[0]
                 label.modify_fg(0, color)
-                return
+                break
 
     def __handle(self):
         """
@@ -527,7 +534,6 @@ class SourceView(GtkSource.View):
         else:
             defaultpath = BatovideWorkSpace
 
-        from Widgets import My_FileChooser
         filechooser = My_FileChooser(parent_window=self.get_toplevel(),
             action_type=Gtk.FileChooserAction.SAVE,
             title="Guardar Archivo Como . . .", path=defaultpath)
@@ -544,7 +550,6 @@ class SourceView(GtkSource.View):
 
             if _buffer.get_modified() and os.path.exists(self.archivo):
                 self.__procesar_y_guardar()
-
             elif not os.path.exists(self.archivo):
                 return self.guardar_archivo_como()
 
@@ -607,11 +612,9 @@ class SourceView(GtkSource.View):
             try:
                 inicio, fin = _buffer.get_selection_bounds()
                 texto = _buffer.get_text(inicio, fin, 0)
-
             except:
                 texto = None
 
-            from Widgets import DialogoBuscar
             dialogo = DialogoBuscar(self, parent_window=self.get_toplevel(),
                 title="Buscar Texto", texto=texto)
 
@@ -623,11 +626,9 @@ class SourceView(GtkSource.View):
             try:
                 inicio, fin = _buffer.get_selection_bounds()
                 texto = _buffer.get_text(inicio, fin, 0)
-
             except:
                 texto = None
 
-            from Widgets import DialogoReemplazar
             dialogo = DialogoReemplazar(self,
                 parent_window=self.get_toplevel(),
                 title="Reemplazar Texto", texto=texto)
@@ -637,18 +638,16 @@ class SourceView(GtkSource.View):
 
         elif accion == "Cerrar Archivo":
             if _buffer.get_modified():
-                from Widgets import DialogoAlertaSinGuardar
                 dialog = DialogoAlertaSinGuardar(
                     parent_window=self.get_toplevel())
 
                 respuesta = dialog.run()
                 dialog.destroy()
+
                 if respuesta == Gtk.ResponseType.ACCEPT:
                     self.guardar()
-
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
-
                 elif respuesta == Gtk.ResponseType.CLOSE:
                     self.__cerrar()
 
@@ -684,7 +683,6 @@ class SourceView(GtkSource.View):
                     # la interfaz de la aplicación.
                     self.get_toplevel().set_sensitive(False)
 
-                    from Widgets import DialogoErrores
                     dialogo = DialogoErrores(self,
                         parent_window=self.get_toplevel())
 
@@ -737,7 +735,6 @@ class SourceView(GtkSource.View):
         if self.actualizador:
             GLib.source_remove(self.actualizador)
             self.actualizador = False
-
         if reset:
             self.actualizador = GLib.timeout_add(1000, self.__handle)
 

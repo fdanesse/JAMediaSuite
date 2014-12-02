@@ -9,10 +9,11 @@
 
 import os
 import sys
-
+import threading
 import gtk
 import gobject
 
+from Control.Control import Control
 from Widgets import TopView
 
 
@@ -50,6 +51,7 @@ class JAMediaTop(gtk.Plug):
 
         gtk.Plug.__init__(self, 0L)
 
+        self.control = Control()
         self.topview = TopView()
 
         scroll = gtk.ScrolledWindow()
@@ -60,6 +62,9 @@ class JAMediaTop(gtk.Plug):
 
         self.add(scroll)
         self.show_all()
+
+        _thread = threading.Thread(target=self.control.run)
+        _thread.start()
 
 
 if __name__=="__main__":

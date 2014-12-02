@@ -124,7 +124,6 @@ class JAMediaEditor(Gtk.Window):
                             GLib.idle_add(
                                 self.base_panel.external_open_proyect,
                                 archivo)
-
                         else:
                             GLib.idle_add(
                                 self.base_panel.external_open_file,
@@ -174,6 +173,9 @@ class JAMediaEditor(Gtk.Window):
         self.base_panel.set_accion_proyecto(widget, accion)
 
     def __set_toolbar_archivo_and_menu(self, widget, _dict):
+        """
+        Estado general del archivo.
+        """
         self.menu.update_archivos(_dict)
         self.base_panel.toolbararchivo.update(_dict)
         info = {
@@ -192,34 +194,20 @@ class JAMediaEditor(Gtk.Window):
         self.base_panel.toolbarproyecto.activar_proyecto(valor)
         # Ejecuciones
         self.base_panel.toolbararchivo.activar_ejecucion(False)
-        if valor:
-            self.base_panel.toolbarproyecto.activar_ejecucion(False)
-        else:
-            self.base_panel.toolbarproyecto.activar_ejecucion(False)
+        self.base_panel.toolbarproyecto.activar_ejecucion(False)
 
     def __set_toolbars_ejecucion(self, widget, tipo, valor):
         """
         Cuando se ejecuta un archivo o proyecto, se actualizan las toolbars.
         """
-        if not valor:
+        if valor:
+            self.base_panel.toolbararchivo.activar_ejecucion(
+                bool(tipo == "archivo"))
+            self.base_panel.toolbarproyecto.activar_ejecucion(
+                bool(tipo == "proyecto"))
+        else:
             self.base_panel.toolbararchivo.activar_ejecucion(False)
-            proyecto = self.base_panel.proyecto
-            if proyecto:
-                self.base_panel.toolbarproyecto.activar_ejecucion(False)
-
-            else:
-                self.base_panel.toolbarproyecto.activar_ejecucion(False)
-
-        elif valor:
-            if tipo == "proyecto":
-                # Se está ejecutando proyecto.
-                self.base_panel.toolbararchivo.activar_ejecucion(False)
-                self.base_panel.toolbarproyecto.activar_ejecucion(True)
-
-            elif tipo == "archivo":
-                # Se está ejecutando archivo.
-                self.base_panel.toolbarproyecto.activar_ejecucion(False)
-                self.base_panel.toolbararchivo.activar_ejecucion(True)
+            self.base_panel.toolbarproyecto.activar_ejecucion(False)
 
 
 if __name__ == "__main__":

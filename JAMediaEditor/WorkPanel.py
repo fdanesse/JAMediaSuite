@@ -27,6 +27,10 @@ from gi.repository import GObject
 from gi.repository import GLib
 
 from SourceView import SourceView
+from JAMediaTerminal.Terminal import Terminal
+from Widgets import DialogoAlertaSinGuardar
+from Widgets import DialogoAlertaSinGuardar
+from JAMediaTerminal.Widgets import DialogoFormato
 
 from Globales import get_pixels
 from Globales import get_boton
@@ -64,8 +68,6 @@ class WorkPanel(Gtk.Paned):
 
         Gtk.Paned.__init__(self, orientation=Gtk.Orientation.VERTICAL)
 
-        from JAMediaTerminal.Terminal import Terminal
-
         self.notebook_sourceview = Notebook_SourceView()
         self.terminal = Terminal()
 
@@ -91,6 +93,9 @@ class WorkPanel(Gtk.Paned):
         GLib.idle_add(self.terminal.hide)
 
     def __re_emit_update(self, widget, _dict):
+        """
+        Emite una señal con el estado general del archivo.
+        """
         self.emit("update", _dict)
 
     def __set_ejecucion(self, widget, terminal):
@@ -150,7 +155,6 @@ class WorkPanel(Gtk.Paned):
             if not archivo or archivo == None or \
                 view.get_buffer().get_modified():
 
-                from Widgets import DialogoAlertaSinGuardar
                 dialog = DialogoAlertaSinGuardar(
                     parent_window=self.get_toplevel())
 
@@ -159,10 +163,8 @@ class WorkPanel(Gtk.Paned):
 
                 if respuesta == Gtk.ResponseType.ACCEPT:
                     self.guardar_archivo()
-
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
-
                 elif respuesta == Gtk.ResponseType.CLOSE:
                     return
 
@@ -183,8 +185,6 @@ class WorkPanel(Gtk.Paned):
 
             if source:
                 if source.get_buffer().get_modified():
-                    from Widgets import DialogoAlertaSinGuardar
-
                     dialog = DialogoAlertaSinGuardar(
                         parent_window=self.get_toplevel())
                     respuesta = dialog.run()
@@ -192,10 +192,8 @@ class WorkPanel(Gtk.Paned):
 
                     if respuesta == Gtk.ResponseType.ACCEPT:
                         source.guardar()
-
                     elif respuesta == Gtk.ResponseType.CANCEL:
                         return
-
                     elif respuesta == Gtk.ResponseType.CLOSE:
                         return
 
@@ -235,7 +233,6 @@ class WorkPanel(Gtk.Paned):
                 self.terminal.hide()
             else:
                 self.terminal.show()
-
         elif accion == "Numeracion":
             self.notebook_sourceview.set_accion(accion, valor)
 
@@ -307,9 +304,15 @@ class Notebook_SourceView(Gtk.Notebook):
             self.emit('new_select', view, tipo)
 
     def __re_emit_update(self, widget, _dict):
+        """
+        Emite una señal con el estado general del archivo.
+        """
         self.emit("update", _dict)
 
     def __re_emit_force_select(self, widget, view, lenguaje):
+        """
+        Forzando Instrospección en Panel Lateral.
+        """
         self.emit('new_select', view, lenguaje)
 
     def __cerrar(self, widget):
@@ -387,8 +390,6 @@ class Notebook_SourceView(Gtk.Notebook):
         self.set_current_page(-1)
         self.set_tab_reorderable(scroll, True)
 
-
-
         """
         # FIXME: Cuando se abre un archivo, se cierra el vacío por default.
         if len(paginas) > 1:
@@ -459,7 +460,6 @@ class Notebook_SourceView(Gtk.Notebook):
 
         # Código.
         elif accion == "Formato":
-            from JAMediaTerminal.Widgets import DialogoFormato
             self.get_toplevel().set_sensitive(False)
             dialogo = DialogoFormato(parent_window=self.get_toplevel(),
                 fuente=self.config['fuente'], tamanio=self.config['tamanio'])
@@ -498,10 +498,8 @@ class Notebook_SourceView(Gtk.Notebook):
             view = pagina.get_child()
             if not view.archivo:
                 continue
-
             if proyecto_path in view.archivo:
                 sourceviews.append(view)
-
         return sourceviews
 
     def remove_proyect(self, proyecto_path):
@@ -513,7 +511,6 @@ class Notebook_SourceView(Gtk.Notebook):
             view = pagina.get_child()
             if not view.archivo:
                 continue
-
             if proyecto_path in view.archivo:
                 self.remove(pagina)
 
@@ -526,8 +523,6 @@ class Notebook_SourceView(Gtk.Notebook):
         if pagina > -1:
             view = self.get_children()[pagina].get_children()[0]
             archivo = view.archivo
-
             if archivo:
                 path = os.path.dirname(view.archivo)
-
         return path

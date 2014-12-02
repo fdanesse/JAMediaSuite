@@ -430,8 +430,9 @@ class Introspeccion(Gtk.TreeView):
                     new_funcion = self.__append(new_class, key, color, temp)
 
         else:
-            print "FIXME: Completar Introspección para otros lenguajes"
-            print self.set_introspeccion, nombre, tipo
+            #print "FIXME: Completar Introspección para otros lenguajes"
+            #print self.set_introspeccion, nombre, tipo
+            pass
 
         GLib.idle_add(self.expand_all)
 

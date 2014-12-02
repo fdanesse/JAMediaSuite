@@ -21,6 +21,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import json
+import codecs
+import commands
 
 from gi.repository import Gtk
 from gi.repository import GObject
@@ -31,6 +34,12 @@ from WorkPanel import WorkPanel
 from Toolbars import ToolbarProyecto
 from Toolbars import ToolbarArchivo
 from Toolbars import ToolbarBusquedas
+from Widgets import Multiple_FileChooser
+from DialogoProyecto import DialogoProyecto
+from Widgets import My_FileChooser
+from Widget_Setup import DialogoSetup
+
+import Licencias as Lic
 
 home = os.environ["HOME"]
 
@@ -109,8 +118,11 @@ class BasePanel(Gtk.Paned):
         self.infonotebook.connect('search_on_grep', self.__search_grep)
         self.infonotebook.connect('remove_proyect', self.__remove_proyect)
 
-    def __re_emit_update(self, widget, dict):
-        self.emit("update", dict)
+    def __re_emit_update(self, widget, _dict):
+        """
+        Emite una señal con el estado general del archivo.
+        """
+        self.emit("update", _dict)
 
     def __search_grep(self, widget, datos, parent):
         """
@@ -161,7 +173,6 @@ class BasePanel(Gtk.Paned):
             tree = self.infonotebook.introspeccion
             seleccion = self.infonotebook.introspeccion.get_selection()
             posibles = self.infonotebook.introspeccion.posibles
-
         else:
             tree = self.infonotebook.estructura_proyecto
             seleccion = self.infonotebook.estructura_proyecto.get_selection()
@@ -169,13 +180,11 @@ class BasePanel(Gtk.Paned):
 
         if accion == "Siguiente":
             self.seleccionado_actual += 1
-
         else:
             self.seleccionado_actual -= 1
 
         if self.seleccionado_actual > len(posibles) - 1:
             self.seleccionado_actual = 0
-
         elif self.seleccionado_actual < 0:
             self.seleccionado_actual = len(posibles) - 1
 
@@ -231,12 +240,10 @@ class BasePanel(Gtk.Paned):
             if codeviews:
                 self.infonotebook.set_path_estructura(path)
                 self.emit("proyecto_abierto", True)
-
             else:
                 self.proyecto = {}
                 self.emit("proyecto_abierto", False)
                 self.infonotebook.set_path_estructura(False)
-
         else:
             self.proyecto = {}
             self.emit("proyecto_abierto", False)
@@ -253,15 +260,12 @@ class BasePanel(Gtk.Paned):
 
     def __abrir_archivo(self, widget, archivo):
         if archivo:
-            import commands
             datos = commands.getoutput(
                 'file -ik %s%s%s' % ("\"", archivo, "\""))
-
             if "text" in datos or "x-python" in datos or \
                 "x-empty" in datos or "svg+xml" in datos or \
                 "application/xml" in datos:
                 self.workpanel.abrir_archivo(archivo)
-
         else:
             self.workpanel.abrir_archivo(False)
 
@@ -269,9 +273,6 @@ class BasePanel(Gtk.Paned):
         extension = os.path.splitext(os.path.split(archivo)[1])[1]
         if not extension == ".ide":
             return
-
-        import json
-        import codecs
 
         pro = codecs.open(archivo, "r", "utf-8")
         proyecto = json.JSONDecoder("utf-8").decode(pro.read())
@@ -299,10 +300,8 @@ class BasePanel(Gtk.Paned):
         """
         if not self.proyecto:
             return
-
         codeviews = self.workpanel.get_archivos_de_proyecto(
             self.proyecto["path"])
-
         for view in codeviews:
             view.guardar()
 
@@ -315,11 +314,8 @@ class BasePanel(Gtk.Paned):
             return
 
         # Seteo automático del path del proyecto.
-        path = False
-        if proyecto.get("path", False):
-            path = proyecto["path"]
-
-        else:
+        path = proyecto.get("path", False)
+        if not path:
             path = os.path.join(BatovideWorkSpace, proyecto["nombre"])
 
         if not os.path.exists(path):
@@ -333,12 +329,11 @@ class BasePanel(Gtk.Paned):
         main_path = os.path.join(proyecto["path"], proyecto["main"])
         if not os.path.exists(main_path):
             arch = open(main_path, "w")
-            arch.write("#!/usr/bin/env python\n# -*- coding: utf-8 -*-")
+            arch.write("#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n")
             arch.close()
 
         # Seteo automático de licencia
         licencia_path = os.path.join(proyecto["path"], "COPYING")
-        import Licencias as Lic
 
         arch = open(licencia_path, "w")
         arch.write(Lic.dict[proyecto["licencia"]])
@@ -358,7 +353,6 @@ class BasePanel(Gtk.Paned):
         # Guardar el Proyecto.
         proyecto_file = os.path.join(path, "proyecto.ide")
 
-        import json
         archivo = open(proyecto_file, "w")
         archivo.write(json.dumps(proyecto, indent=4,
             separators=(", ", ":"), sort_keys=True))
@@ -380,7 +374,7 @@ class BasePanel(Gtk.Paned):
             return True
 
         codeviews = self.workpanel.get_archivos_de_proyecto(
-            self.proyecto["path"])
+            self.proyecto.get("path", ""))
 
         if codeviews:
             # Cerrar Archivos. Esto pedirá guardar si hay cambios en él.
@@ -398,7 +392,7 @@ class BasePanel(Gtk.Paned):
             return True
 
         codeviews = self.workpanel.get_archivos_de_proyecto(
-            self.proyecto["path"])
+            self.proyecto.get("path", ""))
 
         if codeviews:
             # Cerrar Archivos.
@@ -416,7 +410,7 @@ class BasePanel(Gtk.Paned):
             return True
 
         codeviews = self.workpanel.get_archivos_de_proyecto(
-            self.proyecto["path"])
+            self.proyecto.get("path", ""))
 
         if codeviews:
             return False
@@ -431,7 +425,6 @@ class BasePanel(Gtk.Paned):
         se manda ejecutar una acción desde el menú.
         """
         if accion == "Nuevo Proyecto":
-            from DialogoProyecto import DialogoProyecto
             dialog = DialogoProyecto(parent_window=self.get_toplevel(),
                 title="Crear Nuevo Proyecto")
 
@@ -455,7 +448,6 @@ class BasePanel(Gtk.Paned):
 
         elif accion == "Editar Proyecto":
             if self.proyecto:
-                from DialogoProyecto import DialogoProyecto
                 dialog = DialogoProyecto(parent_window=self.get_toplevel(),
                     title="Editar Proyecto", accion="editar")
 
@@ -471,7 +463,6 @@ class BasePanel(Gtk.Paned):
                 dialog.destroy()
 
         elif accion == "Abrir Proyecto":
-            from Widgets import My_FileChooser
             filechooser = My_FileChooser(parent_window=self.get_toplevel(),
                 action_type=Gtk.FileChooserAction.OPEN, filter_type=["*.ide"],
                 title="Abrir proyecto", path=BatovideWorkSpace)
@@ -496,7 +487,6 @@ class BasePanel(Gtk.Paned):
 
         elif accion == "Construir":
             self.get_toplevel().set_sensitive(False)
-            from Widget_Setup import DialogoSetup
             dialog = DialogoSetup(parent_window=self.get_toplevel(),
                 proyecto=self.proyecto)
 
@@ -522,7 +512,6 @@ class BasePanel(Gtk.Paned):
                 self.infonotebook_box.hide()
             else:
                 self.infonotebook_box.show()
-
         elif accion == "Numeracion" or accion == "Panel inferior":
             self.workpanel.set_accion_ver(accion, valor)
 
@@ -543,7 +532,6 @@ class BasePanel(Gtk.Paned):
                 if self.proyecto:
                     path = self.proyecto["path"]
 
-            from Widgets import Multiple_FileChooser
             filechooser = Multiple_FileChooser(
                 parent_window=self.get_toplevel(), title="Abrir Archivo",
                 path=path, mime_type=["text/*", "image/svg+xml"])
