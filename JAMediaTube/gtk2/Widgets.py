@@ -362,33 +362,6 @@ class Toolbar_Descarga(gtk.VBox):
         self.jamediayoutube.connect("progress_download",
             self.__progress_download)
 
-    def download(self, video_item):
-        """
-        Comienza a descargar un video-item.
-        """
-        self.estado = True
-        self.progress = 0.0
-        self.datostemporales = None
-        self.ultimosdatos = None
-        self.contadortestigo = 0
-
-        self.video_item = video_item
-        self.url = video_item.videodict["url"]
-        self.titulo = video_item.videodict["titulo"]
-
-        texto = self.titulo
-        if len(self.titulo) > 30:
-            texto = str(self.titulo[0:30]) + " . . . "
-
-        self.label_titulo.set_text(texto)
-        self.jamediayoutube.download(self.url, self.titulo)
-
-        if self.actualizador:
-            gobject.source_remove(self.actualizador)
-
-        self.actualizador = gobject.timeout_add(1000, self.__handle)
-        self.show_all()
-
     def __handle(self):
         """
         Verifica que se esté descargando el archivo.
@@ -465,6 +438,34 @@ class Toolbar_Descarga(gtk.VBox):
         self.emit("end")
         return False
 
+    def download(self, video_item):
+        """
+        Comienza a descargar un video-item.
+        """
+        self.estado = True
+        self.progress = 0.0
+        self.datostemporales = None
+        self.ultimosdatos = None
+        self.contadortestigo = 0
+
+        self.video_item = video_item
+        self.url = video_item.videodict["url"]
+        self.titulo = video_item.videodict["titulo"]
+
+        texto = self.titulo
+        if len(self.titulo) > 30:
+            texto = str(self.titulo[0:30]) + " . . . "
+
+        self.label_titulo.set_text(texto)
+        self.jamediayoutube.download(self.url, self.titulo)
+
+        if self.actualizador:
+            gobject.source_remove(self.actualizador)
+            self.actualizador = False
+
+        self.actualizador = gobject.timeout_add(1000, self.__handle)
+        self.show_all()
+
 
 class Progreso_Descarga(gtk.EventBox):
     """
@@ -515,9 +516,9 @@ class ProgressBar(gtk.HScale):
         self.set_draw_value(False)
         self.borde, self.ancho = (15, 10)
 
-        self.connect("expose_event", self.expose)
+        self.connect("expose_event", self.__expose)
 
-    def expose(self, widget, event):
+    def __expose(self, widget, event):
         x, y, w, h = self.get_allocation()
         ancho, borde = (self.ancho, self.borde)
 
@@ -696,19 +697,19 @@ class ToolbarSalir(gtk.Toolbar):
 
         self.show_all()
 
-    def run(self, nombre_aplicacion):
-        """
-        La toolbar se muestra y espera confirmación.
-        """
-        self.label.set_text("¿Salir de %s?" % (nombre_aplicacion))
-        self.show()
-
     def __emit_salir(self, widget):
         """
         Confirma Salir de la aplicación.
         """
         self.cancelar()
         self.emit('salir')
+
+    def run(self, nombre_aplicacion):
+        """
+        La toolbar se muestra y espera confirmación.
+        """
+        self.label.set_text("¿Salir de %s?" % (nombre_aplicacion))
+        self.show()
 
     def cancelar(self, widget=None):
         """
