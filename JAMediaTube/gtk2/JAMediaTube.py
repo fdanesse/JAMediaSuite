@@ -23,7 +23,6 @@ import os
 import sys
 import gtk
 import gobject
-import commands
 
 from Widgets import Toolbar
 from Widgets import Toolbar_Busqueda
@@ -118,7 +117,6 @@ class JAMediaTube(gtk.Window):
         self.realize()
 
         self.paneltube.set_vista_inicial()  # oculta las toolbarsaccion
-
         gobject.idle_add(self.__setup_init2)
 
     def __setup_init2(self):
@@ -127,9 +125,7 @@ class JAMediaTube(gtk.Window):
         """
         self.__cancel_toolbar()
         self.paneltube.cancel_toolbars_flotantes()
-
         map(self.__ocultar, [self.toolbar_descarga, self.alerta_busqueda])
-
         if self.archivos:
             self.__switch(None, 'jamedia')
             self.jamedia.base_panel.set_nueva_lista(self.archivos)
@@ -173,18 +169,15 @@ class JAMediaTube(gtk.Window):
         """
         self.paneltube.set_sensitive(False)
         self.toolbar_busqueda.set_sensitive(False)
-
         destino = False
         if toolbarwidget == self.paneltube.toolbar_encontrados:
             destino = self.paneltube.encontrados
         elif toolbarwidget == self.paneltube.toolbar_descargar:
             destino = self.paneltube.descargar
-
         objetos = destino.get_children()
         for objeto in objetos:
             objeto.get_parent().remove(objeto)
             objeto.destroy()
-
         gobject.idle_add(self.__add_videos, shelve_list, destino)
 
     def __run_download(self, widget):
@@ -193,7 +186,6 @@ class JAMediaTube(gtk.Window):
         """
         if self.toolbar_descarga.estado:
             return
-
         videos = self.paneltube.descargar.get_children()
         if videos:
             videos[0].get_parent().remove(videos[0])
@@ -217,12 +209,10 @@ class JAMediaTube(gtk.Window):
                 destino.pack_start(videoitem, False, False, 1)
             except:
                 return
-
             if destino == self.paneltube.descargar:
                 text = TipDescargas
             elif destino == self.paneltube.encontrados:
                 text = TipEncontrados
-
             videoitem.set_tooltip_text(text)
 
     def __comenzar_busqueda(self, widget, palabras):
@@ -236,12 +226,10 @@ class JAMediaTube(gtk.Window):
         self.paneltube.cancel_toolbars_flotantes()
         map(self.__mostrar, [self.alerta_busqueda])
         self.alerta_busqueda.label.set_text("Buscando: %s" % (palabras))
-
         objetos = self.paneltube.encontrados.get_children()
         for objeto in objetos:
             objeto.get_parent().remove(objeto)
             objeto.destroy()
-
         gobject.timeout_add(300, self.__lanzar_busqueda, palabras)
 
     def __lanzar_busqueda(self, palabras):

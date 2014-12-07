@@ -124,9 +124,7 @@ class Help(gtk.Dialog):
                 help.set_from_file(os.path.join(BASE_PATH,
                     "Iconos", "help-%s.svg" % x))
                 tabla1.attach_defaults(help, 0, 5, 1, 2)
-
                 self.helps.append(help)
-
             except:
                 pass
 
@@ -144,7 +142,6 @@ class Help(gtk.Dialog):
             map(self.__ocultar, self.helps[1:])
             self.anterior.hide()
             self.helps[0].show()
-
         else:
             index = self.__get_index_visible()
             helps = list(self.helps)
@@ -153,7 +150,6 @@ class Help(gtk.Dialog):
             if widget == self.siguiente:
                 if index < len(self.helps) - 1:
                     new_index += 1
-
             elif widget == self.anterior:
                 if index > 0:
                     new_index -= 1
@@ -164,13 +160,11 @@ class Help(gtk.Dialog):
 
             if new_index > 0:
                 self.anterior.show()
-
             else:
                 self.anterior.hide()
 
             if new_index < self.helps.index(self.helps[-1]):
                 self.siguiente.show()
-
             else:
                 self.siguiente.hide()
 
@@ -206,35 +200,27 @@ class MouseSpeedDetector(gobject.GObject):
         """
         Emite la señal de estado cada 60 segundos.
         """
-
         try:
             display, posx, posy = gtk.gdk.display_get_default(
                 ).get_window_at_pointer()
-
         except:
             return True
-
         if posx > 0 and posy > 0:
             if posx != self.mouse_pos[0] or posy != self.mouse_pos[1]:
                 self.mouse_pos = (posx, posy)
                 self.emit("estado", "moviendose")
-
             else:
                 self.emit("estado", "detenido")
-
         else:
             self.emit("estado", "fuera")
-
         return True
 
     def new_handler(self, reset):
         """
         Resetea el controlador o lo termina según reset.
         """
-
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
-
         if reset:
             self.actualizador = gobject.timeout_add(1000, self.__handler)

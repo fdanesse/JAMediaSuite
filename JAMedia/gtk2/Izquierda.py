@@ -84,7 +84,8 @@ class Izquierda(gtk.EventBox):
 
         self.toolbar_record.connect("stop", self.__emit_stop_record)
 
-        self.video_visor.connect("ocultar_controles", self.__emit_show_controls)
+        self.video_visor.connect("ocultar_controles",
+            self.__emit_show_controls)
         self.video_visor.connect("button_press_event", self.__set_fullscreen)
 
         self.toolbar_info.connect("rotar", self.__emit_rotar)
@@ -116,15 +117,12 @@ class Izquierda(gtk.EventBox):
             screen = win.get_screen()
             w, h = win.get_size()
             ww, hh = (screen.get_width(), screen.get_height())
-
             if ww == w and hh == h:
                 win.set_border_width(2)
                 gobject.idle_add(self.__set_full, win, False)
-
             else:
                 win.set_border_width(0)
                 gobject.idle_add(self.__set_full, win, True)
-
             widget.set_sensitive(True)
 
     def __set_full(self, win, valor):
@@ -138,7 +136,8 @@ class Izquierda(gtk.EventBox):
         self.emit("show-controls", (zona, ocultar))
 
     def setup_init(self):
-        map(ocultar, [self.toolbar_record, self.buffer_info])  #, self.efectos_aplicados])
+        map(ocultar, [self.toolbar_record, self.buffer_info])
+        #, self.efectos_aplicados])
         self.toolbar_info.set_video(False)
         self.progress.set_sensitive(False)
 

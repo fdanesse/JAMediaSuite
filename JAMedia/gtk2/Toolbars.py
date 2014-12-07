@@ -160,21 +160,17 @@ class ToolbarAccion(gtk.EventBox):
         """
         Ejecuta una accion sobre un archivo o streaming en la lista.
         """
-
         uri = self.lista.get_model().get_value(self.iter, 2)
-
         if self.accion == "Quitar":
             path = self.lista.get_model().get_path(self.iter)
             path = (path[0] - 1, )
             self.lista.get_model().remove(self.iter)
             self.__reselect(path)
-
         else:
             if describe_acceso_uri(uri):
                 if self.accion == "Copiar":
                     if os.path.isfile(uri):
                         copiar(uri, get_my_files_directory())
-
                 elif self.accion == "Borrar":
                     if os.path.isfile(uri):
                         if borrar(uri):
@@ -182,7 +178,6 @@ class ToolbarAccion(gtk.EventBox):
                             path = (path[0] - 1, )
                             self.lista.get_model().remove(self.iter)
                             self.__reselect(path)
-
                 elif self.accion == "Mover":
                     if os.path.isfile(uri):
                         if mover(uri, get_my_files_directory()):
@@ -190,7 +185,6 @@ class ToolbarAccion(gtk.EventBox):
                             path = (path[0] - 1, )
                             self.lista.get_model().remove(self.iter)
                             self.__reselect(path)
-
             else:
                 if self.accion == "Borrar":
                     self.emit("accion-stream", "Borrar", uri)
@@ -198,20 +192,16 @@ class ToolbarAccion(gtk.EventBox):
                     path = (path[0] - 1, )
                     self.lista.get_model().remove(self.iter)
                     self.__reselect(path)
-
                 elif self.accion == "Copiar":
                     self.emit("accion-stream", "Copiar", uri)
-
                 elif self.accion == "Mover":
                     self.emit("accion-stream", "Mover", uri)
                     path = self.lista.get_model().get_path(self.iter)
                     path = (path[0] - 1, )
                     self.lista.get_model().remove(self.iter)
                     self.__reselect(path)
-
                 elif self.accion == "Grabar":
                     self.emit("grabar", uri)
-
         self.cancelar()
 
     def __reselect(self, path):
@@ -229,21 +219,16 @@ class ToolbarAccion(gtk.EventBox):
         Configura una accion sobre un archivo o streaming y muestra
         toolbaraccion para que el usuario confirme o cancele dicha accion.
         """
-
         self.lista = lista
         self.accion = accion
         self.iter = _iter
-
         if self.lista and self.accion and self.iter:
             uri = self.lista.get_model().get_value(self.iter, 2)
             texto = uri
-
             if os.path.exists(uri):
                 texto = os.path.basename(uri)
-
             if len(texto) > 30:
                 texto = " . . . " + str(texto[len(texto) - 30:-1])
-
             self.label.set_text("¿%s?: %s" % (accion, texto))
             self.show_all()
 
@@ -393,7 +378,6 @@ class ToolbarAddStream(gtk.EventBox):
         nombre, url = (self.nombre.get_text(), self.url.get_text())
         if nombre and url:
             self.emit('add-stream', self.tipo, nombre, url)
-
         self.cancelar()
 
     def set_accion(self, tipo):

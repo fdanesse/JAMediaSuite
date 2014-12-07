@@ -21,7 +21,6 @@
 
 import os
 import gobject
-import pygst
 import gst
 import gtk
 
@@ -31,7 +30,7 @@ from JAMediaBins import JAMedia_Video_Pipeline
 PR = False
 
 gobject.threads_init()
-gtk.gdk.threads_init()
+#gtk.gdk.threads_init()
 
 
 class JAMediaReproductor(gobject.GObject):
@@ -85,29 +84,24 @@ class JAMediaReproductor(gobject.GObject):
     def __sync_message(self, bus, message):
         if message.type == gst.MESSAGE_ELEMENT:
             if message.structure.get_name() == 'prepare-xwindow-id':
-                gtk.gdk.threads_enter()
-                gtk.gdk.display_get_default().sync()
+                #gtk.gdk.threads_enter()
+                #gtk.gdk.display_get_default().sync()
                 message.src.set_xwindow_id(self.ventana_id)
-                gtk.gdk.threads_leave()
+                #gtk.gdk.threads_leave()
 
         elif message.type == gst.MESSAGE_STATE_CHANGED:
             old, new, pending = message.parse_state_changed()
-
             if self.estado != new:
                 self.estado = new
-
                 if new == gst.STATE_PLAYING:
                     self.emit("estado", "playing")
                     self.__new_handle(True)
-
                 elif new == gst.STATE_PAUSED:
                     self.emit("estado", "paused")
                     self.__new_handle(False)
-
                 elif new == gst.STATE_NULL:
                     self.emit("estado", "None")
                     self.__new_handle(False)
-
                 else:
                     self.emit("estado", "paused")
                     self.__new_handle(False)
@@ -149,7 +143,6 @@ class JAMediaReproductor(gobject.GObject):
             if buf < 100 and self.estado == gst.STATE_PLAYING:
                 self.emit("loading-buffer", buf)
                 self.__pause()
-
             elif buf > 99 and self.estado != gst.STATE_PLAYING:
                 self.emit("loading-buffer", buf)
                 self.play()
@@ -161,26 +154,20 @@ class JAMediaReproductor(gobject.GObject):
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
-
         if reset:
             self.actualizador = gobject.timeout_add(500, self.__handle)
 
     def __handle(self):
         if not self.progressbar:
             return True
-
         duracion = self.player.query_duration(gst.FORMAT_TIME)[0] / gst.SECOND
         posicion = self.player.query_position(gst.FORMAT_TIME)[0] / gst.SECOND
-
         pos = posicion * 100 / duracion
-
         if self.duracion != duracion:
             self.duracion = duracion
-
         if pos != self.posicion:
             self.posicion = pos
             self.emit("newposicion", self.posicion)
-
         return True
 
     def play(self):
@@ -190,7 +177,6 @@ class JAMediaReproductor(gobject.GObject):
         if self.estado == gst.STATE_PAUSED or self.estado == gst.STATE_NULL \
             or self.estado == gst.STATE_READY:
             self.play()
-
         elif self.estado == gst.STATE_PLAYING:
             self.__pause()
 
@@ -213,37 +199,28 @@ class JAMediaReproductor(gobject.GObject):
     def load(self, uri):
         if not uri:
             return False
-
         self.duracion = 0.0
         self.posicion = 0.0
         self.emit("newposicion", self.posicion)
         self.emit("loading-buffer", 100)
-
         if os.path.exists(uri):
             #direccion = gst.filename_to_uri(uri)
             direccion = "file://" + uri
             self.player.set_property("uri", direccion)
             self.progressbar = True
-            #self.play()
-
         else:
             if gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
                 self.progressbar = False
-                #self.play()
-
         return False
 
     def set_position(self, posicion):
         if not self.progressbar:
             return
-
         if self.duracion < posicion:
             return
-
         if self.duracion == 0 or posicion == 0:
             return
-
         posicion = self.duracion * posicion / 100
 
         # http://pygstdocs.berlios.de/pygst-reference/gst-constants.html
@@ -258,16 +235,15 @@ class JAMediaReproductor(gobject.GObject):
         #    posicion,
         #    gst.SEEK_TYPE_SET,
         #    self.duracion)
-
         # http://nullege.com/codes/show/
         #   src@c@o@congabonga-HEAD@congaplayer@congalib@engines@gstplay.py/
         #   104/gst.SEEK_FLAG_ACCURATE
+
         event = gst.event_new_seek(
             1.0, gst.FORMAT_TIME,
             gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_ACCURATE,
             gst.SEEK_TYPE_SET, posicion * 1000000000,
             gst.SEEK_TYPE_NONE, self.duracion * 1000000000)
-
         self.player.send_event(event)
         #self.player.set_state(gst.STATE_PLAYING)
 

@@ -99,7 +99,6 @@ class PlayerControls(gtk.EventBox):
         if valor:
             map(sensibilizar, [self.atras, self.play,
                 self.siguiente, self.stop])
-
         else:
             map(insensibilizar, [self.atras, self.play,
                 self.siguiente, self.stop])

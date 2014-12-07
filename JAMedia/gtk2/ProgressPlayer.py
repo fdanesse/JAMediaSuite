@@ -100,7 +100,6 @@ class BarraProgreso(gtk.EventBox):
     def set_progress(self, valor=0.0):
         if self.escala.presed:
             return
-
         if self.valor != valor:
             self.valor = valor
             self.escala.ajuste.set_value(valor)
@@ -150,11 +149,9 @@ class ProgressBar(gtk.HScale):
         Cuando el usuario se desplaza por la barra de progreso.
         Se emite el valor en % (float).
         """
-
         if event.state == gtk.gdk.MOD2_MASK | gtk.gdk.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
-
             if valor >= 0.0 and valor <= 100.0:
                 self.ajuste.set_value(valor)
                 self.queue_draw()
@@ -164,7 +161,6 @@ class ProgressBar(gtk.HScale):
         """
         Dibuja el estado de la barra de progreso.
         """
-
         x, y, w, h = self.get_allocation()
         ancho, borde = (self.ancho, self.borde)
 
@@ -222,6 +218,5 @@ class ControlVolumen(gtk.VolumeButton):
         """
         Cuando el usuario desplaza la escala.
         """
-
         valor = int(valor * 10)
         self.emit('volumen', valor)

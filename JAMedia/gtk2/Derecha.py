@@ -142,17 +142,14 @@ class Derecha(gtk.EventBox):
             self.player_controls.activar(True)
         else:
             self.player_controls.activar(False)
-
         self.emit("cargar-reproducir", path)
 
     def show_config(self):
         objs = self.get_child().get_children()
         valor = objs[0].get_visible()
-
         if valor:
             ocultar(objs[0])
             map(mostrar, objs[1:])
-
         else:
             mostrar(objs[0])
             map(ocultar, objs[1:])

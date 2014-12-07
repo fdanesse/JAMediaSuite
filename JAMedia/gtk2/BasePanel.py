@@ -110,16 +110,12 @@ class BasePanel(gtk.HPaned):
         self.__emit_menu_activo()
         if prop == "saturacion":
             self.player.set_balance(saturacion=valor)
-
         elif prop == "contraste":
             self.player.set_balance(contraste=valor)
-
         elif prop == "brillo":
             self.player.set_balance(brillo=valor)
-
         elif prop == "hue":
             self.player.set_balance(hue=valor)
-
         elif prop == "gamma":
             self.player.set_balance(gamma=valor)
 
@@ -141,14 +137,11 @@ class BasePanel(gtk.HPaned):
         self.__emit_menu_activo()
         if accion == "atras":
             self.derecha.lista.seleccionar_anterior()
-
         elif accion == "siguiente":
             self.derecha.lista.seleccionar_siguiente()
-
         elif accion == "stop":
             if self.player:
                 self.player.stop()
-
         elif accion == "pausa-play":
             if self.player:
                 self.player.pause_play()
@@ -227,27 +220,22 @@ class BasePanel(gtk.HPaned):
         if "playing" in valor:
             self.derecha.player_controls.set_playing()
             self.izquierda.progress.set_sensitive(True)
-
         elif "paused" in valor or "None" in valor:
             self.derecha.player_controls.set_paused()
-
         else:
             print "Estado del Reproductor desconocido:", valor
-
         gobject.idle_add(self.__update_balance)
 
     def __update_balance(self):
         config = {}
         if self.player:
             config = self.player.get_balance()
-
         self.derecha.balance.set_balance(
             brillo=config.get('brillo', 50.0),
             contraste=config.get('contraste', 50.0),
             saturacion=config.get('saturacion', 50.0),
             hue=config.get('hue', 50.0),
             gamma=config.get('gamma', 10.0))
-
         return False
 
     def __check_ip(self):

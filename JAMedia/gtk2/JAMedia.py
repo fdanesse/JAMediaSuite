@@ -43,7 +43,7 @@ from Globales import add_stream
 from Globales import get_my_files_directory
 from Globales import describe_archivo
 
-gobject.threads_init()
+#gobject.threads_init()
 
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
 
@@ -200,16 +200,13 @@ class JAMedia(gtk.Window):
             self.grabador.stop()
             del(self.grabador)
             self.grabador = False
-
         self.base_panel.izquierda.toolbar_record.stop()
 
     def __accion_stream(self, widget, accion, url):
         lista = self.base_panel.derecha.lista.toolbar.label.get_text()
-
         if accion == "Borrar":
             eliminar_streaming(url, lista)
             print "Streaming Eliminado:", url
-
         elif accion == "Copiar":
             modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
                 ).get_selected()
@@ -217,7 +214,6 @@ class JAMedia(gtk.Window):
             url = modelo.get_value(_iter, 2)
             tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
             add_stream(tipo, [nombre, url])
-
         elif accion == "Mover":
             modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
                 ).get_selected()
@@ -226,7 +222,6 @@ class JAMedia(gtk.Window):
             tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
             add_stream(tipo, [nombre, url])
             eliminar_streaming(url, lista)
-
         else:
             print "accion_stream desconocido:", accion
 
@@ -260,29 +255,24 @@ class JAMedia(gtk.Window):
         Muestra u oculta el mouse de jamedia según su posición.
         """
         win = self.get_property("window")
-
         if self.mouse_in_visor:  # Solo cuando el mouse está sobre el Visor.
             if estado == "moviendose":
                 if win.get_cursor() != self.jamedia_cursor:
                     win.set_cursor(self.jamedia_cursor)
                     return
-
             elif estado == "detenido":
                 if win.get_cursor() != gtk.gdk.BLANK_CURSOR:
                     win.set_cursor(gtk.gdk.Cursor(gtk.gdk.BLANK_CURSOR))
                     return
-
             elif estado == "fuera":
                 if win.get_cursor() != self.cursor_root:
                     win.set_cursor(self.cursor_root)
                     return
-
         else:
             if estado == "moviendose" or estado == "detenido":
                 if win.get_cursor() != self.jamedia_cursor:
                     win.set_cursor(self.jamedia_cursor)
                     return
-
             elif estado == "fuera":
                 if win.get_cursor() != self.cursor_root:
                     win.set_cursor(self.cursor_root)
@@ -291,7 +281,6 @@ class JAMedia(gtk.Window):
     def __ocultar_controles(self, widget, datos):
         zona, ocultar = datos
         self.mouse_in_visor = zona
-
         if zona and ocultar:
             self.__cancel_toolbars()
             self.set_border_width(0)
@@ -300,7 +289,6 @@ class JAMedia(gtk.Window):
             self.base_panel.derecha.hide()
             self.base_panel.izquierda.toolbar_info.hide()
             self.base_panel.izquierda.progress.hide()
-
         elif not zona and ocultar:
             self.toolbar.show()
             self.set_border_width(2)
@@ -308,14 +296,11 @@ class JAMedia(gtk.Window):
             self.base_panel.derecha.show()
             self.base_panel.izquierda.toolbar_info.show()
             self.base_panel.izquierda.progress.show()
-
             #if not self.hbox_efectos_en_pipe.get_children():
             #    self.hbox_efectos_en_pipe.get_parent().get_parent(
             #        ).get_parent().hide()
-
         elif not zona and not ocultar:
             pass
-
         elif zona and not ocultar:
             pass
 
