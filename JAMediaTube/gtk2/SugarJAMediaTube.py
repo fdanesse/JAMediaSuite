@@ -180,18 +180,15 @@ class SugarJAMediaTube(activity.Activity):
         """
         self.paneltube.set_sensitive(False)
         self.toolbar_busqueda.set_sensitive(False)
-
         destino = False
         if toolbarwidget == self.paneltube.toolbar_encontrados:
             destino = self.paneltube.encontrados
         elif toolbarwidget == self.paneltube.toolbar_descargar:
             destino = self.paneltube.descargar
-
         objetos = destino.get_children()
         for objeto in objetos:
             objeto.get_parent().remove(objeto)
             objeto.destroy()
-
         gobject.idle_add(self.__add_videos, shelve_list, destino)
 
     def __run_download(self, widget):
@@ -200,7 +197,6 @@ class SugarJAMediaTube(activity.Activity):
         """
         if self.toolbar_descarga.estado:
             return
-
         videos = self.paneltube.descargar.get_children()
         if videos:
             videos[0].get_parent().remove(videos[0])
@@ -224,12 +220,10 @@ class SugarJAMediaTube(activity.Activity):
                 destino.pack_start(videoitem, False, False, 1)
             except:
                 return
-
             if destino == self.paneltube.descargar:
                 text = TipDescargas
             elif destino == self.paneltube.encontrados:
                 text = TipEncontrados
-
             videoitem.set_tooltip_text(text)
 
     def __comenzar_busqueda(self, widget, palabras):
@@ -243,12 +237,10 @@ class SugarJAMediaTube(activity.Activity):
         self.paneltube.cancel_toolbars_flotantes()
         map(self.__mostrar, [self.alerta_busqueda])
         self.alerta_busqueda.label.set_text("Buscando: %s" % (palabras))
-
         objetos = self.paneltube.encontrados.get_children()
         for objeto in objetos:
             objeto.get_parent().remove(objeto)
             objeto.destroy()
-
         gobject.timeout_add(300, self.__lanzar_busqueda, palabras)
 
     def __lanzar_busqueda(self, palabras):
@@ -271,7 +263,6 @@ class SugarJAMediaTube(activity.Activity):
             # encontrados en las búsquedas, no los que se cargan
             # desde un archivo.
             map(self.__ocultar, [self.alerta_busqueda])
-
         if not videos:
             self.paneltube.set_sensitive(True)
             self.toolbar_busqueda.set_sensitive(True)

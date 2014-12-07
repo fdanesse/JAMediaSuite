@@ -146,9 +146,7 @@ class GstreamerVideoEfectos(gtk.VBox):
         """
         Agrega los items a la lista, uno a uno, actualizando.
         """
-
         self.set_sensitive(False)
-
         if not elementos:
             self.set_sensitive(True)
             return False
@@ -170,15 +168,14 @@ class GstreamerVideoEfectos(gtk.VBox):
 
         self.show_all()
         elementos.remove(elementos[0])
-
         gobject.idle_add(self.cargar_efectos, elementos)
-
         return False
 
 
 class Efecto_widget_Config(gtk.EventBox):
     """
-    Contiene el botón para el efecto y los controles de configuración del mismo.
+    Contiene el botón para el efecto y los controles de
+    configuración del mismo.
     """
 
     __gsignals__ = {
@@ -219,23 +216,19 @@ class Efecto_widget_Config(gtk.EventBox):
     def __set_efecto(self, widget, propiedad, valor):
         if not self.botonefecto.get_active():
             self.botonefecto.set_active(True)
-
         self.emit('configurar_efecto', self.botonefecto.get_tooltip_text(),
             propiedad, valor)
 
     def __efecto_click(self, widget):
         activo = widget.get_active()
-
         if not activo and self.widget_config:
             self.widget_config.reset()
             widget.set_active(False)
-
         self.emit('agregar_efecto', widget.get_tooltip_text(), activo)
 
     def clear(self):
         if self.widget_config:
             self.widget_config.reset()
-
         self.botonefecto.set_active(False)
 
     def reemit_config_efecto(self, efecto):
@@ -251,10 +244,8 @@ def get_widget_config_efecto(nombre):
     if nombre == 'radioactv':
         from Good import Radioactv
         return Radioactv()
-
     elif nombre == 'agingtv':
         from Good import Agingtv
         return Agingtv()
-
     else:
         return False

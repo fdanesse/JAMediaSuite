@@ -26,6 +26,13 @@
 import os
 import gtk
 import gobject
+import time
+import subprocess
+
+import gdata.youtube
+import gdata.youtube.service
+
+from Globales import get_tube_directory
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -40,9 +47,6 @@ def Buscar(palabras):
     Recibe una cadena de texto, separa las palabras, busca videos que
     coincidan con ellas y devuelve un feed no mayor a 50 videos.
     """
-    import gdata.youtube
-    import gdata.youtube.service
-
     yt_service = gdata.youtube.service.YouTubeService()
     query = gdata.youtube.service.YouTubeVideoQuery()
     query.feed = 'http://%s/feeds/videos' % (YOUTUBE)
@@ -52,7 +56,6 @@ def Buscar(palabras):
 
     for palabra in palabras.split(" "):
         query.categories.append('/%s' % palabra.lower())
-
     try:  # FIXME: Porque Falla si no hay Conexión.
         feed = yt_service.YouTubeQuery(query)
         return DetalleFeed(feed)
@@ -168,11 +171,9 @@ class JAMediaYoutube(gtk.Widget):
         "¿", "?", "@", "#", "$", "\'", ":", ";", "|",
         "!", "¡", "%", "+", "*", "ª", "º", "~", "{",
         "}", "Ç", "[", "]", "^", "`", "=", "¬", "\""]
-
         for l in titulo:
             if not l in excluir:
                 texto += l
-
         return str(texto)
 
     def download(self, url, titulo):
@@ -183,11 +184,6 @@ class JAMediaYoutube(gtk.Widget):
 
         self.ultimosdatos = False
         self.contador = 0
-
-        import time
-        import subprocess
-
-        from Globales import get_tube_directory
 
         print "Intentando Descargar:", titulo
         print "\t En Formato:", self.codecs[self.codec]
@@ -229,7 +225,6 @@ class JAMediaYoutube(gtk.Widget):
         if progress:
             if "100.0%" in progress.split():
                 self.estado = False
-
             self.emit("progress_download", progress)
 
         # control switch codec.
@@ -245,7 +240,6 @@ class JAMediaYoutube(gtk.Widget):
                 self.codec += 1
                 url, titulo = self.datos_originales
                 self.download(url, titulo)
-
         return self.estado
 
     def reset(self):
@@ -256,15 +250,11 @@ class JAMediaYoutube(gtk.Widget):
         if self.actualizador:
             gobject.source_remove(self.actualizador)
             self.actualizador = False
-
         self.youtubedl.kill()
-
         if self.salida:
             self.salida.close()
-
         if os.path.exists(self.STDOUT):
             os.unlink(self.STDOUT)
-
         self.estado = False
 
 
@@ -272,12 +262,9 @@ if __name__ == "__main__":
     import sys
     entrada = sys.argv[1:]
     palabras = ""
-
     for palabra in entrada:
         palabras += "%s " % (palabra)
-
     videos = Buscar(palabras)
-
     for video in videos:
         for item in video.items():
             print item

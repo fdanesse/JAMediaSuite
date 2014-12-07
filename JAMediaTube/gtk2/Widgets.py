@@ -22,6 +22,11 @@
 import os
 import gtk
 import gobject
+import time
+import urllib
+import base64
+
+from JAMediaYoutube import JAMediaYoutube
 
 from Globales import get_colors
 from Globales import get_separador
@@ -223,37 +228,28 @@ class WidgetVideoItem(gtk.EventBox):
             if type(self.videodict["previews"]) == list:
                 # siempre hay 4 previews.
                 url = self.videodict["previews"][0][0]
-                import time
                 archivo = "/dev/shm/preview%d" % time.time()
-
                 try:
                     # FIXME: Porque Falla si no hay Conexión.
-                    import urllib
                     fileimage, headers = urllib.urlretrieve(url, archivo)
                     pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                         fileimage, 200, 150)
                     imagen.set_from_pixbuf(pixbuf)
-
                     # Convertir imagen a string por si se quiere guardar.
-                    import base64
                     pixbuf_file = open(fileimage, 'rb')
                     image_string = base64.b64encode(pixbuf_file.read())
                     pixbuf_file.close()
                     self.videodict["previews"] = image_string
                 except:
                     print "No hay Conexión a Internet."
-
                 if os.path.exists(archivo):
                     os.remove(archivo)
-
             else:
-                import base64
                 loader = gtk.gdk.PixbufLoader()
                 loader.set_size(200, 150)
                 image_string = base64.b64decode(self.videodict["previews"])
                 loader.write(image_string)
                 loader.close()
-
                 pixbuf = loader.get_pixbuf()
                 imagen.set_from_pixbuf(pixbuf)
 
@@ -282,7 +278,6 @@ class WidgetVideoItem(gtk.EventBox):
         self.add(hbox)
 
         self.show_all()
-
         self.connect("button_press_event", self.__button_press)
 
     def __button_press(self, widget, event):
@@ -322,7 +317,6 @@ class Toolbar_Descarga(gtk.VBox):
         self.url = None
         self.titulo = None
 
-        from JAMediaYoutube import JAMediaYoutube
         self.jamediayoutube = JAMediaYoutube()
 
         self.toolbar.insert(get_separador(draw=False,
@@ -393,7 +387,6 @@ class Toolbar_Descarga(gtk.VBox):
             gobject.source_remove(self.actualizador)
 
         self.actualizador = gobject.timeout_add(1000, self.__handle)
-
         self.show_all()
 
     def __handle(self):
@@ -405,13 +398,11 @@ class Toolbar_Descarga(gtk.VBox):
             self.contadortestigo = 0
         else:
             self.contadortestigo += 1
-
         if self.contadortestigo > 15:
             print "\nNo se pudo controlar la descarga de:"
             print ("%s %s\n") % (self.titulo, self.url)
             self.__cancel_download()
             return False
-
         return True
 
     def __progress_download(self, widget, progress):
@@ -425,15 +416,12 @@ class Toolbar_Descarga(gtk.VBox):
             dat = progress.split('[youtube]')[1]
             if self.label_progreso.get_text() != dat:
                 self.label_progreso.set_text(dat)
-
         elif datos[0] == '[download]':
             dat = progress.split('[download]')[1]
             if self.label_progreso.get_text() != dat:
                 self.label_progreso.set_text(dat)
-
         elif datos[0] == '\r[download]':
             porciento = 0.0
-
             if "%" in datos[2]:
                 porciento = datos[2].split("%")[0]
             elif "%" in datos[3]:
@@ -453,10 +441,8 @@ class Toolbar_Descarga(gtk.VBox):
         if "100.0%" in progress.split(" "):
             self.__cancel_download()
             return False
-
         if not self.get_visible():
             self.show()
-
         return True
 
     def __cancel_download(self, button=None, event=None):
@@ -469,15 +455,12 @@ class Toolbar_Descarga(gtk.VBox):
             self.actualizador = False
         try:
             self.jamediayoutube.reset()
-
         except:
             pass
-
         try:
             self.video_item.destroy()
         except:
             pass
-
         self.estado = False
         self.emit("end")
         return False
@@ -623,12 +606,10 @@ class Help(gtk.Dialog):
             help.set_from_file(os.path.join(BASE_PATH,
                 "Iconos", "help-%s.svg" % x))
             tabla1.attach_defaults(help, 0, 5, 1, 2)
-
             self.helps.append(help)
 
         self.vbox.pack_start(tabla1, True, True, 0)
         self.vbox.show_all()
-
         self.__switch(None)
 
     def __ocultar(self, objeto):
@@ -640,12 +621,10 @@ class Help(gtk.Dialog):
             map(self.__ocultar, self.helps[1:])
             self.anterior.hide()
             self.helps[0].show()
-
         else:
             index = self.__get_index_visible()
             helps = list(self.helps)
             new_index = index
-
             if widget == self.siguiente:
                 if index < len(self.helps) - 1:
                     new_index += 1
@@ -661,7 +640,6 @@ class Help(gtk.Dialog):
                 self.anterior.show()
             else:
                 self.anterior.hide()
-
             if new_index < self.helps.index(self.helps[-1]):
                 self.siguiente.show()
             else:

@@ -22,7 +22,11 @@
 import os
 import gtk
 import gobject
+import shelve
 
+from TubeListDialog import TubeListDialog
+
+from Globales import get_data_directory
 from Globales import get_colors
 from Globales import get_separador
 from Globales import get_boton
@@ -93,39 +97,29 @@ class Mini_Toolbar(gtk.Toolbar):
         """
         El menu con las listas de videos almacenadas en archivos shelve.
         """
-        from Globales import get_data_directory
-        import shelve
-
         dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
         keys = dict_tube.keys()
         dict_tube.close()
-
         if keys:
             self.emit("menu_activo")
             menu = gtk.Menu()
-
             administrar = gtk.MenuItem('Administrar')
             administrar.connect_object("activate", self.__administrar, None)
             cargar = gtk.MenuItem('Cargar')
-
             menu.append(administrar)
             menu.append(cargar)
-
             menu_listas = gtk.Menu()
             cargar.set_submenu(menu_listas)
-
             for key in keys:
                 item = gtk.MenuItem(key)
                 menu_listas.append(item)
                 item.connect_object("activate", self.__emit_abrir, key)
-
             menu.show_all()
             menu.attach_to_widget(widget, self.__null)
             gtk.Menu.popup(menu, None, None, None, 1, 0)
 
     def __administrar(self, widget):
-        from TubeListDialog import TubeListDialog
         dialogo = TubeListDialog(parent=self.get_toplevel())
         dialogo.run()
         dialogo.destroy()

@@ -19,7 +19,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import pygst
 import gst
 import gobject
 
@@ -71,7 +70,6 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
 
         try: # FIXME: xo no posee esta propiedad
             rate.set_property('max-rate', 30)
-
         except:
             pass
 
@@ -95,21 +93,16 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
     def rotar(self, valor):
         videoflip = self.get_by_name("videoflip")
         rot = videoflip.get_property('method')
-
         if valor == "Derecha":
             if rot < 3:
                 rot += 1
-
             else:
                 rot = 0
-
         elif valor == "Izquierda":
             if rot > 0:
                 rot -= 1
-
             else:
                 rot = 3
-
         videoflip.set_property('method', rot)
 
     def set_balance(self, brillo=None, contraste=None,
@@ -118,22 +111,18 @@ class JAMedia_Video_Pipeline(gst.Pipeline):
             self.config['brillo'] = brillo
             valor = (2.0 * brillo / 100.0) - 1.0
             self.get_by_name("videobalance").set_property('brightness', valor)
-
         if contraste:
             self.config['contraste'] = contraste
             valor = 2.0 * contraste / 100.0
             self.get_by_name("videobalance").set_property('contrast', valor)
-
         if saturacion:
             self.config['saturacion'] = saturacion
             valor = 2.0 * saturacion / 100.0
             self.get_by_name("videobalance").set_property('saturation', valor)
-
         if hue:
             self.config['hue'] = hue
             valor = (2.0 * hue / 100.0) - 1.0
             self.get_by_name("videobalance").set_property('hue', valor)
-
         if gamma:
             self.config['gamma'] = gamma
             valor = (10.0 * gamma / 100.0)

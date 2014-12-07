@@ -96,16 +96,12 @@ class BalanceWidget(gtk.EventBox):
         saturacion=50.0, hue=50.0, gamma=10.0):
         if saturacion != None:
             self.saturacion.set_progress(saturacion)
-
         if contraste != None:
             self.contraste.set_progress(contraste)
-
         if brillo != None:
             self.brillo.set_progress(brillo)
-
         if hue != None:
             self.hue.set_progress(hue)
-
         if gamma != None:
             self.gamma.set_progress(gamma)
 
@@ -246,11 +242,9 @@ class BalanceBar(gtk.HScale):
         Cuando el usuario se desplaza por la barra de progreso.
         Se emite el valor en % (float).
         """
-
         if event.state == gtk.gdk.MOD2_MASK | gtk.gdk.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
-
             if valor >= 0.0 and valor <= 100.0:
                 self.ajuste.set_value(valor)
                 self.queue_draw()

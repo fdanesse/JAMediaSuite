@@ -22,7 +22,6 @@
 import os
 import sys
 import gobject
-import pygst
 import gst
 
 gobject.threads_init()
@@ -131,17 +130,14 @@ class JAMediaGrabador(gobject.GObject):
         if message.type == gst.MESSAGE_EOS:
             self.__new_handle(False)
             self.emit("endfile")
-
         elif message.type == gst.MESSAGE_BUFFERING:
             buf = int(message.structure["buffer-percent"])
             if buf < 100 and self.estado == gst.STATE_PLAYING:
                 #self.emit("loading-buffer", buf)
                 self.__pause()
-
             elif buf > 99 and self.estado != gst.STATE_PLAYING:
                 #self.emit("loading-buffer", buf)
                 self.play()
-
         elif message.type == gst.MESSAGE_ERROR:
             err, debug = message.parse_error()
             print "JAMediaGrabador ERROR:"
@@ -154,10 +150,8 @@ class JAMediaGrabador(gobject.GObject):
             old, new, pending = message.parse_state_changed()
             if self.estado != new:
                 self.estado = new
-
         elif message.type == gst.MESSAGE_LATENCY:
             self.player.recalculate_latency()
-
         elif message.type == gst.MESSAGE_ERROR:
             err, debug = message.parse_error()
             print "JAMediaGrabador ERROR:"
@@ -170,14 +164,11 @@ class JAMediaGrabador(gobject.GObject):
         Agregar elementos en forma dinámica:
             https://wiki.ubuntu.com/Novacut/GStreamer1.0
         """
-
         caps = pad.get_caps()
         string = caps.to_string()
-
         if string.startswith('audio'):
             if not self.audio_sink.is_linked():
                 pad.link(self.audio_sink)
-
         elif string.startswith('video'):
             if not self.video_sink.is_linked():
                 pad.link(self.video_sink)
@@ -197,25 +188,20 @@ class JAMediaGrabador(gobject.GObject):
         if os.path.exists(self.patharchivo):
             tamanio = os.path.getsize(self.patharchivo)
             tam = int(tamanio) / 1024.0 / 1024.0
-
             if self.tamanio != tamanio:
                 self.control = 0
                 self.tamanio = tamanio
                 texto = str(self.uri)
                 if len(self.uri) > 25:
                     texto = str(self.uri[0:25]) + " . . . "
-
                 info = "Grabando: %s %.2f Mb" % (texto, tam)
                 self.emit('update', info)
-
             else:
                 self.control += 1
-
         if self.control > 60:
             self.stop()
             self.emit("endfile")
             return False
-
         return True
 
     def play(self):

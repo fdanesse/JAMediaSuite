@@ -152,24 +152,18 @@ def get_boton(archivo, flip=False, rotacion=None,
     Devuelve un toolbutton generico.
     """
     import gtk
-
     boton = gtk.ToolButton()
     imagen = gtk.Image()
     pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(archivo, pixels, pixels)
-
     if flip:
         pixbuf = pixbuf.flip(True)
     if rotacion:
         pixbuf = pixbuf.rotate_simple(rotacion)
-
     imagen.set_from_pixbuf(pixbuf)
     boton.set_icon_widget(imagen)
-
     imagen.show()
     boton.show()
-
     if tooltip_text:
         boton.set_tooltip_text(tooltip_text)
         boton.TOOLTIP = tooltip_text
-
     return boton

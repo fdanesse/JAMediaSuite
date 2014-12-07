@@ -53,12 +53,10 @@ def get_separador(draw=False, ancho=0, expand=False):
     """
     Devuelve un separador generico.
     """
-
     separador = gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
-
     return separador
 
 
@@ -66,7 +64,6 @@ def get_color(color):
     """
     Devuelve Colores predefinidos.
     """
-
     colors = {
         "GRIS": gtk.gdk.Color(60156, 60156, 60156),
         "AMARILLO": gtk.gdk.Color(65000, 65000, 40275),
@@ -77,7 +74,6 @@ def get_color(color):
         "VERDE": gtk.gdk.Color(0, 65000, 0),
         "AZUL": gtk.gdk.Color(0, 0, 65000),
         }
-
     return colors.get(color, None)
 
 
@@ -227,24 +223,20 @@ class Radioactv(gtk.VBox):
         return hbox
 
     #def __set_interval(self, widget, valor):
-
     #    if self.control:
     #        return
-
     #    interval = long(2147483647 * valor / 100.0)
     #    self.emit('propiedad', 'interval', interval)
 
     def __set_color(self, widget, color):
         if self.control:
             return
-
         if widget.get_active():
             self.emit('propiedad', 'color', color)
 
     def __set_modo(self, widget, mode):
         if self.control:
             return
-
         if widget.get_active():
             self.emit('propiedad', 'mode', mode)
 
@@ -255,7 +247,6 @@ class Radioactv(gtk.VBox):
                 widget.set_active(True)
                 self.__set_color(widget, widgets.index(widget))
                 break
-
         for widget in [self.modo0, self.modo1, self.modo2, self.modo3]:
             if widget.get_active():
                 widget.set_active(True)
@@ -372,28 +363,23 @@ class Agingtv(gtk.VBox):
     def __set_scratch_lines(self, widget, valor):
         if self.control:
             return
-
         interval = int(20.0 * valor / 100.0)
         self.emit('propiedad', 'scratch-lines', interval)
 
     def __set_pits(self, widget, x=False):
         if self.control:
             return
-
         self.emit("propiedad", 'pits', widget.get_active())
 
     def __set_dusts(self, widget, x=False):
         if self.control:
             return
-
         self.emit("propiedad", 'dusts', widget.get_active())
 
     def reemit_config(self):
         self.__set_scratch_lines(False, self.scratch_lines.get_progress())
-
         self.switch_dusts.set_active(self.switch_dusts.get_active())
         self.__set_dusts(self.switch_dusts)
-
         self.switch_pits.set_active(self.switch_pits.get_active())
         self.__set_pits(self.switch_pits)
 
@@ -448,7 +434,6 @@ class ToolbarcontrolValores(gtk.Toolbar):
         Recibe la posicion en la barra de
         progreso (en % float), y re emite los valores.
         """
-
         if valor > 99.4:
             valor = 100.0
         self.emit('valor', valor)
@@ -458,7 +443,6 @@ class ToolbarcontrolValores(gtk.Toolbar):
         """
         Establece valores en la escala.
         """
-
         self.escala.set_progress(valor)
         self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
@@ -533,11 +517,9 @@ class BalanceBar(gtk.HScale):
         Cuando el usuario se desplaza por la barra de progreso.
         Se emite el valor en % (float).
         """
-
         if event.state == gtk.gdk.MOD2_MASK | gtk.gdk.BUTTON1_MASK:
             rect = self.get_allocation()
             valor = float(event.x * 100 / rect.width)
-
             if valor >= 0.0 and valor <= 100.0:
                 self.ajuste.set_value(valor)
                 self.queue_draw()
@@ -547,7 +529,6 @@ class BalanceBar(gtk.HScale):
         """
         Dibuja el estado de la barra de progreso.
         """
-
         x, y, w, h = self.get_allocation()
         ancho, borde = (self.ancho, self.borde)
 

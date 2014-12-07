@@ -22,8 +22,16 @@
 import os
 import gtk
 import gobject
+import shelve
+
+from PanelTubeWidgets import Mini_Toolbar
+from PanelTubeWidgets import ToolbarAccionListasVideos
+from PanelTubeWidgets import Toolbar_Videos_Izquierda
+from PanelTubeWidgets import Toolbar_Videos_Derecha
+from PanelTubeWidgets import Toolbar_Guardar
 
 from Globales import get_colors
+from Globales import get_data_directory
 
 TipDescargas = "Arrastra Hacia La Izquierda para Quitarlo de Descargas."
 TipEncontrados = "Arrastra Hacia La Derecha para Agregarlo a Descargas"
@@ -69,12 +77,6 @@ class PanelTube(gtk.HPaned):
         """
         Crea y Empaqueta todo.
         """
-        from PanelTubeWidgets import Mini_Toolbar
-        from PanelTubeWidgets import ToolbarAccionListasVideos
-        from PanelTubeWidgets import Toolbar_Videos_Izquierda
-        from PanelTubeWidgets import Toolbar_Videos_Derecha
-        from PanelTubeWidgets import Toolbar_Guardar
-
         self.toolbar_encontrados = Mini_Toolbar("Videos Encontrados")
         self.toolbar_guardar_encontrados = Toolbar_Guardar()
         self.encontrados = gtk.VBox()
@@ -205,18 +207,13 @@ class PanelTube(gtk.HPaned):
         """
         Agrega a la lista, los videos almacenados en un archivo shelve.
         """
-        from Globales import get_data_directory
-        import shelve
-
         dict_tube = shelve.open(os.path.join(get_data_directory(),
             "List.tube"))
         _dict = dict_tube.get(key, [])
         dict_tube.close()
-
         videos = []
         for item in _dict.keys():
             videos.append(_dict[item])
-
         self.emit('open_shelve_list', videos, widget)
 
     def __show_toolbar_guardar(self, widget):
@@ -250,9 +247,6 @@ class PanelTube(gtk.HPaned):
                     videos.append(video.videodict)
 
         if videos:
-            from Globales import get_data_directory
-            import shelve
-
             dict_tube = shelve.open(os.path.join(get_data_directory(),
                 "List.tube"))
 
@@ -316,7 +310,6 @@ class PanelTube(gtk.HPaned):
         self.set_sensitive(False)
         self.get_toplevel().toolbar_busqueda.set_sensitive(False)
         map(self.__cancel_toolbars, self.toolbars_flotantes)
-
         if widget == self.toolbar_videos_izquierda:
             origen = self.encontrados
             destino = self.descargar
@@ -325,7 +318,6 @@ class PanelTube(gtk.HPaned):
             origen = self.descargar
             destino = self.encontrados
             text = TipEncontrados
-
         elementos = origen.get_children()
         gobject.idle_add(self.__ejecutar_mover_videos, origen, destino,
             text, elementos)
@@ -338,12 +330,10 @@ class PanelTube(gtk.HPaned):
             self.set_sensitive(True)
             self.get_toplevel().toolbar_busqueda.set_sensitive(True)
             return False
-
         if elementos[0].get_parent() == origen:
             origen.remove(elementos[0])
             destino.pack_start(elementos[0], False, False, 1)
             elementos[0].set_tooltip_text(text)
-
         elementos.remove(elementos[0])
         gobject.idle_add(self.__ejecutar_mover_videos, origen, destino,
             text, elementos)
@@ -373,17 +363,13 @@ class PanelTube(gtk.HPaned):
                 objetos = self.encontrados.get_children()
             if not objetos or objetos == None:
                 return  # No se abre confirmacion.
-
             self.toolbar_accion_izquierda.set_accion(objetos)
-
         elif widget == self.toolbar_videos_derecha:
             if not objetos or objetos == None:
                 objetos = self.descargar.get_children()
             if not objetos or objetos == None:
                 return  # No se abre confirmacion.
-
             self.toolbar_accion_derecha.set_accion(objetos)
-
         else:
             print "Caso imprevisto en run_accion de PanelTube."
 

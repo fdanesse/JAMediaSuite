@@ -140,17 +140,14 @@ class VideoVisor(gtk.DrawingArea):
         """
         Cuando se mueve el mouse sobre el visor.
         """
-
         x, y = (int(event.x), int(event.y))
         rect = self.get_allocation()
         xx, yy, ww, hh = (rect.x, rect.y, rect.width, rect.height)
 
         if x in range(ww - 60, ww) or y in range(yy, yy + 60) \
             or y in range(hh - 60, hh):
-
             self.emit("ocultar_controles", False)
             return
-
         else:
             self.emit("ocultar_controles", True)
             return
@@ -254,14 +251,12 @@ class Efectos_en_Pipe(gtk.EventBox):
 
         self.add(self.box)
         self.show_all()
-
         #self.set_size_request(-1, 15)
 
     def clear(self):
         for child in self.box.get_children():
             self.box.remove(child)
             child.destroy()
-
         self.hide()
 
     def add_efecto(self, efecto):
@@ -276,7 +271,6 @@ class Efectos_en_Pipe(gtk.EventBox):
                 self.box.remove(button)
                 button.destroy()
                 break
-
         if not self.box.get_children():
             self.hide()
 
@@ -284,7 +278,6 @@ class Efectos_en_Pipe(gtk.EventBox):
         efectos = []
         for button in self.box.get_children():
             efectos.append(button.get_label())
-
         return efectos
 
 
@@ -321,10 +314,8 @@ class BufferInfo(gtk.EventBox):
             self.valor = valor
             self.escala.ajuste.set_value(valor)
             self.escala.queue_draw()
-
         if self.valor == 100.0:
             self.hide()
-
         else:
             self.show()
 
