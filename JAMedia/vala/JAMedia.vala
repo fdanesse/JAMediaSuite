@@ -12,9 +12,12 @@ por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
 
 //using GLib;   Se importa siempre por default
 using Gtk;      //--pkg gtk+-3.0
+using Gdk;
 
 
 public class JAMedia : Gtk.Window{
+
+    private Toolbar toolbar = new Toolbar();
 
     public JAMedia(){
 
@@ -33,6 +36,8 @@ public class JAMedia : Gtk.Window{
 
         Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
+        box.pack_start(this.toolbar, false,false, 0);
+
         this.add(box);
         this.show_all();
 
@@ -45,14 +50,10 @@ public class JAMedia : Gtk.Window{
 }
 
 
-public static int main(string[] args){
-    try {
-        Gtk.init (ref args);
-        new JAMedia();
-        Gtk.main();
-        return 0;
-    }
-    catch {
-        return 1;
-    }
-    }
+public static int main (string[] args) {
+    Gtk.init(ref args);
+    JAMedia app = new JAMedia();
+    app.show_all();
+    Gtk.main();
+    return 0;
+}
