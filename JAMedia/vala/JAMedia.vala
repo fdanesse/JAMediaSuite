@@ -10,6 +10,8 @@ Para Utilizar gstreamer 0.10 cambiar: --pkg gstreamer-1.0
 por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
 */
 
+//valac --pkg glib-2.0 --pkg gtk+-3.0 --pkg gdk-3.0 JAMedia.vala Toolbars.vala
+
 //using GLib;   Se importa siempre por default
 using Gtk;      //--pkg gtk+-3.0
 using Gdk;
@@ -52,6 +54,13 @@ public class JAMedia : Gtk.Window{
 
 public static int main (string[] args) {
     Gtk.init(ref args);
+    var screen = Gdk.Screen.get_default();
+    var css_provider = new Gtk.CssProvider();
+    string style_path = "Estilo.css";
+    css_provider.load_from_path(style_path);
+    Gtk.StyleContext.add_provider_for_screen(
+        screen, css_provider,
+        Gtk.STYLE_PROVIDER_PRIORITY_USER);
     JAMedia app = new JAMedia();
     app.show_all();
     Gtk.main();
