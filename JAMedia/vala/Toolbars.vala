@@ -1,7 +1,8 @@
 
 public class Toolbar : Gtk.EventBox{
 
-    public signal void show_credits();
+    public signal void credits();
+    public signal void help();
 
     public Toolbar(){
 
@@ -31,7 +32,7 @@ public class Toolbar : Gtk.EventBox{
 		Gtk.ToolButton button2 = new Gtk.ToolButton(img2, null);
 		button2.set_tooltip_text("Ayuda");
 		button2.clicked.connect (() => {
-			this.__show_help();
+			this.__emit_help();
 		});
 		toolbar.insert(button2, -1);
 
@@ -70,11 +71,11 @@ public class Toolbar : Gtk.EventBox{
     }
 
     private void __emit_credits(){
-        this.show_credits();
+        this.credits();
     }
 
-    private void __show_help(){
-        stdout.printf("Button \n");
+    private void __emit_help(){
+        this.help();
     }
 
     private void __emit_accion(string accion){
@@ -91,7 +92,6 @@ public class Creditos : Gtk.Dialog{
         this.set_modal(true);
         this.set_transient_for(parent);
         this.set("border_width", 15);
-
         this.set_decorated(false);
         this.set_resizable(false);
 
@@ -101,6 +101,22 @@ public class Creditos : Gtk.Dialog{
         Gtk.Box Box = this.get_content_area ();
         Box.pack_start(imagen, true, true, 0);
         Box.show_all();
+
+        this.add_button ("Cerrar", Gtk.ResponseType.OK);
+    }
+}
+
+
+public class Help : Gtk.Dialog{
+
+    public Help(Gtk.Window parent, string title){
+
+        this.set("title", title);
+        this.set_modal(true);
+        this.set_transient_for(parent);
+        this.set("border_width", 15);
+        this.set_decorated(false);
+        this.set_resizable(false);
 
         this.add_button ("Cerrar", Gtk.ResponseType.OK);
     }

@@ -40,14 +40,21 @@ public class JAMedia : Gtk.Window{
         this.add(box);
         this.show_all();
 
-        this.toolbar.show_credits.connect(this.__show_credits);
+        this.toolbar.credits.connect(this.__show_credits);
+        this.toolbar.help.connect(this.__show_help);
         this.destroy.connect(this.__exit);
     }
 
     private void __show_credits(){
-        Creditos credits = new Creditos(this, "");
-        credits.run();
-        credits.destroy();
+        Creditos dialog = new Creditos(this, "");
+        dialog.run();
+        dialog.destroy();
+    }
+
+    private void __show_help(){
+        Help dialog = new Help(this, "");
+        dialog.run();
+        dialog.destroy();
     }
 
     private void __exit(){
