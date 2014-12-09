@@ -1,6 +1,8 @@
 
 public class Toolbar : Gtk.EventBox{
 
+    public signal void show_credits();
+
     public Toolbar(){
 
         Gtk.Toolbar toolbar = new Gtk.Toolbar();
@@ -20,7 +22,7 @@ public class Toolbar : Gtk.EventBox{
 		//	stdout.printf ("Button 1\n");
 		//});
 		button1.clicked.connect (() => {
-			this.__show_credits();
+			this.__emit_credits();
 		});
 		toolbar.insert(button1, -1);
 
@@ -67,8 +69,8 @@ public class Toolbar : Gtk.EventBox{
         this.show_all();
     }
 
-    private void __show_credits(){
-        stdout.printf("Button \n");
+    private void __emit_credits(){
+        this.show_credits();
     }
 
     private void __show_help(){
@@ -77,5 +79,29 @@ public class Toolbar : Gtk.EventBox{
 
     private void __emit_accion(string accion){
         stdout.printf("%s\n", accion);
+    }
+}
+
+
+public class Creditos : Gtk.Dialog{
+
+    public Creditos(Gtk.Window parent, string title){
+
+        this.set("title", title);
+        this.set_modal(true);
+        this.set_transient_for(parent);
+        this.set("border_width", 15);
+
+        this.set_decorated(false);
+        this.set_resizable(false);
+
+        Gtk.Image imagen = new Gtk.Image();
+        imagen.set_from_file("Iconos/JAMediaCredits.svg");
+
+        Gtk.Box Box = this.get_content_area ();
+        Box.pack_start(imagen, true, true, 0);
+        Box.show_all();
+
+        this.add_button ("Cerrar", Gtk.ResponseType.OK);
     }
 }

@@ -2,10 +2,7 @@
 Compilar con:
     valac --pkg glib-2.0 --pkg gio-2.0 --pkg libsoup-2.4 \
     --pkg gtk+-3.0 --pkg gdk-3.0 --pkg gdk-x11-3.0 --pkg gstreamer-1.0 \
-    --pkg json-glib-1.0 \
-    UbuntuRadio.vala Widgets.vala RadioPlayer.vala \
-    RadioRecord.vala Globales.vala
-
+    --pkg json-glib-1.0
 Para Utilizar gstreamer 0.10 cambiar: --pkg gstreamer-1.0
 por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
 */
@@ -43,10 +40,17 @@ public class JAMedia : Gtk.Window{
         this.add(box);
         this.show_all();
 
-        this.destroy.connect(this.exit);
+        this.toolbar.show_credits.connect(this.__show_credits);
+        this.destroy.connect(this.__exit);
     }
 
-    private void exit(){
+    private void __show_credits(){
+        Creditos credits = new Creditos(this, "");
+        credits.run();
+        credits.destroy();
+    }
+
+    private void __exit(){
         Gtk.main_quit();
     }
 }
