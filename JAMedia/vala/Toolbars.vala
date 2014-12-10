@@ -171,8 +171,7 @@ public class Help : Gtk.Dialog{
 
         this.add_button ("Cerrar", Gtk.ResponseType.OK);
 
-        this.__set_item(this._index);
-
+        this.__switch(this._index);
         }
 
     private void __switch(int index){
