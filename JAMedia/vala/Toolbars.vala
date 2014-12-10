@@ -1,6 +1,7 @@
 
 public class Toolbar : Gtk.EventBox{
 
+    public signal void accion(string acc);
     public signal void credits();
     public signal void help();
 
@@ -79,7 +80,7 @@ public class Toolbar : Gtk.EventBox{
     }
 
     private void __emit_accion(string accion){
-        stdout.printf("%s\n", accion);
+        this.accion(accion);
     }
 }
 

@@ -42,7 +42,18 @@ public class JAMedia : Gtk.Window{
 
         this.toolbar.credits.connect(this.__show_credits);
         this.toolbar.help.connect(this.__show_help);
+        this.toolbar.accion.connect(this.__toolbar_accion);
         this.destroy.connect(this.__exit);
+    }
+
+    private void __toolbar_accion(string accion){
+        if (accion == "show-config"){
+            // FIXME: this.base_panel.derecha.show_config();
+            stdout.printf("%s\n", accion);
+            }
+        else if (accion == "salir"){
+            this.__exit();
+        }
     }
 
     private void __show_credits(){
@@ -58,6 +69,8 @@ public class JAMedia : Gtk.Window{
     }
 
     private void __exit(){
+        // FIXME: this.__detener_grabacion();
+        // FIXME: this.BasePanel.salir();
         Gtk.main_quit();
     }
 }
