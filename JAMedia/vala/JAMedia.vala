@@ -21,6 +21,8 @@ public class JAMedia : Gtk.Window{
     private ToolbarAccion toolbaraccion = new ToolbarAccion();
     private ToolbarAddStream add_stream = new ToolbarAddStream();
 
+    private BasePanel basepanel = new BasePanel();
+
     public JAMedia(){
 
         this.title = "JAMedia";
@@ -36,15 +38,26 @@ public class JAMedia : Gtk.Window{
             stderr.printf ("No se Encontró el Ícono: %s\n", e.message);
             }
 
+        //self.archivos = []
+        //self.grabador = False
+        //self.mouse_in_visor = False
+        //self.cursor_root = gtk.gdk.Cursor(gtk.gdk.BLANK_CURSOR)
+        //icono = os.path.join(BASE_PATH, "Iconos", "jamedia_cursor.svg")
+        //pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, -1, 24)
+        //self.jamedia_cursor = gtk.gdk.Cursor(
+        //    gtk.gdk.display_get_default(), pixbuf, 0, 0)
+
         Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
-        box.pack_start(this.toolbar, false,false, 0);
-        box.pack_start(this.toolbarsalir, false,false, 0);
-        box.pack_start(this.toolbaraccion, false,false, 0);
-        box.pack_start(this.add_stream, false,false, 0);
+        box.pack_start(this.toolbar, false, false, 0);
+        box.pack_start(this.toolbarsalir, false, false, 0);
+        box.pack_start(this.toolbaraccion, false, false, 0);
+        box.pack_start(this.add_stream, false, false, 0);
+        box.pack_start(this.basepanel, true, true, 0);
 
         this.add(box);
         this.show_all();
+        this.realize();
 
         this.toolbar.credits.connect(this.__show_credits);
         this.toolbar.help.connect(this.__show_help);
@@ -53,7 +66,25 @@ public class JAMedia : Gtk.Window{
         this.toolbaraccion.grabar.connect(this.__grabar);
         this.add_stream.add_stream.connect(this.__add_stream);
         this.toolbarsalir.salir.connect(this.__exit);
+
+        //self.base_panel.connect("show-controls", self.__ocultar_controles)
+        //self.base_panel.connect("accion-list", self.__accion_list)
+        //self.base_panel.connect("menu_activo", self.__cancel_toolbars)
+        //self.base_panel.connect("add_stream", self.__run_add_stream)
+        //self.base_panel.connect("stop-record", self.__detener_grabacion)
+
+        //self.mouse_listener.connect("estado", self.__set_mouse)
+        //self.connect("hide", self.__hide_show)
+        //self.connect("show", self.__hide_show)
         this.destroy.connect(this.__exit);
+
+        this.resize(640, 480);
+        //self.mouse_listener = MouseSpeedDetector(self)
+        //self.mouse_listener.new_handler(True)
+
+        //gobject.idle_add(self.__setup_init)
+        //print "JAMedia process:", os.getpid()
+        //self.base_panel.checkear_listas()
         }
 
     private void __add_stream(string tipo, string nombre, string url){
