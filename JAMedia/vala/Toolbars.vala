@@ -247,13 +247,96 @@ public class ToolbarAccion : Gtk.EventBox{
 
     public void cancelar(){
         /*
-        self.label.set_text("")
         self.lista = None
         self.accion = None
         self.iter = None
-        self.hide()
         */
         this.label.set_text("");
+        this.hide();
+        }
+}
+
+
+public class ToolbarAddStream : Gtk.EventBox{
+
+    public signal void add_stream(string _tipo, string _nombre, string _url);
+    private Gtk.Entry nombre = new Gtk.Entry();
+    private Gtk.Entry url = new Gtk.Entry();
+    private string tipo = "";
+
+    public ToolbarAddStream(){
+
+        Gtk.Toolbar toolbar = new Gtk.Toolbar();
+
+        Gtk.SeparatorToolItem separador1 = get_separador(false, 0, true);
+        toolbar.insert(separador1, -1);
+
+        Gtk.ToolButton button1 = get_button("Iconos/button-cancel.svg", false, 24, "Cancelar");
+		button1.clicked.connect (() => {
+			this.cancelar();
+		});
+		toolbar.insert(button1, -1);
+
+        Gtk.SeparatorToolItem separador2 = get_separador(false, 3, false);
+        toolbar.insert(separador2, -1);
+
+        Gtk.ToolItem item1 = new Gtk.ToolItem();
+        Gtk.Frame frame1 = new Gtk.Frame("Nombre");
+        Gtk.EventBox event1 = new Gtk.EventBox();
+        event1.set_border_width(4);
+        event1.add(this.nombre);
+        frame1.add(event1);
+        frame1.show_all();
+        item1.add(frame1);
+        toolbar.insert(item1, -1);
+
+        Gtk.SeparatorToolItem separador3 = get_separador(false, 3, false);
+        toolbar.insert(separador3, -1);
+
+        Gtk.ToolItem item2 = new Gtk.ToolItem();
+        Gtk.Frame frame2 = new Gtk.Frame("URL");
+        Gtk.EventBox event2 = new Gtk.EventBox();
+        event2.set_border_width(4);
+        event2.add(this.url);
+        frame2.add(event2);
+        frame2.show_all();
+        item2.add(frame2);
+        toolbar.insert(item2, -1);
+
+        Gtk.SeparatorToolItem separador4 = get_separador(false, 3, false);
+        toolbar.insert(separador4, -1);
+
+        Gtk.ToolButton button2 = get_button("Iconos/dialog-ok.svg", false, 24, "Aceptar");
+		button2.clicked.connect (() => {
+			this.__emit_add_stream();
+		});
+		toolbar.insert(button2, -1);
+
+        Gtk.SeparatorToolItem separador5 = get_separador(false, 0, true);
+        toolbar.insert(separador5, -1);
+
+        this.add(toolbar);
+        this.show_all();
+        }
+
+    private void __emit_add_stream(){
+        string _nombre = this.nombre.get_text();
+        string _url = this.url.get_text();
+        this.add_stream(this.tipo, _nombre, _url);
+        this.cancelar();
+        }
+
+    public void set_accion(string _tipo){
+        this.show();
+        this.nombre.set_text("");
+        this.url.set_text("");
+        this.tipo = _tipo;
+        }
+
+    public void cancelar(){
+        this.tipo = "";
+        this.nombre.set_text("");
+        this.url.set_text("");
         this.hide();
         }
 }

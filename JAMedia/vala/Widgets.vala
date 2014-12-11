@@ -23,6 +23,8 @@ public class Creditos : Gtk.Dialog{
 
 public class Help : Gtk.Dialog{
 
+    private Gtk.ToolButton anterior = get_button("Iconos/play.svg", true, 24, "Anterior");
+    private Gtk.ToolButton siguiente = get_button("Iconos/play.svg", false, 24, "Siguiente");
     private SList<Gtk.Image> archivos = new SList<Gtk.Image> ();
     private int _index = 0;
 
@@ -39,17 +41,15 @@ public class Help : Gtk.Dialog{
         Gtk.Box box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
         grid.attach(box, 0, 0, 5, 1);
 
-        Gtk.ToolButton anterior = get_button("Iconos/play.svg", true, 24, "Anterior");
-		anterior.clicked.connect (() => {
+		this.anterior.clicked.connect (() => {
 			this.__show("Anterior");
 		});
-        box.pack_start(anterior, false, false, 0);
+        box.pack_start(this.anterior, false, false, 0);
 
-        Gtk.ToolButton siguiente = get_button("Iconos/play.svg", false, 24, "Siguiente");
-		siguiente.clicked.connect (() => {
+		this.siguiente.clicked.connect (() => {
 			this.__show("Siguiente");
 		});
-        box.pack_end(siguiente, false, false, 0);
+        box.pack_end(this.siguiente, false, false, 0);
 
         //SList<Gtk.Image> archivos = new SList<Gtk.Image> ();
         Gdk.Pixbuf help1 = new Gdk.Pixbuf.from_file("Iconos/help-1.svg");
@@ -107,10 +107,10 @@ public class Help : Gtk.Dialog{
     private void __set_item(int items){
         items --;
         if (this._index > items){
-            this._index = 0;
+            this._index = items;
         }
         else if (this._index < 0){
-            this._index = items;
+            this._index = 0;
         }
     }
 }

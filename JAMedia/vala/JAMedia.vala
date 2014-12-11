@@ -19,6 +19,7 @@ public class JAMedia : Gtk.Window{
     private Toolbar toolbar = new Toolbar();
     private ToolbarSalir toolbarsalir = new ToolbarSalir();
     private ToolbarAccion toolbaraccion = new ToolbarAccion();
+    private ToolbarAddStream add_stream = new ToolbarAddStream();
 
     public JAMedia(){
 
@@ -40,6 +41,7 @@ public class JAMedia : Gtk.Window{
         box.pack_start(this.toolbar, false,false, 0);
         box.pack_start(this.toolbarsalir, false,false, 0);
         box.pack_start(this.toolbaraccion, false,false, 0);
+        box.pack_start(this.add_stream, false,false, 0);
 
         this.add(box);
         this.show_all();
@@ -49,8 +51,21 @@ public class JAMedia : Gtk.Window{
         this.toolbar.accion.connect(this.__toolbar_accion);
         this.toolbaraccion.accion_stream.connect(this.__accion_stream);
         this.toolbaraccion.grabar.connect(this.__grabar);
+        this.add_stream.add_stream.connect(this.__add_stream);
         this.toolbarsalir.salir.connect(this.__exit);
         this.destroy.connect(this.__exit);
+        }
+
+    private void __add_stream(string tipo, string nombre, string url){
+        stdout.printf("__add_stream %s %s %s\n", tipo, nombre, url);
+        //add_stream(tipo, [nombre, url])
+        //if "Tv" in tipo or "TV" in tipo:
+        //    indice = 3
+        //elif "Radio" in tipo:
+        //    indice = 2
+        //else:
+        //    return
+        //self.base_panel.derecha.lista.cargar_lista(None, indice)
         }
 
     private void __toolbar_accion(string accion){
