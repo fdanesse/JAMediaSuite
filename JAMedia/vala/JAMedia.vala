@@ -61,7 +61,7 @@ public class JAMedia : Gtk.Window{
 
         this.toolbar.credits.connect(this.__show_credits);
         this.toolbar.help.connect(this.__show_help);
-        this.toolbar.accion.connect(this.__toolbar_accion);
+        this.toolbar.accion.connect(this.__accion_toolbar);
         this.toolbaraccion.accion_stream.connect(this.__accion_stream);
         this.toolbaraccion.grabar.connect(this.__grabar);
         this.add_stream.add_stream.connect(this.__add_stream);
@@ -99,14 +99,22 @@ public class JAMedia : Gtk.Window{
         //self.base_panel.derecha.lista.cargar_lista(None, indice)
         }
 
-    private void __toolbar_accion(string accion){
+    private void __accion_toolbar(string accion){
+        this.__cancel_toolbars();
         if (accion == "show-config"){
             // FIXME: this.base_panel.derecha.show_config();
             stdout.printf("%s\n", accion);
             }
         else if (accion == "salir"){
-            this.__exit();
+            this.toolbarsalir.run("JAMedia");
             }
+        else{
+            stdout.printf("__accion_toolbar %s\n", accion);
+            }
+        }
+
+    private void __cancel_toolbars(){
+        // FIXME: map(ocultar, self.get_child().get_children()[1:-1])
         }
 
     private void __grabar(string stream){
