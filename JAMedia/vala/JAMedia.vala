@@ -7,7 +7,7 @@ Para Utilizar gstreamer 0.10 cambiar: --pkg gstreamer-1.0
 por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
 */
 
-//valac --pkg glib-2.0 --pkg gtk+-3.0 --pkg gdk-3.0 JAMedia.vala Toolbars.vala
+//valac --pkg glib-2.0 --pkg gtk+-3.0 --pkg gdk-3.0 JAMedia.vala Toolbars.vala Widgets.vala Globales.vala
 
 //using GLib;   Se importa siempre por default
 using Gtk;      //--pkg gtk+-3.0
@@ -17,6 +17,7 @@ using Gdk;
 public class JAMedia : Gtk.Window{
 
     private Toolbar toolbar = new Toolbar();
+    private ToolbarSalir toolbarsalir = new ToolbarSalir();
 
     public JAMedia(){
 
@@ -36,6 +37,7 @@ public class JAMedia : Gtk.Window{
         Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
         box.pack_start(this.toolbar, false,false, 0);
+        box.pack_start(this.toolbarsalir, false,false, 0);
 
         this.add(box);
         this.show_all();
@@ -43,6 +45,7 @@ public class JAMedia : Gtk.Window{
         this.toolbar.credits.connect(this.__show_credits);
         this.toolbar.help.connect(this.__show_help);
         this.toolbar.accion.connect(this.__toolbar_accion);
+        this.toolbarsalir.salir.connect(this.__exit);
         this.destroy.connect(this.__exit);
     }
 
