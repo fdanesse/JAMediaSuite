@@ -1,9 +1,13 @@
 
 JAMedia, Creditos, Help, ToolbarSalir, ToolbarAccion, ToolbarAddStream,
-Izquierda, Derecha{
+Derecha, Izquierda{
     background-color: #ffffff;
 }
 
 Toolbar {
     background-color: #778899;
+}
+
+ToolbarGrabar, VideoVisor{
+    background-color: #000000;
 }

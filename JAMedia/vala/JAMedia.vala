@@ -7,10 +7,8 @@ Para Utilizar gstreamer 0.10 cambiar: --pkg gstreamer-1.0
 por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
 */
 
-//valac --pkg glib-2.0 --pkg gtk+-3.0 --pkg gdk-3.0 JAMedia.vala Toolbars.vala Widgets.vala Globales.vala
-
 //using GLib;   Se importa siempre por default
-using Gtk;      //--pkg gtk+-3.0
+using Gtk;
 using Gdk;
 
 
