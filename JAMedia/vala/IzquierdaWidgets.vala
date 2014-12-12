@@ -63,6 +63,7 @@ public class ToolbarGrabar : Gtk.EventBox{
 
 
 public class VideoVisor : Gtk.DrawingArea{
+    //FIXME: Agregar eventos del mouse
     /*
     __gsignals__ = {
     "ocultar_controles": (gobject.SIGNAL_RUN_LAST,
@@ -98,5 +99,44 @@ public class VideoVisor : Gtk.DrawingArea{
         else:
             self.emit("ocultar_controles", True)
             return
+    */
+}
+
+
+public class BufferInfo : Gtk.EventBox{
+
+    public BufferInfo(){
+
+        this.set_border_width(4);
+        /*
+        self.escala = ProgressBar(
+            gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
+
+        self.valor = 0
+        */
+
+        Gtk.EventBox box = new Gtk.EventBox();
+        //box.modify_bg(gtk.STATE_NORMAL, get_colors("windows"))
+        box.set_border_width(4);
+        //box.add(self.escala)
+
+        Gtk.Frame frame = new Gtk.Frame(" Cargando Buffer ... ");
+        frame.set_border_width(4);
+        frame.set_label_align((float) 0.0, (float) 0.5);
+
+        frame.add(box);
+        this.add(frame);
+        this.show_all();
+    }
+    /*
+    def set_progress(self, valor=0.0):
+        if self.valor != valor:
+            self.valor = valor
+            self.escala.ajuste.set_value(valor)
+            self.escala.queue_draw()
+        if self.valor == 100.0:
+            self.hide()
+        else:
+            self.show()
     */
 }
