@@ -12,19 +12,19 @@ public class Toolbar : Gtk.EventBox{
         Gtk.SeparatorToolItem separador1 = get_separador(false, 3, false);
         toolbar.insert(separador1, -1);
 
-        Gtk.ToolButton button1 = get_button("Iconos/JAMedia.svg", false, 35, "Creditos");
+        Gtk.ToolButton button1 = get_button("Iconos/JAMedia.svg", false, Gdk.PixbufRotation.NONE, 35, "Creditos");
 		button1.clicked.connect (() => {
 			this.__emit_credits();
 		});
 		toolbar.insert(button1, -1);
 
-        Gtk.ToolButton button2 = get_button("Iconos/JAMedia-help.svg", false, 24, "Ayuda");
+        Gtk.ToolButton button2 = get_button("Iconos/JAMedia-help.svg", false, Gdk.PixbufRotation.NONE, 24, "Ayuda");
 		button2.clicked.connect (() => {
 			this.__emit_help();
 		});
 		toolbar.insert(button2, -1);
 
-        Gtk.ToolButton button3 = get_button("Iconos/configurar.svg", false, 24, "Configuraciones");
+        Gtk.ToolButton button3 = get_button("Iconos/configurar.svg", false, Gdk.PixbufRotation.NONE, 24, "Configuraciones");
 		button3.clicked.connect (() => {
 			this.__emit_accion("show-config");
 		});
@@ -33,7 +33,7 @@ public class Toolbar : Gtk.EventBox{
         Gtk.SeparatorToolItem separador2 = get_separador(false, 0, true);
         toolbar.insert(separador2, -1);
 
-        Gtk.ToolButton button4 = get_button("Iconos/button-cancel.svg", false, 24, "Salir");
+        Gtk.ToolButton button4 = get_button("Iconos/button-cancel.svg", false, Gdk.PixbufRotation.NONE, 24, "Salir");
 		button4.clicked.connect (() => {
 			this.__emit_accion("salir");
 		});
@@ -72,7 +72,7 @@ public class ToolbarSalir : Gtk.EventBox{
         Gtk.SeparatorToolItem separador1 = get_separador(false, 0, true);
         toolbar.insert(separador1, -1);
 
-        Gtk.ToolButton button1 = get_button("Iconos/button-cancel.svg", false, 24, "Cancelar");
+        Gtk.ToolButton button1 = get_button("Iconos/button-cancel.svg", false, Gdk.PixbufRotation.NONE, 24, "Cancelar");
 		button1.clicked.connect (() => {
 			this.cancelar();
 		});
@@ -89,7 +89,7 @@ public class ToolbarSalir : Gtk.EventBox{
         Gtk.SeparatorToolItem separador3 = get_separador(false, 3, false);
         toolbar.insert(separador3, -1);
 
-        Gtk.ToolButton button2 = get_button("Iconos/dialog-ok.svg", false, 24, "Aceptar");
+        Gtk.ToolButton button2 = get_button("Iconos/dialog-ok.svg", false, Gdk.PixbufRotation.NONE, 24, "Aceptar");
 		button2.clicked.connect (() => {
 			this.__emit_salir();
 		});
@@ -133,7 +133,7 @@ public class ToolbarAccion : Gtk.EventBox{
         Gtk.SeparatorToolItem separador1 = get_separador(false, 0, true);
         toolbar.insert(separador1, -1);
 
-        Gtk.ToolButton button1 = get_button("Iconos/button-cancel.svg", false, 24, "Cancelar");
+        Gtk.ToolButton button1 = get_button("Iconos/button-cancel.svg", false, Gdk.PixbufRotation.NONE, 24, "Cancelar");
 		button1.clicked.connect (() => {
 			this.cancelar();
 		});
@@ -150,7 +150,7 @@ public class ToolbarAccion : Gtk.EventBox{
         Gtk.SeparatorToolItem separador3 = get_separador(false, 3, false);
         toolbar.insert(separador3, -1);
 
-        Gtk.ToolButton button2 = get_button("Iconos/dialog-ok.svg", false, 24, "Aceptar");
+        Gtk.ToolButton button2 = get_button("Iconos/dialog-ok.svg", false, Gdk.PixbufRotation.NONE, 24, "Aceptar");
 		button2.clicked.connect (() => {
 			this.__realizar_accion();
 		});
@@ -271,7 +271,7 @@ public class ToolbarAddStream : Gtk.EventBox{
         Gtk.SeparatorToolItem separador1 = get_separador(false, 0, true);
         toolbar.insert(separador1, -1);
 
-        Gtk.ToolButton button1 = get_button("Iconos/button-cancel.svg", false, 24, "Cancelar");
+        Gtk.ToolButton button1 = get_button("Iconos/button-cancel.svg", false, Gdk.PixbufRotation.NONE, 24, "Cancelar");
 		button1.clicked.connect (() => {
 			this.cancelar();
 		});
@@ -306,7 +306,7 @@ public class ToolbarAddStream : Gtk.EventBox{
         Gtk.SeparatorToolItem separador4 = get_separador(false, 3, false);
         toolbar.insert(separador4, -1);
 
-        Gtk.ToolButton button2 = get_button("Iconos/dialog-ok.svg", false, 24, "Aceptar");
+        Gtk.ToolButton button2 = get_button("Iconos/dialog-ok.svg", false, Gdk.PixbufRotation.NONE, 24, "Aceptar");
 		button2.clicked.connect (() => {
 			this.__emit_add_stream();
 		});

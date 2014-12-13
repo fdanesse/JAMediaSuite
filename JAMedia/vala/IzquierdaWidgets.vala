@@ -15,7 +15,7 @@ public class ToolbarGrabar : Gtk.EventBox{
         Gtk.SeparatorToolItem separador1 = get_separador(false, 3, false);
         toolbar.insert(separador1, -1);
 
-        Gtk.ToolButton button1 = get_button("Iconos/stop.svg", false, 24, "Detener");
+        Gtk.ToolButton button1 = get_button("Iconos/stop.svg", false, Gdk.PixbufRotation.NONE, 24, "Detener");
 		button1.clicked.connect (() => {
 			this.__emit_stop();
 		});
@@ -139,4 +139,84 @@ public class BufferInfo : Gtk.EventBox{
         else:
             self.show()
     */
+}
+
+
+public class ToolbarInfo : Gtk.EventBox{
+
+    public signal void rotar(string rotacion);
+    public signal void actualizar_streamings();
+
+    private Gtk.ToolButton boton_izquierda = get_button("Iconos/rotar.svg", false, Gdk.PixbufRotation.NONE, 24, "Izquierda");
+    private Gtk.ToolButton boton_derecha = get_button("Iconos/rotar.svg", true, Gdk.PixbufRotation.NONE, 24, "Derecha");
+    private Gtk.ToolButton descarga = get_button("Iconos/iconplay.svg", true, Gdk.PixbufRotation.COUNTERCLOCKWISE, 24, "Actualizar Streamings");
+    public bool ocultar_controles = false;
+
+    public ToolbarInfo(){
+
+        Gtk.Toolbar toolbar = new Gtk.Toolbar();
+
+        Gtk.SeparatorToolItem separador1 = get_separador(false, 0, true);
+        toolbar.insert(separador1, -1);
+
+		this.boton_izquierda.clicked.connect (() => {
+			this.__emit_rotar("Izquierda");
+		});
+		toolbar.insert(this.boton_izquierda, -1);
+
+		this.boton_derecha.clicked.connect (() => {
+			this.__emit_rotar("Derecha");
+		});
+		toolbar.insert(this.boton_derecha, -1);
+
+        Gtk.SeparatorToolItem separador2 = get_separador(false, 0, true);
+        toolbar.insert(separador2, -1);
+
+        Gtk.ToolItem item1 = new Gtk.ToolItem();
+        Gtk.Label label = new Gtk.Label("Ocultar Controles:");
+        label.show();
+        item1.add(label);
+        toolbar.insert(item1, -1);
+
+        Gtk.SeparatorToolItem separador3 = get_separador(false, 3, false);
+        toolbar.insert(separador3, -1);
+
+        Gtk.ToolItem item2 = new Gtk.ToolItem();
+        Gtk.CheckButton check = new Gtk.CheckButton();
+        check.show();
+        check.clicked.connect (() => {
+			this.__set_controles_view(check);
+		});
+        item2.add(check);
+        toolbar.insert(item2, -1);
+
+        this.descarga.clicked.connect (() => {
+			this.__emit_actualizar_streamings();
+		});
+		toolbar.insert(this.descarga, -1);
+
+        this.add(toolbar);
+        this.show_all();
+        }
+
+    private void __emit_actualizar_streamings(){
+        this.actualizar_streamings();
+        }
+
+    private void __emit_rotar(string rotacion){
+        this.rotar(rotacion);
+        }
+
+    private void __set_controles_view(Gtk.CheckButton widget){
+        this.ocultar_controles = widget.active;
+        }
+
+    public void set_video(bool valor){
+        this.boton_izquierda.set_sensitive(valor);
+        this.boton_derecha.set_sensitive(valor);
+        }
+
+    public void set_ip(bool valor){
+        this.descarga.set_sensitive(valor);
+        }
 }

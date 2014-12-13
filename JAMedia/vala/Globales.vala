@@ -6,17 +6,20 @@ public Gtk.SeparatorToolItem get_separador(bool draw, int ancho, bool expand){
     return separador;
 }
 
-public Gtk.ToolButton get_button(string archivo, bool flip, int pixels, string tooltip){
+public Gtk.ToolButton get_button(string archivo, bool flip, Gdk.PixbufRotation rotacion, int pixels, string tooltip){
     Gdk.Pixbuf pix = new Gdk.Pixbuf.from_file_at_size(archivo, pixels, pixels);
     Gdk.Pixbuf pixbuf;
     if (flip == true){
+        // false espeja en la vertical
         pixbuf = pix.flip(flip);
         }
     else{
         pixbuf = pix;
         }
+    pixbuf = pixbuf.rotate_simple(rotacion);
     Gtk.Image img = new Gtk.Image.from_pixbuf(pixbuf);
 	Gtk.ToolButton button = new Gtk.ToolButton(img, null);
 	button.set_tooltip_text(tooltip);
     return button;
 }
+//gtk.gdk.PIXBUF_ROTATE_CLOCKWISE

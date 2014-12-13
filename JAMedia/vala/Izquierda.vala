@@ -16,6 +16,7 @@ public class Izquierda : Gtk.EventBox{
     private ToolbarGrabar toolbar_record = new ToolbarGrabar();
     private VideoVisor video_visor = new VideoVisor();
     private BufferInfo buffer_info = new BufferInfo();
+    private ToolbarInfo toolbar_info = new ToolbarInfo();
 
     public Izquierda(){
 
@@ -23,7 +24,6 @@ public class Izquierda : Gtk.EventBox{
 
         /*
         //self.efectos_aplicados = Efectos_en_Pipe()
-        self.toolbar_info = ToolbarInfo()
         self.progress = ProgressPlayer()
         */
 
@@ -31,10 +31,9 @@ public class Izquierda : Gtk.EventBox{
         vbox.pack_start(this.video_visor, true, true, 0);
         //vbox.pack_start(self.efectos_aplicados, False, False, 0)
         vbox.pack_start(this.buffer_info, false, false, 0);
+        vbox.pack_start(this.toolbar_info, false, false, 0);
 
         /*
-
-        vbox.pack_start(self.toolbar_info, False, False, 0)
         vbox.pack_start(self.progress, False, False, 0)
         */
         this.add(vbox);

@@ -23,8 +23,8 @@ public class Creditos : Gtk.Dialog{
 
 public class Help : Gtk.Dialog{
 
-    private Gtk.ToolButton anterior = get_button("Iconos/play.svg", true, 24, "Anterior");
-    private Gtk.ToolButton siguiente = get_button("Iconos/play.svg", false, 24, "Siguiente");
+    private Gtk.ToolButton anterior = get_button("Iconos/play.svg", true, Gdk.PixbufRotation.NONE, 24, "Anterior");
+    private Gtk.ToolButton siguiente = get_button("Iconos/play.svg", false, Gdk.PixbufRotation.NONE, 24, "Siguiente");
     private SList<Gtk.Image> archivos = new SList<Gtk.Image> ();
     private int _index = 0;
 

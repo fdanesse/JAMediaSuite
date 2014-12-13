@@ -4,7 +4,7 @@ Derecha, Izquierda, BufferInfo{
     background-color: #ffffff;
 }
 
-Toolbar {
+Toolbar, ToolbarInfo{
     background-color: #778899;
 }
 
