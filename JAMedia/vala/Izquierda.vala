@@ -15,25 +15,21 @@ public class Izquierda : Gtk.EventBox{
     private VideoVisor video_visor = new VideoVisor();
     private BufferInfo buffer_info = new BufferInfo();
     private ToolbarInfo toolbar_info = new ToolbarInfo();
+    private ProgressPlayer progress = new ProgressPlayer();
 
     public Izquierda(){
 
         Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
-        /*
         //self.efectos_aplicados = Efectos_en_Pipe()
-        self.progress = ProgressPlayer()
-        */
 
         vbox.pack_start(this.toolbar_record, false, false, 0);
         vbox.pack_start(this.video_visor, true, true, 0);
         //vbox.pack_start(self.efectos_aplicados, False, False, 0)
         vbox.pack_start(this.buffer_info, false, false, 0);
         vbox.pack_start(this.toolbar_info, false, false, 0);
+        vbox.pack_start(this.progress, false, false, 0);
 
-        /*
-        vbox.pack_start(self.progress, False, False, 0)
-        */
         this.add(vbox);
         this.show_all();
 

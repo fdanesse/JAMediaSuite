@@ -4,7 +4,8 @@ Derecha, Izquierda, BufferInfo{
     background-color: #ffffff;
 }
 
-Toolbar, ToolbarInfo, ProgressBar{
+Toolbar, ToolbarInfo, ProgressBar, ProgressPlayer, BarraProgreso,
+ProgressBar2{
     background-color: #778899;
 }
 
