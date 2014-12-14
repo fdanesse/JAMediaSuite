@@ -44,8 +44,6 @@ public class Izquierda : Gtk.EventBox{
 
         //self.progress.connect("seek", self.__emit_seek)
         //self.progress.connect("volumen", self.__emit_volumen)
-        this.progress.set_progress(50.0);
-
     }
 
     private void __emit_stop_record(){

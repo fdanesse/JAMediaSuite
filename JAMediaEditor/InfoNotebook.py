@@ -21,11 +21,84 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import commands
+from collections import OrderedDict
+import shutil
 
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
+
+from Widgets import Estructura_Menu
+from Widgets import DialogoEliminar
+from Widgets import BusquedaGrep
+
+
+def get_contenido_python(texto):
+    _dict = OrderedDict()
+    bloqueo = False
+    lineas = texto.splitlines()
+    contador = -1
+
+    buscar = ["class", "def", "import", "from"]
+
+    for linea in lineas:
+        temp = linea.strip()
+        contador += 1
+
+        # FIXME: Corregir casos con varias comillas
+        # Bloquear comentarios multilinea.
+        if temp:
+            if temp.startswith("\'\'\'") or \
+                temp.startswith("\"\"\"") or \
+                temp.endswith("\'\'\'") or \
+                temp.endswith("\"\"\""):
+                bloqueo = bool(not bloqueo)
+
+            if bloqueo:
+                continue
+
+            #elif temp and not bloqueo:
+            if temp.split()[0] in buscar:
+                l = linea.strip().split(":")[0]
+                if temp.split()[0] == "class" or \
+                    temp.split()[0] == "def":
+                    l = "%s:" % l
+                _dict[str(contador)] = l
+    return _dict
+
+
+def get_contenido_vala(texto):
+    _dict = OrderedDict()
+    bloqueo = False
+    lineas = texto.splitlines()
+    contador = -1
+
+    buscar = ["public", "private", "using"]
+
+    for linea in lineas:
+        temp = linea.strip()
+        contador += 1
+
+        # FIXME: Corregir casos con varias comillas
+        # Bloquear comentarios multilinea.
+        if temp:
+            if temp.startswith("/*") or temp.startswith("*/"):
+                bloqueo = bool(not bloqueo)
+
+            if bloqueo:
+                continue
+
+            #elif temp and not bloqueo:
+            if temp.split()[0] in buscar:
+                if "{" in linea:
+                    linea = linea.split("{")[0]
+                if ";" in linea:
+                    linea = linea.split(";")[0]
+                _dict[str(contador)] = linea
+
+    return _dict
 
 
 class InfoNotebook(Gtk.Notebook):
@@ -88,15 +161,11 @@ class InfoNotebook(Gtk.Notebook):
         try:
             path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
                 int(pos[0]), int(pos[1]))
-
         except:
             return
-
         if boton == 3:
-            from Widgets import Estructura_Menu
             menu = Estructura_Menu(widget, boton, pos, tiempo,
                 path, widget.get_model(), self.accion_instrospeccion)
-
             menu.connect('accion', self.__set_accion_estructura)
             menu.popup(None, None, None, None, boton, tiempo)
 
@@ -128,7 +197,6 @@ class InfoNotebook(Gtk.Notebook):
 
                 if os.path.isdir(path):
                     expresion = "cp -r \"" + path + "\" \"" + filepath + "\""
-
                 elif os.path.isfile(path):
                     expresion = "cp \"" + path + "\" \"" + filepath + "\""
 
@@ -136,9 +204,7 @@ class InfoNotebook(Gtk.Notebook):
 
                 if "cortar" in self.copy_cut[0]:
                     if os.path.isdir(path):
-                        import shutil
                         shutil.rmtree("%s" % (os.path.join(path)))
-
                     elif os.path.isfile(path):
                         os.remove("%s" % (os.path.join(path)))
 
@@ -177,7 +243,6 @@ class InfoNotebook(Gtk.Notebook):
             if os.path.isdir(filepath):
                 tipo = "Directorio"
                 text = "Directorio"
-
             elif os.path.isfile(filepath):
                 tipo = "Archivo"
                 text = "Archivo"
@@ -185,31 +250,24 @@ class InfoNotebook(Gtk.Notebook):
             if accion == "eliminar proyecto":
                 text = "Proyecto"
 
-            from Widgets import DialogoEliminar
             dialogo = DialogoEliminar(tipo=text,
                 parent_window=self.get_toplevel())
-
             resp = dialogo.run()
             dialogo.destroy()
 
             if resp == Gtk.ResponseType.ACCEPT:
                 if tipo == "Directorio":
-                    import shutil
                     shutil.rmtree("%s" % (os.path.join(filepath)))
-
                 elif tipo == "Archivo":
                     os.remove("%s" % (os.path.join(filepath)))
-
                 lista.get_model().remove(iter)
                 if accion == "eliminar proyecto":
                     self.emit("remove_proyect")
 
         elif accion == "buscar":
             self.copy_cut = []
-            from Widgets import BusquedaGrep
             dialogo = BusquedaGrep(path=filepath,
                 parent_window=self.get_toplevel())
-
             dialogo.connect("nueva-seleccion", self.__seleccion_in_grep)
             dialogo.run()
             dialogo.destroy()
@@ -242,7 +300,6 @@ class InfoNotebook(Gtk.Notebook):
                         expresion = 'mkdir \"%s\"' % directorio_nuevo
                         os.system(expresion)
                         self.set_path_estructura(self.path_actual)
-
                     except:
                         pass
 
@@ -328,41 +385,14 @@ class Introspeccion(Gtk.TreeView):
         return new_iter
 
     def __get_datos_introspeccion(self, texto, tipo):
-        from collections import OrderedDict
         _dict = OrderedDict()
 
         if tipo == "python":
-            bloqueo = False
-            lineas = texto.splitlines()
-            contador = -1
-
-            buscar = ["class", "def", "import", "from"]
-
-            for linea in lineas:
-                temp = linea.strip()
-                contador += 1
-
-                # FIXME: Corregir casos con varias comillas
-                # Bloquear comentarios multilinea.
-                if temp:
-                    if temp.startswith("\'\'\'") or \
-                        temp.startswith("\"\"\"") or \
-                        temp.endswith("\'\'\'") or \
-                        temp.endswith("\"\"\""):
-                        bloqueo = bool(not bloqueo)
-
-                    if bloqueo:
-                        continue
-
-                    #elif temp and not bloqueo:
-                    if temp.split()[0] in buscar:
-                        l = linea.strip().split(":")[0]
-
-                        if temp.split()[0] == "class" or \
-                            temp.split()[0] == "def":
-                            l = "%s:" % l
-
-                        _dict[str(contador)] = l
+            _dict = get_contenido_python(texto)
+        elif tipo == "vala":
+            _dict = get_contenido_vala(texto)
+        else:
+            print tipo
 
         return _dict
 
@@ -429,6 +459,22 @@ class Introspeccion(Gtk.TreeView):
                     color = Gdk.color_parse("#000091")
                     new_funcion = self.__append(new_class, key, color, temp)
 
+        elif tipo == "vala":
+            for key in _dict.keys():
+                temp = _dict[key].strip()
+
+                if temp.startswith("public class "):
+                    color = Gdk.color_parse("#a40000")
+                    new_class = self.__append(iterbase, key, color, temp)
+                    new_funcion = new_class
+
+                elif temp.startswith("using "):
+                    color = Gdk.color_parse("#006e00")
+                    self.__append(new_funcion, key, color, temp)
+
+                elif temp.startswith("public ") or temp.startswith("private ") and not "=" in temp:
+                    color = Gdk.color_parse("#000091")
+                    new_funcion = self.__append(new_class, key, color, temp)
         else:
             #print "FIXME: Completar Introspección para otros lenguajes"
             #print self.set_introspeccion, nombre, tipo
@@ -754,10 +800,8 @@ class Estructura_Proyecto(Gtk.TreeView):
                 self.expand_to_path(path)
 
         elif os.path.isfile(os.path.join(direccion)):
-            import commands
             datos = commands.getoutput(
                 'file -ik %s%s%s' % ("\"", direccion, "\""))
-
             if "text" in datos or "x-python" in datos or \
                 "x-empty" in datos or "svg+xml" in datos:
                 self.emit('open', direccion)

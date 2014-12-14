@@ -132,7 +132,6 @@ class Terminal(Gtk.EventBox):
             path = os.path.basename(archivo)
             terminal = self.notebook.agregar_terminal(
                 path=path, interprete='/bin/bash', ejecutar=archivo)
-
             self.emit("ejecucion", terminal)
 
     def ejecute_script(self, dirpath, interprete, path_script, param):
