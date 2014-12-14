@@ -34,10 +34,11 @@ public class ProgressPlayer : Gtk.EventBox{
 
     def __set_volumen(self, widget, valor):
         self.emit('volumen', valor)
-
-    def set_progress(self, valor):
-        self.barraprogreso.set_progress(valor)
     */
+
+    public void set_progress(double valor){
+        this.barraprogreso.set_progress(valor);
+    }
 }
 
 
@@ -110,19 +111,21 @@ public class ProgressBar2 : Gtk.EventBox{
         icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
         self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 24, 24)
 
-        self.connect("button-press-event", self.__button_press_event)
-        self.connect("button-release-event", self.__button_release_event)
         self.connect("motion-notify-event", self.__motion_notify_event)
         self.connect("expose_event", self.__expose)
         */
+        this.escala.button_press_event.connect ((event) => {
+            this.presed = true;
+            return true;
+            });
+
+        this.escala.button_release_event.connect ((event) => {
+            this.presed = false;
+            return true;
+            });
     }
+
     /*
-    def __button_press_event(self, widget, event):
-        self.presed = True
-
-    def __button_release_event(self, widget, event):
-        self.presed = False
-
     def __motion_notify_event(self, widget, event):
         """
         Cuando el usuario se desplaza por la barra de progreso.
@@ -187,17 +190,18 @@ public class ControlVolumen : Gtk.VolumeButton{
 
     public ControlVolumen(){
 
-        //self.connect("value-changed", self.__value_changed)
+        this.value_changed.connect ((valor) => {
+            this.__value_changed(valor);
+		});
+
         this.show_all();
 
         this.set_value(0.1);
     }
-    /*
-    def __value_changed(self, widget, valor):
-        """
-        Cuando el usuario desplaza la escala.
-        """
-        valor = int(valor * 10)
-        self.emit('volumen', valor)
-    */
+
+    private void __value_changed(double valor){
+        stdout.printf ("%f\n", valor);
+        //valor = int(valor * 10)
+        //self.emit('volumen', valor)
+        }
 }

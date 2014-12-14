@@ -264,11 +264,11 @@ public class ProgressBar : Gtk.EventBox{
         this.add(this.escala);
         this.show_all();
     }
-
+    /*
     private bool __expose(Cairo.Context gc){
         //https://wiki.gnome.org/Projects/Vala/CairoSample
         stdout.printf ("%f\n", this.escala.get_value());
         return true;
         }
-
+    */
 }
