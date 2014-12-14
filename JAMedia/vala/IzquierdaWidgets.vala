@@ -105,40 +105,39 @@ public class VideoVisor : Gtk.DrawingArea{
 
 public class BufferInfo : Gtk.EventBox{
 
+    private ProgressBar escala = new ProgressBar();
+    private double valor = 0.0;
+
     public BufferInfo(){
 
         this.set_border_width(4);
-        /*
-        self.escala = ProgressBar(
-            gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0))
-
-        self.valor = 0
-        */
-
-        Gtk.EventBox box = new Gtk.EventBox();
-        //box.modify_bg(gtk.STATE_NORMAL, get_colors("windows"))
-        box.set_border_width(4);
-        //box.add(self.escala)
 
         Gtk.Frame frame = new Gtk.Frame(" Cargando Buffer ... ");
         frame.set_border_width(4);
         frame.set_label_align((float) 0.0, (float) 0.5);
 
-        frame.add(box);
+        frame.add(this.escala);
         this.add(frame);
         this.show_all();
+        this.set_sensitive(false);
     }
-    /*
-    def set_progress(self, valor=0.0):
-        if self.valor != valor:
-            self.valor = valor
-            self.escala.ajuste.set_value(valor)
-            self.escala.queue_draw()
-        if self.valor == 100.0:
-            self.hide()
-        else:
-            self.show()
-    */
+
+    public void set_progress(double valor){
+        if (this.valor == valor){
+            }
+        else{
+            this.valor = valor;
+            this.escala.ajuste.set_value(valor);
+            this.escala.queue_draw();
+            }
+
+        if (this.valor == 100.0){
+            this.hide();
+            }
+        else{
+            this.show();
+            }
+    }
 }
 
 
@@ -219,4 +218,57 @@ public class ToolbarInfo : Gtk.EventBox{
     public void set_ip(bool valor){
         this.descarga.set_sensitive(valor);
         }
+}
+
+
+public class ProgressBar : Gtk.EventBox{
+
+    private Gtk.Scale escala = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, new Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0));
+    public Gtk.Adjustment ajuste = new Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0);
+    //private int ancho = 10;
+    //private int borde = 10;
+
+    public ProgressBar(){
+
+        this.set_border_width(4);
+        this.escala = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, this.ajuste);
+        this.escala.set_digits(0);
+        this.escala.set_draw_value(false);
+
+        // FIXME: Implementar Dibujo con cairo
+        //this.escala.draw.connect ((context) => {
+        //    this.__expose(context);
+		//});
+        /*
+		this.escala.draw.connect ((context) => {
+			// Get necessary data:
+			weak Gtk.StyleContext style_context = this.escala.get_style_context ();
+			int height = this.escala.get_allocated_height ();
+			int width = this.escala.get_allocated_width ();
+			Gdk.RGBA color = style_context.get_color (0);
+
+			// Draw an arc:
+			double xc = width / 2.0;
+			double yc = height / 2.0;
+			double radius = int.min (width, height) / 2.0;
+			double angle1 = 0;
+			double angle2 = 2*Math.PI;
+
+			context.arc (xc, yc, radius, angle1, angle2);
+			Gdk.cairo_set_source_rgba (context, color);
+			context.fill ();
+
+			return true;
+		});
+        */
+        this.add(this.escala);
+        this.show_all();
+    }
+
+    private bool __expose(Cairo.Context gc){
+        //https://wiki.gnome.org/Projects/Vala/CairoSample
+        stdout.printf ("%f\n", this.escala.get_value());
+        return true;
+        }
+
 }

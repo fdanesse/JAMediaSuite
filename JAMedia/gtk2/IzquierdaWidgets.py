@@ -340,6 +340,7 @@ class ProgressBar(gtk.HScale):
         self.connect("expose_event", self.__expose)
 
         self.show_all()
+        self.set_sensitive(False)
 
     def __expose(self, widget, event):
         x, y, w, h = self.get_allocation()
