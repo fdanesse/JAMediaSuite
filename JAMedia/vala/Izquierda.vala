@@ -3,16 +3,14 @@ public class Izquierda : Gtk.EventBox{
     //__gsignals__ = {
     //"show-controls": (gobject.SIGNAL_RUN_LAST,
     //    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-    //'rotar': (gobject.SIGNAL_RUN_LAST,
-    //    gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    //'actualizar_streamings': (gobject.SIGNAL_RUN_LAST,
-    //    gobject.TYPE_NONE, []),
     //"seek": (gobject.SIGNAL_RUN_LAST,
     //    gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
     //"volumen": (gobject.SIGNAL_RUN_LAST,
     //    gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
     public signal void stop_record();
+    public signal void rotar(string rotacion);
+    public signal void actualizar_streamings();
     private ToolbarGrabar toolbar_record = new ToolbarGrabar();
     private VideoVisor video_visor = new VideoVisor();
     private BufferInfo buffer_info = new BufferInfo();
@@ -40,21 +38,28 @@ public class Izquierda : Gtk.EventBox{
         this.show_all();
 
         this.toolbar_record.detener.connect(this.__emit_stop_record);
-        /*
-        self.video_visor.connect("ocultar_controles",
-            self.__emit_show_controls)
-        self.video_visor.connect("button_press_event", self.__set_fullscreen)
 
-        self.toolbar_info.connect("rotar", self.__emit_rotar)
-        self.toolbar_info.connect("actualizar_streamings",
-            self.__emit_actualizar_streamings)
+        //self.video_visor.connect("ocultar_controles",
+        //    self.__emit_show_controls)
+        //self.video_visor.connect("button_press_event", self.__set_fullscreen)
 
-        self.progress.connect("seek", self.__emit_seek)
-        self.progress.connect("volumen", self.__emit_volumen)
-        */
+        this.toolbar_info.rotar.connect(this.__emit_rotar);
+        this.toolbar_info.actualizar_streamings.connect(this.__emit_actualizar_streamings);
+
+        //self.progress.connect("seek", self.__emit_seek)
+        //self.progress.connect("volumen", self.__emit_volumen)
+
     }
 
     private void __emit_stop_record(){
         this.stop_record();
+        }
+
+    private void __emit_rotar(string rotacion){
+        this.rotar(rotacion);
+        }
+
+    private void __emit_actualizar_streamings(){
+        this.actualizar_streamings();
         }
 }

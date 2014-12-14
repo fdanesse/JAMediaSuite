@@ -147,10 +147,10 @@ class VideoVisor(gtk.DrawingArea):
         if x in range(ww - 60, ww) or y in range(yy, yy + 60) \
             or y in range(hh - 60, hh):
             self.emit("ocultar_controles", False)
-            return
+            return True
         else:
             self.emit("ocultar_controles", True)
-            return
+            return True
 
 
 class ToolbarInfo(gtk.EventBox):
