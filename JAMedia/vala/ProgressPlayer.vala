@@ -9,6 +9,7 @@ public class ProgressPlayer : Gtk.EventBox{
     */
 
     private BarraProgreso barraprogreso = new BarraProgreso();
+    private ControlVolumen volumen = new ControlVolumen();
 
     public ProgressPlayer(){
 
@@ -17,7 +18,7 @@ public class ProgressPlayer : Gtk.EventBox{
         */
         Gtk.Box hbox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
         hbox.pack_start(this.barraprogreso, true, true, 0);
-        //hbox.pack_start(self.volumen, False, False, 0)
+        hbox.pack_start(this.volumen, false, false, 0);
 
         this.add(hbox);
         /*
@@ -173,5 +174,30 @@ public class ProgressBar2 : Gtk.EventBox{
             imgw, imgh, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
 
         return True
+    */
+}
+
+
+public class ControlVolumen : Gtk.VolumeButton{
+    /*
+    __gsignals__ = {
+    "volumen": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
+    */
+
+    public ControlVolumen(){
+
+        //self.connect("value-changed", self.__value_changed)
+        this.show_all();
+
+        this.set_value(0.1);
+    }
+    /*
+    def __value_changed(self, widget, valor):
+        """
+        Cuando el usuario desplaza la escala.
+        """
+        valor = int(valor * 10)
+        self.emit('volumen', valor)
     */
 }
