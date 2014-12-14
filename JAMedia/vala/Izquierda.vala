@@ -46,6 +46,14 @@ public class Izquierda : Gtk.EventBox{
         //self.progress.connect("volumen", self.__emit_volumen)
     }
 
+    /*
+    def __emit_volumen(self, widget, valor):
+        self.emit('volumen', valor)
+
+    def __emit_seek(self, widget, valor):
+        self.emit("seek", valor)
+    */
+
     private void __emit_stop_record(){
         this.stop_record();
         }
@@ -57,4 +65,40 @@ public class Izquierda : Gtk.EventBox{
     private void __emit_actualizar_streamings(){
         this.actualizar_streamings();
         }
+
+    /*
+    def __set_fullscreen(self, widget, event):
+        if event.type.value_name == "GDK_2BUTTON_PRESS":
+            win = self.get_toplevel()
+            widget.set_sensitive(False)
+            screen = win.get_screen()
+            w, h = win.get_size()
+            ww, hh = (screen.get_width(), screen.get_height())
+            if ww == w and hh == h:
+                win.set_border_width(2)
+                gobject.idle_add(self.__set_full, win, False)
+            else:
+                win.set_border_width(0)
+                gobject.idle_add(self.__set_full, win, True)
+            widget.set_sensitive(True)
+
+    def __set_full(self, win, valor):
+        if valor:
+            win.fullscreen()
+        else:
+            win.unfullscreen()
+
+    def __emit_show_controls(self, widget, valor):
+        zona, ocultar = (valor, self.toolbar_info.ocultar_controles)
+        self.emit("show-controls", (zona, ocultar))
+
+    def setup_init(self):
+        map(ocultar, [self.toolbar_record, self.buffer_info])
+        #, self.efectos_aplicados])
+        self.toolbar_info.set_video(False)
+        self.progress.set_sensitive(False)
+
+    def set_ip(self, valor):
+        self.toolbar_info.set_ip(valor)
+    */
 }

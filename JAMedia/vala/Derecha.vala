@@ -24,35 +24,37 @@ public class Derecha : Gtk.EventBox{
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
     */
 
+    private BalanceWidget balance = new BalanceWidget();
+
     public Derecha(){
 
+        Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        Gtk.Box conf_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+
         /*
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-
-        vbox = gtk.VBox()
-        conf_box = gtk.VBox()
-
-        self.balance = BalanceWidget()
         #self.efectos = VideoEfectos()
         self.lista = PlayerList()
         self.lista.set_mime_types(["audio/*", "video/*"])
         self.player_controls = PlayerControls()
 
-        conf_box.pack_start(self.balance, False, False, 0)
         #conf_box.pack_start(self.efectos, True, True, 0)
-
-        scroll = gtk.ScrolledWindow()
-        scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-        scroll.add_with_viewport(conf_box)
-        scroll.get_child().modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-
-        vbox.pack_start(scroll, True, True, 0)
-        vbox.pack_start(self.lista, True, True, 0)
-        vbox.pack_end(self.player_controls, False, False, 0)
-
-        self.add(vbox)
         */
 
+        Gtk.ScrolledWindow scroll = new Gtk.ScrolledWindow(null, null);
+        scroll.set("hscrollbar_policy", Gtk.PolicyType.NEVER);
+        scroll.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
+        scroll.add_with_viewport(conf_box);
+        //scroll.get_child().modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+
+        vbox.pack_start(scroll, true, true, 0);
+        /*
+        vbox.pack_start(self.lista, True, True, 0)
+        vbox.pack_end(self.player_controls, False, False, 0)
+        */
+
+        conf_box.pack_start(this.balance, false, false, 0);
+
+        this.add(vbox);
         this.show_all();
 
         /*
