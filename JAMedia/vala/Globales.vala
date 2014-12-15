@@ -8,7 +8,7 @@ public Gtk.SeparatorToolItem get_separador(bool draw, int ancho, bool expand){
 
 public Gtk.ToolButton get_button(string archivo, bool flip, Gdk.PixbufRotation rotacion, int pixels, string tooltip){
     Gdk.Pixbuf pix = new Gdk.Pixbuf.from_file_at_size(archivo, pixels, pixels);
-    Gdk.Pixbuf pixbuf;
+    Gdk.Pixbuf pixbuf = null;
     if (flip == true){
         // false espeja en la vertical
         pixbuf = pix.flip(flip);

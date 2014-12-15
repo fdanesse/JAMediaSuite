@@ -26,6 +26,7 @@ public class Derecha : Gtk.EventBox{
 
     private BalanceWidget balance = new BalanceWidget();
     private PlayerList lista = new PlayerList();
+    private PlayerControls player_controls = new PlayerControls();
 
     public Derecha(){
 
@@ -36,8 +37,6 @@ public class Derecha : Gtk.EventBox{
         #self.efectos = VideoEfectos()
         self.lista = PlayerList()
         self.lista.set_mime_types(["audio/*", "video/*"])
-        self.player_controls = PlayerControls()
-
         #conf_box.pack_start(self.efectos, True, True, 0)
         */
 
@@ -48,9 +47,7 @@ public class Derecha : Gtk.EventBox{
 
         vbox.pack_start(scroll, true, true, 0);
         vbox.pack_start(this.lista, true, true, 0);
-        /*
-        vbox.pack_end(self.player_controls, False, False, 0)
-        */
+        vbox.pack_end(this.player_controls, false, false, 0);
 
         conf_box.pack_start(this.balance, false, false, 0);
 

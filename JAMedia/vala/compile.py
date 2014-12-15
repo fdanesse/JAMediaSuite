@@ -4,8 +4,10 @@
 import os
 import commands
 
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
-def run(BASE_PATH):
+
+def run():
     comando = "valac --pkg glib-2.0 --pkg gtk+-3.0 --pkg gdk-3.0 --pkg cairo JAMedia.vala"
 
     for path in os.listdir(BASE_PATH):
@@ -25,5 +27,4 @@ def run(BASE_PATH):
 
 
 if __name__ == "__main__":
-    BASE_PATH = os.path.dirname(__file__)
-    run(BASE_PATH)
+    run()

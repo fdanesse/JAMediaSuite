@@ -13,6 +13,7 @@ public class PlayerList : Gtk.Frame{
         gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
     */
     private Lista lista = new Lista();
+    private JAMediaToolbarList toolbar = new JAMediaToolbarList();
 
     public PlayerList(){
 
@@ -20,14 +21,12 @@ public class PlayerList : Gtk.Frame{
 
         Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
-        //self.toolbar = JAMediaToolbarList()
-
         Gtk.ScrolledWindow scroll = new Gtk.ScrolledWindow(null, null);
         scroll.set("hscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
         scroll.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
         scroll.add(this.lista);
 
-        //vbox.pack_start(self.toolbar, False, False, 0)
+        vbox.pack_start(this.toolbar, false, false, 0);
         vbox.pack_start(scroll, true, true, 0);
 
         this.add(vbox);
@@ -114,4 +113,114 @@ public class Lista : Gtk.TreeView{
         col3.set_property("visible", false);
         this.append_column(col3);
         }
+}
+
+
+public class JAMediaToolbarList : Gtk.EventBox{
+    /*
+    __gsignals__ = {
+    "cargar_lista": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_INT,)),
+    "add_stream": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, []),
+    "menu_activo": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, [])}
+    */
+
+    public JAMediaToolbarList(){
+
+        //self.ip = False
+
+        Gtk.Toolbar toolbar = new Gtk.Toolbar();
+        /*
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        toolbar.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
+        */
+
+        Gtk.ToolButton button1 = get_button("Iconos/lista.svg", false, Gdk.PixbufRotation.NONE, 24, "Selecciona una Lista");
+		//button1.clicked.connect (() => {
+		//	this.__get_menu();
+		//});
+		toolbar.insert(button1, -1);
+
+		Gtk.SeparatorToolItem separador1 = get_separador(false, 3, false);
+        toolbar.insert(separador1, -1);
+
+        Gtk.ToolItem item = new Gtk.ToolItem();
+        Gtk.Label label = new Gtk.Label("");
+        label.show();
+        item.add(label);
+        toolbar.insert(item, -1);
+
+        Gtk.SeparatorToolItem separador2 = get_separador(false, 0, true);
+        toolbar.insert(separador2, -1);
+
+        Gtk.ToolButton button2 = get_button("Iconos/agregar.svg", false, Gdk.PixbufRotation.NONE, 24, "Agregar Streaming");
+		//button1.clicked.connect (() => {
+		//	this.__emit_add_stream();
+		//});
+		toolbar.insert(button2, -1);
+
+        this.add(toolbar);
+        this.show_all();
+    }
+    /*
+    def __get_menu(self, widget):
+        self.emit("menu_activo")
+        menu = gtk.Menu()
+
+        if self.ip:
+            item = gtk.MenuItem("JAMedia Radio")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 0)
+
+            item = gtk.MenuItem("JAMedia TV")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 1)
+
+            item = gtk.MenuItem("Mis Emisoras")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 2)
+
+            item = gtk.MenuItem("Mis Canales")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 3)
+
+            item = gtk.MenuItem("Web Cams")
+            menu.append(item)
+            item.connect_object("activate", self.__emit_load_list, 4)
+
+        item = gtk.MenuItem("Mis Archivos")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 5)
+
+        item = gtk.MenuItem("JAMediaTube")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 6)
+
+        item = gtk.MenuItem("Audio-JAMediaVideo")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 7)
+
+        item = gtk.MenuItem("Video-JAMediaVideo")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 8)
+
+        item = gtk.MenuItem("Archivos Externos")
+        menu.append(item)
+        item.connect_object("activate", self.__emit_load_list, 9)
+
+        menu.show_all()
+        menu.attach_to_widget(widget, self.__null)
+        gtk.Menu.popup(menu, None, None, None, 1, 0)
+
+    def __null(self):
+        pass
+
+    def __emit_load_list(self, indice):
+        self.emit("cargar_lista", indice)
+
+    def __emit_add_stream(self, widget):
+        self.emit("add_stream")
+    */
 }

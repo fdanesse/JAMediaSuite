@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   enable-background="new 0 0 55 55"
+   height="50"
+   version="1.1"
+   viewBox="0 0 50 50"
+   width="50"
+   x="0px"
+   xml:space="preserve"
+   y="0px"
+   id="svg2"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="lista.svg"><metadata
+     id="metadata17"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+     id="defs15">
+	
+		
+	
+</defs><sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="712"
+     id="namedview13"
+     showgrid="false"
+     inkscape:zoom="4.2909091"
+     inkscape:cx="27.5"
+     inkscape:cy="27.5"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" /><path
+     sodipodi:type="arc"
+     style="fill:#ff6600;fill-opacity:1;stroke:#000000;stroke-width:6.4000001;stroke-miterlimit:4;stroke-dasharray:none"
+     id="path2985-97-8-5-5"
+     sodipodi:cx="265.71429"
+     sodipodi:cy="356.64789"
+     sodipodi:rx="58.57143"
+     sodipodi:ry="58.57143"
+     d="m 324.28572,356.64789 a 58.57143,58.57143 0 1 1 -117.14286,0 58.57143,58.57143 0 1 1 117.14286,0 z"
+     transform="matrix(0.38880746,0,0,0.38880746,-78.142211,-113.60381)"
+     inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/agregar.png"
+     inkscape:export-xdpi="32.785225"
+     inkscape:export-ydpi="32.785225" /><path
+     style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2.4883678;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     d="m 8.4501092,18.710997 c -0.06205,0.06205 -0.102023,0.145452 -0.103072,0.240555 l -0.128929,11.847663 c -0.0039,0.190283 0.144869,0.350199 0.335113,0.352221 l 10.4215168,0.111704 0.111705,10.421517 c 0,0.190243 0.161976,0.337134 0.35222,0.335113 l 11.839111,-0.137482 c 0.190243,-0.0039 0.337134,-0.144831 0.335034,-0.335075 l -0.111665,-10.146552 10.146554,0.111666 c 0.19028,0.0039 0.341603,-0.153424 0.343663,-0.343667 l 0.137484,-11.839109 c 0,-0.190244 -0.153419,-0.341607 -0.343664,-0.343629 L 31.363661,18.874218 31.251957,8.4527001 c 0,-0.1902435 -0.153385,-0.3457276 -0.343667,-0.3436669 L 19.060626,8.2379229 C 18.870382,8.2418129 18.723491,8.3999 18.725513,8.5901046 L 18.837178,18.736658 8.6906262,18.624992 c -0.09514,0 -0.177841,0.02449 -0.240595,0.08588 z"
+     id="rect3096-1"
+     inkscape:export-filename="/home/flavio/Documentos/GIT_Software/JAMediaIconos/agregar.png"
+     inkscape:export-xdpi="32"
+     inkscape:export-ydpi="32"
+     inkscape:connector-curvature="0" /></svg>

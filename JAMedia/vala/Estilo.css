@@ -6,7 +6,7 @@ SlicerBalance{
 }
 
 Toolbar, ToolbarInfo, ProgressBar, ProgressPlayer, BarraProgreso,
-ProgressBar2{
+ProgressBar2, JAMediaToolbarList, PlayerControls, JAMediaToolButton{
     background-color: #778899;
 }
 
