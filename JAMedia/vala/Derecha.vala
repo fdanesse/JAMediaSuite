@@ -44,7 +44,6 @@ public class Derecha : Gtk.EventBox{
         scroll.set("hscrollbar_policy", Gtk.PolicyType.NEVER);
         scroll.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
         scroll.add_with_viewport(conf_box);
-        //scroll.get_child().modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
         vbox.pack_start(scroll, true, true, 0);
         /*

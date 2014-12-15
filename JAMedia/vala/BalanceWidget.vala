@@ -6,28 +6,22 @@ public class BalanceWidget : Gtk.EventBox{
         (gobject.TYPE_FLOAT, gobject.TYPE_STRING))}
     */
 
-    private ToolbarcontrolValores brillo = new ToolbarcontrolValores("brillo");
+    private ToolbarcontrolValores brillo = new ToolbarcontrolValores("Brillo");
+    private ToolbarcontrolValores contraste = new ToolbarcontrolValores("Contraste");
+    private ToolbarcontrolValores saturacion = new ToolbarcontrolValores("Saturación");
+    private ToolbarcontrolValores hue = new ToolbarcontrolValores("Matíz");
+    private ToolbarcontrolValores gamma = new ToolbarcontrolValores("Gamma");
 
     public BalanceWidget(){
 
         Gtk.AttachOptions flags = Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL;
         Gtk.Table tabla = new Gtk.Table(5, 1, true);
-        /*
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-        tabla.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
-        self.contraste = ToolbarcontrolValores("Contraste")
-        self.saturacion = ToolbarcontrolValores("Saturación")
-        self.hue = ToolbarcontrolValores("Matíz")
-        self.gamma = ToolbarcontrolValores("Gamma")
-        */
         tabla.attach(this.brillo, 0, 1, 0, 1, flags, flags, 0, 0);
-        /*
-        tabla.attach(self.contraste, 0, 1, 1, 2)
-        tabla.attach(self.saturacion, 0, 1, 2, 3)
-        tabla.attach(self.hue, 0, 1, 3, 4)
-        tabla.attach(self.gamma, 0, 1, 4, 5)
-        */
+        tabla.attach(this.contraste, 0, 1, 1, 2, flags, flags, 0, 0);
+        tabla.attach(this.saturacion, 0, 1, 2, 3, flags, flags, 0, 0);
+        tabla.attach(this.hue, 0, 1, 3, 4, flags, flags, 0, 0);
+        tabla.attach(this.gamma, 0, 1, 4, 5, flags, flags, 0, 0);
 
         this.add(tabla);
         this.show_all();
@@ -129,11 +123,12 @@ public class SlicerBalance : Gtk.EventBox{
         this.show_all();
 
         //self.escala.connect('user-set-value', self.__emit_valor)
+        this.escala.value_changed.connect (() => {
+			stdout.printf ("%f\n", this.escala.get_value ());
+			//self.emit("user-set-value", valor)
+		});
     }
     /*
-    def __emit_valor(self, widget, valor):
-        self.emit("user-set-value", valor)
-
     def set_progress(self, valor=0.0):
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
