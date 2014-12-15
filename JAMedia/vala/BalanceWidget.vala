@@ -74,7 +74,7 @@ public class ToolbarcontrolValores : Gtk.Toolbar{
         this.frame.set("label_widget", this.label);
         this.label.set_text(titulo);
         this.frame.set("label_xalign", 0.5);
-        this.frame.set("label_valign", 0.5);
+        this.frame.set("label_yalign", 0.5);
         this.frame.set_border_width(4);
 
         Gtk.EventBox event = new Gtk.EventBox();

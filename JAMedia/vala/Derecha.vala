@@ -25,6 +25,7 @@ public class Derecha : Gtk.EventBox{
     */
 
     private BalanceWidget balance = new BalanceWidget();
+    private PlayerList lista = new PlayerList();
 
     public Derecha(){
 
@@ -46,8 +47,8 @@ public class Derecha : Gtk.EventBox{
         scroll.add_with_viewport(conf_box);
 
         vbox.pack_start(scroll, true, true, 0);
+        vbox.pack_start(this.lista, true, true, 0);
         /*
-        vbox.pack_start(self.lista, True, True, 0)
         vbox.pack_end(self.player_controls, False, False, 0)
         */
 
