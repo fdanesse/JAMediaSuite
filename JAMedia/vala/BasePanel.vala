@@ -6,12 +6,11 @@ public class BasePanel : Gtk.HPaned{
     //"accion-list": (gobject.SIGNAL_RUN_LAST,
     //    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
     //    gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    //"add_stream": (gobject.SIGNAL_RUN_LAST,
-    //    gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
     //'stop-record': (gobject.SIGNAL_RUN_LAST,
     //    gobject.TYPE_NONE, [])}
 
     public signal void menu_activo();
+    public signal void add_stream(string title);
 
     private Izquierda izquierda = new Izquierda();
     private Derecha derecha = new Derecha();
@@ -33,8 +32,8 @@ public class BasePanel : Gtk.HPaned{
         self.derecha.connect("cargar-reproducir", self.__cargar_reproducir)
         self.derecha.connect("accion-list", self.__emit_accion_list)
         self.derecha.connect("menu_activo", self.__emit_menu_activo)
-        self.derecha.connect("add_stream", self.__emit_add_stream)
         */
+        this.derecha.add_stream.connect(this.__emit_add_stream);
         this.derecha.accion_controls.connect(this.__accion_controls);
         /*
         self.derecha.connect("balance-valor", self.__accion_balance)
@@ -89,11 +88,12 @@ public class BasePanel : Gtk.HPaned{
             self.player.set_balance(hue=valor)
         elif prop == "gamma":
             self.player.set_balance(gamma=valor)
-
-    def __emit_add_stream(self, widget, title):
-        # El usuario agregará una dirección de streaming
-        self.emit("add_stream", title)
     */
+
+    private void __emit_add_stream(string title){
+        // El usuario agregará una dirección de streaming
+        this.add_stream(title);
+        }
 
     private void __emit_menu_activo(){
         // hay un menu contextual presente

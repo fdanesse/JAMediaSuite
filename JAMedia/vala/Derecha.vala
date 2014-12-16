@@ -9,8 +9,6 @@ public class Derecha : Gtk.EventBox{
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
     "menu_activo": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "add_stream": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
     'balance-valor': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,
         gobject.TYPE_STRING)),
@@ -23,9 +21,10 @@ public class Derecha : Gtk.EventBox{
     */
 
     public signal void accion_controls(string accion);
+    public signal void add_stream(string title);
 
     private BalanceWidget balance = new BalanceWidget();
-    public PlayerList lista = new PlayerList();
+    public JAMediaPlayerList lista = new JAMediaPlayerList();
     private PlayerControls player_controls = new PlayerControls();
 
     public Derecha(){
@@ -62,8 +61,8 @@ public class Derecha : Gtk.EventBox{
         self.lista.connect("nueva-seleccion", self.__emit_cargar_reproducir)
         self.lista.connect("accion-list", self.__emit_accion_list)
         self.lista.connect("menu_activo", self.__emit_menu_activo)
-        self.lista.connect("add_stream", self.__emit_add_stream)
         */
+        this.lista.add_stream.connect(this.__emit_add_stream);
 
         this.player_controls.accion_controls.connect(this.__emit_accion_controls);
 
@@ -81,11 +80,11 @@ public class Derecha : Gtk.EventBox{
         this.accion_controls(accion);
         }
 
+    private void __emit_add_stream(string title){
+        // El usuario agregará una dirección de streaming
+        this.add_stream(title);
+        }
     /*
-    def __emit_add_stream(self, widget, title):
-        # El usuario agregará una dirección de streaming
-        self.emit("add_stream", title)
-
     def __emit_menu_activo(self, widget=False):
         # hay un menu contextual presente
         self.emit("menu_activo")

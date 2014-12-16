@@ -19,7 +19,7 @@ public class JAMedia : Gtk.Window{
     private ToolbarAccion toolbaraccion = new ToolbarAccion();
     private ToolbarAddStream add_stream = new ToolbarAddStream();
 
-    private BasePanel basepanel = new BasePanel();
+    private BasePanel base_panel = new BasePanel();
 
     public JAMedia(){
 
@@ -51,7 +51,7 @@ public class JAMedia : Gtk.Window{
         box.pack_start(this.toolbarsalir, false, false, 0);
         box.pack_start(this.toolbaraccion, false, false, 0);
         box.pack_start(this.add_stream, false, false, 0);
-        box.pack_start(this.basepanel, true, true, 0);
+        box.pack_start(this.base_panel, true, true, 0);
 
         this.add(box);
         this.show_all();
@@ -68,7 +68,7 @@ public class JAMedia : Gtk.Window{
         //self.base_panel.connect("show-controls", self.__ocultar_controles)
         //self.base_panel.connect("accion-list", self.__accion_list)
         //self.base_panel.connect("menu_activo", self.__cancel_toolbars)
-        //self.base_panel.connect("add_stream", self.__run_add_stream)
+        this.base_panel.add_stream.connect(this.__run_add_stream);
         //self.base_panel.connect("stop-record", self.__detener_grabacion)
 
         //self.mouse_listener.connect("estado", self.__set_mouse)
@@ -83,6 +83,10 @@ public class JAMedia : Gtk.Window{
         //gobject.idle_add(self.__setup_init)
         //print "JAMedia process:", os.getpid()
         //self.base_panel.checkear_listas()
+        }
+
+    private void __run_add_stream(string title){
+        this.add_stream.set_accion(title);
         }
 
     private void __add_stream(string tipo, string nombre, string url){

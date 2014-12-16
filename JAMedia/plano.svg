@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="plano.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.24748737"
+     inkscape:cx="-1580.2134"
+     inkscape:cy="1119.3067"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="713"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-1625.7144"
+       y="398.07648"
+       id="text2997"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2999" /></text>
+    <g
+       id="g3791"
+       transform="translate(-1329.3607,-113.13708)">
+      <rect
+         ry="0.52651823"
+         y="169.50504"
+         x="-2328.5715"
+         height="488.57144"
+         width="1220"
+         id="rect3021"
+         style="fill:#ffe6d5;fill-opacity:1;stroke:#008000;stroke-width:13.2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text2985"
+         y="252.36218"
+         x="-2308.5718"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:54px;font-weight:bold;fill:#0000ff;-inkscape-font-specification:Sans Bold"
+           y="252.36218"
+           x="-2308.5718"
+           id="tspan2987"
+           sodipodi:role="line">PlayerControls</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text2989"
+         y="418.07648"
+         x="-2305.7144"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="418.07648"
+           x="-2305.7144"
+           id="tspan2991"
+           sodipodi:role="line" /><tspan
+           style="font-weight:bold;-inkscape-font-specification:Sans Bold"
+           id="tspan3003"
+           y="468.07648"
+           x="-2305.7144"
+           sodipodi:role="line">Funciones:</tspan><tspan
+           id="tspan3005"
+           y="518.07648"
+           x="-2305.7144"
+           sodipodi:role="line">    activar (bool) <tspan
+   id="tspan3007"
+   style="font-style:italic;fill:#0000ff;-inkscape-font-specification:Sans Italic">Sensibilidad de los botones</tspan></tspan><tspan
+           id="tspan2993"
+           y="568.07648"
+           x="-2305.7144"
+           sodipodi:role="line">    set_paused () <tspan
+   id="tspan3011"
+   style="font-style:italic;fill:#0000ff;-inkscape-font-specification:Sans Italic">Setea imagen play</tspan></tspan><tspan
+           id="tspan3001"
+           y="618.07648"
+           x="-2305.7144"
+           sodipodi:role="line">    set_playing () <tspan
+   id="tspan3009"
+   style="font-style:italic;fill:#0000ff;-inkscape-font-specification:Sans Italic">Setea imagen pause</tspan></tspan><tspan
+           id="tspan2995"
+           y="668.07648"
+           x="-2305.7144"
+           sodipodi:role="line" /></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3013"
+         y="329.50504"
+         x="-2305.7141"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-weight:bold;-inkscape-font-specification:Sans Bold"
+           y="329.50504"
+           x="-2305.7141"
+           id="tspan3015"
+           sodipodi:role="line">Señales:</tspan><tspan
+           id="tspan3017"
+           y="379.50504"
+           x="-2305.7141"
+           sodipodi:role="line">    &quot;accion-controls&quot; string  <tspan
+   id="tspan3019"
+   style="font-style:italic;fill:#0000ff;-inkscape-font-specification:Sans Italic">atras siguiente stop pausa-play</tspan></tspan></text>
+    </g>
+    <rect
+       style="fill:#ffe6d5;fill-opacity:1;stroke:#008000;stroke-width:13.2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3021-3"
+       width="4196.5854"
+       height="984.22192"
+       x="-3642.0833"
+       y="-1006.8641"
+       ry="1.0606652" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-3616.6951"
+       y="-934.7807"
+       id="text2985-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2987-8"
+         x="-3616.6951"
+         y="-934.7807"
+         style="font-size:54px;font-weight:bold;fill:#0000ff;-inkscape-font-specification:Sans Bold">JAMediaPlayerList</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-3613.8376"
+       y="-769.06641"
+       id="text2989-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2991-7"
+         x="-3613.8376"
+         y="-769.06641" /><tspan
+         sodipodi:role="line"
+         x="-3613.8376"
+         y="-719.06641"
+         id="tspan3003-9"
+         style="font-weight:bold;-inkscape-font-specification:Sans Bold">Funciones:</tspan><tspan
+         sodipodi:role="line"
+         x="-3613.8376"
+         y="-669.06641"
+         id="tspan3001-0" /><tspan
+         sodipodi:role="line"
+         x="-3613.8376"
+         y="-619.06641"
+         id="tspan2995-9" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-3613.8374"
+       y="-857.63788"
+       id="text3013-4"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3015-9"
+         x="-3613.8374"
+         y="-857.63788"
+         style="font-weight:bold;-inkscape-font-specification:Sans Bold">Señales:</tspan><tspan
+         sodipodi:role="line"
+         x="-3613.8374"
+         y="-807.63788"
+         id="tspan3017-11">    &quot;add_stream&quot; string <tspan
+   style="font-style:italic;fill:#0000ff;-inkscape-font-specification:Sans Italic"
+   id="tspan3263">(viene de JAMediaToolBarList)</tspan></tspan></text>
+    <g
+       id="g3273"
+       transform="translate(20.203052,424.26407)">
+      <rect
+         ry="0.27575552"
+         y="-774.15002"
+         x="-2323.655"
+         height="255.88153"
+         width="2795.8816"
+         id="rect3021-2"
+         style="fill:#ffe6d5;fill-opacity:1;stroke:#008000;stroke-width:13.2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text2985-1"
+         y="-691.92352"
+         x="-2304.2859"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:54px;font-weight:bold;fill:#0000ff;-inkscape-font-specification:Sans Bold"
+           y="-691.92352"
+           x="-2304.2859"
+           id="tspan2987-9"
+           sodipodi:role="line">JAMediaToolbarList</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3013-8"
+         y="-614.7807"
+         x="-2301.4282"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-weight:bold;-inkscape-font-specification:Sans Bold"
+           y="-614.7807"
+           x="-2301.4282"
+           id="tspan3015-2"
+           sodipodi:role="line">Señales:</tspan><tspan
+           id="tspan3017-1"
+           y="-564.7807"
+           x="-2301.4282"
+           sodipodi:role="line">    &quot;add_stream&quot; []  <tspan
+   id="tspan3175"
+   style="font-style:italic;fill:#0000ff;-inkscape-font-specification:Sans Italic">=&gt; JAMediaPlayerList string =&gt; Derecha =&gt; BasePanel =&gt; JAMedia.__run_add_stream mostrando ToolbarAddStream</tspan></tspan></text>
+    </g>
+    <g
+       id="g3791-3"
+       transform="translate(-71.418774,-1042.3224)">
+      <g
+         id="g3359"
+         transform="translate(96.974644,-40.406102)">
+        <rect
+           style="fill:#ffe6d5;fill-opacity:1;stroke:#008000;stroke-width:13.19999981;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3021-6"
+           width="1220"
+           height="488.57144"
+           x="-2328.5715"
+           y="169.50504"
+           ry="0.52651823" />
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+           x="-2308.5718"
+           y="252.36218"
+           id="text2985-9"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan2987-5"
+             x="-2308.5718"
+             y="252.36218"
+             style="font-size:54px;font-weight:bold;fill:#0000ff;-inkscape-font-specification:Sans Bold">Lista</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="-2305.7144"
+           y="418.07648"
+           id="text2989-5"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan2991-73"
+             x="-2305.7144"
+             y="418.07648" /><tspan
+             sodipodi:role="line"
+             x="-2305.7144"
+             y="468.07648"
+             id="tspan3003-1"
+             style="font-weight:bold;-inkscape-font-specification:Sans Bold">Funciones:</tspan><tspan
+             sodipodi:role="line"
+             x="-2305.7144"
+             y="518.07648"
+             id="tspan3001-1" /><tspan
+             sodipodi:role="line"
+             x="-2305.7144"
+             y="568.07648"
+             id="tspan2995-2" /></text>
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="-2305.7141"
+           y="329.50504"
+           id="text3013-1"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3015-0"
+             x="-2305.7141"
+             y="329.50504"
+             style="font-weight:bold;-inkscape-font-specification:Sans Bold">Señales:</tspan><tspan
+             sodipodi:role="line"
+             x="-2305.7141"
+             y="379.50504"
+             id="tspan3017-2" /></text>
+      </g>
+    </g>
+  </g>
+</svg>

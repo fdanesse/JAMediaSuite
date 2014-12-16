@@ -1,5 +1,5 @@
 
-public class PlayerList : Gtk.Frame{
+public class JAMediaPlayerList : Gtk.Frame{
     /*
     __gsignals__ = {
     "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
@@ -9,13 +9,14 @@ public class PlayerList : Gtk.Frame{
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
     "menu_activo": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
-    "add_stream": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
     */
+
+    public signal void add_stream(string title);
+
     private Lista lista = new Lista();
     private JAMediaToolbarList toolbar = new JAMediaToolbarList();
 
-    public PlayerList(){
+    public JAMediaPlayerList(){
 
         //self.directorio = get_JAMedia_Directory()
 
@@ -36,18 +37,22 @@ public class PlayerList : Gtk.Frame{
 
         /*
         self.toolbar.connect("cargar_lista", self.cargar_lista)
-        self.toolbar.connect("add_stream", self.__emit_add_stream)
+        */
+        this.toolbar.add_stream.connect(this.__emit_add_stream);
+        /*
         self.toolbar.connect("menu_activo", self.__emit_menu_activo)
 
         self.lista.connect("nueva-seleccion", self.__emit_nueva_seleccion)
         self.lista.connect("button-press-event", self.__click_derecho_en_lista)
         */
     }
-    /*
-    def __emit_add_stream(self, widget):
-        # El usuario agregará una dirección de streaming
-        self.emit("add_stream", self.toolbar.label.get_text())
 
+    private void __emit_add_stream(){
+        // El usuario agregará una dirección de streaming
+        this.add_stream(this.toolbar.label.get_text());
+        }
+
+    /*
     def __emit_menu_activo(self, widget=False):
         # hay un menu contextual presente
         self.emit("menu_activo")
@@ -408,21 +413,19 @@ public class JAMediaToolbarList : Gtk.EventBox{
     __gsignals__ = {
     "cargar_lista": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_INT,)),
-    "add_stream": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, []),
     "menu_activo": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, [])}
     */
+
+    public signal void add_stream();
+
+    public Gtk.Label label = new Gtk.Label("");
 
     public JAMediaToolbarList(){
 
         //self.ip = False
 
         Gtk.Toolbar toolbar = new Gtk.Toolbar();
-        /*
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
-        toolbar.modify_bg(gtk.STATE_NORMAL, get_colors("toolbars"))
-        */
 
         Gtk.ToolButton button1 = get_button("Iconos/lista.svg", false, Gdk.PixbufRotation.NONE, 24, "Selecciona una Lista");
 		//button1.clicked.connect (() => {
@@ -434,18 +437,17 @@ public class JAMediaToolbarList : Gtk.EventBox{
         toolbar.insert(separador1, -1);
 
         Gtk.ToolItem item = new Gtk.ToolItem();
-        Gtk.Label label = new Gtk.Label("");
-        label.show();
-        item.add(label);
+        this.label.show();
+        item.add(this.label);
         toolbar.insert(item, -1);
 
         Gtk.SeparatorToolItem separador2 = get_separador(false, 0, true);
         toolbar.insert(separador2, -1);
 
         Gtk.ToolButton button2 = get_button("Iconos/agregar.svg", false, Gdk.PixbufRotation.NONE, 24, "Agregar Streaming");
-		//button1.clicked.connect (() => {
-		//	this.__emit_add_stream();
-		//});
+		button2.clicked.connect (() => {
+		    this.__emit_add_stream();
+		});
 		toolbar.insert(button2, -1);
 
         this.add(toolbar);
@@ -506,8 +508,8 @@ public class JAMediaToolbarList : Gtk.EventBox{
 
     def __emit_load_list(self, indice):
         self.emit("cargar_lista", indice)
-
-    def __emit_add_stream(self, widget):
-        self.emit("add_stream")
     */
+    private void __emit_add_stream(){
+        this.add_stream();
+        }
 }
