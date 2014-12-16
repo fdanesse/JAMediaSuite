@@ -7,11 +7,10 @@ public class JAMediaPlayerList : Gtk.Frame{
     "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    "menu_activo": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, []),
     */
 
     public signal void add_stream(string title);
+    public signal void menu_activo();
 
     private Lista lista = new Lista();
     private JAMediaToolbarList toolbar = new JAMediaToolbarList();
@@ -19,6 +18,7 @@ public class JAMediaPlayerList : Gtk.Frame{
     public JAMediaPlayerList(){
 
         //self.directorio = get_JAMedia_Directory()
+        //self.mime = ['audio/*', 'video/*']
 
         Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
@@ -35,13 +35,10 @@ public class JAMediaPlayerList : Gtk.Frame{
 
         this.set_size_request(150, -1);
 
-        /*
-        self.toolbar.connect("cargar_lista", self.cargar_lista)
-        */
+        this.toolbar.cargar_lista.connect(this.cargar_lista);
         this.toolbar.add_stream.connect(this.__emit_add_stream);
+        this.toolbar.menu_activo.connect(this.__emit_menu_activo);
         /*
-        self.toolbar.connect("menu_activo", self.__emit_menu_activo)
-
         self.lista.connect("nueva-seleccion", self.__emit_nueva_seleccion)
         self.lista.connect("button-press-event", self.__click_derecho_en_lista)
         */
@@ -52,11 +49,11 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.add_stream(this.toolbar.label.get_text());
         }
 
+    private void __emit_menu_activo(){
+        // hay un menu contextual presente
+        this.menu_activo();
+        }
     /*
-    def __emit_menu_activo(self, widget=False):
-        # hay un menu contextual presente
-        self.emit("menu_activo")
-
     def __emit_accion_list(self, widget, lista, accion, _iter):
         # borrar, copiar, mover, grabar, etc . . .
         self.emit("accion-list", lista, accion, _iter)
@@ -123,13 +120,15 @@ public class JAMediaPlayerList : Gtk.Frame{
                 widget, boton, pos, tiempo, path, widget.get_model())
             menu.connect('accion', self.__emit_accion_list)
             gtk.Menu.popup(menu, None, None, None, boton, tiempo)
-
-    def seleccionar_primero(self):
-        self.lista.seleccionar_primero()
-
-    def seleccionar_ultimo(self):
-        self.lista.seleccionar_ultimo()
     */
+
+    public void seleccionar_primero(){
+        this.lista.seleccionar_primero();
+        }
+
+    public void seleccionar_ultimo(){
+        this.lista.seleccionar_ultimo();
+        }
 
     public void seleccionar_anterior(){
         this.lista.seleccionar_anterior();
@@ -139,16 +138,18 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.lista.seleccionar_siguiente();
         }
 
+    //def select_valor(self, path_origen):
+    //    self.lista.select_valor(path_origen)
+
+    public void limpiar(){
+        this.lista.limpiar();
+        }
+
+    public void set_mime_types(string mime){
+        //this.mime = mime;
+        }
+
     /*
-    def select_valor(self, path_origen):
-        self.lista.select_valor(path_origen)
-
-    def limpiar(self):
-        self.lista.limpiar()
-
-    def set_mime_types(self, mime):
-        self.mime = mime
-
     def get_selected_path(self):
         modelo, _iter = self.lista.get_selection().get_selected()
         valor = self.lista.get_model().get_value(_iter, 2)
@@ -169,8 +170,8 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.toolbar.boton_agregar.hide();
         }
 
-    /*
-    def cargar_lista(self, widget, indice):
+    public void cargar_lista(int indice){
+        /*
         _dict = {
             0: os.path.join(get_data_directory(), 'JAMediaRadio.JAMedia'),
             1: os.path.join(get_data_directory(), 'JAMediaTV.JAMedia'),
@@ -182,42 +183,72 @@ public class JAMediaPlayerList : Gtk.Frame{
             7: get_audio_directory(),
             8: get_video_directory(),
             }
-        ocultar(self.toolbar.boton_agregar)
-        if indice == 0:
-            self.__seleccionar_lista_de_stream(_dict[0], "JAM-Radio")
-        elif indice == 1:
-            self.__seleccionar_lista_de_stream(_dict[1], "JAM-TV")
-        elif indice == 2:
-            self.__seleccionar_lista_de_stream(_dict[2], "Radios")
-            mostrar(self.toolbar.boton_agregar)
-        elif indice == 3:
-            self.__seleccionar_lista_de_stream(_dict[3], "TVs")
-            mostrar(self.toolbar.boton_agregar)
-        elif indice == 4:
-            self.__seleccionar_lista_de_stream(_dict[4], "WebCams")
-        elif indice == 5:
-            self.__seleccionar_lista_de_archivos(_dict[indice], "Archivos")
-        elif indice == 6:
-            self.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Tube")
-        elif indice == 7:
-            self.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Audio")
-        elif indice == 8:
-            self.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Video")
-        elif indice == 9:
-            selector = My_FileChooser(parent=self.get_toplevel(),
-                filter_type=[], action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                mime=self.mime, title="Abrir Archivos", path=self.directorio)
-            selector.connect('load-files', self.__load_files, "Archivos")
-            selector.run()
-            if selector:
-                selector.destroy()
+        */
+        this.toolbar.boton_agregar.hide();
 
-    def set_ip(self, valor):
-        self.toolbar.ip = valor
+        switch (indice){
+            case 0:{
+                //this.__seleccionar_lista_de_stream(_dict[0], "JAM-Radio")
+                break;
+            }
+            case 1:{
+                //this.__seleccionar_lista_de_stream(_dict[1], "JAM-TV")
+                break;
+            }
+            case 2:{
+                //this.__seleccionar_lista_de_stream(_dict[2], "Radios")
+                //mostrar(self.toolbar.boton_agregar)
+                break;
+            }
+            case 3:{
+                //this.__seleccionar_lista_de_stream(_dict[3], "TVs")
+                //mostrar(self.toolbar.boton_agregar)
+                break;
+            }
+            case 4:{
+                //this.__seleccionar_lista_de_stream(_dict[4], "WebCams")
+                break;
+            }
+            case 5:{
+                //this.__seleccionar_lista_de_archivos(_dict[indice], "Archivos")
+                break;
+            }
+            case 6:{
+                //this.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Tube")
+                break;
+            }
+            case 7:{
+                //this.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Audio")
+                break;
+            }
+            case 8:{
+                //this.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Video")
+                break;
+            }
+            case 9:{
+                //selector = My_FileChooser(parent=self.get_toplevel(),
+                //filter_type=[], action=gtk.FILE_CHOOSER_ACTION_OPEN,
+                //mime=self.mime, title="Abrir Archivos", path=self.directorio)
+                //selector.connect('load-files', self.__load_files, "Archivos")
+                //selector.run()
+                //if selector:
+                //    selector.destroy()
+                break;
+            }
+            default:{
+                stdout.printf("Indice de lista sin tratar: %i\n", indice);
+				stdout.flush();
+                break;
+            }
+        }
+        }
 
-    def set_nueva_lista(self, archivos):
-        self.__load_files(False, archivos, titulo="Archivos")
-    */
+    public void set_ip(bool valor){
+        this.toolbar.ip = valor;
+    }
+
+    //def set_nueva_lista(self, archivos):
+    //    self.__load_files(False, archivos, titulo="Archivos")
 }
 
 
@@ -229,6 +260,9 @@ public class Lista : Gtk.TreeView{
     */
 
     private Gtk.ListStore lista = new Gtk.ListStore(3, typeof (Gdk.Pixbuf), typeof (string), typeof (string));
+    private bool permitir_select = true;
+    private string valor_select = null;
+    private string ultimo_select = null;
 
     public Lista(){
 
@@ -237,11 +271,7 @@ public class Lista : Gtk.TreeView{
         this.set("rules-hint", true);
         this.set("headers_clickable", true);
         this.set("headers_visible", true);
-        /*
-        self.permitir_select = True
-        self.valor_select = False
-        self.ultimo_select = False
-        */
+
         this.__setear_columnas();
 
         //self.get_selection().set_select_function(self.__selecciones, self.get_model())
@@ -347,17 +377,19 @@ public class Lista : Gtk.TreeView{
         elementos.remove(elementos[0])
         gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
         return False
+        */
 
-    def limpiar(self):
-        self.permitir_select = False
-        self.get_model().clear()
-        self.valor_select = False
-        self.ultimo_select = False
-        self.permitir_select = True
+    public void limpiar(){
+        this.permitir_select = false;
+        this.lista.clear();
+        this.valor_select = null;
+        this.ultimo_select = null;
+        this.permitir_select = true;
+        }
 
-    def agregar_items(self, elementos):
-        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
-    */
+    //def agregar_items(self, elementos):
+    //    gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
+
     public void seleccionar_siguiente(){
         //modelo, _iter = self.get_selection().get_selected()
         //try:
@@ -383,21 +415,24 @@ public class Lista : Gtk.TreeView{
         //    self.seleccionar_ultimo()
         //return False
         }
+
+    public void seleccionar_primero(){
+        //self.get_selection().select_path(0)
+        }
+
+    public void seleccionar_ultimo(){
+        //model = self.get_model()
+        //item = model.get_iter_first()
+        //_iter = None
+        //while item:
+        //    _iter = item
+        //    item = model.iter_next(item)
+        //if _iter:
+        //    self.get_selection().select_iter(_iter)
+        //    #path = model.get_path(iter)
+        }
+
     /*
-    def seleccionar_primero(self, widget=None):
-        self.get_selection().select_path(0)
-
-    def seleccionar_ultimo(self, widget=None):
-        model = self.get_model()
-        item = model.get_iter_first()
-        _iter = None
-        while item:
-            _iter = item
-            item = model.iter_next(item)
-        if _iter:
-            self.get_selection().select_iter(_iter)
-            #path = model.get_path(iter)
-
     def select_valor(self, path_origen):
         model = self.get_model()
         _iter = model.get_iter_first()
@@ -412,29 +447,23 @@ public class Lista : Gtk.TreeView{
 
 
 public class JAMediaToolbarList : Gtk.EventBox{
-    /*
-    __gsignals__ = {
-    "cargar_lista": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_INT,)),
-    "menu_activo": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, [])}
-    */
 
     public signal void add_stream();
+    public signal void menu_activo();
+    public signal void cargar_lista(int indice);
 
+    public bool ip = false;
     public Gtk.Label label = new Gtk.Label("");
     public Gtk.ToolButton boton_agregar = get_button("Iconos/agregar.svg", false, Gdk.PixbufRotation.NONE, 24, "Agregar Streaming");
 
     public JAMediaToolbarList(){
 
-        //self.ip = False
-
         Gtk.Toolbar toolbar = new Gtk.Toolbar();
 
         Gtk.ToolButton button1 = get_button("Iconos/lista.svg", false, Gdk.PixbufRotation.NONE, 24, "Selecciona una Lista");
-		//button1.clicked.connect (() => {
-		//	this.__get_menu();
-		//});
+		button1.clicked.connect (() => {
+			this.__get_menu(button1);
+		});
 		toolbar.insert(button1, -1);
 
 		Gtk.SeparatorToolItem separador1 = get_separador(false, 3, false);
@@ -456,62 +485,83 @@ public class JAMediaToolbarList : Gtk.EventBox{
         this.add(toolbar);
         this.show_all();
     }
-    /*
-    def __get_menu(self, widget):
-        self.emit("menu_activo")
-        menu = gtk.Menu()
 
-        if self.ip:
-            item = gtk.MenuItem("JAMedia Radio")
-            menu.append(item)
-            item.connect_object("activate", self.__emit_load_list, 0)
+    private void __get_menu(Gtk.Widget widget){
+        this.menu_activo();
+        Gtk.Menu menu = new Gtk.Menu();
 
-            item = gtk.MenuItem("JAMedia TV")
-            menu.append(item)
-            item.connect_object("activate", self.__emit_load_list, 1)
+        if (this.ip == true){
+            Gtk.MenuItem item1 = new Gtk.MenuItem.with_label("JAMedia Radio");
+            menu.append(item1);
+            item1.activate.connect (() => {
+			    this.__emit_load_list(0);
+		    });
 
-            item = gtk.MenuItem("Mis Emisoras")
-            menu.append(item)
-            item.connect_object("activate", self.__emit_load_list, 2)
+            Gtk.MenuItem item2 = new Gtk.MenuItem.with_label("JAMedia TV");
+            menu.append(item2);
+            item2.activate.connect (() => {
+			    this.__emit_load_list(1);
+		    });
 
-            item = gtk.MenuItem("Mis Canales")
-            menu.append(item)
-            item.connect_object("activate", self.__emit_load_list, 3)
+            Gtk.MenuItem item3 = new Gtk.MenuItem.with_label("Mis Emisoras");
+            menu.append(item3);
+            item3.activate.connect (() => {
+			    this.__emit_load_list(2);
+		    });
 
-            item = gtk.MenuItem("Web Cams")
-            menu.append(item)
-            item.connect_object("activate", self.__emit_load_list, 4)
+            Gtk.MenuItem item4 = new Gtk.MenuItem.with_label("Mis Canales");
+            menu.append(item4);
+            item4.activate.connect (() => {
+			    this.__emit_load_list(3);
+		    });
 
-        item = gtk.MenuItem("Mis Archivos")
-        menu.append(item)
-        item.connect_object("activate", self.__emit_load_list, 5)
+            Gtk.MenuItem item5 = new Gtk.MenuItem.with_label("Web Cams");
+            menu.append(item5);
+            item5.activate.connect (() => {
+			    this.__emit_load_list(4);
+		    });
+		    }
 
-        item = gtk.MenuItem("JAMediaTube")
-        menu.append(item)
-        item.connect_object("activate", self.__emit_load_list, 6)
+        Gtk.MenuItem item6 = new Gtk.MenuItem.with_label("Mis Archivos");
+        menu.append(item6);
+        item6.activate.connect (() => {
+			this.__emit_load_list(5);
+		});
 
-        item = gtk.MenuItem("Audio-JAMediaVideo")
-        menu.append(item)
-        item.connect_object("activate", self.__emit_load_list, 7)
+        Gtk.MenuItem item7 = new Gtk.MenuItem.with_label("JAMediaTube");
+        menu.append(item7);
+        item7.activate.connect (() => {
+			this.__emit_load_list(6);
+		});
 
-        item = gtk.MenuItem("Video-JAMediaVideo")
-        menu.append(item)
-        item.connect_object("activate", self.__emit_load_list, 8)
+        Gtk.MenuItem item8 = new Gtk.MenuItem.with_label("Audio-JAMediaVideo");
+        menu.append(item8);
+        item8.activate.connect (() => {
+			this.__emit_load_list(7);
+		});
 
-        item = gtk.MenuItem("Archivos Externos")
-        menu.append(item)
-        item.connect_object("activate", self.__emit_load_list, 9)
+        Gtk.MenuItem item9 = new Gtk.MenuItem.with_label("Video-JAMediaVideo");
+        menu.append(item9);
+        item9.activate.connect (() => {
+			this.__emit_load_list(8);
+		});
 
-        menu.show_all()
-        menu.attach_to_widget(widget, self.__null)
-        gtk.Menu.popup(menu, None, None, None, 1, 0)
+        Gtk.MenuItem item10 = new Gtk.MenuItem.with_label("Archivos Externos");
+        menu.append(item10);
+        item10.activate.connect (() => {
+			this.__emit_load_list(9);
+		});
 
-    def __null(self):
-        pass
+        menu.popup(null, null, null, 1, Gtk.get_current_event_time());
 
-    def __emit_load_list(self, indice):
-        self.emit("cargar_lista", indice)
-    */
+        menu.show_all();
+        menu.attach_to_widget(widget, null);
+        }
+
+    private void __emit_load_list(int indice){
+        this.cargar_lista(indice);
+        }
+
     private void __emit_add_stream(){
         this.add_stream();
         }

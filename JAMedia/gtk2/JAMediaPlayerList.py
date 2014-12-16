@@ -73,6 +73,7 @@ class PlayerList(gtk.Frame):
         self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
 
         self.directorio = get_JAMedia_Directory()
+        self.mime = ['audio/*', 'video/*']
 
         vbox = gtk.VBox()
 

@@ -134,28 +134,23 @@ public class MenuStreamList : Gtk.Menu{
         this.append(item5);
 
         this.show_all();
-
         this.attach_to_widget(widget, null);
     }
 
     private void borrar_item(){
-
         this.lista.remove(this.iter);
     }
 
     private void remove_item(){
-
         this.lista.remove(this.iter);
         this.accion("borrar", this._val1, this._val2, this._val3);
     }
 
     private void emit_play(){
-
         this.accion("play", this._val1, this._val2, this._val3);
     }
 
     private void emit_record(){
-
         this.accion("record", this._val1, this._val2, this._val3);
     }
 }
@@ -440,7 +435,6 @@ public class Lista : Gtk.TreeView{
     }
 
     private void clicked(Gtk.TreePath _path, Gtk.TreeViewColumn column){
-
         MenuStreamList menu = new MenuStreamList(this, _path, this.lista);
         menu.accion.connect(this.set_accion);
         menu.popup(null, null, null, 1, Gtk.get_current_event_time());
@@ -452,7 +446,6 @@ public class Lista : Gtk.TreeView{
         Responde a selecciones del usuario en el
         menú contextual de los streamings.
         */
-
         if (accion == "play"){
             this.play(val1, val2, val3);
             }

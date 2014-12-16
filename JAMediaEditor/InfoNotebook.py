@@ -91,7 +91,14 @@ def get_contenido_vala(texto):
                 continue
 
             #elif temp and not bloqueo:
-            if temp.split()[0] in buscar:
+            items = temp.split()
+            if items[0] in buscar and not \
+                "signal" in items[1]:
+
+                if len(items) > 3:
+                    if "=" in items[3]:
+                        continue
+
                 if "{" in linea:
                     linea = linea.split("{")[0]
                 if ";" in linea:

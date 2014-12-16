@@ -67,7 +67,7 @@ public class JAMedia : Gtk.Window{
 
         //self.base_panel.connect("show-controls", self.__ocultar_controles)
         //self.base_panel.connect("accion-list", self.__accion_list)
-        //self.base_panel.connect("menu_activo", self.__cancel_toolbars)
+        this.base_panel.menu_activo.connect(this.__cancel_toolbars);
         this.base_panel.add_stream.connect(this.__run_add_stream);
         //self.base_panel.connect("stop-record", self.__detener_grabacion)
 
@@ -120,8 +120,7 @@ public class JAMedia : Gtk.Window{
     private void __accion_toolbar(string accion){
         this.__cancel_toolbars();
         if (accion == "show-config"){
-            // FIXME: this.base_panel.derecha.show_config();
-            stdout.printf("%s\n", accion);
+            this.base_panel.derecha.show_config();
             }
         else if (accion == "salir"){
             this.toolbarsalir.run("JAMedia");

@@ -12,8 +12,8 @@ public class BasePanel : Gtk.HPaned{
     public signal void menu_activo();
     public signal void add_stream(string title);
 
-    private Izquierda izquierda = new Izquierda();
-    private Derecha derecha = new Derecha();
+    public Izquierda izquierda = new Izquierda();
+    public Derecha derecha = new Derecha();
 
     public BasePanel(){
 
@@ -31,8 +31,8 @@ public class BasePanel : Gtk.HPaned{
         /*
         self.derecha.connect("cargar-reproducir", self.__cargar_reproducir)
         self.derecha.connect("accion-list", self.__emit_accion_list)
-        self.derecha.connect("menu_activo", self.__emit_menu_activo)
         */
+        this.derecha.menu_activo.connect(this.__emit_menu_activo);
         this.derecha.add_stream.connect(this.__emit_add_stream);
         this.derecha.accion_controls.connect(this.__accion_controls);
         /*
