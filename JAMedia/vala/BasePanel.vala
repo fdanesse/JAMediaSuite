@@ -227,11 +227,14 @@ public class BasePanel : Gtk.HPaned{
     def __endfile(self, widget=None, senial=None):
         self.derecha.player_controls.set_paused()
         self.derecha.lista.seleccionar_siguiente()
+    */
 
-    def setup_init(self):
-        self.izquierda.setup_init()
-        self.derecha.setup_init()
+    public void setup_init(){
+        this.izquierda.setup_init();
+        this.derecha.setup_init();
+        }
 
+    /*
     def salir(self):
         if self.player:
             self.player.disconnect_by_func(self.__endfile)

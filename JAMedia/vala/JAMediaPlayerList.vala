@@ -163,10 +163,13 @@ public class JAMediaPlayerList : Gtk.Frame{
             filepaths.append(model.get_value(item, 2))
             item = model.iter_next(item)
         return filepaths
+    */
 
-    def setup_init(self):
-        ocultar(self.toolbar.boton_agregar)
+    public void setup_init(){
+        this.toolbar.boton_agregar.hide();
+        }
 
+    /*
     def cargar_lista(self, widget, indice):
         _dict = {
             0: os.path.join(get_data_directory(), 'JAMediaRadio.JAMedia'),
@@ -420,6 +423,7 @@ public class JAMediaToolbarList : Gtk.EventBox{
     public signal void add_stream();
 
     public Gtk.Label label = new Gtk.Label("");
+    public Gtk.ToolButton boton_agregar = get_button("Iconos/agregar.svg", false, Gdk.PixbufRotation.NONE, 24, "Agregar Streaming");
 
     public JAMediaToolbarList(){
 
@@ -444,11 +448,10 @@ public class JAMediaToolbarList : Gtk.EventBox{
         Gtk.SeparatorToolItem separador2 = get_separador(false, 0, true);
         toolbar.insert(separador2, -1);
 
-        Gtk.ToolButton button2 = get_button("Iconos/agregar.svg", false, Gdk.PixbufRotation.NONE, 24, "Agregar Streaming");
-		button2.clicked.connect (() => {
+		this.boton_agregar.clicked.connect (() => {
 		    this.__emit_add_stream();
 		});
-		toolbar.insert(button2, -1);
+		toolbar.insert(this.boton_agregar, -1);
 
         this.add(toolbar);
         this.show_all();

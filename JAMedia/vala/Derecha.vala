@@ -23,6 +23,7 @@ public class Derecha : Gtk.EventBox{
     public signal void accion_controls(string accion);
     public signal void add_stream(string title);
 
+    private Gtk.ScrolledWindow scroll = new Gtk.ScrolledWindow(null, null);
     private BalanceWidget balance = new BalanceWidget();
     public JAMediaPlayerList lista = new JAMediaPlayerList();
     private PlayerControls player_controls = new PlayerControls();
@@ -39,12 +40,11 @@ public class Derecha : Gtk.EventBox{
         #conf_box.pack_start(self.efectos, True, True, 0)
         */
 
-        Gtk.ScrolledWindow scroll = new Gtk.ScrolledWindow(null, null);
-        scroll.set("hscrollbar_policy", Gtk.PolicyType.NEVER);
-        scroll.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
-        scroll.add_with_viewport(conf_box);
+        this.scroll.set("hscrollbar_policy", Gtk.PolicyType.NEVER);
+        this.scroll.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
+        this.scroll.add_with_viewport(conf_box);
 
-        vbox.pack_start(scroll, true, true, 0);
+        vbox.pack_start(this.scroll, true, true, 0);
         vbox.pack_start(this.lista, true, true, 0);
         vbox.pack_end(this.player_controls, false, false, 0);
 
@@ -109,13 +109,16 @@ public class Derecha : Gtk.EventBox{
         else:
             mostrar(objs[0])
             map(ocultar, objs[1:])
+    */
 
-    def setup_init(self):
-        ocultar(self.get_child().get_children()[0])
-        self.lista.setup_init()
-        self.player_controls.activar(False)
-        #self.efectos.cargar_efectos(list(get_jamedia_video_efectos()))
+    public void setup_init(){
+        this.scroll.hide();
+        this.lista.setup_init();
+        this.player_controls.activar(false);
+        // self.efectos.cargar_efectos(list(get_jamedia_video_efectos()))
+        }
 
+    /*
     def set_ip(self, valor):
         self.lista.set_ip(valor)
 

@@ -5,6 +5,8 @@ public class Toolbar : Gtk.EventBox{
     public signal void credits();
     public signal void help();
 
+    public Gtk.ToolButton configurar = get_button("Iconos/configurar.svg", false, Gdk.PixbufRotation.NONE, 24, "Configuraciones");
+
     public Toolbar(){
 
         Gtk.Toolbar toolbar = new Gtk.Toolbar();
@@ -24,11 +26,10 @@ public class Toolbar : Gtk.EventBox{
 		});
 		toolbar.insert(button2, -1);
 
-        Gtk.ToolButton button3 = get_button("Iconos/configurar.svg", false, Gdk.PixbufRotation.NONE, 24, "Configuraciones");
-		button3.clicked.connect (() => {
+		this.configurar.clicked.connect (() => {
 			this.__emit_accion("show-config");
 		});
-		toolbar.insert(button3, -1);
+		toolbar.insert(this.configurar, -1);
 
         Gtk.SeparatorToolItem separador2 = get_separador(false, 0, true);
         toolbar.insert(separador2, -1);

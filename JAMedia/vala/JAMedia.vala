@@ -72,17 +72,33 @@ public class JAMedia : Gtk.Window{
         //self.base_panel.connect("stop-record", self.__detener_grabacion)
 
         //self.mouse_listener.connect("estado", self.__set_mouse)
-        //self.connect("hide", self.__hide_show)
-        //self.connect("show", self.__hide_show)
+        this.hide.connect(this.__hide_show);
+        this.show.connect(this.__hide_show);
         this.destroy.connect(this.__exit);
 
         this.resize(640, 480);
         //self.mouse_listener = MouseSpeedDetector(self)
         //self.mouse_listener.new_handler(True)
 
-        //gobject.idle_add(self.__setup_init)
+        GLib.Idle.add(this.__setup_init);
         //print "JAMedia process:", os.getpid()
         //self.base_panel.checkear_listas()
+        }
+
+    private bool __setup_init(){
+        this.__cancel_toolbars();
+        this.toolbar.configurar.set_sensitive(false);
+        this.base_panel.setup_init();
+        //if self.archivos:
+        //    self.base_panel.set_nueva_lista(self.archivos)
+        //    self.archivos = []
+        this.set_sensitive(true);
+        return false;
+        }
+
+    private void __hide_show(){
+        //Controlador del mouse funcionará solo si JAMedia es Visible.
+        //self.mouse_listener.new_handler(widget.get_visible())
         }
 
     private void __run_add_stream(string title){
@@ -116,7 +132,9 @@ public class JAMedia : Gtk.Window{
         }
 
     private void __cancel_toolbars(){
-        // FIXME: map(ocultar, self.get_child().get_children()[1:-1])
+        this.toolbarsalir.hide();
+        this.toolbaraccion.hide();
+        this.add_stream.hide();
         }
 
     private void __grabar(string stream){

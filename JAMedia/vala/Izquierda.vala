@@ -92,12 +92,17 @@ public class Izquierda : Gtk.EventBox{
         zona, ocultar = (valor, self.toolbar_info.ocultar_controles)
         self.emit("show-controls", (zona, ocultar))
 
-    def setup_init(self):
-        map(ocultar, [self.toolbar_record, self.buffer_info])
-        #, self.efectos_aplicados])
-        self.toolbar_info.set_video(False)
-        self.progress.set_sensitive(False)
+    */
 
+    public void setup_init(){
+        this.toolbar_record.hide();
+        this.buffer_info.hide();
+        //this.efectos_aplicados.hide();
+        this.toolbar_info.set_video(false);
+        this.progress.set_sensitive(false);
+        }
+
+    /*
     def set_ip(self, valor):
         self.toolbar_info.set_ip(valor)
     */
