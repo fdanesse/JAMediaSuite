@@ -13,7 +13,7 @@ public class Izquierda : Gtk.EventBox{
     public signal void actualizar_streamings();
     private ToolbarGrabar toolbar_record = new ToolbarGrabar();
     private VideoVisor video_visor = new VideoVisor();
-    private BufferInfo buffer_info = new BufferInfo();
+    public BufferInfo buffer_info = new BufferInfo();
     private ToolbarInfo toolbar_info = new ToolbarInfo();
     private ProgressPlayer progress = new ProgressPlayer();
 

@@ -45,7 +45,7 @@ import os
 import gtk
 import gobject
 
-BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 BASE_PATH = os.path.dirname(BASE_PATH)
 
 

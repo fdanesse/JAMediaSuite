@@ -40,7 +40,7 @@ from Globales import get_tube_directory
 from Globales import get_audio_directory
 from Globales import get_video_directory
 
-BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 def ocultar(objeto):

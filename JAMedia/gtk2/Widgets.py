@@ -29,7 +29,7 @@ from Globales import get_streaming_default
 from Globales import set_listas_default
 from Globales import get_ip
 
-BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class DialogoDescarga(gtk.Dialog):

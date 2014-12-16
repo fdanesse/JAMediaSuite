@@ -60,7 +60,7 @@ import commands
 import gtk
 import gobject
 
-BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class VideoEfectos(gtk.Frame):

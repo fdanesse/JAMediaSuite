@@ -11,8 +11,6 @@ public class Derecha : Gtk.EventBox{
         gobject.TYPE_NONE, []),
     "add_stream": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
-    "accion-controls": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
     'balance-valor': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT,
         gobject.TYPE_STRING)),
@@ -24,8 +22,10 @@ public class Derecha : Gtk.EventBox{
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
     */
 
+    public signal void accion_controls(string accion);
+
     private BalanceWidget balance = new BalanceWidget();
-    private PlayerList lista = new PlayerList();
+    public PlayerList lista = new PlayerList();
     private PlayerControls player_controls = new PlayerControls();
 
     public Derecha(){
@@ -63,11 +63,64 @@ public class Derecha : Gtk.EventBox{
         self.lista.connect("accion-list", self.__emit_accion_list)
         self.lista.connect("menu_activo", self.__emit_menu_activo)
         self.lista.connect("add_stream", self.__emit_add_stream)
-
-        self.player_controls.connect("accion-controls",
-            self.__emit_accion_controls)
         */
+
+        this.player_controls.accion_controls.connect(this.__emit_accion_controls);
 
         this.set_size_request(150, -1);
     }
+
+    /*
+    def __emit_balance(self, widget, valor, prop):
+        # brillo, contraste, saturación, hue, gamma
+        self.emit('balance-valor', valor, prop)
+    */
+
+    private void __emit_accion_controls(string accion){
+        // anterior, siguiente, pausa, play, stop
+        this.accion_controls(accion);
+        }
+
+    /*
+    def __emit_add_stream(self, widget, title):
+        # El usuario agregará una dirección de streaming
+        self.emit("add_stream", title)
+
+    def __emit_menu_activo(self, widget=False):
+        # hay un menu contextual presente
+        self.emit("menu_activo")
+
+    def __emit_accion_list(self, widget, lista, accion, _iter):
+        # borrar, copiar, mover, grabar, etc . . .
+        self.emit("accion-list", lista, accion, _iter)
+
+    def __emit_cargar_reproducir(self, widget, path):
+        if path:
+            self.player_controls.activar(True)
+        else:
+            self.player_controls.activar(False)
+        self.emit("cargar-reproducir", path)
+
+    def show_config(self):
+        objs = self.get_child().get_children()
+        valor = objs[0].get_visible()
+        if valor:
+            ocultar(objs[0])
+            map(mostrar, objs[1:])
+        else:
+            mostrar(objs[0])
+            map(ocultar, objs[1:])
+
+    def setup_init(self):
+        ocultar(self.get_child().get_children()[0])
+        self.lista.setup_init()
+        self.player_controls.activar(False)
+        #self.efectos.cargar_efectos(list(get_jamedia_video_efectos()))
+
+    def set_ip(self, valor):
+        self.lista.set_ip(valor)
+
+    def set_nueva_lista(self, archivos):
+        self.lista.set_nueva_lista(archivos)
+    */
 }

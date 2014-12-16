@@ -1,10 +1,7 @@
 
 public class PlayerControls : Gtk.EventBox{
-    /*
-    __gsignals__ = {
-    "accion-controls": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
-    */
+
+    public signal void accion_controls(string accion);
 
     private JAMediaToolButton atras = new JAMediaToolButton();
     private JAMediaToolButton play = new JAMediaToolButton();
@@ -53,24 +50,23 @@ public class PlayerControls : Gtk.EventBox{
     }
 
     private void __emit_accion(string accion){
-        //self.emit("accion-controls", accion)
+        this.accion_controls(accion);
         }
 
-    /*
-    def activar(self, valor):
-        if valor:
-            map(sensibilizar, [self.atras, self.play,
-                self.siguiente, self.stop])
-        else:
-            map(insensibilizar, [self.atras, self.play,
-                self.siguiente, self.stop])
+    public void activar(bool valor){
+        this.atras.set_sensitive(true);
+        this.play.set_sensitive(true);
+        this.siguiente.set_sensitive(true);
+        this.stop.set_sensitive(true);
+        }
 
-    def set_paused(self):
-        self.play.set_paused(self.pix_play)
+    public void set_paused(){
+        this.play.set_paused(this.pix_play);
+        }
 
-    def set_playing(self):
-        self.play.set_playing(self.pix_paused)
-    */
+    public void set_playing(){
+        this.play.set_playing(this.pix_paused);
+        }
 }
 
 
@@ -101,17 +97,18 @@ public class JAMediaToolButton : Gtk.ToolButton{
         pixbuf = pixbuf.rotate_simple(rotacion);
         this.imagen.set_from_pixbuf(pixbuf);
         }
-    /*
-    def set_playing(self, pixbuf):
-        if self.estado:
-            return
-        self.estado = True
-        self.imagen.set_from_pixbuf(pixbuf)
 
-    def set_paused(self, pixbuf):
-        if not self.estado:
-            return
-        self.estado = False
-        self.imagen.set_from_pixbuf(pixbuf)
-    */
+    public void set_playing(Gdk.Pixbuf pixbuf){
+        if (this.estado == false){
+            this.estado = true;
+            this.imagen.set_from_pixbuf(pixbuf);
+            }
+        }
+
+    public void set_paused(Gdk.Pixbuf pixbuf){
+        if (this.estado == true){
+            this.estado = false;
+            this.imagen.set_from_pixbuf(pixbuf);
+            }
+        }
 }
