@@ -76,7 +76,6 @@ class Derecha(gtk.EventBox):
         self.balance = BalanceWidget()
         #self.efectos = VideoEfectos()
         self.lista = PlayerList()
-        self.lista.set_mime_types(["audio/*", "video/*"])
         self.player_controls = PlayerControls()
 
         conf_box.pack_start(self.balance, False, False, 0)

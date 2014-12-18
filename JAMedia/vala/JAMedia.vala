@@ -21,6 +21,8 @@ public class JAMedia : Gtk.Window{
 
     private BasePanel base_panel = new BasePanel();
 
+    SList<string> archivos = null;
+
     public JAMedia(){
 
         this.set_title("JAMedia");
@@ -36,7 +38,6 @@ public class JAMedia : Gtk.Window{
             stderr.printf ("No se Encontró el Ícono: %s\n", e.message);
             }
 
-        //self.archivos = []
         //self.grabador = False
         //self.mouse_in_visor = False
         //self.cursor_root = gtk.gdk.Cursor(gtk.gdk.BLANK_CURSOR)
@@ -82,16 +83,17 @@ public class JAMedia : Gtk.Window{
 
         GLib.Idle.add(this.__setup_init);
         //print "JAMedia process:", os.getpid()
-        //self.base_panel.checkear_listas()
+        this.base_panel.checkear_listas();
         }
 
     private bool __setup_init(){
         this.__cancel_toolbars();
         this.toolbar.configurar.set_sensitive(false);
         this.base_panel.setup_init();
-        //if self.archivos:
-        //    self.base_panel.set_nueva_lista(self.archivos)
-        //    self.archivos = []
+        if (this.archivos != null){
+            this.base_panel.set_nueva_lista(this.archivos);
+            this.archivos = null;
+            }
         this.set_sensitive(true);
         return false;
         }

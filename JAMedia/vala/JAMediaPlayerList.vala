@@ -261,8 +261,9 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.toolbar.ip = valor;
     }
 
-    //def set_nueva_lista(self, archivos):
-    //    self.__load_files(False, archivos, titulo="Archivos")
+    public void set_nueva_lista(SList<string> archivos){
+        this.__load_files(archivos, "Archivos");
+    }
 }
 
 
@@ -291,12 +292,6 @@ public class Lista : Gtk.TreeView{
         //self.get_selection().set_select_function(self.__selecciones, self.get_model())
 
         this.show_all();
-
-        // FIXME: Ejemplo para agregar elementos a la lista
-        //Gtk.TreeIter iter;
-        //this.lista.append (out iter);
-        //Gdk.Pixbuf pix = new Gdk.Pixbuf.from_file_at_size("Iconos/JAMedia.svg", 24, 24);
-        //this.lista.set (iter, 0, pix, 1, "Hola", 2, "URL");
     }
 
     private void __setear_columnas(){

@@ -25,19 +25,15 @@ public class Derecha : Gtk.EventBox{
     private Gtk.ScrolledWindow scroll = new Gtk.ScrolledWindow(null, null);
     private BalanceWidget balance = new BalanceWidget();
     public JAMediaPlayerList lista = new JAMediaPlayerList();
-    private PlayerControls player_controls = new PlayerControls();
+    public PlayerControls player_controls = new PlayerControls();
 
     public Derecha(){
 
         Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         Gtk.Box conf_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
-        /*
-        #self.efectos = VideoEfectos()
-        self.lista = PlayerList()
-        self.lista.set_mime_types(["audio/*", "video/*"])
-        #conf_box.pack_start(self.efectos, True, True, 0)
-        */
+        //#self.efectos = VideoEfectos()
+        //#conf_box.pack_start(self.efectos, True, True, 0)
 
         this.scroll.set("hscrollbar_policy", Gtk.PolicyType.NEVER);
         this.scroll.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
@@ -123,11 +119,11 @@ public class Derecha : Gtk.EventBox{
         // self.efectos.cargar_efectos(list(get_jamedia_video_efectos()))
         }
 
-    /*
-    def set_ip(self, valor):
-        self.lista.set_ip(valor)
+    public void set_ip(bool valor){
+        this.lista.set_ip(valor);
+        }
 
-    def set_nueva_lista(self, archivos):
-        self.lista.set_nueva_lista(archivos)
-    */
+    public void set_nueva_lista(SList<string> archivos){
+        this.lista.set_nueva_lista(archivos);
+        }
 }

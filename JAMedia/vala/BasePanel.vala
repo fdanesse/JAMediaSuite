@@ -223,35 +223,39 @@ public class BasePanel : Gtk.HPaned{
         self.izquierda.set_ip(valor)
         self.derecha.set_ip(valor)
         return True
-
-    def __endfile(self, widget=None, senial=None):
-        self.derecha.player_controls.set_paused()
-        self.derecha.lista.seleccionar_siguiente()
     */
+
+    public void __endfile(){
+        this.derecha.player_controls.set_paused();
+        this.derecha.lista.seleccionar_siguiente();
+        }
 
     public void setup_init(){
         this.izquierda.setup_init();
         this.derecha.setup_init();
         }
 
-    /*
-    def salir(self):
-        if self.player:
-            self.player.disconnect_by_func(self.__endfile)
-            self.player.disconnect_by_func(self.__state_changed)
-            self.player.disconnect_by_func(self.__update_progress)
-            self.player.disconnect_by_func(self.__set_video)
-            self.player.disconnect_by_func(self.__loading_buffer)
-            self.player.stop()
-            del(self.player)
-            self.player = False
+    public void salir(){
+        // FIXME: Salir
+        //if self.player:
+        //    self.player.disconnect_by_func(self.__endfile)
+        //    self.player.disconnect_by_func(self.__state_changed)
+        //    self.player.disconnect_by_func(self.__update_progress)
+        //    self.player.disconnect_by_func(self.__set_video)
+        //    self.player.disconnect_by_func(self.__loading_buffer)
+        //    self.player.stop()
+        //    del(self.player)
+        //    self.player = False
+        }
 
-    def set_nueva_lista(self, archivos):
-        self.derecha.set_nueva_lista(archivos)
+    public void set_nueva_lista(SList<string> archivos){
+        this.derecha.set_nueva_lista(archivos);
+        }
 
-    def checkear_listas(self):
-        dialog = DialogoDescarga(parent=self.get_toplevel(), force=False)
-        dialog.run()
-        dialog.destroy()
-    */
+    public void checkear_listas(){
+        // FIXME: Descargar Streamings
+        //dialog = DialogoDescarga(parent=self.get_toplevel(), force=False)
+        //dialog.run()
+        //dialog.destroy()
+        }
 }
