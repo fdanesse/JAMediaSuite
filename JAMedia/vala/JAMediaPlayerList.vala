@@ -19,7 +19,7 @@ public class JAMediaPlayerList : Gtk.Frame{
 
     public JAMediaPlayerList(){
 
-        //self.directorio = get_JAMedia_Directory()
+        this.directorio = get_JAMedia_Directory();
 
         this.mime.append("audio/*");
         this.mime.append("video/*");
