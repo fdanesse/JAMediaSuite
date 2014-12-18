@@ -23,7 +23,7 @@ public class JAMedia : Gtk.Window{
 
     public JAMedia(){
 
-        this.title = "JAMedia";
+        this.set_title("JAMedia");
 		this.window_position = Gtk.WindowPosition.CENTER;
 		this.set_default_size(640, 480);
 		this.set_resizable(true);

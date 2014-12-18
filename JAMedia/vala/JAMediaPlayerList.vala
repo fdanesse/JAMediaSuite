@@ -12,13 +12,17 @@ public class JAMediaPlayerList : Gtk.Frame{
     public signal void add_stream(string title);
     public signal void menu_activo();
 
+    private SList<string> mime = new SList<string> ();
+    private string directorio = "";
     private Lista lista = new Lista();
     private JAMediaToolbarList toolbar = new JAMediaToolbarList();
 
     public JAMediaPlayerList(){
 
         //self.directorio = get_JAMedia_Directory()
-        //self.mime = ['audio/*', 'video/*']
+
+        this.mime.append("audio/*");
+        this.mime.append("video/*");
 
         Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
@@ -74,28 +78,37 @@ public class JAMediaPlayerList : Gtk.Frame{
             if os.path.isfile(archivo):
                 lista.append(archivo)
         self.__load_files(False, lista, titulo)
+    */
 
-    def __load_files(self, widget, archivos, titulo=False):
-        items = []
-        archivos.sort()
-        for path in archivos:
-            archivo = os.path.basename(path)
-            items.append([archivo, path])
-            self.directorio = os.path.dirname(path)
-        self.__load_list(items, "load", titulo)
-        # FIXME: Mostrar clear y add para agregar archivos a la lista
+    private void __load_files(SList<string> archivos, string titulo){
+        SList<Streaming> items = null;
+        foreach (unowned string path in archivos) {
+            //FIXME: Agregar => if not os.path.isfile(path): continue
+            Streaming item = new Streaming(GLib.Path.get_basename(path), path);
+            items.append(item);
+            this.directorio = GLib.Path.get_dirname(path);
+			}
+        this.__load_list(items, "load", titulo);
+        // FIXME: Mostrar clear y add para agregar archivos a la lista
+        }
 
-    def __load_list(self, items, tipo, titulo=False):
-        if tipo == "load":
-            self.lista.limpiar()
-            self.emit("accion-list", False, "limpiar", False)
-        if items:
-            self.lista.agregar_items(items)
-        else:
-            self.emit('nueva-seleccion', False)
-        if titulo != False:
-            self.toolbar.label.set_text(titulo)
+    private void __load_list(SList<Streaming> items, string tipo, string titulo){
+        if (tipo == "load"){
+            this.lista.limpiar();
+            //self.emit("accion-list", False, "limpiar", False)
+            }
+        if ((bool)items){
+            this.lista.agregar_items(items);
+            }
+        else{
+            //self.emit('nueva-seleccion', False)
+            }
+        if ((bool) titulo){
+            this.toolbar.label.set_text(titulo);
+            }
+        }
 
+    /*
     def __click_derecho_en_lista(self, widget, event):
         boton = event.button
         pos = (event.x, event.y)
@@ -145,8 +158,8 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.lista.limpiar();
         }
 
-    public void set_mime_types(string mime){
-        //this.mime = mime;
+    public void set_mime_types(SList<string> mimelist){
+        this.mime = mimelist.copy();
         }
 
     /*
@@ -226,13 +239,14 @@ public class JAMediaPlayerList : Gtk.Frame{
                 break;
             }
             case 9:{
-                //selector = My_FileChooser(parent=self.get_toplevel(),
-                //filter_type=[], action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                //mime=self.mime, title="Abrir Archivos", path=self.directorio)
-                //selector.connect('load-files', self.__load_files, "Archivos")
-                //selector.run()
-                //if selector:
-                //    selector.destroy()
+                // FIXME: this.get_toplevel() no hace lo que debiera.
+                My_FileChooser selector = new My_FileChooser(
+                    "Abrir Archivos", this.get_toplevel() as Gtk.Window,
+                    Gtk.FileChooserAction.OPEN, new SList<string> (), this.mime,
+                    this.directorio);
+                selector.load_files.connect(this.__load_files);
+                selector.run();
+                selector.destroy();
                 break;
             }
             default:{
@@ -336,8 +350,19 @@ public class Lista : Gtk.TreeView{
             self.ultimo_select = self.valor_select
         self.scroll_to_cell(path)
         return False
+    */
 
-    def __ejecutar_agregar_elemento(self, elementos):
+    private bool __ejecutar_agregar_elemento(SList<Streaming> items){
+        Gtk.TreeIter iter;
+        Gdk.Pixbuf pix = new Gdk.Pixbuf.from_file_at_size("Iconos/JAMedia.svg", 24, 24);
+
+        foreach (Streaming stream in items){
+            //stdout.printf("%s * %s\n", stream.nombre, stream.path);
+            this.lista.append(out iter);
+            this.lista.set(iter, 0, pix, 1, stream.nombre, 2, stream.path);
+			}
+
+        /*
         self.permitir_select = False
         self.set_sensitive(False)
         if not elementos:
@@ -376,8 +401,9 @@ public class Lista : Gtk.TreeView{
         self.get_model().append([pixbuf, texto, path])
         elementos.remove(elementos[0])
         gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
-        return False
         */
+        return false;
+        }
 
     public void limpiar(){
         this.permitir_select = false;
@@ -387,8 +413,11 @@ public class Lista : Gtk.TreeView{
         this.permitir_select = true;
         }
 
-    //def agregar_items(self, elementos):
-    //    gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
+    public void agregar_items(SList<Streaming> items){
+        // FIXME: Convertir en Función GLib.
+        //GLib.Idle.add_full(GLib.Priority.DEFAULT_IDLE, this.__ejecutar_agregar_elemento, items, null);
+        this.__ejecutar_agregar_elemento(items);
+        }
 
     public void seleccionar_siguiente(){
         //modelo, _iter = self.get_selection().get_selected()
@@ -564,5 +593,80 @@ public class JAMediaToolbarList : Gtk.EventBox{
 
     private void __emit_add_stream(){
         this.add_stream();
+        }
+}
+
+
+public class My_FileChooser : Gtk.FileChooserDialog{
+
+    public signal void load_files(SList<string> filenames, string titulo);
+
+    private Gtk.FileFilter filtro = new Gtk.FileFilter();
+
+    public My_FileChooser(string title, Gtk.Window parent,
+        Gtk.FileChooserAction action, SList<string> filter_type,
+        SList<string> mime, string path){
+
+        this.set_title(title);
+        this.set_modal(true);
+        this.set_transient_for(parent);
+        this.set_resizable(true);
+        this.set_size_request(320, 240);
+
+        //FIXME: Verificar como hacer esto
+        //this.set_current_folder_uri("file://%s" % path);
+        this.set_property("action", action);
+        this.set_select_multiple(true);
+
+        Gtk.Box hbox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+
+        Gtk.Button boton_abrir_directorio = new Gtk.Button();
+        boton_abrir_directorio.set_label("Abrir");
+        Gtk.Button boton_seleccionar_todo = new Gtk.Button();
+        boton_seleccionar_todo.set_label("Seleccionar Todos");
+        Gtk.Button boton_salir = new Gtk.Button();
+        boton_salir.set_label("Salir");
+
+        boton_salir.clicked.connect(this.__salir);
+        boton_abrir_directorio.clicked.connect(this.__file_activated);
+        boton_seleccionar_todo.clicked.connect(this.__select_all);
+
+        hbox.pack_end(boton_salir, true, true, 5);
+        hbox.pack_end(boton_seleccionar_todo, true, true, 5);
+        hbox.pack_end(boton_abrir_directorio, true, true, 5);
+
+        this.set_extra_widget(hbox);
+        hbox.show_all();
+
+        this.filtro.set_name("Filtro");
+        foreach (unowned string fil in filter_type){
+            filtro.add_pattern(fil);
+            }
+        foreach (unowned string mi in mime){
+            filtro.add_mime_type(mi);
+            }
+        this.add_filter(this.filtro);
+
+        this.add_shortcut_folder_uri("file:///media/");
+        this.file_activated.connect(this.__file_activated);
+
+        this.realize.connect(this.__resize);
+    }
+
+    private void __resize(){
+        this.resize(437, 328);
+        }
+
+    private void __file_activated(){
+        this.load_files(this.get_filenames(), "Archivos");
+        this.__salir();
+        }
+
+    private void __select_all(){
+        this.select_all();
+        }
+
+    private void __salir(){
+        this.destroy();
         }
 }

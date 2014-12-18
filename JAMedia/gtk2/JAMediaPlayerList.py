@@ -132,6 +132,8 @@ class PlayerList(gtk.Frame):
         items = []
         archivos.sort()
         for path in archivos:
+            if not os.path.isfile(path):
+                continue
             archivo = os.path.basename(path)
             items.append([archivo, path])
             self.directorio = os.path.dirname(path)
