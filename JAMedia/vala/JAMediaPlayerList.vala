@@ -670,3 +670,13 @@ public class My_FileChooser : Gtk.FileChooserDialog{
         this.destroy();
         }
 }
+
+
+public class Streaming : GLib.Object{
+    public string nombre;
+    public string path;
+    public Streaming(string nombre, string path){
+        this.nombre = nombre;
+        this.path = path;
+    }
+}

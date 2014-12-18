@@ -1,4 +1,7 @@
 
+using Soup;
+using Json;
+
 /*
 canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-tv-2014'
 radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014'
@@ -178,8 +181,7 @@ public void make_base_directory(){
                 }
             }
         }
-    catch{
-        }
+    catch{}
     }
 
 
@@ -553,13 +555,3 @@ public Gtk.ToolButton get_button(string archivo, bool flip, Gdk.PixbufRotation r
 	button.set_tooltip_text(tooltip);
     return button;
     }
-
-
-public class Streaming : GLib.Object{
-    public string nombre;
-    public string path;
-    public Streaming(string nombre, string path){
-        this.nombre = nombre;
-        this.path = path;
-    }
-}
