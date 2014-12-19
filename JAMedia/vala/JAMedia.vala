@@ -66,7 +66,7 @@ public class JAMedia : Gtk.Window{
         this.add_stream.add_stream.connect(this.__add_stream);
         this.toolbarsalir.salir.connect(this.__exit);
 
-        //self.base_panel.connect("show-controls", self.__ocultar_controles)
+        this.base_panel.show_controls.connect(this.__ocultar_controles);
         //self.base_panel.connect("accion-list", self.__accion_list)
         this.base_panel.menu_activo.connect(this.__cancel_toolbars);
         this.base_panel.add_stream.connect(this.__run_add_stream);
@@ -96,6 +96,34 @@ public class JAMedia : Gtk.Window{
             }
         this.set_sensitive(true);
         return false;
+        }
+
+    private void __ocultar_controles(bool zona, bool ocultar){
+        this.mouse_in_visor = zona;
+        if (zona && ocultar){
+            this.__cancel_toolbars();
+            this.set_border_width(0);
+            this.base_panel.set_border_width(0);
+            this.toolbar.hide();
+            this.base_panel.derecha.hide();
+            this.base_panel.izquierda.toolbar_info.hide();
+            this.base_panel.izquierda.progress.hide();
+            }
+        else if (! zona && ocultar){
+            this.toolbar.show();
+            this.set_border_width(2);
+            this.base_panel.set_border_width(2);
+            this.base_panel.derecha.show();
+            this.base_panel.izquierda.toolbar_info.show();
+            this.base_panel.izquierda.progress.show();
+            //#if not self.hbox_efectos_en_pipe.get_children():
+            //#    self.hbox_efectos_en_pipe.get_parent().get_parent(
+            //#        ).get_parent().hide()
+            }
+        else if (! zona && ! ocultar){
+            }
+        else if (zona && ! ocultar){
+            }
         }
 
     private void __hide_show(){

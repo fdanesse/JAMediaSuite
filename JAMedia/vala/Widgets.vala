@@ -51,7 +51,6 @@ public class Help : Gtk.Dialog{
 		});
         box.pack_end(this.siguiente, false, false, 0);
 
-        //SList<Gtk.Image> archivos = new SList<Gtk.Image> ();
         Gdk.Pixbuf help1 = new Gdk.Pixbuf.from_file("Iconos/help-1.svg");
         Gtk.Image Ig1 = new Gtk.Image.from_pixbuf(help1);
         this.archivos.append(Ig1);
@@ -114,3 +113,90 @@ public class Help : Gtk.Dialog{
         }
     }
 }
+
+
+/*
+class DialogoDescarga(gtk.Dialog):
+
+    def __init__(self, parent=None, force=True):
+
+        gtk.Dialog.__init__(self, parent=parent)
+
+        self.set_decorated(False)
+        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
+        self.set_border_width(15)
+
+        self.force = force
+
+        label = gtk.Label("*** Descargando Streamings de JAMedia ***")
+        label.show()
+
+        self.vbox.pack_start(label, True, True, 5)
+        self.connect("realize", self.__do_realize)
+
+    def __do_realize(self, widget):
+        gobject.timeout_add(500, self.__descargar)
+
+    def __descargar(self):
+        if self.force:
+            if get_ip():
+                get_streaming_default()
+            else:
+                print "No estás conectado a Internet"
+        else:
+            set_listas_default()
+        self.destroy()
+        return False
+
+
+class MouseSpeedDetector(gobject.GObject):
+    """
+    Verifica posición y movimiento del mouse.
+    estado puede ser:
+        fuera       (está fuera de la ventana según self.parent)
+        moviendose
+        detenido
+    """
+
+    __gsignals__ = {
+        'estado': (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
+
+    def __init__(self, parent):
+
+        gobject.GObject.__init__(self)
+
+        self.parent = parent
+
+        self.actualizador = False
+        self.mouse_pos = (0, 0)
+
+    def __handler(self):
+        """
+        Emite la señal de estado cada 60 segundos.
+        """
+        try:
+            display, posx, posy = gtk.gdk.display_get_default(
+                ).get_window_at_pointer()
+        except:
+            return True
+        if posx > 0 and posy > 0:
+            if posx != self.mouse_pos[0] or posy != self.mouse_pos[1]:
+                self.mouse_pos = (posx, posy)
+                self.emit("estado", "moviendose")
+            else:
+                self.emit("estado", "detenido")
+        else:
+            self.emit("estado", "fuera")
+        return True
+
+    def new_handler(self, reset):
+        """
+        Resetea el controlador o lo termina según reset.
+        """
+        if self.actualizador:
+            gobject.source_remove(self.actualizador)
+            self.actualizador = False
+        if reset:
+            self.actualizador = gobject.timeout_add(1000, self.__handler)
+*/

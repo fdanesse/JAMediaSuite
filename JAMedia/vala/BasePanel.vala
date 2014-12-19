@@ -1,8 +1,6 @@
 public class BasePanel : Gtk.HPaned{
 
     //__gsignals__ = {
-    //"show-controls": (gobject.SIGNAL_RUN_LAST,
-    //    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
     //"accion-list": (gobject.SIGNAL_RUN_LAST,
     //    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
     //    gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
@@ -11,7 +9,7 @@ public class BasePanel : Gtk.HPaned{
 
     public signal void menu_activo();
     public signal void add_stream(string title);
-
+    public signal void show_controls(bool zona, bool ocultar);
     public Izquierda izquierda = new Izquierda();
     public Derecha derecha = new Derecha();
 
@@ -35,21 +33,19 @@ public class BasePanel : Gtk.HPaned{
         this.derecha.menu_activo.connect(this.__emit_menu_activo);
         this.derecha.add_stream.connect(this.__emit_add_stream);
         this.derecha.accion_controls.connect(this.__accion_controls);
-        /*
-        self.derecha.connect("balance-valor", self.__accion_balance)
-        #self.derecha.connect("add_remove_efecto", self.__add_remove_efecto)
-        #self.derecha.connect("configurar_efecto", self.__config_efecto)
 
-        self.izquierda.connect("show-controls", self.__emit_show_controls)
-        self.izquierda.connect("rotar", self.__rotar)
-        self.izquierda.connect("stop-record", self.__stop_record)
-        self.izquierda.connect("seek", self.__user_set_progress)
-        self.izquierda.connect("volumen", self.__set_volumen)
-        self.izquierda.connect("actualizar_streamings",
-            self.__actualizar_streamings)
+        //self.derecha.connect("balance-valor", self.__accion_balance)
+        //#self.derecha.connect("add_remove_efecto", self.__add_remove_efecto)
+        //#self.derecha.connect("configurar_efecto", self.__config_efecto)
 
-        gobject.timeout_add(5000, self.__check_ip)
-        */
+        this.izquierda.show_controls.connect(this.__emit_show_controls);
+        //self.izquierda.connect("rotar", self.__rotar)
+        //self.izquierda.connect("stop-record", self.__stop_record)
+        //self.izquierda.connect("seek", self.__user_set_progress)
+        //self.izquierda.connect("volumen", self.__set_volumen)
+        //self.izquierda.connect("actualizar_streamings", self.__actualizar_streamings)
+
+        //gobject.timeout_add(5000, self.__check_ip)
     }
 
     /*
@@ -135,10 +131,13 @@ public class BasePanel : Gtk.HPaned{
         self.__emit_menu_activo()
         if self.player:
             self.player.set_position(valor)
+        */
 
-    def __emit_show_controls(self, widget, datos):
-        self.emit("show-controls", datos)
+    private void __emit_show_controls(bool zona, bool ocultar){
+        this.show_controls(zona, ocultar);
+        }
 
+        /*
     def __cargar_reproducir(self, widget, path):
         self.derecha.set_sensitive(False)
 

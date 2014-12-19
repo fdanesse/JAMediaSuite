@@ -1,8 +1,6 @@
 public class Izquierda : Gtk.EventBox{
 
     //__gsignals__ = {
-    //"show-controls": (gobject.SIGNAL_RUN_LAST,
-    //    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
     //"seek": (gobject.SIGNAL_RUN_LAST,
     //    gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
     //"volumen": (gobject.SIGNAL_RUN_LAST,
@@ -11,6 +9,7 @@ public class Izquierda : Gtk.EventBox{
     public signal void stop_record();
     public signal void rotar(string rotacion);
     public signal void actualizar_streamings();
+    public signal void show_controls(bool zona, bool ocultar);
     private ToolbarGrabar toolbar_record = new ToolbarGrabar();
     private VideoVisor video_visor = new VideoVisor();
     public BufferInfo buffer_info = new BufferInfo();
@@ -35,8 +34,7 @@ public class Izquierda : Gtk.EventBox{
 
         this.toolbar_record.detener.connect(this.__emit_stop_record);
 
-        //self.video_visor.connect("ocultar_controles",
-        //    self.__emit_show_controls)
+        this.video_visor.ocultar_controles.connect(this.__emit_show_controls);
         //self.video_visor.connect("button_press_event", self.__set_fullscreen)
 
         this.toolbar_info.rotar.connect(this.__emit_rotar);
@@ -87,12 +85,13 @@ public class Izquierda : Gtk.EventBox{
             win.fullscreen()
         else:
             win.unfullscreen()
-
-    def __emit_show_controls(self, widget, valor):
-        zona, ocultar = (valor, self.toolbar_info.ocultar_controles)
-        self.emit("show-controls", (zona, ocultar))
-
     */
+
+    private void __emit_show_controls(bool valor){
+        bool zona = valor;
+        bool ocultar = this.toolbar_info.ocultar_controles;
+        this.show_controls(zona, ocultar);
+        }
 
     public void setup_init(){
         this.toolbar_record.hide();

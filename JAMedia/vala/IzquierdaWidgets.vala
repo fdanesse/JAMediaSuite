@@ -63,43 +63,46 @@ public class ToolbarGrabar : Gtk.EventBox{
 
 
 public class VideoVisor : Gtk.DrawingArea{
-    //FIXME: Agregar eventos del mouse
-    /*
-    __gsignals__ = {
-    "ocultar_controles": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
-    */
-    public VideoVisor(){
-        /*
-        self.add_events(
-            gtk.gdk.KEY_PRESS_MASK |
-            gtk.gdk.KEY_RELEASE_MASK |
-            gtk.gdk.POINTER_MOTION_MASK |
-            gtk.gdk.POINTER_MOTION_HINT_MASK |
-            gtk.gdk.BUTTON_MOTION_MASK |
-            gtk.gdk.BUTTON_PRESS_MASK |
-            gtk.gdk.BUTTON_RELEASE_MASK
-        )
-        */
-        this.show_all();
-    }
-    /*
-    def do_motion_notify_event(self, event):
-        """
-        Cuando se mueve el mouse sobre el visor.
-        """
-        x, y = (int(event.x), int(event.y))
-        rect = self.get_allocation()
-        xx, yy, ww, hh = (rect.x, rect.y, rect.width, rect.height)
 
-        if x in range(ww - 60, ww) or y in range(yy, yy + 60) \
-            or y in range(hh - 60, hh):
-            self.emit("ocultar_controles", False)
-            return
-        else:
-            self.emit("ocultar_controles", True)
-            return
-    */
+    public signal void ocultar_controles(bool valor);
+
+    public VideoVisor(){
+
+        this.add_events(
+            Gdk.EventMask.KEY_PRESS_MASK |
+            Gdk.EventMask.KEY_RELEASE_MASK |
+            Gdk.EventMask.POINTER_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
+            Gdk.EventMask.BUTTON_MOTION_MASK |
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.BUTTON_RELEASE_MASK
+            );
+
+        this.show_all();
+
+        this.motion_notify_event.connect ((event) => {
+			this.__do_motion_notify_event(event);
+			return true;
+		});
+    }
+
+    private void __do_motion_notify_event(Gdk.EventMotion event){
+        int x = (int) event.x;
+        int y = (int) event.y;
+
+        int ww = (int) this.get_allocated_width();
+        int hh = (int) this.get_allocated_height();
+
+        int minw = ww - 60;
+        int minh = hh - 60;
+
+        if ((x > minw && x < ww) || (y > 0 && y < 60) || (y < hh && y > minh)){
+            this.ocultar_controles(false);
+            }
+        else{
+            this.ocultar_controles(true);
+            }
+        }
 }
 
 
