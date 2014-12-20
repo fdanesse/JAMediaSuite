@@ -56,9 +56,12 @@ def get_colors(key):
         "naranaja": "#ff6600",
         }
     return gdk.color_parse(_dict.get(key, "#ffffff"))
+*/
 
-
-def get_ip():
+public bool get_ip(){
+    //FIXME: Corregir
+    return true;
+    /*
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("google.com", 80))
@@ -67,8 +70,10 @@ def get_ip():
         return bool(ret)
     except:
         return False
+    */
+    }
 
-
+/*
 def describe_archivo(archivo):
     """
     Devuelve el tipo de un archivo (imagen, video, texto).

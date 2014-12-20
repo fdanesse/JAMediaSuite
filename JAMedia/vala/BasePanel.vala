@@ -50,7 +50,7 @@ public class BasePanel : Gtk.HPaned{
         //self.izquierda.connect("volumen", self.__set_volumen)
         //self.izquierda.connect("actualizar_streamings", self.__actualizar_streamings)
 
-        //gobject.timeout_add(5000, self.__check_ip)
+        GLib.Timeout.add(5000, this.__check_ip);
     }
 
     /*
@@ -221,13 +221,14 @@ public class BasePanel : Gtk.HPaned{
             hue=config.get('hue', 50.0),
             gamma=config.get('gamma', 10.0))
         return False
-
-    def __check_ip(self):
-        valor = get_ip()
-        self.izquierda.set_ip(valor)
-        self.derecha.set_ip(valor)
-        return True
     */
+
+    private bool __check_ip(){
+        bool valor = get_ip();
+        this.izquierda.set_ip(valor);
+        this.derecha.set_ip(valor);
+        return true;
+        }
 
     public void __endfile(){
         this.derecha.player_controls.set_paused();

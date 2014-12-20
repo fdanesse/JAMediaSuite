@@ -74,7 +74,7 @@ public class JAMedia : Gtk.Window{
         this.toolbaraccion.accion_stream.connect(this.__accion_stream);
         this.toolbaraccion.grabar.connect(this.__grabar);
         this.add_stream.add_stream.connect(this.__add_stream);
-        this.toolbarsalir.salir.connect(this.__exit);
+        this.toolbarsalir.salir.connect(this.__salir);
 
         this.base_panel.show_controls.connect(this.__ocultar_controles);
         //self.base_panel.connect("accion-list", self.__accion_list)
@@ -85,13 +85,106 @@ public class JAMedia : Gtk.Window{
         this.mouse_listener.estado.connect(this.__set_mouse);
         this.hide.connect(this.__hide_show);
         this.show.connect(this.__hide_show);
-        this.destroy.connect(this.__exit);
+        this.destroy.connect(this.__salir);
 
         this.resize(640, 480);
 
         GLib.Idle.add(this.__setup_init);
         //print "JAMedia process:", os.getpid()
         this.base_panel.checkear_listas();
+        }
+
+    private void __realize(){
+        this.cursor_root = this.get_window().get_cursor();
+        this.get_window().set_cursor(this.jamedia_cursor);
+        }
+
+    private void __add_stream(string tipo, string nombre, string url){
+        stdout.printf("__add_stream %s %s %s\n", tipo, nombre, url);
+        //add_stream(tipo, [nombre, url])
+        //if "Tv" in tipo or "TV" in tipo:
+        //    indice = 3
+        //elif "Radio" in tipo:
+        //    indice = 2
+        //else:
+        //    return
+        //self.base_panel.derecha.lista.cargar_lista(None, indice)
+        }
+
+    private void __run_add_stream(string title){
+        this.add_stream.set_accion(title);
+        }
+
+    private void __grabar(string stream){
+        stdout.printf("__grabar %s\n", stream);
+        /*
+        self.set_sensitive(False)
+        self.__detener_grabacion()
+
+        tipo = "video"
+        label = self.base_panel.derecha.lista.toolbar.label.get_text()
+        if label == "JAM-TV" or label == "TVs" or label == "WebCams":
+            tipo = "video"
+        else:
+            tipo = "audio"
+
+        hora = time.strftime("%H-%M-%S")
+        fecha = str(datetime.date.today())
+        archivo = "%s-%s" % (fecha, hora)
+        archivo = os.path.join(get_my_files_directory(), archivo)
+
+        self.grabador = JAMediaGrabador(uri, archivo, tipo)
+
+        self.grabador.connect('update', self.__update_grabador)
+        self.grabador.connect('endfile', self.__detener_grabacion)
+
+        _thread = threading.Thread(target=self.grabador.play)
+        _thread.start()
+
+        self.set_sensitive(True)
+        */
+        }
+
+    //def __update_grabador(self, widget, datos):
+    //    self.base_panel.izquierda.toolbar_record.set_info(datos)
+
+    /*
+    def __detener_grabacion(self, widget=None):
+        if self.grabador:
+            self.grabador.disconnect_by_func(self.__update_grabador)
+            self.grabador.disconnect_by_func(self.__detener_grabacion)
+            self.grabador.stop()
+            del(self.grabador)
+            self.grabador = False
+        self.base_panel.izquierda.toolbar_record.stop()
+    */
+
+    private void __accion_stream(string accion, string url){
+        stdout.printf("__accion_stream %s\n", accion);
+        /*
+        def __accion_stream(self, widget, accion, url):
+        lista = self.base_panel.derecha.lista.toolbar.label.get_text()
+        if accion == "Borrar":
+            eliminar_streaming(url, lista)
+            print "Streaming Eliminado:", url
+        elif accion == "Copiar":
+            modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
+                ).get_selected()
+            nombre = modelo.get_value(_iter, 1)
+            url = modelo.get_value(_iter, 2)
+            tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
+            add_stream(tipo, [nombre, url])
+        elif accion == "Mover":
+            modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
+                ).get_selected()
+            nombre = modelo.get_value(_iter, 1)
+            url = modelo.get_value(_iter, 2)
+            tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
+            add_stream(tipo, [nombre, url])
+            eliminar_streaming(url, lista)
+        else:
+            print "accion_stream desconocido:", accion
+        */
         }
 
     private bool __setup_init(){
@@ -106,9 +199,22 @@ public class JAMedia : Gtk.Window{
         return false;
         }
 
-    private void __realize(){
-        this.cursor_root = this.get_window().get_cursor();
-        this.get_window().set_cursor(this.jamedia_cursor);
+    private void __accion_toolbar(string accion){
+        this.__cancel_toolbars();
+        if (accion == "show-config"){
+            this.base_panel.derecha.show_config();
+            }
+        else if (accion == "salir"){
+            this.toolbarsalir.run("JAMedia");
+            }
+        else{
+            stdout.printf("__accion_toolbar %s\n", accion);
+            }
+        }
+
+    private void __hide_show(){
+        //Controlador del mouse funcionará solo si JAMedia es Visible.
+        this.mouse_listener.new_handler(this.get_visible());
         }
 
     private void __set_mouse(string estado){
@@ -172,38 +278,10 @@ public class JAMedia : Gtk.Window{
             }
         }
 
-    private void __hide_show(){
-        //Controlador del mouse funcionará solo si JAMedia es Visible.
-        this.mouse_listener.new_handler(this.get_visible());
-        }
-
-    private void __run_add_stream(string title){
-        this.add_stream.set_accion(title);
-        }
-
-    private void __add_stream(string tipo, string nombre, string url){
-        stdout.printf("__add_stream %s %s %s\n", tipo, nombre, url);
-        //add_stream(tipo, [nombre, url])
-        //if "Tv" in tipo or "TV" in tipo:
-        //    indice = 3
-        //elif "Radio" in tipo:
-        //    indice = 2
-        //else:
-        //    return
-        //self.base_panel.derecha.lista.cargar_lista(None, indice)
-        }
-
-    private void __accion_toolbar(string accion){
-        this.__cancel_toolbars();
-        if (accion == "show-config"){
-            this.base_panel.derecha.show_config();
-            }
-        else if (accion == "salir"){
-            this.toolbarsalir.run("JAMedia");
-            }
-        else{
-            stdout.printf("__accion_toolbar %s\n", accion);
-            }
+    private void __salir(){
+        // FIXME: this.__detener_grabacion();
+        // FIXME: this.BasePanel.salir();
+        Gtk.main_quit();
         }
 
     private void __cancel_toolbars(){
@@ -212,63 +290,12 @@ public class JAMedia : Gtk.Window{
         this.add_stream.hide();
         }
 
-    private void __grabar(string stream){
-        stdout.printf("__grabar %s\n", stream);
-        /*
-        self.set_sensitive(False)
-        self.__detener_grabacion()
+    //def __accion_list(self, widget, lista, accion, _iter):
+    //    # borrar, copiar, mover, grabar, etc . . .
+    //    self.toolbar_accion.set_accion(lista, accion, _iter)
 
-        tipo = "video"
-        label = self.base_panel.derecha.lista.toolbar.label.get_text()
-        if label == "JAM-TV" or label == "TVs" or label == "WebCams":
-            tipo = "video"
-        else:
-            tipo = "audio"
-
-        hora = time.strftime("%H-%M-%S")
-        fecha = str(datetime.date.today())
-        archivo = "%s-%s" % (fecha, hora)
-        archivo = os.path.join(get_my_files_directory(), archivo)
-
-        self.grabador = JAMediaGrabador(uri, archivo, tipo)
-
-        self.grabador.connect('update', self.__update_grabador)
-        self.grabador.connect('endfile', self.__detener_grabacion)
-
-        _thread = threading.Thread(target=self.grabador.play)
-        _thread.start()
-
-        self.set_sensitive(True)
-        */
-        }
-
-    private void __accion_stream(string accion, string url){
-        stdout.printf("__accion_stream %s\n", accion);
-        /*
-        def __accion_stream(self, widget, accion, url):
-        lista = self.base_panel.derecha.lista.toolbar.label.get_text()
-        if accion == "Borrar":
-            eliminar_streaming(url, lista)
-            print "Streaming Eliminado:", url
-        elif accion == "Copiar":
-            modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
-                ).get_selected()
-            nombre = modelo.get_value(_iter, 1)
-            url = modelo.get_value(_iter, 2)
-            tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
-            add_stream(tipo, [nombre, url])
-        elif accion == "Mover":
-            modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
-                ).get_selected()
-            nombre = modelo.get_value(_iter, 1)
-            url = modelo.get_value(_iter, 2)
-            tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
-            add_stream(tipo, [nombre, url])
-            eliminar_streaming(url, lista)
-        else:
-            print "accion_stream desconocido:", accion
-        */
-        }
+    //def set_archivos(self, archivos):
+    //    self.archivos = archivos
 
     private void __show_credits(){
         Creditos dialog = new Creditos(this, "");
@@ -281,13 +308,18 @@ public class JAMedia : Gtk.Window{
         dialog.run();
         dialog.destroy();
         }
-
-    private void __exit(){
-        // FIXME: this.__detener_grabacion();
-        // FIXME: this.BasePanel.salir();
-        Gtk.main_quit();
-        }
 }
+
+
+//def check_path(path):
+//    if os.path.exists(path):
+//        if os.path.isfile(path):
+//            datos = describe_archivo(path)
+//            if 'audio' in datos or 'video' in datos or \
+//                'application/ogg' in datos or \
+//                'application/octet-stream' in datos:
+//                    return path
+//    return False
 
 
 public static int main (string[] args) {
