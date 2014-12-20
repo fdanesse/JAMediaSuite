@@ -16,9 +16,13 @@ public class Izquierda : Gtk.EventBox{
     public ToolbarInfo toolbar_info = new ToolbarInfo();
     public ProgressPlayer progress = new ProgressPlayer();
 
-    public Izquierda(){
+    private Gtk.Window root = null;
+
+    public Izquierda(Gtk.Window window){
 
         Gtk.Box vbox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+
+        this.root = window;
 
         //self.efectos_aplicados = Efectos_en_Pipe()
 
@@ -35,7 +39,10 @@ public class Izquierda : Gtk.EventBox{
         this.toolbar_record.detener.connect(this.__emit_stop_record);
 
         this.video_visor.ocultar_controles.connect(this.__emit_show_controls);
-        //this.video_visor.button_press_event.connect(this.__set_fullscreen)
+        this.video_visor.button_press_event.connect ((event) => {
+			this.__set_fullscreen(event);
+			return true;
+		});
 
         this.toolbar_info.rotar.connect(this.__emit_rotar);
         this.toolbar_info.actualizar_streamings.connect(this.__emit_actualizar_streamings);
@@ -63,32 +70,35 @@ public class Izquierda : Gtk.EventBox{
         this.actualizar_streamings();
         }
 
-    /*
-    private void __set_fullscreen(self, widget, event){
-        if event.type.value_name == "GDK_2BUTTON_PRESS":
-            win = self.get_toplevel()
-            widget.set_sensitive(False)
-            screen = win.get_screen()
-            w, h = win.get_size()
-            ww, hh = (screen.get_width(), screen.get_height())
-            if ww == w and hh == h:
-                win.set_border_width(2)
-                gobject.idle_add(self.__set_full, win, False)
-            else:
-                win.set_border_width(0)
-                gobject.idle_add(self.__set_full, win, True)
-            widget.set_sensitive(True)
+    private void __set_fullscreen(Gdk.EventButton event){
+        if (event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS){
+            this.set_sensitive(false);
+            var screen = this.root.get_screen();
+            int w = (int) this.root.get_allocated_width();
+            int h = (int) this.root.get_allocated_height();
+            int ww = (int) screen.get_width ();
+            int hh = (int) screen.get_height ();
+            if (ww == w && hh == h){
+                this.root.set_border_width(2);
+                GLib.Idle.add(this.__unfullscreen);
+                }
+            else{
+                this.root.set_border_width(0);
+                GLib.Idle.add(this.__fullscreen);
+                }
+            this.set_sensitive(true);
+            }
         }
 
-    private void __set_full(win, valor){
-        if (valor){
-            win.fullscreen()
-            }
-        else{
-            win.unfullscreen();
-            }
+    private bool __fullscreen(){
+        this.root.fullscreen();
+        return false;
         }
-    */
+
+    private bool __unfullscreen(){
+        this.root.unfullscreen();
+        return false;
+        }
 
     private void __emit_show_controls(bool valor){
         bool zona = valor;

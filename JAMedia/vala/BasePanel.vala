@@ -10,16 +10,21 @@ public class BasePanel : Gtk.HPaned{
     public signal void menu_activo();
     public signal void add_stream(string title);
     public signal void show_controls(bool zona, bool ocultar);
-    public Izquierda izquierda = new Izquierda();
+    public Izquierda izquierda = null;
     public Derecha derecha = new Derecha();
 
-    public BasePanel(){
+    private Gtk.Window root = null;
+
+    public BasePanel(Gtk.Window window){
 
         this.set_border_width(2);
         /*
         self._thread = False
         self.player = False
         */
+
+        this.root = window;
+        this.izquierda = new Izquierda(this.root);
 
         this.pack1(this.izquierda, true, true);
         this.pack2(this.derecha, false, false);

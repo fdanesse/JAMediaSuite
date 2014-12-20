@@ -89,7 +89,8 @@ public class VideoVisor : Gtk.DrawingArea{
     private void __do_motion_notify_event(Gdk.EventMotion event){
         int x = (int) event.x;
         int y = (int) event.y;
-
+        //Gdk.Allocation allocation;
+        //this.get_allocation(out allocation);
         int ww = (int) this.get_allocated_width();
         int hh = (int) this.get_allocated_height();
 

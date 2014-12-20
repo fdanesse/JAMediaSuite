@@ -7,6 +7,8 @@ Para Utilizar gstreamer 0.10 cambiar: --pkg gstreamer-1.0
 por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
 */
 
+//http://www.abenga.com/post/2013/7/30/gtk+-programming-using-vala:-background-/
+
 //using GLib;   Se importa siempre por default
 using Gtk;
 using Gdk;
@@ -19,7 +21,7 @@ public class JAMedia : Gtk.Window{
     private ToolbarAccion toolbaraccion = new ToolbarAccion();
     private ToolbarAddStream add_stream = new ToolbarAddStream();
 
-    private BasePanel base_panel = new BasePanel();
+    private BasePanel base_panel = null;
 
     private SList<string> archivos = null;
     private bool mouse_in_visor = true;
@@ -39,6 +41,7 @@ public class JAMedia : Gtk.Window{
             stderr.printf ("No se Encontró el Ícono: %s\n", e.message);
             }
 
+        this.base_panel = new BasePanel(this);
         //self.grabador = False
         //self.mouse_in_visor = False
         //self.cursor_root = gtk.gdk.Cursor(gtk.gdk.BLANK_CURSOR)
