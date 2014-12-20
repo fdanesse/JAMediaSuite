@@ -24,7 +24,11 @@ public class JAMedia : Gtk.Window{
     private BasePanel base_panel = null;
 
     private SList<string> archivos = null;
-    private bool mouse_in_visor = true;
+    private bool mouse_in_visor = false;
+    private Gdk.Cursor cursor_root = null;
+    private Gdk.Cursor cursor_blank = new Gdk.Cursor(Gdk.CursorType.BLANK_CURSOR);
+    private Gdk.Cursor jamedia_cursor = null;
+    private MouseSpeedDetector mouse_listener = null;
 
     public JAMedia(){
 
@@ -43,12 +47,9 @@ public class JAMedia : Gtk.Window{
 
         this.base_panel = new BasePanel(this);
         //self.grabador = False
-        //self.mouse_in_visor = False
-        //self.cursor_root = gtk.gdk.Cursor(gtk.gdk.BLANK_CURSOR)
-        //icono = os.path.join(BASE_PATH, "Iconos", "jamedia_cursor.svg")
-        //pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, -1, 24)
-        //self.jamedia_cursor = gtk.gdk.Cursor(
-        //    gtk.gdk.display_get_default(), pixbuf, 0, 0)
+
+        Gdk.Pixbuf pixbuf = new Gdk.Pixbuf.from_file_at_size("Iconos/jamedia_cursor.svg", -1, 24);
+        this.jamedia_cursor = new Gdk.Cursor.from_pixbuf(Gdk.Display.get_default(), pixbuf, 0, 0);
 
         Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
@@ -58,9 +59,14 @@ public class JAMedia : Gtk.Window{
         box.pack_start(this.add_stream, false, false, 0);
         box.pack_start(this.base_panel, true, true, 0);
 
+        this.realize.connect(this.__realize);
+
         this.add(box);
         this.show_all();
         this.realize();
+
+        this.mouse_listener = new MouseSpeedDetector(this);
+        this.mouse_listener.new_handler(true);
 
         this.toolbar.credits.connect(this.__show_credits);
         this.toolbar.help.connect(this.__show_help);
@@ -76,14 +82,12 @@ public class JAMedia : Gtk.Window{
         this.base_panel.add_stream.connect(this.__run_add_stream);
         //self.base_panel.connect("stop-record", self.__detener_grabacion)
 
-        //self.mouse_listener.connect("estado", self.__set_mouse)
+        this.mouse_listener.estado.connect(this.__set_mouse);
         this.hide.connect(this.__hide_show);
         this.show.connect(this.__hide_show);
         this.destroy.connect(this.__exit);
 
         this.resize(640, 480);
-        //self.mouse_listener = MouseSpeedDetector(self)
-        //self.mouse_listener.new_handler(True)
 
         GLib.Idle.add(this.__setup_init);
         //print "JAMedia process:", os.getpid()
@@ -100,6 +104,44 @@ public class JAMedia : Gtk.Window{
             }
         this.set_sensitive(true);
         return false;
+        }
+
+    private void __realize(){
+        this.cursor_root = this.get_window().get_cursor();
+        this.get_window().set_cursor(this.jamedia_cursor);
+        }
+
+    private void __set_mouse(string estado){
+        Gdk.Window win = this.get_window();
+        if (this.mouse_in_visor){  // Solo cuando el mouse está sobre el Visor.
+            if (estado == "moviendose"){
+                if (win.get_cursor() != this.jamedia_cursor){
+                    win.set_cursor(this.jamedia_cursor);
+                    }
+                }
+            else if (estado == "detenido"){
+                if (win.get_cursor() != this.cursor_blank){
+                    win.set_cursor(this.cursor_blank);
+                    }
+                }
+            else if (estado == "fuera"){
+                if (win.get_cursor() != this.cursor_root){
+                    win.set_cursor(this.cursor_root);
+                    }
+                }
+            }
+        else{
+            if (estado == "moviendose" || estado == "detenido"){
+                if (win.get_cursor() != this.jamedia_cursor){
+                    win.set_cursor(this.jamedia_cursor);
+                    }
+                }
+            else if (estado == "fuera"){
+                if (win.get_cursor() != this.cursor_root){
+                    win.set_cursor(this.cursor_root);
+                    }
+                }
+            }
         }
 
     private void __ocultar_controles(bool zona, bool ocultar){
@@ -132,7 +174,7 @@ public class JAMedia : Gtk.Window{
 
     private void __hide_show(){
         //Controlador del mouse funcionará solo si JAMedia es Visible.
-        //self.mouse_listener.new_handler(widget.get_visible())
+        this.mouse_listener.new_handler(this.get_visible());
         }
 
     private void __run_add_stream(string title){

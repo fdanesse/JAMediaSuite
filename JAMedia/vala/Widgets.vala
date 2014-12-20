@@ -147,56 +147,59 @@ class DialogoDescarga(gtk.Dialog):
             set_listas_default()
         self.destroy()
         return False
+*/
 
-
-class MouseSpeedDetector(gobject.GObject):
-    """
+public class MouseSpeedDetector : GLib.Object{
+    /*
     Verifica posición y movimiento del mouse.
     estado puede ser:
         fuera       (está fuera de la ventana según self.parent)
         moviendose
         detenido
-    """
+    */
 
-    __gsignals__ = {
-        'estado': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
+    public signal void estado(string estado);
 
-    def __init__(self, parent):
+    private Gtk.Window parent = null;
+    private int posx = 0;
+    private int posy = 0;
+    private uint actualizador = 0;
 
-        gobject.GObject.__init__(self)
+    public MouseSpeedDetector(Gtk.Window parent){
 
-        self.parent = parent
+        this.parent = parent;
+    }
 
-        self.actualizador = False
-        self.mouse_pos = (0, 0)
+    private bool __handler(){
+        Gdk.Display display = Gdk.Display.get_default();
+        int x = 0;
+        int y = 0;
+        display.get_window_at_pointer(out x, out y);
 
-    def __handler(self):
-        """
-        Emite la señal de estado cada 60 segundos.
-        """
-        try:
-            display, posx, posy = gtk.gdk.display_get_default(
-                ).get_window_at_pointer()
-        except:
-            return True
-        if posx > 0 and posy > 0:
-            if posx != self.mouse_pos[0] or posy != self.mouse_pos[1]:
-                self.mouse_pos = (posx, posy)
-                self.emit("estado", "moviendose")
-            else:
-                self.emit("estado", "detenido")
-        else:
-            self.emit("estado", "fuera")
-        return True
+        if (x > 0 && y > 0){
+            if (this.posx != x || this.posy != y){
+                this.posx = x;
+                this.posy = y;
+                this.estado("moviendose");
+                }
+            else{
+                this.estado("detenido");
+                }
+            }
+        else{
+            this.estado("fuera");
+            }
+        return true;
+        }
 
-    def new_handler(self, reset):
-        """
-        Resetea el controlador o lo termina según reset.
-        """
-        if self.actualizador:
-            gobject.source_remove(self.actualizador)
-            self.actualizador = False
-        if reset:
-            self.actualizador = gobject.timeout_add(1000, self.__handler)
-*/
+    public void new_handler(bool reset){
+        //Resetea el controlador o lo termina según reset.
+        if (this.actualizador > 0){
+            GLib.Source.remove(this.actualizador);
+            this.actualizador = 0;
+            }
+        if (reset == true){
+            this.actualizador = GLib.Timeout.add(1000, this.__handler);
+            }
+        }
+}
