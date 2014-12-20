@@ -379,6 +379,8 @@ class Introspeccion(Gtk.TreeView):
         Gtk.TreeView.__init__(self, Gtk.TreeStore(GObject.TYPE_INT,
             GObject.TYPE_STRING, Gdk.Color))
 
+        self._dict = {}
+
         self.__set_columnas()
         self.connect("key-press-event", self.key_press_event)
         self.set_rules_hint(True)
@@ -393,14 +395,12 @@ class Introspeccion(Gtk.TreeView):
 
     def __get_datos_introspeccion(self, texto, tipo):
         _dict = OrderedDict()
-
         if tipo == "python":
             _dict = get_contenido_python(texto)
         elif tipo == "vala":
             _dict = get_contenido_vala(texto)
         else:
             print tipo
-
         return _dict
 
     def __set_columnas(self):
@@ -437,6 +437,7 @@ class Introspeccion(Gtk.TreeView):
         Recibe nombre y contenido de archivo para realizar introspeccion.
         """
         if self.get_model():
+            self._dict = {}
             self.get_model().clear()
         else:
             return
@@ -444,14 +445,14 @@ class Introspeccion(Gtk.TreeView):
         if not texto:
             return
 
-        _dict = self.__get_datos_introspeccion(texto, tipo)
+        self._dict = self.__get_datos_introspeccion(texto, tipo)
         iterbase = self.get_model().get_iter_first()
         new_class = iterbase
         new_funcion = iterbase
 
         if tipo == "python":
-            for key in _dict.keys():
-                temp = _dict[key].strip()
+            for key in self._dict.keys():
+                temp = self._dict[key].strip()
 
                 if temp.startswith("class "):
                     color = Gdk.color_parse("#a40000")
@@ -467,8 +468,8 @@ class Introspeccion(Gtk.TreeView):
                     new_funcion = self.__append(new_class, key, color, temp)
 
         elif tipo == "vala":
-            for key in _dict.keys():
-                temp = _dict[key].strip()
+            for key in self._dict.keys():
+                temp = self._dict[key].strip()
 
                 if temp.startswith("public class "):
                     color = Gdk.color_parse("#a40000")

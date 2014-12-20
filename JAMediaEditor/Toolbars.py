@@ -21,6 +21,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110 - 1301 USA
 
 import os
+from collections import OrderedDict
 
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -51,7 +52,6 @@ class ToolbarProyecto(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
-        from collections import OrderedDict
         self.dict_proyecto = OrderedDict()
         toolbar = Gtk.Toolbar()
         toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
@@ -128,11 +128,9 @@ class ToolbarProyecto(Gtk.EventBox):
         """
         if ejecucion == None:
             map(self.__desactivar, self.dict_proyecto.keys()[-2:])
-
         elif ejecucion == False:
             map(self.__activar, [self.dict_proyecto.keys()[-2]])
             map(self.__desactivar, [self.dict_proyecto.keys()[-1]])
-
         elif ejecucion == True:
             map(self.__desactivar, [self.dict_proyecto.keys()[-2]])
             map(self.__activar, [self.dict_proyecto.keys()[-1]])
@@ -184,7 +182,6 @@ class ToolbarArchivo(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
-        from collections import OrderedDict
         self.dict_archivo = OrderedDict()
         toolbar = Gtk.Toolbar()
         toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
@@ -291,11 +288,9 @@ class ToolbarArchivo(Gtk.EventBox):
                 self.dict_archivo["Ejecutar Archivo"],
                 self.dict_archivo["Detener Ejecución"],
                 ])
-
         elif ejecucion == False:
             map(self.__activar, [self.dict_archivo["Ejecutar Archivo"]])
             map(self.__desactivar, [self.dict_archivo["Detener Ejecución"]])
-
         elif ejecucion == True:
             map(self.__desactivar, [self.dict_archivo["Ejecutar Archivo"]])
             map(self.__activar, [self.dict_archivo["Detener Ejecución"]])
@@ -377,7 +372,9 @@ class ToolbarBusquedas(Gtk.EventBox):
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING)),
     "buscar": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    "informe": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
@@ -388,7 +385,6 @@ class ToolbarBusquedas(Gtk.EventBox):
 
         self.anterior = get_boton(os.path.join(icons, "go-next-rtl.svg"),
             pixels=get_pixels(0.5), tooltip_text="Anterior")
-
         self.anterior.connect("clicked", self.__emit_accion)
         toolbar.insert(self.anterior, - 1)
 
@@ -403,9 +399,14 @@ class ToolbarBusquedas(Gtk.EventBox):
 
         self.siguiente = get_boton(os.path.join(icons, "go-next.svg"),
             pixels=get_pixels(0.5), tooltip_text="Siguiente")
-
         self.siguiente.connect("clicked", self.__emit_accion)
         toolbar.insert(self.siguiente, - 1)
+
+        self.informe = get_boton(os.path.join(icons, "go-next.svg"),
+            pixels=get_pixels(0.5), tooltip_text="Obtener Copia",
+            rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE)
+        self.informe.connect("clicked", self.__emit_informe)
+        toolbar.insert(self.informe, - 1)
 
         self.entry.connect("changed", self.__emit_buscar)
         self.add(toolbar)
@@ -413,6 +414,9 @@ class ToolbarBusquedas(Gtk.EventBox):
 
         self.anterior.set_sensitive(False)
         self.siguiente.set_sensitive(False)
+
+    def __emit_informe(self, widget):
+        self.emit("informe")
 
     def __emit_accion(self, widget):
         """
@@ -427,11 +431,9 @@ class ToolbarBusquedas(Gtk.EventBox):
         if widget.get_text():
             self.anterior.set_sensitive(True)
             self.siguiente.set_sensitive(True)
-
         else:
             self.anterior.set_sensitive(False)
             self.siguiente.set_sensitive(False)
-
         self.emit("buscar", widget.get_text())
 
 
