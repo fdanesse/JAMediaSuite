@@ -21,7 +21,8 @@ public class JAMedia : Gtk.Window{
 
     private BasePanel base_panel = new BasePanel();
 
-    SList<string> archivos = null;
+    private SList<string> archivos = null;
+    private bool mouse_in_visor = true;
 
     public JAMedia(){
 

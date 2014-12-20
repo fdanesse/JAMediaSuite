@@ -13,8 +13,8 @@ public class Izquierda : Gtk.EventBox{
     private ToolbarGrabar toolbar_record = new ToolbarGrabar();
     private VideoVisor video_visor = new VideoVisor();
     public BufferInfo buffer_info = new BufferInfo();
-    private ToolbarInfo toolbar_info = new ToolbarInfo();
-    private ProgressPlayer progress = new ProgressPlayer();
+    public ToolbarInfo toolbar_info = new ToolbarInfo();
+    public ProgressPlayer progress = new ProgressPlayer();
 
     public Izquierda(){
 
@@ -35,7 +35,7 @@ public class Izquierda : Gtk.EventBox{
         this.toolbar_record.detener.connect(this.__emit_stop_record);
 
         this.video_visor.ocultar_controles.connect(this.__emit_show_controls);
-        //self.video_visor.connect("button_press_event", self.__set_fullscreen)
+        //this.video_visor.button_press_event.connect(this.__set_fullscreen)
 
         this.toolbar_info.rotar.connect(this.__emit_rotar);
         this.toolbar_info.actualizar_streamings.connect(this.__emit_actualizar_streamings);
@@ -44,13 +44,12 @@ public class Izquierda : Gtk.EventBox{
         //self.progress.connect("volumen", self.__emit_volumen)
     }
 
-    /*
-    def __emit_volumen(self, widget, valor):
-        self.emit('volumen', valor)
+    private void __emit_volumen(double valor){
+        //self.emit('volumen', valor)
+        }
 
-    def __emit_seek(self, widget, valor):
-        self.emit("seek", valor)
-    */
+    //def __emit_seek(self, widget, valor):
+    //    self.emit("seek", valor)
 
     private void __emit_stop_record(){
         this.stop_record();
@@ -65,7 +64,7 @@ public class Izquierda : Gtk.EventBox{
         }
 
     /*
-    def __set_fullscreen(self, widget, event):
+    private void __set_fullscreen(self, widget, event){
         if event.type.value_name == "GDK_2BUTTON_PRESS":
             win = self.get_toplevel()
             widget.set_sensitive(False)
@@ -79,12 +78,16 @@ public class Izquierda : Gtk.EventBox{
                 win.set_border_width(0)
                 gobject.idle_add(self.__set_full, win, True)
             widget.set_sensitive(True)
+        }
 
-    def __set_full(self, win, valor):
-        if valor:
+    private void __set_full(win, valor){
+        if (valor){
             win.fullscreen()
-        else:
-            win.unfullscreen()
+            }
+        else{
+            win.unfullscreen();
+            }
+        }
     */
 
     private void __emit_show_controls(bool valor){
@@ -101,8 +104,7 @@ public class Izquierda : Gtk.EventBox{
         this.progress.set_sensitive(false);
         }
 
-    /*
-    def set_ip(self, valor):
-        self.toolbar_info.set_ip(valor)
-    */
+    public void set_ip(bool valor){
+        this.toolbar_info.set_ip(valor);
+        }
 }
