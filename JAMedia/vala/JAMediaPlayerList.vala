@@ -65,28 +65,36 @@ public class JAMediaPlayerList : Gtk.Frame{
     def __emit_nueva_seleccion(self, widget, pista):
         # item seleccionado en la lista
         self.emit('nueva-seleccion', pista)
-
-    def __seleccionar_lista_de_stream(self, archivo, titulo):
-        items = get_streamings(archivo)
-        self.__load_list(items, "load", titulo)
-
-    def __seleccionar_lista_de_archivos(self, directorio, titulo):
-        archivos = sorted(os.listdir(directorio))
-        lista = []
-        for path in archivos:
-            archivo = os.path.join(directorio, path)
-            if os.path.isfile(archivo):
-                lista.append(archivo)
-        self.__load_files(False, lista, titulo)
     */
+
+    private void __seleccionar_lista_de_stream(string archivo, string titulo){
+        //items = get_streamings(archivo)
+        //self.__load_list(items, "load", titulo)
+        }
+
+    private void __seleccionar_lista_de_archivos(string directorio, string titulo){
+        SList<string> items = null;
+        GLib.Dir dir = GLib.Dir.open (directorio, 0);
+        string name = null;
+		while ((name = dir.read_name ()) != null) {
+			string path = GLib.Path.build_filename (directorio, name);
+			bool isfile = GLib.FileUtils.test (path, GLib.FileTest.IS_REGULAR);
+			if (isfile == true){
+			    items.append(path);
+			    }
+			}
+        this.__load_files(items, titulo);
+        }
 
     private void __load_files(SList<string> archivos, string titulo){
         SList<Streaming> items = null;
         foreach (unowned string path in archivos) {
-            //FIXME: Agregar => if not os.path.isfile(path): continue
-            Streaming item = new Streaming(GLib.Path.get_basename(path), path);
-            items.append(item);
-            this.directorio = GLib.Path.get_dirname(path);
+            bool isfile = GLib.FileUtils.test(path, GLib.FileTest.IS_REGULAR);
+            if (isfile == true){
+                Streaming item = new Streaming(GLib.Path.get_basename(path), path);
+                items.append(item);
+                this.directorio = GLib.Path.get_dirname(path);
+                }
 			}
         this.__load_list(items, "load", titulo);
         // FIXME: Mostrar clear y add para agregar archivos a la lista
@@ -95,13 +103,13 @@ public class JAMediaPlayerList : Gtk.Frame{
     private void __load_list(SList<Streaming> items, string tipo, string titulo){
         if (tipo == "load"){
             this.lista.limpiar();
-            //self.emit("accion-list", False, "limpiar", False)
+            //FIXME: self.emit("accion-list", False, "limpiar", False)
             }
         if ((bool)items){
             this.lista.agregar_items(items);
             }
         else{
-            //self.emit('nueva-seleccion', False)
+            //FIXME: self.emit('nueva-seleccion', False)
             }
         if ((bool) titulo){
             this.toolbar.label.set_text(titulo);
@@ -184,58 +192,57 @@ public class JAMediaPlayerList : Gtk.Frame{
         }
 
     public void cargar_lista(int indice){
-        /*
-        _dict = {
-            0: os.path.join(get_data_directory(), 'JAMediaRadio.JAMedia'),
-            1: os.path.join(get_data_directory(), 'JAMediaTV.JAMedia'),
-            2: os.path.join(get_data_directory(), 'MisRadios.JAMedia'),
-            3: os.path.join(get_data_directory(), 'MisTvs.JAMedia'),
-            4: os.path.join(get_data_directory(), 'JAMediaWebCams.JAMedia'),
-            5: get_my_files_directory(),
-            6: get_tube_directory(),
-            7: get_audio_directory(),
-            8: get_video_directory(),
-            }
-        */
+        string data = get_data_directory();
+
+        string a = GLib.Path.build_filename(data, "JAMediaRadio.JAMedia");
+        string b = GLib.Path.build_filename(data, "JAMediaTV.JAMedia");
+        string c = GLib.Path.build_filename(data, "MisRadios.JAMedia");
+        string d = GLib.Path.build_filename(data, "MisTvs.JAMedia");
+        string e = GLib.Path.build_filename(data, "JAMediaWebCams.JAMedia");
+        string f = get_my_files_directory();
+        string g = get_tube_directory();
+        string h = get_audio_directory();
+        string i = get_video_directory();
+
         this.toolbar.boton_agregar.hide();
 
         switch (indice){
             case 0:{
-                //this.__seleccionar_lista_de_stream(_dict[0], "JAM-Radio")
+                this.__seleccionar_lista_de_stream(a, "JAM-Radio");
                 break;
             }
             case 1:{
-                //this.__seleccionar_lista_de_stream(_dict[1], "JAM-TV")
+                this.__seleccionar_lista_de_stream(b, "JAM-TV");
                 break;
             }
             case 2:{
-                //this.__seleccionar_lista_de_stream(_dict[2], "Radios")
-                //mostrar(self.toolbar.boton_agregar)
+                this.__seleccionar_lista_de_stream(c, "Radios");
+                this.toolbar.boton_agregar.show();
                 break;
             }
             case 3:{
-                //this.__seleccionar_lista_de_stream(_dict[3], "TVs")
-                //mostrar(self.toolbar.boton_agregar)
+                this.__seleccionar_lista_de_stream(d, "TVs");
+                this.toolbar.boton_agregar.show();
                 break;
             }
             case 4:{
-                //this.__seleccionar_lista_de_stream(_dict[4], "WebCams")
+                this.__seleccionar_lista_de_stream(e, "WebCams");
                 break;
             }
             case 5:{
-                //this.__seleccionar_lista_de_archivos(_dict[indice], "Archivos")
+                this.__seleccionar_lista_de_archivos(f, "Archivos");
                 break;
             }
             case 6:{
-                //this.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Tube")
+                this.__seleccionar_lista_de_archivos(g, "JAM-Tube");
                 break;
             }
             case 7:{
-                //this.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Audio")
+                this.__seleccionar_lista_de_archivos(h, "JAM-Audio");
                 break;
             }
             case 8:{
-                //this.__seleccionar_lista_de_archivos(_dict[indice], "JAM-Video")
+                this.__seleccionar_lista_de_archivos(i, "JAM-Video");
                 break;
             }
             case 9:{
@@ -348,55 +355,33 @@ public class Lista : Gtk.TreeView{
     */
 
     private bool __ejecutar_agregar_elemento(SList<Streaming> items){
+        //FIXME: Funcionalidad, no es igual a la versión python.
+        this.permitir_select = false;
+        this.set_sensitive(false);
+
+        string icono = "Iconos/sonido.svg";
+        Gdk.Pixbuf pixbuf = new Gdk.Pixbuf.from_file_at_size(icono, 24, -1);
+
         Gtk.TreeIter iter;
-        Gdk.Pixbuf pix = new Gdk.Pixbuf.from_file_at_size("Iconos/JAMedia.svg", 24, 24);
-
         foreach (Streaming stream in items){
-            //stdout.printf("%s * %s\n", stream.nombre, stream.path);
-            this.lista.append(out iter);
-            this.lista.set(iter, 0, pix, 1, stream.nombre, 2, stream.path);
+            bool isfile = GLib.FileUtils.test(stream.path, GLib.FileTest.IS_REGULAR);
+            if (isfile == true){
+                GLib.File file = GLib.File.parse_name(stream.path);
+                var file_info = file.query_info ("*", GLib.FileQueryInfoFlags.NONE);
+                string tipo = file_info.get_content_type();
+                if ("video" in tipo || "application/ogg" in tipo){
+                    icono = "Iconos/video.svg";
+                    pixbuf = new Gdk.Pixbuf.from_file_at_size(icono, 24, -1);
+                    }
+                }
+            if (! GLib.FileUtils.test(stream.path, GLib.FileTest.IS_DIR)){
+                this.lista.append(out iter);
+                this.lista.set(iter, 0, pixbuf, 1, stream.nombre, 2, stream.path);
+                }
 			}
-
-        /*
-        self.permitir_select = False
-        self.set_sensitive(False)
-        if not elementos:
-            self.permitir_select = True
-            self.seleccionar_primero()
-            self.set_sensitive(True)
-            return False
-
-        texto, path = elementos[0]
-        descripcion = describe_uri(path)
-        icono = os.path.join(BASE_PATH, "Iconos", "sonido.svg")
-        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 24, -1)
-
-        if descripcion:
-            if descripcion[2]:
-                # Es un Archivo
-                tipo = describe_archivo(path)
-                if 'video' in tipo or 'application/ogg' in tipo:
-                    icono = os.path.join(BASE_PATH, "Iconos", "video.svg")
-                    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                        icono, 24, -1)
-                elif 'audio' in tipo or 'application/octet-stream' in tipo:
-                    pass
-                else:
-                    if "image" in tipo:
-                        icono = path
-                        try:
-                            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                                icono, 50, -1)
-                        except:
-                            icono = os.path.join(BASE_PATH,
-                                "Iconos", "sonido.svg")
-                            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
-                                icono, 24, -1)
-
-        self.get_model().append([pixbuf, texto, path])
-        elementos.remove(elementos[0])
-        gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
-        */
+        this.permitir_select = true;
+        this.seleccionar_primero();
+        this.set_sensitive(true);
         return false;
         }
 
@@ -608,8 +593,7 @@ public class My_FileChooser : Gtk.FileChooserDialog{
         this.set_resizable(true);
         this.set_size_request(320, 240);
 
-        //FIXME: Verificar como hacer esto
-        //this.set_current_folder_uri("file://%s" % path);
+        this.set_current_folder(path);
         this.set_property("action", action);
         this.set_select_multiple(true);
 

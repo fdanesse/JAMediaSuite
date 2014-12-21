@@ -216,12 +216,13 @@ class PlayerList(gtk.Frame):
         ocultar(self.toolbar.boton_agregar)
 
     def cargar_lista(self, widget, indice):
+        data = get_data_directory()
         _dict = {
-            0: os.path.join(get_data_directory(), 'JAMediaRadio.JAMedia'),
-            1: os.path.join(get_data_directory(), 'JAMediaTV.JAMedia'),
-            2: os.path.join(get_data_directory(), 'MisRadios.JAMedia'),
-            3: os.path.join(get_data_directory(), 'MisTvs.JAMedia'),
-            4: os.path.join(get_data_directory(), 'JAMediaWebCams.JAMedia'),
+            0: os.path.join(data, 'JAMediaRadio.JAMedia'),
+            1: os.path.join(data, 'JAMediaTV.JAMedia'),
+            2: os.path.join(data, 'MisRadios.JAMedia'),
+            3: os.path.join(data, 'MisTvs.JAMedia'),
+            4: os.path.join(data, 'JAMediaWebCams.JAMedia'),
             5: get_my_files_directory(),
             6: get_tube_directory(),
             7: get_audio_directory(),
