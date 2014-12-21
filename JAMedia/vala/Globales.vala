@@ -505,21 +505,27 @@ def guarda_lista_de_streamings(path, items):
     for item in items:
         _dict[item[0].strip()] = item[1].strip()
     set_dict(path, _dict)
+*/
 
 
-def get_streamings(path):
-    """
-    Recibe el path a un archivo de streamings
-    y devuelve la lista de streamings que contiene.
-    """
-    items = []
-    _dict = get_dict(path)
-    keys = sorted(_dict.keys())
-    for key in keys:
-        items.append([key, _dict[key]])
-    return items
+public SList<Streaming> get_streamings(string path){
+    SList<Streaming> streaming_list = new SList<Streaming> ();
+
+    Json.Parser parser = new Json.Parser();
+    parser.load_from_file(path);
+    Json.Node node = parser.get_root();
+    unowned Json.Object obj = node.get_object();
+
+    foreach (unowned string name in obj.get_members()){
+        unowned Json.Node item = obj.get_member(name);
+        Streaming streaming = new Streaming(name, item.get_string());
+        streaming_list.append(streaming);
+    }
+    return streaming_list;
+}
 
 
+/*
 def stream_en_archivo(streaming, path):
     """
     Verifica si un streaming está en

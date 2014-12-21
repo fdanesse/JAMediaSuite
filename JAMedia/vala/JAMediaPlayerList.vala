@@ -68,8 +68,8 @@ public class JAMediaPlayerList : Gtk.Frame{
     */
 
     private void __seleccionar_lista_de_stream(string archivo, string titulo){
-        //items = get_streamings(archivo)
-        //self.__load_list(items, "load", titulo)
+        SList<Streaming> items = get_streamings(archivo);
+        this.__load_list(items, "load", titulo);
         }
 
     private void __seleccionar_lista_de_archivos(string directorio, string titulo){
@@ -210,41 +210,41 @@ public class JAMediaPlayerList : Gtk.Frame{
             case 0:{
                 this.__seleccionar_lista_de_stream(a, "JAM-Radio");
                 break;
-            }
+                }
             case 1:{
                 this.__seleccionar_lista_de_stream(b, "JAM-TV");
                 break;
-            }
+                }
             case 2:{
                 this.__seleccionar_lista_de_stream(c, "Radios");
                 this.toolbar.boton_agregar.show();
                 break;
-            }
+                }
             case 3:{
                 this.__seleccionar_lista_de_stream(d, "TVs");
                 this.toolbar.boton_agregar.show();
                 break;
-            }
+                }
             case 4:{
                 this.__seleccionar_lista_de_stream(e, "WebCams");
                 break;
-            }
+                }
             case 5:{
                 this.__seleccionar_lista_de_archivos(f, "Archivos");
                 break;
-            }
+                }
             case 6:{
                 this.__seleccionar_lista_de_archivos(g, "JAM-Tube");
                 break;
-            }
+                }
             case 7:{
                 this.__seleccionar_lista_de_archivos(h, "JAM-Audio");
                 break;
-            }
+                }
             case 8:{
                 this.__seleccionar_lista_de_archivos(i, "JAM-Video");
                 break;
-            }
+                }
             case 9:{
                 // FIXME: this.get_toplevel() no hace lo que debiera.
                 My_FileChooser selector = new My_FileChooser(
@@ -255,22 +255,22 @@ public class JAMediaPlayerList : Gtk.Frame{
                 selector.run();
                 selector.destroy();
                 break;
-            }
+                }
             default:{
                 stdout.printf("Indice de lista sin tratar: %i\n", indice);
 				stdout.flush();
                 break;
+                }
             }
-        }
         }
 
     public void set_ip(bool valor){
         this.toolbar.ip = valor;
-    }
+        }
 
     public void set_nueva_lista(SList<string> archivos){
         this.__load_files(archivos, "Archivos");
-    }
+        }
 }
 
 
