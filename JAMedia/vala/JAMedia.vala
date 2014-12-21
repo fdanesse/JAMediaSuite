@@ -38,8 +38,7 @@ public class JAMedia : Gtk.Window{
 		this.set_resizable(true);
         this.set("border_width", 2);
         try {
-            Gtk.Window.set_default_icon_from_file(
-                "Iconos/JAMedia.svg");
+            Gtk.Window.set_default_icon_from_file("Iconos/JAMedia.svg");
             }
         catch(Error e) {
             stderr.printf ("No se Encontró el Ícono: %s\n", e.message);

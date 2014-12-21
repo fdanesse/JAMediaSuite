@@ -2,8 +2,6 @@ public class Derecha : Gtk.EventBox{
 
     /*
     __gsignals__ = {
-    "cargar-reproducir": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
     "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
@@ -18,6 +16,7 @@ public class Derecha : Gtk.EventBox{
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
     */
 
+    public signal void cargar_reproducir(string pista);
     public signal void accion_controls(string accion);
     public signal void add_stream(string title);
     public signal void menu_activo();
@@ -48,14 +47,12 @@ public class Derecha : Gtk.EventBox{
         this.add(vbox);
         this.show_all();
 
-        /*
-        self.balance.connect("balance-valor", self.__emit_balance)
-        #self.efectos.connect("click_efecto", self.__emit_add_remove_efecto)
-        #self.efectos.connect("configurar_efecto", self.__emit_config_efecto)
+        //self.balance.connect("balance-valor", self.__emit_balance)
+        //#self.efectos.connect("click_efecto", self.__emit_add_remove_efecto)
+        //#self.efectos.connect("configurar_efecto", self.__emit_config_efecto)
 
-        self.lista.connect("nueva-seleccion", self.__emit_cargar_reproducir)
-        self.lista.connect("accion-list", self.__emit_accion_list)
-        */
+        this.lista.nueva_seleccion.connect(this.__emit_cargar_reproducir);
+        //self.lista.connect("accion-list", self.__emit_accion_list)
 
         this.lista.menu_activo.connect(this.__emit_menu_activo);
         this.lista.add_stream.connect(this.__emit_add_stream);
@@ -72,12 +69,10 @@ public class Derecha : Gtk.EventBox{
     */
 
     private void __emit_accion_controls(string accion){
-        // anterior, siguiente, pausa, play, stop
         this.accion_controls(accion);
         }
 
     private void __emit_add_stream(string title){
-        // El usuario agregará una dirección de streaming
         this.add_stream(title);
         }
 
@@ -90,14 +85,17 @@ public class Derecha : Gtk.EventBox{
     def __emit_accion_list(self, widget, lista, accion, _iter):
         # borrar, copiar, mover, grabar, etc . . .
         self.emit("accion-list", lista, accion, _iter)
-
-    def __emit_cargar_reproducir(self, widget, path):
-        if path:
-            self.player_controls.activar(True)
-        else:
-            self.player_controls.activar(False)
-        self.emit("cargar-reproducir", path)
     */
+
+    private void __emit_cargar_reproducir(string pista){
+        if (pista != null){
+            this.player_controls.activar(true);
+            }
+        else{
+            this.player_controls.activar(false);
+            }
+        this.cargar_reproducir(pista);
+        }
 
     public void show_config(){
         if (this.scroll.get_visible() == true){

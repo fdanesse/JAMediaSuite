@@ -31,10 +31,9 @@ public class BasePanel : Gtk.HPaned{
 
         this.show_all();
 
-        /*
-        self.derecha.connect("cargar-reproducir", self.__cargar_reproducir)
-        self.derecha.connect("accion-list", self.__emit_accion_list)
-        */
+        this.derecha.cargar_reproducir.connect(this.__cargar_reproducir);
+        //self.derecha.connect("accion-list", self.__emit_accion_list)
+
         this.derecha.menu_activo.connect(this.__emit_menu_activo);
         this.derecha.add_stream.connect(this.__emit_add_stream);
         this.derecha.accion_controls.connect(this.__accion_controls);
@@ -142,8 +141,10 @@ public class BasePanel : Gtk.HPaned{
         this.show_controls(zona, ocultar);
         }
 
+    private void __cargar_reproducir(string path){
+        stdout.printf("FIXME: Load: %s\n", path);
+        stdout.flush();
         /*
-    def __cargar_reproducir(self, widget, path):
         self.derecha.set_sensitive(False)
 
         # FIXME: Analizar mantener los siguientes valores:
@@ -184,7 +185,10 @@ public class BasePanel : Gtk.HPaned{
         self.player.set_volumen(volumen)
         self.izquierda.progress.volumen.set_value(volumen / 10)
         self.derecha.set_sensitive(True)
+        */
+        }
 
+    /*
     def __loading_buffer(self, player, buf):
         self.izquierda.buffer_info.set_progress(float(buf))
 

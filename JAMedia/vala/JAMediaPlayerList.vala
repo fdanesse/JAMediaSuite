@@ -2,13 +2,12 @@
 public class JAMediaPlayerList : Gtk.Frame{
     /*
     __gsignals__ = {
-    "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
     "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
     */
 
+    public signal void nueva_seleccion(string pista);
     public signal void add_stream(string title);
     public signal void menu_activo();
 
@@ -42,30 +41,27 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.toolbar.cargar_lista.connect(this.cargar_lista);
         this.toolbar.add_stream.connect(this.__emit_add_stream);
         this.toolbar.menu_activo.connect(this.__emit_menu_activo);
-        /*
-        self.lista.connect("nueva-seleccion", self.__emit_nueva_seleccion)
-        self.lista.connect("button-press-event", self.__click_derecho_en_lista)
-        */
+
+        this.lista.nueva_seleccion.connect(this.__emit_nueva_seleccion);
+        //FIXME:self.lista.connect("button-press-event", self.__click_derecho_en_lista)
     }
 
     private void __emit_add_stream(){
-        // El usuario agregará una dirección de streaming
         this.add_stream(this.toolbar.label.get_text());
         }
 
     private void __emit_menu_activo(){
-        // hay un menu contextual presente
         this.menu_activo();
         }
     /*
     def __emit_accion_list(self, widget, lista, accion, _iter):
         # borrar, copiar, mover, grabar, etc . . .
         self.emit("accion-list", lista, accion, _iter)
-
-    def __emit_nueva_seleccion(self, widget, pista):
-        # item seleccionado en la lista
-        self.emit('nueva-seleccion', pista)
     */
+
+    private void __emit_nueva_seleccion(string pista){
+        this.nueva_seleccion(pista);
+        }
 
     private void __seleccionar_lista_de_stream(string archivo, string titulo){
         SList<Streaming> items = get_streamings(archivo);
@@ -109,7 +105,7 @@ public class JAMediaPlayerList : Gtk.Frame{
             this.lista.agregar_items(items);
             }
         else{
-            //FIXME: self.emit('nueva-seleccion', False)
+            this.nueva_seleccion(null);
             }
         if ((bool) titulo){
             this.toolbar.label.set_text(titulo);
@@ -275,11 +271,8 @@ public class JAMediaPlayerList : Gtk.Frame{
 
 
 public class Lista : Gtk.TreeView{
-    /*
-    __gsignals__ = {
-    "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
-    */
+
+    public signal void nueva_seleccion(string pista);
 
     private Gtk.ListStore lista = new Gtk.ListStore(3, typeof (Gdk.Pixbuf), typeof (string), typeof (string));
     private bool permitir_select = true;
@@ -296,7 +289,9 @@ public class Lista : Gtk.TreeView{
 
         this.__setear_columnas();
 
-        //self.get_selection().set_select_function(self.__selecciones, self.get_model())
+        Gtk.TreeSelection select = this.get_selection();
+        select.set_mode(Gtk.SelectionMode.SINGLE);
+        select.set_select_function(this.__selecciones);
 
         this.show_all();
     }
@@ -334,25 +329,35 @@ public class Lista : Gtk.TreeView{
         col3.set_property("visible", false);
         this.append_column(col3);
         }
-    /*
-    def __selecciones(self, path, column):
-        if not self.permitir_select:
-            return True
-        _iter = self.get_model().get_iter(path)
-        valor = self.get_model().get_value(_iter, 2)
-        if self.valor_select != valor:
-            self.valor_select = valor
-            gobject.timeout_add(3, self.__select,
-                self.get_model().get_path(_iter))
-        return True
 
-    def __select(self, path):
-        if self.ultimo_select != self.valor_select:
-            self.emit('nueva-seleccion', self.valor_select)
-            self.ultimo_select = self.valor_select
-        self.scroll_to_cell(path)
-        return False
-    */
+    private bool __selecciones(Gtk.TreeSelection selection, Gtk.TreeModel filter,
+        Gtk.TreePath path, bool path_currently_selected){
+        if (! this.permitir_select || path_currently_selected){
+            return true;
+            }
+
+        Gtk.TreeIter _iter;
+        this.get_model().get_iter(out _iter, path);
+        GLib.Value val;
+        this.get_model().get_value(_iter, 2, out val);
+        string valor = val.dup_string();
+
+        if (this.valor_select != valor){
+            this.valor_select = valor;
+            //FIXME: gobject.timeout_add(3, self.__select, self.get_model().get_path(_iter))
+            this.__select(path);
+            }
+        return true;
+        }
+
+    private bool __select(Gtk.TreePath path){
+        if (this.ultimo_select != this.valor_select){
+            this.ultimo_select = this.valor_select;
+            this.nueva_seleccion(this.valor_select);
+            }
+        //FIXME: this.scroll_to_cell(path);
+        return false;
+        }
 
     private bool __ejecutar_agregar_elemento(SList<Streaming> items){
         //FIXME: Funcionalidad, no es igual a la versión python.
