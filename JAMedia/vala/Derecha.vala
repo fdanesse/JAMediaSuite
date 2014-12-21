@@ -77,7 +77,6 @@ public class Derecha : Gtk.EventBox{
         }
 
     private void __emit_menu_activo(){
-        // hay un menu contextual presente
         this.menu_activo();
         }
 

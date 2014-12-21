@@ -3,9 +3,8 @@ public class Izquierda : Gtk.EventBox{
     //__gsignals__ = {
     //"seek": (gobject.SIGNAL_RUN_LAST,
     //    gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
-    //"volumen": (gobject.SIGNAL_RUN_LAST,
-    //    gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
 
+    public signal void volumen(double valor);
     public signal void stop_record();
     public signal void rotar(string rotacion);
     public signal void actualizar_streamings();
@@ -48,11 +47,11 @@ public class Izquierda : Gtk.EventBox{
         this.toolbar_info.actualizar_streamings.connect(this.__emit_actualizar_streamings);
 
         //self.progress.connect("seek", self.__emit_seek)
-        //self.progress.connect("volumen", self.__emit_volumen)
+        this.progress.volumen.connect(this.__emit_volumen);
     }
 
     private void __emit_volumen(double valor){
-        //self.emit('volumen', valor)
+        this.volumen(valor);
         }
 
     //def __emit_seek(self, widget, valor):

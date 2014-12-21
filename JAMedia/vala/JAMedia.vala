@@ -12,6 +12,7 @@ por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
 //using GLib;   Se importa siempre por default
 using Gtk;
 using Gdk;
+using Posix;
 
 
 public class JAMedia : Gtk.Window{
@@ -41,7 +42,8 @@ public class JAMedia : Gtk.Window{
             Gtk.Window.set_default_icon_from_file("Iconos/JAMedia.svg");
             }
         catch(Error e) {
-            stderr.printf ("No se Encontró el Ícono: %s\n", e.message);
+            GLib.stderr.printf ("No se Encontró el Ícono: %s\n", e.message);
+            GLib.stderr.flush();
             }
 
         this.base_panel = new BasePanel(this);
@@ -89,7 +91,8 @@ public class JAMedia : Gtk.Window{
         this.resize(640, 480);
 
         GLib.Idle.add(this.__setup_init);
-        //print "JAMedia process:", os.getpid()
+        GLib.stdout.printf("JAMedia process: %i", Posix.getpid());
+        GLib.stdout.flush();
         this.base_panel.checkear_listas();
         }
 
@@ -99,7 +102,8 @@ public class JAMedia : Gtk.Window{
         }
 
     private void __add_stream(string tipo, string nombre, string url){
-        stdout.printf("__add_stream %s %s %s\n", tipo, nombre, url);
+        GLib.stdout.printf("__add_stream %s %s %s\n", tipo, nombre, url);
+        GLib.stdout.flush();
         //add_stream(tipo, [nombre, url])
         //if "Tv" in tipo or "TV" in tipo:
         //    indice = 3
@@ -115,7 +119,8 @@ public class JAMedia : Gtk.Window{
         }
 
     private void __grabar(string stream){
-        stdout.printf("__grabar %s\n", stream);
+        GLib.stdout.printf("__grabar %s\n", stream);
+        GLib.stdout.flush();
         /*
         self.set_sensitive(False)
         self.__detener_grabacion()
@@ -159,7 +164,8 @@ public class JAMedia : Gtk.Window{
     */
 
     private void __accion_stream(string accion, string url){
-        stdout.printf("__accion_stream %s\n", accion);
+        GLib.stdout.printf("__accion_stream %s\n", accion);
+        GLib.stdout.flush();
         /*
         def __accion_stream(self, widget, accion, url):
         lista = self.base_panel.derecha.lista.toolbar.label.get_text()
@@ -207,7 +213,8 @@ public class JAMedia : Gtk.Window{
             this.toolbarsalir.run("JAMedia");
             }
         else{
-            stdout.printf("__accion_toolbar %s\n", accion);
+            GLib.stdout.printf("__accion_toolbar %s\n", accion);
+            GLib.stdout.flush();
             }
         }
 

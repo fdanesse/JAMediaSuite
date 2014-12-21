@@ -4,41 +4,36 @@ public class ProgressPlayer : Gtk.EventBox{
     __gsignals__ = {
     "seek": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
-    "volumen": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
     */
+    public signal void volumen(double valor);
 
     private BarraProgreso barraprogreso = new BarraProgreso();
-    private ControlVolumen volumen = new ControlVolumen();
+    private ControlVolumen _volumen = new ControlVolumen();
 
     public ProgressPlayer(){
 
-        /*
-        self.volumen = ControlVolumen()
-        */
         Gtk.Box hbox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
         hbox.pack_start(this.barraprogreso, true, true, 0);
-        hbox.pack_start(this.volumen, false, false, 0);
+        hbox.pack_start(this._volumen, false, false, 0);
 
         this.add(hbox);
-        /*
-        self.barraprogreso.connect("user-set-value", self.__user_set_value)
-        self.volumen.connect("volumen", self.__set_volumen)
-        */
+
+        //self.barraprogreso.connect("user-set-value", self.__user_set_value)
+        this._volumen.volumen.connect(this.__set_volumen);
+
         this.show_all();
     }
 
-    /*
-    def __user_set_value(self, widget=None, valor=None):
-        self.emit("seek", valor)
+    //def __user_set_value(self, widget=None, valor=None):
+    //    self.emit("seek", valor)
 
-    def __set_volumen(self, widget, valor):
-        self.emit('volumen', valor)
-    */
+    private void __set_volumen(double valor){
+        this.volumen(valor);
+        }
 
     public void set_progress(double valor){
         this.barraprogreso.set_progress(valor);
-    }
+        }
 }
 
 
@@ -182,11 +177,10 @@ public class ProgressBar2 : Gtk.EventBox{
 
 
 public class ControlVolumen : Gtk.VolumeButton{
-    /*
-    __gsignals__ = {
-    "volumen": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
-    */
+
+    public signal void volumen(double valor);
+
+    private double valor = 0.1;
 
     public ControlVolumen(){
 
@@ -195,13 +189,13 @@ public class ControlVolumen : Gtk.VolumeButton{
 		});
 
         this.show_all();
-
         this.set_value(0.1);
     }
 
     private void __value_changed(double valor){
-        stdout.printf ("%f\n", valor);
-        //valor = int(valor * 10)
-        //self.emit('volumen', valor)
+        GLib.stdout.printf("%f\n", valor);
+        GLib.stdout.flush();
+        this.valor = valor; // FIXME: int(valor * 10)
+        this.volumen(valor);
         }
 }

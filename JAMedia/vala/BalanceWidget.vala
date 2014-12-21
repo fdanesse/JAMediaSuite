@@ -124,7 +124,8 @@ public class SlicerBalance : Gtk.EventBox{
 
         //self.escala.connect('user-set-value', self.__emit_valor)
         this.escala.value_changed.connect (() => {
-			stdout.printf ("%f\n", this.escala.get_value ());
+			GLib.stdout.printf ("%f\n", this.escala.get_value ());
+			GLib.stdout.flush();
 			//self.emit("user-set-value", valor)
 		});
     }

@@ -39,6 +39,7 @@ public class ToolbarGrabar : Gtk.EventBox{
     }
 
     private void __update(){
+        //FIXME: Implementar
         //if this.color == this.colors[0]:
         //    this.color = this.colors[1]
         //elif this.color == this.colors[1]:
@@ -271,7 +272,8 @@ public class ProgressBar : Gtk.EventBox{
     /*
     private bool __expose(Cairo.Context gc){
         //https://wiki.gnome.org/Projects/Vala/CairoSample
-        stdout.printf ("%f\n", this.escala.get_value());
+        GLib.stdout.printf ("%f\n", this.escala.get_value());
+        GLib.stdout.flush();
         return true;
         }
     */

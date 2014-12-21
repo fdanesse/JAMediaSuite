@@ -53,11 +53,11 @@ public class JAMediaPlayerList : Gtk.Frame{
     private void __emit_menu_activo(){
         this.menu_activo();
         }
-    /*
-    def __emit_accion_list(self, widget, lista, accion, _iter):
-        # borrar, copiar, mover, grabar, etc . . .
-        self.emit("accion-list", lista, accion, _iter)
-    */
+
+    //def __emit_accion_list(self, widget, lista, accion, _iter):
+    // FIXME: Implementar
+    //    # borrar, copiar, mover, grabar, etc . . .
+    //    self.emit("accion-list", lista, accion, _iter)
 
     private void __emit_nueva_seleccion(string pista){
         this.nueva_seleccion(pista);
@@ -105,7 +105,7 @@ public class JAMediaPlayerList : Gtk.Frame{
             this.lista.agregar_items(items);
             }
         else{
-            this.nueva_seleccion(null);
+            this.nueva_seleccion("");
             }
         if ((bool) titulo){
             this.toolbar.label.set_text(titulo);
@@ -155,6 +155,7 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.lista.seleccionar_siguiente();
         }
 
+    //FIXME: JAMedia no utiliza esta función.
     //def select_valor(self, path_origen):
     //    self.lista.select_valor(path_origen)
 
@@ -166,22 +167,22 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.mime = mimelist.copy();
         }
 
-    /*
-    def get_selected_path(self):
-        modelo, _iter = self.lista.get_selection().get_selected()
-        valor = self.lista.get_model().get_value(_iter, 2)
-        return valor
+    //FIXME: JAMedia no utiliza esta función.
+    //def get_selected_path(self):
+    //    modelo, _iter = self.lista.get_selection().get_selected()
+    //    valor = self.lista.get_model().get_value(_iter, 2)
+    //    return valor
 
-    def get_items_paths(self):
-        filepaths = []
-        model = self.lista.get_model()
-        item = model.get_iter_first()
-        self.lista.get_selection().select_iter(item)
-        while item:
-            filepaths.append(model.get_value(item, 2))
-            item = model.iter_next(item)
-        return filepaths
-    */
+    //FIXME: JAMedia no utiliza esta función.
+    //def get_items_paths(self):
+    //    filepaths = []
+    //    model = self.lista.get_model()
+    //    item = model.get_iter_first()
+    //    self.lista.get_selection().select_iter(item)
+    //    while item:
+    //        filepaths.append(model.get_value(item, 2))
+    //        item = model.iter_next(item)
+    //    return filepaths
 
     public void setup_init(){
         this.toolbar.boton_agregar.hide();
@@ -242,7 +243,7 @@ public class JAMediaPlayerList : Gtk.Frame{
                 break;
                 }
             case 9:{
-                // FIXME: this.get_toplevel() no hace lo que debiera.
+                // FIXME: Corregir esto. this.get_toplevel() no hace lo que debiera.
                 My_FileChooser selector = new My_FileChooser(
                     "Abrir Archivos", this.get_toplevel() as Gtk.Window,
                     Gtk.FileChooserAction.OPEN, new SList<string> (), this.mime,
@@ -253,8 +254,8 @@ public class JAMediaPlayerList : Gtk.Frame{
                 break;
                 }
             default:{
-                stdout.printf("Indice de lista sin tratar: %i\n", indice);
-				stdout.flush();
+                GLib.stdout.printf("Indice de lista sin tratar: %i\n", indice);
+				GLib.stdout.flush();
                 break;
                 }
             }
@@ -355,7 +356,8 @@ public class Lista : Gtk.TreeView{
             this.ultimo_select = this.valor_select;
             this.nueva_seleccion(this.valor_select);
             }
-        //FIXME: this.scroll_to_cell(path);
+        //FIXME: Verificar:
+        //this.scroll_to_cell (TreePath? path, TreeViewColumn? column, bool use_align, float row_align, float col_align)
         return false;
         }
 
@@ -405,61 +407,60 @@ public class Lista : Gtk.TreeView{
         }
 
     public void seleccionar_siguiente(){
-        //modelo, _iter = self.get_selection().get_selected()
-        //try:
-        //    self.get_selection().select_iter(
-        //        self.get_model().iter_next(_iter))
-        //except:
-        //    self.seleccionar_primero()
-        //return False
+        Gtk.TreeModel modelo;
+        Gtk.TreeIter _iter;
+        this.get_selection().get_selected(out modelo, out _iter);
+        bool val = modelo.iter_next(ref _iter);
+        if (val){
+            this.get_selection().select_iter(_iter);
+            }
+        else{
+            this.seleccionar_primero();
+            }
         }
 
     public void seleccionar_anterior(){
-        //modelo, _iter = self.get_selection().get_selected()
-        //try:
-        //    # HACK porque: model no tiene iter_previous
-        //    #self.get_selection().select_iter(
-        //    #    self.get_model().iter_previous(_iter))
-        //    path = self.get_model().get_path(_iter)
-        //    path = (path[0] - 1, )
-        //    if path > -1:
-        //        self.get_selection().select_iter(
-        //            self.get_model().get_iter(path))
-        //except:
-        //    self.seleccionar_ultimo()
-        //return False
+        Gtk.TreeModel modelo;
+        Gtk.TreeIter _iter;
+        this.get_selection().get_selected(out modelo, out _iter);
+        if (modelo.iter_previous(ref _iter)){
+            this.get_selection().select_iter(_iter);
+            }
+        else{
+            this.seleccionar_ultimo();
+            }
         }
 
     public void seleccionar_primero(){
         //this.get_selection().select_path(new Gtk.TreePath.first());
         Gtk.TreeIter _iter;
         this.get_model().get_iter_first(out _iter);
-        this.get_selection().select_path(this.get_model().get_path(_iter));
+        //this.get_selection().select_path(this.get_model().get_path(_iter));
+        this.get_selection().select_iter(_iter);
         }
 
     public void seleccionar_ultimo(){
-        //model = self.get_model()
-        //item = model.get_iter_first()
-        //_iter = None
-        //while item:
-        //    _iter = item
-        //    item = model.iter_next(item)
-        //if _iter:
-        //    self.get_selection().select_iter(_iter)
-        //    #path = model.get_path(iter)
+        Gtk.TreeModel modelo;
+        Gtk.TreeIter _iter;
+        this.get_selection().get_selected(out modelo, out _iter);
+        Gtk.TreeIter _iter2;
+        this.get_model().get_iter_first(out _iter2);
+        while (modelo.iter_next(ref _iter)){
+            _iter2 = _iter;
+            }
+        this.get_selection().select_iter(_iter2);
         }
 
-    /*
-    def select_valor(self, path_origen):
-        model = self.get_model()
-        _iter = model.get_iter_first()
-        valor = model.get_value(_iter, 2)
-        while valor != path_origen:
-            _iter = model.iter_next(_iter)
-            valor = model.get_value(_iter, 2)
-        if _iter:
-            self.get_selection().select_iter(_iter)
-    */
+    //FIXME: JAMedia no utiliza esta función.
+    //def select_valor(self, path_origen):
+    //    model = self.get_model()
+    //    _iter = model.get_iter_first()
+    //    valor = model.get_value(_iter, 2)
+    //    while valor != path_origen:
+    //        _iter = model.iter_next(_iter)
+    //        valor = model.get_value(_iter, 2)
+    //    if _iter:
+    //        self.get_selection().select_iter(_iter)
 }
 
 

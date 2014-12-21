@@ -3,11 +3,10 @@ public class BasePanel : Gtk.HPaned{
     //__gsignals__ = {
     //"accion-list": (gobject.SIGNAL_RUN_LAST,
     //    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-    //    gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    //'stop-record': (gobject.SIGNAL_RUN_LAST,
-    //    gobject.TYPE_NONE, [])}
+    //    gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
 
     public signal void menu_activo();
+    public signal void stop_record();
     public signal void add_stream(string title);
     public signal void show_controls(bool zona, bool ocultar);
     public Izquierda izquierda = null;
@@ -43,27 +42,31 @@ public class BasePanel : Gtk.HPaned{
         //#self.derecha.connect("configurar_efecto", self.__config_efecto)
 
         this.izquierda.show_controls.connect(this.__emit_show_controls);
-        //self.izquierda.connect("rotar", self.__rotar)
-        //self.izquierda.connect("stop-record", self.__stop_record)
+        this.izquierda.rotar.connect(this.__rotar);
+        this.izquierda.stop_record.connect(this.__stop_record);
         //self.izquierda.connect("seek", self.__user_set_progress)
-        //self.izquierda.connect("volumen", self.__set_volumen)
-        //self.izquierda.connect("actualizar_streamings", self.__actualizar_streamings)
+        this.izquierda.volumen.connect(this.__set_volumen);
+        this.izquierda.actualizar_streamings.connect(this.__actualizar_streamings);
 
         GLib.Timeout.add(5000, this.__check_ip);
     }
 
+    private void __stop_record(){
+        this.menu_activo();
+        this.stop_record();
+        }
+
+    private void __actualizar_streamings(){
+        GLib.stdout.printf("FIXME: __actualizar_streamings");
+        GLib.stdout.flush();
+        this.menu_activo();
+        //dialog = DialogoDescarga(parent=self.get_toplevel(), force=True)
+        //dialog.run()
+        //dialog.destroy()
+        //# FIXME: Recargar Lista actual
+        }
+
     /*
-    def __stop_record(self, widget):
-        self.__emit_menu_activo()
-        self.emit("stop-record")
-
-    def __actualizar_streamings(self, widget):
-        self.__emit_menu_activo()
-        dialog = DialogoDescarga(parent=self.get_toplevel(), force=True)
-        dialog.run()
-        dialog.destroy()
-        # FIXME: Recargar Lista actual
-
     #def __add_remove_efecto(self, widget, efecto, valor):
     #    # Agrega o quita efecto de video.
     #    self.__emit_menu_activo()
@@ -91,12 +94,10 @@ public class BasePanel : Gtk.HPaned{
     */
 
     private void __emit_add_stream(string title){
-        // El usuario agregará una dirección de streaming
         this.add_stream(title);
         }
 
     private void __emit_menu_activo(){
-        // hay un menu contextual presente
         this.menu_activo();
         this.izquierda.buffer_info.hide();
         }
@@ -108,7 +109,6 @@ public class BasePanel : Gtk.HPaned{
     */
 
     private void __accion_controls(string accion){
-        // anterior, siguiente, pausa, play, stop
         this.__emit_menu_activo();
         if (accion == "atras"){
             this.derecha.lista.seleccionar_anterior();
@@ -117,6 +117,7 @@ public class BasePanel : Gtk.HPaned{
             this.derecha.lista.seleccionar_siguiente();
             }
         else if (accion == "stop"){
+            //FIXME: Implementar
             //if self.player:
             //    self.player.stop()
             }
@@ -125,25 +126,25 @@ public class BasePanel : Gtk.HPaned{
             //    self.player.pause_play()
             }
         }
-    /*
-    def __set_volumen(self, widget, valor):
-        self.__emit_menu_activo()
-        if self.player:
-            self.player.set_volumen(valor)
 
-    def __user_set_progress(self, widget, valor):
-        self.__emit_menu_activo()
-        if self.player:
-            self.player.set_position(valor)
-        */
+    private void __set_volumen(double valor){
+        this.menu_activo();
+        //if self.player:
+        //    self.player.set_volumen(valor)
+        }
+
+    //def __user_set_progress(self, widget, valor):
+    //    this.menu_activo();
+    //    if self.player:
+    //        self.player.set_position(valor)
 
     private void __emit_show_controls(bool zona, bool ocultar){
         this.show_controls(zona, ocultar);
         }
 
     private void __cargar_reproducir(string path){
-        stdout.printf("FIXME: Load: %s\n", path);
-        stdout.flush();
+        GLib.stdout.printf("FIXME: Load: %s\n", path);
+        GLib.stdout.flush();
         /*
         self.derecha.set_sensitive(False)
 
@@ -188,44 +189,50 @@ public class BasePanel : Gtk.HPaned{
         */
         }
 
-    /*
-    def __loading_buffer(self, player, buf):
-        self.izquierda.buffer_info.set_progress(float(buf))
+    private void __loading_buffer(double buf){
+        this.izquierda.buffer_info.set_progress(buf);
+        }
 
-    def __rotar(self, widget, valor):
-        if self.player:
-            self.__emit_menu_activo()
-            self.player.rotar(valor)
+    private void __rotar(string rotacion){
+        //if self.player:
+        //    this.menu_activo();
+        //    self.player.rotar(rotacion)
+        }
 
-    def __set_video(self, widget, valor):
-        self.izquierda.toolbar_info.set_video(valor)
-        self.get_parent().get_parent().toolbar.configurar.set_sensitive(valor)
+    private void __set_video(bool valor){
+        this.izquierda.toolbar_info.set_video(valor);
+        //FIXME: this.get_parent().get_parent().toolbar.configurar.set_sensitive(valor);
+        }
 
-    def __update_progress(self, objetoemisor, valor):
-        self.izquierda.progress.set_progress(float(valor))
+    private void __update_progress(double valor){
+        this.izquierda.progress.set_progress(valor);
+        }
 
-    def __state_changed(self, widget=None, valor=None):
-        if "playing" in valor:
-            self.derecha.player_controls.set_playing()
-            self.izquierda.progress.set_sensitive(True)
-        elif "paused" in valor or "None" in valor:
-            self.derecha.player_controls.set_paused()
-        else:
-            print "Estado del Reproductor desconocido:", valor
-        gobject.idle_add(self.__update_balance)
+    private void __state_changed(string valor){
+        // FIXME: Implementar
+        //if "playing" in valor:
+        //    self.derecha.player_controls.set_playing()
+        //    self.izquierda.progress.set_sensitive(True)
+        //elif "paused" in valor or "None" in valor:
+        //    self.derecha.player_controls.set_paused()
+        //else:
+        //    print "Estado del Reproductor desconocido:", valor
+        //gobject.idle_add(self.__update_balance)
+        }
 
-    def __update_balance(self):
-        config = {}
-        if self.player:
-            config = self.player.get_balance()
-        self.derecha.balance.set_balance(
-            brillo=config.get('brillo', 50.0),
-            contraste=config.get('contraste', 50.0),
-            saturacion=config.get('saturacion', 50.0),
-            hue=config.get('hue', 50.0),
-            gamma=config.get('gamma', 10.0))
-        return False
-    */
+    private bool __update_balance(){
+        //FIXME: Implementar
+        //config = {}
+        //if self.player:
+        //    config = self.player.get_balance()
+        //self.derecha.balance.set_balance(
+        //    brillo=config.get('brillo', 50.0),
+        //    contraste=config.get('contraste', 50.0),
+        //    saturacion=config.get('saturacion', 50.0),
+        //    hue=config.get('hue', 50.0),
+        //    gamma=config.get('gamma', 10.0))
+        return false;
+        }
 
     private bool __check_ip(){
         bool valor = get_ip();
