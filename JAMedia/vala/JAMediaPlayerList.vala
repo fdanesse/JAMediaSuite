@@ -431,7 +431,10 @@ public class Lista : Gtk.TreeView{
         }
 
     public void seleccionar_primero(){
-        //self.get_selection().select_path(0)
+        //this.get_selection().select_path(new Gtk.TreePath.first());
+        Gtk.TreeIter _iter;
+        this.get_model().get_iter_first(out _iter);
+        this.get_selection().select_path(this.get_model().get_path(_iter));
         }
 
     public void seleccionar_ultimo(){
