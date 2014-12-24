@@ -26,11 +26,9 @@ public class UbuntuRadioRecord : GLib.Object{
     */
 
     private Gst.Pipeline pipeline = new Gst.Pipeline("Record");
-    private dynamic Gst.Element player = Gst.ElementFactory.make(
-        "uridecodebin", "uridecodebin");
+    private dynamic Gst.Element player = Gst.ElementFactory.make("uridecodebin", "uridecodebin");
     private Gst.Pad audio_sink;
-    private Gst.Element archivo = Gst.ElementFactory.make(
-        "filesink", "filesink");
+    private Gst.Element archivo = Gst.ElementFactory.make("filesink", "filesink");
 
     public string _name = "";
     public string patharchivo = "";
@@ -51,10 +49,8 @@ public class UbuntuRadioRecord : GLib.Object{
 
         this.pipeline.add(this.player);
 
-        Gst.Element audioconvert = Gst.ElementFactory.make(
-            "audioconvert", "audioconvert");
-        Gst.Element audioresample = Gst.ElementFactory.make(
-            "audioresample", "audioresample");
+        Gst.Element audioconvert = Gst.ElementFactory.make("audioconvert", "audioconvert");
+        Gst.Element audioresample = Gst.ElementFactory.make("audioresample", "audioresample");
         audioresample.set_property("quality", 10);
 
         this.pipeline.add(audioconvert);
@@ -67,10 +63,8 @@ public class UbuntuRadioRecord : GLib.Object{
         this.pipeline.add(this.archivo);
 
         if (this._formato == "ogg"){
-            Gst.Element vorbisenc = Gst.ElementFactory.make(
-                "vorbisenc", "vorbisenc");
-            Gst.Element oggmux = Gst.ElementFactory.make(
-                "oggmux", "oggmux");
+            Gst.Element vorbisenc = Gst.ElementFactory.make("vorbisenc", "vorbisenc");
+            Gst.Element oggmux = Gst.ElementFactory.make("oggmux", "oggmux");
 
             this.pipeline.add(vorbisenc);
             this.pipeline.add(oggmux);
@@ -172,9 +166,7 @@ public class UbuntuRadioRecord : GLib.Object{
              + "_" + this._name.replace(" ", "_")
              + "." + this._formato;
 
-        this.patharchivo = GLib.Path.build_filename(
-            get_my_files_directory(), _path);
-
+        this.patharchivo = GLib.Path.build_filename(get_my_files_directory(), _path);
         this.archivo.set("location", this.patharchivo);
 
         if (this._uri != ""){
@@ -183,15 +175,13 @@ public class UbuntuRadioRecord : GLib.Object{
     }
 
     public void stop(){
-
         this._estado = "None";
         this.estado(this._estado);
         this.new_handle(false);
         this.pipeline.set_state(Gst.State.NULL);
-    }
+        }
 
     private void new_handle(bool reset){
-
         if (this.actualizador > 0){
             GLib.Source.remove(this.actualizador);
             this.actualizador = 0;

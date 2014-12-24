@@ -31,7 +31,7 @@ public class ProgressPlayer : Gtk.EventBox{
         this.volumen(valor);
         }
 
-    public void set_progress(double valor){
+    public void set_progress(int64 valor){
         this.barraprogreso.set_progress(valor);
         }
 }
@@ -63,7 +63,9 @@ public class BarraProgreso : Gtk.EventBox{
             self.emit("user-set-value", self.valor)
     */
 
-    public void set_progress(double valor){
+    public void set_progress(int64 valor){
+        //GLib.stdout.printf("%i", (int) valor);
+        //GLib.stdout.flush();
         if (this.escala.presed){
             }
         else{

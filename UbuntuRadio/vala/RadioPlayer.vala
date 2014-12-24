@@ -56,7 +56,6 @@ public class UbuntuRadioPlayer : GLib.Object{
         if os.path.exists(uri):
             direccion = Gst.filename_to_uri(uri)
             self.player.set_property("uri", direccion)
-
         else:
             if Gst.uri_is_valid(uri):
                 self.player.set_property("uri", uri)
@@ -65,19 +64,17 @@ public class UbuntuRadioPlayer : GLib.Object{
         this._uri = uri;
         this.player.set("uri", this._uri);
         this.play();
-    }
+        }
 
     public void play(){
-
         if (this._uri != ""){
             this.player.set_state(Gst.State.PLAYING);
+            }
         }
-    }
 
     public void stop(){
-
         this.player.set_state(Gst.State.NULL);
-    }
+        }
 
     private void sync_message(Gst.Message message){
 

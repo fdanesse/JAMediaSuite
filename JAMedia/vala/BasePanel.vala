@@ -9,18 +9,18 @@ public class BasePanel : Gtk.HPaned{
     public signal void stop_record();
     public signal void add_stream(string title);
     public signal void show_controls(bool zona, bool ocultar);
+    public signal void configurar(bool valor);
+
     public Izquierda izquierda = null;
     public Derecha derecha = new Derecha();
-
     private Gtk.Window root = null;
+    private JAMediaReproductor player = null;
 
     public BasePanel(Gtk.Window window){
 
         this.set_border_width(2);
-        /*
-        self._thread = False
-        self.player = False
-        */
+
+        //self._thread = False
 
         this.root = window;
         this.izquierda = new Izquierda(this.root);
@@ -48,7 +48,7 @@ public class BasePanel : Gtk.HPaned{
         this.izquierda.volumen.connect(this.__set_volumen);
         this.izquierda.actualizar_streamings.connect(this.__actualizar_streamings);
 
-        GLib.Timeout.add(5000, this.__check_ip);
+        // FIXME: Activar GLib.Timeout.add(5000, this.__check_ip);
     }
 
     private void __stop_record(){
@@ -117,13 +117,14 @@ public class BasePanel : Gtk.HPaned{
             this.derecha.lista.seleccionar_siguiente();
             }
         else if (accion == "stop"){
-            //FIXME: Implementar
-            //if self.player:
-            //    self.player.stop()
+            if (this.player != null){
+                this.player.stop();
+                }
             }
         else if (accion == "pausa-play"){
-            //if self.player:
-            //    self.player.pause_play()
+            if (this.player != null){
+                this.player.pause_play();
+                }
             }
         }
 
@@ -143,50 +144,48 @@ public class BasePanel : Gtk.HPaned{
         }
 
     private void __cargar_reproducir(string path){
-        GLib.stdout.printf("FIXME: Load: %s\n", path);
-        GLib.stdout.flush();
+        this.derecha.set_sensitive(false);
+
+        double volumen = 1.0;
+        if (this.player != null){
+            //volumen = float("{:.1f}".format(self.izquierda.progress.volumen.get_value() * 10))
+            //self.player.disconnect_by_func(self.__endfile)
+            //self.player.disconnect_by_func(self.__state_changed)
+            //self.player.disconnect_by_func(self.__update_progress)
+            //self.player.disconnect_by_func(self.__set_video)
+            //self.player.disconnect_by_func(self.__loading_buffer)
+            this.player.stop();
+            // FIXME: GLib-GObject-CRITICAL **: g_object_unref: assertion 'G_IS_OBJECT (object)' failed
+            this.player.unref();
+            this.player = null;
+        }
         /*
-        self.derecha.set_sensitive(False)
-
-        # FIXME: Analizar mantener los siguientes valores:
-        # Efectos
-        # balanace
-        # Gamma
-        # Rotacion
-        # Volumen
-
-        volumen = 1.0
-        if self.player:
-            volumen = float("{:.1f}".format(
-                self.izquierda.progress.volumen.get_value() * 10))
-            self.player.disconnect_by_func(self.__endfile)
-            self.player.disconnect_by_func(self.__state_changed)
-            self.player.disconnect_by_func(self.__update_progress)
-            self.player.disconnect_by_func(self.__set_video)
-            self.player.disconnect_by_func(self.__loading_buffer)
-            self.player.stop()
-            del(self.player)
-            self.player = False
-
-        self.izquierda.progress.set_sensitive(False)
-        self.__set_video(False, False)
-
-        xid = self.izquierda.video_visor.get_property('window').xid
-        self.player = JAMediaReproductor(xid)
-
-        self.player.connect("endfile", self.__endfile)
-        self.player.connect("estado", self.__state_changed)
         self.player.connect("newposicion", self.__update_progress)
-        self.player.connect("video", self.__set_video)
         self.player.connect("loading-buffer", self.__loading_buffer)
 
-        self.player.load(path)
         self._thread = threading.Thread(target=self.player.play)
         self._thread.start()
-        self.player.set_volumen(volumen)
-        self.izquierda.progress.volumen.set_value(volumen / 10)
-        self.derecha.set_sensitive(True)
         */
+
+        this.izquierda.progress.set_sensitive(false);
+        this.__set_video(false);
+
+        uint* xid = this.izquierda.video_visor.xid;
+        this.player = new JAMediaReproductor(xid);
+
+        this.player.endfile.connect(this.__endfile);
+        this.player.estado.connect(this.__state_changed);
+        this.player.video.connect(this.__set_video);
+
+        this.player.load(path);
+        this.player.play();
+        // FIXME: No funciona
+        //GLib.Thread thread = new GLib.Thread("JAMediaPlayer", this.player.play);
+        this.player.set_volumen(volumen);
+        //FIXME: The name `set_value' does not exist in the context of `ProgressPlayer.volumen'
+        //this.izquierda.progress.volumen.set_value(volumen / 10);
+
+        this.derecha.set_sensitive(true);
         }
 
     private void __loading_buffer(double buf){
@@ -194,30 +193,34 @@ public class BasePanel : Gtk.HPaned{
         }
 
     private void __rotar(string rotacion){
-        //if self.player:
-        //    this.menu_activo();
-        //    self.player.rotar(rotacion)
+        if (this.player != null){
+            this.menu_activo();
+            this.player.rotar(rotacion);
+            }
         }
 
     private void __set_video(bool valor){
         this.izquierda.toolbar_info.set_video(valor);
-        //FIXME: this.get_parent().get_parent().toolbar.configurar.set_sensitive(valor);
+        this.configurar(valor);
         }
 
-    private void __update_progress(double valor){
+    private void __update_progress(int64 valor){
         this.izquierda.progress.set_progress(valor);
         }
 
     private void __state_changed(string valor){
-        // FIXME: Implementar
-        //if "playing" in valor:
-        //    self.derecha.player_controls.set_playing()
-        //    self.izquierda.progress.set_sensitive(True)
-        //elif "paused" in valor or "None" in valor:
-        //    self.derecha.player_controls.set_paused()
-        //else:
-        //    print "Estado del Reproductor desconocido:", valor
-        //gobject.idle_add(self.__update_balance)
+        if (valor == "playing"){
+            this.derecha.player_controls.set_playing();
+            this.izquierda.progress.set_sensitive(true);
+            }
+        else if (valor == "paused" || valor == "None"){
+            this.derecha.player_controls.set_paused();
+            }
+        else{
+            GLib.stdout.printf("Estado del Reproductor desconocido: %s", valor);
+            GLib.stdout.flush();
+            }
+        //FIXME: gobject.idle_add(self.__update_balance)
         }
 
     private bool __update_balance(){
@@ -253,15 +256,15 @@ public class BasePanel : Gtk.HPaned{
 
     public void salir(){
         // FIXME: Salir
-        //if self.player:
+        if (this.player != null){
         //    self.player.disconnect_by_func(self.__endfile)
         //    self.player.disconnect_by_func(self.__state_changed)
         //    self.player.disconnect_by_func(self.__update_progress)
         //    self.player.disconnect_by_func(self.__set_video)
         //    self.player.disconnect_by_func(self.__loading_buffer)
-        //    self.player.stop()
-        //    del(self.player)
-        //    self.player = False
+            this.player.stop();
+            this.player = null;
+            }
         }
 
     public void set_nueva_lista(SList<string> archivos){

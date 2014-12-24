@@ -75,8 +75,8 @@ def get_contenido_vala(texto):
     lineas = texto.splitlines()
     contador = -1
 
-    buscar = ["public", "private", "using"]
-
+    buscar = ["public", "private", "protected", "internal", "using"]
+    # FIXME: verificar casos: public abstract class Animal : Object {
     for linea in lineas:
         temp = linea.strip()
         contador += 1

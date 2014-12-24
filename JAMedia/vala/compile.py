@@ -8,7 +8,12 @@ BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 def run():
-    comando = "valac --pkg posix --pkg gio-2.0 --pkg libsoup-2.4 --pkg json-glib-1.0 --pkg glib-2.0 --pkg gtk+-3.0 --pkg gdk-3.0 --pkg gdk-x11-3.0 --pkg gstreamer-1.0 --pkg cairo JAMedia.vala"
+    comando = "valac --pkg posix --pkg gio-2.0 --pkg libsoup-2.4"
+    comando = "%s %s" % (comando, "--pkg json-glib-1.0 --pkg glib-2.0")
+    comando = "%s %s" % (comando, "--pkg gtk+-3.0 --pkg gdk-3.0 --pkg gdk-x11-3.0")
+    comando = "%s %s" % (comando, "--pkg gstreamer-1.0 --pkg gstreamer-video-1.0")
+    #comando = "%s %s" % (comando, "--pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10")
+    comando = "%s %s" % (comando, "--pkg cairo JAMedia.vala")
 
     for path in os.listdir(BASE_PATH):
         file_path = os.path.join(BASE_PATH, path)

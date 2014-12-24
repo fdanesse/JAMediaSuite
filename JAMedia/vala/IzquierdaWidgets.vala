@@ -66,6 +66,7 @@ public class ToolbarGrabar : Gtk.EventBox{
 public class VideoVisor : Gtk.DrawingArea{
 
     public signal void ocultar_controles(bool valor);
+    public uint* xid;
 
     public VideoVisor(){
 
@@ -79,6 +80,8 @@ public class VideoVisor : Gtk.DrawingArea{
             Gdk.EventMask.BUTTON_RELEASE_MASK
             );
 
+        this.realize.connect(this.__realize);
+
         this.show_all();
 
         this.motion_notify_event.connect ((event) => {
@@ -86,6 +89,10 @@ public class VideoVisor : Gtk.DrawingArea{
 			return true;
 		});
     }
+
+    private void __realize(){
+        this.xid = (uint*)Gdk.X11Window.get_xid(this.get_window());
+        }
 
     private void __do_motion_notify_event(Gdk.EventMotion event){
         int x = (int) event.x;

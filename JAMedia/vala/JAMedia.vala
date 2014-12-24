@@ -13,6 +13,7 @@ por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
 using Gtk;
 using Gdk;
 using Posix;
+using Gst;
 
 
 public class JAMedia : Gtk.Window{
@@ -82,6 +83,7 @@ public class JAMedia : Gtk.Window{
         this.base_panel.menu_activo.connect(this.__cancel_toolbars);
         this.base_panel.add_stream.connect(this.__run_add_stream);
         //self.base_panel.connect("stop-record", self.__detener_grabacion)
+        this.base_panel.configurar.connect(this.__activar_config);
 
         this.mouse_listener.estado.connect(this.__set_mouse);
         this.hide.connect(this.__hide_show);
@@ -91,9 +93,13 @@ public class JAMedia : Gtk.Window{
         this.resize(640, 480);
 
         GLib.Idle.add(this.__setup_init);
-        GLib.stdout.printf("JAMedia process: %i", Posix.getpid());
+        GLib.stdout.printf("JAMedia process: %i\n", Posix.getpid());
         GLib.stdout.flush();
         this.base_panel.checkear_listas();
+        }
+
+    private void __activar_config(bool valor){
+        this.toolbar.configurar.set_sensitive(valor);
         }
 
     private void __realize(){
@@ -330,6 +336,7 @@ public class JAMedia : Gtk.Window{
 
 public static int main (string[] args) {
     Gtk.init(ref args);
+    Gst.init(ref args);
     var screen = Gdk.Screen.get_default();
     var css_provider = new Gtk.CssProvider();
     string style_path = "Estilo.css";

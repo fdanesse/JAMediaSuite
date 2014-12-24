@@ -48,11 +48,10 @@ public class UbuntuRadio : Gtk.Window{
 
         this.title = "Ubuntu Radio";
         try {
-            Gtk.Window.set_default_icon_from_file(
-                "Iconos/ubuntu_radio.svg");
-        }
+            Gtk.Window.set_default_icon_from_file("Iconos/ubuntu_radio.svg");
+            }
         catch{
-        }
+            }
 		this.window_position = Gtk.WindowPosition.CENTER;
 		this.set_default_size(200, 400);
 		this.set_opacity(0.5);
@@ -62,8 +61,7 @@ public class UbuntuRadio : Gtk.Window{
 
         Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
-        this.scroll_list.set_policy(
-            PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+        this.scroll_list.set_policy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
         this.scroll_list.add(this.lista);
 
         box.pack_start(this.menu, false, true, 0);
@@ -84,71 +82,62 @@ public class UbuntuRadio : Gtk.Window{
         this.destroy.connect(this.exit);
 
         this.show_all();
-
         this.load_list();
-    }
+        }
 
     private void load_list(){
         /*
         Carga la lista de streamings
         */
-
         set_listas_default();
         SList<Streaming> streaming_list = get_streamings();
         this.lista.set_lista(streaming_list);
-    }
+        }
 
     private void do_play_in_list(string val1, string val2, string val3){
         /*
         Cuando se hace reproducir en un elemento de la lista
         */
-
         this.itemplayer.load(val1, val2, val3);
-    }
+        }
 
     private void do_record_in_list(string val1, string val2, string val3){
         /*
         Cuando se hace grabar en un elemento de la lista
         */
-
         this.itemrecord.load(val1, val2, val3);
-    }
+        }
 
     private void radios(){
-
         if (this.scroll_list.get_visible()){
             this.scroll_list.hide();
             this.resize (200, 10);
-        }
+            }
         else{
             this.scroll_list.show();
             this.resize (200, 400);
+            }
         }
-    }
 
     private void configurar(){
-    }
+        }
 
     private void creditos(){
-
         Creditos credits = new Creditos(this, "");
         credits.run();
         credits.destroy();
-    }
+        }
 
     private void actualizar(){
-
         Descargas descarga = new Descargas(this, "");
         descarga.run();
-    }
+        }
 
     private void exit(){
-
         this.itemplayer.stop();
         this.itemrecord.stop();
         Gtk.main_quit();
-    }
-
+        }
 }
 
 
@@ -169,8 +158,8 @@ public static int main(string[] args){
         new UbuntuRadio();
         Gtk.main();
         return 0;
-    }
+        }
     catch {
         return 1;
-    }
+        }
 }

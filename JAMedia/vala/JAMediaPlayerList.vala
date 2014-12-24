@@ -101,13 +101,13 @@ public class JAMediaPlayerList : Gtk.Frame{
             this.lista.limpiar();
             //FIXME: self.emit("accion-list", False, "limpiar", False)
             }
-        if ((bool)items){
+        if ((bool)items){ //FIXME Modificar bool
             this.lista.agregar_items(items);
             }
         else{
             this.nueva_seleccion("");
             }
-        if ((bool) titulo){
+        if (titulo != ""){
             this.toolbar.label.set_text(titulo);
             }
         }
@@ -345,20 +345,21 @@ public class Lista : Gtk.TreeView{
 
         if (this.valor_select != valor){
             this.valor_select = valor;
-            //FIXME: gobject.timeout_add(3, self.__select, self.get_model().get_path(_iter))
-            this.__select(path);
+            GLib.Idle.add (() => {
+                this.__select(this.get_model().get_path(_iter));
+                return false;
+                });
             }
         return true;
         }
 
-    private bool __select(Gtk.TreePath path){
+    private void __select(Gtk.TreePath path){
         if (this.ultimo_select != this.valor_select){
             this.ultimo_select = this.valor_select;
             this.nueva_seleccion(this.valor_select);
             }
         //FIXME: Verificar:
         //this.scroll_to_cell (TreePath? path, TreeViewColumn? column, bool use_align, float row_align, float col_align)
-        return false;
         }
 
     private bool __ejecutar_agregar_elemento(SList<Streaming> items){
