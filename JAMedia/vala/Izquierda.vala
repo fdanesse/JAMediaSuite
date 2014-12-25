@@ -9,6 +9,7 @@ public class Izquierda : Gtk.EventBox{
     public signal void rotar(string rotacion);
     public signal void actualizar_streamings();
     public signal void show_controls(bool zona, bool ocultar);
+
     private ToolbarGrabar toolbar_record = new ToolbarGrabar();
     public VideoVisor video_visor = new VideoVisor();
     public BufferInfo buffer_info = new BufferInfo();

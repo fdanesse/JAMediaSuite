@@ -25,8 +25,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.24748738"
-     inkscape:cx="-8713.6701"
-     inkscape:cy="1657.3519"
+     inkscape:cx="-7250.1554"
+     inkscape:cy="742.75164"
      inkscape:document-units="px"
      inkscape:current-layer="g4876"
      showgrid="false"
@@ -747,7 +747,7 @@
                id="tspan3469"
                y="-1024.5248"
                x="-13261.308"
-               sodipodi:role="line">    &quot;volumen&quot; double <tspan
+               sodipodi:role="line">    &quot;volumen&quot; int <tspan
    style="font-style:italic;fill:#0000ff;-inkscape-font-specification:Sans Italic"
    id="tspan3525">(viene de ProgressPlayer)</tspan></tspan><tspan
                id="tspan3301-3"
@@ -1061,13 +1061,13 @@
                  id="tspan3301-3-0-8-7-9" /></text>
           </g>
           <rect
-             ry="0.44540584"
-             y="-367.14746"
-             x="-11773.795"
-             height="413.3049"
-             width="593.30493"
+             ry="0.43664026"
+             y="-363.08054"
+             x="-11769.728"
+             height="405.17108"
+             width="2326.6741"
              id="rect3021-1-47-8-3-1-0-1"
-             style="fill:#00ffff;fill-opacity:0.13333333;stroke:#008000;stroke-width:8.46650696;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+             style="fill:#00ffff;fill-opacity:0.13333333;stroke:#008000;stroke-width:16.60033989;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
           <text
              sodipodi:linespacing="125%"
              id="text2985-7-7-6-0-1-8-1"
@@ -1130,7 +1130,11 @@
                y="-104.78058"
                x="-11748.57"
                sodipodi:role="line"
-               id="tspan3886-8">    &quot;volumen&quot; double</tspan><tspan
+               id="tspan3886-8">    &quot;volumen&quot; int  <tspan
+   style="font-style:italic;-inkscape-font-specification:Sans Italic;fill:#0000ff"
+   id="tspan3529">=&gt; Izquierda =&gt; BasePanel =&gt; JAMediaReproductor <tspan
+   style="fill:#000000"
+   id="tspan3531">Actualizando el volumen de Reproducción</tspan></tspan></tspan><tspan
                style="font-weight:normal;fill:#000000;-inkscape-font-specification:Sans"
                y="-54.780579"
                x="-11748.57"

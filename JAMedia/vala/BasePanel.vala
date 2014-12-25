@@ -130,8 +130,9 @@ public class BasePanel : Gtk.HPaned{
 
     private void __set_volumen(double valor){
         this.menu_activo();
-        //if self.player:
-        //    self.player.set_volumen(valor)
+        if (this.player != null){
+            this.player.set_volumen(valor);
+            }
         }
 
     //def __user_set_progress(self, widget, valor):
@@ -146,26 +147,12 @@ public class BasePanel : Gtk.HPaned{
     private void __cargar_reproducir(string path){
         this.derecha.set_sensitive(false);
 
-        double volumen = 1.0;
+        double volumen = this.izquierda.progress._volumen.get_value();
         if (this.player != null){
-            //volumen = float("{:.1f}".format(self.izquierda.progress.volumen.get_value() * 10))
-            //self.player.disconnect_by_func(self.__endfile)
-            //self.player.disconnect_by_func(self.__state_changed)
-            //self.player.disconnect_by_func(self.__update_progress)
-            //self.player.disconnect_by_func(self.__set_video)
-            //self.player.disconnect_by_func(self.__loading_buffer)
             this.player.stop();
-            // FIXME: GLib-GObject-CRITICAL **: g_object_unref: assertion 'G_IS_OBJECT (object)' failed
             this.player.unref();
             this.player = null;
         }
-        /*
-        self.player.connect("newposicion", self.__update_progress)
-        self.player.connect("loading-buffer", self.__loading_buffer)
-
-        self._thread = threading.Thread(target=self.player.play)
-        self._thread.start()
-        */
 
         this.izquierda.progress.set_sensitive(false);
         this.__set_video(false);
@@ -176,14 +163,14 @@ public class BasePanel : Gtk.HPaned{
         this.player.endfile.connect(this.__endfile);
         this.player.estado.connect(this.__state_changed);
         this.player.video.connect(this.__set_video);
+        //self.player.connect("newposicion", self.__update_progress)
+        //self.player.connect("loading-buffer", self.__loading_buffer)
 
         this.player.load(path);
         this.player.play();
-        // FIXME: No funciona
-        //GLib.Thread thread = new GLib.Thread("JAMediaPlayer", this.player.play);
+
         this.player.set_volumen(volumen);
-        //FIXME: The name `set_value' does not exist in the context of `ProgressPlayer.volumen'
-        //this.izquierda.progress.volumen.set_value(volumen / 10);
+        this.izquierda.progress._volumen.set_value(volumen);
 
         this.derecha.set_sensitive(true);
         }
@@ -217,7 +204,7 @@ public class BasePanel : Gtk.HPaned{
             this.derecha.player_controls.set_paused();
             }
         else{
-            GLib.stdout.printf("Estado del Reproductor desconocido: %s", valor);
+            GLib.stdout.printf("Estado del Reproductor desconocido: %s\n", valor);
             GLib.stdout.flush();
             }
         //FIXME: gobject.idle_add(self.__update_balance)

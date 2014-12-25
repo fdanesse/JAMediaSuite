@@ -46,16 +46,15 @@ public class JAMediaReproductor : GLib.Object{
 
     private bool __sync_message(Gst.Bus bus, Gst.Message message){
         switch(message.type){
-            case Gst.MessageType.ELEMENT:{
+            case Gst.MessageType.ELEMENT:
                 if (message.get_structure().get_name() == "prepare-window-handle"){
                     Gst.Video.Overlay overlay = message.src as Gst.Video.Overlay;
 			        assert (overlay != null);
                     overlay.set_window_handle(this._ventana_id);
                     }
-                }
                 break;
 
-            case Gst.MessageType.STATE_CHANGED:{
+            case Gst.MessageType.STATE_CHANGED:
                 Gst.State oldstate;
                 Gst.State newstate;
                 Gst.State pending;
@@ -63,36 +62,36 @@ public class JAMediaReproductor : GLib.Object{
                 message.parse_state_changed(out oldstate, out newstate, out pending);
 
                 if (this._estado != newstate){
+                    //FIXME: Se pueden reducir señales afinando esto
                     this._estado = newstate;
                     if (oldstate == Gst.State.PAUSED && newstate == Gst.State.PLAYING){
-                        if (this._estado != Gst.State.PLAYING){
+                        if (this._estado == Gst.State.PLAYING){
                             this.estado("playing");
                             this.__new_handle(true);
                             }
                     }
                     else if (oldstate == Gst.State.READY && newstate == Gst.State.PAUSED){
-                        if (this._estado != Gst.State.PAUSED){
+                        if (this._estado == Gst.State.PAUSED){
                             this.estado("paused");
                             this.__new_handle(false);
                             }
                     }
                     else if (oldstate == Gst.State.READY && newstate == Gst.State.NULL){
-                        if (this._estado != Gst.State.NULL){
+                        if (this._estado == Gst.State.NULL){
                             this.estado("None");
                             this.__new_handle(false);
                             }
                     }
                     else if (oldstate == Gst.State.PLAYING && newstate == Gst.State.PAUSED){
-                        if (this._estado != Gst.State.PAUSED){
+                        if (this._estado == Gst.State.PAUSED){
                             this.estado("paused");
                             this.__new_handle(false);
                         }
                     }
                     }
                 break;
-                }
 
-            case Gst.MessageType.TAG:{
+            case Gst.MessageType.TAG:
                 Gst.TagList taglist;
                 message.parse_tag(out taglist);
                 //GLib.stdout.printf("%s\n", taglist.to_string());
@@ -105,40 +104,34 @@ public class JAMediaReproductor : GLib.Object{
                       }
                     }
                 break;
-                }
 
-            case Gst.MessageType.LATENCY:{
+            case Gst.MessageType.LATENCY:
                 //FIXME: error: dynamic methods are not supported for `Gst.Element'
                 GLib.stdout.printf("FIXME: Gst.MessageType.LATENCY\n");
                 GLib.stdout.flush();
                 //this.player.recalculate_latency();
                 break;
-                }
 
-            case Gst.MessageType.ERROR:{
+            case Gst.MessageType.ERROR:
                 GLib.Error err;
                 string debug;
                 message.parse_error(out err, out debug);
-                GLib.stdout.printf("Error: %s\n", err.message);
-                GLib.stdout.flush();
+                //GLib.stdout.printf("Error: %s\n", err.message);
+                //GLib.stdout.flush();
                 //this.endfile();
                 this.__new_handle(false);
                 break;
-                }
 
-            case Gst.MessageType.BUFFERING:{
+            case Gst.MessageType.BUFFERING:
                 GLib.Value buf = message.get_structure().get_value("buffer-percent");
                 GLib.stdout.printf("Buffer: %s\n", (string) buf);
                 GLib.stdout.flush();
                 break;
-                }
 
-            case Gst.MessageType.EOS:{
-                this.endfile();
+            case Gst.MessageType.EOS:
                 this.__new_handle(false);
                 this.endfile();
                 break;
-                }
             }
             return true;
         }
@@ -158,8 +151,6 @@ public class JAMediaReproductor : GLib.Object{
         }
 
     private bool __handle(){
-        GLib.stdout.printf("__handle");
-        GLib.stdout.flush();
         /*
         if (! this.progressbar == true){
             return true;
@@ -275,13 +266,13 @@ public class JAMediaReproductor : GLib.Object{
         */
 
     public void set_volumen(double volumen){
-        //double 0 a 10
-        this.player.set_property("volume", volumen / 10);
+        this.player.set_property("volume", volumen);
         }
 
-    //public void get_volumen(){
+    // FIXME: No se usa, además no funciona: error: Argument 2: Cannot pass out argument to non-output parameter
+    //public double get_volumen(){
     //    GLib.Value vol;
     //    this.player.get_property("volume", out vol);
-    //    return vol * 10;
+    //    return vol.get_double();
     //    }
 }

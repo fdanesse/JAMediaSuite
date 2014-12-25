@@ -8,7 +8,7 @@ public class ProgressPlayer : Gtk.EventBox{
     public signal void volumen(double valor);
 
     private BarraProgreso barraprogreso = new BarraProgreso();
-    private ControlVolumen _volumen = new ControlVolumen();
+    public ControlVolumen _volumen = new ControlVolumen();
 
     public ProgressPlayer(){
 
@@ -182,22 +182,17 @@ public class ControlVolumen : Gtk.VolumeButton{
 
     public signal void volumen(double valor);
 
-    private double valor = 0.1;
-
     public ControlVolumen(){
 
         this.value_changed.connect ((valor) => {
             this.__value_changed(valor);
 		});
 
-        this.show_all();
-        this.set_value(0.1);
+    this.show_all();
+    this.set_value(0.1);
     }
 
     private void __value_changed(double valor){
-        GLib.stdout.printf("%f\n", valor);
-        GLib.stdout.flush();
-        this.valor = valor; // FIXME: int(valor * 10)
         this.volumen(valor);
         }
 }
