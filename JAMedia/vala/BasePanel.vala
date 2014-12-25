@@ -163,7 +163,7 @@ public class BasePanel : Gtk.HPaned{
         this.player.endfile.connect(this.__endfile);
         this.player.estado.connect(this.__state_changed);
         this.player.video.connect(this.__set_video);
-        //self.player.connect("newposicion", self.__update_progress)
+        this.player.newposicion.connect(this.__update_progress);
         //self.player.connect("loading-buffer", self.__loading_buffer)
 
         this.player.load(path);
@@ -242,14 +242,9 @@ public class BasePanel : Gtk.HPaned{
         }
 
     public void salir(){
-        // FIXME: Salir
         if (this.player != null){
-        //    self.player.disconnect_by_func(self.__endfile)
-        //    self.player.disconnect_by_func(self.__state_changed)
-        //    self.player.disconnect_by_func(self.__update_progress)
-        //    self.player.disconnect_by_func(self.__set_video)
-        //    self.player.disconnect_by_func(self.__loading_buffer)
             this.player.stop();
+            this.player.unref();
             this.player = null;
             }
         }

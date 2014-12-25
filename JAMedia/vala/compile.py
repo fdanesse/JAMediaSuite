@@ -12,7 +12,6 @@ def run():
     comando = "%s %s" % (comando, "--pkg json-glib-1.0 --pkg glib-2.0")
     comando = "%s %s" % (comando, "--pkg gtk+-3.0 --pkg gdk-3.0 --pkg gdk-x11-3.0")
     comando = "%s %s" % (comando, "--pkg gstreamer-1.0 --pkg gstreamer-video-1.0")
-    #comando = "%s %s" % (comando, "--pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10")
     comando = "%s %s" % (comando, "--pkg cairo JAMedia.vala")
 
     for path in os.listdir(BASE_PATH):

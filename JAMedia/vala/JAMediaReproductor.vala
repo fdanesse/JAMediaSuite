@@ -11,7 +11,7 @@ public class JAMediaReproductor : GLib.Object{
     public signal void endfile();
     public signal void estado(string estado);
     public signal void video(bool valor);
-    public signal void newposicion(double posicion);
+    public signal void newposicion(int64 posicion);
 
     private dynamic Gst.Element player = Gst.ElementFactory.make("playbin", "play");
     private double _volumen = 0.10;
@@ -151,7 +151,6 @@ public class JAMediaReproductor : GLib.Object{
         }
 
     private bool __handle(){
-        /*
         if (! this.progressbar == true){
             return true;
             }
@@ -167,11 +166,8 @@ public class JAMediaReproductor : GLib.Object{
             }
         if (pos != this.posicion){
             this.posicion = pos;
-            //this.newposicion(this.posicion);
+            this.newposicion(this.posicion);
             }
-        GLib.stdout.printf("%i", (int) pos);
-        GLib.stdout.flush();
-        */
         return true;
         }
 

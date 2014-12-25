@@ -64,14 +64,8 @@ public class BarraProgreso : Gtk.EventBox{
     */
 
     public void set_progress(int64 valor){
-        //GLib.stdout.printf("%i", (int) valor);
-        //GLib.stdout.flush();
-        if (this.escala.presed){
-            }
-        else{
-            if (this.valor == valor){
-                }
-            else{
+        if (! this.escala.presed){
+            if (this.valor != valor){
                 this.valor = valor;
                 this.escala.ajuste.set_value(valor);
                 this.escala.queue_draw();
