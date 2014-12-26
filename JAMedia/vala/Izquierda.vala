@@ -1,14 +1,11 @@
 public class Izquierda : Gtk.EventBox{
 
-    //__gsignals__ = {
-    //"seek": (gobject.SIGNAL_RUN_LAST,
-    //    gobject.TYPE_NONE, (gobject.TYPE_FLOAT, )),
-
     public signal void volumen(double valor);
     public signal void stop_record();
     public signal void rotar(string rotacion);
     public signal void actualizar_streamings();
     public signal void show_controls(bool zona, bool ocultar);
+    public signal void seek(double valor);
 
     private ToolbarGrabar toolbar_record = new ToolbarGrabar();
     public VideoVisor video_visor = new VideoVisor();
@@ -47,7 +44,7 @@ public class Izquierda : Gtk.EventBox{
         this.toolbar_info.rotar.connect(this.__emit_rotar);
         this.toolbar_info.actualizar_streamings.connect(this.__emit_actualizar_streamings);
 
-        //self.progress.connect("seek", self.__emit_seek)
+        this.progress.seek.connect(this.__emit_seek);
         this.progress.volumen.connect(this.__emit_volumen);
     }
 
@@ -55,8 +52,9 @@ public class Izquierda : Gtk.EventBox{
         this.volumen(valor);
         }
 
-    //def __emit_seek(self, widget, valor):
-    //    self.emit("seek", valor)
+    private void __emit_seek(double valor){
+        this.seek(valor);
+        }
 
     private void __emit_stop_record(){
         this.stop_record();

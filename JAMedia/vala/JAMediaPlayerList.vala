@@ -155,10 +155,6 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.lista.seleccionar_siguiente();
         }
 
-    //FIXME: JAMedia no utiliza esta función.
-    //def select_valor(self, path_origen):
-    //    self.lista.select_valor(path_origen)
-
     public void limpiar(){
         this.lista.limpiar();
         }
@@ -166,23 +162,6 @@ public class JAMediaPlayerList : Gtk.Frame{
     public void set_mime_types(SList<string> mimelist){
         this.mime = mimelist.copy();
         }
-
-    //FIXME: JAMedia no utiliza esta función.
-    //def get_selected_path(self):
-    //    modelo, _iter = self.lista.get_selection().get_selected()
-    //    valor = self.lista.get_model().get_value(_iter, 2)
-    //    return valor
-
-    //FIXME: JAMedia no utiliza esta función.
-    //def get_items_paths(self):
-    //    filepaths = []
-    //    model = self.lista.get_model()
-    //    item = model.get_iter_first()
-    //    self.lista.get_selection().select_iter(item)
-    //    while item:
-    //        filepaths.append(model.get_value(item, 2))
-    //        item = model.iter_next(item)
-    //    return filepaths
 
     public void setup_init(){
         this.toolbar.boton_agregar.hide();
@@ -451,17 +430,6 @@ public class Lista : Gtk.TreeView{
             }
         this.get_selection().select_iter(_iter2);
         }
-
-    //FIXME: JAMedia no utiliza esta función.
-    //def select_valor(self, path_origen):
-    //    model = self.get_model()
-    //    _iter = model.get_iter_first()
-    //    valor = model.get_value(_iter, 2)
-    //    while valor != path_origen:
-    //        _iter = model.iter_next(_iter)
-    //        valor = model.get_value(_iter, 2)
-    //    if _iter:
-    //        self.get_selection().select_iter(_iter)
 }
 
 

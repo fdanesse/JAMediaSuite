@@ -14,7 +14,6 @@ public class JAMediaReproductor : GLib.Object{
     public signal void newposicion(int64 posicion);
 
     private dynamic Gst.Element player = Gst.ElementFactory.make("playbin", "play");
-    private double _volumen = 0.10;
     private string _uri = "";
     private Gst.State _estado = Gst.State.NULL;
     private uint* _ventana_id;
@@ -227,40 +226,31 @@ public class JAMediaReproductor : GLib.Object{
         return false;
         }
 
-    /*
-    def set_position(self, posicion):
-        if not self.progressbar:
-            return
-        if self.duracion < posicion:
-            return
-        if self.duracion == 0 or posicion == 0:
-            return
-        posicion = self.duracion * posicion / 100
+    public bool set_position(int64 posicion){
+        if (! this.progressbar){
+            return false;
+            }
+        if (this.duracion < posicion){
+            return false;
+            }
+        if (this.duracion == 0 || posicion == 0){
+            return false;
+            }
 
-        # http://pygstdocs.berlios.de/pygst-reference/gst-constants.html
-        #self.player.set_state(gst.STATE_PAUSED)
-        # http://nullege.com/codes/show/
-        #   src@d@b@dbr-HEAD@trunk@src@reproductor.py/72/gst.SEEK_TYPE_SET
-        #self.player.seek(
-        #    1.0,
-        #    gst.FORMAT_TIME,
-        #    gst.SEEK_FLAG_FLUSH,
-        #    gst.SEEK_TYPE_SET,
-        #    posicion,
-        #    gst.SEEK_TYPE_SET,
-        #    self.duracion)
-        # http://nullege.com/codes/show/
-        #   src@c@o@congabonga-HEAD@congaplayer@congalib@engines@gstplay.py/
-        #   104/gst.SEEK_FLAG_ACCURATE
+        posicion = this.duracion * posicion / 100;
 
-        event = gst.event_new_seek(
-            1.0, gst.FORMAT_TIME,
-            gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_ACCURATE,
-            gst.SEEK_TYPE_SET, posicion * 1000000000,
-            gst.SEEK_TYPE_NONE, self.duracion * 1000000000)
-        self.player.send_event(event)
-        #self.player.set_state(gst.STATE_PLAYING)
-        */
+        // Event.seek (double rate, Format format,
+        // SeekFlags flags, SeekType start_type, int64 start,
+        // SeekType stop_type, int64 stop)
+        Gst.Event event = new Gst.Event.seek(
+            1.0, Gst.Format.TIME,
+            Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE,
+            Gst.SeekType.SET, posicion * 1000000000,
+            Gst.SeekType.NONE, this.duracion * 1000000000);
+
+        this.player.send_event(event);
+        return true;
+        }
 
     public void set_volumen(double volumen){
         this.player.set_property("volume", volumen);

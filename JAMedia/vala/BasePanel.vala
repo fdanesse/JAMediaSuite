@@ -42,7 +42,7 @@ public class BasePanel : Gtk.HPaned{
         this.izquierda.show_controls.connect(this.__emit_show_controls);
         this.izquierda.rotar.connect(this.__rotar);
         this.izquierda.stop_record.connect(this.__stop_record);
-        //self.izquierda.connect("seek", self.__user_set_progress)
+        this.izquierda.seek.connect(this.__user_set_progress);
         this.izquierda.volumen.connect(this.__set_volumen);
         this.izquierda.actualizar_streamings.connect(this.__actualizar_streamings);
 
@@ -124,10 +124,12 @@ public class BasePanel : Gtk.HPaned{
             }
         }
 
-    //def __user_set_progress(self, widget, valor):
-    //    this.menu_activo();
-    //    if self.player:
-    //        self.player.set_position(valor)
+    private void __user_set_progress(double valor){
+        this.menu_activo();
+        if (this.player != null){
+            this.player.set_position((int64) valor);
+            }
+        }
 
     private void __emit_show_controls(bool zona, bool ocultar){
         this.show_controls(zona, ocultar);
