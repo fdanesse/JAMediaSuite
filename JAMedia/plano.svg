@@ -25,8 +25,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.24748738"
-     inkscape:cx="-7250.1554"
-     inkscape:cy="742.75164"
+     inkscape:cx="-7314.8052"
+     inkscape:cy="670.02066"
      inkscape:document-units="px"
      inkscape:current-layer="g4876"
      showgrid="false"
@@ -747,7 +747,7 @@
                id="tspan3469"
                y="-1024.5248"
                x="-13261.308"
-               sodipodi:role="line">    &quot;volumen&quot; int <tspan
+               sodipodi:role="line">    &quot;volumen&quot; double <tspan
    style="font-style:italic;fill:#0000ff;-inkscape-font-specification:Sans Italic"
    id="tspan3525">(viene de ProgressPlayer)</tspan></tspan><tspan
                id="tspan3301-3"
@@ -1130,8 +1130,8 @@
                y="-104.78058"
                x="-11748.57"
                sodipodi:role="line"
-               id="tspan3886-8">    &quot;volumen&quot; int  <tspan
-   style="font-style:italic;-inkscape-font-specification:Sans Italic;fill:#0000ff"
+               id="tspan3886-8">    &quot;volumen&quot; double  <tspan
+   style="font-style:italic;fill:#0000ff;-inkscape-font-specification:Sans Italic"
    id="tspan3529">=&gt; Izquierda =&gt; BasePanel =&gt; JAMediaReproductor <tspan
    style="fill:#000000"
    id="tspan3531">Actualizando el volumen de Reproducción</tspan></tspan></tspan><tspan

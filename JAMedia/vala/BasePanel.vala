@@ -20,8 +20,6 @@ public class BasePanel : Gtk.HPaned{
 
         this.set_border_width(2);
 
-        //self._thread = False
-
         this.root = window;
         this.izquierda = new Izquierda(this.root);
 
@@ -48,7 +46,7 @@ public class BasePanel : Gtk.HPaned{
         this.izquierda.volumen.connect(this.__set_volumen);
         this.izquierda.actualizar_streamings.connect(this.__actualizar_streamings);
 
-        // FIXME: Activar GLib.Timeout.add(5000, this.__check_ip);
+        GLib.Timeout.add(5000, this.__check_ip);
     }
 
     private void __stop_record(){

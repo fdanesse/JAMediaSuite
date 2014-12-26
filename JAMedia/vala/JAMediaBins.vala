@@ -69,24 +69,26 @@ public class JAMedia_Video_Pipeline : Gst.Pipeline{
         }
 
     public void rotar(string valor){
-        //int rot = this.get_by_name("videoflip").get_property("method");
-        //if (valor == "Derecha"){
-        //    if (rot < 3){
-        //        rot += 1;
-        //        }
-        //    else{
-        //        rot = 0;
-        //        }
-        //    }
-        //else if (valor == "Izquierda"){
-        //    if (rot > 0){
-        //        rot -= 1;
-        //        }
-        //    else{
-        //        rot = 3;
-        //        }
-        //    }
-        //this.get_by_name("videoflip").set_property("method", rot);
+        GLib.Value r = 0;
+        this.get_by_name("videoflip").get_property("method", ref r);
+        int rot = r.get_int();
+        if (valor == "Derecha"){
+            if (rot < 3){
+                rot += 1;
+                }
+            else{
+                rot = 0;
+                }
+            }
+        else if (valor == "Izquierda"){
+            if (rot > 0){
+                rot -= 1;
+                }
+            else{
+                rot = 3;
+                }
+            }
+        this.get_by_name("videoflip").set_property("method", rot);
         }
 
     /*
