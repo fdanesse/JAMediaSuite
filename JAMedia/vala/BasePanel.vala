@@ -35,7 +35,7 @@ public class BasePanel : Gtk.HPaned{
         this.derecha.add_stream.connect(this.__emit_add_stream);
         this.derecha.accion_controls.connect(this.__accion_controls);
 
-        //self.derecha.connect("balance-valor", self.__accion_balance)
+        this.derecha.balance_valor.connect(this.__accion_balance);
         //#self.derecha.connect("add_remove_efecto", self.__add_remove_efecto)
         //#self.derecha.connect("configurar_efecto", self.__config_efecto)
 
@@ -75,21 +75,12 @@ public class BasePanel : Gtk.HPaned{
     #    # Configurar efecto de video.
     #    self.__emit_menu_activo()
     #    print self.__config_efecto, efecto, propiedad, valor
-
-    def __accion_balance(self, widget, valor, prop):
-        # Setea valores de Balance en el reproductor.
-        self.__emit_menu_activo()
-        if prop == "saturacion":
-            self.player.set_balance(saturacion=valor)
-        elif prop == "contraste":
-            self.player.set_balance(contraste=valor)
-        elif prop == "brillo":
-            self.player.set_balance(brillo=valor)
-        elif prop == "hue":
-            self.player.set_balance(hue=valor)
-        elif prop == "gamma":
-            self.player.set_balance(gamma=valor)
     */
+
+    private void __accion_balance(string prop, double valor){
+        this.__emit_menu_activo();
+        this.player.set_balance(prop, valor);
+        }
 
     private void __emit_add_stream(string title){
         this.add_stream(title);

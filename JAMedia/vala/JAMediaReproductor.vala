@@ -190,10 +190,9 @@ public class JAMediaReproductor : GLib.Object{
         this.video_bin.rotar(valor);
         }
 
-    //def set_balance(self, brillo=False, contraste=False,
-    //    saturacion=False, hue=False, gamma=False):
-    //    self.video_bin.set_balance(brillo=brillo, contraste=contraste,
-    //        saturacion=saturacion, hue=hue, gamma=gamma)
+    public void set_balance(string prop, double valor){
+        this.video_bin.set_balance(prop, valor);
+        }
 
     //def get_balance(self):
     //    return self.video_bin.get_balance()

@@ -5,9 +5,6 @@ public class Derecha : Gtk.EventBox{
     "accion-list": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
         gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    'balance-valor': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,
-        gobject.TYPE_STRING)),
     "add_remove_efecto": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_BOOLEAN)),
@@ -20,6 +17,7 @@ public class Derecha : Gtk.EventBox{
     public signal void accion_controls(string accion);
     public signal void add_stream(string title);
     public signal void menu_activo();
+    public signal void balance_valor(string prop, double valor);
 
     private Gtk.ScrolledWindow scroll = new Gtk.ScrolledWindow(null, null);
     private BalanceWidget balance = new BalanceWidget();
@@ -47,7 +45,7 @@ public class Derecha : Gtk.EventBox{
         this.add(vbox);
         this.show_all();
 
-        //self.balance.connect("balance-valor", self.__emit_balance)
+        this.balance.balance_valor.connect(this.__emit_balance);
         //#self.efectos.connect("click_efecto", self.__emit_add_remove_efecto)
         //#self.efectos.connect("configurar_efecto", self.__emit_config_efecto)
 
@@ -62,11 +60,9 @@ public class Derecha : Gtk.EventBox{
         this.set_size_request(150, -1);
     }
 
-    /*
-    def __emit_balance(self, widget, valor, prop):
-        # brillo, contraste, saturación, hue, gamma
-        self.emit('balance-valor', valor, prop)
-    */
+    private void __emit_balance(string prop, double valor){
+        this.balance_valor(prop, valor);
+        }
 
     private void __emit_accion_controls(string accion){
         this.accion_controls(accion);

@@ -22,17 +22,16 @@ public class JAMedia_Audio_Pipeline : Gst.Pipeline{
 
 public class JAMedia_Video_Pipeline : Gst.Pipeline{
 
+    public double saturacion = 50.0;
+    public double contraste = 50.0;
+    public double brillo = 50.0;
+    public double hue = 50.0;
+    public double gamma = 10.0;
+    public double rotacion = 0;
+
     public JAMedia_Video_Pipeline(){
 
         this.set_name("jamedia_video_pipeline");
-
-        //this.config = {
-        //    "saturacion": 50.0,
-        //    "contraste": 50.0,
-        //    "brillo": 50.0,
-        //    "hue": 50.0,
-        //    "gamma": 10.0,
-        //    "rotacion": 0}
 
         Gst.Element convert = Gst.ElementFactory.make("videoconvert", "convert");
         Gst.Element rate = Gst.ElementFactory.make("videorate", "rate");
@@ -91,31 +90,34 @@ public class JAMedia_Video_Pipeline : Gst.Pipeline{
         this.get_by_name("videoflip").set_property("method", rot);
         }
 
-    /*
-    def set_balance(this, brillo=None, contraste=None,
-        saturacion=None, hue=None, gamma=None):
-        if brillo:
-            this.config["brillo"] = brillo
-            valor = (2.0 * brillo / 100.0) - 1.0
-            this.get_by_name("videobalance").set_property("brightness", valor)
-        if contraste:
-            this.config["contraste"] = contraste
-            valor = 2.0 * contraste / 100.0
-            this.get_by_name("videobalance").set_property("contrast", valor)
-        if saturacion:
-            this.config["saturacion"] = saturacion
-            valor = 2.0 * saturacion / 100.0
-            this.get_by_name("videobalance").set_property("saturation", valor)
-        if hue:
-            this.config["hue"] = hue
-            valor = (2.0 * hue / 100.0) - 1.0
-            this.get_by_name("videobalance").set_property("hue", valor)
-        if gamma:
-            this.config["gamma"] = gamma
-            valor = (10.0 * gamma / 100.0)
-            this.get_by_name("gamma").set_property("gamma", valor)
+    public void set_balance(string prop, double valor){
+        if (prop == "brillo"){
+            this.brillo = valor;
+            double val = (2.0 * valor / 100.0) - 1.0;
+            this.get_by_name("videobalance").set_property("brightness", val);
+            }
+        else if (prop == "contraste"){
+            this.contraste = valor;
+            double val = 2.0 * valor / 100.0;
+            this.get_by_name("videobalance").set_property("contrast", val);
+            }
+        else if (prop == "saturacion"){
+            this.saturacion = valor;
+            double val = 2.0 * valor / 100.0;
+            this.get_by_name("videobalance").set_property("saturation", val);
+            }
+        else if (prop == "hue"){
+            this.hue = valor;
+            double val = (2.0 * valor / 100.0) - 1.0;
+            this.get_by_name("videobalance").set_property("hue", val);
+            }
+        else if (prop == "gamma"){
+            this.gamma = valor;
+            double val = (10.0 * valor / 100.0);
+            this.get_by_name("gamma").set_property("gamma", val);
+            }
+        }
 
-    def get_balance(this):
-        return this.config
-    */
+    //def get_balance(this):
+    //    return this.config
 }

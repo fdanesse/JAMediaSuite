@@ -1,10 +1,7 @@
 
 public class BalanceWidget : Gtk.EventBox{
-    /*
-    __gsignals__ = {
-    'balance-valor': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-        (gobject.TYPE_FLOAT, gobject.TYPE_STRING))}
-    */
+
+    public signal void balance_valor(string prop, double valor);
 
     private ToolbarcontrolValores brillo = new ToolbarcontrolValores("Brillo");
     private ToolbarcontrolValores contraste = new ToolbarcontrolValores("Contraste");
@@ -27,18 +24,28 @@ public class BalanceWidget : Gtk.EventBox{
         this.show_all();
 
         this.set_size_request(150, -1);
-        /*
-        self.brillo.connect('valor', self.__emit_senial, 'brillo')
-        self.contraste.connect('valor', self.__emit_senial, 'contraste')
-        self.saturacion.connect('valor', self.__emit_senial, 'saturacion')
-        self.hue.connect('valor', self.__emit_senial, 'hue')
-        self.gamma.connect('valor', self.__emit_senial, 'gamma')
-        */
-    }
-    /*
-    def __emit_senial(self, widget, valor, tipo):
-        self.emit('balance-valor', valor, tipo)
 
+        this.brillo.user_set_value.connect ((valor) => {
+			this.__emit_senial(valor, "brillo");
+		});
+        this.contraste.user_set_value.connect ((valor) => {
+			this.__emit_senial(valor, "contraste");
+		});
+        this.saturacion.user_set_value.connect ((valor) => {
+			this.__emit_senial(valor, "saturacion");
+		});
+        this.hue.user_set_value.connect ((valor) => {
+			this.__emit_senial(valor, "hue");
+		});
+        this.gamma.user_set_value.connect ((valor) => {
+			this.__emit_senial(valor, "gamma");
+		});
+    }
+
+    private void __emit_senial(double valor, string prop){
+        this.balance_valor(prop, valor);
+        }
+    /*
     def set_balance(self, brillo=50.0, contraste=50.0,
         saturacion=50.0, hue=50.0, gamma=10.0):
         if saturacion != None:
@@ -56,11 +63,8 @@ public class BalanceWidget : Gtk.EventBox{
 
 
 public class ToolbarcontrolValores : Gtk.Toolbar{
-    /*
-    __gsignals__ = {
-    'valor': (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))}
-    */
+
+    public signal void user_set_value(double valor);
 
     private SlicerBalance escala = new SlicerBalance();
     private Gtk.Frame frame = new Gtk.Frame("");
@@ -87,28 +91,31 @@ public class ToolbarcontrolValores : Gtk.Toolbar{
         this.insert(item2, -1);
         this.show_all();
 
-        //self.escala.connect("user-set-value", self.__user_set_value)
+        this.escala.user_set_value.connect(this.__user_set_value);
     }
-    /*
-    def __user_set_value(self, widget=None, valor=None):
-        if valor > 99.4:
-            valor = 100.0
-        self.emit('valor', valor)
-        self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 
-    def set_progress(self, valor):
-        self.escala.set_progress(valor)
-        self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
-    */
+    public void __user_set_value(double valor){
+        if (valor > 99.4){
+            valor = 100.0;
+            }
+        int v = (int) valor;
+        string str1 = this.label.get_text();
+	    string str2 = v.to_string();
+	    string str3 = "%";
+	    string text = @"$str1: $str2$str3";
+        this.frame.set_label(text);
+        this.user_set_value(valor);
+        }
+
+    //def set_progress(double valor):
+    //    self.escala.set_progress(valor)
+    //    self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
 }
 
 
 public class SlicerBalance : Gtk.EventBox{
-    /*
-    __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
-    */
+
+    public signal void user_set_value(double valor);
 
     private Gtk.Scale escala = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, new Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0));
     public Gtk.Adjustment ajuste = new Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0);
@@ -122,15 +129,12 @@ public class SlicerBalance : Gtk.EventBox{
         this.add(this.escala);
         this.show_all();
 
-        //self.escala.connect('user-set-value', self.__emit_valor)
         this.escala.value_changed.connect (() => {
-			GLib.stdout.printf ("%f\n", this.escala.get_value ());
-			GLib.stdout.flush();
-			//self.emit("user-set-value", valor)
+			this.user_set_value(this.ajuste.get_value());
 		});
     }
     /*
-    def set_progress(self, valor=0.0):
+    def set_progress(double valor):
         self.escala.ajuste.set_value(valor)
         self.escala.queue_draw()
     */
