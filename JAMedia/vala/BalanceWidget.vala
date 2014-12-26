@@ -113,9 +113,6 @@ public class ToolbarcontrolValores : Gtk.Toolbar{
 
     public void set_progress(double valor){
         this.escala.set_progress(valor);
-        //FIXME: Actualmente se hace automático.
-        //self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
-        //this.frame.set_label(text);
     }
 }
 
@@ -146,74 +143,3 @@ public class SlicerBalance : Gtk.EventBox{
         this.escala.queue_draw();
         }
 }
-
-
-/*
-FIXME: Analizar Implementar.
-class BalanceBar(gtk.HScale):
-
-    __gsignals__ = {
-    "user-set-value": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT, ))}
-
-    def __init__(self, ajuste):
-
-        gtk.HScale.__init__(self)
-
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-
-        self.ajuste = ajuste
-        self.set_digits(0)
-        self.set_draw_value(False)
-
-        self.ancho, self.borde = (7, 10)
-
-        icono = os.path.join(BASE_PATH, "Iconos", "controlslicer.svg")
-        self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, 16, 16)
-
-        self.connect("expose_event", self.__expose)
-
-        self.show_all()
-
-    def __expose(self, widget, event):
-        x, y, w, h = self.get_allocation()
-        ancho, borde = (self.ancho, self.borde)
-
-        gc = gtk.gdk.Drawable.new_gc(self.window)
-
-        gc.set_rgb_fg_color(get_colors("window"))
-        self.window.draw_rectangle(gc, True, x, y, w, h)
-
-        gc.set_rgb_fg_color(get_colors("drawingplayer"))
-        ww = w - borde * 2
-        xx = x + w / 2 - ww / 2
-        hh = ancho
-        yy = y + h / 2 - ancho / 2
-        self.window.draw_rectangle(gc, True, xx, yy, ww, hh)
-
-        ximage = int(self.ajuste.get_value() * ww / 100)
-        gc.set_rgb_fg_color(get_colors("naranaja"))
-        self.window.draw_rectangle(gc, True, xx, yy, ximage, hh)
-
-        # La Imagen
-        imgw, imgh = (self.pixbuf.get_width(), self.pixbuf.get_height())
-        yimage = yy + hh / 2 - imgh / 2
-
-        self.window.draw_pixbuf(gc, self.pixbuf, 0, 0, ximage, yimage,
-            imgw, imgh, gtk.gdk.RGB_DITHER_NORMAL, 0, 0)
-
-        return True
-
-    def do_motion_notify_event(self, event):
-        """
-        Cuando el usuario se desplaza por la barra de progreso.
-        Se emite el valor en % (float).
-        """
-        if event.state == gtk.gdk.MOD2_MASK | gtk.gdk.BUTTON1_MASK:
-            rect = self.get_allocation()
-            valor = float(event.x * 100 / rect.width)
-            if valor >= 0.0 and valor <= 100.0:
-                self.ajuste.set_value(valor)
-                self.queue_draw()
-                self.emit("user-set-value", valor)
-*/
