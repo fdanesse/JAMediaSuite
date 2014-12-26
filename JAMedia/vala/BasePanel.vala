@@ -188,28 +188,26 @@ public class BasePanel : Gtk.HPaned{
         if (valor == "playing"){
             this.derecha.player_controls.set_playing();
             this.izquierda.progress.set_sensitive(true);
+            GLib.Idle.add(this.__update_balance);
             }
         else if (valor == "paused" || valor == "None"){
             this.derecha.player_controls.set_paused();
+            GLib.Idle.add(this.__update_balance);
             }
         else{
             GLib.stdout.printf("Estado del Reproductor desconocido: %s\n", valor);
             GLib.stdout.flush();
             }
-        //FIXME: gobject.idle_add(self.__update_balance)
         }
 
     private bool __update_balance(){
-        //FIXME: Implementar
-        //config = {}
-        //if self.player:
-        //    config = self.player.get_balance()
-        //self.derecha.balance.set_balance(
-        //    brillo=config.get('brillo', 50.0),
-        //    contraste=config.get('contraste', 50.0),
-        //    saturacion=config.get('saturacion', 50.0),
-        //    hue=config.get('hue', 50.0),
-        //    gamma=config.get('gamma', 10.0))
+        if (this.player != null){
+            this.derecha.balance.set_balance("brillo", this.player.get_balance("brillo"));
+            this.derecha.balance.set_balance("contraste", this.player.get_balance("contraste"));
+            this.derecha.balance.set_balance("saturacion", this.player.get_balance("saturacion"));
+            this.derecha.balance.set_balance("hue", this.player.get_balance("hue"));
+            this.derecha.balance.set_balance("gamma", this.player.get_balance("gamma"));
+            }
         return false;
         }
 

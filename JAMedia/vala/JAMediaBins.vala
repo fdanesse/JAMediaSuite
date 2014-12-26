@@ -118,6 +118,24 @@ public class JAMedia_Video_Pipeline : Gst.Pipeline{
             }
         }
 
-    //def get_balance(this):
-    //    return this.config
+    public double get_balance(string prop){
+        if (prop == "brillo"){
+            return this.brillo;
+            }
+        else if (prop == "contraste"){
+            return this.contraste;
+            }
+        else if (prop == "saturacion"){
+            return this.saturacion;
+            }
+        else if (prop == "hue"){
+            return this.hue;
+            }
+        else if (prop == "gamma"){
+            return this.gamma;
+            }
+        else{
+            return 0.0;
+            }
+        }
 }

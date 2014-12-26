@@ -20,7 +20,7 @@ public class Derecha : Gtk.EventBox{
     public signal void balance_valor(string prop, double valor);
 
     private Gtk.ScrolledWindow scroll = new Gtk.ScrolledWindow(null, null);
-    private BalanceWidget balance = new BalanceWidget();
+    public BalanceWidget balance = new BalanceWidget();
     public JAMediaPlayerList lista = new JAMediaPlayerList();
     public PlayerControls player_controls = new PlayerControls();
 

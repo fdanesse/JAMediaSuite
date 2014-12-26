@@ -45,20 +45,24 @@ public class BalanceWidget : Gtk.EventBox{
     private void __emit_senial(double valor, string prop){
         this.balance_valor(prop, valor);
         }
-    /*
-    def set_balance(self, brillo=50.0, contraste=50.0,
-        saturacion=50.0, hue=50.0, gamma=10.0):
-        if saturacion != None:
-            self.saturacion.set_progress(saturacion)
-        if contraste != None:
-            self.contraste.set_progress(contraste)
-        if brillo != None:
-            self.brillo.set_progress(brillo)
-        if hue != None:
-            self.hue.set_progress(hue)
-        if gamma != None:
-            self.gamma.set_progress(gamma)
-    */
+
+    public void set_balance(string prop, double valor){
+        if (prop == "saturacion"){
+            this.saturacion.set_progress(valor);
+            }
+        else if (prop == "contraste"){
+            this.contraste.set_progress(valor);
+            }
+        else if (prop == "brillo"){
+            this.brillo.set_progress(valor);
+            }
+        else if (prop == "hue"){
+            this.hue.set_progress(valor);
+            }
+        else if (prop == "gamma"){
+            this.gamma.set_progress(valor);
+            }
+        }
 }
 
 
@@ -107,9 +111,12 @@ public class ToolbarcontrolValores : Gtk.Toolbar{
         this.user_set_value(valor);
         }
 
-    //def set_progress(double valor):
-    //    self.escala.set_progress(valor)
-    //    self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
+    public void set_progress(double valor){
+        this.escala.set_progress(valor);
+        //FIXME: Actualmente se hace automático.
+        //self.frame.set_label("%s: %s%s" % (self.titulo, int(valor), "%"))
+        //this.frame.set_label(text);
+    }
 }
 
 
@@ -133,15 +140,16 @@ public class SlicerBalance : Gtk.EventBox{
 			this.user_set_value(this.ajuste.get_value());
 		});
     }
-    /*
-    def set_progress(double valor):
-        self.escala.ajuste.set_value(valor)
-        self.escala.queue_draw()
-    */
+
+    public void set_progress(double valor){
+        this.ajuste.set_value(valor);
+        this.escala.queue_draw();
+        }
 }
 
 
 /*
+FIXME: Analizar Implementar.
 class BalanceBar(gtk.HScale):
 
     __gsignals__ = {
@@ -208,5 +216,4 @@ class BalanceBar(gtk.HScale):
                 self.ajuste.set_value(valor)
                 self.queue_draw()
                 self.emit("user-set-value", valor)
-
 */

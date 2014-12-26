@@ -109,6 +109,7 @@ public class JAMediaReproductor : GLib.Object{
                 //FIXME: error: dynamic methods are not supported for `Gst.Element'
                 GLib.stdout.printf("FIXME: Gst.MessageType.LATENCY\n");
                 GLib.stdout.flush();
+                // FIXME: CRITICAL **: vala_variable_get_variable_type: assertion 'self != NULL' failed
                 //this.player.recalculate_latency();
                 break;
 
@@ -151,7 +152,7 @@ public class JAMediaReproductor : GLib.Object{
         }
 
     private bool __handle(){
-        if (! this.progressbar == true){
+        if (this.progressbar != true){
             return true;
             }
         int64 duracion;
@@ -194,8 +195,9 @@ public class JAMediaReproductor : GLib.Object{
         this.video_bin.set_balance(prop, valor);
         }
 
-    //def get_balance(self):
-    //    return self.video_bin.get_balance()
+    public double get_balance(string prop){
+        return this.video_bin.get_balance(prop);
+        }
 
     public void stop(){
         this.__new_handle(false);
@@ -263,11 +265,4 @@ public class JAMediaReproductor : GLib.Object{
     public void set_volumen(double volumen){
         this.player.set_property("volume", volumen);
         }
-
-    // FIXME: No se usa, además no funciona: error: Argument 2: Cannot pass out argument to non-output parameter
-    //public double get_volumen(){
-    //    GLib.Value vol;
-    //    this.player.get_property("volume", out vol);
-    //    return vol.get_double();
-    //    }
 }
