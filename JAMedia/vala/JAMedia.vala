@@ -43,7 +43,7 @@ public class JAMedia : Gtk.Window{
             Gtk.Window.set_default_icon_from_file("Iconos/JAMedia.svg");
             }
         catch(Error e) {
-            GLib.stderr.printf ("No se Encontró el Ícono: %s\n", e.message);
+            GLib.stderr.printf("No se Encontró el Ícono: %s\n", e.message);
             GLib.stderr.flush();
             }
 

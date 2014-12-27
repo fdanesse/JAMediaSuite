@@ -97,7 +97,7 @@ def copiar(origen, destino):
 */
 
 
-private void make_base_directory(){
+private void __make_base_directory(){
     try {
         string home = GLib.Environment.get_variable("HOME");
         string jamedia = GLib.Path.build_filename(home, "JAMediaDatos");
@@ -111,8 +111,8 @@ private void make_base_directory(){
         string [] dirlist = {jamedia, archivos, datos, youtube, audio, video, fotos};
 
         foreach (string dir in dirlist){
-            File file = File.new_for_path(dir);
-            if(file.query_exists() != true){
+            GLib.File file = GLib.File.new_for_path(dir);
+            if (file.query_exists() != true){
                 file.make_directory ();
                 }
             }
@@ -122,11 +122,13 @@ private void make_base_directory(){
 
 
 private SList<Streaming> __descarga_lista_de_streamings(string url){
-    GLib.stdout.printf("Conectandose a: %s \n\tDescargando Streamings . . .", url);
+    GLib.stdout.printf("Conectandose a: %s\n", url);
+    GLib.stdout.printf("    Descargando Streamings . . .\n");
     GLib.stdout.flush();
 
     string cabecera = "JAMedia Channels:";
     SList<Streaming> streamings = new SList<Streaming>();
+    int contador = 0;
 
     try{
         Soup.SessionSync session = new Soup.SessionSync();
@@ -154,24 +156,19 @@ private SList<Streaming> __descarga_lista_de_streamings(string url){
                 string name = s.split(",")[0].strip();
                 string direc = s.split(",")[1].strip();
 
-                //FIXME: No es posible en SList
-                //if (direc in urls){
-                //    stdout.printf("Direccion Descartada por Repetición: %s, %s\n", name, direc);
-                //}
-                //else{
-                    //urls.append(direc);
-                    Streaming streaming = new Streaming(name, direc);
-                    streamings.append(streaming);
-                //}
+                Streaming streaming = new Streaming(name, direc);
+                streamings.append(streaming);
+                contador ++;
+                }
             }
-        }
 
-        //stdout.printf("\tSe han Descargado: %s Estreamings.\n",
-        //    (string) streamings.length);
+        GLib.stdout.printf("   Se han Descargado: %i Estreamings.\n", contador);
+        GLib.stdout.flush();
         }
 
     catch (Error e){
-        stderr.printf ("Error: %s\n", e.message);
+        GLib.stderr.printf ("Error: %s\n", e.message);
+        GLib.stdout.flush();
         }
 
     return streamings;
@@ -231,7 +228,7 @@ public string get_data_directory(){
     try{
         File file = File.new_for_path(datos);
         if(file.query_exists() != true){
-            make_base_directory();
+            __make_base_directory();
             }
         }
     catch{}
@@ -245,7 +242,7 @@ public string get_tube_directory(){
     try{
         File file = File.new_for_path((string) youtube);
         if(file.query_exists() != true){
-            make_base_directory();
+            __make_base_directory();
             }
         }
     catch{}
@@ -259,7 +256,7 @@ public string get_audio_directory(){
     try{
         File file = File.new_for_path((string) audio);
         if(file.query_exists() != true){
-            make_base_directory();
+            __make_base_directory();
             }
         }
     catch{}
@@ -273,7 +270,7 @@ public string get_imagenes_directory(){
     try{
         File file = File.new_for_path((string) fotos);
         if(file.query_exists() != true){
-            make_base_directory();
+            __make_base_directory();
             }
         }
     catch{}
@@ -287,7 +284,7 @@ public string get_video_directory(){
     try{
         File file = File.new_for_path((string) videos);
         if(file.query_exists() != true){
-            make_base_directory();
+            __make_base_directory();
             }
         }
     catch{}
@@ -301,7 +298,7 @@ public string get_my_files_directory(){
     try{
         File file = File.new_for_path((string) archivos);
         if(file.query_exists() != true){
-            make_base_directory();
+            __make_base_directory();
             }
         }
     catch{}
@@ -315,7 +312,7 @@ public string get_JAMedia_Directory(){
     try{
         File file = File.new_for_path((string) datos);
         if(file.query_exists() != true){
-            make_base_directory();
+            __make_base_directory();
             }
         }
     catch{}
@@ -370,71 +367,35 @@ def add_stream(tipo, item):
     set_dict(path, _dict)
 */
 
+
 public void set_listas_default(){
-    GLib.stdout.printf("FIXME: Implementar set_listas_default");
-    GLib.stdout.flush();
-    /*
-    """
-    Crea las listas para JAMedia si es que no existen y
-    llena las default en caso de estar vacías.
-    """
-    DIRECTORIO_DATOS = get_data_directory()
 
-    listas = [
-        os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"),
-        os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"),
-        os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia"),
-        os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia"),
-        os.path.join(DIRECTORIO_DATOS, "JAMediaWebCams.JAMedia")
-        ]
+    string data = get_data_directory();
 
-    for archivo in listas:
-        if not os.path.exists(archivo):
-            jamedialista = set_dict(archivo, {})
-            os.chmod(archivo, 0666)
+    string a = GLib.Path.build_filename(data, "JAMediaRadio.JAMedia");
+    string b = GLib.Path.build_filename(data, "JAMediaTV.JAMedia");
+    string c = GLib.Path.build_filename(data, "MisRadios.JAMedia");
+    string d = GLib.Path.build_filename(data, "MisTvs.JAMedia");
+    string e = GLib.Path.build_filename(data, "JAMediaWebCams.JAMedia");
 
-    # verificar si las listas están vacías,
-    # si lo están se descargan las de JAMedia
-    _dict = get_dict(os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia"))
-    lista = _dict.items()
+    string [] lista = {a, b, c, d, e};
 
-    if not lista:
-        try:
-            # Streamings JAMediatv
-            lista_canales = descarga_lista_de_streamings(canales)
-            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
-                "JAMediaTV.JAMedia"), lista_canales)
-        except:
-            print "Error al descargar Streamings de TV."
-
-    # verificar si las listas están vacías,
-    # si lo están se descargan las de JAMedia
-    _dict = get_dict(os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia"))
-    lista = _dict.items()
-
-    if not lista:
-        try:
-            # Streamings JAMediaradio
-            lista_radios = descarga_lista_de_streamings(radios)
-            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
-                "JAMediaRadio.JAMedia"), lista_radios)
-        except:
-            print "Error al descargar Streamings de Radios."
-
-    # verificar si las listas están vacías,
-    # si lo están se descargan las de JAMedia
-    _dict = get_dict(os.path.join(DIRECTORIO_DATOS, "JAMediaWebCams.JAMedia"))
-    lista = _dict.items()
-
-    if not lista:
-        try:
-            # Streamings JAMediaWebCams
-            lista_webcams = descarga_lista_de_streamings(webcams)
-            guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
-                "JAMediaWebCams.JAMedia"), lista_webcams)
-        except:
-            print "Error al descargar Streamings de WebCams."
-    */
+    foreach (string path in lista){
+        GLib.File file = GLib.File.parse_name(path);
+        if (! file.query_exists()){
+            Json.Builder builder = new Json.Builder();
+            builder.begin_object ();
+            builder.end_object();
+            Json.Generator generator = new Json.Generator();
+            Json.Node root = builder.get_root();
+            generator.set_root(root);
+            string str = generator.to_data(null);
+            var file_stream = file.create(FileCreateFlags.PRIVATE);
+            var data_stream = new DataOutputStream(file_stream);
+            data_stream.put_string(str);
+            }
+        }
+    // FIXME: Falta implementar verificación de listas vacías.
     }
 
 
