@@ -151,8 +151,7 @@ public SList<Streaming> descarga_lista_de_streamings(){
 			}
 
         string streamings_text = text.split(cabecera)[1];
-        string streamings_text1 = streamings_text.replace(
-            "</div>", "").replace("/>", "").replace("<div>", "");
+        string streamings_text1 = streamings_text.replace("</div>", "").replace("/>", "").replace("<div>", "");
         string [] lista = streamings_text1.split("<br");
 
         foreach (string s in lista){
@@ -160,8 +159,7 @@ public SList<Streaming> descarga_lista_de_streamings(){
 
             if (length != 2){
                 continue;
-            }
-
+                }
             else{
                 string name = s.split(",")[0].strip();
                 string direc = s.split(",")[1].strip();
@@ -234,8 +232,7 @@ public void get_streaming_default(){
 	    string str = generator.to_data(null);
 
         string home = GLib.Environment.get_variable("HOME");
-        string jamedia = GLib.Path.build_filename(
-            home, "JAMediaDatos", "Datos", "JAMediaRadio.json");
+        string jamedia = GLib.Path.build_filename(home, "JAMediaDatos", "Datos", "JAMediaRadio.json");
 
         var file = File.new_for_path(jamedia);
         var file_stream = file.create(FileCreateFlags.PRIVATE);

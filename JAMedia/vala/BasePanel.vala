@@ -10,6 +10,7 @@ public class BasePanel : Gtk.HPaned{
     public signal void add_stream(string title);
     public signal void show_controls(bool zona, bool ocultar);
     public signal void configurar(bool valor);
+    public signal void actualizar_streamings();
 
     public Izquierda izquierda = null;
     public Derecha derecha = new Derecha();
@@ -44,7 +45,7 @@ public class BasePanel : Gtk.HPaned{
         this.izquierda.stop_record.connect(this.__stop_record);
         this.izquierda.seek.connect(this.__user_set_progress);
         this.izquierda.volumen.connect(this.__set_volumen);
-        this.izquierda.actualizar_streamings.connect(this.__actualizar_streamings);
+        this.izquierda.actualizar_streamings.connect(this.__emit_actualizar_streamings);
 
         GLib.Timeout.add(5000, this.__check_ip);
     }
@@ -54,13 +55,9 @@ public class BasePanel : Gtk.HPaned{
         this.stop_record();
         }
 
-    private void __actualizar_streamings(){
-        GLib.stdout.printf("FIXME: __actualizar_streamings");
-        GLib.stdout.flush();
+    private void __emit_actualizar_streamings(){
         this.menu_activo();
-        //dialog = DialogoDescarga(parent=self.get_toplevel(), force=True)
-        //dialog.run()
-        //dialog.destroy()
+        this.actualizar_streamings();
         //# FIXME: Recargar Lista actual
         }
 
@@ -240,12 +237,5 @@ public class BasePanel : Gtk.HPaned{
 
     public void set_nueva_lista(SList<string> archivos){
         this.derecha.set_nueva_lista(archivos);
-        }
-
-    public void checkear_listas(){
-        // FIXME: Descargar Streamings
-        //dialog = DialogoDescarga(parent=self.get_toplevel(), force=False)
-        //dialog.run()
-        //dialog.destroy()
         }
 }

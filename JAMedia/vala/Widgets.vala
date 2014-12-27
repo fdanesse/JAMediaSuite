@@ -115,39 +115,49 @@ public class Help : Gtk.Dialog{
 }
 
 
-/*
-class DialogoDescarga(gtk.Dialog):
+public class DialogoDescarga : Gtk.Dialog{
 
-    def __init__(self, parent=None, force=True):
+    bool _force = true;
 
-        gtk.Dialog.__init__(self, parent=parent)
+    public DialogoDescarga(Gtk.Window parent, bool force){
 
-        self.set_decorated(False)
-        self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
-        self.set_border_width(15)
+        this.set_transient_for(parent);
+        this.set("border_width", 15);
+        this.set_decorated(false);
+        this.set_resizable(false);
 
-        self.force = force
+        this._force = force;
 
-        label = gtk.Label("*** Descargando Streamings de JAMedia ***")
-        label.show()
+        Gtk.Label label = new Gtk.Label("*** Descargando Streamings de JAMedia ***");
+        label.show();
 
-        self.vbox.pack_start(label, True, True, 5)
-        self.connect("realize", self.__do_realize)
+        Gtk.Box vbox = this.get_content_area ();
+        vbox.pack_start(label, true, true, 5);
+        this.realize.connect(this.__do_realize);
+    }
 
-    def __do_realize(self, widget):
-        gobject.timeout_add(500, self.__descargar)
+    private void __do_realize(){
+        GLib.Timeout.add(500, this.__descargar);
+        }
 
-    def __descargar(self):
-        if self.force:
-            if get_ip():
-                get_streaming_default()
-            else:
-                print "No estás conectado a Internet"
-        else:
-            set_listas_default()
-        self.destroy()
-        return False
-*/
+    private bool __descargar(){
+        if (this._force){
+            if (get_ip()){
+                download_streamings();
+                }
+            else{
+                GLib.stdout.printf("No estás conectado a Internet\n");
+                GLib.stdout.flush();
+                }
+            }
+        else{
+            set_listas_default();
+            }
+        this.destroy();
+        return false;
+        }
+}
+
 
 public class MouseSpeedDetector : GLib.Object{
     /*

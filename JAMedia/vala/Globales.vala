@@ -2,76 +2,6 @@
 using Soup;
 using Json;
 
-/*
-canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-tv-2014'
-radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014'
-webcams = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014'
-
-
-def convert_shelve_to_json(path):
-    print "Convert:", path
-    import shelve
-    _dict = {}
-    try:
-        archivo = shelve.open(path)
-        _dict = dict(archivo)
-        archivo.close()
-        borrar(path)
-        set_dict(path, _dict)
-    except:
-        pass
-    return _dict
-
-
-def get_dict(path):
-    if not os.path.exists(path):
-        return {}
-    try:
-        archivo = codecs.open(path, "r", "utf-8")
-        _dict = json.JSONDecoder(encoding="utf-8").decode(archivo.read())
-        archivo.close()
-    except:
-        _dict = convert_shelve_to_json(path)
-    return _dict
-
-
-def set_dict(path, _dict):
-    archivo = open(path, "w")
-    archivo.write(
-        json.dumps(
-            _dict,
-            indent=4,
-            separators=(", ", ":"),
-            sort_keys=True))
-    archivo.close()
-
-
-def get_colors(key):
-    from gtk import gdk
-    _dict = {
-        "window": "#ffffff",
-        "toolbars": "#778899",
-        "widgetvideoitem": "#f0e6aa",
-        "drawingplayer": "#000000",
-        "naranaja": "#ff6600",
-        }
-    return gdk.color_parse(_dict.get(key, "#ffffff"))
-*/
-
-public bool get_ip(){
-    //FIXME: Corregir
-    return true;
-    /*
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("google.com", 80))
-        ret = s.getsockname()[0]
-        s.close()
-        return bool(ret)
-    except:
-        return False
-    */
-    }
 
 /*
 def describe_archivo(archivo):
@@ -166,7 +96,8 @@ def copiar(origen, destino):
 
 */
 
-public void make_base_directory(){
+
+private void make_base_directory(){
     try {
         string home = GLib.Environment.get_variable("HOME");
         string jamedia = GLib.Path.build_filename(home, "JAMediaDatos");
@@ -187,6 +118,110 @@ public void make_base_directory(){
             }
         }
     catch{}
+    }
+
+
+private SList<Streaming> __descarga_lista_de_streamings(string url){
+    GLib.stdout.printf("Conectandose a: %s \n\tDescargando Streamings . . .", url);
+    GLib.stdout.flush();
+
+    string cabecera = "JAMedia Channels:";
+    SList<Streaming> streamings = new SList<Streaming>();
+
+    try{
+        Soup.SessionSync session = new Soup.SessionSync();
+        Soup.Request request = session.request(url);
+        InputStream stream = request.send();
+        DataInputStream data_stream = new DataInputStream(stream);
+
+        string? line;
+        string text = "";
+		while ((line = data_stream.read_line()) != null){
+		    text += line;
+			}
+
+        string streamings_text = text.split(cabecera)[1];
+        string streamings_text1 = streamings_text.replace("</div>", "").replace("/>", "").replace("<div>", "");
+        string [] lista = streamings_text1.split("<br");
+
+        foreach (string s in lista){
+            int length = s.split(",").length;
+
+            if (length != 2){
+                continue;
+                }
+            else{
+                string name = s.split(",")[0].strip();
+                string direc = s.split(",")[1].strip();
+
+                //FIXME: No es posible en SList
+                //if (direc in urls){
+                //    stdout.printf("Direccion Descartada por Repetición: %s, %s\n", name, direc);
+                //}
+                //else{
+                    //urls.append(direc);
+                    Streaming streaming = new Streaming(name, direc);
+                    streamings.append(streaming);
+                //}
+            }
+        }
+
+        //stdout.printf("\tSe han Descargado: %s Estreamings.\n",
+        //    (string) streamings.length);
+        }
+
+    catch (Error e){
+        stderr.printf ("Error: %s\n", e.message);
+        }
+
+    return streamings;
+    }
+
+
+private void __guarda_lista_de_streamings(string path, SList<Streaming> items){
+    GLib.File f = GLib.File.parse_name(path);
+    if (f.query_exists()){
+        GLib.FileUtils.remove(path);
+        }
+
+    Json.Builder builder = new Json.Builder();
+    builder.begin_object ();
+
+    foreach (Streaming s in items){
+        builder.set_member_name(s.nombre);
+        builder.add_string_value(s.path);
+	    }
+
+    builder.end_object();
+
+    //FIXME: No se entiende pero está acá :P
+    //https://mail.gnome.org/archives/commits-list/2012-September/msg03363.html
+
+    Json.Generator generator = new Json.Generator();
+    Json.Node root = builder.get_root();
+    generator.set_root(root);
+    string str = generator.to_data(null);
+
+    var file = GLib.File.new_for_path(path);
+    var file_stream = file.create(FileCreateFlags.PRIVATE);
+    var data_stream = new DataOutputStream(file_stream);
+    data_stream.put_string(str);
+    }
+
+
+public bool get_ip(){
+    //FIXME: Corregir
+    return true;
+    /*
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("google.com", 80))
+        ret = s.getsockname()[0]
+        s.close()
+        return bool(ret)
+    except:
+        return False
+    */
     }
 
 
@@ -333,9 +368,12 @@ def add_stream(tipo, item):
     _dict = get_dict(path)
     _dict[item[0].strip()] = item[1].strip()
     set_dict(path, _dict)
+*/
 
-
-def set_listas_default():
+public void set_listas_default(){
+    GLib.stdout.printf("FIXME: Implementar set_listas_default");
+    GLib.stdout.flush();
+    /*
     """
     Crea las listas para JAMedia si es que no existen y
     llena las default en caso de estar vacías.
@@ -396,116 +434,26 @@ def set_listas_default():
                 "JAMediaWebCams.JAMedia"), lista_webcams)
         except:
             print "Error al descargar Streamings de WebCams."
+    */
+    }
 
 
-def get_streaming_default():
-    """
-    Descarga los streaming desde la web de JAMedia.
-    """
-    DIRECTORIO_DATOS = get_data_directory()
+public void download_streamings(){
 
-    try:
-        # Streamings JAMediatv
-        lista_canales = descarga_lista_de_streamings(canales)
-        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
-            "JAMediaTV.JAMedia"))
-        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
-            "JAMediaTV.JAMedia"), lista_canales)
-    except:
-        print "Error al descargar Streamings de TV."
+    string data = get_data_directory();
 
-    try:
-        # Streamings JAMediaradio
-        lista_radios = descarga_lista_de_streamings(radios)
-        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
-            "JAMediaRadio.JAMedia"))
-        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
-            "JAMediaRadio.JAMedia"), lista_radios)
-    except:
-        print "Error al descargar Streamings de Radios."
+    string a = GLib.Path.build_filename(data, "JAMediaRadio.JAMedia");
+    string b = GLib.Path.build_filename(data, "JAMediaTV.JAMedia");
+    string c = GLib.Path.build_filename(data, "JAMediaWebCams.JAMedia");
 
-    try:
-        # Streamings JAMediaWebCams
-        lista_webcams = descarga_lista_de_streamings(webcams)
-        clear_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
-            "JAMediaWebCams.JAMedia"))
-        guarda_lista_de_streamings(os.path.join(DIRECTORIO_DATOS,
-            "JAMediaWebCams.JAMedia"), lista_webcams)
-    except:
-        print "Error al descargar Streamings de webcams."
+    SList<Streaming> radios = __descarga_lista_de_streamings("https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014");
+    SList<Streaming> canales = __descarga_lista_de_streamings("https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-tv-2014");
+    SList<Streaming> cams = __descarga_lista_de_streamings("https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-webcams-2014");
 
-
-def descarga_lista_de_streamings(url):
-    """
-    Recibe la web donde se publican los streamings de radio o televisión de
-    JAMedia y devuelve la lista de streamings.
-
-    Un streaming se representa por una lista:
-        [nombre, url]
-    """
-
-    print "Conectandose a:", url, "\n\tDescargando Streamings . . ."
-
-    import urllib
-
-    cont = 0
-    urls = []
-    cabecera = 'JAMedia Channels:'
-    streamings = []
-
-    try:
-        web = urllib.urlopen(url)
-        t = web.readlines()
-        web.close()
-
-        text = ""
-        for l in t:
-            text = "%s%s" % (text, l)
-
-        streamings_text = text.split(cabecera)[1]
-        streamings_text = streamings_text.replace('</div>', "")
-        streamings_text = streamings_text.replace('/>', "")
-        lista = streamings_text.split('<br')
-
-        for s in lista:
-            if not len(s.split(",")) == 2:
-                continue
-
-            name, direc = s.split(",")
-            name = name.strip()
-            direc = direc.strip()
-
-            if not direc in urls:
-                urls.append(direc)
-                stream = [name, direc]
-                streamings.append(stream)
-                cont += 1
-
-            else:
-                print "Direccion Descartada por Repetición:", name, direc
-
-        print "\tSe han Descargado:", cont, "Estreamings.\n"
-        return streamings
-
-    except:
-        return []
-
-
-def clear_lista_de_streamings(path):
-    set_dict(path, {})
-
-
-def guarda_lista_de_streamings(path, items):
-    """
-    Recibe el path a un archivo de lista de streamings
-    de JAMedia y una lista de items [nombre, url] y los almacena
-    en el archivo.
-    """
-    _dict = get_dict(path)
-    for item in items:
-        _dict[item[0].strip()] = item[1].strip()
-    set_dict(path, _dict)
-*/
+    __guarda_lista_de_streamings(a, radios);
+    __guarda_lista_de_streamings(b, canales);
+    __guarda_lista_de_streamings(c, cams);
+    }
 
 
 public SList<Streaming> get_streamings(string path){
@@ -520,9 +468,9 @@ public SList<Streaming> get_streamings(string path){
         unowned Json.Node item = obj.get_member(name);
         Streaming streaming = new Streaming(name, item.get_string());
         streaming_list.append(streaming);
-    }
+        }
     return streaming_list;
-}
+    }
 
 
 /*

@@ -145,7 +145,6 @@ class JAMedia(gtk.Window):
 
         gobject.idle_add(self.__setup_init)
         print "JAMedia process:", os.getpid()
-        self.base_panel.checkear_listas()
 
     def __realize(self, window):
         self.cursor_root = self.get_property("window").get_cursor()
@@ -233,6 +232,9 @@ class JAMedia(gtk.Window):
             self.base_panel.set_nueva_lista(self.archivos)
             self.archivos = []
         self.set_sensitive(True)
+        dialog = DialogoDescarga(parent=self, force=False)
+        dialog.run()
+        dialog.destroy()
         return False
 
     def __accion_toolbar(self, widget, accion):

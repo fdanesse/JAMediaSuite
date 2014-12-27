@@ -79,6 +79,7 @@ public class JAMedia : Gtk.Window{
         this.toolbarsalir.salir.connect(this.__salir);
 
         this.base_panel.show_controls.connect(this.__ocultar_controles);
+        this.base_panel.actualizar_streamings.connect(this.__actualizar_streamings);
         //self.base_panel.connect("accion-list", self.__accion_list)
         this.base_panel.menu_activo.connect(this.__cancel_toolbars);
         this.base_panel.add_stream.connect(this.__run_add_stream);
@@ -95,7 +96,12 @@ public class JAMedia : Gtk.Window{
         GLib.Idle.add(this.__setup_init);
         GLib.stdout.printf("JAMedia process: %i\n", Posix.getpid());
         GLib.stdout.flush();
-        this.base_panel.checkear_listas();
+        }
+
+    private void __actualizar_streamings(){
+        DialogoDescarga dialog = new DialogoDescarga(this, true);
+        dialog.run();
+        dialog.destroy();
         }
 
     private void __activar_config(bool valor){
@@ -207,6 +213,9 @@ public class JAMedia : Gtk.Window{
             this.archivos = null;
             }
         this.set_sensitive(true);
+        DialogoDescarga dialog = new DialogoDescarga(this, false);
+        dialog.run();
+        dialog.destroy();
         return false;
         }
 

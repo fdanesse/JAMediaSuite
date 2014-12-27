@@ -419,7 +419,7 @@ def set_listas_default():
             print "Error al descargar Streamings de WebCams."
 
 
-def get_streaming_default():
+def download_streamings():
     """
     Descarga los streaming desde la web de JAMedia.
     """

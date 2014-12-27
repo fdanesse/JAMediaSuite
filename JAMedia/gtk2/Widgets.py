@@ -56,7 +56,7 @@ class DialogoDescarga(gtk.Dialog):
     def __descargar(self):
         if self.force:
             if get_ip():
-                get_streaming_default()
+                download_streamings()
             else:
                 print "No estás conectado a Internet"
         else:

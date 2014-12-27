@@ -266,8 +266,3 @@ class BasePanel(gtk.HPaned):
 
     def set_nueva_lista(self, archivos):
         self.derecha.set_nueva_lista(archivos)
-
-    def checkear_listas(self):
-        dialog = DialogoDescarga(parent=self.get_toplevel(), force=False)
-        dialog.run()
-        dialog.destroy()
