@@ -33,6 +33,7 @@ from Toolbars import ToolbarAccion
 from Toolbars import ToolbarAddStream
 
 from Widgets import MouseSpeedDetector
+from Widgets import DialogoDescarga
 from BasePanel import BasePanel
 
 from JAMediaReproductor.JAMediaGrabador import JAMediaGrabador

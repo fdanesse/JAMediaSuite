@@ -25,7 +25,7 @@ import gobject
 
 from Globales import get_colors
 from Globales import get_boton
-from Globales import get_streaming_default
+from Globales import download_streamings
 from Globales import set_listas_default
 from Globales import get_ip
 
