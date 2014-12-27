@@ -80,7 +80,8 @@ public class JAMedia : Gtk.Window{
 
         this.base_panel.show_controls.connect(this.__ocultar_controles);
         this.base_panel.actualizar_streamings.connect(this.__actualizar_streamings);
-        //self.base_panel.connect("accion-list", self.__accion_list)
+        this.base_panel.accion_list.connect(this.__accion_list);
+
         this.base_panel.menu_activo.connect(this.__cancel_toolbars);
         this.base_panel.add_stream.connect(this.__run_add_stream);
         //self.base_panel.connect("stop-record", self.__detener_grabacion)
@@ -311,9 +312,9 @@ public class JAMedia : Gtk.Window{
         this.add_stream.hide();
         }
 
-    //def __accion_list(self, widget, lista, accion, _iter):
-    //    # borrar, copiar, mover, grabar, etc . . .
-    //    self.toolbar_accion.set_accion(lista, accion, _iter)
+    private void __accion_list(Gtk.ListStore lista, string accion, Gtk.TreePath path){
+        this.toolbaraccion.set_accion(lista, accion, path);
+        }
 
     //def set_archivos(self, archivos):
     //    self.archivos = archivos

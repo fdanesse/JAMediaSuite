@@ -1,16 +1,12 @@
 public class BasePanel : Gtk.HPaned{
 
-    //__gsignals__ = {
-    //"accion-list": (gobject.SIGNAL_RUN_LAST,
-    //    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-    //    gobject.TYPE_STRING, gobject.TYPE_PYOBJECT))}
-
     public signal void menu_activo();
     public signal void stop_record();
     public signal void add_stream(string title);
     public signal void show_controls(bool zona, bool ocultar);
     public signal void configurar(bool valor);
     public signal void actualizar_streamings();
+    public signal void accion_list (Gtk.ListStore lista, string accion, Gtk.TreePath path);
 
     public Izquierda izquierda = null;
     public Derecha derecha = new Derecha();
@@ -30,8 +26,7 @@ public class BasePanel : Gtk.HPaned{
         this.show_all();
 
         this.derecha.cargar_reproducir.connect(this.__cargar_reproducir);
-        //self.derecha.connect("accion-list", self.__emit_accion_list)
-
+        this.derecha.accion_list.connect(this.__emit_accion_list);
         this.derecha.menu_activo.connect(this.__emit_menu_activo);
         this.derecha.add_stream.connect(this.__emit_add_stream);
         this.derecha.accion_controls.connect(this.__accion_controls);
@@ -88,11 +83,10 @@ public class BasePanel : Gtk.HPaned{
         this.izquierda.buffer_info.hide();
         }
 
-    /*
-    def __emit_accion_list(self, widget, lista, accion, _iter):
-        # borrar, copiar, mover, grabar, etc . . .
-        self.emit("accion-list", lista, accion, _iter)
-    */
+    private void __emit_accion_list(Gtk.ListStore lista, string accion, Gtk.TreePath path){
+        // borrar, copiar, mover, grabar, etc . . .
+        this.accion_list(lista, accion, path);
+        }
 
     private void __accion_controls(string accion){
         this.__emit_menu_activo();

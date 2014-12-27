@@ -2,9 +2,6 @@ public class Derecha : Gtk.EventBox{
 
     /*
     __gsignals__ = {
-    "accion-list": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
     "add_remove_efecto": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,
         gobject.TYPE_BOOLEAN)),
@@ -18,6 +15,7 @@ public class Derecha : Gtk.EventBox{
     public signal void add_stream(string title);
     public signal void menu_activo();
     public signal void balance_valor(string prop, double valor);
+    public signal void accion_list (Gtk.ListStore lista, string accion, Gtk.TreePath path);
 
     private Gtk.ScrolledWindow scroll = new Gtk.ScrolledWindow(null, null);
     public BalanceWidget balance = new BalanceWidget();
@@ -50,7 +48,7 @@ public class Derecha : Gtk.EventBox{
         //#self.efectos.connect("configurar_efecto", self.__emit_config_efecto)
 
         this.lista.nueva_seleccion.connect(this.__emit_cargar_reproducir);
-        //self.lista.connect("accion-list", self.__emit_accion_list)
+        this.lista.accion_list.connect(this.__emit_accion_list);
 
         this.lista.menu_activo.connect(this.__emit_menu_activo);
         this.lista.add_stream.connect(this.__emit_add_stream);
@@ -76,11 +74,10 @@ public class Derecha : Gtk.EventBox{
         this.menu_activo();
         }
 
-    /*
-    def __emit_accion_list(self, widget, lista, accion, _iter):
-        # borrar, copiar, mover, grabar, etc . . .
-        self.emit("accion-list", lista, accion, _iter)
-    */
+    private void __emit_accion_list(Gtk.ListStore lista, string accion, Gtk.TreePath path){
+        // borrar, copiar, mover, grabar, etc . . .
+        this.accion_list(lista, accion, path);
+        }
 
     private void __emit_cargar_reproducir(string pista){
         if (pista != null){

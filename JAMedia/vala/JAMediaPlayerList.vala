@@ -1,15 +1,10 @@
 
 public class JAMediaPlayerList : Gtk.Frame{
-    /*
-    __gsignals__ = {
-    "accion-list": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,
-        gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)),
-    */
 
     public signal void nueva_seleccion(string pista);
     public signal void add_stream(string title);
     public signal void menu_activo();
+    public signal void accion_list (Gtk.ListStore lista, string accion, Gtk.TreePath path);
 
     private SList<string> mime = new SList<string> ();
     private string directorio = "";
@@ -43,7 +38,10 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.toolbar.menu_activo.connect(this.__emit_menu_activo);
 
         this.lista.nueva_seleccion.connect(this.__emit_nueva_seleccion);
-        //FIXME:self.lista.connect("button-press-event", self.__click_derecho_en_lista)
+        this.lista.button_press_event.connect ((event) => {
+			bool ret = this.__click_derecho_en_lista(event);
+			return ret;
+		    });
     }
 
     private void __emit_add_stream(){
@@ -54,10 +52,10 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.menu_activo();
         }
 
-    //def __emit_accion_list(self, widget, lista, accion, _iter):
-    // FIXME: Implementar
-    //    # borrar, copiar, mover, grabar, etc . . .
-    //    self.emit("accion-list", lista, accion, _iter)
+    private void __emit_accion_list(Gtk.ListStore lista, string accion, Gtk.TreePath path){
+        // borrar, copiar, mover, grabar, etc . . .
+        this.accion_list(lista, accion, path);
+        }
 
     private void __emit_nueva_seleccion(string pista){
         this.nueva_seleccion(pista);
@@ -112,32 +110,25 @@ public class JAMediaPlayerList : Gtk.Frame{
             }
         }
 
-    /*
-    def __click_derecho_en_lista(self, widget, event):
-        boton = event.button
-        pos = (event.x, event.y)
-        tiempo = event.time
-        path, columna, xdefondo, ydefondo = (None, None, None, None)
-        try:
-            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
-                int(pos[0]), int(pos[1]))
-        except:
-            return
-        # TreeView.get_path_at_pos(event.x, event.y) devuelve:
-        # * La ruta de acceso en el punto especificado (x, y),
-        # en relación con las coordenadas widget
-        # * El gtk.TreeViewColumn en ese punto
-        # * La coordenada X en relación con el fondo de la celda
-        # * La coordenada Y en relación con el fondo de la celda
-        if boton == 1 or boton == 2:
-            return
-        elif boton == 3:
-            self.__emit_menu_activo()
-            menu = MenuList(
-                widget, boton, pos, tiempo, path, widget.get_model())
-            menu.connect('accion', self.__emit_accion_list)
-            gtk.Menu.popup(menu, None, None, None, boton, tiempo)
-    */
+    private bool __click_derecho_en_lista(Gdk.EventButton event){
+
+        if ((int) event.button == 3){
+            this.__emit_menu_activo();
+            Gtk.TreePath path;
+            Gtk.TreeViewColumn column;
+            int cell_x;
+            int cell_y;
+            this.lista.get_path_at_pos ((int) event.x, (int) event.y, out path, out column, out cell_x, out cell_y);
+            MenuList menu = new MenuList(this.lista, path, this.lista.lista);
+            menu.accion.connect ((lista, accion, path) => {
+			    this.__emit_accion_list(lista, accion, path);
+		        });
+		    return true;
+            }
+        else{
+            return false;
+            }
+    }
 
     public void seleccionar_primero(){
         this.lista.seleccionar_primero();
@@ -254,7 +245,7 @@ public class Lista : Gtk.TreeView{
 
     public signal void nueva_seleccion(string pista);
 
-    private Gtk.ListStore lista = new Gtk.ListStore(3, typeof (Gdk.Pixbuf), typeof (string), typeof (string));
+    public Gtk.ListStore lista = new Gtk.ListStore(3, typeof (Gdk.Pixbuf), typeof (string), typeof (string));
     private bool permitir_select = true;
     private string valor_select = null;
     private string ultimo_select = null;
@@ -625,6 +616,92 @@ public class My_FileChooser : Gtk.FileChooserDialog{
 
     private void __salir(){
         this.destroy();
+        }
+}
+
+
+public class MenuList : Gtk.Menu{
+
+    public signal void accion (Gtk.ListStore lista, string accion, Gtk.TreePath path);
+
+    public MenuList(Gtk.Widget widget, Gtk.TreePath path, Gtk.ListStore model){
+
+        Gtk.TreeIter _iter;
+	    GLib.Value val3;
+
+	    model.get_iter(out _iter, path);
+        model.get_value(_iter, 2, out val3);
+
+	    //_val1 = (string) val1.get_string ();
+	    //_val2 = (string) val2.get_string ();
+
+        Gtk.MenuItem item1 = new Gtk.MenuItem.with_label("Quitar de la Lista");
+        item1.activate.connect (() => {
+			this.__emit_accion(model, path, "Quitar");
+		    });
+        this.append(item1);
+
+        /*
+        my_files_directory = get_my_files_directory()
+
+        if describe_acceso_uri(uri):
+            lectura, escritura, ejecucion = describe_acceso_uri(uri)
+            if lectura and os.path.dirname(uri) != my_files_directory:
+                copiar = gtk.MenuItem("Copiar a JAMedia")
+                self.append(copiar)
+                copiar.connect_object("activate", self.__emit_accion, widget, path, "Copiar")
+            if escritura and os.path.dirname(uri) != my_files_directory:
+                mover = gtk.MenuItem("Mover a JAMedia")
+                self.append(mover)
+                mover.connect_object("activate", self.__emit_accion, widget, path, "Mover")
+            if escritura:
+                borrar = gtk.MenuItem("Borrar el Archivo")
+                self.append(borrar)
+                borrar.connect_object("activate", self.__emit_accion, widget, path, "Borrar")
+            #tipo = describe_archivo(uri)
+            #if "audio" in tipo or "video" in tipo or
+            # "application/ogg" in tipo:
+            #    editar = gtk.MenuItem("Editar o Convertir Archivo")
+            #    self.append(editar)
+            #    editar.connect_object("activate", self.__emit_accion,
+            #        widget, path, "Editar")
+        else:
+            borrar = gtk.MenuItem("Borrar Streaming")
+            self.append(borrar)
+            borrar.connect_object("activate", self.__emit_accion, widget, path, "Borrar")
+            listas = [
+                os.path.join(get_data_directory(), "JAMediaTV.JAMedia"),
+                os.path.join(get_data_directory(), "JAMediaRadio.JAMedia"),
+                os.path.join(get_data_directory(), "MisRadios.JAMedia"),
+                os.path.join(get_data_directory(), "MisTvs.JAMedia"),
+                os.path.join(get_data_directory(), "JAMediaWebCams.JAMedia"),
+                ]
+            jtv = stream_en_archivo(uri, listas[0])
+            jr = stream_en_archivo(uri, listas[1])
+            r = stream_en_archivo(uri, listas[2])
+            tv = stream_en_archivo(uri, listas[3])
+            #webcam = stream_en_archivo(uri, listas[4])
+
+            if (jtv and not tv) or (jr and not r):
+                copiar = gtk.MenuItem("Copiar a JAMedia")
+                self.append(copiar)
+                copiar.connect_object("activate", self.__emit_accion, widget, path, "Copiar")
+                mover = gtk.MenuItem("Mover a JAMedia")
+                self.append(mover)
+                mover.connect_object("activate", self.__emit_accion, widget, path, "Mover")
+
+            grabar = gtk.MenuItem("Grabar")
+            self.append(grabar)
+            grabar.connect_object("activate", self.__emit_accion, widget, path, "Grabar")
+        */
+
+        this.popup(null, null, null, 1, Gtk.get_current_event_time());
+        this.show_all();
+        this.attach_to_widget(widget, null);
+    }
+
+    private void __emit_accion(Gtk.ListStore model, Gtk.TreePath path, string accion){
+        this.accion(model, accion, path);
         }
 }
 

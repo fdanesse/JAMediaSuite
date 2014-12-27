@@ -97,8 +97,7 @@ public class MenuStreamList : Gtk.Menu{
     private string _val2;
     private string _val3;
 
-    public MenuStreamList(Gtk.Widget widget, Gtk.TreePath _path,
-        Gtk.ListStore _model){
+    public MenuStreamList(Gtk.Widget widget, Gtk.TreePath _path, Gtk.ListStore _model){
 
         this.lista = _model;
         this.pathstream = _path;

@@ -17,18 +17,18 @@ public class Toolbar : Gtk.EventBox{
         Gtk.ToolButton button1 = get_button("Iconos/JAMedia.svg", false, Gdk.PixbufRotation.NONE, 35, "Creditos");
 		button1.clicked.connect (() => {
 			this.__emit_credits();
-		});
+		    });
 		toolbar.insert(button1, -1);
 
         Gtk.ToolButton button2 = get_button("Iconos/JAMedia-help.svg", false, Gdk.PixbufRotation.NONE, 24, "Ayuda");
 		button2.clicked.connect (() => {
 			this.__emit_help();
-		});
+		    });
 		toolbar.insert(button2, -1);
 
 		this.configurar.clicked.connect (() => {
 			this.__emit_accion("show-config");
-		});
+		    });
 		toolbar.insert(this.configurar, -1);
 
         Gtk.SeparatorToolItem separador2 = get_separador(false, 0, true);
@@ -37,7 +37,7 @@ public class Toolbar : Gtk.EventBox{
         Gtk.ToolButton button4 = get_button("Iconos/button-cancel.svg", false, Gdk.PixbufRotation.NONE, 24, "Salir");
 		button4.clicked.connect (() => {
 			this.__emit_accion("salir");
-		});
+		    });
 		toolbar.insert(button4, -1);
 
         Gtk.SeparatorToolItem separador3 = get_separador(false, 3, false);
@@ -125,7 +125,11 @@ public class ToolbarAccion : Gtk.EventBox{
 
     public signal void grabar(string stream);
     public signal void accion_stream(string accion, string stream);
+
     private Gtk.Label label = new Gtk.Label("");
+    private Gtk.ListStore lista = null;
+    private string accion = null;
+    private Gtk.TreePath path = null;
 
     public ToolbarAccion(){
 
@@ -137,7 +141,7 @@ public class ToolbarAccion : Gtk.EventBox{
         Gtk.ToolButton button1 = get_button("Iconos/button-cancel.svg", false, Gdk.PixbufRotation.NONE, 24, "Cancelar");
 		button1.clicked.connect (() => {
 			this.cancelar();
-		});
+		    });
 		toolbar.insert(button1, -1);
 
         Gtk.SeparatorToolItem separador2 = get_separador(false, 3, false);
@@ -154,7 +158,7 @@ public class ToolbarAccion : Gtk.EventBox{
         Gtk.ToolButton button2 = get_button("Iconos/dialog-ok.svg", false, Gdk.PixbufRotation.NONE, 24, "Aceptar");
 		button2.clicked.connect (() => {
 			this.__realizar_accion();
-		});
+		    });
 		toolbar.insert(button2, -1);
 
         Gtk.SeparatorToolItem separador4 = get_separador(false, 0, true);
@@ -165,8 +169,17 @@ public class ToolbarAccion : Gtk.EventBox{
     }
 
     public void __realizar_accion(){
+
+        Gtk.TreeIter _iter;
+	    GLib.Value val3;
+
+	    this.lista.get_iter(out _iter, this.path);
+        this.lista.get_value(_iter, 2, out val3);
+
+        GLib.stdout.printf("%s - %s\n", this.accion, val3.get_string ());
+        GLib.stdout.flush();
+
         /*
-    def __realizar_accion(self, widget):
         """
         Ejecuta una accion sobre un archivo o streaming en la lista.
         """
@@ -212,46 +225,38 @@ public class ToolbarAccion : Gtk.EventBox{
                     self.__reselect(path)
                 elif self.accion == "Grabar":
                     self.emit("grabar", uri)
-        self.cancelar()
         */
+        this.cancelar();
         }
 
-        /*
-    def __reselect(self, path):
-        try:
-            if path[0] > -1:
-                self.lista.get_selection().select_iter(
-                    self.lista.get_model().get_iter(path))
-            else:
-                self.lista.seleccionar_primero()
-        except:
-            self.lista.seleccionar_primero()
+    public void set_accion(Gtk.ListStore lista, string accion, Gtk.TreePath path){
 
-    def set_accion(self, lista, accion, _iter):
-        """
-        Configura una accion sobre un archivo o streaming y muestra
-        toolbaraccion para que el usuario confirme o cancele dicha accion.
-        """
-        self.lista = lista
-        self.accion = accion
-        self.iter = _iter
-        if self.lista and self.accion and self.iter:
-            uri = self.lista.get_model().get_value(self.iter, 2)
-            texto = uri
-            if os.path.exists(uri):
-                texto = os.path.basename(uri)
-            if len(texto) > 30:
-                texto = " . . . " + str(texto[len(texto) - 30:-1])
-            self.label.set_text("¿%s?: %s" % (accion, texto))
-            self.show_all()
-    */
+        this.lista = lista;
+        this.accion = accion;
+        this.path = path;
+
+        if (this.lista != null && this.accion != null && this.path != null){
+            Gtk.TreeIter _iter;
+            GLib.Value val2;
+            lista.get_iter(out _iter, path);
+            lista.get_value(_iter, 1, out val2);
+            string texto = val2.get_string();
+            //FIXME: Analizar si reimplementarlo así:
+            //if os.path.exists(val3.get_string()):
+            //  texto = os.path.basename(uri)
+            //string texto = val2.get_string();
+            //if (texto.length > 30){
+            //    texto = " . . . " + str(texto[len(texto) - 30:-1])
+            //    }
+            this.label.set_text(string.join(" ", "¿", accion, "?: ", texto));
+            this.show_all();
+            }
+        }
 
     public void cancelar(){
-        /*
-        self.lista = None
-        self.accion = None
-        self.iter = None
-        */
+        this.lista = null;
+        this.accion = null;
+        this.path = null;
         this.label.set_text("");
         this.hide();
         }

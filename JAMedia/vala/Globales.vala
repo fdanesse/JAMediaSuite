@@ -183,15 +183,13 @@ private void __guarda_lista_de_streamings(string path, SList<Streaming> items){
 
     Json.Builder builder = new Json.Builder();
     builder.begin_object ();
-
     foreach (Streaming s in items){
         builder.set_member_name(s.nombre);
         builder.add_string_value(s.path);
 	    }
-
     builder.end_object();
 
-    //FIXME: No se entiende pero está acá :P
+    //No se entiende pero está acá :P
     //https://mail.gnome.org/archives/commits-list/2012-September/msg03363.html
 
     Json.Generator generator = new Json.Generator();
