@@ -64,7 +64,9 @@ class PlayerList(gtk.Frame):
     "menu_activo": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, []),
     "add_stream": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
+    "len_items": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_INT, ))}
 
     def __init__(self):
 
@@ -98,6 +100,10 @@ class PlayerList(gtk.Frame):
 
         self.lista.connect("nueva-seleccion", self.__emit_nueva_seleccion)
         self.lista.connect("button-press-event", self.__click_derecho_en_lista)
+        self.lista.connect("len_items", self.__re_emit_len_items)
+
+    def __re_emit_len_items(self, widget, items):
+        self.emit("len_items", items)
 
     def __emit_add_stream(self, widget):
         # El usuario agregará una dirección de streaming
@@ -269,7 +275,9 @@ class Lista(gtk.TreeView):
 
     __gsignals__ = {
     "nueva-seleccion": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, ))}
+        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
+    "len_items": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_INT, ))}
 
     def __init__(self):
 
@@ -281,9 +289,9 @@ class Lista(gtk.TreeView):
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
 
+        self.len_items = 0
         self.permitir_select = True
         self.valor_select = False
-        self.ultimo_select = False
 
         self.__setear_columnas()
 
@@ -295,19 +303,18 @@ class Lista(gtk.TreeView):
     def __selecciones(self, path, column):
         if not self.permitir_select:
             return True
+        self.permitir_select = False
         _iter = self.get_model().get_iter(path)
         valor = self.get_model().get_value(_iter, 2)
         if self.valor_select != valor:
-            self.valor_select = valor
-            gobject.timeout_add(3, self.__select,
-                self.get_model().get_path(_iter))
+            gobject.timeout_add(3, self.__select, _iter, valor)
         return True
 
-    def __select(self, path):
-        if self.ultimo_select != self.valor_select:
-            self.emit('nueva-seleccion', self.valor_select)
-            self.ultimo_select = self.valor_select
-        self.scroll_to_cell(path)
+    def __select(self, _iter, valor):
+        self.valor_select = valor
+        self.emit('nueva-seleccion', self.valor_select)
+        self.scroll_to_cell(self.get_model().get_path(_iter))
+        self.permitir_select = True
         return False
 
     def __setear_columnas(self):
@@ -382,8 +389,11 @@ class Lista(gtk.TreeView):
         self.valor_select = False
         self.ultimo_select = False
         self.permitir_select = True
+        self.emit("len_items", 0)
 
     def agregar_items(self, elementos):
+        self.len_items = len(elementos)
+        self.emit("len_items", self.len_items)
         gobject.idle_add(self.__ejecutar_agregar_elemento, elementos)
 
     def seleccionar_siguiente(self, widget=None):
@@ -392,7 +402,10 @@ class Lista(gtk.TreeView):
             self.get_selection().select_iter(
                 self.get_model().iter_next(_iter))
         except:
-            self.seleccionar_primero()
+            if self.len_items == 1:
+                self.emit('nueva-seleccion', self.valor_select)
+            else:
+                self.seleccionar_primero()
         return False
 
     def seleccionar_anterior(self, widget=None):
