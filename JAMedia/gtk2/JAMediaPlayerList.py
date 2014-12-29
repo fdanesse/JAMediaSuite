@@ -389,6 +389,7 @@ class Lista(gtk.TreeView):
         self.valor_select = False
         self.ultimo_select = False
         self.permitir_select = True
+        self.len_items = 0
         self.emit("len_items", 0)
 
     def agregar_items(self, elementos):

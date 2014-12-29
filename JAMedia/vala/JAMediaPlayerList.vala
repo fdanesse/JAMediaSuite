@@ -5,6 +5,7 @@ public class JAMediaPlayerList : Gtk.Frame{
     public signal void add_stream(string title);
     public signal void menu_activo();
     public signal void accion_list (Gtk.ListStore lista, string accion, Gtk.TreePath path);
+    public signal void len_items (int items);
 
     private SList<string> mime = new SList<string> ();
     private string directorio = "";
@@ -42,7 +43,12 @@ public class JAMediaPlayerList : Gtk.Frame{
 			bool ret = this.__click_derecho_en_lista(event);
 			return ret;
 		    });
+		this.lista.len_items.connect(this.__re_emit_len_items);
     }
+
+    private void __re_emit_len_items(int items){
+        this.len_items(items);
+        }
 
     private void __emit_add_stream(){
         this.add_stream(this.toolbar.label.get_text());
@@ -244,11 +250,12 @@ public class JAMediaPlayerList : Gtk.Frame{
 public class Lista : Gtk.TreeView{
 
     public signal void nueva_seleccion(string pista);
+    public signal void len_items (int items);
 
     public Gtk.ListStore lista = new Gtk.ListStore(3, typeof (Gdk.Pixbuf), typeof (string), typeof (string));
     private bool permitir_select = true;
     private string valor_select = null;
-    private string ultimo_select = null;
+    private int _len_items = 0;
 
     public Lista(){
 
@@ -306,7 +313,7 @@ public class Lista : Gtk.TreeView{
         if (! this.permitir_select || path_currently_selected){
             return true;
             }
-
+        this.permitir_select = false;
         Gtk.TreeIter _iter;
         this.get_model().get_iter(out _iter, path);
         GLib.Value val;
@@ -314,22 +321,21 @@ public class Lista : Gtk.TreeView{
         string valor = val.dup_string();
 
         if (this.valor_select != valor){
-            this.valor_select = valor;
             GLib.Idle.add (() => {
-                this.__select(this.get_model().get_path(_iter));
+                this.__select(this.get_model().get_path(_iter), valor);
                 return false;
                 });
             }
         return true;
         }
 
-    private void __select(Gtk.TreePath path){
-        if (this.ultimo_select != this.valor_select){
-            this.ultimo_select = this.valor_select;
-            this.nueva_seleccion(this.valor_select);
-            }
+    private void __select(Gtk.TreePath path, string valor){
+        this.valor_select = valor;
+        this.nueva_seleccion(this.valor_select);
+        //self.scroll_to_cell(self.get_model().get_path(_iter))
         //FIXME: Verificar:
         //this.scroll_to_cell (TreePath? path, TreeViewColumn? column, bool use_align, float row_align, float col_align)
+        this.permitir_select = true;
         }
 
     private bool __ejecutar_agregar_elemento(SList<Streaming> items){
@@ -367,11 +373,14 @@ public class Lista : Gtk.TreeView{
         this.permitir_select = false;
         this.lista.clear();
         this.valor_select = null;
-        this.ultimo_select = null;
         this.permitir_select = true;
+        this._len_items = 0;
+        this.len_items(0);
         }
 
     public void agregar_items(SList<Streaming> items){
+        this._len_items = (int) items.length();
+        this.len_items(this._len_items);
         // FIXME: Convertir en Función GLib.
         //GLib.Idle.add_full(GLib.Priority.DEFAULT_IDLE, this.__ejecutar_agregar_elemento, items, null);
         this.__ejecutar_agregar_elemento(items);
@@ -386,7 +395,12 @@ public class Lista : Gtk.TreeView{
             this.get_selection().select_iter(_iter);
             }
         else{
-            this.seleccionar_primero();
+            if (this._len_items == 1){
+                this.nueva_seleccion(this.valor_select);
+                }
+            else{
+                this.seleccionar_primero();
+                }
             }
         }
 

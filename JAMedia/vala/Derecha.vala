@@ -49,14 +49,18 @@ public class Derecha : Gtk.EventBox{
 
         this.lista.nueva_seleccion.connect(this.__emit_cargar_reproducir);
         this.lista.accion_list.connect(this.__emit_accion_list);
-
         this.lista.menu_activo.connect(this.__emit_menu_activo);
         this.lista.add_stream.connect(this.__emit_add_stream);
+        this.lista.len_items.connect(this.__items_in_list);
 
         this.player_controls.accion_controls.connect(this.__emit_accion_controls);
 
         this.set_size_request(150, -1);
     }
+
+    private void __items_in_list(int items){
+        this.player_controls.activar(items);
+        }
 
     private void __emit_balance(string prop, double valor){
         this.balance_valor(prop, valor);
@@ -80,12 +84,6 @@ public class Derecha : Gtk.EventBox{
         }
 
     private void __emit_cargar_reproducir(string pista){
-        if (pista != null){
-            this.player_controls.activar(true);
-            }
-        else{
-            this.player_controls.activar(false);
-            }
         this.cargar_reproducir(pista);
         }
 
@@ -105,7 +103,7 @@ public class Derecha : Gtk.EventBox{
     public void setup_init(){
         this.scroll.hide();
         this.lista.setup_init();
-        this.player_controls.activar(false);
+        this.player_controls.activar(0);
         // self.efectos.cargar_efectos(list(get_jamedia_video_efectos()))
         }
 

@@ -53,11 +53,25 @@ public class PlayerControls : Gtk.EventBox{
         this.accion_controls(accion);
         }
 
-    public void activar(bool valor){
-        this.atras.set_sensitive(true);
-        this.play.set_sensitive(true);
-        this.siguiente.set_sensitive(true);
-        this.stop.set_sensitive(true);
+    public void activar(int valor){
+        if (valor == 0){
+            this.atras.set_sensitive(false);
+            this.play.set_sensitive(false);
+            this.siguiente.set_sensitive(false);
+            this.stop.set_sensitive(false);
+            }
+        else if (valor == 1){
+            this.atras.set_sensitive(false);
+            this.siguiente.set_sensitive(false);
+            this.play.set_sensitive(true);
+            this.stop.set_sensitive(true);
+            }
+        else{
+            this.atras.set_sensitive(true);
+            this.play.set_sensitive(true);
+            this.siguiente.set_sensitive(true);
+            this.stop.set_sensitive(true);
+            }
         }
 
     public void set_paused(){
