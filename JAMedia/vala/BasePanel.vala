@@ -6,7 +6,7 @@ public class BasePanel : Gtk.HPaned{
     public signal void show_controls(bool zona, bool ocultar);
     public signal void configurar(bool valor);
     public signal void actualizar_streamings();
-    public signal void accion_list (Gtk.ListStore lista, string accion, Gtk.TreePath path);
+    public signal void accion_list (Lista lista, string accion, Gtk.TreePath path);
 
     public Izquierda izquierda = null;
     public Derecha derecha = new Derecha();
@@ -83,7 +83,7 @@ public class BasePanel : Gtk.HPaned{
         this.izquierda.buffer_info.hide();
         }
 
-    private void __emit_accion_list(Gtk.ListStore lista, string accion, Gtk.TreePath path){
+    private void __emit_accion_list(Lista lista, string accion, Gtk.TreePath path){
         // borrar, copiar, mover, grabar, etc . . .
         this.accion_list(lista, accion, path);
         }
@@ -214,6 +214,12 @@ public class BasePanel : Gtk.HPaned{
     public void __endfile(){
         this.derecha.player_controls.set_paused();
         this.derecha.lista.seleccionar_siguiente();
+        }
+
+    public void stop(){
+        if (this.player != null){
+            this.player.stop();
+            }
         }
 
     public void setup_init(){

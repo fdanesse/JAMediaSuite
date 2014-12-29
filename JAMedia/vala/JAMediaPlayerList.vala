@@ -4,7 +4,7 @@ public class JAMediaPlayerList : Gtk.Frame{
     public signal void nueva_seleccion(string pista);
     public signal void add_stream(string title);
     public signal void menu_activo();
-    public signal void accion_list (Gtk.ListStore lista, string accion, Gtk.TreePath path);
+    public signal void accion_list (Lista lista, string accion, Gtk.TreePath path);
     public signal void len_items (int items);
 
     private SList<string> mime = new SList<string> ();
@@ -58,7 +58,7 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.menu_activo();
         }
 
-    private void __emit_accion_list(Gtk.ListStore lista, string accion, Gtk.TreePath path){
+    private void __emit_accion_list(Lista lista, string accion, Gtk.TreePath path){
         // borrar, copiar, mover, grabar, etc . . .
         this.accion_list(lista, accion, path);
         }
@@ -125,7 +125,7 @@ public class JAMediaPlayerList : Gtk.Frame{
             int cell_x;
             int cell_y;
             this.lista.get_path_at_pos ((int) event.x, (int) event.y, out path, out column, out cell_x, out cell_y);
-            MenuList menu = new MenuList(this.lista, path, this.lista.lista);
+            MenuList menu = new MenuList(this.lista, path);
             menu.accion.connect ((lista, accion, path) => {
 			    this.__emit_accion_list(lista, accion, path);
 		        });
@@ -255,7 +255,7 @@ public class Lista : Gtk.TreeView{
     public Gtk.ListStore lista = new Gtk.ListStore(3, typeof (Gdk.Pixbuf), typeof (string), typeof (string));
     private bool permitir_select = true;
     private string valor_select = null;
-    private int _len_items = 0;
+    public int _len_items = 0;
 
     public Lista(){
 
@@ -636,22 +636,22 @@ public class My_FileChooser : Gtk.FileChooserDialog{
 
 public class MenuList : Gtk.Menu{
 
-    public signal void accion (Gtk.ListStore lista, string accion, Gtk.TreePath path);
+    public signal void accion (Lista lista, string accion, Gtk.TreePath path);
 
-    public MenuList(Gtk.Widget widget, Gtk.TreePath path, Gtk.ListStore model){
+    public MenuList(Lista treeview, Gtk.TreePath path){
 
         Gtk.TreeIter _iter;
 	    GLib.Value val3;
 
-	    model.get_iter(out _iter, path);
-        model.get_value(_iter, 2, out val3);
+	    treeview.lista.get_iter(out _iter, path);
+        treeview.lista.get_value(_iter, 2, out val3);
 
 	    //_val1 = (string) val1.get_string ();
 	    //_val2 = (string) val2.get_string ();
 
         Gtk.MenuItem item1 = new Gtk.MenuItem.with_label("Quitar de la Lista");
         item1.activate.connect (() => {
-			this.__emit_accion(model, path, "Quitar");
+			this.__emit_accion(treeview, path, "Quitar");
 		    });
         this.append(item1);
 
@@ -711,11 +711,11 @@ public class MenuList : Gtk.Menu{
 
         this.popup(null, null, null, 1, Gtk.get_current_event_time());
         this.show_all();
-        this.attach_to_widget(widget, null);
+        this.attach_to_widget(treeview, null);
     }
 
-    private void __emit_accion(Gtk.ListStore model, Gtk.TreePath path, string accion){
-        this.accion(model, accion, path);
+    private void __emit_accion(Lista treeview, Gtk.TreePath path, string accion){
+        this.accion(treeview, accion, path);
         }
 }
 

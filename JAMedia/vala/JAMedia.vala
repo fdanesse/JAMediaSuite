@@ -75,6 +75,7 @@ public class JAMedia : Gtk.Window{
         this.toolbar.accion.connect(this.__accion_toolbar);
         this.toolbaraccion.accion_stream.connect(this.__accion_stream);
         this.toolbaraccion.grabar.connect(this.__grabar);
+        this.toolbaraccion.stop.connect(this.__stop);
         this.add_stream.add_stream.connect(this.__add_stream);
         this.toolbarsalir.salir.connect(this.__salir);
 
@@ -312,7 +313,7 @@ public class JAMedia : Gtk.Window{
         this.add_stream.hide();
         }
 
-    private void __accion_list(Gtk.ListStore lista, string accion, Gtk.TreePath path){
+    private void __accion_list(Lista lista, string accion, Gtk.TreePath path){
         this.toolbaraccion.set_accion(lista, accion, path);
         }
 
@@ -329,6 +330,10 @@ public class JAMedia : Gtk.Window{
         Help dialog = new Help(this, "");
         dialog.run();
         dialog.destroy();
+        }
+
+    private void __stop(){
+        this.base_panel.stop();
         }
 }
 

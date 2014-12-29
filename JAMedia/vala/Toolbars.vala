@@ -124,10 +124,11 @@ public class ToolbarSalir : Gtk.EventBox{
 public class ToolbarAccion : Gtk.EventBox{
 
     public signal void grabar(string stream);
+    public signal void stop();
     public signal void accion_stream(string accion, string stream);
 
     private Gtk.Label label = new Gtk.Label("");
-    private Gtk.ListStore lista = null;
+    private Lista lista = null;
     private string accion = null;
     private Gtk.TreePath path = null;
 
@@ -169,26 +170,32 @@ public class ToolbarAccion : Gtk.EventBox{
     }
 
     public void __realizar_accion(){
-
+        // Valores para acción
         Gtk.TreeIter _iter;
 	    GLib.Value val3;
+	    this.lista.lista.get_iter(out _iter, this.path);
+        this.lista.lista.get_value(_iter, 2, out val3);
+        string uri = val3.get_string();
 
-	    this.lista.get_iter(out _iter, this.path);
-        this.lista.get_value(_iter, 2, out val3);
+        // valores para determinar si es necesario seleccionar otro item
+        Gtk.TreeModel modelo;
+        Gtk.TreeIter _new;
+        GLib.Value selected;
+        this.lista.get_selection().get_selected(out modelo, out _new);
+        this.lista.lista.get_value(_new, 2, out selected);
 
-        GLib.stdout.printf("%s - %s\n", this.accion, val3.get_string ());
-        GLib.stdout.flush();
+        if (this.accion == "Quitar"){
+            this.lista._len_items --;
+            if (uri == selected.get_string()){
+                this.__reselect(_new);
+                }
+            this.lista.lista.remove(_iter);
+            }
+
+        //GLib.stdout.printf("%s - %s\n", this.accion, uri);
+        //GLib.stdout.flush();
 
         /*
-        """
-        Ejecuta una accion sobre un archivo o streaming en la lista.
-        """
-        uri = self.lista.get_model().get_value(self.iter, 2)
-        if self.accion == "Quitar":
-            path = self.lista.get_model().get_path(self.iter)
-            path = (path[0] - 1, )
-            self.lista.get_model().remove(self.iter)
-            self.__reselect(path)
         else:
             if describe_acceso_uri(uri):
                 if self.accion == "Copiar":
@@ -229,17 +236,37 @@ public class ToolbarAccion : Gtk.EventBox{
         this.cancelar();
         }
 
-    public void set_accion(Gtk.ListStore lista, string accion, Gtk.TreePath path){
+    private bool __reselect(Gtk.TreeIter _new){
+        bool val = this.lista.lista.iter_next(ref _new);
+        if (val){
+            this.lista.get_selection().select_iter(_new);
+            return true;
+            }
+
+        val = this.lista.lista.iter_previous(ref _new);
+        if (val){
+            this.lista.get_selection().select_iter(_new);
+            return true;
+            }
+
+        if (this.lista._len_items == 0){
+            this.stop();
+            return true;
+            }
+        return false;
+        }
+
+    public void set_accion(Lista lista, string accion, Gtk.TreePath path){
 
         this.lista = lista;
         this.accion = accion;
         this.path = path;
 
-        if (this.lista != null && this.accion != null && this.path != null){
+        if (this.lista.lista != null && this.accion != null && this.path != null){
             Gtk.TreeIter _iter;
             GLib.Value val2;
-            lista.get_iter(out _iter, path);
-            lista.get_value(_iter, 1, out val2);
+            this.lista.lista.get_iter(out _iter, path);
+            this.lista.lista.get_value(_iter, 1, out val2);
             string texto = val2.get_string();
             //FIXME: Analizar si reimplementarlo así:
             //if os.path.exists(val3.get_string()):

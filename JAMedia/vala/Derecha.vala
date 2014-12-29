@@ -15,7 +15,7 @@ public class Derecha : Gtk.EventBox{
     public signal void add_stream(string title);
     public signal void menu_activo();
     public signal void balance_valor(string prop, double valor);
-    public signal void accion_list (Gtk.ListStore lista, string accion, Gtk.TreePath path);
+    public signal void accion_list (Lista lista, string accion, Gtk.TreePath path);
 
     private Gtk.ScrolledWindow scroll = new Gtk.ScrolledWindow(null, null);
     public BalanceWidget balance = new BalanceWidget();
@@ -78,7 +78,7 @@ public class Derecha : Gtk.EventBox{
         this.menu_activo();
         }
 
-    private void __emit_accion_list(Gtk.ListStore lista, string accion, Gtk.TreePath path){
+    private void __emit_accion_list(Lista lista, string accion, Gtk.TreePath path){
         // borrar, copiar, mover, grabar, etc . . .
         this.accion_list(lista, accion, path);
         }
