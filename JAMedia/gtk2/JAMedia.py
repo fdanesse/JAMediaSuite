@@ -211,16 +211,12 @@ class JAMedia(gtk.Window):
             modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
                 ).get_selected()
             nombre = modelo.get_value(_iter, 1)
-            url = modelo.get_value(_iter, 2)
-            tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
-            add_stream(tipo, [nombre, url])
+            add_stream(lista, [nombre, url])
         elif accion == "Mover":
             modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
                 ).get_selected()
             nombre = modelo.get_value(_iter, 1)
-            url = modelo.get_value(_iter, 2)
-            tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
-            add_stream(tipo, [nombre, url])
+            add_stream(lista, [nombre, url])
             eliminar_streaming(url, lista)
         else:
             print "accion_stream desconocido:", accion

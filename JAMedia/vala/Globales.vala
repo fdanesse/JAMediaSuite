@@ -245,52 +245,63 @@ public string get_JAMedia_Directory(){
     }
 
 
-/*
-def eliminar_streaming(url, lista):
-    """
-    Elimina un Streaming de una lista de jamedia.
-    """
-    DIRECTORIO_DATOS = get_data_directory()
+public bool eliminar_streaming(Streaming stream, string lista){
+    string data = get_data_directory();
+    string path = null;
 
-    if lista == "Radios":
-        path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
-    elif lista == "TVs":
-        path = os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
-    elif lista == "JAM-Radio":
-        path = os.path.join(DIRECTORIO_DATOS, "JAMediaRadio.JAMedia")
-    elif lista == "JAM-TV":
-        path = os.path.join(DIRECTORIO_DATOS, "JAMediaTV.JAMedia")
-    elif lista == "WebCams":
-        path = os.path.join(DIRECTORIO_DATOS, "JAMediaWebCams.JAMedia")
-    else:
-        return
+    if (lista == "Radios"){
+        path = GLib.Path.build_filename(data, "MisRadios.JAMedia");
+        }
+    else if (lista == "TVs"){
+        path = GLib.Path.build_filename(data, "MisTvs.JAMedia");
+        }
+    else if (lista == "JAM-Radio"){
+        path = GLib.Path.build_filename(data, "JAMediaRadio.JAMedia");
+        }
+    else if (lista == "JAM-TV"){
+        path = GLib.Path.build_filename(data, "JAMediaTV.JAMedia");
+        }
+    else if (lista == "WebCams"){
+        path = GLib.Path.build_filename(data, "JAMediaWebCams.JAMedia");
+        }
+    else{
+        return false;
+        }
 
-    _dict = get_dict(path)
-    cambios = False
-    items = _dict.items()
-    for item in items:
-        if url == str(item[1]):
-            cambios = True
-            del(_dict[item[0]])
-    if cambios:
-        set_dict(path, _dict)
+    SList<Streaming> streaming_list = new SList<Streaming>();
+    SList<Streaming> streamings = get_streamings(path);
+
+    foreach (Streaming stream1 in streamings){
+        if (stream1.path != stream.path){
+            streaming_list.append(stream1);
+            }
+        }
+
+    __guarda_lista_de_streamings(path, streaming_list);
+
+    GLib.stdout.printf("Streaming Eliminado: %s de: %s\n", stream.path, lista);
+    GLib.stdout.flush();
+    return true;
+    }
 
 
-def add_stream(tipo, item):
-    """
-    Agrega un streaming a la lista correspondiente de jamedia.
-    """
-    DIRECTORIO_DATOS = get_data_directory()
-    if "TV" in tipo or "Tv" in tipo:
-        path = os.path.join(DIRECTORIO_DATOS, "MisTvs.JAMedia")
-    elif "Radio" in tipo:
-        path = os.path.join(DIRECTORIO_DATOS, "MisRadios.JAMedia")
-    else:
-        return
-    _dict = get_dict(path)
-    _dict[item[0].strip()] = item[1].strip()
-    set_dict(path, _dict)
-*/
+public bool add_streamx(string lista, Streaming stream){
+    string data = get_data_directory();
+    string path = null;
+    if ("TV" in lista || "Tv" in lista){
+        path = GLib.Path.build_filename(data, "MisTvs.JAMedia");
+        }
+    else if ("Radio" in lista){
+        path = GLib.Path.build_filename(data, "MisRadios.JAMedia");
+        }
+    else{
+        return false;
+        }
+    SList<Streaming> streamings = get_streamings(path);
+    streamings.append(stream);
+    __guarda_lista_de_streamings(path, streamings);
+    return true;
+    }
 
 
 public void set_listas_default(){
@@ -359,20 +370,15 @@ public SList<Streaming> get_streamings(string path){
     }
 
 
-/*
-def stream_en_archivo(streaming, path):
-    """
-    Verifica si un streaming está en
-    un archivo de lista de jamedia determinado.
-    """
-    _dict = get_dict(path)
-    items = _dict.values()
-    for item in items:
-        if streaming == item:
-            return True
-    return False
-
-*/
+public bool stream_en_archivo(string streaming, string path){
+    SList<Streaming> streaming_list = get_streamings(path);
+    foreach (Streaming stream in streaming_list){
+        if (stream.path == streaming){
+            return true;
+            }
+        }
+    return false;
+    }
 
 
 public Gtk.SeparatorToolItem get_separador(bool draw, int ancho, bool expand){

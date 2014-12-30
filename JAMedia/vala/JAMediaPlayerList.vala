@@ -10,7 +10,7 @@ public class JAMediaPlayerList : Gtk.Frame{
     private SList<string> mime = new SList<string> ();
     private string directorio = "";
     private Lista lista = new Lista();
-    private JAMediaToolbarList toolbar = new JAMediaToolbarList();
+    public JAMediaToolbarList toolbar = new JAMediaToolbarList();
 
     public JAMediaPlayerList(){
 
@@ -684,7 +684,33 @@ public class MenuList : Gtk.Menu{
                 });
             this.append(item5);
 
-            // FIXME: Agregar Copiar y Mover a JAMedia para Streamings
+            string data = get_data_directory();
+
+            string a = GLib.Path.build_filename(data, "JAMediaRadio.JAMedia");
+            string b = GLib.Path.build_filename(data, "JAMediaTV.JAMedia");
+            string c = GLib.Path.build_filename(data, "MisRadios.JAMedia");
+            string d = GLib.Path.build_filename(data, "MisTvs.JAMedia");
+            //string e = GLib.Path.build_filename(data, "JAMediaWebCams.JAMedia");
+
+            bool jtv = stream_en_archivo(uri, b);
+            bool jr = stream_en_archivo(uri, a);
+            bool r = stream_en_archivo(uri, c);
+            bool tv = stream_en_archivo(uri, d);
+            // webcam = stream_en_archivo(uri, listas[4])
+
+            if ((jtv && ! tv) || (jr && ! r)){
+                Gtk.MenuItem item6 = new Gtk.MenuItem.with_label("Copiar a JAMedia");
+                item6.activate.connect (() => {
+                    this.__emit_accion(treeview, path, "Copiar");
+                    });
+                this.append(item6);
+
+                Gtk.MenuItem item7 = new Gtk.MenuItem.with_label("Mover a JAMedia");
+                item7.activate.connect (() => {
+                    this.__emit_accion(treeview, path, "Mover");
+                    });
+                this.append(item7);
+                }
 
             Gtk.MenuItem item8 = new Gtk.MenuItem.with_label("Grabar");
             item8.activate.connect (() => {
@@ -692,30 +718,6 @@ public class MenuList : Gtk.Menu{
                 });
             this.append(item8);
             }
-        /*
-        else:
-
-            listas = [
-                os.path.join(get_data_directory(), "JAMediaTV.JAMedia"),
-                os.path.join(get_data_directory(), "JAMediaRadio.JAMedia"),
-                os.path.join(get_data_directory(), "MisRadios.JAMedia"),
-                os.path.join(get_data_directory(), "MisTvs.JAMedia"),
-                os.path.join(get_data_directory(), "JAMediaWebCams.JAMedia"),
-                ]
-            jtv = stream_en_archivo(uri, listas[0])
-            jr = stream_en_archivo(uri, listas[1])
-            r = stream_en_archivo(uri, listas[2])
-            tv = stream_en_archivo(uri, listas[3])
-            #webcam = stream_en_archivo(uri, listas[4])
-
-            if (jtv and not tv) or (jr and not r):
-                copiar = gtk.MenuItem("Copiar a JAMedia")
-                self.append(copiar)
-                copiar.connect_object("activate", self.__emit_accion, widget, path, "Copiar")
-                mover = gtk.MenuItem("Mover a JAMedia")
-                self.append(mover)
-                mover.connect_object("activate", self.__emit_accion, widget, path, "Mover")
-        */
 
         this.popup(null, null, null, 1, Gtk.get_current_event_time());
         this.show_all();

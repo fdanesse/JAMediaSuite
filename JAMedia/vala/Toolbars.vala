@@ -123,9 +123,9 @@ public class ToolbarSalir : Gtk.EventBox{
 
 public class ToolbarAccion : Gtk.EventBox{
 
-    public signal void grabar(string stream);
+    public signal void grabar(Streaming stream);
     public signal void stop();
-    public signal void accion_stream(string accion, string stream);
+    public signal void accion_stream(string accion, Streaming stream);
 
     private Gtk.Label label = new Gtk.Label("");
     private Lista lista = null;
@@ -173,8 +173,11 @@ public class ToolbarAccion : Gtk.EventBox{
         // Valores para acción
         Gtk.TreeIter _iter;
 	    GLib.Value val3;
+	    GLib.Value val2;
 	    this.lista.lista.get_iter(out _iter, this.path);
+	    this.lista.lista.get_value(_iter, 1, out val2);
         this.lista.lista.get_value(_iter, 2, out val3);
+        string nombre = val2.get_string();
         string uri = val3.get_string();
 
         // valores para determinar si es necesario seleccionar otro item
@@ -217,8 +220,9 @@ public class ToolbarAccion : Gtk.EventBox{
                 }
 
             else{
+                Streaming stream = new Streaming(nombre, uri);
                 if (this.accion == "Borrar" || this.accion == "Mover"){
-                    this.accion_stream(this.accion, uri);
+                    this.accion_stream(this.accion, stream);
                     this.lista._len_items --;
                     if (uri == selected.get_string()){
                         this.__reselect(_new);
@@ -226,10 +230,10 @@ public class ToolbarAccion : Gtk.EventBox{
                     this.lista.lista.remove(_iter);
                     }
                 else if (this.accion == "Copiar"){
-                    this.accion_stream(this.accion, uri);
+                    this.accion_stream(this.accion, stream);
                     }
                 else if (this.accion == "Grabar"){
-                    this.grabar(uri);
+                    this.grabar(stream);
                     }
                 }
             }
@@ -293,7 +297,7 @@ public class ToolbarAccion : Gtk.EventBox{
 
 public class ToolbarAddStream : Gtk.EventBox{
 
-    public signal void add_stream(string _tipo, string _nombre, string _url);
+    public signal void add_stream(string _tipo, Streaming stream);
     private Gtk.Entry nombre = new Gtk.Entry();
     private Gtk.Entry url = new Gtk.Entry();
     private string tipo = "";
@@ -354,9 +358,8 @@ public class ToolbarAddStream : Gtk.EventBox{
         }
 
     private void __emit_add_stream(){
-        string _nombre = this.nombre.get_text();
-        string _url = this.url.get_text();
-        this.add_stream(this.tipo, _nombre, _url);
+        Streaming stream = new Streaming(this.nombre.get_text(), this.url.get_text());
+        this.add_stream(this.tipo, stream);
         this.cancelar();
         }
 

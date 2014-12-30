@@ -123,8 +123,9 @@ public class JAMediaReproductor : GLib.Object{
                 break;
 
             case Gst.MessageType.BUFFERING:
-                GLib.Value buf = message.get_structure().get_value("buffer-percent");
-                GLib.stdout.printf("Buffer: %s\n", (string) buf);
+                //GLib.Value buf = message.get_structure().get_value("buffer-percent");
+                GLib.stdout.printf("Buffer:\n");
+                //GLib.stdout.printf("Buffer: %s\n", buf.get_string());
                 GLib.stdout.flush();
                 break;
 

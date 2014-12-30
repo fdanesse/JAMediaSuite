@@ -74,9 +74,13 @@ public class JAMedia : Gtk.Window{
         this.toolbar.help.connect(this.__show_help);
         this.toolbar.accion.connect(this.__accion_toolbar);
         this.toolbaraccion.accion_stream.connect(this.__accion_stream);
-        this.toolbaraccion.grabar.connect(this.__grabar);
+        this.toolbaraccion.grabar.connect ((stream) => {
+			this.__grabar(stream);
+		    });
         this.toolbaraccion.stop.connect(this.__stop);
-        this.add_stream.add_stream.connect(this.__add_stream);
+        this.add_stream.add_stream.connect ((lista, stream) => {
+			this.__add_stream(lista, stream);
+		    });
         this.toolbarsalir.salir.connect(this.__salir);
 
         this.base_panel.show_controls.connect(this.__ocultar_controles);
@@ -115,25 +119,28 @@ public class JAMedia : Gtk.Window{
         this.get_window().set_cursor(this.jamedia_cursor);
         }
 
-    private void __add_stream(string tipo, string nombre, string url){
-        GLib.stdout.printf("__add_stream %s %s %s\n", tipo, nombre, url);
-        GLib.stdout.flush();
-        //add_stream(tipo, [nombre, url])
-        //if "Tv" in tipo or "TV" in tipo:
-        //    indice = 3
-        //elif "Radio" in tipo:
-        //    indice = 2
-        //else:
-        //    return
-        //self.base_panel.derecha.lista.cargar_lista(None, indice)
+    private bool __add_stream(string lista, Streaming stream){
+        add_streamx(lista, stream);
+        int indice = 0;
+        if ("Tv" in lista || "TV" in lista){
+            indice = 3;
+            }
+        else if ("Radio" in lista){
+            indice = 2;
+            }
+        else{
+            return false;
+            }
+        this.base_panel.derecha.lista.cargar_lista(indice);
+        return true;
         }
 
     private void __run_add_stream(string title){
         this.add_stream.set_accion(title);
         }
 
-    private void __grabar(string stream){
-        GLib.stdout.printf("FIXME: __grabar %s\n", stream);
+    private void __grabar(Streaming stream){
+        GLib.stdout.printf("FIXME: __grabar %s\n", stream.path);
         GLib.stdout.flush();
         /*
         self.set_sensitive(False)
@@ -177,33 +184,22 @@ public class JAMedia : Gtk.Window{
         self.base_panel.izquierda.toolbar_record.stop()
     */
 
-    private void __accion_stream(string accion, string url){
-        GLib.stdout.printf("FIXME __accion_stream %s\n", accion);
-        GLib.stdout.flush();
-        /*
-        def __accion_stream(self, widget, accion, url):
-        lista = self.base_panel.derecha.lista.toolbar.label.get_text()
-        if accion == "Borrar":
-            eliminar_streaming(url, lista)
-            print "Streaming Eliminado:", url
-        elif accion == "Copiar":
-            modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
-                ).get_selected()
-            nombre = modelo.get_value(_iter, 1)
-            url = modelo.get_value(_iter, 2)
-            tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
-            add_stream(tipo, [nombre, url])
-        elif accion == "Mover":
-            modelo, _iter = self.base_panel.derecha.lista.lista.get_selection(
-                ).get_selected()
-            nombre = modelo.get_value(_iter, 1)
-            url = modelo.get_value(_iter, 2)
-            tipo = self.base_panel.derecha.lista.toolbar.label.get_text()
-            add_stream(tipo, [nombre, url])
-            eliminar_streaming(url, lista)
-        else:
-            print "accion_stream desconocido:", accion
-        */
+    private void __accion_stream(string accion, Streaming stream){
+        string lista = this.base_panel.derecha.lista.toolbar.label.get_text();
+        if (accion == "Borrar"){
+            eliminar_streaming(stream, lista);
+            }
+        else if (accion == "Copiar"){
+            add_streamx(lista, stream);
+            }
+        else if (accion == "Mover"){
+            add_streamx(lista, stream);
+            eliminar_streaming(stream, lista);
+            }
+        else{
+            GLib.stdout.printf("Accion_stream Desconocida: %s\n", accion);
+            GLib.stdout.flush();
+            }
         }
 
     private bool __setup_init(){
