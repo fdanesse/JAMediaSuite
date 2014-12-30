@@ -192,47 +192,48 @@ public class ToolbarAccion : Gtk.EventBox{
             this.lista.lista.remove(_iter);
             }
 
-        //GLib.stdout.printf("%s - %s\n", this.accion, uri);
-        //GLib.stdout.flush();
+        else{
+            bool isfile = GLib.FileUtils.test(uri, GLib.FileTest.IS_REGULAR);
+            if (isfile == true){
+                if (this.accion == "Copiar"){
+                    copiar(uri, get_my_files_directory());
+                    }
+                else if (this.accion == "Borrar"){
+                    borrar(uri);
+                    this.lista._len_items --;
+                    if (uri == selected.get_string()){
+                        this.__reselect(_new);
+                        }
+                    this.lista.lista.remove(_iter);
+                    }
+                else if (this.accion == "Mover"){
+                    mover(uri, get_my_files_directory());
+                    this.lista._len_items --;
+                    if (uri == selected.get_string()){
+                        this.__reselect(_new);
+                        }
+                    this.lista.lista.remove(_iter);
+                    }
+                }
 
-        /*
-        else:
-            if describe_acceso_uri(uri):
-                if self.accion == "Copiar":
-                    if os.path.isfile(uri):
-                        copiar(uri, get_my_files_directory())
-                elif self.accion == "Borrar":
-                    if os.path.isfile(uri):
-                        if borrar(uri):
-                            path = self.lista.get_model().get_path(self.iter)
-                            path = (path[0] - 1, )
-                            self.lista.get_model().remove(self.iter)
-                            self.__reselect(path)
-                elif self.accion == "Mover":
-                    if os.path.isfile(uri):
-                        if mover(uri, get_my_files_directory()):
-                            path = self.lista.get_model().get_path(self.iter)
-                            path = (path[0] - 1, )
-                            self.lista.get_model().remove(self.iter)
-                            self.__reselect(path)
-            else:
-                if self.accion == "Borrar":
-                    self.emit("accion-stream", "Borrar", uri)
-                    path = self.lista.get_model().get_path(self.iter)
-                    path = (path[0] - 1, )
-                    self.lista.get_model().remove(self.iter)
-                    self.__reselect(path)
-                elif self.accion == "Copiar":
-                    self.emit("accion-stream", "Copiar", uri)
-                elif self.accion == "Mover":
-                    self.emit("accion-stream", "Mover", uri)
-                    path = self.lista.get_model().get_path(self.iter)
-                    path = (path[0] - 1, )
-                    self.lista.get_model().remove(self.iter)
-                    self.__reselect(path)
-                elif self.accion == "Grabar":
-                    self.emit("grabar", uri)
-        */
+            else{
+                if (this.accion == "Borrar" || this.accion == "Mover"){
+                    this.accion_stream(this.accion, uri);
+                    this.lista._len_items --;
+                    if (uri == selected.get_string()){
+                        this.__reselect(_new);
+                        }
+                    this.lista.lista.remove(_iter);
+                    }
+                else if (this.accion == "Copiar"){
+                    this.accion_stream(this.accion, uri);
+                    }
+                else if (this.accion == "Grabar"){
+                    this.grabar(uri);
+                    }
+                }
+            }
+
         this.cancelar();
         }
 

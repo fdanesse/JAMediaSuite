@@ -646,43 +646,55 @@ public class MenuList : Gtk.Menu{
 	    treeview.lista.get_iter(out _iter, path);
         treeview.lista.get_value(_iter, 2, out val3);
 
-	    //_val1 = (string) val1.get_string ();
-	    //_val2 = (string) val2.get_string ();
-
         Gtk.MenuItem item1 = new Gtk.MenuItem.with_label("Quitar de la Lista");
         item1.activate.connect (() => {
 			this.__emit_accion(treeview, path, "Quitar");
 		    });
         this.append(item1);
 
-        /*
-        my_files_directory = get_my_files_directory()
+        string uri = val3.get_string();
+        bool isfile = GLib.FileUtils.test(uri, GLib.FileTest.IS_REGULAR);
+        GLib.File my_files_directory = GLib.File.parse_name(get_my_files_directory());
 
-        if describe_acceso_uri(uri):
-            lectura, escritura, ejecucion = describe_acceso_uri(uri)
-            if lectura and os.path.dirname(uri) != my_files_directory:
-                copiar = gtk.MenuItem("Copiar a JAMedia")
-                self.append(copiar)
-                copiar.connect_object("activate", self.__emit_accion, widget, path, "Copiar")
-            if escritura and os.path.dirname(uri) != my_files_directory:
-                mover = gtk.MenuItem("Mover a JAMedia")
-                self.append(mover)
-                mover.connect_object("activate", self.__emit_accion, widget, path, "Mover")
-            if escritura:
-                borrar = gtk.MenuItem("Borrar el Archivo")
-                self.append(borrar)
-                borrar.connect_object("activate", self.__emit_accion, widget, path, "Borrar")
-            #tipo = describe_archivo(uri)
-            #if "audio" in tipo or "video" in tipo or
-            # "application/ogg" in tipo:
-            #    editar = gtk.MenuItem("Editar o Convertir Archivo")
-            #    self.append(editar)
-            #    editar.connect_object("activate", self.__emit_accion,
-            #        widget, path, "Editar")
+        if (isfile == true){
+            GLib.File file = GLib.File.parse_name(uri);
+            if (file.get_parent() != my_files_directory){
+                Gtk.MenuItem item2 = new Gtk.MenuItem.with_label("Copiar a JAMedia");
+                item2.activate.connect (() => {
+			        this.__emit_accion(treeview, path, "Copiar");
+		            });
+                this.append(item2);
+
+                Gtk.MenuItem item3 = new Gtk.MenuItem.with_label("Mover a JAMedia");
+                item3.activate.connect (() => {
+			        this.__emit_accion(treeview, path, "Mover");
+		            });
+                this.append(item3);
+                }
+            Gtk.MenuItem item4 = new Gtk.MenuItem.with_label("Borrar el Archivo");
+            item4.activate.connect (() => {
+                this.__emit_accion(treeview, path, "Borrar");
+                });
+            this.append(item4);
+            }
+        else{
+            Gtk.MenuItem item5 = new Gtk.MenuItem.with_label("Borrar Streaming");
+            item5.activate.connect (() => {
+                this.__emit_accion(treeview, path, "Borrar");
+                });
+            this.append(item5);
+
+            // FIXME: Agregar Copiar y Mover a JAMedia para Streamings
+
+            Gtk.MenuItem item8 = new Gtk.MenuItem.with_label("Grabar");
+            item8.activate.connect (() => {
+                this.__emit_accion(treeview, path, "Grabar");
+                });
+            this.append(item8);
+            }
+        /*
         else:
-            borrar = gtk.MenuItem("Borrar Streaming")
-            self.append(borrar)
-            borrar.connect_object("activate", self.__emit_accion, widget, path, "Borrar")
+
             listas = [
                 os.path.join(get_data_directory(), "JAMediaTV.JAMedia"),
                 os.path.join(get_data_directory(), "JAMediaRadio.JAMedia"),
@@ -703,10 +715,6 @@ public class MenuList : Gtk.Menu{
                 mover = gtk.MenuItem("Mover a JAMedia")
                 self.append(mover)
                 mover.connect_object("activate", self.__emit_accion, widget, path, "Mover")
-
-            grabar = gtk.MenuItem("Grabar")
-            self.append(grabar)
-            grabar.connect_object("activate", self.__emit_accion, widget, path, "Grabar")
         */
 
         this.popup(null, null, null, 1, Gtk.get_current_event_time());

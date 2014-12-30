@@ -133,7 +133,7 @@ public class JAMedia : Gtk.Window{
         }
 
     private void __grabar(string stream){
-        GLib.stdout.printf("__grabar %s\n", stream);
+        GLib.stdout.printf("FIXME: __grabar %s\n", stream);
         GLib.stdout.flush();
         /*
         self.set_sensitive(False)
@@ -178,7 +178,7 @@ public class JAMedia : Gtk.Window{
     */
 
     private void __accion_stream(string accion, string url){
-        GLib.stdout.printf("__accion_stream %s\n", accion);
+        GLib.stdout.printf("FIXME __accion_stream %s\n", accion);
         GLib.stdout.flush();
         /*
         def __accion_stream(self, widget, accion, url):

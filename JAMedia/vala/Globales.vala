@@ -3,100 +3,6 @@ using Soup;
 using Json;
 
 
-/*
-def describe_archivo(archivo):
-    """
-    Devuelve el tipo de un archivo (imagen, video, texto).
-    -z, --uncompress para ver dentro de los zip.
-    """
-    datos = commands.getoutput('file -ik %s%s%s' % ("\"", archivo, "\""))
-    retorno = ""
-    for dat in datos.split(":")[1:]:
-        retorno += " %s" % (dat)
-    return retorno
-
-
-def describe_uri(uri):
-    """
-    Explica de que se trata el uri, si existe.
-    """
-    existe = False
-    try:
-        existe = os.path.exists(uri)
-    except:
-        return False
-    if existe:
-        unidad = os.path.ismount(uri)
-        directorio = os.path.isdir(uri)
-        archivo = os.path.isfile(uri)
-        enlace = os.path.islink(uri)
-        return [unidad, directorio, archivo, enlace]
-    else:
-        return False
-
-
-def describe_acceso_uri(uri):
-    """
-    Devuelve los permisos de acceso sobre una uri.
-    """
-    existe = False
-    try:
-        existe = os.access(uri, os.F_OK)
-    except:
-        return False
-    if existe:
-        lectura = os.access(uri, os.R_OK)
-        escritura = os.access(uri, os.W_OK)
-        ejecucion = os.access(uri, os.X_OK)
-        return [lectura, escritura, ejecucion]
-    else:
-        return False
-
-
-def borrar(origen):
-    try:
-        if os.path.isdir(origen):
-            shutil.rmtree("%s" % (os.path.join(origen)))
-        elif os.path.isfile(origen):
-            os.remove("%s" % (os.path.join(origen)))
-        else:
-            return False
-        return True
-    except:
-        print "ERROR Al Intentar Borrar un Archivo"
-        return False
-
-
-def mover(origen, destino):
-    try:
-        if os.path.isdir(origen):
-            copiar(origen, destino)
-            borrar(origen)
-            return True
-        elif os.path.isfile(origen):
-            expresion = "mv \"" + origen + "\" \"" + destino + "\""
-            os.system(expresion)
-            return True
-    except:
-        print "ERROR Al Intentar Mover un Archivo"
-        return False
-
-
-def copiar(origen, destino):
-    try:
-        if os.path.isdir(origen):
-            expresion = "cp -r \"" + origen + "\" \"" + destino + "\""
-        elif os.path.isfile(origen):
-            expresion = "cp \"" + origen + "\" \"" + destino + "\""
-        os.system(expresion)
-        return True
-    except:
-        print "ERROR Al Intentar Copiar un Archivo"
-        return False
-
-*/
-
-
 private void __make_base_directory(){
     try {
         string home = GLib.Environment.get_variable("HOME");
@@ -201,6 +107,27 @@ private void __guarda_lista_de_streamings(string path, SList<Streaming> items){
     var file_stream = file.create(FileCreateFlags.PRIVATE);
     var data_stream = new DataOutputStream(file_stream);
     data_stream.put_string(str);
+    }
+
+
+public void borrar(string origen){
+    GLib.FileUtils.remove(origen);
+    }
+
+
+public void mover(string origen, string dest){
+    GLib.File file1 = GLib.File.parse_name(origen);
+    string destino = GLib.Path.build_filename(dest, GLib.Path.get_basename(origen));
+    GLib.File file2 = GLib.File.parse_name(destino);
+    file1.move(file2, GLib.FileCopyFlags.OVERWRITE, null, null);
+    }
+
+
+public void copiar(string origen, string dest){
+    GLib.File file1 = GLib.File.parse_name(origen);
+    string destino = GLib.Path.build_filename(dest, GLib.Path.get_basename(origen));
+    GLib.File file2 = GLib.File.parse_name(destino);
+    file1.copy(file2, GLib.FileCopyFlags.OVERWRITE, null, null);
     }
 
 
