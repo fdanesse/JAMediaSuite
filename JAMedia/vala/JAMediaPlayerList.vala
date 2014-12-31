@@ -103,7 +103,7 @@ public class JAMediaPlayerList : Gtk.Frame{
     private void __load_list(SList<Streaming> items, string tipo, string titulo){
         if (tipo == "load"){
             this.lista.limpiar();
-            //FIXME: self.emit("accion-list", False, "limpiar", False)
+            // FIXME: Creo que no se necesita this.accion_list(null, "limpiar", "");
             }
         if ((bool)items){ //FIXME Modificar bool
             this.lista.agregar_items(items);

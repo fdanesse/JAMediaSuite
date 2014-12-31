@@ -101,10 +101,8 @@ public class JAMediaReproductor : GLib.Object{
                 break;
 
             case Gst.MessageType.LATENCY:
-                //FIXME: error: dynamic methods are not supported for `Gst.Element'
-                GLib.stdout.printf("FIXME: Gst.MessageType.LATENCY\n");
-                GLib.stdout.flush();
                 // FIXME: CRITICAL **: vala_variable_get_variable_type: assertion 'self != NULL' failed
+                // FIXME: error: dynamic methods are not supported for `Gst.Element'
                 //this.player.recalculate_latency();
                 break;
 

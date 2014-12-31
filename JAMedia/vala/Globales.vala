@@ -318,7 +318,7 @@ public void set_listas_default(){
 
     foreach (string path in lista){
         GLib.File file = GLib.File.parse_name(path);
-        if (! file.query_exists()){
+        if (file.query_exists() == false){
             Json.Builder builder = new Json.Builder();
             builder.begin_object ();
             builder.end_object();
@@ -331,7 +331,6 @@ public void set_listas_default(){
             data_stream.put_string(str);
             }
         }
-    // FIXME: Falta implementar verificación de listas vacías.
     }
 
 

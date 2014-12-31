@@ -33,7 +33,7 @@ public class JAMedia_Video_Pipeline : Gst.Pipeline{
 
         this.set_name("jamedia_video_pipeline");
 
-        Gst.Element convert = Gst.ElementFactory.make("videoconvert", "convert");
+        Gst.Element convert = Gst.ElementFactory.make("videoconvert", "videoconvert");
         Gst.Element rate = Gst.ElementFactory.make("videorate", "rate");
         Gst.Element videobalance = Gst.ElementFactory.make("videobalance", "videobalance");
         Gst.Element gamma = Gst.ElementFactory.make("gamma", "gamma");

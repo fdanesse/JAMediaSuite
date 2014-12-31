@@ -9,7 +9,6 @@ public class JAMediaGrabador : GLib.Object{
     private Gst.Element archivo = Gst.ElementFactory.make("filesink", "filesink");
     private uint actualizador = 0;
     private string patharchivo = null;
-    //private Gst.State estado = Gst.State.NULL;
     private int control = 0;
     private double tamanio = 0.0;
     private string uri = null;
@@ -49,7 +48,7 @@ public class JAMediaGrabador : GLib.Object{
         this.audio_sink = audioconvert.get_static_pad("sink");
 
         // VIDEO
-        Gst.Element videoconvert = Gst.ElementFactory.make("ffmpegcolorspace", "videoconvert");
+        Gst.Element videoconvert = Gst.ElementFactory.make("videoconvert", "videoconvert");
         Gst.Element videorate = Gst.ElementFactory.make("videorate", "videorate");
 
         try{
@@ -99,8 +98,6 @@ public class JAMediaGrabador : GLib.Object{
 
             case Gst.MessageType.LATENCY:
                 //FIXME: error: dynamic methods are not supported for `Gst.Element'
-                GLib.stdout.printf("FIXME: Gst.MessageType.LATENCY\n");
-                GLib.stdout.flush();
                 // FIXME: CRITICAL **: vala_variable_get_variable_type: assertion 'self != NULL' failed
                 //this.player.recalculate_latency();
                 break;
@@ -131,7 +128,6 @@ public class JAMediaGrabador : GLib.Object{
                 }
             }
         else if (text.has_prefix("video")){
-            // FIXME: No se linkea
             if (this.video_sink.is_linked() == false){
                 pad.link(this.video_sink);
                 }
@@ -163,6 +159,7 @@ public class JAMediaGrabador : GLib.Object{
                 this.control = 0;
                 this.tamanio = tamanio;
                 string texto = this.uri;
+                // FIXME: Verificar
                 //if len(self.uri) > 25:
                 //    texto = str(self.uri[0:25]) + " . . . "
                 string info = "Grabando: %s %.2f Mb".printf(texto, this.tamanio);
@@ -189,6 +186,7 @@ public class JAMediaGrabador : GLib.Object{
     public void stop(){
         this.pipeline.set_state(Gst.State.NULL);
         this.__new_handle(false);
+        // FIXME: Verificar
         //if os.path.exists(self.patharchivo):
         //    os.chmod(self.patharchivo, 0755)
         }
