@@ -146,7 +146,7 @@ public class BasePanel : Gtk.HPaned{
         this.player.estado.connect(this.__state_changed);
         this.player.video.connect(this.__set_video);
         this.player.newposicion.connect(this.__update_progress);
-        //self.player.connect("loading-buffer", self.__loading_buffer)
+        this.player.loading_buffer.connect(this.__loading_buffer);
 
         this.player.load(path);
         this.player.play();
@@ -157,7 +157,7 @@ public class BasePanel : Gtk.HPaned{
         this.derecha.set_sensitive(true);
         }
 
-    private void __loading_buffer(double buf){
+    private void __loading_buffer(int buf){
         this.izquierda.buffer_info.set_progress(buf);
         }
 

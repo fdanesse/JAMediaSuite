@@ -1,17 +1,13 @@
 
 public class JAMediaReproductor : GLib.Object{
-    /*
-    __gsignals__ = {
-    "loading-buffer": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_INT, )),
-        }
-    */
+
     //# Estados: playing, paused, None
 
     public signal void endfile();
     public signal void estado(string estado);
     public signal void video(bool valor);
     public signal void newposicion(int64 posicion);
+    public signal void loading_buffer(int posicion);
 
     private dynamic Gst.Element player = Gst.ElementFactory.make("playbin", "play");
     private string _uri = "";
@@ -20,7 +16,7 @@ public class JAMediaReproductor : GLib.Object{
 
     private JAMedia_Video_Pipeline video_bin;
     private JAMedia_Audio_Pipeline audio_bin;
-    private bool progressbar = true;
+    private bool progressbar = false;
     private bool _video = false;
     private uint actualizador = 0;
     private int64 duracion = 0;
@@ -118,15 +114,20 @@ public class JAMediaReproductor : GLib.Object{
                 message.parse_error(out err, out debug);
                 //GLib.stdout.printf("Error: %s\n", err.message);
                 //GLib.stdout.flush();
-                //this.endfile();
                 this.__new_handle(false);
                 break;
 
             case Gst.MessageType.BUFFERING:
-                //GLib.Value buf = message.get_structure().get_value("buffer-percent");
-                GLib.stdout.printf("Buffer:\n");
-                //GLib.stdout.printf("Buffer: %s\n", buf.get_string());
-                GLib.stdout.flush();
+                GLib.Value dat = message.get_structure().get_value("buffer-percent");
+                int buf = dat.get_int();
+                if (buf < 100 && this._estado == Gst.State.PLAYING){
+                    this.loading_buffer(buf);
+                    //this.__pause();
+                    }
+                else if (buf > 99 && this._estado == Gst.State.PLAYING){
+                    this.loading_buffer(buf);
+                    //this.play();
+                    }
                 break;
 
             case Gst.MessageType.EOS:
@@ -212,11 +213,11 @@ public class JAMediaReproductor : GLib.Object{
         this.duracion = 0;
         this.posicion = 0;
         this.newposicion(this.posicion);
-        //self.emit("loading-buffer", 100)
+        this.loading_buffer(100);
 
         this._uri = uri;
-        GLib.File file = GLib.File.parse_name(uri);
-        if(file.query_exists()){
+        if (GLib.FileUtils.test(uri, GLib.FileTest.IS_REGULAR)){
+            GLib.File file = GLib.File.parse_name(uri);
             this._uri = file.get_uri();
             this.progressbar = true;
             }
@@ -228,7 +229,7 @@ public class JAMediaReproductor : GLib.Object{
         }
 
     public bool set_position(int64 posicion){
-        if (! this.progressbar){
+        if (this.progressbar == false){
             return false;
             }
         if (this.duracion < posicion){

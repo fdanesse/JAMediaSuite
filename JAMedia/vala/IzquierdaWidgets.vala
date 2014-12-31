@@ -119,31 +119,32 @@ public class BufferInfo : Gtk.EventBox{
 
     private ProgressBar escala = new ProgressBar();
     private double valor = 0.0;
+    private Gtk.Frame frame = new Gtk.Frame(" Cargando Buffer ... ");
 
     public BufferInfo(){
 
         this.set_border_width(4);
 
-        Gtk.Frame frame = new Gtk.Frame(" Cargando Buffer ... ");
-        frame.set_border_width(4);
-        frame.set_label_align((float) 0.0, (float) 0.5);
+        this.frame.set_border_width(4);
+        this.frame.set_label_align((float) 0.0, (float) 0.5);
 
-        frame.add(this.escala);
-        this.add(frame);
+        this.frame.add(this.escala);
+        this.add(this.frame);
         this.show_all();
         this.set_sensitive(false);
     }
 
-    public void set_progress(double valor){
-        if (this.valor == valor){
-            }
-        else{
+    public void set_progress(int valor){
+
+        if (this.valor != valor){
+            this.frame.set_label(string.join(" ", " Cargando Buffer:", valor.to_string(), "%"));
             this.valor = valor;
             this.escala.ajuste.set_value(valor);
             this.escala.queue_draw();
             }
 
-        if (this.valor == 100.0){
+        if (this.valor == 100){
+            this.frame.set_label(" Cargando Buffer ... ");
             this.hide();
             }
         else{
