@@ -7,7 +7,7 @@ public class Izquierda : Gtk.EventBox{
     public signal void show_controls(bool zona, bool ocultar);
     public signal void seek(double valor);
 
-    private ToolbarGrabar toolbar_record = new ToolbarGrabar();
+    public ToolbarGrabar toolbar_record = new ToolbarGrabar();
     public VideoVisor video_visor = new VideoVisor();
     public BufferInfo buffer_info = new BufferInfo();
     public ToolbarInfo toolbar_info = new ToolbarInfo();

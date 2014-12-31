@@ -3,12 +3,15 @@ public class ToolbarGrabar : Gtk.EventBox{
 
     public signal void detener();
     private Gtk.Label label = new Gtk.Label("ToolbarGrabar");
+    private Gdk.Color color1;
+    private Gdk.Color color2;
+    private Gdk.Color color;
 
     public ToolbarGrabar(){
 
-        // FIXME: Agregar Colores
-        //self.colors = [get_colors("window"), get_colors("naranaja")]
-        //self.color = self.colors[0]
+        Gdk.Color.parse("#ffffff", out this.color1);
+        Gdk.Color.parse("#ff6600", out this.color2);
+        this.color = this.color1;
 
         Gtk.Toolbar toolbar = new Gtk.Toolbar();
 
@@ -36,30 +39,32 @@ public class ToolbarGrabar : Gtk.EventBox{
     private void __emit_stop(){
         this.stop();
         this.detener();
-    }
+        }
 
     private void __update(){
-        //FIXME: Implementar
-        //if this.color == this.colors[0]:
-        //    this.color = this.colors[1]
-        //elif this.color == this.colors[1]:
-        //    this.color = this.colors[0]
-        //this.label.modify_fg(0, this.color)
-        //if not this.get_visible():
-        //    this.show()
-    }
+        if (this.color == this.color1){
+            this.color = this.color2;
+            }
+        else if (this.color == this.color2){
+            this.color = this.color1;
+            }
+        this.label.modify_fg(Gtk.StateType.NORMAL, this.color);
+        if (this.get_visible() == false){
+            this.show();
+            }
+        }
 
     public void stop(){
-        //this.color = self.colors[0]
-        //this.label.modify_fg(0, self.color)
+        this.color = this.color1;
+        this.label.modify_fg(Gtk.StateType.NORMAL, this.color);
         this.label.set_text("Grabador Detenido.");
         this.hide();
-    }
+        }
 
     public void set_info(string datos){
         this.label.set_text(datos);
         this.__update();
-    }
+        }
 }
 
 

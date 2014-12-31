@@ -31,6 +31,7 @@ public class JAMedia : Gtk.Window{
     private Gdk.Cursor cursor_blank = new Gdk.Cursor(Gdk.CursorType.BLANK_CURSOR);
     private Gdk.Cursor jamedia_cursor = null;
     private MouseSpeedDetector mouse_listener = null;
+    private JAMediaGrabador grabador = null;
 
     public JAMedia(){
 
@@ -48,7 +49,6 @@ public class JAMedia : Gtk.Window{
             }
 
         this.base_panel = new BasePanel(this);
-        //self.grabador = False
 
         Gdk.Pixbuf pixbuf = new Gdk.Pixbuf.from_file_at_size("Iconos/jamedia_cursor.svg", -1, 24);
         this.jamedia_cursor = new Gdk.Cursor.from_pixbuf(Gdk.Display.get_default(), pixbuf, 0, 0);
@@ -89,7 +89,7 @@ public class JAMedia : Gtk.Window{
 
         this.base_panel.menu_activo.connect(this.__cancel_toolbars);
         this.base_panel.add_stream.connect(this.__run_add_stream);
-        //self.base_panel.connect("stop-record", self.__detener_grabacion)
+        this.base_panel.stop_record.connect(this.__detener_grabacion);
         this.base_panel.configurar.connect(this.__activar_config);
 
         this.mouse_listener.estado.connect(this.__set_mouse);
@@ -140,49 +140,44 @@ public class JAMedia : Gtk.Window{
         }
 
     private void __grabar(Streaming stream){
-        GLib.stdout.printf("FIXME: __grabar %s\n", stream.path);
-        GLib.stdout.flush();
-        /*
-        self.set_sensitive(False)
-        self.__detener_grabacion()
+        this.set_sensitive(false);
+        this.__detener_grabacion();
 
-        tipo = "video"
-        label = self.base_panel.derecha.lista.toolbar.label.get_text()
-        if label == "JAM-TV" or label == "TVs" or label == "WebCams":
-            tipo = "video"
-        else:
-            tipo = "audio"
+        string tipo = "video";
+        string label = this.base_panel.derecha.lista.toolbar.label.get_text();
+        if (label == "JAM-TV" || label == "TVs" || label == "WebCams"){
+            tipo = "video";
+            }
+        else{
+            tipo = "audio";
+            }
 
-        hora = time.strftime("%H-%M-%S")
-        fecha = str(datetime.date.today())
-        archivo = "%s-%s" % (fecha, hora)
-        archivo = os.path.join(get_my_files_directory(), archivo)
+        GLib.Time now = GLib.Time();
+        now = GLib.Time.local(time_t()); // get current time.
+        string archivo = GLib.Path.build_filename(get_my_files_directory(), now.to_string());
 
-        self.grabador = JAMediaGrabador(uri, archivo, tipo)
+        this.grabador = new JAMediaGrabador(stream.path, archivo, tipo);
 
-        self.grabador.connect('update', self.__update_grabador)
-        self.grabador.connect('endfile', self.__detener_grabacion)
+        this.grabador.update.connect(this.__update_grabador);
+        this.grabador.endfile.connect(this.__detener_grabacion);
 
-        _thread = threading.Thread(target=self.grabador.play)
-        _thread.start()
+        this.grabador.play();
 
-        self.set_sensitive(True)
-        */
+        this.set_sensitive(true);
         }
 
-    //def __update_grabador(self, widget, datos):
-    //    self.base_panel.izquierda.toolbar_record.set_info(datos)
+    private void __update_grabador(string datos){
+        this.base_panel.izquierda.toolbar_record.set_info(datos);
+        }
 
-    /*
-    def __detener_grabacion(self, widget=None):
-        if self.grabador:
-            self.grabador.disconnect_by_func(self.__update_grabador)
-            self.grabador.disconnect_by_func(self.__detener_grabacion)
-            self.grabador.stop()
-            del(self.grabador)
-            self.grabador = False
-        self.base_panel.izquierda.toolbar_record.stop()
-    */
+    private void __detener_grabacion(){
+        if (this.grabador != null){
+            this.grabador.stop();
+            this.grabador.unref();
+            this.grabador = null;
+            }
+        this.base_panel.izquierda.toolbar_record.stop();
+        }
 
     private void __accion_stream(string accion, Streaming stream){
         string lista = this.base_panel.derecha.lista.toolbar.label.get_text();
@@ -298,8 +293,8 @@ public class JAMedia : Gtk.Window{
         }
 
     private void __salir(){
-        // FIXME: this.__detener_grabacion();
-        // FIXME: this.BasePanel.salir();
+        this.__detener_grabacion();
+        this.base_panel.salir();
         Gtk.main_quit();
         }
 

@@ -20,7 +20,7 @@ def run():
             if path != "JAMedia.vala":
                 comando = "%s %s" % (comando, path)
 
-    log = open("/home/flavio/compile.log", "w")
+    log = open(os.path.join(os.environ["HOME"], "compile.log"), "w")
     text = commands.getoutput(comando)
     log.write(text)
     log.close()
