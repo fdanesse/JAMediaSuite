@@ -6,6 +6,18 @@ import commands
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
+"""
+Se Necesita Tener Instalado:
+valac
+libgtk-3-dev
+libgstreamer1.0-dev
+libgstreamer-plugins-base1.0-dev
+libgstreamer-plugins-good1.0-dev
+libgstreamer-plugins-bad1.0-dev
+libsoup-gnome2.4-dev
+libjson-glib-dev
+"""
+
 
 def run():
     comando = "valac --pkg posix --pkg gio-2.0 --pkg libsoup-2.4"
