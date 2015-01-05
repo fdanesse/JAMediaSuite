@@ -5,7 +5,7 @@ from distutils.core import setup
 
 setup(
 	name = "JAMedia",
-	version = "14.0.0",
+	version = "15.0.0",
 	author = "Flavio Danesse",
 	author_email = "fdanesse@gmail.com",
 	url = "https://sites.google.com/site/sugaractivities/jamediaobjects/jam",
@@ -47,5 +47,5 @@ setup(
             ])
 
 import commands
-commands.getoutput("chmod -R 755 /usr/local/share/JAMedia")
+commands.getoutput("chmod -R 755 /usr/share/JAMedia")
 commands.getoutput("chmod 755 /usr/share/applications/JAMedia.desktop")

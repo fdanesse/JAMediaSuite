@@ -16,6 +16,7 @@ libgstreamer-plugins-good1.0-dev
 libgstreamer-plugins-bad1.0-dev
 libsoup-gnome2.4-dev
 libjson-glib-dev
+libghc-css-text-dev
 """
 
 

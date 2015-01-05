@@ -1,2 +1,3 @@
 #!/bin/sh
-exec "/usr/local/share/JAMedia/JAMedia" "$@"
+cd "/usr/share/JAMedia/"
+exec "./JAMedia" "$@"

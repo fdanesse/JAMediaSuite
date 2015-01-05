@@ -1,0 +1,11 @@
+Package: jamedia
+Source: JAMedia
+Version: 15.0.0
+Section: Sound
+Priority: optional
+Architecture: amd64
+Maintainer: Flavio Danesse <fdanesse@gmail.com>
+Homepage: https://sites.google.com/site/sugaractivities/jamediaobjects/jam
+Depends:
+Description: Reproductor de Audio, Video y Streamings de Radio y Televisión
+ Reproductor de Audio, Video y Streamings de Radio y Televisión

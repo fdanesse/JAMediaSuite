@@ -23,11 +23,19 @@
 import os
 import commands
 import shutil
+import zipfile
 
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource
 from gi.repository import GLib
+from gi.repository import Gdk
+from gi.repository import Pango
+from gi.repository import GdkPixbuf
+
+from JAMediaTerminal.Terminal import Terminal
+import ApiProyecto
+from Widgets import My_FileChooser
 
 BASEPATH = os.path.dirname(__file__)
 
@@ -231,9 +239,6 @@ class DialogoSetup(Gtk.Dialog):
         scroll.set_size_request(rect.width / 3, -1)
 
     def __format_help(self, buffer_help, tags_table):
-        from gi.repository import Gdk
-        from gi.repository import Pango
-
         tag1 = Gtk.TextTag.new("1")
         tag1.set_property("weight", Pango.Weight.BOLD)
         tags_table.add(tag1)
@@ -509,8 +514,6 @@ class Gnome_Notebook(Gtk.Notebook):
         self.setupdesktop.get_buffer().set_text(desktop)
 
         # MANIFEST
-        import ApiProyecto
-
         manifest_list, data_files = ApiProyecto.get_installers_data(
             self.activitydirpath)
 
@@ -705,7 +708,6 @@ class Sugar_Notebook(Gtk.Notebook):
                     shutil.rmtree(path, ignore_errors=False, onerror=None)
 
         # Generar archivo de distribución "*.xo"
-        import zipfile
         zippath = "%s.xo" % (activitydirpath)
 
         # Borrar anterior
@@ -759,7 +761,6 @@ class Setup_SourceView(GtkSource.View):
         GtkSource.View.__init__(self)
 
         self.set_buffer(GtkSource.Buffer())
-        from gi.repository import Pango
         self.modify_font(Pango.FontDescription('Monospace 10'))
         self.show_all()
 
@@ -832,7 +833,6 @@ class Widget_icon(Gtk.Frame):
         if self.tipo == "sugar":
             mime = "image/svg+xml"
 
-        from Widgets import My_FileChooser
         filechooser = My_FileChooser(parent_window=self.get_toplevel(),
             action_type=Gtk.FileChooserAction.OPEN,
             title="Seleccionar Icono . . .", path=self.proyecto["path"],
@@ -844,7 +844,6 @@ class Widget_icon(Gtk.Frame):
         """
         Cuando el usuario selecciona un icono para la aplicación.
         """
-        from gi.repository import GdkPixbuf
         iconpath = str(iconpath).replace("//", "/")
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(iconpath, 50, 50)
@@ -873,7 +872,6 @@ class DialogoInstall(Gtk.Dialog):
         self.destino_path = destino_path
         self.dirpath = dirpath
 
-        from JAMediaTerminal.Terminal import Terminal
         self.terminal = Terminal()
 
         self.vbox.pack_start(self.terminal, True, True, 0)
@@ -974,7 +972,6 @@ class Ceibal_Notebook(Gtk.Notebook):
         self.iconpath = iconpath
         activitydirpath, iconpath = self.__generar_temporal_dir(iconpath)
 
-        import shelve
         archivo = shelve.open(os.path.join(BASEPATH, "plantilla"))
         text = u"%s" % archivo.get('install', "")
         archivo.close()
@@ -1025,7 +1022,6 @@ class Ceibal_Notebook(Gtk.Notebook):
         if os.path.exists(zippath):
             os.remove(zippath)
 
-        import zipfile
         zipped = zipfile.ZipFile(zippath, "w")
 
         RECHAZAExtension = [".pyc", ".pyo",
@@ -1071,11 +1067,7 @@ class Ceibal_Notebook(Gtk.Notebook):
 
 
 class HPanel(Gtk.Paned):
-
     __gtype_name__ = 'JAMediaEditorPanelWidget_setup'
-
     def __init__(self):
-
         Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
-
         self.show_all()
