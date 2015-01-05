@@ -35,7 +35,7 @@ from Globales import copiar
 from Globales import borrar
 from Globales import mover
 
-BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class Toolbar(gtk.EventBox):

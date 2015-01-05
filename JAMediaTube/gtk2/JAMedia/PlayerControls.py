@@ -36,7 +36,7 @@ def insensibilizar(objeto):
         objeto.set_sensitive(False)
 
 
-BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class PlayerControls(gtk.EventBox):
@@ -95,19 +95,22 @@ class PlayerControls(gtk.EventBox):
     def __emit_accion(self, widget, accion):
         self.emit("accion-controls", accion)
 
-    def activar(self, valor):
-        if valor:
-            map(sensibilizar, [self.atras, self.play,
-                self.siguiente, self.stop])
-        else:
-            map(insensibilizar, [self.atras, self.play,
-                self.siguiente, self.stop])
-
     def set_paused(self):
         self.play.set_paused(self.pix_play)
 
     def set_playing(self):
         self.play.set_playing(self.pix_paused)
+
+    def activar(self, valor):
+        if valor == 0:
+            map(insensibilizar, [self.atras, self.play,
+                self.siguiente, self.stop])
+        elif valor == 1:
+            map(insensibilizar, [self.atras, self.siguiente])
+            map(sensibilizar, [self.play, self.stop])
+        else:
+            map(sensibilizar, [self.atras, self.play,
+                self.siguiente, self.stop])
 
 
 class JAMediaToolButton(gtk.ToolButton):

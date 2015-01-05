@@ -24,6 +24,7 @@ import os
 import commands
 import shutil
 import zipfile
+import shelve
 
 from gi.repository import Gtk
 from gi.repository import GObject
@@ -626,27 +627,6 @@ class Sugar_Notebook(Gtk.Notebook):
 
         self.show_all()
 
-    def setup_install(self, iconpath):
-        """
-        Recolecta la información necesaria para generar los archivos de
-        instalación y los presenta al usuario para posibles correcciones.
-        """
-        self.iconpath = iconpath
-        main_path = os.path.join(self.proyecto["path"], self.proyecto["main"])
-        extension = os.path.splitext(os.path.split(main_path)[1])[1]
-        main_name = self.proyecto["main"].split(extension)[0]
-
-        extension = os.path.splitext(os.path.split(iconpath)[1])[1]
-        newiconpath = os.path.basename(iconpath).split(extension)[0]
-
-        activity = "[Activity]\nname = %s\nactivity_version = %s\nbundle_id = org.laptop.%s\nicon = %s\nexec = sugar-activity %s.%s -s\nmime_types =%s\nlicense = %s\nsummary = " % (self.proyecto["nombre"], self.proyecto["version"], self.proyecto["nombre"], newiconpath, main_name, main_name, self.proyecto["mimetypes"], self.proyecto["licencia"])
-        setup = "#!/usr/bin/env python\n\nfrom sugar3.activity import bundlebuilder\nbundlebuilder.start()"
-
-        self.__generar_temporal_dir(iconpath)
-
-        self.activity_sourceview.get_buffer().set_text(activity)
-        self.setup_sourceview.get_buffer().set_text(setup)
-
     def __generar_temporal_dir(self, iconpath):
         # Comenzar a generar el temporal
         activitydirpath = os.path.join("/tmp",
@@ -747,6 +727,27 @@ class Sugar_Notebook(Gtk.Notebook):
 
         if os.path.exists(activitydirpath):
             shutil.rmtree(activitydirpath, ignore_errors=False, onerror=None)
+
+    def setup_install(self, iconpath):
+        """
+        Recolecta la información necesaria para generar los archivos de
+        instalación y los presenta al usuario para posibles correcciones.
+        """
+        self.iconpath = iconpath
+        main_path = os.path.join(self.proyecto["path"], self.proyecto["main"])
+        extension = os.path.splitext(os.path.split(main_path)[1])[1]
+        main_name = self.proyecto["main"].split(extension)[0]
+
+        extension = os.path.splitext(os.path.split(iconpath)[1])[1]
+        newiconpath = os.path.basename(iconpath).split(extension)[0]
+
+        activity = "[Activity]\nname = %s\nactivity_version = %s\nbundle_id = org.laptop.%s\nicon = %s\nexec = sugar-activity %s.%s -s\nmime_types =%s\nlicense = %s\nsummary = " % (self.proyecto["nombre"], self.proyecto["version"], self.proyecto["nombre"], newiconpath, main_name, main_name, self.proyecto["mimetypes"], self.proyecto["licencia"])
+        setup = "#!/usr/bin/env python\n\nfrom sugar3.activity import bundlebuilder\nbundlebuilder.start()"
+
+        self.__generar_temporal_dir(iconpath)
+
+        self.activity_sourceview.get_buffer().set_text(activity)
+        self.setup_sourceview.get_buffer().set_text(setup)
 
 
 class Setup_SourceView(GtkSource.View):
@@ -964,25 +965,6 @@ class Ceibal_Notebook(Gtk.Notebook):
         self.append_page(get_scroll(self.install), Gtk.Label("install.py"))
         self.show_all()
 
-    def setup_install(self, iconpath):
-        """
-        Recolecta la información necesaria para generar los archivos de
-        instalación y los presenta al usuario para posibles correcciones.
-        """
-        self.iconpath = iconpath
-        activitydirpath, iconpath = self.__generar_temporal_dir(iconpath)
-
-        archivo = shelve.open(os.path.join(BASEPATH, "plantilla"))
-        text = u"%s" % archivo.get('install', "")
-        archivo.close()
-
-        text = text.replace('mainfile', self.proyecto["main"])
-        text = text.replace('iconfile', iconpath)
-        text = text.replace('GnomeCat', self.proyecto["categoria"])
-        text = text.replace('GnomeMimeTypes', self.proyecto["mimetypes"])
-
-        self.install.get_buffer().set_text(text)
-
     def __generar_temporal_dir(self, iconpath):
         # Comenzar a generar el temporal
         activitydirpath = os.path.join("/tmp", "%s" % self.proyecto["nombre"])
@@ -1064,6 +1046,25 @@ class Ceibal_Notebook(Gtk.Notebook):
             os.remove(zippath)
             shutil.rmtree(activitydirpath,
                 ignore_errors=False, onerror=None)
+
+    def setup_install(self, iconpath):
+        """
+        Recolecta la información necesaria para generar los archivos de
+        instalación y los presenta al usuario para posibles correcciones.
+        """
+        self.iconpath = iconpath
+        activitydirpath, iconpath = self.__generar_temporal_dir(iconpath)
+
+        archivo = shelve.open(os.path.join(BASEPATH, "plantilla"))
+        text = u"%s" % archivo.get('install', "")
+        archivo.close()
+
+        text = text.replace('mainfile', self.proyecto["main"])
+        text = text.replace('iconfile', iconpath)
+        text = text.replace('GnomeCat', self.proyecto["categoria"])
+        text = text.replace('GnomeMimeTypes', self.proyecto["mimetypes"])
+
+        self.install.get_buffer().set_text(text)
 
 
 class HPanel(Gtk.Paned):

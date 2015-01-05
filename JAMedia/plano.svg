@@ -25,8 +25,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.12374369"
-     inkscape:cx="-10652.383"
-     inkscape:cy="2129.4039"
+     inkscape:cx="-10264.403"
+     inkscape:cy="2978.7806"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -244,80 +244,109 @@
            x="-13303.078"
            sodipodi:role="line" /></text>
     </g>
-    <rect
-       style="fill:#00ffff;fill-opacity:0.13333333;stroke:#008000;stroke-width:2.12979531;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="rect3021-1-5-2-3-8"
-       width="1216.3566"
-       height="818.8941"
-       x="-9196.749"
-       y="-2831.3706"
-       ry="0.8824966" />
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
-       x="-9161.9756"
-       y="-2750.877"
-       id="text2985-7-6-7"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan2987-56-3-8"
-         x="-9161.9756"
+    <g
+       id="g4230"
+       transform="translate(-88.893422,113.13708)">
+      <rect
+         ry="0.57430983"
+         y="-2831.8245"
+         x="-9197.2031"
+         height="532.9187"
+         width="615.21356"
+         id="rect3021-1-5-2-3-8"
+         style="fill:#fff6d5;fill-opacity:1;stroke:#008000;stroke-width:13;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text2985-7-6-7"
          y="-2750.877"
-         style="font-size:54px;font-weight:bold;fill:#0000ff;-inkscape-font-specification:Sans Bold">JAMediaGrabador</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="-9159.1182"
-       y="-2375.2441"
-       id="text2989-1-56-02"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan2991-8-0-5"
+         x="-9161.9756"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:54px;font-weight:bold;fill:#0000ff;-inkscape-font-specification:Sans Bold"
+           y="-2750.877"
+           x="-9161.9756"
+           id="tspan2987-56-3-8"
+           sodipodi:role="line">JAMediaGrabador</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text2989-1-56-02"
+         y="-2561.2441"
          x="-9159.1182"
-         y="-2375.2441" /><tspan
-         sodipodi:role="line"
-         x="-9159.1182"
-         y="-2325.2441"
-         id="tspan3003-5-73-96"
-         style="font-weight:bold;-inkscape-font-specification:Sans Bold">Funciones:</tspan><tspan
-         sodipodi:role="line"
-         x="-9159.1182"
-         y="-2275.2441"
-         style="font-weight:normal;-inkscape-font-specification:Sans"
-         id="tspan5099-32" /><tspan
-         sodipodi:role="line"
-         x="-9159.1182"
-         y="-2225.2441"
-         id="tspan3001-8-16-9" /><tspan
-         sodipodi:role="line"
-         x="-9159.1182"
-         y="-2175.2441"
-         id="tspan2995-4-2-7" /></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="-9159.1182"
-       y="-2681.8154"
-       id="text3013-5-5-1"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan3015-7-53-2"
-         x="-9159.1182"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="-2561.2441"
+           x="-9159.1182"
+           id="tspan2991-8-0-5"
+           sodipodi:role="line" /><tspan
+           style="font-weight:bold;-inkscape-font-specification:Sans Bold"
+           id="tspan3003-5-73-96"
+           y="-2511.2441"
+           x="-9159.1182"
+           sodipodi:role="line">Funciones:</tspan><tspan
+           id="tspan3451"
+           style="font-weight:normal;-inkscape-font-specification:Sans"
+           y="-2461.2441"
+           x="-9159.1182"
+           sodipodi:role="line">    public void play()</tspan><tspan
+           id="tspan3453"
+           style="font-weight:normal;-inkscape-font-specification:Sans"
+           y="-2411.2441"
+           x="-9159.1182"
+           sodipodi:role="line">    public void stop()</tspan><tspan
+           id="tspan3455"
+           style="font-weight:normal;-inkscape-font-specification:Sans"
+           y="-2361.2441"
+           x="-9159.1182"
+           sodipodi:role="line">    public bool load(string)</tspan><tspan
+           id="tspan5099-32"
+           style="font-weight:normal;-inkscape-font-specification:Sans"
+           y="-2311.2441"
+           x="-9159.1182"
+           sodipodi:role="line" /><tspan
+           id="tspan3001-8-16-9"
+           y="-2261.2441"
+           x="-9159.1182"
+           sodipodi:role="line" /><tspan
+           id="tspan2995-4-2-7"
+           y="-2211.2441"
+           x="-9159.1182"
+           sodipodi:role="line" /></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3013-5-5-1"
          y="-2681.8154"
-         style="font-weight:bold;-inkscape-font-specification:Sans Bold">Señales:</tspan><tspan
-         sodipodi:role="line"
          x="-9159.1182"
-         y="-2631.8154"
-         id="tspan5084-4"
-         style="fill:#0000ff" /><tspan
-         sodipodi:role="line"
-         x="-9159.1182"
-         y="-2581.8154"
-         id="tspan5082-6" /><tspan
-         sodipodi:role="line"
-         x="-9159.1182"
-         y="-2531.8154"
-         id="tspan3301-5-3" /></text>
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-weight:bold;-inkscape-font-specification:Sans Bold"
+           y="-2681.8154"
+           x="-9159.1182"
+           id="tspan3015-7-53-2"
+           sodipodi:role="line">Señales:</tspan><tspan
+           id="tspan3457"
+           style="font-weight:normal;-inkscape-font-specification:Sans"
+           y="-2631.8154"
+           x="-9159.1182"
+           sodipodi:role="line">    &quot;endfile&quot;</tspan><tspan
+           id="tspan3460"
+           style="font-weight:normal;-inkscape-font-specification:Sans"
+           y="-2581.8154"
+           x="-9159.1182"
+           sodipodi:role="line">    &quot;update&quot; string</tspan><tspan
+           style="fill:#0000ff"
+           id="tspan5084-4"
+           y="-2531.8154"
+           x="-9159.1182"
+           sodipodi:role="line" /><tspan
+           id="tspan5082-6"
+           y="-2481.8154"
+           x="-9159.1182"
+           sodipodi:role="line" /><tspan
+           id="tspan3301-5-3"
+           y="-2431.8154"
+           x="-9159.1182"
+           sodipodi:role="line" /></text>
+    </g>
     <g
        id="g4320">
       <g
@@ -2041,7 +2070,7 @@
        id="g5326"
        transform="translate(1704.5776,623.90247)">
       <rect
-         style="fill:#fff6d5;fill-opacity:1;stroke:#008000;stroke-width:6.32882404;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:#fff6d5;fill-opacity:1;stroke:#008000;stroke-width:13;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          id="rect3021-1-47-8-31"
          width="398.29968"
          height="344.01404"
@@ -2096,7 +2125,7 @@
        id="g5184-6"
        transform="translate(-332.02051,363.90253)">
       <rect
-         style="fill:#fff6d5;fill-opacity:1;stroke:#008000;stroke-width:11.09163952;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:#fff6d5;fill-opacity:1;stroke:#008000;stroke-width:13;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          id="rect3021-1-47-8-31-0"
          width="847.82257"
          height="496.39407"
@@ -2185,7 +2214,7 @@
        id="g5342"
        transform="translate(3244.5776,518.7471)">
       <rect
-         style="fill:#fff6d5;fill-opacity:1;stroke:#008000;stroke-width:5.45312691;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:#fff6d5;fill-opacity:1;stroke:#008000;stroke-width:13;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          id="rect3021-1-47-8-31-3"
          width="410.60394"
          height="247.74689"
@@ -2229,7 +2258,7 @@
     <g
        id="g4705">
       <rect
-         style="fill:#fff6d5;fill-opacity:1;stroke:#008000;stroke-width:9.31445026;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:#fff6d5;fill-opacity:1;stroke:#008000;stroke-width:13;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          id="rect3021-1-47-8-31-0-4"
          width="729.68384"
          height="406.74268"

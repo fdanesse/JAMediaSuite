@@ -38,7 +38,7 @@ def insensibilizar(objeto):
         objeto.set_sensitive(False)
 
 
-BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class ToolbarGrabar(gtk.EventBox):
@@ -147,10 +147,10 @@ class VideoVisor(gtk.DrawingArea):
         if x in range(ww - 60, ww) or y in range(yy, yy + 60) \
             or y in range(hh - 60, hh):
             self.emit("ocultar_controles", False)
-            return
+            return True
         else:
             self.emit("ocultar_controles", True)
-            return
+            return True
 
 
 class ToolbarInfo(gtk.EventBox):
@@ -340,6 +340,7 @@ class ProgressBar(gtk.HScale):
         self.connect("expose_event", self.__expose)
 
         self.show_all()
+        self.set_sensitive(False)
 
     def __expose(self, widget, event):
         x, y, w, h = self.get_allocation()

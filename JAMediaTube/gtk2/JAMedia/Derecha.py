@@ -76,7 +76,6 @@ class Derecha(gtk.EventBox):
         self.balance = BalanceWidget()
         #self.efectos = VideoEfectos()
         self.lista = PlayerList()
-        self.lista.set_mime_types(["audio/*", "video/*"])
         self.player_controls = PlayerControls()
 
         conf_box.pack_start(self.balance, False, False, 0)
@@ -103,6 +102,7 @@ class Derecha(gtk.EventBox):
         self.lista.connect("accion-list", self.__emit_accion_list)
         self.lista.connect("menu_activo", self.__emit_menu_activo)
         self.lista.connect("add_stream", self.__emit_add_stream)
+        self.lista.connect("len_items", self.__items_in_list)
 
         self.player_controls.connect("accion-controls",
             self.__emit_accion_controls)
@@ -116,6 +116,9 @@ class Derecha(gtk.EventBox):
     #def __emit_add_remove_efecto(self, widget, efecto, valor):
     #    # Agrega o quita efecto de video.
     #    self.emit("add_remove_efecto", efecto, valor)
+
+    def __items_in_list(self, widget, items):
+        self.player_controls.activar(items)
 
     def __emit_balance(self, widget, valor, prop):
         # brillo, contraste, saturación, hue, gamma
@@ -138,10 +141,6 @@ class Derecha(gtk.EventBox):
         self.emit("accion-list", lista, accion, _iter)
 
     def __emit_cargar_reproducir(self, widget, path):
-        if path:
-            self.player_controls.activar(True)
-        else:
-            self.player_controls.activar(False)
         self.emit("cargar-reproducir", path)
 
     def show_config(self):
@@ -157,7 +156,7 @@ class Derecha(gtk.EventBox):
     def setup_init(self):
         ocultar(self.get_child().get_children()[0])
         self.lista.setup_init()
-        self.player_controls.activar(False)
+        self.player_controls.activar(0)
         #self.efectos.cargar_efectos(list(get_jamedia_video_efectos()))
 
     def set_ip(self, valor):

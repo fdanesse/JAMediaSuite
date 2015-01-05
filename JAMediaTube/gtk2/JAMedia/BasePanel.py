@@ -220,11 +220,12 @@ class BasePanel(gtk.HPaned):
         if "playing" in valor:
             self.derecha.player_controls.set_playing()
             self.izquierda.progress.set_sensitive(True)
+            gobject.idle_add(self.__update_balance)
         elif "paused" in valor or "None" in valor:
             self.derecha.player_controls.set_paused()
+            gobject.idle_add(self.__update_balance)
         else:
             print "Estado del Reproductor desconocido:", valor
-        gobject.idle_add(self.__update_balance)
 
     def __update_balance(self):
         config = {}
@@ -265,8 +266,3 @@ class BasePanel(gtk.HPaned):
 
     def set_nueva_lista(self, archivos):
         self.derecha.set_nueva_lista(archivos)
-
-    def checkear_listas(self):
-        dialog = DialogoDescarga(parent=self.get_toplevel(), force=False)
-        dialog.run()
-        dialog.destroy()
