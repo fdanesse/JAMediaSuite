@@ -43,6 +43,8 @@ class BasePanel(gtk.HPaned):
         gobject.TYPE_NONE, []),
     "add_stream": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING, )),
+    "video": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,)),
     'stop-record': (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, [])}
 
@@ -211,7 +213,7 @@ class BasePanel(gtk.HPaned):
 
     def __set_video(self, widget, valor):
         self.izquierda.toolbar_info.set_video(valor)
-        self.get_parent().get_parent().toolbar.configurar.set_sensitive(valor)
+        self.emit("video", valor)
 
     def __update_progress(self, objetoemisor, valor):
         self.izquierda.progress.set_progress(float(valor))

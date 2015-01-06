@@ -133,6 +133,7 @@ class JAMedia(gtk.EventBox):
         self.base_panel.connect("menu_activo", self.__cancel_toolbars)
         self.base_panel.connect("add_stream", self.__run_add_stream)
         self.base_panel.connect("stop-record", self.__detener_grabacion)
+        self.base_panel.connect("video", self.__set_video)
 
         self.toolbar_accion.connect("accion-stream", self.__accion_stream)
         self.toolbar_accion.connect("grabar", self.__grabar)
@@ -149,6 +150,9 @@ class JAMedia(gtk.EventBox):
         gobject.idle_add(self.__setup_init)
         #print "JAMedia process:", os.getpid()
         #self.base_panel.checkear_listas()
+
+    def __set_video(self, widget, valor):
+        self.toolbar.configurar.set_sensitive(valor)
 
     def __realize(self, window):
         self.cursor_root = self.get_property("window").get_cursor()
