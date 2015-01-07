@@ -6,6 +6,7 @@ using Posix;
 public class JAMediaEditor : Gtk.Window{
 
     private Menu menu = new Menu(new Gtk.AccelGroup());
+    private ToolbarEstado status = new ToolbarEstado();
 
     public JAMediaEditor(){
 
@@ -23,6 +24,8 @@ public class JAMediaEditor : Gtk.Window{
 
         box.pack_start(this.menu, false, false, 0);
 
+        box.pack_end(this.status, false, false, 0);
+
         this.add_accel_group(this.menu.accel_group);
 
         this.add(box);
@@ -30,16 +33,16 @@ public class JAMediaEditor : Gtk.Window{
 
         this.destroy.connect(this.__salir);
 
-        this.menu.accion.connect((_accion) => {
-			this.__accion_menu(_accion);
+        this.menu.accion.connect((_accion, valor) => {
+			this.__accion_menu(_accion, valor);
 		    });
 
         GLib.stdout.printf("JAMediaEditor process: %i\n", Posix.getpid());
         GLib.stdout.flush();
     }
 
-    private void __accion_menu(string _accion){
-        GLib.stdout.printf("__accion_menu: %s\n", _accion);
+    private void __accion_menu(string _accion, bool valor){
+        GLib.stdout.printf("__accion_menu: %s %s\n", _accion, valor.to_string());
         GLib.stdout.flush();
     }
 
@@ -51,13 +54,13 @@ public class JAMediaEditor : Gtk.Window{
 
 public static int main (string[] args) {
     Gtk.init(ref args);
-    //var screen = Gdk.Screen.get_default();
-    //var css_provider = new Gtk.CssProvider();
-    //string style_path = "Estilo.css";
-    //css_provider.load_from_path(style_path);
-    //Gtk.StyleContext.add_provider_for_screen(
-    //    screen, css_provider,
-    //    Gtk.STYLE_PROVIDER_PRIORITY_USER);
+    var screen = Gdk.Screen.get_default();
+    var css_provider = new Gtk.CssProvider();
+    string style_path = "Estilo.css";
+    css_provider.load_from_path(style_path);
+    Gtk.StyleContext.add_provider_for_screen(
+        screen, css_provider,
+        Gtk.STYLE_PROVIDER_PRIORITY_USER);
     JAMediaEditor app = new JAMediaEditor();
     app.show_all();
     Gtk.main();

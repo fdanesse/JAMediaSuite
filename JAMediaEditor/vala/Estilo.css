@@ -1,0 +1,11 @@
+
+JAMediaEditor{
+    background-color: #f0e6aa;
+    color: #000000;
+}
+
+ToolbarEstado, Menu, MenuProyectos, MenuArchivos, MenuEdicion, MenuVer,
+MenuCodigo, MenuAyuda{
+    background-color: #000000;
+    color: #ffffff;
+    }
