@@ -45,19 +45,7 @@ from Globales import get_my_files_directory
 from Globales import describe_archivo
 
 #gobject.threads_init()
-
 #commands.getoutput('PATH=%s:$PATH' % (os.path.dirname(__file__)))
-
-
-def ocultar(objeto):
-    if objeto.get_visible():
-        objeto.hide()
-
-
-def mostrar(objeto):
-    if not objeto.get_visible():
-        objeto.show()
-
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -314,7 +302,9 @@ class JAMedia(gtk.Window):
         sys.exit(0)
 
     def __cancel_toolbars(self, widget=False):
-        map(ocultar, self.get_child().get_children()[1:-1])
+        self.toolbar_salir.cancelar()
+        self.toolbar_accion.cancelar()
+        self.add_stream.cancelar()
 
     def __accion_list(self, widget, lista, accion, _iter):
         # borrar, copiar, mover, grabar, etc . . .

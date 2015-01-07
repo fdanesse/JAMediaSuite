@@ -21,6 +21,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110 - 1301 USA
 
 import os
+import glob
 
 from gi.repository import Gtk
 
@@ -245,7 +246,7 @@ class DialogoProyecto(Gtk.Dialog):
         mimetypes = self.mimetypes.get_text()
         categories = self.categories.get_text()
 
-        text = _buffer.get_text(_buffer.get_start_iter(),
+        descripcion = _buffer.get_text(_buffer.get_start_iter(),
             _buffer.get_end_iter(), True)
 
         version = self.version.get_text()
@@ -262,13 +263,13 @@ class DialogoProyecto(Gtk.Dialog):
             path = path.strip()
 
         if mimetypes:
-            mimetypes = mimetypes.strip()
+            mimetypes = mimetypes.replace("\n", " ").strip()
 
         if categories:
-            categories = categories.strip()
+            categories = categories.replace("\n", " ").strip()
 
-        if text:
-            text = text.strip()
+        if descripcion:
+            descripcion = descripcion.replace("\n", " ").strip()
 
         if version:
             version = version.strip()
@@ -277,13 +278,13 @@ class DialogoProyecto(Gtk.Dialog):
             licencia = licencia.strip()
 
         if url:
-            url = url.strip()
+            url = url.replace("\n", " ").strip()
 
         _dict = {
             "nombre": nombre,
             "main": main,
             "path": path,
-            "descripcion": text,
+            "descripcion": descripcion,
             "mimetypes": mimetypes,
             "categoria": categories,
             "version": version,
@@ -311,7 +312,6 @@ class DialogoProyecto(Gtk.Dialog):
 
         # Setear Combo para archivo Main.
         if diccionario.get("path", False):
-            import glob
             arch = glob.glob("%s/*.py" % diccionario["path"])
             self.main.remove_all()
 

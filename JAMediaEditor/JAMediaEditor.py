@@ -216,5 +216,4 @@ if __name__ == "__main__":
         JAMediaEditor(sys.argv[1:])
     else:
         JAMediaEditor()
-
     Gtk.main()
