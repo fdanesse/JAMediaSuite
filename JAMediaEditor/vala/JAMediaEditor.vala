@@ -30,7 +30,16 @@ public class JAMediaEditor : Gtk.Window{
 
         this.destroy.connect(this.__salir);
 
+        this.menu.accion.connect((_accion) => {
+			this.__accion_menu(_accion);
+		    });
+
         GLib.stdout.printf("JAMediaEditor process: %i\n", Posix.getpid());
+        GLib.stdout.flush();
+    }
+
+    private void __accion_menu(string _accion){
+        GLib.stdout.printf("__accion_menu: %s\n", _accion);
         GLib.stdout.flush();
     }
 
