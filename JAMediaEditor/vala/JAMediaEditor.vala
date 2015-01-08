@@ -7,6 +7,7 @@ public class JAMediaEditor : Gtk.Window{
 
     private Menu menu = new Menu(new Gtk.AccelGroup());
     private ToolbarEstado status = new ToolbarEstado();
+    private BasePanel base_panel = new BasePanel();
 
     public JAMediaEditor(){
 
@@ -23,19 +24,24 @@ public class JAMediaEditor : Gtk.Window{
         Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
         box.pack_start(this.menu, false, false, 0);
-
+        box.pack_start(this.base_panel, true, true, 0);
         box.pack_end(this.status, false, false, 0);
+        //self.jamediapygihack = JAMediaPyGiHack()
 
         this.add_accel_group(this.menu.accel_group);
 
         this.add(box);
         this.show_all();
+        this.maximize();
+
+        //self.jamediapygihack.hide()
 
         this.destroy.connect(this.__salir);
 
         this.menu.accion.connect((_accion, valor) => {
 			this.__accion_menu(_accion, valor);
 		    });
+        //self.jamediapygihack.connect('salir', self.__run_editor)
 
         GLib.stdout.printf("JAMediaEditor process: %i\n", Posix.getpid());
         GLib.stdout.flush();

@@ -349,11 +349,17 @@ public class MenuAyuda : Gtk.Menu{
 		    });
         this.append(item1);
 
-        Gtk.MenuItem item2 = new Gtk.MenuItem.with_label("JAMediaPyGiHack");
+        Gtk.MenuItem item2 = new Gtk.MenuItem.with_label("Guias y Ejemplos");
         item2.activate.connect (() => {
-			this.accion("JAMediaPyGiHack", false);
+			this.accion("Guias y Ejemplos", false);
 		    });
         this.append(item2);
+
+        Gtk.MenuItem item3 = new Gtk.MenuItem.with_label("JAMediaPyGiHack");
+        item3.activate.connect (() => {
+			this.accion("JAMediaPyGiHack", false);
+		    });
+        this.append(item3);
 
         this.show_all();
     }
