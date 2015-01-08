@@ -209,6 +209,48 @@ public class ToolbarProyecto : Gtk.EventBox{
         //self.activar_proyecto(False)
         //self.activar_ejecucion(None)
 
-        this.set_size_request(240, -1);
+        this.set_size_request(270, -1);
+    }
+}
+
+
+public class ToolbarBusquedas : Gtk.EventBox{
+
+    private Gtk.Entry entry = new Gtk.Entry();
+
+    public ToolbarBusquedas(){
+
+        Gtk.Toolbar toolbar = new Gtk.Toolbar();
+
+        Gtk.ToolButton button1 = get_button("Iconos/go-next-rtl.svg", false, Gdk.PixbufRotation.NONE, 18, "Anterior");
+		//button1.clicked.connect (() => {
+		//	this.accion("Anterior");
+		//    });
+		toolbar.insert(button1, -1);
+
+        Gtk.ToolItem item = new Gtk.ToolItem();
+        item.set_expand(true);
+        this.entry.show();
+        item.add(this.entry);
+        toolbar.insert(item, - 1);
+
+        Gtk.ToolButton button2 = get_button("Iconos/go-next.svg", false, Gdk.PixbufRotation.NONE, 18, "Siguiente");
+		//button2.clicked.connect (() => {
+		//	this.accion("Anterior");
+		//    });
+		toolbar.insert(button2, -1);
+
+        Gtk.ToolButton button3 = get_button("Iconos/go-next.svg", false, Gdk.PixbufRotation.CLOCKWISE, 18, "Obtener Informe");
+		//button3.clicked.connect (() => {
+		//	this.accion("Obtener Informe");
+		//    });
+		toolbar.insert(button3, -1);
+
+        //self.entry.connect("changed", self.__emit_buscar)
+        this.add(toolbar);
+        this.show_all();
+
+        //self.anterior.set_sensitive(False)
+        //self.siguiente.set_sensitive(False)
     }
 }

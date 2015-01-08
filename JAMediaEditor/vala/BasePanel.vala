@@ -14,11 +14,11 @@ public class BasePanel : Gtk.HPaned{
         //self.seleccionado_actual = 0
 
         //self.toolbararchivo = ToolbarArchivo()
-        //toolbarbusquedas = ToolbarBusquedas()
+        ToolbarBusquedas toolbarbusquedas = new ToolbarBusquedas();
 
         this.infonotebook_box.pack_start(this.toolbarproyecto, false, false, 0);
         //self.infonotebook_box.pack_start(self.infonotebook, True, True, 0)
-        //self.infonotebook_box.pack_end(toolbarbusquedas, False, False, 0)
+        this.infonotebook_box.pack_end(toolbarbusquedas, false, false, 0);
 
         Gtk.Box workpanel_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
