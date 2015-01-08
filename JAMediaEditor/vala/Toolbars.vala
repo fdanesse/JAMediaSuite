@@ -54,7 +54,6 @@ public class ToolbarArchivo : Gtk.EventBox{
         Gtk.Toolbar toolbar = new Gtk.Toolbar();
 
         toolbar.insert(get_separador(false, 10, false), - 1);
-        toolbar.insert(get_separador(true, 0, false), - 1);
 
         //icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         Gtk.ToolButton button1 = get_button("Iconos/document-new.svg", false, Gdk.PixbufRotation.NONE, 18, "Nuevo Archivo");
@@ -140,10 +139,76 @@ public class ToolbarArchivo : Gtk.EventBox{
 		    });
 		toolbar.insert(button12, -1);
 
-        toolbar.insert(get_separador(true, 0, false), - 1);
         toolbar.insert(get_separador(false, 0, true), - 1);
 
         this.add(toolbar);
         this.show_all();
+    }
+}
+
+
+public class ToolbarProyecto : Gtk.EventBox{
+
+    public signal void accion(string _accion);
+
+    public ToolbarProyecto(){
+
+        Gtk.Toolbar toolbar = new Gtk.Toolbar();
+
+        //icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
+        Gtk.ToolButton button1 = get_button("Iconos/document-new.svg", false, Gdk.PixbufRotation.NONE, 18, "Nuevo Proyecto");
+		button1.clicked.connect (() => {
+			this.accion("Nuevo Proyecto");
+		    });
+		toolbar.insert(button1, -1);
+
+        //icon_path = make_icon_active(os.path.join(icons, "document-open.svg"))
+        Gtk.ToolButton button2 = get_button("Iconos/document-open.svg", false, Gdk.PixbufRotation.NONE, 18, "Abrir Proyecto");
+		button2.clicked.connect (() => {
+			this.accion("Abrir Proyecto");
+		    });
+		toolbar.insert(button2, -1);
+
+        Gtk.ToolButton button3 = get_button("Iconos/gtk-edit.svg", false, Gdk.PixbufRotation.NONE, 18, "Editar Proyecto");
+		button3.clicked.connect (() => {
+			this.accion("Editar Proyecto");
+		    });
+		toolbar.insert(button3, -1);
+
+        Gtk.ToolButton button4 = get_button("Iconos/document-save.svg", false, Gdk.PixbufRotation.NONE, 18, "Guardar Proyecto");
+		button4.clicked.connect (() => {
+			this.accion("Guardar Proyecto");
+		    });
+		toolbar.insert(button4, -1);
+
+        Gtk.ToolButton button5 = get_button("Iconos/button-cancel.svg", false, Gdk.PixbufRotation.NONE, 18, "Cerrar Proyecto");
+		button5.clicked.connect (() => {
+			this.accion("Cerrar Proyecto");
+		    });
+		toolbar.insert(button5, -1);
+
+        toolbar.insert(get_separador(true, 0, false), - 1);
+
+        Gtk.ToolButton button6 = get_button("Iconos/media-playback-start.svg", false, Gdk.PixbufRotation.NONE, 18, "Ejecutar Proyecto");
+		button6.clicked.connect (() => {
+			this.accion("Ejecutar Proyecto");
+		    });
+		toolbar.insert(button6, -1);
+
+        Gtk.ToolButton button7 = get_button("Iconos/media-playback-stop.svg", false, Gdk.PixbufRotation.NONE, 18, "Detener Ejecución");
+		button7.clicked.connect (() => {
+			this.accion("Detener Ejecución");
+		    });
+		toolbar.insert(button7, -1);
+
+        toolbar.insert(get_separador(false, 0, true), - 1);
+
+        this.add(toolbar);
+        this.show_all();
+
+        //self.activar_proyecto(False)
+        //self.activar_ejecucion(None)
+
+        this.set_size_request(240, -1);
     }
 }
