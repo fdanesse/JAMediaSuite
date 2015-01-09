@@ -2,23 +2,21 @@
 public class WorkPanel : Gtk.VPaned{
 
     private WorkPanel2 workpanel2 = new WorkPanel2();
+    private Terminal terminal = new Terminal();
 
     public WorkPanel(){
 
-        /*
-        self.terminal = Terminal()
+        //# Terminal en ejecución.
+        //self.ejecucion = False
+        //# Tipo: proyecto o archivo.
+        //self.ejecucion_activa = False
 
-        # Terminal en ejecución.
-        self.ejecucion = False
-        # Tipo: proyecto o archivo.
-        self.ejecucion_activa = False
-        */
         this.pack1(this.workpanel2, true, false);
-        //self.pack2(self.terminal, resize=False, shrink=True)
+        this.pack2(this.terminal, false, true);
 
         this.show_all();
 
-        //this.terminal.set_size_request(-1, 170);
+        this.terminal.set_size_request(-1, 170);
 
         //self.terminal.connect("ejecucion", self.__set_ejecucion)
         //self.terminal.connect("reset", self.detener_ejecucion)

@@ -5,19 +5,17 @@ public class BasePanel : Gtk.HPaned{
     private Gtk.Box infonotebook_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
     private ToolbarProyecto toolbarproyecto = new ToolbarProyecto();
     private ToolbarArchivo toolbararchivo = new ToolbarArchivo();
+    private InfoNotebook infonotebook = new InfoNotebook();
 
     public BasePanel(){
 
         this.set("border_width", 5);
 
-        //self.infonotebook = InfoNotebook()
-        //self.seleccionado_actual = 0
-
         //self.toolbararchivo = ToolbarArchivo()
         ToolbarBusquedas toolbarbusquedas = new ToolbarBusquedas();
 
         this.infonotebook_box.pack_start(this.toolbarproyecto, false, false, 0);
-        //self.infonotebook_box.pack_start(self.infonotebook, True, True, 0)
+        this.infonotebook_box.pack_start(this.infonotebook, true, true, 0);
         this.infonotebook_box.pack_end(toolbarbusquedas, false, false, 0);
 
         Gtk.Box workpanel_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
