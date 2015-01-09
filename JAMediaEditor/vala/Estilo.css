@@ -4,11 +4,12 @@ ToolbarArchivo, ToolbarBusquedas, Terminal, NoteBookTerminal, ToolbarTerminal{
     background-color: #f0e6aa;
     color: #000000;
 }
-
 /*
-InfoNotebook
+InfoNotebook, Notebook_SourceView{
+    background-color: #ffffff;
+    color: #000000;
+    }
 */
-
 ToolbarEstado, Menu, MenuProyectos, MenuArchivos, MenuEdicion, MenuVer,
 MenuCodigo, MenuAyuda{
     background-color: #000000;

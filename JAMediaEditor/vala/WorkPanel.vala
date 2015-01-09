@@ -55,6 +55,11 @@ public class Notebook_SourceView : Gtk.Notebook{
         this.set_scrollable(true);
         //self.ultimo_view_activo = False
 
+        Gtk.ScrolledWindow scroll1 = new Gtk.ScrolledWindow(null, null);
+        scroll1.set("hscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
+        scroll1.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
+        this.append_page(scroll1, new Gtk.Label("Ejemplo"));
+
         this.show_all();
 
         //self.connect('switch_page', self.__switch_page)

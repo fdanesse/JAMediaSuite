@@ -1,5 +1,5 @@
 
-public class Terminal : Gtk.Notebook{
+public class Terminal : Gtk.EventBox{
 
     private NoteBookTerminal notebook = new NoteBookTerminal();
     private ToolbarTerminal toolbar = new ToolbarTerminal();
@@ -23,6 +23,12 @@ public class NoteBookTerminal : Gtk.Notebook{
 
         this.set_scrollable(true);
         //self.fuente = Pango.FontDescription("Monospace %s" % 10)
+
+        Gtk.ScrolledWindow scroll1 = new Gtk.ScrolledWindow(null, null);
+        scroll1.set("hscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
+        scroll1.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
+        this.append_page(scroll1, new Gtk.Label("Ejemplo"));
+
         this.show_all();
         //self.connect('switch_page', self.__switch_page)
     }
