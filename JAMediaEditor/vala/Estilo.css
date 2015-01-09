@@ -1,8 +1,13 @@
 
-JAMediaEditor, BasePanel, WorkPanel, WorkPanel2, ToolbarProyecto, ToolbarArchivo, ToolbarBusquedas{
+JAMediaEditor, BasePanel, WorkPanel, WorkPanel2, ToolbarProyecto,
+ToolbarArchivo, ToolbarBusquedas, Terminal, NoteBookTerminal, ToolbarTerminal{
     background-color: #f0e6aa;
     color: #000000;
 }
+
+/*
+InfoNotebook
+*/
 
 ToolbarEstado, Menu, MenuProyectos, MenuArchivos, MenuEdicion, MenuVer,
 MenuCodigo, MenuAyuda{
