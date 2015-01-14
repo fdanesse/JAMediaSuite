@@ -16,7 +16,7 @@ libghc-css-text-dev
 
 
 def run():
-    comando = "valac --pkg posix --pkg gio-2.0"
+    comando = "valac --pkg posix --pkg gio-2.0 --pkg gtksourceview-3.0"
     comando = "%s %s" % (comando, "--pkg json-glib-1.0 --pkg glib-2.0")
     comando = "%s %s" % (comando, "--pkg gtk+-3.0 --pkg gdk-3.0")
     comando = "%s %s" % (comando, "JAMediaEditor.vala")

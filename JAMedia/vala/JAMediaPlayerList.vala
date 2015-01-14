@@ -156,9 +156,10 @@ public class JAMediaPlayerList : Gtk.Frame{
         this.lista.limpiar();
         }
 
-    public void set_mime_types(SList<string> mimelist){
-        this.mime = mimelist.copy();
-        }
+    // FIXME: No se está utilizando
+    //public void set_mime_types(SList<string> mimelist){
+    //    this.mime = mimelist.copy();
+    //    }
 
     public void setup_init(){
         this.toolbar.boton_agregar.hide();

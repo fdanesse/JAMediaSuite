@@ -29,6 +29,8 @@ from gi.repository import GLib
 from Globales import get_color
 from Globales import get_separador
 from Globales import get_boton
+from Globales import describe_uri
+from Globales import describe_archivo
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -43,7 +45,6 @@ class Lista(Gtk.TreeView):
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
-
         Gtk.TreeView.__init__(self, Gtk.ListStore(
             GdkPixbuf.Pixbuf,
             GObject.TYPE_STRING,
@@ -93,7 +94,6 @@ class Lista(Gtk.TreeView):
         """
         Cuando se selecciona un item en la lista.
         """
-
         if not self.permitir_select:
             return True
 
@@ -105,40 +105,69 @@ class Lista(Gtk.TreeView):
             self.scroll_to_cell(model.get_path(_iter))
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
-
         return True
 
     def __setear_columnas(self):
-
         self.append_column(self.__construir_columa_icono('', 0, True))
         self.append_column(self.__construir_columa('Nombre', 1, True))
         self.append_column(self.__construir_columa('', 2, False))
 
     def __construir_columa(self, text, index, visible):
-
         render = Gtk.CellRendererText()
-
         columna = Gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-
         return columna
 
     def __construir_columa_icono(self, text, index, visible):
-
         render = Gtk.CellRendererPixbuf()
-
         columna = Gtk.TreeViewColumn(text, render, pixbuf=index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', False)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
-
         return columna
 
-    def limpiar(self):
+    def __ejecutar_agregar_elemento(self, elementos):
+        """
+        Agrega los items a la lista, uno a uno, actualizando.
+        """
+        if not elementos:
+            self.permitir_select = True
+            self.seleccionar_primero()
+            self.get_toplevel().set_sensitive(True)
+            return False
 
+        texto, path = elementos[0]
+        descripcion = describe_uri(path)
+
+        icono = None
+        if descripcion:
+            if descripcion[2]:
+                # Es un Archivo
+                tipo = describe_archivo(path)
+                if 'video' in tipo or 'application/ogg' in tipo or \
+                    'application/octet-stream' in tipo:
+                    icono = os.path.join(BASE_PATH,
+                        "Iconos", "video.svg")
+                elif 'audio' in tipo:
+                    icono = os.path.join(BASE_PATH,
+                        "Iconos", "sonido.svg")
+                else:
+                    icono = os.path.join(BASE_PATH,
+                        "Iconos", "sonido.svg")
+        else:
+            icono = os.path.join(BASE_PATH,
+                "Iconos", "sonido.svg")
+
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono, 24, -1)
+        self.get_model().append([pixbuf, texto, path])
+        elementos.remove(elementos[0])
+        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
+        return False
+
+    def limpiar(self):
         self.permitir_select = False
         self.get_model().clear()
         self.permitir_select = True
@@ -148,105 +177,36 @@ class Lista(Gtk.TreeView):
         Recibe lista de: [texto para mostrar, path oculto] y
         Comienza secuencia de agregado a la lista.
         """
-
         self.get_toplevel().set_sensitive(False)
         self.permitir_select = False
-
         GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
-
-    def __ejecutar_agregar_elemento(self, elementos):
-        """
-        Agrega los items a la lista, uno a uno, actualizando.
-        """
-
-        if not elementos:
-            self.permitir_select = True
-            self.seleccionar_primero()
-            self.get_toplevel().set_sensitive(True)
-            return False
-
-        texto, path = elementos[0]
-
-        from Globales import describe_uri
-        from Globales import describe_archivo
-
-        descripcion = describe_uri(path)
-
-        icono = None
-        if descripcion:
-            if descripcion[2]:
-                # Es un Archivo
-                tipo = describe_archivo(path)
-
-                if 'video' in tipo or 'application/ogg' in tipo or \
-                    'application/octet-stream' in tipo:
-                    icono = os.path.join(BASE_PATH,
-                        "Iconos", "video.svg")
-
-                elif 'audio' in tipo:
-                    icono = os.path.join(BASE_PATH,
-                        "Iconos", "sonido.svg")
-
-                else:
-                    icono = os.path.join(BASE_PATH,
-                        "Iconos", "sonido.svg")
-        else:
-            icono = os.path.join(BASE_PATH,
-                "Iconos", "sonido.svg")
-
-        #try:
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icono,
-            24, -1)
-        self.get_model().append([pixbuf, texto, path])
-
-        #except:
-        #    pass
-
-        elementos.remove(elementos[0])
-
-        GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)
-
-        return False
 
     def seleccionar_siguiente(self, widget=None):
-
         modelo, _iter = self.get_selection().get_selected()
-
         try:
             self.get_selection().select_iter(modelo.iter_next(_iter))
-
         except:
             self.seleccionar_primero()
-
         return False
 
     def seleccionar_anterior(self, widget=None):
-
         modelo, _iter = self.get_selection().get_selected()
-
         try:
             self.get_selection().select_iter(modelo.iter_previous(_iter))
-
         except:
             self.seleccionar_ultimo()
-
         return False
 
     def seleccionar_primero(self, widget=None):
-
         self.get_selection().select_path(0)
 
     def seleccionar_ultimo(self, widget=None):
-
         model = self.get_model()
         item = model.get_iter_first()
-
         _iter = None
-
         while item:
             _iter = item
             item = model.iter_next(item)
-
         if _iter:
             self.get_selection().select_iter(_iter)
             #path = model.get_path(iter)

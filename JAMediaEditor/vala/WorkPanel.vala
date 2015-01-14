@@ -28,6 +28,7 @@ public class WorkPanel : Gtk.VPaned{
 
 public class WorkPanel2 : Gtk.HPaned{
 
+    // FIXME: Contenedor de guias, ejemplos y tutoriales.
     private Notebook_SourceView notebook_sourceview = new Notebook_SourceView();
 
     public WorkPanel2(){
@@ -58,6 +59,7 @@ public class Notebook_SourceView : Gtk.Notebook{
         Gtk.ScrolledWindow scroll1 = new Gtk.ScrolledWindow(null, null);
         scroll1.set("hscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
         scroll1.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
+        scroll1.add(new SourceView());
         this.append_page(scroll1, new Gtk.Label("Ejemplo"));
 
         this.show_all();

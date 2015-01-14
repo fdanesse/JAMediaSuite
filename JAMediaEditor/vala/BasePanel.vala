@@ -1,6 +1,8 @@
 
 public class BasePanel : Gtk.HPaned{
 
+    public signal void accion(string _accion);
+
     private WorkPanel workpanel = new WorkPanel();
     private Gtk.Box infonotebook_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
     private ToolbarProyecto toolbarproyecto = new ToolbarProyecto();
@@ -11,7 +13,6 @@ public class BasePanel : Gtk.HPaned{
 
         this.set("border_width", 5);
 
-        //self.toolbararchivo = ToolbarArchivo()
         ToolbarBusquedas toolbarbusquedas = new ToolbarBusquedas();
 
         this.infonotebook_box.pack_start(this.toolbarproyecto, false, false, 0);
@@ -34,17 +35,12 @@ public class BasePanel : Gtk.HPaned{
         //self.workpanel.connect('ejecucion', self.__re_emit_ejecucion)
         //self.workpanel.connect('update', self.__re_emit_update)
 
-        //self.toolbararchivo.connect('accion', self.set_accion_archivo)
         this.toolbararchivo.accion.connect ((_accion) => {
-			//this.__accion("Nuevo Archivo");
-            GLib.stdout.printf("__accion_toolbararchivo: %s\n", _accion);
-            GLib.stdout.flush();
+			this.accion(_accion);
 		    });
-        //self.toolbarproyecto.connect('accion', self.set_accion_proyecto)
+
         this.toolbarproyecto.accion.connect ((_accion) => {
-			//this.__accion("Nuevo Archivo");
-            GLib.stdout.printf("__accion_toolbarproyecto: %s\n", _accion);
-            GLib.stdout.flush();
+			this.accion(_accion);
 		    });
 
         //toolbarbusquedas.connect("buscar", self.__buscar)

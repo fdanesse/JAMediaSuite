@@ -3,13 +3,26 @@ JAMediaEditor, BasePanel, WorkPanel, WorkPanel2, ToolbarProyecto,
 ToolbarArchivo, ToolbarBusquedas, Terminal, NoteBookTerminal, ToolbarTerminal{
     background-color: #f0e6aa;
     color: #000000;
-}
+    }
+
+Multiple_FileChooser
+    background-color: #ffffff;
+    color: #000000;
+    }
+
 /*
 InfoNotebook, Notebook_SourceView{
     background-color: #ffffff;
     color: #000000;
     }
 */
+/*
+{
+    background-color: #edf5ff;
+    color: #000000;
+}
+*/
+
 ToolbarEstado, Menu, MenuProyectos, MenuArchivos, MenuEdicion, MenuVer,
 MenuCodigo, MenuAyuda{
     background-color: #000000;

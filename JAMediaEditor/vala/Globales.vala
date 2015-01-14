@@ -1,4 +1,11 @@
 
+public string WorkPath(){
+    string home = GLib.Environment.get_variable("HOME");
+    string path = GLib.Path.build_filename(home, "BatovideWorkSpace");
+    return path;
+    }
+
+
 public Gtk.SeparatorToolItem get_separador(bool draw, int ancho, bool expand){
     Gtk.SeparatorToolItem separador = new Gtk.SeparatorToolItem();
     separador.set_draw(draw);

@@ -28,6 +28,8 @@ import commands
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GLib
+from gi.repository import GtkSource
+from gi.repository import Gdk
 
 from InfoNotebook import InfoNotebook
 from WorkPanel import WorkPanel
@@ -129,8 +131,6 @@ class BasePanel(Gtk.Paned):
         _dict = self.infonotebook.introspeccion._dict
         for key in _dict:
             text = "%s\n%s" % (text, _dict[key])
-        from gi.repository import GtkSource
-        from gi.repository import Gdk
         source = GtkSource.View()
         source.set_insert_spaces_instead_of_tabs(True)
         source.set_tab_width(4)

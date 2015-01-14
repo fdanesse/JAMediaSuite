@@ -43,14 +43,67 @@ public class JAMediaEditor : Gtk.Window{
 		    });
         //self.jamediapygihack.connect('salir', self.__run_editor)
 
+        this.base_panel.accion.connect ((_accion) => {
+            this.__accion_toolbar(_accion);
+		    });
+
         GLib.stdout.printf("JAMediaEditor process: %i\n", Posix.getpid());
         GLib.stdout.flush();
     }
 
+    private void __accion_toolbar(string _accion){
+        switch (_accion){
+            case "Abrir Archivo":{
+                this.__run_chooser_open_files();
+                break;
+                }
+            default:{
+                GLib.stdout.printf("__accion_base_panel: %s\n", _accion);
+                GLib.stdout.flush();
+                break;
+                }
+            }
+        }
+
+    private void __run_chooser_open_files(){
+        // FIXME: El path debe ser el directorio del archivo seleccionado actualmente, o en su defecto:
+        // el directorio del proyecto abierto si lo hay, o WorkPath() si no hay ninguno de los anteriores.
+        string path = WorkPath();
+
+        SList<string> mimelist = null;
+        mimelist.append("text/*");
+        mimelist.append("image/svg+xml");
+
+        Multiple_FileChooser selector = new Multiple_FileChooser(
+            "Abrir Archivos", this,
+            Gtk.FileChooserAction.OPEN, new SList<string> (), mimelist,
+            path);
+
+        SList<string> archivos = null;
+        if (selector.run() == Gtk.ResponseType.ACCEPT){
+            archivos = selector.get_filenames();
+            foreach (unowned string archivo in archivos){
+                GLib.stdout.printf("%s\n", archivo);
+                GLib.stdout.flush();
+                }
+            }
+        selector.destroy();
+        // FIXME: Abrir archivos seleccionados.
+        }
+
     private void __accion_menu(string _accion, bool valor){
-        GLib.stdout.printf("__accion_menu: %s %s\n", _accion, valor.to_string());
-        GLib.stdout.flush();
-    }
+        switch (_accion){
+            case "Abrir Archivo":{
+                this.__run_chooser_open_files();
+                break;
+                }
+            default:{
+                GLib.stdout.printf("__accion_menu: %s %s\n", _accion, valor.to_string());
+                GLib.stdout.flush();
+                break;
+                }
+            }
+        }
 
     private void __salir(){
         Gtk.main_quit();
