@@ -82,13 +82,9 @@ public class JAMediaEditor : Gtk.Window{
         SList<string> archivos = null;
         if (selector.run() == Gtk.ResponseType.ACCEPT){
             archivos = selector.get_filenames();
-            foreach (unowned string archivo in archivos){
-                GLib.stdout.printf("%s\n", archivo);
-                GLib.stdout.flush();
-                }
             }
         selector.destroy();
-        // FIXME: Abrir archivos seleccionados.
+        this.abrir_archivos(archivos);
         }
 
     private void __accion_menu(string _accion, bool valor){
@@ -107,6 +103,10 @@ public class JAMediaEditor : Gtk.Window{
 
     private void __salir(){
         Gtk.main_quit();
+        }
+
+    public void abrir_archivos(SList<string> archivos){
+        this.base_panel.abrir_archivos(archivos);
         }
 }
 

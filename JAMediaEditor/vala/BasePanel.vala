@@ -52,4 +52,8 @@ public class BasePanel : Gtk.HPaned{
         //self.infonotebook.connect('search_on_grep', self.__search_grep)
         //self.infonotebook.connect('remove_proyect', self.__remove_proyect)
     }
+
+    public void abrir_archivos(SList<string> archivos){
+        this.workpanel.abrir_archivos(archivos);
+        }
 }
