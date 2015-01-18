@@ -126,9 +126,6 @@ class WorkPanel(Gtk.Paned):
         self.notebook_sourceview.set_linea(index, texto)
 
     def abrir_archivo(self, archivo):
-        """
-        Abre un archivo.
-        """
         self.notebook_sourceview.abrir_archivo(archivo)
 
     def guardar_archivo(self):
@@ -351,59 +348,48 @@ class Notebook_SourceView(Gtk.Notebook):
             view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
 
     def abrir_archivo(self, archivo):
-        """
-        Abre un archivo y agrega una página para él, con su código.
-        """
+        # Si el archivo ya está abierto, se selecciona
         paginas = self.get_children()
         for pagina in paginas:
             view = pagina.get_child()
             if view.archivo and archivo:
-                arch1 = os.path.join(view.archivo)
-                arch2 = os.path.join(archivo)
+                arch1 = view.archivo
+                arch2 = archivo
                 if arch1 == archivo:
+                    self.set_current_page(paginas.index(pagina))
                     return False
 
-        sourceview = SourceView(self.config)
-
+        # Crear la lengüeta
         hbox = Gtk.HBox()
         label = Gtk.Label("Sin Título")
+        if archivo:
+            if os.path.exists(archivo):
+                nombre = os.path.basename(archivo)
+                if len(nombre) > 13:
+                    nombre = nombre[0:13] + " . . . "
+                label.set_text(nombre)
 
         boton = get_boton(os.path.join(icons, "button-cancel.svg"),
             pixels=get_pixels(0.5), tooltip_text="Cerrar")
+        boton.connect("clicked", self.__cerrar)
 
         hbox.pack_start(label, False, False, 0)
         hbox.pack_start(boton, False, False, 0)
 
+        # Crear el SourceView
+        sourceview = SourceView(self.config)
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scroll.add(sourceview)
         self.append_page(scroll, hbox)
-
         sourceview.set_archivo(archivo)
 
         label.show()
         boton.show()
         self.show_all()
 
-        boton.connect("clicked", self.__cerrar)
-        self.set_current_page(-1)
         self.set_tab_reorderable(scroll, True)
-
-        """
-        # FIXME: Cuando se abre un archivo, se cierra el vacío por default.
-        if len(paginas) > 1:
-            for pagina in paginas:
-                view = pagina.get_child()
-
-                if not view.archivo:
-                    buffer = view.get_buffer()
-                    inicio, fin = buffer.get_bounds()
-                    buf = buffer.get_text(inicio, fin, 0)
-
-                    if not buf:
-                        self.remove(pagina)
-                        break
-        """
+        self.set_current_page(-1)
 
         sourceview.connect("update", self.__re_emit_update)
         sourceview.connect("force-select", self.__re_emit_force_select)

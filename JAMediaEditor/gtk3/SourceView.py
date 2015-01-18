@@ -65,23 +65,15 @@ class SourceView(GtkSource.View):
         self.lenguaje = False
         self.tab = "    "
 
-        self.set_show_line_numbers(config['numeracion'])
-
         self.lenguaje_manager = GtkSource.LanguageManager()
 
-        self.lenguajes = {}
-        for _id in self.lenguaje_manager.get_language_ids():
-            lang = self.lenguaje_manager.get_language(_id)
-            self.lenguajes[_id] = lang.get_mime_types()
-
+        self.set_show_line_numbers(config['numeracion'])
         self.set_insert_spaces_instead_of_tabs(True)
         self.set_tab_width(4)
         self.set_show_right_margin(True)
         self.set_auto_indent(True)
         self.set_smart_home_end(True)
         self.set_highlight_current_line(True)
-        #self.set_accepts_tab(True)
-        #self.set_pixels_above_lines(5)
 
         font = "%s %s" % (config['fuente'], config['tamanio'])
         self.modify_font(Pango.FontDescription(font))
@@ -89,33 +81,6 @@ class SourceView(GtkSource.View):
         self.show_all()
 
         self.connect("key-press-event", self.__key_press_event)
-
-    def __set_label(self, nombre):
-        """
-        Setea la etiqueta en notebook con el nombre del archivo.
-        """
-        scroll = self.get_parent()
-        notebook = scroll.get_parent()
-        paginas = notebook.get_n_pages()
-
-        for indice in range(paginas):
-            page = notebook.get_children()[indice]
-            if page == scroll:
-                pag = notebook.get_children()[indice]
-                label = notebook.get_tab_label(pag).get_children()[0]
-                label.set_text(nombre)
-                break
-
-        return False
-
-    def __set_lenguaje(self, archivo):
-        """
-        Setea los colores del texto según tipo de archivo.
-        """
-        self.lenguaje = self.lenguaje_manager.guess_language(archivo)
-        self.get_buffer().set_highlight_syntax(True)
-        self.get_buffer().set_language(self.lenguaje)
-        GLib.timeout_add(3, self.__force_emit_new_select)
 
     def __force_emit_new_select(self):
         """
@@ -464,7 +429,6 @@ class SourceView(GtkSource.View):
         """
         if archivo:
             archivo = os.path.realpath(archivo)
-
             if os.path.exists(archivo):
                 self.archivo = archivo
                 texto_file = open(self.archivo, 'r')
@@ -473,16 +437,13 @@ class SourceView(GtkSource.View):
 
                 self.set_buffer(GtkSource.Buffer())
                 self.get_buffer().begin_not_undoable_action()
-                self.__set_lenguaje(archivo)
+                self.lenguaje = self.lenguaje_manager.guess_language(
+                    self.archivo)
+                self.get_buffer().set_highlight_syntax(True)
+                self.get_buffer().set_language(self.lenguaje)
+                GLib.timeout_add(3, self.__force_emit_new_select)
                 self.get_buffer().set_text(texto)
-
-                nombre = os.path.basename(self.archivo)
-                if len(nombre) > 13:
-                    nombre = nombre[0:13] + " . . . "
-
-                GLib.idle_add(self.__set_label, nombre)
                 self.control = os.path.getmtime(self.archivo)
-
         else:
             self.set_buffer(GtkSource.Buffer())
             self.get_buffer().begin_not_undoable_action()
@@ -498,16 +459,13 @@ class SourceView(GtkSource.View):
         parent = self.get_parent().get_parent()
         parent = parent.get_parent().get_parent()
         proyecto = parent.get_parent().proyecto
-
         if proyecto:
             defaultpath = proyecto["path"]
         else:
             defaultpath = BatovideWorkSpace
-
         filechooser = My_FileChooser(parent_window=self.get_toplevel(),
             action_type=Gtk.FileChooserAction.SAVE,
             title="Guardar Archivo Como . . .", path=defaultpath)
-
         filechooser.connect('load', self.__guardar_como)
 
     def guardar(self):
@@ -517,12 +475,10 @@ class SourceView(GtkSource.View):
         """
         if self.archivo and self.archivo != None:
             _buffer = self.get_buffer()
-
             if _buffer.get_modified() and os.path.exists(self.archivo):
                 self.__procesar_y_guardar()
             elif not os.path.exists(self.archivo):
                 return self.guardar_archivo_como()
-
         else:
             return self.guardar_archivo_como()
 

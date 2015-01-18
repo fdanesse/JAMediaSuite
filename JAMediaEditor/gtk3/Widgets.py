@@ -816,11 +816,13 @@ class My_FileChooser(Gtk.FileChooserDialog):
         """
         Emite el path del archivo seleccionado.
         """
-        if not self.get_filename():
+        direccion = self.get_filename()
+        if not direccion:
             self.__salir(None)
             return
 
-        direccion = str(self.get_filename()).replace("//", "/")
+        #direccion = str(self.get_filename()).replace("//", "/")
+        direccion = os.path.realpath(direccion)
 
         # Para abrir solo archivos, de lo contrario el filechooser
         # se está utilizando para "guardar como".
@@ -896,17 +898,15 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
         """
         Emite el path del archivo seleccionado.
         """
-
         files = self.get_filenames()
         if not files:
             self.__salir(None)
             return
-
         for _file in files:
-            direccion = str(_file).replace("//", "/")
+            direccion = os.path.realpath(_file)
+            #direccion = str(_file).replace("//", "/")
             if os.path.exists(direccion) and os.path.isfile(direccion):
                 self.emit('load', direccion)
-
         self.__salir()
 
     def __salir(self, widget=None):

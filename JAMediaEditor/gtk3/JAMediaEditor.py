@@ -115,6 +115,7 @@ class JAMediaEditor(Gtk.Window):
         # Cuando se abre el editor con archivo como parámetro.
         if archivos:
             for archivo in archivos:
+                archivo = os.path.realpath(archivo)
                 if os.path.exists(archivo):
                     if os.path.isfile(archivo):
                         extension = os.path.splitext(

@@ -295,16 +295,19 @@ class BasePanel(Gtk.Paned):
 
     def __abrir_archivo(self, widget, archivo):
         if archivo:
-            datos = commands.getoutput(
-                'file -ik %s%s%s' % ("\"", archivo, "\""))
+            archivo = os.path.realpath(archivo)
+            datos = commands.getoutput('file -ik \"%s\"' % (archivo))
             if "text" in datos or "x-python" in datos or \
                 "x-empty" in datos or "svg+xml" in datos or \
                 "application/xml" in datos:
                 self.workpanel.abrir_archivo(archivo)
+            else:
+                print "FIXME: Archivo no permitido por el Editor", datos, archivo
         else:
             self.workpanel.abrir_archivo(False)
 
     def __abrir_proyecto(self, widget, archivo):
+        archivo = os.path.realpath(archivo)
         extension = os.path.splitext(os.path.split(archivo)[1])[1]
         if not extension == ".ide":
             return
