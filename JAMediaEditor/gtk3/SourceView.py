@@ -112,23 +112,9 @@ class SourceView(GtkSource.View):
         """
         Setea los colores del texto según tipo de archivo.
         """
-        self.lenguaje = False
-        self.get_buffer().set_highlight_syntax(False)
-        self.get_buffer().set_language(None)
-
-        tipo = mimetypes.guess_type(archivo)[0]
-        #FIXME: HACK para forzar detección vala por ejemplo
-        extension = os.path.splitext(
-            os.path.split(archivo)[1])[1].replace(".", "").lower()
-
-        if tipo or extension:
-            for key in self.lenguajes.keys():
-                if tipo in self.lenguajes[key] or extension == key.lower():
-                    self.lenguaje = self.lenguaje_manager.get_language(key)
-                    self.get_buffer().set_language(self.lenguaje)
-                    self.get_buffer().set_highlight_syntax(True)
-                    break
-
+        self.lenguaje = self.lenguaje_manager.guess_language(archivo)
+        self.get_buffer().set_highlight_syntax(True)
+        self.get_buffer().set_language(self.lenguaje)
         GLib.timeout_add(3, self.__force_emit_new_select)
 
     def __force_emit_new_select(self):
@@ -477,7 +463,7 @@ class SourceView(GtkSource.View):
         Setea el archivo cuyo codigo debe mostrarse.
         """
         if archivo:
-            archivo = os.path.join(archivo.replace("//", "/"))
+            archivo = os.path.realpath(archivo)
 
             if os.path.exists(archivo):
                 self.archivo = archivo
@@ -491,7 +477,6 @@ class SourceView(GtkSource.View):
                 self.get_buffer().set_text(texto)
 
                 nombre = os.path.basename(self.archivo)
-
                 if len(nombre) > 13:
                     nombre = nombre[0:13] + " . . . "
 
@@ -504,22 +489,7 @@ class SourceView(GtkSource.View):
 
         self.get_buffer().end_not_undoable_action()
         self.get_buffer().set_modified(False)
-
         self.new_handle(True)
-        # FIXME: Anular Autocompletado, no es importante.
-        #completion = self.get_completion()
-
-        #prov_words = GtkSource.CompletionWords.new(None, None)
-        #prov_words.register(self.get_buffer())
-
-        #autocompletado = AutoCompletado(
-        #    self.get_buffer(), self.archivo, self)
-        #completion.add_provider(autocompletado)
-
-        #completion.set_property("remember-info-visibility", True)
-        #completion.set_property("select-on-show", True)
-        #completion.set_property("show-headers", True)
-        #completion.set_property("show-icons", True)
 
     def guardar_archivo_como(self):
         """
@@ -737,100 +707,3 @@ class SourceView(GtkSource.View):
             self.actualizador = False
         if reset:
             self.actualizador = GLib.timeout_add(1000, self.__handle)
-
-
-'''
-class AutoCompletado(GObject.Object, GtkSource.CompletionProvider):
-
-    __gtype_name__ = 'AutoCompletado'
-
-    def __init__(self, _buffer, archivo, parent):
-
-        GObject.Object.__init__(self)
-
-        self.parent = parent
-        self.archivo = archivo
-        self.buffer = _buffer
-        self.opciones = []
-        self.priority = 1
-
-        from SpyderHack.SpyderHack import SpyderHack
-        self.spyder_hack = SpyderHack()
-
-    def do_get_name(self):
-        return "AutoCompletado"
-
-    def do_populate(self, context):
-        """
-        Cuando se producen cambios en el buffer.
-
-        Metodología para autocompletado:
-            * Importar todos los paquetes y módulos que se están
-                importando en el archivo sobre el cual estamos
-                auto completando.
-            * Hacer el auto completado propiamente dicho,
-                trabajando sobre
-                la línea de código que se está editando.
-        """
-
-        # Iterador de texto sobre el código actual.
-        textiter = context.get_iter()
-        indice_de_linea_activa = textiter.get_line()
-        texto_de_linea_en_edicion = textiter.get_slice(
-            self.buffer.get_iter_at_line(indice_de_linea_activa))
-
-        expresion = ''
-        # Auto completado se hace sobre "."
-        if texto_de_linea_en_edicion.endswith("."):
-            expresion = str(texto_de_linea_en_edicion.split()[-1][:-1]).strip()
-            if expresion:
-                # Caso: class V(Gtk.
-                if "(" in expresion:
-                    expresion = expresion.split("(")[-1].strip()
-
-                lista = self.__get_list(expresion)
-                opciones = []
-                self.opciones = []
-
-                for item in lista:
-                    self.opciones.append(item)
-                    opciones.append(GtkSource.CompletionItem.new(
-                        item, item, None, None))
-
-                context.add_proposals(self, opciones, True)
-
-        else:
-            # Actualizando Autocompletado cuando está Visible.
-            text = texto_de_linea_en_edicion.split(".")[-1]
-
-            new_opciones = []
-            opciones = []
-
-            for opcion in self.opciones:
-                if opcion.startswith(text):
-                    new_opciones.append(opcion)
-                    opciones.append(GtkSource.CompletionItem.new(
-                        opcion, opcion, None, None))
-
-            self.opciones = new_opciones
-            context.add_proposals(self, opciones, True)
-
-    def __get_list(self, expresion):
-        """
-        Devuelve la lista de opciones para autocompletado.
-        """
-        if self.archivo:
-            workpath = os.path.dirname(self.archivo)
-
-        elif self.parent.get_toplevel().base_panel.proyecto:
-            workpath = self.parent.get_toplevel().base_panel.proyecto.get(
-                "path", "")
-
-        else:
-            home = os.environ["HOME"]
-            workpath = os.path.join(home, 'BatovideWorkSpace')
-
-        return self.spyder_hack.Run(workpath, expresion, self.buffer)
-
-GObject.type_register(AutoCompletado)
-'''

@@ -354,7 +354,6 @@ class Notebook_SourceView(Gtk.Notebook):
         """
         Abre un archivo y agrega una página para él, con su código.
         """
-        #try:
         paginas = self.get_children()
         for pagina in paginas:
             view = pagina.get_child()
@@ -408,10 +407,6 @@ class Notebook_SourceView(Gtk.Notebook):
 
         sourceview.connect("update", self.__re_emit_update)
         sourceview.connect("force-select", self.__re_emit_force_select)
-
-        #except:
-        #    print "FIXME: No se ha podido abrir:", archivo
-
         return False
 
     def guardar_archivo(self):

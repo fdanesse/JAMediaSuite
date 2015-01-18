@@ -40,6 +40,21 @@ public class SourceView : Gtk.SourceView{
         //self.connect("key-press-event", self.__key_press_event)
     }
 
+    private bool __set_label(string nombre){
+        Gtk.ScrolledWindow scroll = this.get_parent() as Gtk.ScrolledWindow;
+        Gtk.Notebook notebook = scroll.get_parent() as Gtk.Notebook;
+
+        int indice = notebook.get_current_page(); //int indice = notebook.page_num(this)
+        List<weak Gtk.Widget> paginas = notebook.get_children(); //[indice]
+        Gtk.ScrolledWindow page = paginas[indice];
+        //Gtk.Label label = notebook.get_tab_label(page).get_children()[0];
+        //page = notebook.get_children()[indice]
+        //Gtk.Label label = notebook.get_tab_label(pag).get_children()[0]
+        //label.set_text(nombre)
+
+        return false;
+        }
+
     public void set_archivo(string archivo){
         this.archivo = archivo;
 
@@ -54,10 +69,11 @@ public class SourceView : Gtk.SourceView{
                     this.__set_lenguaje(this.archivo);
                     this.get_buffer().set_text(texto);
 
-                    //nombre = os.path.basename(self.archivo)
+                    string nombre = GLib.Path.get_basename(this.archivo);
                     //if len(nombre) > 13:
                     //    nombre = nombre[0:13] + " . . . "
                     //GLib.idle_add(self.__set_label, nombre)
+                    this.__set_label(nombre);
                     // FIXME: self.control = os.path.getmtime(self.archivo)
 		            }
                 catch (Error e){}
