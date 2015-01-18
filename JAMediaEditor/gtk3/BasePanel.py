@@ -44,7 +44,6 @@ from Widget_Setup import DialogoSetup
 import Licencias as Lic
 
 home = os.environ["HOME"]
-
 BatovideWorkSpace = os.path.join(home, 'BatovideWorkSpace')
 
 
@@ -204,7 +203,7 @@ class BasePanel(Gtk.Paned):
         elif self.seleccionado_actual < 0:
             self.seleccionado_actual = len(posibles) - 1
 
-        if posibles != []:
+        if posibles:
             seleccion.select_iter(posibles[self.seleccionado_actual])
             new_path = tree.get_model().get_path(
                 posibles[self.seleccionado_actual])

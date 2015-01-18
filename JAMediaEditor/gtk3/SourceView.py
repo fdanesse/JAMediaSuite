@@ -111,33 +111,40 @@ class SourceView(GtkSource.View):
         GLib.idle_add(self.scroll_to_iter, linea_iter, 0.1, 1, 1, 0.1)
 
     def __limpiar_codigo(self, texto):
-        # Cuando se guarda un archivo, se limpia el código en él.
-        limpio = ''
+        # Cuando se abre o guarda un archivo, se limpia el código en él.
+        limpio = ""
         for line in texto.splitlines():
-            # Eliminar espacios al final de la linea.
+            # Eliminar espacios al final de la linea y en lineas vacías.
             text_line = line.rstrip()
-            # Elimina espacios en lineas vacías.
-            limpio = "%s%s\n" % (limpio, text_line)
-        # FIXME: Esto no funciona correctamente
-        #limpio = limpio.replace("\t", "    ")
+            text_line = "%s\n" % (text_line)
+            # Cambiar Tabulaciones por 4 espacios
+            ret = []
+            for l in text_line:
+                x = l
+                if ord("\t") == ord(l):
+                    x = "    "
+                ret.append(x)
+            text_line = ""
+            for l in ret:
+                text_line = "%s%s" % (text_line, l)
+            limpio = "%s%s" % (limpio, text_line)
         return limpio
 
     def __guardar_como(self, widget, archivo):
-        if archivo and archivo != None:
-            archivo = os.path.join(archivo.replace("//", "/"))
+        if archivo:
+            archivo = os.path.realpath(archivo)
             if os.path.exists(archivo):
                 dialog = DialogoSobreEscritura(
                     parent_window=self.get_toplevel())
                 respuesta = dialog.run()
                 dialog.destroy()
-
                 if respuesta == Gtk.ResponseType.ACCEPT:
-                    self.archivo = os.path.join(archivo.replace("//", "/"))
+                    self.archivo = archivo
                     self.__procesar_y_guardar()
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
             else:
-                self.archivo = os.path.join(archivo.replace("//", "/"))
+                self.archivo = archivo
                 self.__procesar_y_guardar()
 
     def __identar(self):
@@ -148,7 +155,6 @@ class SourceView(GtkSource.View):
         _buffer = self.get_buffer()
         if _buffer.get_selection_bounds():
             start, end = _buffer.get_selection_bounds()
-
             id_0 = start.get_line()
             id_1 = end.get_line()
             for _id in range(id_0, id_1 + 1):
@@ -171,13 +177,11 @@ class SourceView(GtkSource.View):
             start, end = _buffer.get_selection_bounds()
             id_0 = start.get_line()
             id_1 = end.get_line()
-
             for _id in range(id_0, id_1 + 1):
                 line_iter = _buffer.get_iter_at_line(_id)
                 chars = line_iter.get_chars_in_line()
                 line_end_iter = _buffer.get_iter_at_line_offset(_id, chars - 1)
                 texto = _buffer.get_text(line_iter, line_end_iter, True)
-
                 if texto.startswith(self.tab):
                     _buffer.delete(line_iter,
                         _buffer.get_iter_at_line_offset(_id, len(self.tab)))
@@ -185,11 +189,9 @@ class SourceView(GtkSource.View):
             textmark = _buffer.get_insert()
             textiter = _buffer.get_iter_at_mark(textmark)
             _id = textiter.get_line()
-
             line_iter = _buffer.get_iter_at_line(_id)
             chars = line_iter.get_chars_in_line()
             line_end_iter = _buffer.get_iter_at_line_offset(_id, chars - 1)
-
             texto = _buffer.get_text(line_iter, line_end_iter, True)
             if texto.startswith(self.tab):
                 _buffer.delete(line_iter,
@@ -207,7 +209,7 @@ class SourceView(GtkSource.View):
                 page = notebook.get_children()[indice]
                 if page == scroll:
                     notebook.remove_page(indice)
-                    break
+                    return
 
     def __key_press_event(self, widget, event):
         # Pretende ser un Tabulador Inteligente.
@@ -215,23 +217,19 @@ class SourceView(GtkSource.View):
             _buffer = self.get_buffer()
             textmark = _buffer.get_insert()
             textiter = _buffer.get_iter_at_mark(textmark)
-
             _id = textiter.get_line()
             line_iter = _buffer.get_iter_at_line(_id)
             chars = line_iter.get_chars_in_line()
-
             if chars > 3:
                 # Ultimo caracter.
                 start_iter = _buffer.get_iter_at_line_offset(_id, chars - 2)
                 end_iter = _buffer.get_iter_at_line_offset(_id, chars - 1)
-
                 texto = _buffer.get_text(start_iter, end_iter, True)
                 if texto == ":":
                     # Tola la linea.
                     line_end_iter = _buffer.get_iter_at_line_offset(
                         _id, chars - 1)
                     texto = _buffer.get_text(line_iter, line_end_iter, True)
-
                     tabs = 0
                     if texto.startswith(self.tab):
                         tabs = len(texto.split(self.tab)) - 1
@@ -243,20 +241,16 @@ class SourceView(GtkSource.View):
         textmark = _buffer.get_insert()
         textiter = _buffer.get_iter_at_mark(textmark)
         _id = textiter.get_line()
-
         line_iter = _buffer.get_iter_at_line(_id)
         chars = line_iter.get_chars_in_line()
         _buffer.delete(line_iter,
             _buffer.get_iter_at_line_offset(_id, chars - 1))
-
         for tab in range(0, tabs):
             self.__identar()
         return False
 
     def __control_cambios(self):
-        """
-        Alerta sobre cambios externos al archivo.
-        """
+        # Alerta sobre cambios externos al archivo.
         if self.archivo:
             if os.path.exists(self.archivo):
                 if self.control:
@@ -275,7 +269,6 @@ class SourceView(GtkSource.View):
                         dialogo.vbox.pack_start(label, True, True, 0)
                         response = dialogo.run()
                         dialogo.destroy()
-
                         if Gtk.ResponseType(response) == \
                             Gtk.ResponseType.ACCEPT:
                             self.set_archivo(self.archivo)
@@ -285,7 +278,6 @@ class SourceView(GtkSource.View):
                             self.get_buffer().set_modified(True)
                 else:
                     self.control = os.path.getmtime(self.archivo)
-
             elif not os.path.exists(self.archivo):
                 dialogo = Gtk.Dialog(parent=self.get_toplevel(),
                     flags=Gtk.DialogFlags.MODAL,
@@ -300,7 +292,6 @@ class SourceView(GtkSource.View):
                 dialogo.vbox.pack_start(label, True, True, 0)
                 response = dialogo.run()
                 dialogo.destroy()
-
                 if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
                     self.guardar()
                 elif Gtk.ResponseType(response) == Gtk.ResponseType.CANCEL:
@@ -309,40 +300,31 @@ class SourceView(GtkSource.View):
         else:
             self.archivo = False
             self.get_buffer().set_modified(True)
-        return True
 
     def __senialar(self, valor=False):
-        """
-        Pinta la etiqueta cuando el archivo contiene cambios sin guardar.
-        """
-        color = Gdk.Color(0, 0, 0)
-        if valor:
-            color = Gdk.Color(65000, 26000, 0)
-
+        # Pinta la etiqueta cuando el archivo contiene cambios sin guardar.
         scroll = self.get_parent()
         if not scroll:
             return
-
         notebook = scroll.get_parent()
         if not notebook:
             return
-
         paginas = notebook.get_n_pages()
         if not paginas:
             return
-
         for indice in range(paginas):
             page = notebook.get_children()[indice]
             if page == scroll:
+                color = Gdk.Color(0, 0, 0)
+                if valor:
+                    color = Gdk.Color(65000, 26000, 0)
                 pag = notebook.get_children()[indice]
                 label = notebook.get_tab_label(pag).get_children()[0]
                 label.modify_fg(0, color)
-                break
+                return
 
     def __handle(self):
-        """
-        Emite una señal con el estado general del archivo.
-        """
+        # Emite una señal con el estado general del archivo.
         self.new_handle(False)
         self.__control_cambios()
 
@@ -358,12 +340,10 @@ class SourceView(GtkSource.View):
 
         deshacer = False
         rehacer = False
-
         try:
             deshacer = _buffer.can_undo()
         except:
             pass
-
         try:
             rehacer = _buffer.can_redo()
         except:
@@ -391,15 +371,15 @@ class SourceView(GtkSource.View):
         return False
 
     def set_archivo(self, archivo):
-        """
-        Setea el archivo cuyo codigo debe mostrarse.
-        """
+        # Setea el archivo cuyo codigo debe mostrarse.
+        self.new_handle(False)
         if archivo:
             archivo = os.path.realpath(archivo)
             if os.path.exists(archivo):
                 self.archivo = archivo
                 texto_file = open(self.archivo, 'r')
                 texto = texto_file.read()
+                texto = self.__limpiar_codigo(texto)
                 texto_file.close()
 
                 self.set_buffer(GtkSource.Buffer())
@@ -420,16 +400,13 @@ class SourceView(GtkSource.View):
         self.new_handle(True)
 
     def guardar_archivo_como(self):
-        """
-        Abre un Filechooser para guardar como.
-        """
+        # Abre un Filechooser para guardar como.
         parent = self.get_parent().get_parent()
         parent = parent.get_parent().get_parent()
         proyecto = parent.get_parent().proyecto
+        defaultpath = BatovideWorkSpace
         if proyecto:
             defaultpath = proyecto["path"]
-        else:
-            defaultpath = BatovideWorkSpace
         filechooser = My_FileChooser(parent_window=self.get_toplevel(),
             action_type=Gtk.FileChooserAction.SAVE,
             title="Guardar Archivo Como . . .", path=defaultpath)
@@ -440,7 +417,7 @@ class SourceView(GtkSource.View):
         Si el archivo tiene cambios, lo guarda,
         de lo contrario ejecuta Guardar Como.
         """
-        if self.archivo and self.archivo != None:
+        if self.archivo:
             _buffer = self.get_buffer()
             if _buffer.get_modified() and os.path.exists(self.archivo):
                 self.__procesar_y_guardar()

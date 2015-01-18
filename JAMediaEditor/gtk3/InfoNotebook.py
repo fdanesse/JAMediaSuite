@@ -353,7 +353,7 @@ class Introspeccion(Gtk.TreeView):
         elif tipo == "vala":
             _dict = get_contenido_vala(texto)
         else:
-            print tipo
+            print "FIXME: Introspección no implementada para:", tipo
         return _dict
 
     def __set_columnas(self):
@@ -409,6 +409,7 @@ class Introspeccion(Gtk.TreeView):
                     new_funcion = self.__append(new_class, key, color, temp)
         elif tipo == "vala":
             for key in self._dict.keys():
+                # FIXME: Verificar Otros Casos
                 temp = self._dict[key].strip()
                 if temp.startswith("public class "):
                     color = Gdk.color_parse("#a40000")
@@ -422,7 +423,6 @@ class Introspeccion(Gtk.TreeView):
                     new_funcion = self.__append(new_class, key, color, temp)
         else:
             #print "FIXME: Completar Introspección para otros lenguajes"
-            #print self.set_introspeccion, nombre, tipo
             pass
         GLib.idle_add(self.expand_all)
 
