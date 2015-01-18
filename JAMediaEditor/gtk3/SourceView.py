@@ -83,9 +83,7 @@ class SourceView(GtkSource.View):
         self.connect("key-press-event", self.__key_press_event)
 
     def __force_emit_new_select(self):
-        """
-        Forzando Instrospección en Panel Lateral.
-        """
+        # Forzando Instrospección en Panel Lateral.
         lenguaje = False
         if self.lenguaje:
             lenguaje = self.lenguaje.get_name().lower()
@@ -102,13 +100,10 @@ class SourceView(GtkSource.View):
         textiter = _buffer.get_iter_at_mark(textmark)
         _id = textiter.get_line()
 
-        #if self.archivo.endswith(".py"):
         texto = self.__limpiar_codigo(texto)
-
         archivo = open(self.archivo, "w")
         archivo.write(texto)
         archivo.close()
-
         self.set_archivo(self.archivo)
 
         # Devolver el scroll a donde estaba.
@@ -116,9 +111,7 @@ class SourceView(GtkSource.View):
         GLib.idle_add(self.scroll_to_iter, linea_iter, 0.1, 1, 1, 0.1)
 
     def __limpiar_codigo(self, texto):
-        """
-        Cuando se guarda un archivo, se limpia el código en él.
-        """
+        # Cuando se guarda un archivo, se limpia el código en él.
         limpio = ''
         for line in texto.splitlines():
             # Eliminar espacios al final de la linea.
@@ -132,11 +125,9 @@ class SourceView(GtkSource.View):
     def __guardar_como(self, widget, archivo):
         if archivo and archivo != None:
             archivo = os.path.join(archivo.replace("//", "/"))
-
             if os.path.exists(archivo):
                 dialog = DialogoSobreEscritura(
                     parent_window=self.get_toplevel())
-
                 respuesta = dialog.run()
                 dialog.destroy()
 
@@ -145,7 +136,6 @@ class SourceView(GtkSource.View):
                     self.__procesar_y_guardar()
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
-
             else:
                 self.archivo = os.path.join(archivo.replace("//", "/"))
                 self.__procesar_y_guardar()
@@ -158,14 +148,12 @@ class SourceView(GtkSource.View):
         _buffer = self.get_buffer()
         if _buffer.get_selection_bounds():
             start, end = _buffer.get_selection_bounds()
-            #texto = buffer.get_text(start, end, True)
 
             id_0 = start.get_line()
             id_1 = end.get_line()
             for _id in range(id_0, id_1 + 1):
                 _iter = _buffer.get_iter_at_line(_id)
                 _buffer.insert(_iter, self.tab)
-
         else:
             textmark = _buffer.get_insert()
             textiter = _buffer.get_iter_at_mark(textmark)
@@ -193,7 +181,6 @@ class SourceView(GtkSource.View):
                 if texto.startswith(self.tab):
                     _buffer.delete(line_iter,
                         _buffer.get_iter_at_line_offset(_id, len(self.tab)))
-
         else:
             textmark = _buffer.get_insert()
             textiter = _buffer.get_iter_at_mark(textmark)
@@ -209,16 +196,12 @@ class SourceView(GtkSource.View):
                     _buffer.get_iter_at_line_offset(_id, len(self.tab)))
 
     def __cerrar(self):
-        """
-        Cierra la página en el Notebook_SourceView de este sourceview.
-        """
+        # Cierra la página en el Notebook_SourceView de este sourceview.
         self.get_toplevel().set_sensitive(False)
         self.new_handle(False)
-
         scroll = self.get_parent()
         notebook = scroll.get_parent()
         paginas = notebook.get_n_pages()
-
         if paginas:
             for indice in range(paginas):
                 page = notebook.get_children()[indice]
@@ -227,9 +210,7 @@ class SourceView(GtkSource.View):
                     break
 
     def __key_press_event(self, widget, event):
-        """
-        Tabulador Inteligente.
-        """
+        # Pretende ser un Tabulador Inteligente.
         if event.keyval == 65421:
             _buffer = self.get_buffer()
             textmark = _buffer.get_insert()
@@ -254,10 +235,10 @@ class SourceView(GtkSource.View):
                     tabs = 0
                     if texto.startswith(self.tab):
                         tabs = len(texto.split(self.tab)) - 1
-
                     GLib.idle_add(self.__forzar_identacion, tabs + 1)
 
     def __forzar_identacion(self, tabs):
+        # FIXME: Verificar esto
         _buffer = self.get_buffer()
         textmark = _buffer.get_insert()
         textiter = _buffer.get_iter_at_mark(textmark)
@@ -270,7 +251,6 @@ class SourceView(GtkSource.View):
 
         for tab in range(0, tabs):
             self.__identar()
-
         return False
 
     def __control_cambios(self):
@@ -280,7 +260,6 @@ class SourceView(GtkSource.View):
         if self.archivo:
             if os.path.exists(self.archivo):
                 if self.control:
-
                     if self.control != os.path.getmtime(self.archivo):
                         dialogo = Gtk.Dialog(parent=self.get_toplevel(),
                             flags=Gtk.DialogFlags.MODAL,
@@ -288,28 +267,22 @@ class SourceView(GtkSource.View):
                                 "Recargar", Gtk.ResponseType.ACCEPT,
                                 "Continuar sin Recargar",
                                 Gtk.ResponseType.CANCEL])
-
                         dialogo.set_border_width(15)
-
                         lab = "El archivo ha sido modificado "
                         lab = "%s%s" % (lab, "por otra aplicación.")
                         label = Gtk.Label(lab)
                         label.show()
-
                         dialogo.vbox.pack_start(label, True, True, 0)
-
                         response = dialogo.run()
                         dialogo.destroy()
 
                         if Gtk.ResponseType(response) == \
                             Gtk.ResponseType.ACCEPT:
                             self.set_archivo(self.archivo)
-
                         elif Gtk.ResponseType(response) == \
                             Gtk.ResponseType.CANCEL:
                             self.archivo = False
                             self.get_buffer().set_modified(True)
-
                 else:
                     self.control = os.path.getmtime(self.archivo)
 
@@ -319,16 +292,12 @@ class SourceView(GtkSource.View):
                     buttons=[
                         "Guardar", Gtk.ResponseType.ACCEPT,
                         "Continuar sin Guardar", Gtk.ResponseType.CANCEL])
-
                 dialogo.set_border_width(15)
-
                 lab = "El archivo fue Eliminado o\n"
                 lab = "%s%s" % (lab, "Movido de Lugar por Otra Oplicación.")
                 label = Gtk.Label(lab)
                 label.show()
-
                 dialogo.vbox.pack_start(label, True, True, 0)
-
                 response = dialogo.run()
                 dialogo.destroy()
 
@@ -337,11 +306,9 @@ class SourceView(GtkSource.View):
                 elif Gtk.ResponseType(response) == Gtk.ResponseType.CANCEL:
                     self.archivo = False
                     self.get_buffer().set_modified(True)
-
         else:
             self.archivo = False
             self.get_buffer().set_modified(True)
-
         return True
 
     def __senialar(self, valor=False):
@@ -492,9 +459,7 @@ class SourceView(GtkSource.View):
         self.modify_font(Pango.FontDescription("%s %s" % (fuente, tamanio)))
 
     def set_accion(self, accion, valor=True):
-        """
-        Ejecuta acciones sobre el código.
-        """
+        # Ejecuta acciones sobre el código.
         _buffer = self.get_buffer()
         if accion == "Deshacer":
             if _buffer.can_undo():
@@ -523,7 +488,6 @@ class SourceView(GtkSource.View):
                     start, end = _buffer.get_selection_bounds()
                     texto_seleccion = _buffer.get_text(start, end, 0)
                     _buffer.delete(start, end)
-
                 _buffer.insert_at_cursor(texto)
 
         elif accion == "Cortar":
@@ -540,10 +504,8 @@ class SourceView(GtkSource.View):
                 texto = _buffer.get_text(inicio, fin, 0)
             except:
                 texto = None
-
             dialogo = DialogoBuscar(self, parent_window=self.get_toplevel(),
                 title="Buscar Texto", texto=texto)
-
             dialogo.run()
             dialogo.destroy()
 
@@ -554,11 +516,9 @@ class SourceView(GtkSource.View):
                 texto = _buffer.get_text(inicio, fin, 0)
             except:
                 texto = None
-
             dialogo = DialogoReemplazar(self,
                 parent_window=self.get_toplevel(),
                 title="Reemplazar Texto", texto=texto)
-
             dialogo.run()
             dialogo.destroy()
 
@@ -566,17 +526,14 @@ class SourceView(GtkSource.View):
             if _buffer.get_modified():
                 dialog = DialogoAlertaSinGuardar(
                     parent_window=self.get_toplevel())
-
                 respuesta = dialog.run()
                 dialog.destroy()
-
                 if respuesta == Gtk.ResponseType.ACCEPT:
                     self.guardar()
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
                 elif respuesta == Gtk.ResponseType.CLOSE:
                     self.__cerrar()
-
             else:
                 self.__cerrar()
 
@@ -604,19 +561,14 @@ class SourceView(GtkSource.View):
                 if self.lenguaje.get_name() == "Python":
                     numeracion = self.get_show_line_numbers()
                     self.set_show_line_numbers(True)
-
                     # HACK: FIXME: No se debe permitir usar
                     # la interfaz de la aplicación.
                     self.get_toplevel().set_sensitive(False)
-
                     dialogo = DialogoErrores(self,
                         parent_window=self.get_toplevel())
-
                     dialogo.run()
                     dialogo.destroy()
-
                     self.set_show_line_numbers(numeracion)
-
                     # HACK: FIXME: No se debe permitir usar
                     # la interfaz de la aplicación.
                     self.get_toplevel().set_sensitive(True)
@@ -625,7 +577,6 @@ class SourceView(GtkSource.View):
             dialogo = Gtk.Dialog(parent=self.get_toplevel(),
                 flags=Gtk.DialogFlags.MODAL,
                 buttons=["OK", Gtk.ResponseType.ACCEPT])
-
             dialogo.set_size_request(300, 100)
             dialogo.set_border_width(15)
 
@@ -635,25 +586,18 @@ class SourceView(GtkSource.View):
             label.show()
 
             dialogo.vbox.pack_start(label, True, True, 0)
-
             dialogo.run()
             dialogo.destroy()
 
     def marcar_error(self, linea):
-        """
-        Selecciona el error en la línea especificada.
-        """
+        # Selecciona el error en la línea especificada.
         # FIXME: Esto no funciona en la última línea.
         if not linea > -1:
             return
-
         _buffer = self.get_buffer()
         start, end = _buffer.get_bounds()
-
         linea_iter = _buffer.get_iter_at_line(linea - 1)
         linea_iter_next = _buffer.get_iter_at_line(linea)
-
-        #texto = buffer.get_text(linea_iter, linea_iter_next, True)
         _buffer.select_range(linea_iter, linea_iter_next)
         self.scroll_to_iter(linea_iter_next, 0.1, 1, 1, 0.1)
 

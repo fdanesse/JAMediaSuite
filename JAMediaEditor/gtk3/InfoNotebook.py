@@ -40,13 +40,10 @@ def get_contenido_python(texto):
     bloqueo = False
     lineas = texto.splitlines()
     contador = -1
-
     buscar = ["class", "def", "import", "from"]
-
     for linea in lineas:
         temp = linea.strip()
         contador += 1
-
         # FIXME: Corregir casos con varias comillas
         # Bloquear comentarios multilinea.
         if temp:
@@ -55,10 +52,8 @@ def get_contenido_python(texto):
                 temp.endswith("\'\'\'") or \
                 temp.endswith("\"\"\""):
                 bloqueo = bool(not bloqueo)
-
             if bloqueo:
                 continue
-
             #elif temp and not bloqueo:
             if temp.split()[0] in buscar:
                 l = linea.strip().split(":")[0]
@@ -74,37 +69,30 @@ def get_contenido_vala(texto):
     bloqueo = False
     lineas = texto.splitlines()
     contador = -1
-
     buscar = ["public", "private", "protected", "internal", "using"]
     # FIXME: verificar casos: public abstract class Animal : Object {
     for linea in lineas:
         temp = linea.strip()
         contador += 1
-
         # FIXME: Corregir casos con varias comillas
         # Bloquear comentarios multilinea.
         if temp:
             if temp.startswith("/*") or temp.startswith("*/"):
                 bloqueo = bool(not bloqueo)
-
             if bloqueo:
                 continue
-
             #elif temp and not bloqueo:
             items = temp.split()
             if items[0] in buscar and not \
                 "signal" in items[1]:
-
                 if len(items) > 3:
                     if "=" in items[3]:
                         continue
-
                 if "{" in linea:
                     linea = linea.split("{")[0]
                 if ";" in linea:
                     linea = linea.split(";")[0]
                 _dict[str(contador)] = linea
-
     return _dict
 
 
@@ -164,7 +152,6 @@ class InfoNotebook(Gtk.Notebook):
         pos = (event.x, event.y)
         tiempo = event.time
         path, columna, xdefondo, ydefondo = (None, None, None, None)
-
         try:
             path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
                 int(pos[0]), int(pos[1]))
@@ -197,46 +184,36 @@ class InfoNotebook(Gtk.Notebook):
 
         elif accion == "pegar":
             path = lista.get_model().get_value(self.copy_cut[1], 2)
-
             if path != filepath and \
                 not os.path.basename(path) in os.listdir(filepath):
                 expresion = ""
-
                 if os.path.isdir(path):
                     expresion = "cp -r \"" + path + "\" \"" + filepath + "\""
                 elif os.path.isfile(path):
                     expresion = "cp \"" + path + "\" \"" + filepath + "\""
-
                 os.system(expresion)
-
                 if "cortar" in self.copy_cut[0]:
                     if os.path.isdir(path):
                         shutil.rmtree("%s" % (os.path.join(path)))
                     elif os.path.isfile(path):
                         os.remove("%s" % (os.path.join(path)))
-
                 self.copy_cut = []
                 self.set_path_estructura(self.path_actual)
-
             else:
                 dialogo = Gtk.Dialog(parent=self.get_toplevel(),
                     flags=Gtk.DialogFlags.MODAL,
                     buttons=["OK", Gtk.ResponseType.ACCEPT])
-
                 dialogo.set_size_request(300, 100)
                 dialogo.set_border_width(15)
-
                 text = ""
                 if path == filepath:
                     text = "No se Puede Pegar aquí"
                     text = "%s%s" % (
                         text, ", Origen y Destino son Iguales.")
-
                 elif os.path.basename(path) in os.listdir(filepath):
                     text = "No se Puede Pegar aquí, Ya hay un\n"
                     text = "%s%s" % (
                         text, "Archivo con el Mismo Nombre en el Destino.")
-
                 label = Gtk.Label(text)
                 label.show()
                 dialogo.vbox.pack_start(label, True, True, 0)
@@ -246,22 +223,18 @@ class InfoNotebook(Gtk.Notebook):
         elif accion == "suprimir" or accion == "eliminar proyecto":
             tipo = ""
             self.copy_cut = []
-
             if os.path.isdir(filepath):
                 tipo = "Directorio"
                 text = "Directorio"
             elif os.path.isfile(filepath):
                 tipo = "Archivo"
                 text = "Archivo"
-
             if accion == "eliminar proyecto":
                 text = "Proyecto"
-
             dialogo = DialogoEliminar(tipo=text,
                 parent_window=self.get_toplevel())
             resp = dialogo.run()
             dialogo.destroy()
-
             if resp == Gtk.ResponseType.ACCEPT:
                 if tipo == "Directorio":
                     shutil.rmtree("%s" % (os.path.join(filepath)))
@@ -282,26 +255,19 @@ class InfoNotebook(Gtk.Notebook):
         elif accion == "Crear Directorio":
             dialog = Gtk.Dialog("Crear Directorio . . .",
                 self.get_toplevel(), Gtk.DialogFlags.MODAL, None)
-
             etiqueta = Gtk.Label("Nombre del Directorio: ")
             entry = Gtk.Entry()
-
             etiqueta.show()
             entry.show()
-
             dialog.vbox.pack_start(etiqueta, True, True, 5)
             dialog.vbox.pack_start(entry, True, True, 5)
-
             dialog.add_button("Crear Directorio", Gtk.ResponseType.ACCEPT)
             dialog.add_button("Cancelar", Gtk.ResponseType.CANCEL)
-
             resp = dialog.run()
-
             if resp == Gtk.ResponseType.ACCEPT:
                 self.copy_cut = []
                 filepath = lista.get_model().get_value(iter, 2)
                 directorio_nuevo = os.path.join(filepath, entry.get_text())
-
                 if directorio_nuevo != "" and directorio_nuevo != None:
                     try:
                         expresion = 'mkdir \"%s\"' % directorio_nuevo
@@ -309,22 +275,16 @@ class InfoNotebook(Gtk.Notebook):
                         self.set_path_estructura(self.path_actual)
                     except:
                         pass
-
             dialog.destroy()
-
         else:
             print accion
 
     def __seleccion_in_grep(self, widget, valor):
-        """
-        Cuando se hace doble click en una linea de la búsqueda grep.
-        """
+        # Cuando se hace doble click en una linea de la búsqueda grep.
         self.emit("search_on_grep", valor, widget)
 
     def __re_emit_open(self, widget, filepath):
-        """
-        Manda abrir un archivo segun filepath.
-        """
+        # Manda abrir un archivo segun filepath.
         self.emit("open", filepath)
 
     def __re_emit_new_select(self, widget, index, texto):
@@ -335,29 +295,22 @@ class InfoNotebook(Gtk.Notebook):
         self.emit('new_select', index, texto)
 
     def set_path_estructura(self, path):
-        """
-        Setea estructura de directorios y archivos del proyecto según path.
-        """
+        # Setea estructura de directorios y archivos del proyecto según path.
         self.estructura_proyecto.set_path_estructura(path)
         self.path_actual = path
 
     def set_introspeccion(self, nombre, texto, view, tipo):
-        """
-        Recibe nombre y contenido de archivo para realizar introspeccion.
-        """
+        # Recibe nombre y contenido de archivo para realizar introspeccion.
         if len(nombre) > 15:
             nombre = str(nombre[0:16]) + " . . . "
         self.set_tab_label_text(self.get_nth_page(0), nombre)
         self.introspeccion.set_introspeccion(nombre, texto, view, tipo)
 
     def buscar(self, texto):
-        """
-        Recibe el texto a buscar y realiza la busqueda en el treeview activo.
-        """
+        # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
         print "FIXME: Modificar esto para obtener la lengüeta activa y hacer buscar sobre ella."
         if self.get_current_page() == 0:
             self.introspeccion.buscar(texto)
-
         else:
             self.estructura_proyecto.buscar(texto)
 
@@ -404,9 +357,7 @@ class Introspeccion(Gtk.TreeView):
         return _dict
 
     def __set_columnas(self):
-        """
-        Crea y agrega las columnas.
-        """
+        # Crea y agrega las columnas.
         render = Gtk.CellRendererText()
         columna = Gtk.TreeViewColumn('Indice', render, text=0)
         columna.set_property('visible', False)
@@ -422,9 +373,7 @@ class Introspeccion(Gtk.TreeView):
         self.append_column(columna)
 
     def do_row_activated(self, path, column):
-        """
-        Emite la señal new_select cuando se hace doble click sobre una fila
-        """
+        # Emite la señal new_select cuando se hace doble click sobre una fila
         self.expand_to_path(path)
         _iter = self.get_model().get_iter(path)
         index = self.get_model().get_value(_iter, 0)
@@ -433,53 +382,41 @@ class Introspeccion(Gtk.TreeView):
         self.emit('new_select', index, texto)
 
     def set_introspeccion(self, nombre, texto, view, tipo):
-        """
-        Recibe nombre y contenido de archivo para realizar introspeccion.
-        """
+        # Recibe nombre y contenido de archivo para realizar introspeccion.
         if self.get_model():
             self._dict = {}
             self.get_model().clear()
         else:
             return
-
         if not texto:
             return
-
         self._dict = self.__get_datos_introspeccion(texto, tipo)
         iterbase = self.get_model().get_iter_first()
         new_class = iterbase
         new_funcion = iterbase
-
         if tipo == "python":
             for key in self._dict.keys():
                 temp = self._dict[key].strip()
-
                 if temp.startswith("class "):
                     color = Gdk.color_parse("#a40000")
                     new_class = self.__append(iterbase, key, color, temp)
                     new_funcion = new_class
-
                 elif temp.startswith("import ") or temp.startswith("from "):
                     color = Gdk.color_parse("#006e00")
                     self.__append(new_funcion, key, color, temp)
-
                 elif temp.startswith("def "):
                     color = Gdk.color_parse("#000091")
                     new_funcion = self.__append(new_class, key, color, temp)
-
         elif tipo == "vala":
             for key in self._dict.keys():
                 temp = self._dict[key].strip()
-
                 if temp.startswith("public class "):
                     color = Gdk.color_parse("#a40000")
                     new_class = self.__append(iterbase, key, color, temp)
                     new_funcion = new_class
-
                 elif temp.startswith("using "):
                     color = Gdk.color_parse("#006e00")
                     self.__append(new_funcion, key, color, temp)
-
                 elif temp.startswith("public ") or temp.startswith("private ") and not "=" in temp:
                     color = Gdk.color_parse("#000091")
                     new_funcion = self.__append(new_class, key, color, temp)
@@ -487,113 +424,83 @@ class Introspeccion(Gtk.TreeView):
             #print "FIXME: Completar Introspección para otros lenguajes"
             #print self.set_introspeccion, nombre, tipo
             pass
-
         GLib.idle_add(self.expand_all)
 
     def key_press_event(self, widget, event):
-        """
-        Funciones adicionales para moverse en el TreeView
-        """
+        # Funciones adicionales para moverse en el TreeView
         tecla = event.keyval
         model, _iter = self.get_selection().get_selected()
-
         if _iter is None:
             return
-
         path = self.get_model().get_path(_iter)
         if tecla == 65293:
             if self.row_expanded(path):
                 self.collapse_row(path)
-
             else:
                 self.expand_to_path(path)
-
         elif tecla == 65361:
             if self.row_expanded(path):
                 self.collapse_row(path)
                 return False
-
             len_max = len(str(path).split(":"))
             if len_max > 1:
                 path = str(path).split(":")
                 path_str = ""
-
                 for x in path:
                     if path_str != "":
                         path_str = path_str + ":" + x
-
                     else:
                         path_str = x
-
                 n = len(path[len(path) - 1]) + 1
                 path_str = path_str[:-n]
-
                 try:
                     new_path = Gtk.TreePath.new_from_string(path_str)
                     _iter = self.get_model().get_iter(new_path)
                     self.get_selection().select_iter(_iter)
                     self.scroll_to_cell(new_path)
-
                 except:
                     return False
-
             else:
                 _iter = self.get_model().get_iter_first()
                 self.get_selection().select_iter(_iter)
                 new_path = model.get_path(_iter)
                 self.scroll_to_cell(new_path)
-
         elif tecla == 65363:
             if not self.row_expanded(path):
                 self.expand_to_path(path)
-
         else:
             pass
-
         return False
 
     def buscar(self, texto):
-        """
-        Realiza una Búsqueda sobre el treeview.
-        """
+        # Realiza una Búsqueda sobre el treeview.
         model = self.get_model()
         item = model.get_iter_first()
-
         if not item:
             return
-
         self.get_selection().select_iter(item)
         first_path = model.get_path(item)
         self.scroll_to_cell(first_path)
-
         padres = []
         self.posibles = []
-
         while item:
             valor = model.get_value(item, 1)
             if texto in valor:
                 self.posibles.append(item)
-
             if model.iter_has_child(item):
                 path = model.get_path(item)
                 self.expand_to_path(path)
-
                 if item not in padres:
                     padres.append(item)
-
             item = model.iter_next(item)
-
         if padres:
             for padre in padres:
                 item = model.iter_children(padre)
                 while item:
                     valor = model.get_value(item, 1)
-
                     if texto in valor:
                         self.posibles.append(item)
-
                     item = model.iter_next(item)
-
         if self.posibles:
             self.get_selection().select_iter(self.posibles[0])
             new_path = model.get_path(self.posibles[0])
@@ -616,7 +523,6 @@ class Estructura_Proyecto(Gtk.TreeView):
         Gtk.TreeView.__init__(self, Gtk.TreeStore(GObject.TYPE_STRING,
             GObject.TYPE_STRING, GObject.TYPE_STRING))
 
-        #self.set_property("enable-grid-lines", True)
         self.set_property("rules-hint", True)
         self.set_property("enable-tree-lines", True)
         self.__set_columnas()
@@ -627,9 +533,7 @@ class Estructura_Proyecto(Gtk.TreeView):
         self.show_all()
 
     def __set_columnas(self):
-        """
-        Crea y agrega las columnas al TreeView.
-        """
+        # Crea y agrega las columnas al TreeView.
         render = Gtk.CellRendererPixbuf()
         columna = Gtk.TreeViewColumn('pixbuf', render, stock_id=0)
         columna.set_property('resizable', False)
@@ -675,7 +579,7 @@ class Estructura_Proyecto(Gtk.TreeView):
 
         # Leer archivos y directorios en este nivel
         archivos = []
-        dir_list = os.listdir(os.path.join(directorio))
+        dir_list = os.listdir(directorio)
         dir_list.sort()
 
         for archivo in dir_list:
@@ -689,17 +593,14 @@ class Estructura_Proyecto(Gtk.TreeView):
                     continue
 
             direccion = os.path.join(directorio, archivo)
-
             # Si es un directorio, se agrega y se guarda
             # en una lista para hacer recurrencia sobre esta función.
             if os.path.isdir(direccion):
                 iteractual = self.get_model().append(
                     _iter, [Gtk.STOCK_DIRECTORY, archivo, direccion])
-
                 # Para Recursividad.
                 estructura.append((direccion,
                     self.get_model().get_path(iteractual)))
-
             # Si es un archivo.
             elif os.path.isfile(direccion):
                 archivos.append(direccion)
@@ -714,49 +615,37 @@ class Estructura_Proyecto(Gtk.TreeView):
         return False
 
     def __key_press_event(self, widget, event):
-        """
-        Funciones adicionales para moverse en el TreeView
-        """
+        # Funciones adicionales para moverse en el TreeView
         tecla = event.keyval
         model, _iter = self.get_selection().get_selected()
-
         if _iter is None:
             return
-
         path = self.get_model().get_path(_iter)
         if tecla == 65293:
             if self.row_expanded(path):
                 self.collapse_row(path)
-
             else:
                 self.expand_to_path(path)
-
         elif tecla == 65361:
             if self.row_expanded(path):
                 self.collapse_row(path)
                 return False
-
             len_max = len(str(path).split(":"))
             if len_max > 1:
                 path = str(path).split(":")
                 path_str = ""
-
                 for x in path:
                     if path_str != "":
                         path_str = path_str + ":" + x
-
                     else:
                         path_str = x
-
                 n = len(path[len(path) - 1]) + 1
                 path_str = path_str[:-n]
-
                 try:
                     new_path = Gtk.TreePath.new_from_string(path_str)
                     _iter = self.get_model().get_iter(new_path)
                     self.get_selection().select_iter(_iter)
                     self.scroll_to_cell(new_path)
-
                 except:
                     return False
             else:
@@ -764,50 +653,39 @@ class Estructura_Proyecto(Gtk.TreeView):
                 self.get_selection().select_iter(_iter)
                 path = model.get_path(iter)
                 self.scroll_to_cell(path)
-
         elif tecla == 65363:
             if not self.row_expanded(path):
                 self.expand_to_path(path)
-
         else:
             pass
-
         return False
 
     def set_path_estructura(self, path):
-        """
-        Carga la estructura de directorios y archivos del proyecto.
-        """
+        # Carga la estructura de directorios y archivos del proyecto.
         if self.get_model():
             self.get_model().clear()
         else:
             return
-
         if not path:
             return
-
         _iter = self.get_model().get_iter_first()
         self.get_model().append(_iter, [Gtk.STOCK_DIRECTORY,
             os.path.basename(path), path])
-
         estructura = []
         estructura.append((path, None))
         GLib.idle_add(self.__load_estructura, estructura)
 
     def do_row_activated(self, path, column):
-        """
-        Cuando se hace doble click sobre una fila
-        """
+        # Cuando se hace doble click sobre una fila
         _iter = self.get_model().get_iter(path)
         direccion = self.get_model().get_value(_iter, 2)
-
+        direccion = os.path.realpath(direccion)
         if os.path.isdir(direccion):
             if self.row_expanded(path):
                 self.collapse_row(path)
             else:
                 self.expand_to_path(path)
-
-        elif os.path.isfile(os.path.join(direccion)):
+        elif os.path.isfile(direccion):
             datos = commands.getoutput(
                 'file -ik %s%s%s' % ("\"", direccion, "\""))
             if "text" in datos or "x-python" in datos or \
@@ -815,46 +693,34 @@ class Estructura_Proyecto(Gtk.TreeView):
                 self.emit('open', direccion)
 
     def buscar(self, texto):
-        """
-        Realiza una Búsqueda sobre el treeview.
-        """
+        # Realiza una Búsqueda sobre el treeview.
         model = self.get_model()
         item = model.get_iter_first()
         padres = []
         self.posibles = []
-
         while item:
             valor = model.get_value(item, 1)
             if texto in valor:
                 self.posibles.append(item)
-
             if model.iter_has_child(item):
                 path = model.get_path(item)
                 self.expand_to_path(path)
-
                 if item not in padres:
                     padres.append(item)
-
             item = model.iter_next(item)
-
         if padres != []:
             for padre in padres:
                 item = model.iter_children(padre)
-
                 while item:
                     valor = model.get_value(item, 1)
                     if model.iter_has_child(item):
                         path = model.get_path(item)
                         self.expand_to_path(path)
-
                         if item not in padres:
                             padres.append(item)
-
                     if texto in valor:
                         self.posibles.append(item)
-
                     item = model.iter_next(item)
-
         if self.posibles != []:
             self.get_selection().select_iter(self.posibles[0])
             new_path = model.get_path(self.posibles[0])

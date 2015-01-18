@@ -145,13 +145,6 @@ class Menu(Gtk.MenuBar):
         item.add_accelerator("activate", accel_group,
             ord('O'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
 
-        #item = Gtk.MenuItem('Cerrar')
-        #item.connect("activate", self.__emit_accion_archivo, "Cerrar Archivo")
-        #self.dict_archivo['Cerrar'] = item
-        #menu_archivos.append(item)
-        #item.add_accelerator("activate", accel_group,
-        #    ord('W'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-
         item = Gtk.MenuItem('Guardar')
         item.connect("activate", self.__emit_accion_archivo, "Guardar Archivo")
         menu_archivos.append(item)
@@ -161,7 +154,6 @@ class Menu(Gtk.MenuBar):
 
         item = Gtk.MenuItem('Guardar Como ...')
         item.connect("activate", self.__emit_accion_archivo, "Guardar Como")
-        #self.dict_archivo['Guardar Como'] = item
         menu_archivos.append(item)
 
         # Items del Menú Edición
@@ -224,7 +216,6 @@ class Menu(Gtk.MenuBar):
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
         item.connect("activate", self.__emit_accion_ver, "Numeracion")
-        #self.dict_archivo['Numeracion'] = item
         menu_ver.append(item)
 
         item = Gtk.MenuItem()
@@ -276,7 +267,6 @@ class Menu(Gtk.MenuBar):
 
         item = Gtk.MenuItem('Formato de Texto . . .')
         item.connect("activate", self.__emit_accion_codigo, "Formato")
-        #self.dict_archivo['Formato'] = item
         menu_codigo.append(item)
         item.add_accelerator("activate", accel_group,
             ord('T'), Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
@@ -295,18 +285,6 @@ class Menu(Gtk.MenuBar):
         item.add_accelerator("activate", accel_group,
             ord('I'), Gdk.ModifierType.CONTROL_MASK |
             Gdk.ModifierType.SHIFT_MASK, Gtk.AccelFlags.VISIBLE)
-
-        #item = Gtk.MenuItem('Identar con Espacios')
-        #item.connect("activate", self.__emit_accion_codigo,
-        # "Identar con Espacios")
-        #self.dict_archivo['Identar con Espacios'] = item
-        #menu_codigo.append(item)
-
-        #item = Gtk.MenuItem('Identar con Tabulaciones')
-        #item.connect("activate", self.__emit_accion_codigo,
-        # "Identar con Tabulaciones")
-        #self.dict_archivo['Identar con Tabulaciones'] = item
-        #menu_codigo.append(item)
 
         item = Gtk.MenuItem('Buscar Texto . . .')
         item.connect("activate", self.__emit_accion_codigo, "Buscar Texto")
@@ -361,19 +339,14 @@ class Menu(Gtk.MenuBar):
         self.emit('accion_proyecto', accion)
 
     def activar_proyecto(self, sensitive):
-        """
-        Activa o desactiva opciones.
-        """
+        # Activa o desactiva opciones.
         if sensitive:
             map(self.__activar, self.dict_proyecto.values())
         else:
             map(self.__desactivar, self.dict_proyecto.values())
 
     def update_archivos(self, _dict):
-        """
-        Activa o desactiva opciones.
-        """
-
+        # Activa o desactiva opciones.
         activar = []
         desactivar = []
 
@@ -491,44 +464,34 @@ class DialogoBuscar(Gtk.Dialog):
             GLib.idle_add(self.__update, texto, seleccion)
 
     def __update(self, texto, selection):
-        """
-        Cuando se abre el dialogo selecciona la primer ocurrencia.
-        """
+        # Cuando se abre el dialogo selecciona la primer ocurrencia.
         _buffer = self.view.get_buffer()
         start, end = _buffer.get_bounds()
         contenido = _buffer.get_text(start, end, 0)
         numero = len(contenido)
-
         if end.get_offset() == numero and not selection:
             # Si está al final, vuelve al principio.
             inicio = _buffer.get_start_iter()
             self.__seleccionar_texto(texto, inicio, 'Adelante')
-
         else:
             if selection:
                 inicio, fin = selection
                 _buffer.select_range(inicio, fin)
-
         return False
 
     def __changed(self, widget):
-        """
-        Habilita y deshabilita los botones de busqueda y reemplazo.
-        """
+        # Habilita y deshabilita los botones de busqueda y reemplazo.
         self.boton_anterior.set_sensitive(bool(self.entrada.get_text()))
         self.boton_siguiente.set_sensitive(bool(self.entrada.get_text()))
 
     def __buscar(self, widget, direccion):
-        """
-        Busca el texto en el buffer.
-        """
+        # Busca el texto en el buffer.
         texto = self.entrada.get_text()
         _buffer = self.view.get_buffer()
         inicio, fin = _buffer.get_bounds()
 
         texto_actual = _buffer.get_text(inicio, fin, 0)
         posicion = _buffer.get_iter_at_mark(_buffer.get_insert())
-
         if texto:
             if texto in texto_actual:
                 inicio = posicion
@@ -543,40 +506,31 @@ class DialogoBuscar(Gtk.Dialog):
                         numero = len(contenido)
                         if end.get_offset() == numero:
                             inicio = _buffer.get_end_iter()
-
                         else:
                             inicio = _buffer.get_selection_bounds()[0]
-
                 self.__seleccionar_texto(texto, inicio, direccion)
             else:
                 _buffer.select_range(posicion, posicion)
 
     def __seleccionar_texto(self, texto, inicio, direccion):
-        """
-        Selecciona el texto solicitado, y mueve el scroll sí es necesario.
-        """
+        # Selecciona el texto solicitado, y mueve el scroll sí es necesario.
         _buffer = self.view.get_buffer()
         if direccion == 'Adelante':
             match = inicio.forward_search(texto, 0, None)
-
         elif direccion == 'Atras':
             match = inicio.backward_search(texto, 0, None)
-
         if match:
             match_start, match_end = match
             _buffer.select_range(match_end, match_start)
             self.view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
-
         else:
             if direccion == 'Adelante':
                 inicio = _buffer.get_start_iter()
-
             elif direccion == 'Atras':
                 inicio = _buffer.get_end_iter()
-
             self.__seleccionar_texto(texto, inicio, direccion)
 
-    def __destroy(self, widget):
+    def __destroy(self, widget=None):
         self.destroy()
 
 
@@ -636,80 +590,61 @@ class DialogoReemplazar(Gtk.Dialog):
         GLib.idle_add(self.__changed)
 
     def __update(self, texto, selection):
-        """
-        Cuando se abre el dialogo selecciona la primer ocurrencia.
-        """
+        # Cuando se abre el dialogo selecciona la primer ocurrencia.
         _buffer = self.view.get_buffer()
         start, end = _buffer.get_bounds()
         contenido = _buffer.get_text(start, end, 0)
         numero = len(contenido)
-
         if end.get_offset() == numero and not selection:
             inicio = _buffer.get_start_iter()
             self.__seleccionar_texto(texto, inicio, 'Adelante')
-
         else:
             inicio, fin = selection
             _buffer.select_range(inicio, fin)
 
     def __changed(self):
-        """
-        Habilita y deshabilita los botones de busqueda y reemplazo.
-        """
+        # Habilita y deshabilita los botones de busqueda y reemplazo.
         self.button_buscar.set_sensitive(bool(self.buscar_entry.get_text()))
         _buffer = self.view.get_buffer()
         select = _buffer.get_selection_bounds()
-
         if len(select) == 2:
             select = True
         else:
             select = False
-
         self.reemplazar.set_sensitive(select and \
             bool(self.buscar_entry.get_text()) and \
             bool(self.reemplazar_entry.get_text()))
-
         return True
 
     def __buscar(self, widget, direccion):
-        """
-        Busca el texto en el buffer.
-        """
-
         try:
             texto = self.buscar_entry.get_text()
             _buffer = self.view.get_buffer()
             inicio, fin = _buffer.get_bounds()
-
             texto_actual = _buffer.get_text(inicio, fin, 0)
             posicion = _buffer.get_iter_at_mark(_buffer.get_insert())
-
             if texto:
                 if texto in texto_actual:
                     inicio = posicion
                     if direccion == 'Adelante':
                         if inicio.get_offset() == _buffer.get_char_count():
                             inicio = _buffer.get_start_iter()
-
                     elif direccion == 'Atras':
                         if _buffer.get_selection_bounds():
                             start, end = _buffer.get_selection_bounds()
                             contenido = _buffer.get_text(start, end, 0)
                             numero = len(contenido)
-
                             if end.get_offset() == numero:
                                 inicio = _buffer.get_end_iter()
                             else:
                                 inicio = _buffer.get_selection_bounds()[0]
-
                     self.__seleccionar_texto(texto, inicio, direccion)
                 else:
                     buffer.select_range(posicion, posicion)
         except:
-            # FIXME: "Error en __buscar de DialogoReemplazar"
+            print "FIXME: Error en:", self.__buscar
             # Cuando se reemplaza texto y llega al final del archivo,
             # al parecer no afecta en nada a la aplicación.
-            pass
 
     def __destroy(self, widget=None, event=None):
         self.destroy()
@@ -723,13 +658,10 @@ class DialogoReemplazar(Gtk.Dialog):
         self.button_buscar.clicked()
 
     def __seleccionar_texto(self, texto, inicio, direccion):
-        """
-        Selecciona el texto solicitado, y mueve el scroll sí es necesario.
-        """
+        # Selecciona el texto solicitado, y mueve el scroll sí es necesario.
         _buffer = self.view.get_buffer()
         if direccion == 'Adelante':
             match = inicio.forward_search(texto, 0, None)
-
         elif direccion == 'Atras':
             match = inicio.backward_search(texto, 0, None)
 
@@ -737,14 +669,11 @@ class DialogoReemplazar(Gtk.Dialog):
             match_start, match_end = match
             _buffer.select_range(match_end, match_start)
             self.view.scroll_to_iter(match_end, 0.1, 1, 1, 0.1)
-
         else:
             if direccion == 'Adelante':
                 inicio = _buffer.get_start_iter()
-
             elif direccion == 'Atras':
                 inicio = _buffer.get_end_iter()
-
             self.__seleccionar_texto(texto, inicio, direccion)
 
 
@@ -807,29 +736,22 @@ class My_FileChooser(Gtk.FileChooserDialog):
         self.connect("file-activated", self.__file_activated)
 
     def __file_activated(self, widget):
-        """
-        Cuando se hace doble click sobre un archivo.
-        """
-        self.__abrir(None)
+        # Cuando se hace doble click sobre un archivo.
+        self.__abrir()
 
-    def __abrir(self, widget):
-        """
-        Emite el path del archivo seleccionado.
-        """
+    def __abrir(self, widget=None):
         direccion = self.get_filename()
         if not direccion:
-            self.__salir(None)
-            return
+            return self.__salir()
 
-        #direccion = str(self.get_filename()).replace("//", "/")
         direccion = os.path.realpath(direccion)
-
         # Para abrir solo archivos, de lo contrario el filechooser
         # se está utilizando para "guardar como".
-        if os.path.exists(direccion) and not os.path.isfile(direccion):
-            self.__salir(None)
-            return
+        if os.path.exists(direccion):
+            if not os.path.isfile(direccion):
+                return self.__salir()
 
+        # Emite el path del archivo seleccionado.
         self.emit('load', direccion)
         self.__salir()
 
@@ -889,24 +811,17 @@ class Multiple_FileChooser(Gtk.FileChooserDialog):
         self.connect("file-activated", self.__file_activated)
 
     def __file_activated(self, widget):
-        """
-        Cuando se hace doble click sobre un archivo.
-        """
-        self.__abrir(None)
+        # Cuando se hace doble click sobre un archivo.
+        self.__abrir()
 
-    def __abrir(self, widget):
-        """
-        Emite el path del archivo seleccionado.
-        """
+    def __abrir(self, widget=None):
         files = self.get_filenames()
-        if not files:
-            self.__salir(None)
-            return
-        for _file in files:
-            direccion = os.path.realpath(_file)
-            #direccion = str(_file).replace("//", "/")
-            if os.path.exists(direccion) and os.path.isfile(direccion):
-                self.emit('load', direccion)
+        if files:
+            for _file in files:
+                direccion = os.path.realpath(_file)
+                if os.path.exists(direccion) and os.path.isfile(direccion):
+                    # Emite el path del archivo seleccionado.
+                    self.emit('load', direccion)
         self.__salir()
 
     def __salir(self, widget=None):

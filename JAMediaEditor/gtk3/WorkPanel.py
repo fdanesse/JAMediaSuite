@@ -21,7 +21,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import os
-
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GLib
@@ -42,15 +41,6 @@ BatovideWorkSpace = os.path.join(home, 'BatovideWorkSpace')
 
 
 class WorkPanel(Gtk.Paned):
-    """
-    Panel, área de trabajo.
-        zona superior: Notebook + source view para archivos abiertos
-        zona inferior: terminales.
-
-    Gtk.VPaned:
-        Notebook_SourceView
-        JAMediaTerminal
-    """
 
     __gtype_name__ = 'JAMediaEditorWorkPanel'
 
@@ -80,28 +70,21 @@ class WorkPanel(Gtk.Paned):
         self.pack2(self.terminal, resize=False, shrink=True)
 
         self.show_all()
-
         self.terminal.set_size_request(-1, 170)
 
         self.notebook_sourceview.connect('new_select',
             self.__re_emit_new_select)
         self.notebook_sourceview.connect('update', self.__re_emit_update)
-
         self.terminal.connect("ejecucion", self.__set_ejecucion)
         self.terminal.connect("reset", self.detener_ejecucion)
-
         GLib.idle_add(self.terminal.hide)
 
     def __re_emit_update(self, widget, _dict):
-        """
-        Emite una señal con el estado general del archivo.
-        """
+        # Emite una señal con el estado general del archivo.
         self.emit("update", _dict)
 
     def __set_ejecucion(self, widget, terminal):
-        """
-        Cuando se ejecuta un archivo o un proyecto.
-        """
+        # Cuando se ejecuta un archivo o un proyecto.
         self.ejecucion = terminal
         self.terminal.set_sensitive(False)
 
@@ -113,9 +96,7 @@ class WorkPanel(Gtk.Paned):
         self.emit('new_select', view, tipo)
 
     def get_default_path(self):
-        """
-        Devuelve el Directorio del archivo seleccionado en sourceview.
-        """
+        # Devuelve el Directorio del archivo seleccionado en sourceview.
         return self.notebook_sourceview.get_default_path()
 
     def set_linea(self, index, texto):
@@ -139,64 +120,50 @@ class WorkPanel(Gtk.Paned):
         Ejecuta un archivo. Si no se pasa archivo,
         ejecuta el seleccionado en notebooksourceview.
         """
-
         if not archivo or archivo == None:
             # Cuando se ejecuta el archivo seleccionado.
             pagina = self.notebook_sourceview.get_current_page()
             view = self.notebook_sourceview.get_children()[
                 pagina].get_children()[0]
-
             archivo = view.archivo
-
             # Si el archivo tiene cambios sin guardar o nunca se guardó.
             if not archivo or archivo == None or \
                 view.get_buffer().get_modified():
-
                 dialog = DialogoAlertaSinGuardar(
                     parent_window=self.get_toplevel())
-
                 respuesta = dialog.run()
                 dialog.destroy()
-
                 if respuesta == Gtk.ResponseType.ACCEPT:
                     self.guardar_archivo()
                 elif respuesta == Gtk.ResponseType.CANCEL:
                     return
                 elif respuesta == Gtk.ResponseType.CLOSE:
                     return
-
                 archivo = view.archivo
-
             self.ejecucion_activa = "archivo"
             self.emit("ejecucion", self.ejecucion_activa, True)
-
         else:
             # Cuando se ejecuta el main de proyecto.
             source = None
             for view in self.get_archivos_de_proyecto(
                 self.get_parent().get_parent().proyecto["path"]):
-
                 if view.archivo == archivo:
                     source = view
                     break
-
             if source:
                 if source.get_buffer().get_modified():
                     dialog = DialogoAlertaSinGuardar(
                         parent_window=self.get_toplevel())
                     respuesta = dialog.run()
                     dialog.destroy()
-
                     if respuesta == Gtk.ResponseType.ACCEPT:
                         source.guardar()
                     elif respuesta == Gtk.ResponseType.CANCEL:
                         return
                     elif respuesta == Gtk.ResponseType.CLOSE:
                         return
-
             self.ejecucion_activa = "proyecto"
             self.emit("ejecucion", self.ejecucion_activa, True)
-
         if archivo:
             self.terminal.ejecutar(archivo)
 
@@ -210,21 +177,15 @@ class WorkPanel(Gtk.Paned):
             self.ejecucion_activa = False
 
     def set_accion_codigo(self, accion):
-        """
-        Ejecuta acciones sobre el código del archivo seleccionado.
-        """
+        # Ejecuta acciones sobre el código del archivo seleccionado.
         self.notebook_sourceview.set_accion(accion)
 
     def set_accion_archivos(self, accion):
-        """
-        Ejecuta acciones sobre el archivo seleccionado.
-        """
+        # Ejecuta acciones sobre el archivo seleccionado.
         self.notebook_sourceview.set_accion(accion)
 
     def set_accion_ver(self, accion, valor):
-        """
-        Ejecuta acciones sobre el archivo seleccionado.
-        """
+        # Ejecuta acciones sobre el archivo seleccionado.
         if accion == "Panel inferior":
             if not valor:
                 self.terminal.hide()
@@ -241,9 +202,7 @@ class WorkPanel(Gtk.Paned):
         return self.notebook_sourceview.get_archivos_de_proyecto(proyecto_path)
 
     def remove_proyect(self, proyecto_path):
-        """
-        Cuando se elimina el proyecto desde la vista de estructura.
-        """
+        # Cuando se elimina el proyecto desde la vista de estructura.
         self.notebook_sourceview.remove_proyect(proyecto_path)
 
 
@@ -270,26 +229,18 @@ class Notebook_SourceView(Gtk.Notebook):
             'tamanio': 10,
             'numeracion': True,
             }
-
         self.set_scrollable(True)
         self.ultimo_view_activo = False
-
         self.show_all()
-
         self.connect('switch_page', self.__switch_page)
-
         GLib.idle_add(self.abrir_archivo, False)
 
     def __switch_page(self, widget, widget_child, indice):
-        """
-        Cuando el usuario selecciona una lengüeta en el notebook.
-        """
         # Detener inspectores y activar solo el seleccionado
         paginas = self.get_children()
         for pagina in paginas:
             view = pagina.get_child()
             view.new_handle(False)
-
         view = widget_child.get_child()
         if self.ultimo_view_activo != view:
             self.ultimo_view_activo = view
@@ -297,31 +248,23 @@ class Notebook_SourceView(Gtk.Notebook):
             tipo = False
             if view.lenguaje:
                 tipo = view.lenguaje.get_name().lower()
-
             self.emit('new_select', view, tipo)
 
     def __re_emit_update(self, widget, _dict):
-        """
-        Emite una señal con el estado general del archivo.
-        """
+        # Emite una señal con el estado general del archivo.
         self.emit("update", _dict)
 
     def __re_emit_force_select(self, widget, view, lenguaje):
-        """
-        Forzando Instrospección en Panel Lateral.
-        """
+        # Forzando Instrospección en Panel Lateral.
         self.emit('new_select', view, lenguaje)
 
     def __cerrar(self, widget):
-        """
-        Cerrar el archivo seleccionado.
-        """
+        # Cerrar el archivo seleccionado.
         notebook = widget.get_parent().get_parent()
         paginas = notebook.get_n_pages()
         for indice in range(paginas):
             boton = self.get_tab_label(
                 self.get_children()[indice]).get_children()[1]
-
             if boton == widget:
                 self.get_children()[
                     indice].get_child().set_accion("Cerrar Archivo")
@@ -332,14 +275,12 @@ class Notebook_SourceView(Gtk.Notebook):
         Recibe la linea seleccionada en instrospeccion y
         y la selecciona en el sourceview activo.
         """
-
         scrolled = self.get_children()[self.get_current_page()]
         view = scrolled.get_children()[0]
         _buffer = view.get_buffer()
 
         start, end = _buffer.get_bounds()
         linea_iter = _buffer.get_iter_at_line(index)
-
         match = linea_iter.forward_search(texto, 0, None)
 
         if match:
@@ -435,7 +376,6 @@ class Notebook_SourceView(Gtk.Notebook):
             for pagina in paginas:
                 if self.config['tamanio'] > 6:
                     self.config['tamanio'] -= 1
-
                 view = pagina.get_child()
                 view.set_formato(self.config['fuente'], self.config['tamanio'])
 
@@ -444,7 +384,6 @@ class Notebook_SourceView(Gtk.Notebook):
             self.get_toplevel().set_sensitive(False)
             dialogo = DialogoFormato(parent_window=self.get_toplevel(),
                 fuente=self.config['fuente'], tamanio=self.config['tamanio'])
-
             respuesta = dialogo.run()
             dialogo.destroy()
             self.get_toplevel().set_sensitive(True)
@@ -453,12 +392,10 @@ class Notebook_SourceView(Gtk.Notebook):
                 res = dialogo.get_font()
                 self.config['fuente'] = res[0]
                 self.config['tamanio'] = res[1]
-
                 for pagina in paginas:
                     view = pagina.get_child()
                     view.set_formato(self.config['fuente'],
                     self.config['tamanio'])
-
         else:
             sourceview.set_accion(accion)
 
@@ -484,9 +421,7 @@ class Notebook_SourceView(Gtk.Notebook):
         return sourceviews
 
     def remove_proyect(self, proyecto_path):
-        """
-        Cuando se elimina el proyecto desde la vista de estructura.
-        """
+        # Cuando se elimina el proyecto desde la vista de estructura.
         paginas = self.get_children()
         for pagina in paginas:
             view = pagina.get_child()
@@ -496,9 +431,7 @@ class Notebook_SourceView(Gtk.Notebook):
                 self.remove(pagina)
 
     def get_default_path(self):
-        """
-        Devuelve el Directorio del archivo seleccionado.
-        """
+        # Devuelve el Directorio del archivo seleccionado.
         path = False
         pagina = self.get_current_page()
         if pagina > -1:

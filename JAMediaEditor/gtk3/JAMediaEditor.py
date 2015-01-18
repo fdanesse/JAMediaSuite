@@ -54,13 +54,6 @@ GObject.threads_init()
 
 
 class JAMediaEditor(Gtk.Window):
-    """
-    Gtk.Window
-        Gtk.VBox
-            Menu
-            BasePanel - JAMediaPyGiHack
-            ToolbarEstado
-    """
 
     __gtype_name__ = 'WindowJAMediaEditor'
 
@@ -92,7 +85,6 @@ class JAMediaEditor(Gtk.Window):
         base_widget.pack_start(self.toolbar_estado, False, False, 0)
 
         self.add(base_widget)
-
         self.show_all()
         self.maximize()
 
@@ -104,12 +96,10 @@ class JAMediaEditor(Gtk.Window):
         self.menu.connect('accion_archivo', self.__ejecutar_accion_archivo)
         self.menu.connect('run_jamediapygihack', self.__run_jamediapygihack)
         self.jamediapygihack.connect('salir', self.__run_editor)
-
         self.base_panel.connect("update", self.__set_toolbar_archivo_and_menu)
         self.base_panel.connect("proyecto_abierto",
             self.__set_toolbar_proyecto_and_menu)
         self.base_panel.connect("ejecucion", self.__set_toolbars_ejecucion)
-
         self.connect("delete-event", self.__exit)
 
         # Cuando se abre el editor con archivo como parámetro.
@@ -120,7 +110,6 @@ class JAMediaEditor(Gtk.Window):
                     if os.path.isfile(archivo):
                         extension = os.path.splitext(
                             os.path.split(archivo)[1])[1]
-
                         if extension == ".ide":
                             GLib.idle_add(
                                 self.base_panel.external_open_proyect,
@@ -129,7 +118,6 @@ class JAMediaEditor(Gtk.Window):
                             GLib.idle_add(
                                 self.base_panel.external_open_file,
                                 archivo)
-
         print "JAMediaEditor:", os.getpid()
 
     def __run_editor(self, widget):
@@ -149,15 +137,11 @@ class JAMediaEditor(Gtk.Window):
         sys.exit(0)
 
     def __ejecutar_accion_codigo(self, widget, accion):
-        """
-        Cuando se hace click en una opción del menú codigo.
-        """
+        # Cuando se hace click en una opción del menú codigo.
         self.base_panel.set_accion_codigo(widget, accion)
 
     def __ejecutar_accion_ver(self, widget, accion, valor):
-        """
-        Cuando se hace click en una opción del menú ver.
-        """
+        # Cuando se hace click en una opción del menú ver.
         self.base_panel.set_accion_ver(widget, accion, valor)
 
     def __ejecutar_accion_archivo(self, widget, accion):
@@ -168,15 +152,11 @@ class JAMediaEditor(Gtk.Window):
         self.base_panel.set_accion_archivo(widget, accion)
 
     def __ejecutar_accion_proyecto(self, widget, accion):
-        """
-        Cuando se hace click en una opción del menú proyecto.
-        """
+        # Cuando se hace click en una opción del menú proyecto.
         self.base_panel.set_accion_proyecto(widget, accion)
 
     def __set_toolbar_archivo_and_menu(self, widget, _dict):
-        """
-        Estado general del archivo.
-        """
+        # Estado general del archivo.
         self.menu.update_archivos(_dict)
         self.base_panel.toolbararchivo.update(_dict)
         info = {
@@ -198,9 +178,7 @@ class JAMediaEditor(Gtk.Window):
         self.base_panel.toolbarproyecto.activar_ejecucion(False)
 
     def __set_toolbars_ejecucion(self, widget, tipo, valor):
-        """
-        Cuando se ejecuta un archivo o proyecto, se actualizan las toolbars.
-        """
+        # Cuando se ejecuta un archivo o proyecto, se actualizan las toolbars.
         if valor:
             self.base_panel.toolbararchivo.activar_ejecucion(
                 bool(tipo == "archivo"))
