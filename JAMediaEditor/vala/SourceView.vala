@@ -19,12 +19,6 @@ public class SourceView : Gtk.SourceView{
         //self.tab = "    "
 
         this.set_property("show_line_numbers", this.numeracion);
-
-        //self.lenguajes = {}
-        //for _id in self.lenguaje_manager.get_language_ids():
-        //    lang = self.lenguaje_manager.get_language(_id)
-        //    self.lenguajes[_id] = lang.get_mime_types()
-
         this.set_insert_spaces_instead_of_tabs(true);
         this.set_tab_width(4);
         this.set_show_right_margin(true);
@@ -36,46 +30,27 @@ public class SourceView : Gtk.SourceView{
         //self.modify_font(Pango.FontDescription(font))
 
         this.show_all();
-
         //self.connect("key-press-event", self.__key_press_event)
     }
 
-    private bool __set_label(string nombre){
-        Gtk.ScrolledWindow scroll = this.get_parent() as Gtk.ScrolledWindow;
-        Gtk.Notebook notebook = scroll.get_parent() as Gtk.Notebook;
-
-        int indice = notebook.get_current_page(); //int indice = notebook.page_num(this)
-        List<weak Gtk.Widget> paginas = notebook.get_children(); //[indice]
-        Gtk.ScrolledWindow page = paginas[indice];
-        //Gtk.Label label = notebook.get_tab_label(page).get_children()[0];
-        //page = notebook.get_children()[indice]
-        //Gtk.Label label = notebook.get_tab_label(pag).get_children()[0]
-        //label.set_text(nombre)
-
-        return false;
-        }
-
     public void set_archivo(string archivo){
-        this.archivo = archivo;
-
-        if (archivo != null){
-            GLib.File file = GLib.File.parse_name(this.archivo);
+        //self.new_handle(False)
+        if (archivo != "None"){
+            GLib.File file = GLib.File.parse_name(archivo);
             if (file.query_exists()){
+                this.archivo = archivo;
                 try {
-		            string texto;
+                    string texto;
                     GLib.FileUtils.get_contents(this.archivo, out texto);
                     this.set_buffer(new Gtk.SourceBuffer(null));
                     // FIXME: self.get_buffer().begin_not_undoable_action()
-                    this.__set_lenguaje(this.archivo);
+                    this.get_buffer().set_property("highlight_syntax", true);
+                    this.lenguaje = lenguaje_manager.guess_language(this.archivo, null);
+                    this.get_buffer().set_property("language", this.lenguaje);
+                    // FIXME: GLib.timeout_add(3, self.__force_emit_new_select)
                     this.get_buffer().set_text(texto);
-
-                    string nombre = GLib.Path.get_basename(this.archivo);
-                    //if len(nombre) > 13:
-                    //    nombre = nombre[0:13] + " . . . "
-                    //GLib.idle_add(self.__set_label, nombre)
-                    this.__set_label(nombre);
-                    // FIXME: self.control = os.path.getmtime(self.archivo)
-		            }
+                    //self.control = os.path.getmtime(self.archivo)
+                    }
                 catch (Error e){}
                 }
             }
@@ -86,14 +61,6 @@ public class SourceView : Gtk.SourceView{
 
         //self.get_buffer().end_not_undoable_action()
         this.get_buffer().set_modified(false);
-
         //self.new_handle(True)
-        }
-
-    private void __set_lenguaje(string archivo){
-        this.get_buffer().set_property("highlight_syntax", true);
-        this.lenguaje = lenguaje_manager.guess_language(archivo, null);
-        this.get_buffer().set_property("language", this.lenguaje);
-        // FIXME: GLib.timeout_add(3, self.__force_emit_new_select)
         }
 }

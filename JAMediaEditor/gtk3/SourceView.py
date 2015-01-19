@@ -520,16 +520,6 @@ class SourceView(GtkSource.View):
         elif accion == "Identar":
             self.__identar()
 
-        elif accion == "Identar con Espacios":
-            # FIXME: convertir . . .
-            self.tab = '    '
-            #self.__identar()
-
-        elif accion == "Identar con Tabulaciones":
-            # FIXME: convertir . . .
-            self.tab = '\t'
-            #self.__identar()
-
         elif accion == "De Identar":
             self.__de_identar()
 
