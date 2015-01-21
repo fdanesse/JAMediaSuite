@@ -1,4 +1,9 @@
 /*
+Instalaciones previas:
+valac libgtk-3-dev libsoup2.4-dev libjson-glib-dev
+*/
+
+/*
 Compilar con:
     valac --pkg glib-2.0 --pkg gio-2.0 --pkg libsoup-2.4 \
     --pkg gtk+-3.0 --pkg gdk-3.0 --pkg gdk-x11-3.0 --pkg gstreamer-1.0 \
@@ -8,6 +13,17 @@ por: --pkg gstreamer-0.10 --pkg gstreamer-interfaces-0.10
 */
 
 //http://www.abenga.com/post/2013/7/30/gtk+-programming-using-vala:-background-/
+
+
+/*
+apt-get update
+apt-get upgrade
+apt-get install gstreamer1.0 gstreamer1.0-plugins-base
+apt-get install gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly
+apt-get install gstreamer1.0-tools gstreamer1.0-plugins-bad gstreamer1.0-libav
+apt-get update
+apt-get upgrade
+*/
 
 //using GLib;   Se importa siempre por default
 using Gtk;
@@ -36,9 +52,9 @@ public class JAMedia : Gtk.Window{
     public JAMedia(){
 
         this.set_title("JAMedia");
-		this.window_position = Gtk.WindowPosition.CENTER;
-		this.set_default_size(640, 480);
-		this.set_resizable(true);
+        this.window_position = Gtk.WindowPosition.CENTER;
+        this.set_default_size(640, 480);
+        this.set_resizable(true);
         this.set("border_width", 2);
         try {
             Gtk.Window.set_default_icon_from_file("Iconos/JAMedia.svg");
@@ -75,12 +91,12 @@ public class JAMedia : Gtk.Window{
         this.toolbar.accion.connect(this.__accion_toolbar);
         this.toolbaraccion.accion_stream.connect(this.__accion_stream);
         this.toolbaraccion.grabar.connect ((stream) => {
-			this.__grabar(stream);
-		    });
+            this.__grabar(stream);
+            });
         this.toolbaraccion.stop.connect(this.__stop);
         this.add_stream.add_stream.connect ((lista, stream) => {
-			this.__add_stream(lista, stream);
-		    });
+            this.__add_stream(lista, stream);
+            });
         this.toolbarsalir.salir.connect(this.__salir);
 
         this.base_panel.show_controls.connect(this.__ocultar_controles);

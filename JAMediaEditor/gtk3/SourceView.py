@@ -115,8 +115,7 @@ class SourceView(GtkSource.View):
         limpio = ""
         for line in texto.splitlines():
             # Eliminar espacios al final de la linea y en lineas vacías.
-            text_line = line.rstrip()
-            text_line = "%s\n" % (text_line)
+            text_line = "%s\n" % (line.rstrip())
             # Cambiar Tabulaciones por 4 espacios
             ret = []
             for l in text_line:
@@ -331,6 +330,7 @@ class SourceView(GtkSource.View):
         _buffer = self.get_buffer()
         inicio, fin = _buffer.get_bounds()
 
+        # FIXME: Verificar con Limpieza de codigo
         modificado = self.get_buffer().get_modified()
         tiene_texto = bool(_buffer.get_text(inicio, fin, 0))
         texto_seleccionado = bool(_buffer.get_selection_bounds())

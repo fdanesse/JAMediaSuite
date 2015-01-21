@@ -59,6 +59,27 @@ Necesita:
     gstreamer0.10-plugins-ugly
     gstreamer0.10-plugins-bad
     gstreamer0.10-tools
+
+apt-get update
+apt-get upgrade
+apt-get install python-gst0.10 python-gst0.10-rtsp
+
+apt-add-repository ppa:mc3man/trusty-media
+apt-get update
+apt-get upgrade
+apt-get install ffmpeg gstreamer0.10-ffmpeg gstreamer0.10-fluendo-mp3
+apt-get install gstreamer0.10-gnonlin gstreamer0.10-plugins-bad-multiverse
+apt-get install gstreamer0.10-plugins-bad gstreamer0.10-plugins-ugly
+apt-get install totem-plugins-extra gstreamer-tools ubuntu-restricted-extras
+apt-get install libxine1-ffmpeg gxine mencoder mpeg2dec vorbis-tools id3v2
+apt-get install mpg321 mpg123 libflac++6 totem-mozilla icedax tagtool easytag
+apt-get install id3tool lame nautilus-script-audio-convert libmad0
+apt-get install libjpeg-progs flac faac faad sox ffmpeg2theora libmpeg2-4
+apt-get install uudeview flac libmpeg3-1 mpeg3-utils mpegdemux
+apt-get install liba52-0.7.4-dev libquicktime2
+
+apt-get update
+apt-get upgrade
 """
 
 
