@@ -68,30 +68,50 @@ public class Notebook_SourceView : Gtk.Notebook{
         this.abrir_archivo("None");
     }
 
+    private void __update_label(SourceView sourceview, string archivo){
+        /*
+        """
+        Setea la etiqueta en notebook cuando cambia el nombre del archivo.
+        """
+        paginas = self.get_n_pages()
+        for indice in range(paginas):
+            pag = self.get_children()[indice]
+            if pag.get_children()[0] == sourceview:
+                label = self.get_tab_label(pag).get_children()[0]
+                if (archivo != "None"){
+                    GLib.File file = GLib.File.parse_name(archivo);
+                    if (file.query_exists()){
+                        //FIXME: Arreglar
+                        //if len(nombre) > 13:
+                        //    nombre = nombre[0:13] + " . . . "
+                        label.set_text(GLib.Path.get_basename(archivo));
+                        }
+                    else{
+                        label.set_text("Sin Título")
+                        }
+                    }
+                break
+        */
+        }
+
     public bool abrir_archivo(string archivo){
         /*
+        # Si el archivo ya está abierto, se selecciona
         paginas = self.get_children()
         for pagina in paginas:
             view = pagina.get_child()
             if view.archivo and archivo:
-                arch1 = os.path.join(view.archivo)
-                arch2 = os.path.join(archivo)
+                arch1 = view.archivo
+                arch2 = archivo
                 if arch1 == archivo:
+                    self.set_current_page(paginas.index(pagina))
                     return False
         */
 
         // Crear la lengüeta
         Gtk.Box hbox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
         Gtk.Label label = new Gtk.Label("Sin Título");
-        if (archivo != "None"){
-            GLib.File file = GLib.File.parse_name(archivo);
-            if (file.query_exists()){
-                //FIXME: Arreglar
-                //if len(nombre) > 13:
-                //    nombre = nombre[0:13] + " . . . "
-                label.set_text(GLib.Path.get_basename(archivo));
-                }
-            }
+
         Gtk.ToolButton boton = get_button("Iconos/button-cancel.svg", false, Gdk.PixbufRotation.NONE, 18, "Cerrar");
         //button.clicked.connect (() => {
         //    this.__cerrar();
@@ -105,7 +125,6 @@ public class Notebook_SourceView : Gtk.Notebook{
         scroll.set("vscrollbar_policy", Gtk.PolicyType.AUTOMATIC);
         scroll.add(sourceview);
         this.append_page(scroll, hbox);
-        sourceview.set_archivo(archivo);
 
         hbox.show_all();
         this.show_all();
@@ -115,6 +134,10 @@ public class Notebook_SourceView : Gtk.Notebook{
 
         //sourceview.connect("update", self.__re_emit_update)
         //sourceview.connect("force-select", self.__re_emit_force_select)
+        sourceview.update_label.connect ((source, arch) => {
+             this.__update_label(source, arch);
+            });
+        sourceview.set_archivo(archivo);
         return false;
         }
 }

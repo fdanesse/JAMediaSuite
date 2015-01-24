@@ -12,6 +12,7 @@ valac
 libgtk-3-dev
 libjson-glib-dev
 libghc-css-text-dev
+libgtksourceview-3.0-dev
 """
 
 

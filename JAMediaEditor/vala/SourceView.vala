@@ -1,8 +1,10 @@
 
 public class SourceView : Gtk.SourceView{
 
+    public signal void update_label(SourceView sourceview, string archivo);
+
     private Gtk.SourceLanguageManager lenguaje_manager = new Gtk.SourceLanguageManager();
-    private string archivo = null;
+    private string archivo = "None";
     private string fuente = "Monospace";
     private int tamanio = 10;
     private bool numeracion = true;
@@ -61,6 +63,8 @@ public class SourceView : Gtk.SourceView{
 
         //self.get_buffer().end_not_undoable_action()
         this.get_buffer().set_modified(false);
+        //Necesario cuando se guarda cambiando el nombre del archivo.
+        this.update_label(this, this.archivo);
         //self.new_handle(True)
         }
 }
