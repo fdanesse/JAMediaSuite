@@ -25,6 +25,8 @@ import commands
 import shutil
 import json
 import codecs
+import urllib
+import gtk
 
 canales = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-tv-2014'
 radios = 'https://sites.google.com/site/sugaractivities/jamediaobjects/jam/lista-de-radios-2014'
@@ -70,7 +72,6 @@ def set_dict(path, _dict):
 
 
 def get_colors(key):
-    from gtk import gdk
     _dict = {
         "window": "#ffffff",
         "toolbars": "#778899",
@@ -78,7 +79,7 @@ def get_colors(key):
         "drawingplayer": "#000000",
         "naranaja": "#ff6600",
         }
-    return gdk.color_parse(_dict.get(key, "#ffffff"))
+    return gtk.gdk.color_parse(_dict.get(key, "#ffffff"))
 
 
 def get_ip():
@@ -467,8 +468,6 @@ def descarga_lista_de_streamings(url):
 
     print "Conectandose a:", url, "\n\tDescargando Streamings . . ."
 
-    import urllib
-
     cont = 0
     urls = []
     cabecera = 'JAMedia Channels:'
@@ -555,22 +554,15 @@ def stream_en_archivo(streaming, path):
 
 
 def get_separador(draw=False, ancho=0, expand=False):
-    """
-    Devuelve un separador generico.
-    """
-    import gtk
     separador = gtk.SeparatorToolItem()
     separador.props.draw = draw
     separador.set_size_request(ancho, -1)
     separador.set_expand(expand)
     return separador
 
+
 def get_boton(archivo, flip=False, rotacion=None,
     pixels=24, tooltip_text=None):
-    """
-    Devuelve un toolbutton generico.
-    """
-    import gtk
     boton = gtk.ToolButton()
     imagen = gtk.Image()
     pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(archivo, pixels, pixels)

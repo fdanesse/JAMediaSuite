@@ -270,6 +270,24 @@ class Notebook_SourceView(Gtk.Notebook):
                     indice].get_child().set_accion("Cerrar Archivo")
                 break
 
+    def __update_label(self, sourceview, archivo):
+        """
+        Setea la etiqueta en notebook cuando cambia el nombre del archivo.
+        """
+        paginas = self.get_n_pages()
+        for indice in range(paginas):
+            pag = self.get_children()[indice]
+            if pag.get_children()[0] == sourceview:
+                label = self.get_tab_label(pag).get_children()[0]
+                if archivo:
+                    nombre = os.path.basename(archivo)
+                    if len(nombre) > 13:
+                        nombre = nombre[0:13] + " . . . "
+                    label.set_text(nombre)
+                else:
+                    label.set_text("Sin Título")
+                break
+
     def set_linea(self, index, texto):
         """
         Recibe la linea seleccionada en instrospeccion y
@@ -303,12 +321,6 @@ class Notebook_SourceView(Gtk.Notebook):
         # Crear la lengüeta
         hbox = Gtk.HBox()
         label = Gtk.Label("Sin Título")
-        if archivo:
-            if os.path.exists(archivo):
-                nombre = os.path.basename(archivo)
-                if len(nombre) > 13:
-                    nombre = nombre[0:13] + " . . . "
-                label.set_text(nombre)
 
         boton = get_boton(os.path.join(icons, "button-cancel.svg"),
             pixels=get_pixels(0.5), tooltip_text="Cerrar")
@@ -323,7 +335,6 @@ class Notebook_SourceView(Gtk.Notebook):
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scroll.add(sourceview)
         self.append_page(scroll, hbox)
-        sourceview.set_archivo(archivo)
 
         label.show()
         boton.show()
@@ -332,8 +343,10 @@ class Notebook_SourceView(Gtk.Notebook):
         self.set_tab_reorderable(scroll, True)
         self.set_current_page(-1)
 
-        sourceview.connect("update", self.__re_emit_update)
+        sourceview.connect("update-label", self.__update_label)
         sourceview.connect("force-select", self.__re_emit_force_select)
+        sourceview.connect("update", self.__re_emit_update)
+        sourceview.set_archivo(archivo)
         return False
 
     def guardar_archivo(self):

@@ -54,7 +54,8 @@ class ToolbarProyecto(Gtk.EventBox):
 
         self.dict_proyecto = OrderedDict()
         toolbar = Gtk.Toolbar()
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
+        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#f0e6aa'))
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         nuevo_proyecto = get_boton(icon_path, pixels=get_pixels(0.5),
@@ -184,7 +185,8 @@ class ToolbarArchivo(Gtk.EventBox):
 
         self.dict_archivo = OrderedDict()
         toolbar = Gtk.Toolbar()
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
+        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#f0e6aa'))
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         nuevo_archivo = get_boton(os.path.join(icons, icon_path),
@@ -381,7 +383,8 @@ class ToolbarBusquedas(Gtk.EventBox):
         Gtk.EventBox.__init__(self)
 
         toolbar = Gtk.Toolbar()
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
+        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#f0e6aa'))
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
 
         self.anterior = get_boton(os.path.join(icons, "go-next-rtl.svg"),
             pixels=get_pixels(0.5), tooltip_text="Anterior")

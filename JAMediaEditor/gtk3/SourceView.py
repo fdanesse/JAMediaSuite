@@ -53,7 +53,9 @@ class SourceView(GtkSource.View):
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
     "force-select": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
-        GObject.TYPE_STRING))}
+        GObject.TYPE_STRING)),
+    "update-label": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self, config):
 
@@ -397,6 +399,8 @@ class SourceView(GtkSource.View):
 
         self.get_buffer().end_not_undoable_action()
         self.get_buffer().set_modified(False)
+        # Necesario cuando se guarda cambiando el nombre del archivo.
+        self.emit("update-label", self.archivo)
         self.new_handle(True)
 
     def guardar_archivo_como(self):
