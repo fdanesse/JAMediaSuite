@@ -1,0 +1,8 @@
+[Activity]
+name = JAMediaExplorer
+bundle_id = org.laptop.JAMediaExplorer
+exec = sugar-activity SugarExplorer.Ventana
+icon = JAMediaExplorer
+activity_version = 6
+show_launcher = yes
+license = GPLv2+
