@@ -46,25 +46,27 @@ class BaseBox(Gtk.Box):
 
         Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
 
-        self.base_notebook = BaseNotebook()
-        self.jamedia_gstreamer = JAMediaGstreamer()
-
-        self.pack_start(self.base_notebook, True, True, 0)
-        self.pack_end(self.jamedia_gstreamer, True, True, 0)
-
-        self.connect("realize", self.__realize)
+        self.base_notebook = False
+        self.jamedia_gstreamer = False
         self.show_all()
-
-    def __realize(self, widget):
-        self.set_accion("ver", "Apis PyGiHack", True)
 
     def set_accion(self, menu, wid_lab, valor):
         if menu == "ver":
             if wid_lab == "Gstreamer - Inspect 1.0":
-                self.base_notebook.hide()
+                if self.base_notebook:
+                    self.base_notebook.hide()
+                    # FIXME: preguntar al usuario si mata el widget
+                if not self.jamedia_gstreamer:
+                    self.jamedia_gstreamer = JAMediaGstreamer()
+                    self.pack_end(self.jamedia_gstreamer, True, True, 0)
                 self.jamedia_gstreamer.show()
             elif wid_lab == "Apis PyGiHack":
-                self.jamedia_gstreamer.hide()
+                if self.jamedia_gstreamer:
+                    self.jamedia_gstreamer.hide()
+                    # FIXME: preguntar al usuario si mata el widget
+                if not self.base_notebook:
+                    self.base_notebook = BaseNotebook()
+                    self.pack_start(self.base_notebook, True, True, 0)
                 self.base_notebook.show()
             self.emit("update", wid_lab)
 
