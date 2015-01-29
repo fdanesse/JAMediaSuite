@@ -250,32 +250,32 @@ class IntrospectionPanel(Gtk.Paned):
         clase = objeto.split(".")[-1]
         modulo = objeto.replace(".%s" % objeto.split(".")[-1], '')
 
-        for f in os.listdir('/dev/shm'):
+        for f in os.listdir('/tmp'):
             if f.split(".")[-1] == 'html':
-                os.remove(os.path.join('/dev/shm', f))
+                os.remove(os.path.join('/tmp', f))
 
         if tipo == "python-gi":
             if modulo == "gi":
                 arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_doc.py")
-                commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
-                arch = os.path.join('/dev/shm', "Make_doc.py")
+                commands.getoutput('cp %s %s' % (arch0, '/tmp'))
+                arch = os.path.join('/tmp', "Make_doc.py")
             else:
                 arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_gi_doc.py")
-                commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
-                arch = os.path.join('/dev/shm', "Make_gi_doc.py")
+                commands.getoutput('cp %s %s' % (arch0, '/tmp'))
+                arch = os.path.join('/tmp', "Make_gi_doc.py")
 
         elif tipo == "python" or tipo == "Otros":
             arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_doc.py")
-            commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
-            arch = os.path.join('/dev/shm', "Make_doc.py")
+            commands.getoutput('cp %s %s' % (arch0, '/tmp'))
+            arch = os.path.join('/tmp', "Make_doc.py")
 
         commands.getoutput('python %s %s %s' % (arch, modulo, clase))
         os.remove(arch)
 
         ### Porque aveces la web no tiene este nombre.
-        for file in os.listdir('/dev/shm'):
+        for file in os.listdir('/tmp'):
             if str(file).endswith('.html'):
-                archivo = os.path.realpath(os.path.join('/dev/shm', file))
+                archivo = os.path.realpath(os.path.join('/tmp', file))
                 arch = open(archivo, "r")
                 text = arch.read()
                 arch.close()

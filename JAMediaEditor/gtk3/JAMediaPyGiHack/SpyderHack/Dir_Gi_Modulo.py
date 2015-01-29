@@ -26,14 +26,10 @@ import json
 
 
 def import_modulo(modulo_name):
-
     pygi = __import__("gi.repository")
-
     modulo = False
-
     try:
         modulo = pygi.module.IntrospectionModule(modulo_name)
-
     except:
         pass
 
@@ -48,14 +44,12 @@ def import_modulo(modulo_name):
     if modulo:
         try:
             dict['PATH'] = str(modulo.__path__)
-
         except:
             pass
 
         if not dict['PATH']:
             try:
                 dict['PATH'] = str(modulo.__file__)
-
             except:
                 pass
 
@@ -90,15 +84,12 @@ def import_modulo(modulo_name):
 
             elif func.startswith("_"):
                 continue
-
             else:
                 objeto = "%s.%s" % (modulo_name, func)
                 attr = False
                 gdoc = ''
-
                 try:
                     attr = getattr(modulo, func)
-
                 except:
                     dict['DESCONOCIDOS'].append(
                         (objeto, '', '', str(type(func))))
@@ -108,14 +99,11 @@ def import_modulo(modulo_name):
                     if isinstance(attr, type):
                         try:
                             gdoc = attr.__gdoc__
-
                         except:
                             pass
-
                         dict['CLASES'].append(
                             (objeto, gdoc, dir(attr), str(type(attr))))
                         continue
-
                     elif isinstance(attr, types.FunctionType) or \
                         isinstance(attr, types.BuiltinFunctionType) or \
                         isinstance(attr, types.BuiltinMethodType) or \
@@ -140,7 +128,7 @@ name = sys.argv[1]
 dict = {}
 dict[name] = import_modulo(name)
 
-path = os.path.join("/dev/shm", "spyder_hack_out.json")
+path = os.path.join("/tmp", "spyder_hack_out.json")
 
 archivo = open(path, "w")
 archivo.write(
@@ -149,6 +137,6 @@ archivo.write(
         indent=4,
         separators=(", ", ":"),
         sort_keys=True
+        )
     )
-)
 archivo.close()

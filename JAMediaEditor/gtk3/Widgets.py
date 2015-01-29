@@ -930,7 +930,7 @@ class ErroresTreeview(Gtk.TreeView):
         start, end = _buffer.get_bounds()
         texto = _buffer.get_text(start, end, True)
 
-        path = os.path.join("/dev/shm", "check_temp.py")
+        path = os.path.join("/tmp", "check_temp.py")
         arch = open(path, "w")
         arch.write(texto)
         arch.close()

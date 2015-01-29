@@ -142,7 +142,7 @@ class ApiWidget(Gtk.TreeView):
                 'SpyderHack', 'Dir_Modulo.py')
 
         commands.getoutput('python %s %s' % (ejecutable, modulo))
-        path = os.path.join("/dev/shm", "spyder_hack_out.json")
+        path = os.path.join("/tmp", "spyder_hack_out.json")
         archivo = codecs.open(path, "r", "utf-8")
         _dict = json.JSONDecoder("utf-8").decode(archivo.read())
         archivo.close()

@@ -26,7 +26,6 @@ import json
 
 
 def import_modulo(name):
-
     modulo = False
 
     if len(name.split(".")) == 2:
@@ -34,17 +33,14 @@ def import_modulo(name):
             mod = __import__(name)
             modulo = mod.__getattribute__(
                 name.replace("%s." % name.split(".")[0], ''))
-
         except:
             pass
 
     elif len(name.split(".")) == 1:
         try:
             modulo = __import__("%s" % name)
-
         except:
             pass
-
     else:
         pass
 
@@ -71,7 +67,6 @@ def import_modulo(name):
         for func in dir(modulo):
             if func.startswith("__") and func.endswith("__"):
                 continue
-
             elif func.startswith("_"):
                 continue
 
@@ -79,10 +74,8 @@ def import_modulo(name):
                 objeto = "%s.%s" % (name, func)
                 attr = False
                 gdoc = ''
-
                 try:
                     attr = getattr(modulo, func)
-
                 except:
                     dict['DESCONOCIDOS'].append(
                         (objeto, '', '', str(type(func))))
@@ -106,17 +99,14 @@ def import_modulo(name):
                             dict['FUNCIONES'].append(
                                 (objeto, '', dir(attr), str(type(attr))))
                             continue
-
                     else:
                         if not type(attr) == types.ModuleType:
                             dict['CONSTANTES'].append(
                                 (objeto, '', dir(attr), str(type(attr))))
                             continue
-
                         else:
                             dict["%s.%s" % (name, func)] = import_modulo(
                                 "%s.%s" % (name, func))
-
     return dict
 
 name = sys.argv[1]
@@ -124,7 +114,7 @@ name = sys.argv[1]
 dict = {}
 dict[name] = import_modulo(name)
 
-path = os.path.join("/dev/shm", "spyder_hack_out.json")
+path = os.path.join("/tmp", "spyder_hack_out.json")
 
 archivo = open(path, "w")
 archivo.write(

@@ -28,7 +28,6 @@ os.chdir(BASEPATH)
 
 
 def get_modulo(name, attrib):
-
     modulo = False
 
     if len(name.split(".")) == 2:
@@ -36,7 +35,6 @@ def get_modulo(name, attrib):
             mod = __import__(name)
             modulo = mod.__getattribute__(
                 name.replace("%s." % name.split(".")[0], ''))
-
         except:
             pass
 
@@ -45,24 +43,19 @@ def get_modulo(name, attrib):
             modulo = __import__(name)
         except:
             pass
-
     else:
         pass
 
     if modulo:
         try:
             clase = getattr(modulo, attrib)
-
             archivo = os.path.join(BASEPATH, '%s.html' % attrib)
             ar = open(archivo, "w")
             ar.write("")
             ar.close()
-
             pydoc.writedoc(clase)
-
         except:
             sys.exit(0)
-
     else:
         sys.exit(0)
 

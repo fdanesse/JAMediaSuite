@@ -30,21 +30,16 @@ os.chdir(BASEPATH)
 def get_modulo(modulo, attrib):
     #pygi = __import__("gi.repository")
     #modulo = pygi.module.IntrospectionModule(modulo_name)
-
     try:
         mod = __import__("%s.%s" % ("gi.repository", modulo))
         new = mod.importer.modules.get(modulo)
         clase = getattr(new, attrib)
-
         archivo = os.path.join(BASEPATH, '%s.html' % attrib)
         ar = open(archivo, "w")
         ar.write("")
         ar.close()
-
         pydoc.writedoc(clase)
-
         return os.path.join(BASEPATH, '%s.html' % attrib)
-
     except:
         sys.exit(0)
 
