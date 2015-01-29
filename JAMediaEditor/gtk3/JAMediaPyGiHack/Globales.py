@@ -170,7 +170,7 @@ def get_separador(draw=False, ancho=0, expand=False):
 def get_boton(archivo, flip=False, rotacion=None,
     pixels=0, tooltip_text=None):
     if not pixels:
-        pixels = get_pixels(1)
+        pixels = 37
     boton = Gtk.ToolButton()
     imagen = Gtk.Image()
     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixels, pixels)

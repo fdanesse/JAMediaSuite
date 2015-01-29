@@ -30,7 +30,6 @@ BASE_PATH = os.path.dirname(__file__)
 icons = os.path.join(BASE_PATH, "Iconos")
 
 from Globales import get_boton
-from Globales import get_pixels
 
 LICENCIAS = ['GPL2', 'GPL3', 'LGPL 2.1', 'LGPL 3', 'BSD', 'MIT X11']
 
@@ -370,10 +369,10 @@ class WidgetAutores(Gtk.Box):
         entry2 = Gtk.Entry()
 
         remover = get_boton(os.path.join(icons, "list-remove.svg"),
-            pixels=get_pixels(1.0), tooltip_text="Eliminar")
+            pixels=37, tooltip_text="Eliminar")
 
         agregar = get_boton(os.path.join(icons, "gtk-add.svg"),
-            pixels=get_pixels(1.0), tooltip_text="Agregar")
+            pixels=37, tooltip_text="Agregar")
 
         frame1 = Gtk.Frame()
         frame1.set_label("Nombre")

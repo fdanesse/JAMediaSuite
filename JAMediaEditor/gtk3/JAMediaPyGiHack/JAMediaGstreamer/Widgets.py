@@ -19,10 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
-
 from gi.repository import Gtk
-from gi.repository import Gdk
 from gi.repository import GObject
 
 
@@ -41,7 +38,7 @@ class TextView(Gtk.TextView):
 class Lista(Gtk.TreeView):
 
     __gsignals__ = {
-    "nueva-seleccion":(GObject.SIGNAL_RUN_LAST,
+    "nueva-seleccion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
 
     def __init__(self):
@@ -70,26 +67,20 @@ class Lista(Gtk.TreeView):
         tecla = event.get_keycode()[1]
         model, _iter = self.get_selection().get_selected()
         path = model.get_path(_iter)
-
         if tecla == 22:
             if self.row_expanded(path):
                 self.collapse_row(path)
-
         elif tecla == 113:
             if self.row_expanded(path):
                 self.collapse_row(path)
-
         elif tecla == 114:
             if not self.row_expanded(path):
                 self.expand_to_path(path)
-
         return False
 
-    def activar (self, treeview, path, view_column, user_param1):
-        _iter = self.get_model().get_iter(path)
+    def activar(self, treeview, path, view_column, user_param1):
         if self.row_expanded(path):
             self.collapse_row(path)
-
         elif not self.row_expanded(path):
             self.expand_to_path(path)
 
@@ -99,7 +90,7 @@ class Lista(Gtk.TreeView):
 
     def construir_columa(self, text, index, visible):
         render = Gtk.CellRendererText()
-        columna = Gtk.TreeViewColumn(text, render, text = index)
+        columna = Gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
         columna.set_property('visible', visible)
         columna.set_property('resizable', True)
@@ -112,10 +103,9 @@ class Lista(Gtk.TreeView):
         """
         # model y listore son ==
         _iter = model.get_iter(path)
-        valor =  model.get_value(_iter, 0)
+        valor = model.get_value(_iter, 0)
         if not is_selected and self.valor_select != valor:
             self.valor_select = valor
             self.emit('nueva-seleccion', self.valor_select)
             self.scroll_to_cell(path)
-
         return True

@@ -19,12 +19,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
 import commands
-
 from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GObject
 
 from Widgets import TextView
 from Widgets import Lista
@@ -40,7 +36,7 @@ class JAMediaGstreamer(Gtk.Paned):
 
     def __init__(self):
 
-        Gtk.Paned.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
+        Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
 
         # Izquierda
         self.lista = Lista()
@@ -48,38 +44,34 @@ class JAMediaGstreamer(Gtk.Paned):
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scroll.add(self.lista)
         scroll.set_size_request(250, -1)
-        self.pack1(scroll, resize = False, shrink = False)
+        self.pack1(scroll, resize=False, shrink=False)
 
         # Derecha
         self.textview = TextView()
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scroll.add(self.textview)
-        self.pack2(scroll, resize = True, shrink = True)
+        self.pack2(scroll, resize=True, shrink=True)
 
-        self.show_all()
-        self.__llenar_lista()
         self.lista.connect('nueva-seleccion', self.__get_element)
+        self.connect("realize", self.__llenar_lista)
+        self.show_all()
 
-    def __llenar_lista(self):
+    def __llenar_lista(self, widget):
         try:
             import gi
             gi.require_version('Gst', '1.0')
             from gi.repository import Gst
-
             Gst.init([])
             registry = Gst.Registry.get()
             plugins = registry.get_plugin_list()
-
         except:
             return
 
         _iter = self.lista.get_model().get_iter_first()
-
         for elemento in plugins:
             iteractual = self.lista.get_model().append(
                 _iter, [elemento.get_name(), elemento.get_description()])
-
             features = registry.get_feature_list_by_plugin(elemento.get_name())
             if len(features) > 1:
                 for feature in features:

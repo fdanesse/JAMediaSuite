@@ -55,7 +55,7 @@ class BaseBox(Gtk.Box):
             if wid_lab == "Gstreamer - Inspect 1.0":
                 if self.base_notebook:
                     self.base_notebook.hide()
-                    # FIXME: preguntar al usuario si mata el widget
+                    print "FIXME: preguntar al usuario si mata el widget", self.set_accion
                 if not self.jamedia_gstreamer:
                     self.jamedia_gstreamer = JAMediaGstreamer()
                     self.pack_end(self.jamedia_gstreamer, True, True, 0)
@@ -63,7 +63,7 @@ class BaseBox(Gtk.Box):
             elif wid_lab == "Apis PyGiHack":
                 if self.jamedia_gstreamer:
                     self.jamedia_gstreamer.hide()
-                    # FIXME: preguntar al usuario si mata el widget
+                    print "FIXME: preguntar al usuario si mata el widget", self.set_accion
                 if not self.base_notebook:
                     self.base_notebook = BaseNotebook()
                     self.pack_start(self.base_notebook, True, True, 0)
@@ -71,6 +71,7 @@ class BaseBox(Gtk.Box):
             self.emit("update", wid_lab)
 
     def import_modulo(self, paquete, modulo):
+        self.set_accion("ver", "Apis PyGiHack", True)
         self.base_notebook.import_modulo(paquete, modulo)
 
 

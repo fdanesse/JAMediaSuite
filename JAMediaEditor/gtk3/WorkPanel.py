@@ -31,7 +31,6 @@ from Widgets import DialogoAlertaSinGuardar
 from Widgets import DialogoAlertaSinGuardar
 from JAMediaTerminal.Widgets import DialogoFormato
 
-from Globales import get_pixels
 from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
@@ -323,7 +322,7 @@ class Notebook_SourceView(Gtk.Notebook):
         label = Gtk.Label("Sin Título")
 
         boton = get_boton(os.path.join(icons, "button-cancel.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Cerrar")
+            pixels=18, tooltip_text="Cerrar")
         boton.connect("clicked", self.__cerrar)
 
         hbox.pack_start(label, False, False, 0)

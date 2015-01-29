@@ -24,8 +24,10 @@ import commands
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GdkPixbuf
 
 BASE_PATH = os.path.dirname(__file__)
+ICONOS = os.path.join(BASE_PATH, "Iconos")
 
 from Globales import get_dict
 from Globales import get_separador
@@ -56,13 +58,41 @@ class Toolbar(Gtk.EventBox):
         toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
 
         item = Gtk.ToolItem()
-        item.set_expand(True)
+        item.set_expand(False)
         self.menu = Menu()
         self.menu.connect("import", self.__emit_import)
         self.menu.connect("accion-menu", self.__emit_accion_menu)
         self.menu.show()
         item.add(self.menu)
         toolbar.insert(item, -1)
+
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
+
+        self.anterior = get_boton(os.path.join(ICONOS, "go-next-rtl.svg"),
+            pixels=18, tooltip_text="Anterior")
+        self.anterior.connect("clicked", self.__emit_accion)
+        toolbar.insert(self.anterior, - 1)
+
+        item = Gtk.ToolItem()
+        item.set_expand(False)
+        self.entry = Gtk.Entry()
+        self.entry.show()
+        self.entry.connect("changed", self.__emit_buscar)
+        item.add(self.entry)
+        toolbar.insert(item, - 1)
+
+        self.siguiente = get_boton(os.path.join(ICONOS, "go-next.svg"),
+            pixels=18, tooltip_text="Siguiente")
+        self.siguiente.connect("clicked", self.__emit_accion)
+        toolbar.insert(self.siguiente, - 1)
+
+        self.informe = get_boton(os.path.join(ICONOS, "go-next.svg"),
+            pixels=18, tooltip_text="Obtener Copia",
+            rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE)
+        self.informe.connect("clicked", self.__emit_informe)
+        toolbar.insert(self.informe, - 1)
+
+        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         archivo = os.path.join(BASE_PATH, "Iconos", "button-cancel.svg")
         boton = get_boton(archivo, flip=False, pixels=32)
@@ -73,7 +103,13 @@ class Toolbar(Gtk.EventBox):
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         self.add(toolbar)
+        #self.connect("realize", self.__realize)
         self.show_all()
+
+    #def __realize(self, widget):
+    #    self.anterior.set_sensitive(False)
+    #    self.siguiente.set_sensitive(False)
+    #    self.informe.set_sensitive(False)
 
     def __emit_salir(self, widget):
         self.emit('salir')
@@ -86,6 +122,30 @@ class Toolbar(Gtk.EventBox):
 
     def update(self, view):
         self.menu.update(view)
+
+    def __emit_informe(self, widget):
+        #self.emit("informe")
+        print "FIXME:", self.__emit_informe
+
+    def __emit_accion(self, widget):
+        """
+        Cuando se hace click en anterior y siguiente.
+        """
+        #self.emit("accion", widget.TOOLTIP, self.entry.get_text())
+        print "FIXME:", self.__emit_accion
+
+    def __emit_buscar(self, widget):
+        """
+        Cuando cambia el texto a buscar.
+        """
+        if widget.get_text():
+            self.anterior.set_sensitive(True)
+            self.siguiente.set_sensitive(True)
+        else:
+            self.anterior.set_sensitive(False)
+            self.siguiente.set_sensitive(False)
+        #self.emit("buscar", widget.get_text())
+        print "FiXME:", self.__emit_buscar
 
 
 class ToolbarTry(Gtk.EventBox):

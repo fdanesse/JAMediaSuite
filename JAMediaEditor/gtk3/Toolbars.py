@@ -28,7 +28,6 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GdkPixbuf
 
-from Globales import get_pixels
 from Globales import get_separador
 from Globales import get_boton
 from Globales import make_icon_active
@@ -58,41 +57,41 @@ class ToolbarProyecto(Gtk.EventBox):
         toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
-        nuevo_proyecto = get_boton(icon_path, pixels=get_pixels(0.5),
+        nuevo_proyecto = get_boton(icon_path, pixels=18,
             tooltip_text="Nuevo Proyecto")
         self.dict_proyecto["Nuevo Proyecto"] = [nuevo_proyecto,
             "document-new.svg"]
 
         icon_path = make_icon_active(os.path.join(icons, "document-open.svg"))
-        abrir_proyecto = get_boton(icon_path, pixels=get_pixels(0.5),
+        abrir_proyecto = get_boton(icon_path, pixels=18,
             tooltip_text="Abrir Proyecto")
         self.dict_proyecto["Abrir Proyecto"] = [abrir_proyecto,
             "document-open.svg"]
 
         cerrar_proyecto = get_boton(os.path.join(icons, "button-cancel.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Cerrar Proyecto")
+            pixels=18, tooltip_text="Cerrar Proyecto")
         self.dict_proyecto["Cerrar Proyecto"] = [cerrar_proyecto,
             "button-cancel.svg"]
 
         editar_proyecto = get_boton(os.path.join(icons, "gtk-edit.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Editar Proyecto")
+            pixels=18, tooltip_text="Editar Proyecto")
         self.dict_proyecto["Editar Proyecto"] = [editar_proyecto,
             "gtk-edit.svg"]
 
         guardar_proyecto = get_boton(os.path.join(icons, "document-save.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Guardar Proyecto")
+            pixels=18, tooltip_text="Guardar Proyecto")
         self.dict_proyecto["Guardar Proyecto"] = [guardar_proyecto,
             "document-save.svg"]
 
         ejecutar_proyecto = get_boton(
             os.path.join(icons, "media-playback-start.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Ejecutar Proyecto")
+            pixels=18, tooltip_text="Ejecutar Proyecto")
         self.dict_proyecto["Ejecutar Proyecto"] = [ejecutar_proyecto,
             "media-playback-start.svg"]
 
         detener_ejecucion = get_boton(
             os.path.join(icons, "media-playback-stop.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Detener Ejecución")
+            pixels=18, tooltip_text="Detener Ejecución")
         self.dict_proyecto["Detener Ejecución"] = [detener_ejecucion,
             "media-playback-stop.svg"]
 
@@ -123,6 +122,28 @@ class ToolbarProyecto(Gtk.EventBox):
     def __emit_accion(self, widget):
         self.emit("accion", widget.TOOLTIP)
 
+    def __activar(self, key):
+        option, icon = self.dict_proyecto[key]
+        if not option.get_sensitive():
+            icon_path = make_icon_active(os.path.join(icons, icon))
+            pixels = 18
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, pixels, pixels)
+            imagen = option.get_icon_widget()
+            imagen.set_from_pixbuf(pixbuf)
+            option.set_sensitive(True)
+
+    def __desactivar(self, key):
+        option, icon = self.dict_proyecto[key]
+        if option.get_sensitive():
+            icon_path = os.path.join(icons, icon)
+            pixels = 18
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, pixels, pixels)
+            imagen = option.get_icon_widget()
+            imagen.set_from_pixbuf(pixbuf)
+            option.set_sensitive(False)
+
     def activar_ejecucion(self, ejecucion):
         """
         Activa y desactiva opción de ejecución de proyecto.
@@ -144,28 +165,6 @@ class ToolbarProyecto(Gtk.EventBox):
             map(self.__activar, self.dict_proyecto.keys()[2:])
         else:
             map(self.__desactivar, self.dict_proyecto.keys()[2:])
-
-    def __activar(self, key):
-        option, icon = self.dict_proyecto[key]
-        if not option.get_sensitive():
-            icon_path = make_icon_active(os.path.join(icons, icon))
-            pixels = get_pixels(0.5)
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                icon_path, pixels, pixels)
-            imagen = option.get_icon_widget()
-            imagen.set_from_pixbuf(pixbuf)
-            option.set_sensitive(True)
-
-    def __desactivar(self, key):
-        option, icon = self.dict_proyecto[key]
-        if option.get_sensitive():
-            icon_path = os.path.join(icons, icon)
-            pixels = get_pixels(0.5)
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                icon_path, pixels, pixels)
-            imagen = option.get_icon_widget()
-            imagen.set_from_pixbuf(pixbuf)
-            option.set_sensitive(False)
 
 
 class ToolbarArchivo(Gtk.EventBox):
@@ -190,64 +189,64 @@ class ToolbarArchivo(Gtk.EventBox):
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         nuevo_archivo = get_boton(os.path.join(icons, icon_path),
-            pixels=get_pixels(0.5), tooltip_text="Nuevo Archivo")
+            pixels=18, tooltip_text="Nuevo Archivo")
         self.dict_archivo["Nuevo Archivo"] = [nuevo_archivo,
             "document-new.svg"]
 
         icon_path = make_icon_active(os.path.join(icons, "document-open.svg"))
         abrir_archivo = get_boton(os.path.join(icons, icon_path),
-            pixels=get_pixels(0.5), tooltip_text="Abrir Archivo")
+            pixels=18, tooltip_text="Abrir Archivo")
         self.dict_archivo["Abrir Archivo"] = [abrir_archivo,
             "document-open.svg"]
 
         guardar_archivo = get_boton(os.path.join(icons, "document-save.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Guardar Archivo")
+            pixels=18, tooltip_text="Guardar Archivo")
         self.dict_archivo["Guardar Archivo"] = [guardar_archivo,
             "document-save.svg"]
 
         icon_path = make_icon_active(
             os.path.join(icons, "document-save-as.svg"))
         guardar_como = get_boton(os.path.join(icons, icon_path),
-            pixels=get_pixels(0.5), tooltip_text="Guardar Como")
+            pixels=18, tooltip_text="Guardar Como")
         self.dict_archivo["Guardar Como"] = [guardar_como,
             "document-save-as.svg"]
 
         icon_path = make_icon_active(
             os.path.join(icons, "media-playback-start.svg"))
         ejecutar = get_boton(os.path.join(icons, icon_path),
-            pixels=get_pixels(0.5), tooltip_text="Ejecutar Archivo")
+            pixels=18, tooltip_text="Ejecutar Archivo")
         self.dict_archivo["Ejecutar Archivo"] = [ejecutar,
             "media-playback-start.svg"]
 
         detener = get_boton(
             os.path.join(icons, "media-playback-stop.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Detener Ejecución")
+            pixels=18, tooltip_text="Detener Ejecución")
         self.dict_archivo["Detener Ejecución"] = [detener,
             "media-playback-stop.svg"]
 
         deshacer = get_boton(os.path.join(icons, "edit-undo.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Deshacer")
+            pixels=18, tooltip_text="Deshacer")
         self.dict_archivo["Deshacer"] = [deshacer, "edit-undo.svg"]
 
         rehacer = get_boton(os.path.join(icons, "edit-redo.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Rehacer")
+            pixels=18, tooltip_text="Rehacer")
         self.dict_archivo["Rehacer"] = [rehacer, "edit-redo.svg"]
 
         copiar = get_boton(os.path.join(icons, "edit-copy.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Copiar")
+            pixels=18, tooltip_text="Copiar")
         self.dict_archivo["Copiar"] = [copiar, "edit-copy.svg"]
 
         cortar = get_boton(os.path.join(icons, "editcut.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Cortar")
+            pixels=18, tooltip_text="Cortar")
         self.dict_archivo["Cortar"] = [cortar, "editcut.svg"]
 
         pegar = get_boton(os.path.join(icons, "editpaste.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Pegar")
+            pixels=18, tooltip_text="Pegar")
         self.dict_archivo["Pegar"] = [pegar, "editpaste.svg"]
 
         seleccionar_todo = get_boton(
             os.path.join(icons, "edit-select-all.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Seleccionar Todo")
+            pixels=18, tooltip_text="Seleccionar Todo")
         self.dict_archivo["Seleccionar Todo"] = [seleccionar_todo,
             "edit-select-all.svg"]
 
@@ -280,6 +279,28 @@ class ToolbarArchivo(Gtk.EventBox):
 
     def __emit_accion(self, widget):
         self.emit("accion", widget.TOOLTIP)
+
+    def __activar(self, item):
+        option, icon = item
+        if not option.get_sensitive():
+            icon_path = make_icon_active(os.path.join(icons, icon))
+            pixels = 18
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, pixels, pixels)
+            imagen = option.get_icon_widget()
+            imagen.set_from_pixbuf(pixbuf)
+            option.set_sensitive(True)
+
+    def __desactivar(self, item):
+        option, icon = item
+        if option.get_sensitive():
+            icon_path = os.path.join(icons, icon)
+            pixels = 18
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, pixels, pixels)
+            imagen = option.get_icon_widget()
+            imagen.set_from_pixbuf(pixbuf)
+            option.set_sensitive(False)
 
     def activar_ejecucion(self, ejecucion):
         """
@@ -342,28 +363,6 @@ class ToolbarArchivo(Gtk.EventBox):
         map(self.__activar, activar)
         map(self.__desactivar, desactivar)
 
-    def __activar(self, item):
-        option, icon = item
-        if not option.get_sensitive():
-            icon_path = make_icon_active(os.path.join(icons, icon))
-            pixels = get_pixels(0.5)
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                icon_path, pixels, pixels)
-            imagen = option.get_icon_widget()
-            imagen.set_from_pixbuf(pixbuf)
-            option.set_sensitive(True)
-
-    def __desactivar(self, item):
-        option, icon = item
-        if option.get_sensitive():
-            icon_path = os.path.join(icons, icon)
-            pixels = get_pixels(0.5)
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                icon_path, pixels, pixels)
-            imagen = option.get_icon_widget()
-            imagen.set_from_pixbuf(pixbuf)
-            option.set_sensitive(False)
-
 
 class ToolbarBusquedas(Gtk.EventBox):
 
@@ -387,31 +386,29 @@ class ToolbarBusquedas(Gtk.EventBox):
         toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
 
         self.anterior = get_boton(os.path.join(icons, "go-next-rtl.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Anterior")
+            pixels=18, tooltip_text="Anterior")
         self.anterior.connect("clicked", self.__emit_accion)
         toolbar.insert(self.anterior, - 1)
 
         item = Gtk.ToolItem()
         item.set_expand(True)
-
         self.entry = Gtk.Entry()
         self.entry.show()
-
+        self.entry.connect("changed", self.__emit_buscar)
         item.add(self.entry)
         toolbar.insert(item, - 1)
 
         self.siguiente = get_boton(os.path.join(icons, "go-next.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Siguiente")
+            pixels=18, tooltip_text="Siguiente")
         self.siguiente.connect("clicked", self.__emit_accion)
         toolbar.insert(self.siguiente, - 1)
 
         self.informe = get_boton(os.path.join(icons, "go-next.svg"),
-            pixels=get_pixels(0.5), tooltip_text="Obtener Copia",
+            pixels=18, tooltip_text="Obtener Copia",
             rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE)
         self.informe.connect("clicked", self.__emit_informe)
         toolbar.insert(self.informe, - 1)
 
-        self.entry.connect("changed", self.__emit_buscar)
         self.add(toolbar)
         self.show_all()
 
