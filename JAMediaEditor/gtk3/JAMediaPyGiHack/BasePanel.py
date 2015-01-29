@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
+import commands
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import WebKit
@@ -34,6 +34,7 @@ from ApiWidget import ApiWidget
 from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
+ICONOS = os.path.join(os.path.dirname(__file__), "Iconos")
 
 
 def get_pixels(centimetros):
@@ -108,7 +109,7 @@ class BasePanel(Gtk.Paned):
     def __do_realize(self, widget):
         self.set_accion("ver", "Terminal", False)
         self.set_accion("ver", "Apis PyGiHack", True)
-        self.base_notebook.import_modulo("python-gi", "Gtk")
+        #self.base_notebook.import_modulo("python-gi", "Gtk")
 
     def set_accion(self, menu, wid_lab, valor):
         if menu == "ver":
@@ -236,7 +237,6 @@ class IntrospectionPanel(Gtk.Paned):
             objeto, gdoc, doc, _type, modulo_path, tipo = tupla
             doc = str(doc).replace("[", "").replace("]", "").replace(
                 ",", "\n").replace("u'", "").replace("'", "")
-
         else:
             self.infonotebook.set_gdoc('')
             self.infonotebook.set_doc('')
@@ -254,13 +254,11 @@ class IntrospectionPanel(Gtk.Paned):
             if f.split(".")[-1] == 'html':
                 os.remove(os.path.join('/dev/shm', f))
 
-        import commands
         if tipo == "python-gi":
             if modulo == "gi":
                 arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_doc.py")
                 commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))
                 arch = os.path.join('/dev/shm', "Make_doc.py")
-
             else:
                 arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_gi_doc.py")
                 commands.getoutput('cp %s %s' % (arch0, '/dev/shm'))

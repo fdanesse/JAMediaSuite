@@ -20,7 +20,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
+import commands
+import json
+import codecs
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
@@ -49,8 +51,7 @@ class ApiWidget(Gtk.TreeView):
 
         self.add_events(
             Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.KEY_PRESS_MASK |
-            Gdk.EventMask.TOUCH_MASK)
+            Gdk.EventMask.KEY_PRESS_MASK)
 
         self.set_property("enable-grid-lines", True)
         self.set_property("rules-hint", True)
@@ -89,28 +90,21 @@ class ApiWidget(Gtk.TreeView):
         tecla = event.get_keycode()[1]
         model, _iter = self.get_selection().get_selected()
         path = self.get_model().get_path(_iter)
-
         if tecla == 22:
             if self.row_expanded(path):
                 self.collapse_row(path)
-
         elif tecla == 113:
             if self.row_expanded(path):
                 self.collapse_row(path)
-
         elif tecla == 114:
             if not self.row_expanded(path):
                 self.expand_to_path(path)
-
         return False
 
     def __activar(self, treeview, path, view_column, user_param1):
         """
         Cuando se hace doble click en "Clases", "Funciones", etc . . .
         """
-        #iter = treeview.get_model().get_iter(path)
-        #valor = treeview.get_model().get_value(iter, 1)
-
         if treeview.row_expanded(path):
             treeview.collapse_row(path)
         elif not treeview.row_expanded(path):
@@ -123,12 +117,10 @@ class ApiWidget(Gtk.TreeView):
         """
         _iter = modelo.get_iter(path)
         datos = modelo.get_value(_iter, 1)
-
         if not is_selected and self.old_update != datos:
             self.old_update = datos
             self.emit('update', self.objetos.get(datos, {}))
             self.scroll_to_cell(path)
-
         return True
 
     def __load(self, tipo, modulo):
@@ -137,11 +129,6 @@ class ApiWidget(Gtk.TreeView):
         (Clases, funciones, constantes y otros.)
         """
         self.get_model().clear()
-
-        import commands
-        import json
-        import codecs
-
         self.objetos = {}
         if tipo == "python-gi":
             if modulo == "gi":
@@ -150,7 +137,6 @@ class ApiWidget(Gtk.TreeView):
             else:
                 ejecutable = os.path.join(BASE_PATH,
                     'SpyderHack', 'Dir_Gi_Modulo.py')
-
         elif tipo == "python" or tipo == "Otros":
             ejecutable = os.path.join(BASE_PATH,
                 'SpyderHack', 'Dir_Modulo.py')

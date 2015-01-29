@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import commands
 
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -279,7 +280,6 @@ class Menu(Gtk.MenuBar):
             self.emit("accion-menu", menu, label.get_text(), valor)
 
     def __emit_import(self, widget, menu):
-        import commands
         disponible = False
         if menu == "python-gi":
             if widget.get_label() == "gi":
@@ -288,15 +288,12 @@ class Menu(Gtk.MenuBar):
             else:
                 ejecutable = os.path.join(BASE_PATH,
                     "SpyderHack", "Gi_Check.py")
-
         elif menu == "python":
             ejecutable = os.path.join(BASE_PATH,
                 "SpyderHack", "Check.py")
-
         elif menu == "Otros":
             ejecutable = os.path.join(BASE_PATH,
                 "SpyderHack", "Check.py")
-
         else:
             return
 

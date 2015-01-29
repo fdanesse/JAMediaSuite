@@ -23,7 +23,7 @@ import os
 import sys
 import gtk
 
-#from sugar.activity import activity
+from sugar.activity import activity
 
 from Toolbars import ToolbarSalir
 from Toolbars import Toolbar
@@ -41,17 +41,11 @@ BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 ICONOS = os.path.join(BASE_PATH, "Iconos")
 
 
-#class Ventana(activity.Activity):
+class Ventana(activity.Activity):
 
-#    def __init__(self, handle):
+    def __init__(self, handle):
 
-#        activity.Activity.__init__(self, handle, False)
-
-class Ventana(gtk.Window):
-
-    def __init__(self):
-
-        gtk.Window.__init__(self)
+        activity.Activity.__init__(self, handle, False)
 
         self.set_title("JAMediaExplorer")
         self.set_icon_from_file(os.path.join(ICONOS, "JAMediaExplorer.svg"))
@@ -75,9 +69,7 @@ class Ventana(gtk.Window):
         vbox.pack_start(self.navegador, True, True, 0)
         vbox.pack_end(self.toolbar_try, False, False, 0)
 
-        #self.set_canvas(vbox)
-        self.add(vbox)
-
+        self.set_canvas(vbox)
         self.show_all()
         self.realize()
 
@@ -187,15 +179,10 @@ class Ventana(gtk.Window):
         self.navegador.infowidget.set_info(texto, typeinfo)
 
     def __salir(self, widget=None, senial=None):
-        #notebook = self.navegador.notebookdirectorios
-        #paginas = notebook.get_n_pages()
-        #for indice in range(paginas):
-        #    pags = notebook.get_children()
-        #    pags[indice].get_child().new_handle(False)
+        notebook = self.navegador.notebookdirectorios
+        paginas = notebook.get_n_pages()
+        pags = notebook.get_children()
+        for indice in range(paginas):
+            pags[indice].get_child().new_handle(False)
         sys.exit(0)
         gtk.main_quit()
-
-
-if __name__ == "__main__":
-    Ventana()
-    gtk.main()
