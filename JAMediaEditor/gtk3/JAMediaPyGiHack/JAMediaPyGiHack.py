@@ -25,14 +25,12 @@ from gi.repository import Gtk
 from gi.repository import GObject
 
 from Widgets import Toolbar
-from BasePanel import BasePanel
+from BaseBox import BaseBox
 
 BASE_PATH = os.path.dirname(__file__)
 
 
-class JAMediaPyGiHack(Gtk.EventBox):
-
-    __gtype_name__ = 'JAMediaPyGiHack'
+class JAMediaPyGiHack(Gtk.Box):
 
     __gsignals__ = {
     'salir': (GObject.SIGNAL_RUN_LAST,
@@ -40,38 +38,32 @@ class JAMediaPyGiHack(Gtk.EventBox):
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
-
-        vbox = Gtk.VBox()
+        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
 
         self.toolbar = Toolbar()
-        vbox.pack_start(self.toolbar, False, False, 0)
+        self.pack_start(self.toolbar, False, False, 0)
 
-        self.base_panel = BasePanel()
-        vbox.pack_start(self.base_panel, True, True, 0)
+        self.basebox = BaseBox()
+        self.pack_start(self.basebox, True, True, 0)
 
-        self.add(vbox)
         self.show_all()
 
         self.toolbar.connect("import", self.__import)
         self.toolbar.connect("accion-menu", self.__set_accion)
         self.toolbar.connect("salir", self.__emit_salir)
-        self.base_panel.connect("update", self.__update)
+        self.basebox.connect("update", self.__update)
 
     def __emit_salir(self, widget):
         self.emit('salir')
 
     def __update(self, widget, view):
-        if view == "Terminal":
-            pass
-        elif view == "Gstreamer - Inspect 1.0" or view == "Apis PyGiHack":
-            self.toolbar.update(view)
+        self.toolbar.update(view)
 
     def __set_accion(self, widget, menu, wid_lab, valor):
-        self.base_panel.set_accion(menu, wid_lab, valor)
+        self.basebox.set_accion(menu, wid_lab, valor)
 
     def __import(self, widget, paquete, modulo):
-        self.base_panel.import_modulo(paquete, modulo)
+        self.basebox.import_modulo(paquete, modulo)
 
 
 class Ventana(Gtk.Window):
@@ -83,8 +75,6 @@ class Ventana(Gtk.Window):
         Gtk.Window.__init__(self)
 
         self.set_title("JAMediaPygiHack")
-        self.set_icon_from_file(os.path.join(BASE_PATH,
-            "Iconos", "PygiHack.svg"))
 
         self.set_resizable(True)
         self.set_size_request(640, 480)

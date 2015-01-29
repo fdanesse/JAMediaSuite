@@ -25,7 +25,6 @@ from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import WebKit
 
-from JAMediaTerminal.Terminal import Terminal
 from JAMediaGstreamer.JAMediaGstreamer import JAMediaGstreamer
 
 from Widgets import ToolbarTry
@@ -37,48 +36,7 @@ BASE_PATH = os.path.dirname(__file__)
 ICONOS = os.path.join(os.path.dirname(__file__), "Iconos")
 
 
-def get_pixels(centimetros):
-    """
-    Recibe un tamaño en centimetros y
-    devuelve el tamaño en pixels que le corresponde,
-    según tamaño del monitor que se está utilizando.
-
-    # 1 px = 0.026458333 cm #int(centimetros/0.026458333)
-    # 1 Pixel = 0.03 Centimetros = 0.01 Pulgadas.
-    """
-    """
-    from gi.repository import GdkX11
-
-    screen = GdkX11.X11Screen()
-
-    res_w = screen.width()
-    res_h = screen.height()
-
-    mm_w = screen.width_mm()
-    mm_h = screen.height_mm()
-
-    ancho = int (float(res_w) / float(mm_w) * 10.0 * centimetros)
-    alto = int (float(res_h) / float(mm_h) * 10.0 * centimetros)
-    if centimetros == 5.0: print ">>>>", centimetros, int(min([ancho, alto]))
-    return int(min([ancho, alto]))"""
-
-    res = {
-        1.0: 37,
-        1.2: 45,
-        0.5: 18,
-        0.2: 7,
-        0.5: 18,
-        0.6: 22,
-        0.8: 30,
-        5.0: 189,
-        }
-
-    return res[centimetros]
-
-
-class BasePanel(Gtk.Paned):
-
-    __gtype_name__ = 'PygiHackBasePanel'
+class BaseBox(Gtk.Box):
 
     __gsignals__ = {
     "update": (GObject.SIGNAL_RUN_LAST,
@@ -86,47 +44,28 @@ class BasePanel(Gtk.Paned):
 
     def __init__(self):
 
-        Gtk.Paned.__init__(self, orientation=Gtk.Orientation.VERTICAL)
-
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
 
         self.base_notebook = BaseNotebook()
         self.jamedia_gstreamer = JAMediaGstreamer()
 
-        vbox.pack_start(self.base_notebook, True, True, 0)
-        vbox.pack_end(self.jamedia_gstreamer, True, True, 0)
+        self.pack_start(self.base_notebook, True, True, 0)
+        self.pack_end(self.jamedia_gstreamer, True, True, 0)
 
-        self.pack1(vbox, resize=True, shrink=False)
-
-        self.terminal = Terminal()
-        self.terminal.set_size_request(-1, 200)
-        self.pack2(self.terminal, resize=False, shrink=False)
-
+        self.connect("realize", self.__realize)
         self.show_all()
 
-        self.connect("realize", self.__do_realize)
-
-    def __do_realize(self, widget):
-        self.set_accion("ver", "Terminal", False)
+    def __realize(self, widget):
         self.set_accion("ver", "Apis PyGiHack", True)
-        #self.base_notebook.import_modulo("python-gi", "Gtk")
 
     def set_accion(self, menu, wid_lab, valor):
         if menu == "ver":
-            if wid_lab == "Terminal":
-                if valor == True:
-                    self.terminal.show()
-                elif valor == False:
-                    self.terminal.hide()
-
-            elif wid_lab == "Gstreamer - Inspect 1.0":
+            if wid_lab == "Gstreamer - Inspect 1.0":
                 self.base_notebook.hide()
                 self.jamedia_gstreamer.show()
-
             elif wid_lab == "Apis PyGiHack":
                 self.jamedia_gstreamer.hide()
                 self.base_notebook.show()
-
             self.emit("update", wid_lab)
 
     def import_modulo(self, paquete, modulo):
@@ -143,7 +82,6 @@ class BaseNotebook(Gtk.Notebook):
 
         self.set_scrollable(True)
         self.show_all()
-        #self.connect('switch_page', self.__switch_page)
 
     def import_modulo(self, paquete, modulo):
         """
@@ -154,7 +92,7 @@ class BaseNotebook(Gtk.Notebook):
             label = Gtk.Label(modulo)
 
             boton = get_boton(os.path.join(BASE_PATH,
-                "Iconos", "button-cancel.svg"), pixels=get_pixels(0.5),
+                "Iconos", "button-cancel.svg"), pixels=18,
                 tooltip_text="Cerrar")
 
             hbox.pack_start(label, False, False, 0)
@@ -179,7 +117,6 @@ class BaseNotebook(Gtk.Notebook):
         for indice in range(paginas):
             boton = self.get_tab_label(
                 self.get_children()[indice]).get_children()[1]
-
             if boton == widget:
                 self.remove_page(indice)
                 return
@@ -263,7 +200,6 @@ class IntrospectionPanel(Gtk.Paned):
                 arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_gi_doc.py")
                 commands.getoutput('cp %s %s' % (arch0, '/tmp'))
                 arch = os.path.join('/tmp', "Make_gi_doc.py")
-
         elif tipo == "python" or tipo == "Otros":
             arch0 = os.path.join(BASE_PATH, "SpyderHack", "Make_doc.py")
             commands.getoutput('cp %s %s' % (arch0, '/tmp'))
@@ -279,7 +215,6 @@ class IntrospectionPanel(Gtk.Paned):
                 arch = open(archivo, "r")
                 text = arch.read()
                 arch.close()
-
                 if text:
                     webdoc = archivo
 
@@ -307,7 +242,6 @@ class InfoNotebook(Gtk.Notebook):
         self.webview = WebKit.WebView()
         self.webview.set_settings(WebKit.WebSettings())
         self.webview.set_zoom_level(0.8)
-        #buffer.set_text("%s-%s" % (paquete, modulo))
         scroll.add(self.webview)
         self.append_page(scroll, label)
 
@@ -318,7 +252,6 @@ class InfoNotebook(Gtk.Notebook):
         self.gdoc = Gtk.TextView()
         self.gdoc.set_editable(False)
         self.gdoc.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
-        #buffer.set_text("%s-%s" % (paquete, modulo))
         scroll.add(self.gdoc)
         self.append_page(scroll, label)
 
@@ -329,7 +262,6 @@ class InfoNotebook(Gtk.Notebook):
         self.doc = Gtk.TextView()
         self.doc.set_editable(False)
         self.doc.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
-        #buffer.set_text("%s-%s" % (paquete, modulo))
         scroll.add(self.doc)
         self.append_page(scroll, label)
 

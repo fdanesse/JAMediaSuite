@@ -21,7 +21,6 @@
 
 import os
 import commands
-
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
@@ -29,7 +28,6 @@ from gi.repository import GObject
 BASE_PATH = os.path.dirname(__file__)
 
 from Globales import get_dict
-#from Globales import set_dict
 from Globales import get_separador
 from Globales import get_boton
 
@@ -57,12 +55,6 @@ class Toolbar(Gtk.EventBox):
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
         toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
 
-        archivo = os.path.join(BASE_PATH, "Iconos", "PygiHack.svg")
-        boton = get_boton(archivo, flip=False, pixels=32)
-        boton.set_tooltip_text("Créditos")
-        boton.connect("clicked", self.__show_credits)
-        toolbar.insert(boton, -1)
-
         item = Gtk.ToolItem()
         item.set_expand(True)
         self.menu = Menu()
@@ -86,19 +78,14 @@ class Toolbar(Gtk.EventBox):
     def __emit_salir(self, widget):
         self.emit('salir')
 
-    def update(self, view):
-        self.menu.update(view)
-
     def __emit_accion_menu(self, widget, menu, wid_lab, valor):
         self.emit("accion-menu", menu, wid_lab, valor)
 
     def __emit_import(self, widget, paquete, modulo):
         self.emit("import", paquete, modulo)
 
-    def __show_credits(self, widget):
-        dialog = Credits(self.get_toplevel())
-        dialog.run()
-        dialog.destroy()
+    def update(self, view):
+        self.menu.update(view)
 
 
 class ToolbarTry(Gtk.EventBox):
@@ -149,7 +136,7 @@ class Menu(Gtk.MenuBar):
 
         Gtk.MenuBar.__init__(self)
 
-        dict = get_dict()
+        _dict = get_dict()
 
         ### Items del Menú Abrir
         self.item_abrir = Gtk.MenuItem('Importar')
@@ -159,72 +146,39 @@ class Menu(Gtk.MenuBar):
 
         item = Gtk.MenuItem('python')
         menu_abrir.append(item)
-        if dict.get('python', False):
+        if _dict.get('python', False):
             m = Gtk.Menu()
             item.set_submenu(m)
-            for key in dict.get('python', []):
+            for key in _dict.get('python', []):
                 i = Gtk.MenuItem(key)
                 i.connect("activate", self.__emit_import, 'python')
                 m.append(i)
 
         item = Gtk.MenuItem('python-gi')
         menu_abrir.append(item)
-        if dict.get('python-gi', False):
+        if _dict.get('python-gi', False):
             m = Gtk.Menu()
             item.set_submenu(m)
-            for key in dict.get('python-gi', []):
+            for key in _dict.get('python-gi', []):
                 i = Gtk.MenuItem(key)
                 i.connect("activate", self.__emit_import, 'python-gi')
                 m.append(i)
 
         item = Gtk.MenuItem('Otros')
         menu_abrir.append(item)
-        if dict.get('Otros', False):
+        if _dict.get('Otros', False):
             m = Gtk.Menu()
             item.set_submenu(m)
-            for key in dict.get('Otros', []):
+            for key in _dict.get('Otros', []):
                 i = Gtk.MenuItem(key)
                 i.connect("activate", self.__emit_import, 'Otros')
                 m.append(i)
-
-        ### Items del Menú Agregar
-        #item_agregar = Gtk.MenuItem('Agregar Opción de ...')
-        #menu_agregar = Gtk.Menu()
-        #item_agregar.set_submenu(menu_agregar)
-        #self.append(item_agregar)
-
-        #item = Gtk.MenuItem('python')
-        #item.connect("activate", self.__set_add_menu)
-        #menu_agregar.append(item)
-
-        #item = Gtk.MenuItem('python-gi')
-        #item.connect("activate", self.__set_add_menu)
-        #menu_agregar.append(item)
-
-        #item = Gtk.MenuItem('Otros')
-        #item.connect("activate", self.__set_add_menu)
-        #menu_agregar.append(item)
 
         ### Items del Menú Ver
         item_ver = Gtk.MenuItem('Ver')
         menu_ver = Gtk.Menu()
         item_ver.set_submenu(menu_ver)
         self.append(item_ver)
-
-        item = Gtk.MenuItem('Terminal')
-        try:
-            item.get_child().destroy()
-        except:
-            pass
-        hbox = Gtk.HBox()
-        boton = Gtk.CheckButton()
-        boton.set_active(False)
-        hbox.pack_start(boton, False, False, 0)
-        label = Gtk.Label("Terminal")
-        hbox.pack_start(label, False, False, 5)
-        item.add(hbox)
-        item.connect("activate", self.__emit_accion_menu, "ver")
-        menu_ver.append(item)
 
         item = Gtk.MenuItem('Apis PyGiHack')
         try:
@@ -259,12 +213,6 @@ class Menu(Gtk.MenuBar):
         menu_ver.append(item)
 
         self.show_all()
-
-    def update(self, view):
-        if view == "Gstreamer - Inspect 1.0":
-            self.item_abrir.set_sensitive(False)
-        elif view == "Apis PyGiHack":
-            self.item_abrir.set_sensitive(True)
 
     def __emit_accion_menu(self, widget, menu):
         valor = not widget.get_children()[0].get_children()[0].get_active()
@@ -325,21 +273,8 @@ class Menu(Gtk.MenuBar):
     def __set_add_menu(self, widget):
         print "Agregar un Item en:", widget.get_label()
 
-
-class Credits(Gtk.Dialog):
-
-    __gtype_name__ = 'PyGiHackCredits'
-
-    def __init__(self, parent=None):
-
-        Gtk.Dialog.__init__(self, parent=parent, flags=Gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
-
-        self.set_border_width(15)
-
-        imagen = Gtk.Image()
-        imagen.set_from_file(os.path.join(BASE_PATH,
-            "Iconos", "PyGiHackCredits.svg"))
-
-        self.vbox.pack_start(imagen, True, True, 0)
-        self.vbox.show_all()
+    def update(self, view):
+        if view == "Gstreamer - Inspect 1.0":
+            self.item_abrir.set_sensitive(False)
+        elif view == "Apis PyGiHack":
+            self.item_abrir.set_sensitive(True)
