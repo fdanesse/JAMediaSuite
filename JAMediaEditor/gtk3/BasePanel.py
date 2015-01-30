@@ -35,7 +35,7 @@ from InfoNotebook import InfoNotebook
 from WorkPanel import WorkPanel
 from Toolbars import ToolbarProyecto
 from Toolbars import ToolbarArchivo
-from Toolbars import ToolbarBusquedas
+from JAMediaPyGiHack.Widgets import ToolbarBusquedas
 from Widgets import Multiple_FileChooser
 from DialogoProyecto import DialogoProyecto
 from Widgets import My_FileChooser
@@ -73,13 +73,13 @@ class BasePanel(Gtk.Paned):
 
         self.toolbarproyecto = ToolbarProyecto()
         self.toolbararchivo = ToolbarArchivo()
-        toolbarbusquedas = ToolbarBusquedas()
+        self.toolbarbusquedas = ToolbarBusquedas()
 
         self.infonotebook_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         self.infonotebook_box.pack_start(self.toolbarproyecto, False, False, 0)
         self.infonotebook_box.pack_start(self.infonotebook, True, True, 0)
-        self.infonotebook_box.pack_end(toolbarbusquedas, False, False, 0)
+        self.infonotebook_box.pack_end(self.toolbarbusquedas, False, False, 0)
 
         workpanel_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         workpanel_box.pack_start(self.toolbararchivo, False, False, 0)
@@ -98,9 +98,9 @@ class BasePanel(Gtk.Paned):
         self.toolbararchivo.connect('accion', self.set_accion_archivo)
         self.toolbarproyecto.connect('accion', self.set_accion_proyecto)
 
-        toolbarbusquedas.connect("buscar", self.__buscar)
-        toolbarbusquedas.connect("accion", self.__buscar_mas)
-        toolbarbusquedas.connect("informe", self.__informar)
+        self.toolbarbusquedas.connect("buscar", self.__buscar)
+        self.toolbarbusquedas.connect("accion", self.__buscar_mas)
+        self.toolbarbusquedas.connect("informe", self.__informar)
 
         self.infonotebook.connect('new_select', self.__set_linea)
         self.infonotebook.connect('open', self.__abrir_archivo)
