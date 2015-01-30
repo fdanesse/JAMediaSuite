@@ -237,6 +237,7 @@ class BasePanel(Gtk.Paned):
             text = _buffer.get_text(inicio, fin, 0)
         # Setear Introspeción.
         self.infonotebook.set_introspeccion(nombre, text, view, tipo)
+        self.toolbarbusquedas.activar(bool(text))
         GLib.idle_add(self.__set_estructura, view, tipo)
 
     def __set_estructura(self, view, tipo):

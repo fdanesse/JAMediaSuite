@@ -337,6 +337,8 @@ class ToolbarBusquedas(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
+        self.activo = False
+
         toolbar = Gtk.Toolbar()
         toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#f0e6aa'))
         toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
@@ -369,8 +371,10 @@ class ToolbarBusquedas(Gtk.EventBox):
         self.add(toolbar)
         self.show_all()
 
-        self.anterior.set_sensitive(False)
-        self.siguiente.set_sensitive(False)
+        self.anterior.set_sensitive(self.activo)
+        self.siguiente.set_sensitive(self.activo)
+        self.informe.set_sensitive(self.activo)
+        self.set_sensitive(self.activo)
 
     def __emit_informe(self, widget):
         self.emit("informe")
@@ -379,7 +383,9 @@ class ToolbarBusquedas(Gtk.EventBox):
         """
         Cuando se hace click en anterior y siguiente.
         """
-        self.emit("accion", widget.TOOLTIP, self.entry.get_text())
+        text = self.entry.get_text()
+        if text:
+            self.emit("accion", widget.TOOLTIP, text)
 
     def __emit_buscar(self, widget):
         """
@@ -392,3 +398,12 @@ class ToolbarBusquedas(Gtk.EventBox):
             self.anterior.set_sensitive(False)
             self.siguiente.set_sensitive(False)
         self.emit("buscar", widget.get_text())
+
+    def activar(self, valor):
+        self.activo = valor
+        if not self.activo:
+            self.entry.set_text("")
+        self.anterior.set_sensitive(self.activo)
+        self.siguiente.set_sensitive(self.activo)
+        self.informe.set_sensitive(self.activo)
+        self.set_sensitive(self.activo)
