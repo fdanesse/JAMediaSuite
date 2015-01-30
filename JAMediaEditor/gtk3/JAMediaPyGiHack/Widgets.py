@@ -46,6 +46,13 @@ class Toolbar(Gtk.EventBox):
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING, GObject.TYPE_BOOLEAN)),
     'salir': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, []),
+    "accion": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING)),
+    "buscar": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    "informe": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
     def __init__(self):
@@ -101,15 +108,13 @@ class Toolbar(Gtk.EventBox):
         self.emit("import", paquete, modulo)
 
     def __emit_informe(self, widget):
-        #self.emit("informe")
-        print "FIXME:", self.__emit_informe
+        self.emit("informe")
 
     def __emit_accion(self, widget):
         """
         Cuando se hace click en anterior y siguiente.
         """
-        #self.emit("accion", widget.TOOLTIP, self.entry.get_text())
-        print "FIXME:", self.__emit_accion
+        self.emit("accion", widget.TOOLTIP, self.entry.get_text())
 
     def __emit_buscar(self, widget):
         """
@@ -121,8 +126,7 @@ class Toolbar(Gtk.EventBox):
         else:
             self.anterior.set_sensitive(False)
             self.siguiente.set_sensitive(False)
-        #self.emit("buscar", widget.get_text())
-        print "FiXME:", self.__emit_buscar
+        self.emit("buscar", widget.get_text())
 
     def update(self, view):
         self.menu.update(view)
@@ -337,38 +341,35 @@ class ToolbarBusquedas(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
+        self.set_border_width(5)
+
         self.activo = False
 
-        toolbar = Gtk.Toolbar()
-        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#f0e6aa'))
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
-        item = Gtk.ToolItem()
-        item.set_expand(True)
         self.entry = Gtk.Entry()
         self.entry.show()
         self.entry.connect("changed", self.__emit_buscar)
-        item.add(self.entry)
-        toolbar.insert(item, - 1)
+        hbox.pack_start(self.entry, False, False, 0)
 
         self.anterior = get_boton(os.path.join(ICONOS, "go-next.svg"),
             pixels=18, tooltip_text="Buscar Anterior",
             rotacion=GdkPixbuf.PixbufRotation.COUNTERCLOCKWISE)
         self.anterior.connect("clicked", self.__emit_accion)
-        toolbar.insert(self.anterior, - 1)
+        hbox.pack_start(self.anterior, False, False, 0)
 
         self.siguiente = get_boton(os.path.join(ICONOS, "go-next.svg"),
             pixels=18, tooltip_text="Buscar Siguiente",
             rotacion=GdkPixbuf.PixbufRotation.CLOCKWISE)
         self.siguiente.connect("clicked", self.__emit_accion)
-        toolbar.insert(self.siguiente, - 1)
+        hbox.pack_start(self.siguiente, False, False, 0)
 
         self.informe = get_boton(os.path.join(ICONOS, "document-new.svg"),
             pixels=18, tooltip_text="Obtener Estructura")
         self.informe.connect("clicked", self.__emit_informe)
-        toolbar.insert(self.informe, - 1)
+        hbox.pack_start(self.informe, False, False, 0)
 
-        self.add(toolbar)
+        self.add(hbox)
         self.show_all()
 
         self.anterior.set_sensitive(self.activo)
@@ -403,7 +404,5 @@ class ToolbarBusquedas(Gtk.EventBox):
         self.activo = valor
         if not self.activo:
             self.entry.set_text("")
-        self.anterior.set_sensitive(self.activo)
-        self.siguiente.set_sensitive(self.activo)
         self.informe.set_sensitive(self.activo)
         self.set_sensitive(self.activo)

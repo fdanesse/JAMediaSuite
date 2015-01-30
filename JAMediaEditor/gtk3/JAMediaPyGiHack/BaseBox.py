@@ -74,6 +74,43 @@ class BaseBox(Gtk.Box):
         self.set_accion("ver", "Apis PyGiHack", True)
         self.base_notebook.import_modulo(paquete, modulo)
 
+    def buscar(self, texto):
+        # Recibe el texto a buscar.
+        #self.seleccionado_actual = 0
+        #self.infonotebook.buscar(texto)
+        print self.buscar
+
+    def buscar_mas(self, accion, texto):
+        # Cuando se hace click en anterior o siguiente en toolbar de busquedas.
+        #self.infonotebook.buscar(texto)
+        #if self.infonotebook.get_current_page() == 0:
+        #    tree = self.infonotebook.introspeccion
+        #    seleccion = self.infonotebook.introspeccion.get_selection()
+        #    posibles = self.infonotebook.introspeccion.posibles
+        #else:
+        #    tree = self.infonotebook.estructura_proyecto
+        #    seleccion = self.infonotebook.estructura_proyecto.get_selection()
+        #    posibles = self.infonotebook.estructura_proyecto.posibles
+
+        #if accion == "Buscar Siguiente":
+        #    self.seleccionado_actual += 1
+        #elif accion == "Buscar Anterior":
+        #    self.seleccionado_actual -= 1
+        #else:
+        #    print "Acción Desconocida:", self.__buscar_mas
+
+        #if self.seleccionado_actual > len(posibles) - 1:
+        #    self.seleccionado_actual = 0
+        #elif self.seleccionado_actual < 0:
+        #    self.seleccionado_actual = len(posibles) - 1
+
+        #if posibles:
+        #    seleccion.select_iter(posibles[self.seleccionado_actual])
+        #    new_path = tree.get_model().get_path(
+        #        posibles[self.seleccionado_actual])
+        #    tree.scroll_to_cell(new_path)
+        print self.buscar_mas
+
 
 class BaseNotebook(Gtk.Notebook):
 

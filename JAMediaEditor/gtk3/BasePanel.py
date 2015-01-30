@@ -193,10 +193,12 @@ class BasePanel(Gtk.Paned):
             seleccion = self.infonotebook.estructura_proyecto.get_selection()
             posibles = self.infonotebook.estructura_proyecto.posibles
 
-        if accion == "Siguiente":
+        if accion == "Buscar Siguiente":
             self.seleccionado_actual += 1
-        else:
+        elif accion == "Buscar Anterior":
             self.seleccionado_actual -= 1
+        else:
+            print "Acción Desconocida:", self.__buscar_mas
 
         if self.seleccionado_actual > len(posibles) - 1:
             self.seleccionado_actual = 0

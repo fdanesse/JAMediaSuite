@@ -51,7 +51,51 @@ class JAMediaPyGiHack(Gtk.Box):
         self.toolbar.connect("import", self.__import)
         self.toolbar.connect("accion-menu", self.__set_accion)
         self.toolbar.connect("salir", self.__emit_salir)
+
+        self.toolbar.connect("buscar", self.__buscar)
+        self.toolbar.connect("accion", self.__buscar_mas)
+        self.toolbar.connect("informe", self.__informar)
+
         self.basebox.connect("update", self.__update)
+
+    def __informar(self, widget):
+        """
+        Abre nueva lengueta en Workpanel con la información de Introspección
+        del archivo seleccionado.
+        """
+        # FIXME: Continuar Desarrollo de esta funcionalidad
+        #text = ""
+        #_dict = self.infonotebook.introspeccion._dict
+        #for key in _dict:
+        #    text = "%s\n%s" % (text, _dict[key])
+        #source = GtkSource.View()
+        #source.set_insert_spaces_instead_of_tabs(True)
+        #source.set_tab_width(4)
+        #source.set_auto_indent(True)
+        #source.set_highlight_current_line(True)
+        #source.set_editable(False)
+        #source.set_border_width(5)
+        #source.set_buffer(GtkSource.Buffer())
+        #win = Gtk.Window()
+        #win.set_transient_for(self.get_toplevel())
+        #win.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#f0e6aa"))
+        #win.set_title("Informe de Introspección")
+        #win.set_border_width(5)
+        #win.set_position(Gtk.WindowPosition.CENTER)
+        #win.set_size_request(400, 400)
+        #scroll = Gtk.ScrolledWindow()
+        #scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        #scroll.add(source)
+        #source.get_buffer().set_text(text)
+        #win.add(scroll)
+        #win.show_all()
+        print self.__informar
+
+    def __buscar(self, widget, text):
+        buscar(text)
+
+    def __buscar_mas(self, widget, accion, text):
+        buscar_mas(accion, text)
 
     def __emit_salir(self, widget):
         self.emit('salir')
