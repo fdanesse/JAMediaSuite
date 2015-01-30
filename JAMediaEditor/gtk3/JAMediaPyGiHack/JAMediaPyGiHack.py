@@ -92,10 +92,10 @@ class JAMediaPyGiHack(Gtk.Box):
         print self.__informar
 
     def __buscar(self, widget, text):
-        buscar(text)
+        self.basebox.buscar(text)
 
     def __buscar_mas(self, widget, accion, text):
-        buscar_mas(accion, text)
+        self.basebox.buscar_mas(accion, text)
 
     def __emit_salir(self, widget):
         self.emit('salir')
