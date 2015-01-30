@@ -131,6 +131,9 @@ class Toolbar(Gtk.EventBox):
     def update(self, view):
         self.menu.update(view)
 
+    def activar_busquedas(self, valor):
+        self.toolbarbusquedas.activar(valor)
+
 
 class ToolbarTry(Gtk.EventBox):
 

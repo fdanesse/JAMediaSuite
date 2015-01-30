@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   BasePanel.py por:
+#   BaseBox.py por:
 #       Flavio Danesse <fdanesse@gmail.com>
 #       Uruguay
 
@@ -40,7 +40,9 @@ class BaseBox(Gtk.Box):
 
     __gsignals__ = {
     "update": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "nobusquedas": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
@@ -49,6 +51,9 @@ class BaseBox(Gtk.Box):
         self.base_notebook = False
         self.jamedia_gstreamer = False
         self.show_all()
+
+    def __re_emit_nobusquedas(self, widget):
+        self.emit("nobusquedas")
 
     def set_accion(self, menu, wid_lab, valor):
         if menu == "ver":
@@ -67,6 +72,8 @@ class BaseBox(Gtk.Box):
                 if not self.base_notebook:
                     self.base_notebook = BaseNotebook()
                     self.pack_start(self.base_notebook, True, True, 0)
+                    self.base_notebook.connect("nobusquedas",
+                        self.__re_emit_nobusquedas)
                 self.base_notebook.show()
             self.emit("update", wid_lab)
 
@@ -111,10 +118,17 @@ class BaseBox(Gtk.Box):
         #    tree.scroll_to_cell(new_path)
         print self.buscar_mas
 
+    def check_busquedas(self):
+        return self.jamedia_gstreamer or self.base_notebook
+
 
 class BaseNotebook(Gtk.Notebook):
 
     __gtype_name__ = 'PygiHackBaseNotebook'
+
+    __gsignals__ = {
+    "nobusquedas": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
 
     def __init__(self):
 
@@ -122,6 +136,20 @@ class BaseNotebook(Gtk.Notebook):
 
         self.set_scrollable(True)
         self.show_all()
+
+    def __cerrar(self, widget):
+        """
+        Elimina la Lengüeta.
+        """
+        paginas = self.get_n_pages()
+        for indice in range(paginas):
+            boton = self.get_tab_label(
+                self.get_children()[indice]).get_children()[1]
+            if boton == widget:
+                self.remove_page(indice)
+                break
+        if not self.get_n_pages():
+            self.emit("nobusquedas")
 
     def import_modulo(self, paquete, modulo):
         """
@@ -148,18 +176,6 @@ class BaseNotebook(Gtk.Notebook):
             boton.connect("clicked", self.__cerrar)
             self.set_current_page(-1)
             self.set_tab_reorderable(introspectionwidget, True)
-
-    def __cerrar(self, widget):
-        """
-        Elimina la Lengüeta.
-        """
-        paginas = self.get_n_pages()
-        for indice in range(paginas):
-            boton = self.get_tab_label(
-                self.get_children()[indice]).get_children()[1]
-            if boton == widget:
-                self.remove_page(indice)
-                return
 
 
 class IntrospectionWidget(Gtk.Box):

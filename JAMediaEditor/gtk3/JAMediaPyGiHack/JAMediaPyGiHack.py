@@ -57,6 +57,7 @@ class JAMediaPyGiHack(Gtk.Box):
         self.toolbar.connect("informe", self.__informar)
 
         self.basebox.connect("update", self.__update)
+        self.basebox.connect("nobusquedas", self.__desactivar_busquedas)
 
     def __informar(self, widget):
         """
@@ -102,6 +103,10 @@ class JAMediaPyGiHack(Gtk.Box):
 
     def __update(self, widget, view):
         self.toolbar.update(view)
+        self.toolbar.activar_busquedas(self.basebox.check_busquedas())
+
+    def __desactivar_busquedas(self, widget):
+        self.toolbar.activar_busquedas(False)
 
     def __set_accion(self, widget, menu, wid_lab, valor):
         self.basebox.set_accion(menu, wid_lab, valor)
