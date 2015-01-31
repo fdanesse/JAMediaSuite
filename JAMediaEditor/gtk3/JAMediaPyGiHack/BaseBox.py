@@ -83,9 +83,7 @@ class BaseBox(Gtk.Box):
 
     def buscar(self, texto):
         # Recibe el texto a buscar.
-        #self.seleccionado_actual = 0
-        #self.infonotebook.buscar(texto)
-        print self.buscar
+        self.base_notebook.buscar(texto)
 
     def buscar_mas(self, accion, texto):
         # Cuando se hace click en anterior o siguiente en toolbar de busquedas.
@@ -151,6 +149,10 @@ class BaseNotebook(Gtk.Notebook):
         if not self.get_n_pages():
             self.emit("nobusquedas")
 
+    def buscar(self, texto):
+        # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
+        self.get_nth_page(self.get_current_page()).buscar(texto)
+
     def import_modulo(self, paquete, modulo):
         """
         Crea una lengüeta para el módulo que se cargará.
@@ -198,6 +200,10 @@ class IntrospectionWidget(Gtk.Box):
     def __set_info_tray(self, widget, info):
         self.toolbartray.set_info(info)
 
+    def buscar(self, texto):
+        # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
+        self.introspection_panel.buscar(texto)
+
 
 class IntrospectionPanel(Gtk.Paned):
 
@@ -213,8 +219,8 @@ class IntrospectionPanel(Gtk.Paned):
 
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        apiwidget = ApiWidget(paquete, modulo)
-        scroll.add(apiwidget)
+        self.apiwidget = ApiWidget(paquete, modulo)
+        scroll.add(self.apiwidget)
         scroll.set_size_request(250, -1)
         self.pack1(scroll, resize=False, shrink=True)
 
@@ -222,7 +228,7 @@ class IntrospectionPanel(Gtk.Paned):
         self.pack2(self.infonotebook, resize=True, shrink=True)
 
         self.show_all()
-        apiwidget.connect('update', self.__update)
+        self.apiwidget.connect('update', self.__update)
 
     def __update(self, widget, tupla):
         if tupla:
@@ -277,6 +283,10 @@ class IntrospectionPanel(Gtk.Paned):
         self.infonotebook.set_webdoc(webdoc)
         self.emit("info-try", "%s %s %s %s" % (
             objeto, _type, modulo_path, tipo))
+
+    def buscar(self, texto):
+        # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
+        self.apiwidget.buscar(texto)
 
 
 class InfoNotebook(Gtk.Notebook):

@@ -198,3 +198,35 @@ class ApiWidget(Gtk.TreeView):
         self.get_model().append(_iter, [pixbuf, lista[0]])
         self.objetos[lista[0]] = (lista[0], lista[1], lista[2], lista[3],
             modulo_path, tipo)
+
+    def __buscar_recursivo(self, model, _iter, texto):
+        contenido = model.get_value(_iter, 1).lower()
+        if texto in contenido:
+            self.get_selection().select_iter(_iter)
+            self.scroll_to_cell(model.get_path(_iter))
+            return True
+        else:
+            if model.iter_has_child(_iter):
+                self.expand_to_path(model.get_path(_iter))
+                _iter = model.iter_children(_iter)
+                while _iter:
+                    ret = self.__buscar_recursivo(model, _iter, texto)
+                    if ret:
+                        return True
+                    _iter = model.iter_next(_iter)
+            else:
+                return False
+        return False
+
+    def buscar(self, texto):
+        # Realiza una Búsqueda sobre el treeview.
+        model = self.get_model()
+        _iter = model.get_iter_first()
+        if not _iter:
+            return
+        texto = texto.lower()
+        while _iter:
+            ret = self.__buscar_recursivo(model, _iter, texto)
+            if ret:
+                break
+            _iter = model.iter_next(_iter)

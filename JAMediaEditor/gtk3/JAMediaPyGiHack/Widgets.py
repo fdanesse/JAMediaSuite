@@ -91,9 +91,9 @@ class Toolbar(Gtk.EventBox):
 
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        self.toolbarbusquedas.connect("buscar", self.__emit_buscar)
-        self.toolbarbusquedas.connect("accion", self.__emit_accion)
-        self.toolbarbusquedas.connect("informe", self.__emit_informe)
+        self.toolbarbusquedas.connect("buscar", self.__re_emit_buscar)
+        self.toolbarbusquedas.connect("accion", self.__re_emit_accion)
+        self.toolbarbusquedas.connect("informe", self.__re_emit_informe)
 
         self.add(toolbar)
         self.show_all()
@@ -107,26 +107,17 @@ class Toolbar(Gtk.EventBox):
     def __emit_import(self, widget, paquete, modulo):
         self.emit("import", paquete, modulo)
 
-    def __emit_informe(self, widget):
+    def __re_emit_informe(self, widget):
         self.emit("informe")
 
-    def __emit_accion(self, widget):
+    def __re_emit_accion(self, widget):
         """
         Cuando se hace click en anterior y siguiente.
         """
         self.emit("accion", widget.TOOLTIP, self.entry.get_text())
 
-    def __emit_buscar(self, widget):
-        """
-        Cuando cambia el texto a buscar.
-        """
-        if widget.get_text():
-            self.anterior.set_sensitive(True)
-            self.siguiente.set_sensitive(True)
-        else:
-            self.anterior.set_sensitive(False)
-            self.siguiente.set_sensitive(False)
-        self.emit("buscar", widget.get_text())
+    def __re_emit_buscar(self, widget, text):
+        self.emit("buscar", text)
 
     def update(self, view):
         self.menu.update(view)
