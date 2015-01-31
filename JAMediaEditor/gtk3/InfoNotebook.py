@@ -121,6 +121,7 @@ class InfoNotebook(Gtk.Notebook):
 
         self.accion_instrospeccion = []
         self.copy_cut = []
+        self.path_actual = False
 
         self.estructura_proyecto = Estructura_Proyecto()
         self.introspeccion = Introspeccion()
@@ -334,7 +335,6 @@ class Introspeccion(Gtk.TreeView):
         self.connect("key-press-event", self.key_press_event)
         self.set_rules_hint(True)
         self.set_property("enable-tree-lines", True)
-        self.posibles = []
         self.set_headers_visible(False)
         self.show_all()
 
@@ -367,6 +367,38 @@ class Introspeccion(Gtk.TreeView):
         columna.set_property('resizable', True)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         self.append_column(columna)
+
+    def __buscar_recursivo(self, model, _iter, texto):
+        contenido = model.get_value(_iter, 1).lower()
+        if texto in contenido:
+            self.get_selection().select_iter(_iter)
+            self.scroll_to_cell(model.get_path(_iter))
+            return True
+        else:
+            if model.iter_has_child(_iter):
+                self.expand_to_path(model.get_path(_iter))
+                _iter = model.iter_children(_iter)
+                while _iter:
+                    ret = self.__buscar_recursivo(model, _iter, texto)
+                    if ret:
+                        return True
+                    _iter = model.iter_next(_iter)
+            else:
+                return False
+        return False
+
+    def buscar(self, texto):
+        # Realiza una Búsqueda sobre el treeview.
+        model = self.get_model()
+        _iter = model.get_iter_first()
+        if not _iter:
+            return
+        texto = texto.lower()
+        while _iter:
+            ret = self.__buscar_recursivo(model, _iter, texto)
+            if ret:
+                break
+            _iter = model.iter_next(_iter)
 
     def do_row_activated(self, path, column):
         # Emite la señal new_select cuando se hace doble click sobre una fila
@@ -414,7 +446,8 @@ class Introspeccion(Gtk.TreeView):
                 elif temp.startswith("using "):
                     color = Gdk.color_parse("#006e00")
                     self.__append(new_funcion, key, color, temp)
-                elif temp.startswith("public ") or temp.startswith("private ") and not "=" in temp:
+                elif temp.startswith("public ") or \
+                    temp.startswith("private ") and not "=" in temp:
                     color = Gdk.color_parse("#000091")
                     new_funcion = self.__append(new_class, key, color, temp)
         else:
@@ -468,40 +501,6 @@ class Introspeccion(Gtk.TreeView):
             pass
         return False
 
-    def buscar(self, texto):
-        # Realiza una Búsqueda sobre el treeview.
-        model = self.get_model()
-        item = model.get_iter_first()
-        if not item:
-            return
-        self.get_selection().select_iter(item)
-        first_path = model.get_path(item)
-        self.scroll_to_cell(first_path)
-        padres = []
-        self.posibles = []
-        while item:
-            valor = model.get_value(item, 1)
-            if texto in valor:
-                self.posibles.append(item)
-            if model.iter_has_child(item):
-                path = model.get_path(item)
-                self.expand_to_path(path)
-                if item not in padres:
-                    padres.append(item)
-            item = model.iter_next(item)
-        if padres:
-            for padre in padres:
-                item = model.iter_children(padre)
-                while item:
-                    valor = model.get_value(item, 1)
-                    if texto in valor:
-                        self.posibles.append(item)
-                    item = model.iter_next(item)
-        if self.posibles:
-            self.get_selection().select_iter(self.posibles[0])
-            new_path = model.get_path(self.posibles[0])
-            self.scroll_to_cell(new_path)
-
 
 class Estructura_Proyecto(Gtk.TreeView):
     """
@@ -524,7 +523,6 @@ class Estructura_Proyecto(Gtk.TreeView):
         self.__set_columnas()
         self.set_headers_visible(False)
 
-        self.posibles = []
         self.connect("key-press-event", self.__key_press_event)
         self.show_all()
 
@@ -656,6 +654,38 @@ class Estructura_Proyecto(Gtk.TreeView):
             pass
         return False
 
+    def __buscar_recursivo(self, model, _iter, texto):
+        contenido = model.get_value(_iter, 1).lower()
+        if texto in contenido:
+            self.get_selection().select_iter(_iter)
+            self.scroll_to_cell(model.get_path(_iter))
+            return True
+        else:
+            if model.iter_has_child(_iter):
+                self.expand_to_path(model.get_path(_iter))
+                _iter = model.iter_children(_iter)
+                while _iter:
+                    ret = self.__buscar_recursivo(model, _iter, texto)
+                    if ret:
+                        return True
+                    _iter = model.iter_next(_iter)
+            else:
+                return False
+        return False
+
+    def buscar(self, texto):
+        # Realiza una Búsqueda sobre el treeview.
+        model = self.get_model()
+        _iter = model.get_iter_first()
+        if not _iter:
+            return
+        texto = texto.lower()
+        while _iter:
+            ret = self.__buscar_recursivo(model, _iter, texto)
+            if ret:
+                break
+            _iter = model.iter_next(_iter)
+
     def set_path_estructura(self, path):
         # Carga la estructura de directorios y archivos del proyecto.
         if self.get_model():
@@ -687,37 +717,3 @@ class Estructura_Proyecto(Gtk.TreeView):
             if "text" in datos or "x-python" in datos or \
                 "x-empty" in datos or "svg+xml" in datos:
                 self.emit('open', direccion)
-
-    def buscar(self, texto):
-        # Realiza una Búsqueda sobre el treeview.
-        model = self.get_model()
-        item = model.get_iter_first()
-        padres = []
-        self.posibles = []
-        while item:
-            valor = model.get_value(item, 1)
-            if texto in valor:
-                self.posibles.append(item)
-            if model.iter_has_child(item):
-                path = model.get_path(item)
-                self.expand_to_path(path)
-                if item not in padres:
-                    padres.append(item)
-            item = model.iter_next(item)
-        if padres != []:
-            for padre in padres:
-                item = model.iter_children(padre)
-                while item:
-                    valor = model.get_value(item, 1)
-                    if model.iter_has_child(item):
-                        path = model.get_path(item)
-                        self.expand_to_path(path)
-                        if item not in padres:
-                            padres.append(item)
-                    if texto in valor:
-                        self.posibles.append(item)
-                    item = model.iter_next(item)
-        if self.posibles != []:
-            self.get_selection().select_iter(self.posibles[0])
-            new_path = model.get_path(self.posibles[0])
-            self.scroll_to_cell(new_path)
