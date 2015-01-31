@@ -308,11 +308,7 @@ class InfoNotebook(Gtk.Notebook):
 
     def buscar(self, texto):
         # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
-        print "FIXME: Modificar esto para obtener la lengüeta activa y hacer buscar sobre ella."
-        if self.get_current_page() == 0:
-            self.introspeccion.buscar(texto)
-        else:
-            self.estructura_proyecto.buscar(texto)
+        self.get_nth_page(self.get_current_page()).get_child().buscar(texto)
 
 
 class Introspeccion(Gtk.TreeView):
