@@ -110,11 +110,11 @@ class Toolbar(Gtk.EventBox):
     def __re_emit_informe(self, widget):
         self.emit("informe")
 
-    def __re_emit_accion(self, widget):
+    def __re_emit_accion(self, widget, accion, text):
         """
         Cuando se hace click en anterior y siguiente.
         """
-        self.emit("accion", widget.TOOLTIP, self.entry.get_text())
+        self.emit("accion", accion, text)
 
     def __re_emit_buscar(self, widget, text):
         self.emit("buscar", text)

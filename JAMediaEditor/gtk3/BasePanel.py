@@ -69,7 +69,6 @@ class BasePanel(Gtk.Paned):
 
         self.workpanel = WorkPanel()
         self.infonotebook = InfoNotebook()
-        self.seleccionado_actual = 0
 
         self.toolbarproyecto = ToolbarProyecto()
         self.toolbararchivo = ToolbarArchivo()
@@ -176,40 +175,12 @@ class BasePanel(Gtk.Paned):
         dialogo.destroy()
         sourceview.set_show_line_numbers(visible)
         '''
+
     def __buscar(self, widget, texto):
-        # Recibe el texto a buscar.
-        self.seleccionado_actual = 0
         self.infonotebook.buscar(texto)
 
     def __buscar_mas(self, widget, accion, texto):
-        # Cuando se hace click en anterior o siguiente en toolbar de busquedas.
-        self.infonotebook.buscar(texto)
-        if self.infonotebook.get_current_page() == 0:
-            tree = self.infonotebook.introspeccion
-            seleccion = self.infonotebook.introspeccion.get_selection()
-            posibles = self.infonotebook.introspeccion.posibles
-        else:
-            tree = self.infonotebook.estructura_proyecto
-            seleccion = self.infonotebook.estructura_proyecto.get_selection()
-            posibles = self.infonotebook.estructura_proyecto.posibles
-
-        if accion == "Buscar Siguiente":
-            self.seleccionado_actual += 1
-        elif accion == "Buscar Anterior":
-            self.seleccionado_actual -= 1
-        else:
-            print "Acción Desconocida:", self.__buscar_mas
-
-        if self.seleccionado_actual > len(posibles) - 1:
-            self.seleccionado_actual = 0
-        elif self.seleccionado_actual < 0:
-            self.seleccionado_actual = len(posibles) - 1
-
-        if posibles:
-            seleccion.select_iter(posibles[self.seleccionado_actual])
-            new_path = tree.get_model().get_path(
-                posibles[self.seleccionado_actual])
-            tree.scroll_to_cell(new_path)
+        self.infonotebook.buscar_mas(accion, texto)
 
     def __set_linea(self, widget, index, texto):
         """

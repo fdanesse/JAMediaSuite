@@ -309,7 +309,11 @@ class InfoNotebook(Gtk.Notebook):
 
     def buscar(self, texto):
         # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
-        self.get_nth_page(self.get_current_page()).get_child().buscar(texto)
+        self.get_nth_page(self.get_current_page()).get_child().buscar_delante(texto)
+
+    def buscar_mas(self, accion, texto):
+        self.get_nth_page(self.get_current_page(
+            )).get_child().buscar_mas(accion, texto)
 
 
 class Introspeccion(Gtk.TreeView):
@@ -387,18 +391,47 @@ class Introspeccion(Gtk.TreeView):
                 return False
         return False
 
-    def buscar(self, texto):
-        # Realiza una Búsqueda sobre el treeview.
+    def buscar_delante(self, texto, _iter=False):
         model = self.get_model()
-        _iter = model.get_iter_first()
+        if not _iter:
+            _iter = model.get_iter_first()
         if not _iter:
             return
         texto = texto.lower()
         while _iter:
             ret = self.__buscar_recursivo(model, _iter, texto)
             if ret:
-                break
+                return ret
             _iter = model.iter_next(_iter)
+        return False
+
+    def buscar_mas(self, accion, texto):
+        if accion == "Buscar Siguiente":
+            model, _iter = self.get_selection().get_selected()
+            if model.iter_has_child(_iter):
+                # Si tiene hijos, buscar entre ellos
+                self.expand_to_path(model.get_path(_iter))
+                _iter2 = model.iter_children(_iter)
+                ret = self.buscar_delante(texto, _iter2)
+                if ret:
+                    return ret
+
+            # Si no tiene hijos, continuar en el mismo nivel
+            _iter2 = model.iter_next(_iter)
+            if _iter2:
+                ret = self.buscar_delante(texto, _iter2)
+                if ret:
+                    return ret
+
+            # Probablemente no hay mas iters en este nivel, buscar en el padre
+            _iter2 = model.iter_parent(_iter)
+            if _iter2:
+                ret = self.buscar_delante(texto, model.iter_next(_iter2))
+                if ret:
+                    return ret
+
+        elif accion == "Buscar Anterior":
+            pass
 
     def do_row_activated(self, path, column):
         # Emite la señal new_select cuando se hace doble click sobre una fila
@@ -673,10 +706,10 @@ class Estructura_Proyecto(Gtk.TreeView):
                 return False
         return False
 
-    def buscar(self, texto):
-        # Realiza una Búsqueda sobre el treeview.
+    def buscar_delante(self, texto, _iter=False):
         model = self.get_model()
-        _iter = model.get_iter_first()
+        if not _iter:
+            _iter = model.get_iter_first()
         if not _iter:
             return
         texto = texto.lower()
@@ -685,6 +718,18 @@ class Estructura_Proyecto(Gtk.TreeView):
             if ret:
                 break
             _iter = model.iter_next(_iter)
+
+    def buscar_mas(self, accion, texto):
+        if accion == "Buscar Siguiente":
+            model, _iter = self.get_selection().get_selected()
+            if model.iter_has_child(_iter):
+                self.expand_to_path(model.get_path(_iter))
+                _iter = model.iter_children(_iter)
+                self.buscar_delante(texto, _iter)
+            else:
+                self.buscar_delante(texto, model.iter_next(_iter))
+        elif accion == "Buscar Anterior":
+            pass
 
     def set_path_estructura(self, path):
         # Carga la estructura de directorios y archivos del proyecto.

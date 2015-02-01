@@ -82,39 +82,20 @@ class BaseBox(Gtk.Box):
         self.base_notebook.import_modulo(paquete, modulo)
 
     def buscar(self, texto):
-        # Recibe el texto a buscar.
-        self.base_notebook.buscar(texto)
+        if self.base_notebook:
+            if self.base_notebook.get_visible():
+                self.base_notebook.buscar(texto)
+        if self.jamedia_gstreamer:
+            if self.jamedia_gstreamer.get_visible():
+                self.jamedia_gstreamer.buscar(texto)
 
     def buscar_mas(self, accion, texto):
-        # Cuando se hace click en anterior o siguiente en toolbar de busquedas.
-        #self.infonotebook.buscar(texto)
-        #if self.infonotebook.get_current_page() == 0:
-        #    tree = self.infonotebook.introspeccion
-        #    seleccion = self.infonotebook.introspeccion.get_selection()
-        #    posibles = self.infonotebook.introspeccion.posibles
-        #else:
-        #    tree = self.infonotebook.estructura_proyecto
-        #    seleccion = self.infonotebook.estructura_proyecto.get_selection()
-        #    posibles = self.infonotebook.estructura_proyecto.posibles
-
-        #if accion == "Buscar Siguiente":
-        #    self.seleccionado_actual += 1
-        #elif accion == "Buscar Anterior":
-        #    self.seleccionado_actual -= 1
-        #else:
-        #    print "Acción Desconocida:", self.__buscar_mas
-
-        #if self.seleccionado_actual > len(posibles) - 1:
-        #    self.seleccionado_actual = 0
-        #elif self.seleccionado_actual < 0:
-        #    self.seleccionado_actual = len(posibles) - 1
-
-        #if posibles:
-        #    seleccion.select_iter(posibles[self.seleccionado_actual])
-        #    new_path = tree.get_model().get_path(
-        #        posibles[self.seleccionado_actual])
-        #    tree.scroll_to_cell(new_path)
-        print self.buscar_mas
+        if self.base_notebook:
+            if self.base_notebook.get_visible():
+                self.base_notebook.buscar_mas(accion, texto)
+        if self.jamedia_gstreamer:
+            if self.jamedia_gstreamer.get_visible():
+                self.jamedia_gstreamer.buscar_mas(accion, texto)
 
     def check_busquedas(self):
         return self.jamedia_gstreamer or self.base_notebook
@@ -150,8 +131,10 @@ class BaseNotebook(Gtk.Notebook):
             self.emit("nobusquedas")
 
     def buscar(self, texto):
-        # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
         self.get_nth_page(self.get_current_page()).buscar(texto)
+
+    def buscar_mas(self, accion, texto):
+        self.get_nth_page(self.get_current_page()).buscar_mas(accion, texto)
 
     def import_modulo(self, paquete, modulo):
         """
@@ -201,8 +184,10 @@ class IntrospectionWidget(Gtk.Box):
         self.toolbartray.set_info(info)
 
     def buscar(self, texto):
-        # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
         self.introspection_panel.buscar(texto)
+
+    def buscar_mas(self, accion, texto):
+        self.introspection_panel.buscar_mas(accion, texto)
 
 
 class IntrospectionPanel(Gtk.Paned):
@@ -285,8 +270,10 @@ class IntrospectionPanel(Gtk.Paned):
             objeto, _type, modulo_path, tipo))
 
     def buscar(self, texto):
-        # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
-        self.apiwidget.buscar(texto)
+        self.apiwidget.buscar_delante(texto)
+
+    def buscar_mas(self, accion, texto):
+        self.apiwidget.buscar_mas(accion, texto)
 
 
 class InfoNotebook(Gtk.Notebook):

@@ -55,15 +55,15 @@ class Lista(Gtk.TreeView):
         self.set_headers_clickable(True)
         self.set_headers_visible(True)
 
-        self.setear_columnas()
+        self.__setear_columnas()
         self.get_selection().set_select_function(
-            self.selecciones, self.get_model())
+            self.__selecciones, self.get_model())
         self.show_all()
 
-        self.connect("row-activated", self.activar, None)
-        self.connect("key-press-event", self.keypress)
+        self.connect("row-activated", self.__activar, None)
+        self.connect("key-press-event", self.__keypress)
 
-    def keypress(self, widget, event):
+    def __keypress(self, widget, event):
         tecla = event.get_keycode()[1]
         model, _iter = self.get_selection().get_selected()
         path = model.get_path(_iter)
@@ -78,17 +78,17 @@ class Lista(Gtk.TreeView):
                 self.expand_to_path(path)
         return False
 
-    def activar(self, treeview, path, view_column, user_param1):
+    def __activar(self, treeview, path, view_column, user_param1):
         if self.row_expanded(path):
             self.collapse_row(path)
         elif not self.row_expanded(path):
             self.expand_to_path(path)
 
-    def setear_columnas(self):
-        self.append_column(self.construir_columa('Plugins', 0, True))
-        self.append_column(self.construir_columa('Descripción', 1, True))
+    def __setear_columnas(self):
+        self.append_column(self.__construir_columa('Plugins', 0, True))
+        self.append_column(self.__construir_columa('Descripción', 1, True))
 
-    def construir_columa(self, text, index, visible):
+    def __construir_columa(self, text, index, visible):
         render = Gtk.CellRendererText()
         columna = Gtk.TreeViewColumn(text, render, text=index)
         columna.set_sort_column_id(index)
@@ -97,11 +97,7 @@ class Lista(Gtk.TreeView):
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         return columna
 
-    def selecciones(self, treeselection, model, path, is_selected, listore):
-        """
-        Cuando se selecciona un item en la lista.
-        """
-        # model y listore son ==
+    def __selecciones(self, treeselection, model, path, is_selected, listore):
         _iter = model.get_iter(path)
         valor = model.get_value(_iter, 0)
         if not is_selected and self.valor_select != valor:
@@ -109,3 +105,65 @@ class Lista(Gtk.TreeView):
             self.emit('nueva-seleccion', self.valor_select)
             self.scroll_to_cell(path)
         return True
+
+    def __buscar_recursivo(self, model, _iter, texto):
+        contenido = model.get_value(_iter, 0).lower()
+        contenido1 = model.get_value(_iter, 1).lower()
+        if texto in contenido or texto in contenido1:
+            self.get_selection().select_iter(_iter)
+            self.scroll_to_cell(model.get_path(_iter))
+            return True
+        else:
+            if model.iter_has_child(_iter):
+                self.expand_to_path(model.get_path(_iter))
+                _iter = model.iter_children(_iter)
+                while _iter:
+                    ret = self.__buscar_recursivo(model, _iter, texto)
+                    if ret:
+                        return True
+                    _iter = model.iter_next(_iter)
+            else:
+                return False
+        return False
+
+    def buscar_delante(self, texto, _iter=False):
+        model = self.get_model()
+        if not _iter:
+            _iter = model.get_iter_first()
+        if not _iter:
+            return
+        texto = texto.lower()
+        while _iter:
+            ret = self.__buscar_recursivo(model, _iter, texto)
+            if ret:
+                return ret
+            _iter = model.iter_next(_iter)
+        return False
+
+    def buscar_mas(self, accion, texto):
+        if accion == "Buscar Siguiente":
+            model, _iter = self.get_selection().get_selected()
+            if model.iter_has_child(_iter):
+                # Si tiene hijos, buscar entre ellos
+                self.expand_to_path(model.get_path(_iter))
+                _iter2 = model.iter_children(_iter)
+                ret = self.buscar_delante(texto, _iter2)
+                if ret:
+                    return ret
+
+            # Si no tiene hijos, continuar en el mismo nivel
+            _iter2 = model.iter_next(_iter)
+            if _iter2:
+                ret = self.buscar_delante(texto, _iter2)
+                if ret:
+                    return ret
+
+            # Probablemente no hay mas iters en este nivel, buscar en el padre
+            _iter2 = model.iter_parent(_iter)
+            if _iter2:
+                ret = self.buscar_delante(texto, model.iter_next(_iter2))
+                if ret:
+                    return ret
+
+        elif accion == "Buscar Anterior":
+            pass
