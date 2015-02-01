@@ -34,8 +34,6 @@ def __buscar_recursivo_delante(treeview, model, _iter, texto):
                 if ret:
                     return ret
                 _iter = model.iter_next(_iter)
-        else:
-            return False
     return False
 
 
@@ -48,9 +46,11 @@ def __buscar_recursivo_atras(treeview, model, _iter, texto):
         if _iter3:
             # valores del padre de lo seleccionado
             v11 = model2.get_value(_iter3, 1).lower()
+            print 1, v1, v11
         else:
             # valores de lo seleccionado
             v11 = model2.get_value(_iter2, 1).lower()
+            print 2, v1, v11
         if v1 != v11:
             treeview.expand_to_path(model.get_path(_iter))
             _iter2 = model.iter_children(_iter)
@@ -64,6 +64,14 @@ def __buscar_recursivo_atras(treeview, model, _iter, texto):
                 if ret:
                     return ret
                 _iter3 = model.iter_previous(_iter3)
+        else:
+            print 3, v1, v11
+            print bool(model.iter_previous(_iter)), bool(model.iter_parent(_iter))
+            '''
+            1 clases clases
+            3 clases clases
+            False True
+            '''
     contenido = model.get_value(_iter, 1).lower()
     if texto in contenido:
         treeview.get_selection().select_iter(_iter)
@@ -74,15 +82,6 @@ def __buscar_recursivo_atras(treeview, model, _iter, texto):
 
 def __buscar_detras(treeview, texto, _iter=False):
     model = treeview.get_model()
-    if not _iter:
-        _iter = model.get_iter_first()
-        item = _iter
-        _iter = None
-        while item:
-            _iter = item
-            item = model.iter_next(item)
-    if not _iter:
-        return
     texto = texto.lower()
     while _iter:
         ret = __buscar_recursivo_atras(treeview, model, _iter, texto)
@@ -94,10 +93,6 @@ def __buscar_detras(treeview, texto, _iter=False):
 
 def buscar_delante(treeview, texto, _iter=False):
     model = treeview.get_model()
-    if not _iter:
-        _iter = model.get_iter_first()
-    if not _iter:
-        return
     texto = texto.lower()
     while _iter:
         ret = __buscar_recursivo_delante(treeview, model, _iter, texto)
@@ -109,6 +104,8 @@ def buscar_delante(treeview, texto, _iter=False):
 
 def buscar_mas(treeview, accion, texto):
     model, _iter = treeview.get_selection().get_selected()
+    if not _iter:
+        _iter = model.get_iter_first()
     if accion == "Buscar Siguiente":
         if model.iter_has_child(_iter):
             # Si tiene hijos, buscar entre ellos
