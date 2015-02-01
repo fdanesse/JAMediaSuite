@@ -27,6 +27,8 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+from BusquedasTreeView import buscar_delante
+from BusquedasTreeView import buscar_mas
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -199,63 +201,8 @@ class ApiWidget(Gtk.TreeView):
         self.objetos[lista[0]] = (lista[0], lista[1], lista[2], lista[3],
             modulo_path, tipo)
 
-    def __buscar_recursivo(self, model, _iter, texto):
-        contenido = model.get_value(_iter, 1).lower()
-        if texto in contenido:
-            self.get_selection().select_iter(_iter)
-            self.scroll_to_cell(model.get_path(_iter))
-            return True
-        else:
-            if model.iter_has_child(_iter):
-                self.expand_to_path(model.get_path(_iter))
-                _iter = model.iter_children(_iter)
-                while _iter:
-                    ret = self.__buscar_recursivo(model, _iter, texto)
-                    if ret:
-                        return True
-                    _iter = model.iter_next(_iter)
-            else:
-                return False
-        return False
-
-    def buscar_delante(self, texto, _iter=False):
-        model = self.get_model()
-        if not _iter:
-            _iter = model.get_iter_first()
-        if not _iter:
-            return
-        texto = texto.lower()
-        while _iter:
-            ret = self.__buscar_recursivo(model, _iter, texto)
-            if ret:
-                return ret
-            _iter = model.iter_next(_iter)
-        return False
+    def buscar(self, texto, _iter=False):
+        buscar_delante(self, texto, _iter)
 
     def buscar_mas(self, accion, texto):
-        if accion == "Buscar Siguiente":
-            model, _iter = self.get_selection().get_selected()
-            if model.iter_has_child(_iter):
-                # Si tiene hijos, buscar entre ellos
-                self.expand_to_path(model.get_path(_iter))
-                _iter2 = model.iter_children(_iter)
-                ret = self.buscar_delante(texto, _iter2)
-                if ret:
-                    return ret
-
-            # Si no tiene hijos, continuar en el mismo nivel
-            _iter2 = model.iter_next(_iter)
-            if _iter2:
-                ret = self.buscar_delante(texto, _iter2)
-                if ret:
-                    return ret
-
-            # Probablemente no hay mas iters en este nivel, buscar en el padre
-            _iter2 = model.iter_parent(_iter)
-            if _iter2:
-                ret = self.buscar_delante(texto, model.iter_next(_iter2))
-                if ret:
-                    return ret
-
-        elif accion == "Buscar Anterior":
-            pass
+        buscar_mas(self, accion, texto)

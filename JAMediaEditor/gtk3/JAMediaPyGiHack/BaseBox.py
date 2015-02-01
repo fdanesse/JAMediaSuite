@@ -270,7 +270,7 @@ class IntrospectionPanel(Gtk.Paned):
             objeto, _type, modulo_path, tipo))
 
     def buscar(self, texto):
-        self.apiwidget.buscar_delante(texto)
+        self.apiwidget.buscar(texto)
 
     def buscar_mas(self, accion, texto):
         self.apiwidget.buscar_mas(accion, texto)
