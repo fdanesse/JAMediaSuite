@@ -82,7 +82,7 @@ class JAMediaGstreamer(Gtk.Paned):
         self.textview.get_buffer().set_text(get_inspect(path))
 
     def buscar(self, texto):
-        self.lista.buscar_delante(texto)
+        self.lista.buscar(texto)
 
     def buscar_mas(self, accion, texto):
         self.lista.buscar_mas(accion, texto)

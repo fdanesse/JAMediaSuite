@@ -374,8 +374,10 @@ class Introspeccion(Gtk.TreeView):
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         self.append_column(columna)
 
-    def buscar(self, texto, _iter=False):
-        buscar_delante(self, texto, _iter)
+    def buscar(self, texto):
+        # FIXME: Requiere un _iter
+        #buscar_delante(self, texto, _iter)
+        pass
 
     def buscar_mas(self, accion, texto):
         buscar_mas(self, accion, texto)
@@ -634,8 +636,10 @@ class Estructura_Proyecto(Gtk.TreeView):
             pass
         return False
 
-    def buscar(self, texto, _iter=False):
-        buscar_delante(self, texto, _iter)
+    def buscar(self, texto):
+        # FIXME: Requiere un _iter
+        #buscar_delante(self, texto, _iter)
+        pass
 
     def buscar_mas(self, accion, texto):
         buscar_mas(self, accion, texto)

@@ -93,6 +93,7 @@ class Toolbar(Gtk.EventBox):
 
         self.toolbarbusquedas.connect("accion", self.__re_emit_accion)
         self.toolbarbusquedas.connect("informe", self.__re_emit_informe)
+        self.toolbarbusquedas.connect("buscar", self.__re_emit_buscar)
 
         self.add(toolbar)
         self.show_all()
@@ -105,6 +106,9 @@ class Toolbar(Gtk.EventBox):
 
     def __emit_import(self, widget, paquete, modulo):
         self.emit("import", paquete, modulo)
+
+    def __re_emit_buscar(self, widget, texto):
+        self.emit("buscar", texto)
 
     def __re_emit_informe(self, widget):
         self.emit("informe")
