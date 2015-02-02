@@ -31,33 +31,31 @@ def __check(treeview, texto, _iter):
         return False
 
 
-def __buscar_recursivo_delante(treeview, model, _iter, texto):
+def __buscar_delante_en_nodo(treeview, model, _iter, texto):
     if __check(treeview, texto, _iter):
         return True
     else:
         if model.iter_has_child(_iter):
-            treeview.expand_to_path(model.get_path(_iter))
             _iter = model.iter_children(_iter)
             while _iter:
-                ret = __buscar_recursivo_delante(treeview, model, _iter, texto)
-                if ret:
+                if __buscar_delante_en_nodo(treeview, model, _iter, texto):
                     return True
                 _iter = model.iter_next(_iter)
     return False
 
 
-def buscar_delante(treeview, texto, _iter=False):
+def buscar_delante(treeview, texto, _iter):
+    if not _iter:
+        return
     model = treeview.get_model()
     texto = texto.lower()
     while _iter:
-        ret = __buscar_recursivo_delante(treeview, model, _iter, texto)
-        if ret:
-            return ret
+        if __buscar_delante_en_nodo(treeview, model, _iter, texto):
+            return True
         _iter = model.iter_next(_iter)
     return False
 
 
-### Buscar hacia atrás
 def __get_ultimo(treeview, _iter):
     model = treeview.get_model()
     if not _iter:
@@ -68,43 +66,81 @@ def __get_ultimo(treeview, _iter):
         _iter = item
         item = model.iter_next(item)
     if model.iter_has_child(_iter):
-        treeview.expand_to_path(model.get_path(_iter))
         _iter = model.iter_children(_iter)
         _iter = __get_ultimo(treeview, _iter)
     return _iter
 
 
-def __buscar_recursivo_atras(treeview, model, _iter, texto):
-    pass
+def __Buscar_detras_en_nodo(treeview, texto, _iter):
+    model = treeview.get_model()
+    _iter = model.iter_children(_iter)
+    item = _iter
+    _iter2 = None
+    while item:
+        _iter2 = item
+        item = model.iter_next(item)
+    while _iter2 :
+        if model.iter_has_child(_iter2):
+            if __Buscar_detras_en_nodo(treeview, texto, _iter2):
+                return True
+        if __check(treeview, texto, _iter2):
+            return True
+        _iter2 = model.iter_previous(_iter2)
+    return False
 
 
-def __buscar_detras(treeview, texto, _iter):
-    pass
+def __buscar_detras(treeview, texto, _iter, child=True):
+    if not _iter:
+        return
+    model = treeview.get_model()
+    texto = texto.lower()
+    while _iter:
+        if model.iter_has_child(_iter) and child:
+            if __Buscar_detras_en_nodo(treeview, texto, _iter):
+                return True
+        if __check(treeview, texto, _iter):
+            return True
+        _iter2 = _iter
+        _iter = model.iter_previous(_iter)
+        child=True
+    _iter = model.iter_parent(_iter2)
+    if _iter:
+        if __buscar_detras(treeview, texto, _iter, child=False):
+            return True
+    return False
 
 
 def buscar_mas(treeview, accion, texto):
+    treeview.expand_all()
     model, _iter = treeview.get_selection().get_selected()
     if accion == "Buscar Siguiente":
         if not _iter:
             _iter = model.get_iter_first()
         if model.iter_has_child(_iter):
-            # Si tiene hijos, buscar entre ellos
-            treeview.expand_to_path(model.get_path(_iter))
             _iter2 = model.iter_children(_iter)
-            ret = buscar_delante(treeview, texto, _iter2)
-            if ret:
-                return ret
-        # Si no tiene hijos, continuar en el mismo nivel
+            if buscar_delante(treeview, texto, _iter2):
+                return True
         _iter2 = model.iter_next(_iter)
         if _iter2:
-            ret = buscar_delante(treeview, texto, _iter2)
-            if ret:
-                return ret
-        # Si no hay mas iters en este nivel, buscar en el siguiente del padre
+            if buscar_delante(treeview, texto, _iter2):
+                return True
         _iter2 = model.iter_parent(_iter)
         if _iter2:
-            ret = buscar_delante(treeview, texto, model.iter_next(_iter2))
-            if ret:
-                return ret
+            if buscar_delante(treeview, texto, model.iter_next(_iter2)):
+                return True
     elif accion == "Buscar Anterior":
-        pass
+        if _iter:
+            _iter2 = model.iter_previous(_iter)
+            if _iter2:
+                if __buscar_detras(treeview, texto, _iter2, child=True):
+                    return True
+            else:
+                _iter2 = model.iter_parent(_iter)
+                if _iter2:
+                    if __buscar_detras(treeview, texto, _iter2, child=False):
+                        return True
+        else:
+            _iter2 = __get_ultimo(treeview, False)
+            if __buscar_detras(treeview, texto, _iter2, child=True):
+                return True
+    return False
