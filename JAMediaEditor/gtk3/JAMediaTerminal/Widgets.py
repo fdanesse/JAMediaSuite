@@ -27,12 +27,11 @@ from gi.repository import GObject
 from gi.repository import Pango
 from gi.repository import GLib
 
-from Globales import get_pixels
 from Globales import get_separador
 from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
-Width_Button = 0.5
+Width_Button = 18
 FAMILIES = Gtk.Window().get_pango_context().list_families()
 
 
@@ -63,10 +62,8 @@ class ToolbarTerminal(Gtk.Toolbar):
         for path in paths:
             if 'bash' in os.listdir(path):
                 bash_path = os.path.join(path, 'bash')
-
             if 'python' in os.listdir(path):
                 python_path = os.path.join(path, 'python')
-
             if bash_path and python_path:
                 break
 
@@ -77,13 +74,13 @@ class ToolbarTerminal(Gtk.Toolbar):
         ### Construcción.
         archivo = os.path.join(BASE_PATH, "Iconos", "edit-copy.svg")
         boton = get_boton(archivo,
-            pixels=get_pixels(Width_Button), tooltip_text="Copiar")
+            pixels=Width_Button, tooltip_text="Copiar")
         boton.connect("clicked", self.__emit_accion, "copiar")
         self.insert(boton, -1)
 
         archivo = os.path.join(BASE_PATH, "Iconos", "editpaste.svg")
         boton = get_boton(archivo,
-            pixels=get_pixels(Width_Button), tooltip_text="Pegar")
+            pixels=Width_Button, tooltip_text="Pegar")
         boton.connect("clicked", self.__emit_accion, "pegar")
         self.insert(boton, -1)
 
@@ -92,14 +89,14 @@ class ToolbarTerminal(Gtk.Toolbar):
         ### Botón Formato.
         archivo = os.path.join(BASE_PATH, "Iconos", "font.svg")
         boton = get_boton(archivo,
-            pixels=get_pixels(Width_Button), tooltip_text="Fuente")
+            pixels=Width_Button, tooltip_text="Fuente")
         boton.connect("clicked", self.__emit_formato)
         self.insert(boton, -1)
 
         ### Botón Agregar.
         archivo = os.path.join(BASE_PATH, "Iconos", "tab-new.svg")
         boton = get_boton(archivo,
-            pixels=get_pixels(Width_Button), tooltip_text="Nueva Terminal")
+            pixels=Width_Button, tooltip_text="Nueva Terminal")
         boton.connect("clicked", self.__emit_accion, "agregar")
         self.insert(boton, -1)
 
@@ -108,14 +105,14 @@ class ToolbarTerminal(Gtk.Toolbar):
         ### Botón bash.
         archivo = os.path.join(BASE_PATH, "Iconos", "bash.svg")
         boton = get_boton(archivo,
-            pixels=get_pixels(Width_Button), tooltip_text="Terminal bash")
+            pixels=Width_Button, tooltip_text="Terminal bash")
         boton.connect("clicked", self.__emit_reset, bash_path)
         self.insert(boton, -1)
 
         ### Botón python.
         archivo = os.path.join(BASE_PATH, "Iconos", "python.svg")
         boton = get_boton(archivo,
-            pixels=get_pixels(Width_Button), tooltip_text="Terminal python")
+            pixels=Width_Button, tooltip_text="Terminal python")
         boton.connect("clicked", self.__emit_reset, python_path)
         self.insert(boton, -1)
 
@@ -146,6 +143,7 @@ class DialogoFormato(Gtk.Dialog):
                 "Aceptar", Gtk.ResponseType.ACCEPT,
                 "Cancelar", Gtk.ResponseType.CANCEL])
 
+        self.set_transient_for(parent_window)
         self.fuente = fuente
         self.tamanio = tamanio
 
@@ -227,7 +225,6 @@ class TreeViewFonts(Gtk.TreeView):
             Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_STRING))
 
         self.fuente = fuente
-
         self.__setear_columnas()
 
         self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
@@ -235,7 +232,6 @@ class TreeViewFonts(Gtk.TreeView):
             self.__selecciones, self.get_model())
 
         self.show_all()
-
         GLib.idle_add(self.__init)
 
     def __setear_columnas(self):
@@ -262,23 +258,18 @@ class TreeViewFonts(Gtk.TreeView):
         for family in FAMILIES:
             name = family.get_name()
             fuentes.append(name)
-
         for fuente in sorted(fuentes):
             texto = '<span font="%s">%s</span>' % (fuente, fuente)
             self.get_model().append([texto, fuente])
-
         ### Seleccionar la fuente inicial.
         item = self.get_model().get_iter_first()
-
         while item:
             if self.get_model().get_value(item, 1) == self.fuente:
                 self.get_selection().select_path(
                     self.get_model().get_path(item))
                 self.scroll_to_cell(self.get_model().get_path(item))
                 return False
-
             item = self.get_model().iter_next(item)
-
         return False
 
     def __selecciones(self, treeselection, model, path, is_selected, listore):
@@ -308,7 +299,6 @@ class TreeViewTamanio(Gtk.TreeView):
             Gtk.ListStore(GObject.TYPE_INT))
 
         self.__setear_columnas()
-
         self.tamanio = tamanio
 
         self.get_selection().set_mode(Gtk.SelectionMode.SINGLE)
@@ -316,7 +306,6 @@ class TreeViewTamanio(Gtk.TreeView):
             self.__selecciones, self.get_model())
 
         self.show_all()
-
         GLib.idle_add(self.__init)
 
     def __setear_columnas(self):
@@ -332,7 +321,6 @@ class TreeViewTamanio(Gtk.TreeView):
         self.get_model().clear()
         for num in range(8, 21):
             self.get_model().append([num])
-
         ### Seleccionar el tamaño inicial.
         item = self.get_model().get_iter_first()
         while item:
@@ -341,9 +329,7 @@ class TreeViewTamanio(Gtk.TreeView):
                     self.get_model().get_path(item))
                 self.scroll_to_cell(self.get_model().get_path(item))
                 return False
-
             item = self.get_model().iter_next(item)
-
         return False
 
     def __selecciones(self, treeselection, model, path, is_selected, listore):

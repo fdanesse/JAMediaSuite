@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
+import mimetypes
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
@@ -29,12 +29,10 @@ from gi.repository import Pango
 
 from Widgets import ToolbarTerminal
 from Widgets import DialogoFormato
-
-from Globales import get_pixels
 from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
-Width_Button = 0.5
+Width_Button = 18
 
 
 class Terminal(Gtk.EventBox):
@@ -78,26 +76,18 @@ class Terminal(Gtk.EventBox):
         Abre el Diálogo de Formato y Setea el tipo y tamaño de
         fuentes en las terminales según selección del usuario.
         """
-
         string = self.notebook.fuente.to_string()
         tamanio = int(string.split(" ")[-1])
         fuente = string.replace("%s" % tamanio, "").strip()
-
-        self.get_toplevel().set_sensitive(False)
-
         dialogo = DialogoFormato(parent_window=self.get_toplevel(),
             fuente=fuente, tamanio=tamanio)
-
+        self.get_toplevel().set_sensitive(False)
         respuesta = dialogo.run()
-
         font = ""
         if respuesta == Gtk.ResponseType.ACCEPT:
             font = "%s %s" % dialogo.get_font()
-
         dialogo.destroy()
-
         self.get_toplevel().set_sensitive(True)
-
         if font:
             self.notebook.set_font(font)
 
@@ -137,7 +127,6 @@ class Terminal(Gtk.EventBox):
     def ejecute_script(self, dirpath, interprete, path_script, param):
         """
         Ejecuta un script con parámetros, en la terminal activa
-
         Por ejemplo:
             python setup.py sdist
 
@@ -146,10 +135,8 @@ class Terminal(Gtk.EventBox):
             path_script =   dirpath + 'setup.py'
             param       =   'sdist' en est caso
         """
-
         terminal = self.notebook.get_children()[
             self.notebook.get_current_page()].get_child()
-
         pty_flags = Vte.PtyFlags(0)
         terminal.fork_command_full(pty_flags, dirpath,
             (interprete, path_script, param), "", 0, None, None)
@@ -176,16 +163,42 @@ class NoteBookTerminal(Gtk.Notebook):
         self.show_all()
         self.connect('switch_page', self.__switch_page)
 
+    def __re_emit_reset(self, terminal):
+        """
+        Cuando se resetea una terminal.
+        """
+        paginas = self.get_n_pages()
+        for pag_indice in range(paginas):
+            if terminal == self.get_nth_page(pag_indice):
+                break
+        self.emit("reset", terminal, pag_indice)
+
+    def __switch_page(self, widget, widget_child, indice):
+        """
+        Cuando el usuario selecciona una lengüeta en el notebook.
+        """
+        widget_child.child_focus(True)
+
+    def __cerrar(self, widget):
+        """
+        Cerrar la terminal a través de su botón cerrar.
+        """
+        paginas = self.get_n_pages()
+        for indice in range(paginas):
+            boton = self.get_tab_label(self.get_children()[
+                indice]).get_children()[1]
+            if boton == widget:
+                self.remove_page(indice)
+                break
+
     def set_font(self, fuente):
         """
         Setea la fuente en las terminales.
         """
         self.fuente = Pango.FontDescription(fuente)
-
         paginas = self.get_children()
         if not paginas:
             return
-
         for pagina in paginas:
             pagina.get_child().re_set_font(self.fuente)
 
@@ -201,24 +214,19 @@ class NoteBookTerminal(Gtk.Notebook):
         """
         ### Label.
         hbox = Gtk.HBox()
-
         archivo = os.path.join(BASE_PATH, "Iconos", "button-cancel.svg")
-
         boton = get_boton(archivo,
-            pixels=get_pixels(Width_Button), tooltip_text="Cerrar")
+            pixels=Width_Button, tooltip_text="Cerrar")
 
         text = "bash"
         if "bash" in interprete:
             text = "bash"
-
         elif "python" in interprete:
             text = "python"
-
         if "ipython" in interprete:
             text = "ipython"
 
         label = Gtk.Label(text)
-
         hbox.pack_start(label, False, False, 0)
         hbox.pack_start(boton, False, False, 0)
 
@@ -239,23 +247,6 @@ class NoteBookTerminal(Gtk.Notebook):
         self.set_current_page(-1)
         return terminal
 
-    def __re_emit_reset(self, terminal):
-        """
-        Cuando se resetea una terminal.
-        """
-        paginas = self.get_n_pages()
-        for pag_indice in range(paginas):
-            if terminal == self.get_nth_page(pag_indice):
-                break
-
-        self.emit("reset", terminal, pag_indice)
-
-    def __switch_page(self, widget, widget_child, indice):
-        """
-        Cuando el usuario selecciona una lengüeta en el notebook.
-        """
-        widget_child.child_focus(True)
-
     def reset_terminal(self, path=os.environ["HOME"],
         interprete="/bin/bash"):
         """
@@ -268,10 +259,8 @@ class NoteBookTerminal(Gtk.Notebook):
         text = "bash"
         if "bash" in interprete:
             text = "bash"
-
         elif "python" in interprete:
             text = "python"
-
         if "ipython" in interprete:
             text = "ipython"
 
@@ -289,41 +278,22 @@ class NoteBookTerminal(Gtk.Notebook):
         if self.get_children():
             terminal = self.get_children()[self.get_current_page()].get_child()
             terminal.child_focus(True)
-
             if accion == 'copiar':
                 if terminal.get_has_selection():
                     terminal.copy_clipboard()
-
             elif accion == 'pegar':
                 terminal.paste_clipboard()
-
             elif accion == "agregar":
                 self.agregar_terminal()
-
         else:
             self.agregar_terminal()
             terminal = self.get_children()[self.get_current_page()].get_child()
             terminal.child_focus(True)
-
             if accion == 'copiar':
                 if terminal.get_has_selection():
                     terminal.copy_clipboard()
-
             elif accion == 'pegar':
                 terminal.paste_clipboard()
-
-    def __cerrar(self, widget):
-        """
-        Cerrar la terminal a través de su botón cerrar.
-        """
-        paginas = self.get_n_pages()
-        for indice in range(paginas):
-            boton = self.get_tab_label(self.get_children()[
-                indice]).get_children()[1]
-
-            if boton == widget:
-                self.remove_page(indice)
-                break
 
 
 class VTETerminal(Vte.Terminal):
@@ -354,6 +324,39 @@ class VTETerminal(Vte.Terminal):
         self.show_all()
         self.__reset(archivo=archivo)
 
+    def __reset(self, archivo=None):
+        """
+        Reseteo de la Terminal.
+        """
+        if archivo:
+            interprete = "/bin/bash"
+            try:
+                if "python" in mimetypes.guess_type(archivo)[0]:
+                    interprete = "python"
+                    if os.path.exists(os.path.join("/bin", interprete)):
+                        interprete = os.path.join("/bin", interprete)
+                    elif os.path.exists(os.path.join("/usr/bin", interprete)):
+                        interprete = os.path.join("/usr/bin", interprete)
+                    elif os.path.exists(os.path.join("/sbin", interprete)):
+                        interprete = os.path.join("/sbin", interprete)
+                    elif os.path.exists(
+                        os.path.join("/usr/local", interprete)):
+                        interprete = os.path.join("/usr/local", interprete)
+            except:
+                ### Cuando se intenta ejecutar un archivo no ejecutable.
+                return self.set_interprete()
+            path = os.path.dirname(archivo)
+            pty_flags = Vte.PtyFlags(0)
+            self.fork_command_full(pty_flags, path, (interprete, archivo),
+                "", 0, None, None)
+        else:
+            interprete = self.interprete
+            path = self.path
+            pty_flags = Vte.PtyFlags(0)
+            self.fork_command_full(pty_flags, path, (interprete,),
+                "", 0, None, None)
+        self.child_focus(True)
+
     def re_set_font(self, fuente):
         """
         Setea la fuente.
@@ -375,45 +378,3 @@ class VTETerminal(Vte.Terminal):
         self.path = path
         self.interprete = interprete
         self.__reset()
-
-    def __reset(self, archivo=None):
-        """
-        Reseteo de la Terminal.
-        """
-        if archivo:
-            interprete = "/bin/bash"
-            try:
-                import mimetypes
-                if "python" in mimetypes.guess_type(archivo)[0]:
-                    interprete = "python"
-
-                    if os.path.exists(os.path.join("/bin", interprete)):
-                        interprete = os.path.join("/bin", interprete)
-
-                    elif os.path.exists(os.path.join("/usr/bin", interprete)):
-                        interprete = os.path.join("/usr/bin", interprete)
-
-                    elif os.path.exists(os.path.join("/sbin", interprete)):
-                        interprete = os.path.join("/sbin", interprete)
-
-                    elif os.path.exists(
-                        os.path.join("/usr/local", interprete)):
-                        interprete = os.path.join("/usr/local", interprete)
-
-            except:
-                ### Cuando se intenta ejecutar un archivo no ejecutable.
-                return self.set_interprete()
-
-            path = os.path.dirname(archivo)
-            pty_flags = Vte.PtyFlags(0)
-            self.fork_command_full(pty_flags, path, (interprete, archivo),
-                "", 0, None, None)
-
-        else:
-            interprete = self.interprete
-            path = self.path
-            pty_flags = Vte.PtyFlags(0)
-            self.fork_command_full(pty_flags, path, (interprete,),
-                "", 0, None, None)
-
-        self.child_focus(True)

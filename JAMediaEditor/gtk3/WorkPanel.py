@@ -367,30 +367,25 @@ class Notebook_SourceView(Gtk.Notebook):
         paginas = self.get_children()
         if not paginas:
             return
-
         scrolled = paginas[self.get_current_page()]
         sourceview = scrolled.get_children()[0]
-
         # Ver.
         if accion == "Numeracion":
             for pagina in paginas:
                 self.config['numeracion'] = valor
                 view = pagina.get_child()
                 view.set_accion(accion, self.config['numeracion'])
-
         elif accion == "Aumentar":
             for pagina in paginas:
                 self.config['tamanio'] += 1
                 view = pagina.get_child()
                 view.set_formato(self.config['fuente'], self.config['tamanio'])
-
         elif accion == "Disminuir":
             for pagina in paginas:
                 if self.config['tamanio'] > 6:
                     self.config['tamanio'] -= 1
                 view = pagina.get_child()
                 view.set_formato(self.config['fuente'], self.config['tamanio'])
-
         # Código.
         elif accion == "Formato":
             self.get_toplevel().set_sensitive(False)
@@ -399,7 +394,6 @@ class Notebook_SourceView(Gtk.Notebook):
             respuesta = dialogo.run()
             dialogo.destroy()
             self.get_toplevel().set_sensitive(True)
-
             if respuesta == Gtk.ResponseType.ACCEPT:
                 res = dialogo.get_font()
                 self.config['fuente'] = res[0]
