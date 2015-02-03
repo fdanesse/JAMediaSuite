@@ -946,7 +946,6 @@ class ErroresTreeview(Gtk.TreeView):
                 comentario = item_str.replace(item_str.split()[0], "").strip()
                 item = [numero, comentario]
                 self.get_model().append(item)
-
             except:
                 pass
 
@@ -961,7 +960,6 @@ class ErroresTreeview(Gtk.TreeView):
                 comentario = item_str.replace(item_str.split()[0], "").strip()
                 item = [numero, comentario]
                 self.get_model().append(item)
-
             except:
                 pass
 
@@ -1004,48 +1002,35 @@ class Estructura_Menu(Gtk.Menu):
             if os.path.isfile(filepath):
                 datos = commands.getoutput(
                     'file - ik %s%s%s' % ("\"", filepath, "\""))
-
                 if "text" in datos or "x - python" in datos and lectura:
                     self.__get_item(widget, path, "abrir")
-
                 if lectura:
                     self.__get_item(widget, path, "copiar")
-
                 if escritura:
                     self.__get_item(widget, path, "cortar")
-
                 if escritura:
                     self.__get_item(widget, path, "suprimir")
-
                 if "text" in datos or "x-python" in datos and lectura:
                     self.__get_item(widget, path, "buscar")
-
             elif os.path.isdir(filepath):
                 if filepath == modelo.get_value(iterfirst, 2):
                     self.__get_item(widget, path, "eliminar proyecto")
                     self.__get_item(widget, path, "Crear Directorio")
-
                     if escritura and "copiar" in accion_previa or \
                         "cortar" in accion_previa:
                         self.__get_item(widget, path, "pegar")
-
                     self.__get_item(widget, path, "buscar")
-
                 else:
                     if lectura:
                         self.__get_item(widget, path, "copiar")
-
                     if escritura and lectura:
                         self.__get_item(widget, path, "cortar")
-
                     if escritura and "copiar" in accion_previa or \
                         "cortar" in accion_previa:
                         self.__get_item(widget, path, "pegar")
-
                     if escritura:
                         self.__get_item(widget, path, "suprimir")
                         self.__get_item(widget, path, "Crear Directorio")
-
                     if lectura:
                         self.__get_item(widget, path, "buscar")
 
@@ -1056,28 +1041,16 @@ class Estructura_Menu(Gtk.Menu):
         # verificar:
         # 1 - Si es un archivo o un directorio
         # 2 - Si sus permisos permiten la copia, escritura y borrado
-
-        # Comprobar existencia y permisos:
-        # http://docs.python.org/library/os.html?highlight=os#module-os
-        # os.access(path, mode)
-        # os.F_OK # si existe la direccion
-        # os.R_OK # Permisos de lectura
-        # os.W_OK # Permisos de escritura
-        # os.X_OK # Permisos de ejecucion
-
         if not os.path.exists(path):
             return False, False, False
-
         try:
             if os.access(path, os.F_OK):
                 r = os.access(path, os.R_OK)
                 w = os.access(path, os.W_OK)
                 x = os.access(path, os.X_OK)
                 return r, w, x
-
             else:
                 return False, False, False
-
         except:
             return False, False, False
 
@@ -1184,23 +1157,19 @@ class BusquedaGrep(Gtk.Dialog):
                 result = commands.getoutput(
                     "less | grep -R -n \'%s\' %s" % (text, self.path))
                 result = result.splitlines()
-
             elif os.path.isfile(self.path):
                 result = commands.getoutput(
                     "less | grep -n \'%s\' %s" % (text, self.path))
                 result = result.splitlines()
-
             items = []
             for line in result:
                 dat = line.split(":")
                 if os.path.isdir(self.path):
                     if len(dat) == 3:
                         items.append([dat[0], dat[1], dat[2].strip()])
-
                 elif os.path.isfile(self.path):
                     if len(dat) == 2:
                         items.append([self.path, dat[0], dat[1].strip()])
-
             self.treeview.limpiar()
             self.treeview.agregar_items(items)
 
@@ -1233,7 +1202,6 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
             model.get_value(_iter, 0),
             model.get_value(_iter, 1),
             model.get_value(_iter, 2)]
-
         self.emit("nueva-seleccion", valor)
 
     def __setear_columnas(self):
@@ -1266,7 +1234,6 @@ class TreeViewBusquedaGrep(Gtk.TreeView):
         if not elementos:
             self.seleccionar_primero()
             return False
-
         self.get_model().append(elementos[0])
         elementos.remove(elementos[0])
         GLib.idle_add(self.__ejecutar_agregar_elemento, elementos)

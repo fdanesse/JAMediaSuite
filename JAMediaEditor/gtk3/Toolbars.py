@@ -389,7 +389,6 @@ class ToolbarEstado(Gtk.EventBox):
         item.add(self.label)
         toolbar.insert(item, -1)
 
-        #self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
         self.add(toolbar)
         self.show_all()
 
@@ -397,11 +396,9 @@ class ToolbarEstado(Gtk.EventBox):
         reng = _dict['renglones']
         carac = _dict['caracteres']
         arch = _dict['archivo']
-
         text = self.label.get_text()
         new_text = u"Archivo: %s  Lineas: %s  Caracteres: %s" % (
             arch, reng, carac)
-
         try:
             if text != new_text:
                 self.label.set_text(new_text)

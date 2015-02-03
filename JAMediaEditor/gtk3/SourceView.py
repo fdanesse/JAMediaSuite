@@ -81,7 +81,6 @@ class SourceView(GtkSource.View):
         self.modify_font(Pango.FontDescription(font))
 
         self.show_all()
-
         self.connect("key-press-event", self.__key_press_event)
 
     def __force_emit_new_select(self):
@@ -334,7 +333,7 @@ class SourceView(GtkSource.View):
 
         # FIXME: Verificar con Limpieza de codigo
         modificado = self.get_buffer().get_modified()
-        tiene_texto = bool(_buffer.get_text(inicio, fin, 0))
+        tiene_texto = bool(self.get_buffer().get_char_count())
         texto_seleccionado = bool(_buffer.get_selection_bounds())
 
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
@@ -369,7 +368,8 @@ class SourceView(GtkSource.View):
 
         self.emit('update', _dict)
         self.__senialar(modificado)
-        self.new_handle(True)
+        if self.actualizador:
+            self.new_handle(True)
         return False
 
     def set_archivo(self, archivo):
@@ -532,16 +532,12 @@ class SourceView(GtkSource.View):
                 if self.lenguaje.get_name() == "Python":
                     numeracion = self.get_show_line_numbers()
                     self.set_show_line_numbers(True)
-                    # HACK: FIXME: No se debe permitir usar
-                    # la interfaz de la aplicación.
                     self.get_toplevel().set_sensitive(False)
                     dialogo = DialogoErrores(self,
                         parent_window=self.get_toplevel())
                     dialogo.run()
                     dialogo.destroy()
                     self.set_show_line_numbers(numeracion)
-                    # HACK: FIXME: No se debe permitir usar
-                    # la interfaz de la aplicación.
                     self.get_toplevel().set_sensitive(True)
                     return
 
