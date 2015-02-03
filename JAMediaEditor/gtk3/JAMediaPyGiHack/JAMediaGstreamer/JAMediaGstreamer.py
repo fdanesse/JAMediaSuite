@@ -87,6 +87,9 @@ class JAMediaGstreamer(Gtk.Paned):
     def buscar_mas(self, accion, texto):
         self.lista.buscar_mas(accion, texto)
 
+    def zoom(self, zoom):
+        print self.zoom, zoom
+
 
 def exit(self, widget=None, senial=None):
     import sys

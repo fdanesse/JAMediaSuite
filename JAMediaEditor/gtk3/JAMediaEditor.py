@@ -117,6 +117,7 @@ class JAMediaEditor(Gtk.Window):
                         GLib.idle_add(
                             self.base_panel.external_open_file,
                             archivo)
+        # FIXME: Agregar informe de utilizacion de recursos
         print "JAMediaEditor:", os.getpid()
 
     def __run_editor(self, widget):

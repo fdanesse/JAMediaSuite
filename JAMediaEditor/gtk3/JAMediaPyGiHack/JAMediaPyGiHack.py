@@ -51,13 +51,16 @@ class JAMediaPyGiHack(Gtk.Box):
         self.toolbar.connect("import", self.__import)
         self.toolbar.connect("accion-menu", self.__set_accion)
         self.toolbar.connect("salir", self.__emit_salir)
-
+        self.toolbar.connect("zoom", self.__zoom)
         self.toolbar.connect("buscar", self.__buscar)
         self.toolbar.connect("accion", self.__buscar_mas)
         self.toolbar.connect("informe", self.__informar)
 
         self.basebox.connect("update", self.__update)
         self.basebox.connect("nobusquedas", self.__desactivar_busquedas)
+
+    def __zoom(self, widget, zoom):
+        self.basebox.zoom(zoom)
 
     def __informar(self, widget):
         """

@@ -47,6 +47,8 @@ class Toolbar(Gtk.EventBox):
         GObject.TYPE_STRING, GObject.TYPE_BOOLEAN)),
     'salir': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
+    "zoom": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
     "accion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING)),
@@ -83,9 +85,22 @@ class Toolbar(Gtk.EventBox):
 
         toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
+        archivo = os.path.join(ICONOS, "Zoomout.svg")
+        boton = get_boton(archivo, flip=False, pixels=18,
+            tooltip_text="Alejar")
+        boton.connect("clicked", self.__emit_zoom)
+        toolbar.insert(boton, -1)
+
+        archivo = os.path.join(ICONOS, "Zoomin.svg")
+        boton = get_boton(archivo, flip=False, pixels=18,
+            tooltip_text="Acercar")
+        boton.connect("clicked", self.__emit_zoom)
+        toolbar.insert(boton, -1)
+
+        toolbar.insert(get_separador(draw=False, ancho=10, expand=False), -1)
+
         archivo = os.path.join(ICONOS, "button-cancel.svg")
-        boton = get_boton(archivo, flip=False, pixels=32)
-        boton.set_tooltip_text("Salir")
+        boton = get_boton(archivo, flip=False, pixels=32, tooltip_text="Salir")
         boton.connect("clicked", self.__emit_salir)
         toolbar.insert(boton, -1)
 
@@ -97,6 +112,9 @@ class Toolbar(Gtk.EventBox):
 
         self.add(toolbar)
         self.show_all()
+
+    def __emit_zoom(self, widget):
+        self.emit('zoom', widget.TOOLTIP)
 
     def __emit_salir(self, widget):
         self.emit('salir')

@@ -28,7 +28,6 @@ from gi.repository import GLib
 from SourceView import SourceView
 from JAMediaTerminal.Terminal import Terminal
 from Widgets import DialogoAlertaSinGuardar
-from Widgets import DialogoAlertaSinGuardar
 from JAMediaTerminal.Widgets import DialogoFormato
 
 from Globales import get_boton
@@ -311,9 +310,7 @@ class Notebook_SourceView(Gtk.Notebook):
         for pagina in paginas:
             view = pagina.get_child()
             if view.archivo and archivo:
-                arch1 = view.archivo
-                arch2 = archivo
-                if arch1 == archivo:
+                if view.archivo == archivo:
                     self.set_current_page(paginas.index(pagina))
                     return False
 
@@ -409,7 +406,6 @@ class Notebook_SourceView(Gtk.Notebook):
         paginas = self.get_children()
         if not paginas:
             self.abrir_archivo(False)
-        self.get_toplevel().set_sensitive(True)
 
     def get_archivos_de_proyecto(self, proyecto_path):
         """

@@ -1,7 +1,7 @@
 
 public class WorkPanel : Gtk.VPaned{
 
-    private WorkPanel2 workpanel2 = new WorkPanel2();
+    private Notebook_SourceView notebook_sourceview = new Notebook_SourceView();
     private Terminal terminal = new Terminal();
 
     public WorkPanel(){
@@ -11,43 +11,22 @@ public class WorkPanel : Gtk.VPaned{
         //# Tipo: proyecto o archivo.
         //self.ejecucion_activa = False
 
-        this.pack1(this.workpanel2, true, false);
+        this.pack1(this.notebook_sourceview, true, false);
         this.pack2(this.terminal, false, true);
 
         this.show_all();
         this.terminal.set_size_request(-1, 170);
 
+        //self.notebook_sourceview.connect('new_select', self.__re_emit_new_select)
+        //self.notebook_sourceview.connect('update', self.__re_emit_update)
         //self.terminal.connect("ejecucion", self.__set_ejecucion)
         //self.terminal.connect("reset", self.detener_ejecucion)
         //GLib.idle_add(self.terminal.hide)
     }
 
     public void abrir_archivos(SList<string> archivos){
-        this.workpanel2.abrir_archivos(archivos);
-        }
-}
-
-
-public class WorkPanel2 : Gtk.HPaned{
-
-    // FIXME: Contenedor de guias, ejemplos y tutoriales.
-    private Notebook_SourceView notebook_sourceview = new Notebook_SourceView();
-
-    public WorkPanel2(){
-
-        this.pack1(this.notebook_sourceview, true, false);
-        //this.pack2(Guias y Ejemplos, true, false);
-
-        //self.notebook_sourceview.connect('new_select', self.__re_emit_new_select)
-        //self.notebook_sourceview.connect('update', self.__re_emit_update)
-
-        this.show_all();
-    }
-
-    public void abrir_archivos(SList<string> archivos){
         foreach (unowned string archivo in archivos){
             notebook_sourceview.abrir_archivo(archivo);
-            }
         }
 }
 

@@ -21,8 +21,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 import os
-import mimetypes
-
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GtkSource
@@ -101,6 +99,8 @@ class SourceView(GtkSource.View):
         textiter = _buffer.get_iter_at_mark(textmark)
         _id = textiter.get_line()
 
+        # FIXME: Falta que  al guardar archivos py establezca tipo y
+        # codificación de los archivos.
         texto = self.__limpiar_codigo(texto)
         archivo = open(self.archivo, "w")
         archivo.write(texto)
@@ -199,7 +199,6 @@ class SourceView(GtkSource.View):
 
     def __cerrar(self):
         # Cierra la página en el Notebook_SourceView de este sourceview.
-        self.get_toplevel().set_sensitive(False)
         self.new_handle(False)
         scroll = self.get_parent()
         notebook = scroll.get_parent()
@@ -368,8 +367,7 @@ class SourceView(GtkSource.View):
 
         self.emit('update', _dict)
         self.__senialar(modificado)
-        if self.actualizador:
-            self.new_handle(True)
+        self.new_handle(True)
         return False
 
     def set_archivo(self, archivo):
@@ -573,4 +571,5 @@ class SourceView(GtkSource.View):
             GLib.source_remove(self.actualizador)
             self.actualizador = False
         if reset:
+            # FIXME: El intervalo puedes alargarlo si tu maquina es lenta.
             self.actualizador = GLib.timeout_add(1000, self.__handle)

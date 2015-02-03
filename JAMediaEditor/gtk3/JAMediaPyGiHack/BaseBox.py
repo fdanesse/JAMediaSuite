@@ -100,6 +100,14 @@ class BaseBox(Gtk.Box):
     def check_busquedas(self):
         return self.jamedia_gstreamer or self.base_notebook
 
+    def zoom(self, zoom):
+        if self.base_notebook:
+            if self.base_notebook.get_visible():
+                self.base_notebook.zoom(zoom)
+        if self.jamedia_gstreamer:
+            if self.jamedia_gstreamer.get_visible():
+                self.jamedia_gstreamer.zoom(zoom)
+
 
 class BaseNotebook(Gtk.Notebook):
 
@@ -129,6 +137,9 @@ class BaseNotebook(Gtk.Notebook):
                 break
         if not self.get_n_pages():
             self.emit("nobusquedas")
+
+    def zoom(self, zoom):
+        print self.zoom, zoom
 
     def buscar(self, texto):
         self.get_nth_page(self.get_current_page()).buscar(texto)
