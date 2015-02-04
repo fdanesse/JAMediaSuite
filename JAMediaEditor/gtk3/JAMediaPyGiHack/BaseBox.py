@@ -139,7 +139,9 @@ class BaseNotebook(Gtk.Notebook):
             self.emit("nobusquedas")
 
     def zoom(self, zoom):
-        print self.zoom, zoom
+        paginas = self.get_n_pages()
+        for indice in range(paginas):
+            self.get_children()[indice].get_children()[0].zoom(zoom)
 
     def buscar(self, texto):
         self.get_nth_page(self.get_current_page()).buscar(texto)
@@ -193,6 +195,9 @@ class IntrospectionWidget(Gtk.Box):
 
     def __set_info_tray(self, widget, info):
         self.toolbartray.set_info(info)
+
+    def zoom(self, zoom):
+        self.introspection_panel.zoom(zoom)
 
     def buscar(self, texto):
         self.introspection_panel.buscar(texto)
@@ -280,6 +285,9 @@ class IntrospectionPanel(Gtk.Paned):
         self.emit("info-try", "%s %s %s %s" % (
             objeto, _type, modulo_path, tipo))
 
+    def zoom(self, zoom):
+        self.infonotebook.zoom(zoom)
+
     def buscar(self, texto):
         self.apiwidget.buscar(texto)
 
@@ -330,6 +338,18 @@ class InfoNotebook(Gtk.Notebook):
         self.append_page(scroll, label)
 
         self.show_all()
+
+    def zoom(self, zoom):
+        x = float("{:.2f}".format(self.webview.get_zoom_level()))
+        if zoom == "Alejar":
+            x -= 0.1
+            if x < 0.3:
+                x = 0.3
+        elif zoom == "Acercar":
+            x += 0.1
+            if x > 3.0:
+                x = 3.0
+        self.webview.set_zoom_level(x)
 
     def set_webdoc(self, webdoc):
         self.webview.open(webdoc)

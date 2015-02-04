@@ -21,6 +21,7 @@
 
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import Pango
 
 from BusquedasTreeView import buscar_delante
 from BusquedasTreeView import buscar_mas
@@ -32,10 +33,27 @@ class TextView(Gtk.TextView):
 
         Gtk.TextView.__init__(self)
 
+        self.set_border_width(15)
         self.set_editable(False)
-        self.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+        #self.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         self.set_buffer(Gtk.TextBuffer())
+        self.fontzise = 10
+        font = "%s %s" % ("Monospace", self.fontzise)
+        self.modify_font(Pango.FontDescription(font))
+
         self.show_all()
+
+    def zoom(self, zoom):
+        if zoom == "Alejar":
+            self.fontzise -= 1
+            if self.fontzise < 5:
+                self.fontzise = 5
+        elif zoom == "Acercar":
+            self.fontzise += 1
+            if self.fontzise > 20:
+                self.fontzise = 20
+        font = "%s %s" % ("Monospace", self.fontzise)
+        self.modify_font(Pango.FontDescription(font))
 
 
 class Lista(Gtk.TreeView):
