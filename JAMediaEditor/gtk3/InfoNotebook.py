@@ -30,9 +30,9 @@ from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GLib
 
-from Widgets import Estructura_Menu
-from Widgets import DialogoEliminar
-#from Widgets import BusquedaGrep
+#from Widgets2 import Estructura_Menu
+#from Widgets2 import DialogoEliminar
+#from Widgets2 import BusquedaGrep
 from JAMediaPyGiHack.BusquedasTreeView import buscar_delante
 from JAMediaPyGiHack.BusquedasTreeView import buscar_mas
 
@@ -146,6 +146,7 @@ class InfoNotebook(Gtk.Notebook):
         #    self.__click_derecho_en_estructura)
         self.estructura_proyecto.connect("open", self.__re_emit_open)
 
+    '''
     def __click_derecho_en_estructura(self, widget, event):
         """
         Abrir un menu de opciones cuando el usuario hace click derecho sobre
@@ -285,6 +286,7 @@ class InfoNotebook(Gtk.Notebook):
     def __seleccion_in_grep(self, widget, valor):
         # Cuando se hace doble click en una linea de la búsqueda grep.
         self.emit("search_on_grep", valor, widget)
+    '''
 
     def __re_emit_open(self, widget, filepath):
         # Manda abrir un archivo segun filepath.

@@ -28,12 +28,12 @@ from gi.repository import Pango
 from gi.repository import Gdk
 from gi.repository import GLib
 
-from Widgets import DialogoSobreEscritura
-from Widgets import My_FileChooser
-from Widgets import DialogoBuscar
-from Widgets import DialogoReemplazar
-from Widgets import DialogoAlertaSinGuardar
-from Widgets import DialogoErrores
+from Widgets1 import DialogoSobreEscritura
+from Widgets1 import My_FileChooser
+from Widgets1 import DialogoBuscar
+from Widgets1 import DialogoReemplazar
+from Widgets1 import DialogoAlertaSinGuardar
+from Widgets2 import DialogoErrores
 
 home = os.environ["HOME"]
 BatovideWorkSpace = os.path.join(home, 'BatovideWorkSpace')

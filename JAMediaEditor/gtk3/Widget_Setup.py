@@ -36,7 +36,7 @@ from gi.repository import GdkPixbuf
 
 from JAMediaTerminal.Terminal import Terminal
 import ApiProyecto
-from Widgets import My_FileChooser
+from Widgets1 import My_FileChooser
 
 BASEPATH = os.path.dirname(__file__)
 
@@ -455,7 +455,7 @@ class Gnome_Notebook(Gtk.Notebook):
         """
         # Borrar anteriores
         if os.path.exists(self.activitydirpath):
-            commands.getoutput("rm -r %s" % self.activitydirpath)
+            shutil.rmtree(self.activitydirpath)
 
         # Copiar contenido del proyecto.
         shutil.copytree(self.proyecto["path"],

@@ -26,8 +26,7 @@ import glob
 from gi.repository import Gtk
 
 BASE_PATH = os.path.dirname(__file__)
-
-icons = os.path.join(BASE_PATH, "Iconos")
+ICONOS = os.path.join(BASE_PATH, "Iconos")
 
 from Globales import get_boton
 
@@ -99,7 +98,6 @@ class DialogoProyecto(Gtk.Dialog):
 
         if accion == "nuevo":
             boton = Gtk.Button("Ver más Opciones...")
-
         else:
             boton = Gtk.Button("Ocultar Opciones...")
 
@@ -162,16 +160,13 @@ class DialogoProyecto(Gtk.Dialog):
             if widget.get_visible():
                 widget.hide()
                 options = False
-
             else:
                 widget.show()
                 options = True
-
         if options:
             self.resize(self.sizes[1][0], self.sizes[1][1])
             self.set_size_request(self.sizes[1][0], self.sizes[1][1])
             button.set_label("Ocultar Opciones...")
-
         else:
             self.resize(self.sizes[0][0], self.sizes[0][1])
             self.set_size_request(self.sizes[0][0], self.sizes[0][1])
@@ -184,18 +179,14 @@ class DialogoProyecto(Gtk.Dialog):
         text = widget.get_text()
         items = text.split(".")
         valores = []
-
         for item in items:
             item = item.strip()
             try:
                 valores.append(int(item))
-
             except:
                 valores.append(0)
-
         while len(valores) < 3:
             valores.append(0)
-
         version = "%s.%s.%s" % (valores[0], valores[1], valores[2])
         self.version.set_text(version)
 
@@ -204,27 +195,21 @@ class DialogoProyecto(Gtk.Dialog):
         Activa y Desactiva el boton aceptar, según
         tenga nombre el proyecto o no.
         """
-
         boton = None
-
         for button in self.get_action_area().get_children():
             if self.get_response_for_widget(button) == Gtk.ResponseType.ACCEPT:
                 boton = button
                 break
-
         nombre = self.nombre.get_text()
         if nombre:
             nombre = nombre.strip()
-
         if nombre:
             boton.set_sensitive(True)
-
         else:
             boton.set_sensitive(False)
 
     def __get_label(self, text):
-        label = Gtk.Label(text)
-        return label
+        return Gtk.Label(text)
 
     def __get_pack_box(self, widgets):
         box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -298,7 +283,6 @@ class DialogoProyecto(Gtk.Dialog):
         """
         Establece los datos del diccionario introducido
         """
-
         self.nombre.set_text(diccionario["nombre"])
         self.path.set_text(diccionario["path"])
         self.version.set_text(diccionario["version"])
@@ -313,19 +297,16 @@ class DialogoProyecto(Gtk.Dialog):
         if diccionario.get("path", False):
             arch = glob.glob("%s/*.py" % diccionario["path"])
             self.main.remove_all()
-
             for archivo in arch:
                 self.main.append_text(os.path.basename(archivo))
 
         model = self.main.get_model()
         item = model.get_iter_first()
-
         count = 0
         while item:
             if model.get_value(item, 0) == diccionario["main"]:
                 self.main.set_active(count)
                 break
-
             item = model.iter_next(item)
             count += 1
 
@@ -335,13 +316,10 @@ class DialogoProyecto(Gtk.Dialog):
                 nombre = self.nombre.get_text()
                 if nombre:
                     nombre.strip()
-
                 if not nombre:
                     button.set_sensitive(False)
-
                 else:
                     button.set_sensitive(True)
-
                 break
 
 
@@ -364,14 +342,13 @@ class WidgetAutores(Gtk.Box):
         Función para agregar información de un autor.
         """
         box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-
         entry1 = Gtk.Entry()
         entry2 = Gtk.Entry()
 
-        remover = get_boton(os.path.join(icons, "list-remove.svg"),
+        remover = get_boton(os.path.join(ICONOS, "list-remove.svg"),
             pixels=37, tooltip_text="Eliminar")
 
-        agregar = get_boton(os.path.join(icons, "gtk-add.svg"),
+        agregar = get_boton(os.path.join(ICONOS, "gtk-add.svg"),
             pixels=37, tooltip_text="Agregar")
 
         frame1 = Gtk.Frame()
@@ -400,7 +377,6 @@ class WidgetAutores(Gtk.Box):
         if len(self.get_children()) == 1:
             widget.get_parent().get_children()[0].get_child().set_text("")
             widget.get_parent().get_children()[1].get_child().set_text("")
-
         else:
             widget.get_parent().destroy()
 
@@ -410,25 +386,19 @@ class WidgetAutores(Gtk.Box):
         con todos los autores definidos.
         """
         autores = []
-
         for autor in self.get_children():
             nombre = autor.get_children()[0].get_child()
             mail = autor.get_children()[1].get_child()
-
             nombre = nombre.get_text()
             nombre = nombre.strip()
-
             mail = mail.get_text()
             mail = mail.strip()
-
             autores.append((nombre, mail))
-
         return autores
 
     def set_autores(self, autores):
         for x in range(len(autores) - 1):
             self.__agregar(None)
-
         for autor in autores:
             nombre, mail = autor
             linea = self.get_children()[autores.index(autor)]

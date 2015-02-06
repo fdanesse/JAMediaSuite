@@ -28,7 +28,7 @@ from gi.repository import Gdk
 from gi.repository import GLib
 from gi.repository import GObject
 
-from Widgets import Menu
+from Menu import Menu
 from BasePanel import BasePanel
 from Toolbars import ToolbarEstado
 from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack

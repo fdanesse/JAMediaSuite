@@ -36,9 +36,9 @@ from WorkPanel import WorkPanel
 from Toolbars import ToolbarProyecto
 from Toolbars import ToolbarArchivo
 from JAMediaPyGiHack.Widgets import ToolbarBusquedas
-from Widgets import Multiple_FileChooser
+from Widgets1 import Multiple_FileChooser
 from DialogoProyecto import DialogoProyecto
-from Widgets import My_FileChooser
+from Widgets1 import My_FileChooser
 from Widget_Setup import DialogoSetup
 
 import Licencias as Lic

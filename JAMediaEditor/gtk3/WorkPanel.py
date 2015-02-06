@@ -27,7 +27,7 @@ from gi.repository import GLib
 
 from SourceView import SourceView
 from JAMediaTerminal.Terminal import Terminal
-from Widgets import DialogoAlertaSinGuardar
+from Widgets1 import DialogoAlertaSinGuardar
 from JAMediaTerminal.Widgets import DialogoFormato
 
 from Globales import get_boton
