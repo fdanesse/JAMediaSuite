@@ -224,46 +224,37 @@ class DialogoProyecto(Gtk.Dialog):
         """
         _buffer = self.descripcion.get_buffer()
 
-        nombre = self.nombre.get_text()
+        nombre = unicode(self.nombre.get_text(), "utf-8")
         main = self.main.get_active_text()
-        path = self.path.get_text()
-        mimetypes = self.mimetypes.get_text()
-        categories = self.categories.get_text()
-
-        descripcion = _buffer.get_text(_buffer.get_start_iter(),
-            _buffer.get_end_iter(), True)
-
-        version = self.version.get_text()
-        licencia = self.licencia.get_active_text()
-        url = self.url.get_text()
+        if main:
+            main = unicode(main, "utf-8")
+        path = unicode(self.path.get_text(), "utf-8")
+        mimetypes = unicode(self.mimetypes.get_text(), "utf-8")
+        categories = unicode(self.categories.get_text(), "utf-8")
+        descripcion = unicode(_buffer.get_text(_buffer.get_start_iter(),
+            _buffer.get_end_iter(), True), "utf-8")
+        version = unicode(self.version.get_text(), "utf-8")
+        licencia = unicode(self.licencia.get_active_text(), "utf-8")
+        url = unicode(self.url.get_text(), "utf-8")
 
         if nombre:
             nombre = nombre.strip()
-
         if main:
             main = main.strip()
-
         if path:
             path = path.strip()
-
         if mimetypes:
             mimetypes = mimetypes.replace("\n", " ").strip()
-
         if categories:
             categories = categories.replace("\n", " ").strip()
-
         if descripcion:
             descripcion = descripcion.replace("\n", " ").strip()
-
         if version:
             version = version.strip()
-
         if licencia:
             licencia = licencia.strip()
-
         if url:
             url = url.replace("\n", " ").strip()
-
         _dict = {
             "nombre": nombre,
             "main": main,
@@ -276,7 +267,6 @@ class DialogoProyecto(Gtk.Dialog):
             "url": url,
             "autores": self.autores.get_autores()
             }
-
         return _dict
 
     def set_proyecto(self, diccionario):
@@ -298,7 +288,8 @@ class DialogoProyecto(Gtk.Dialog):
             arch = glob.glob("%s/*.py" % diccionario["path"])
             self.main.remove_all()
             for archivo in arch:
-                self.main.append_text(os.path.basename(archivo))
+                self.main.append_text(
+                    unicode(os.path.basename(archivo), "utf-8"))
 
         model = self.main.get_model()
         item = model.get_iter_first()
@@ -313,13 +304,10 @@ class DialogoProyecto(Gtk.Dialog):
         # Setear sensibilidad en el boton aceptar.
         for button in self.get_action_area().get_children():
             if self.get_response_for_widget(button) == Gtk.ResponseType.ACCEPT:
-                nombre = self.nombre.get_text()
-                if nombre:
-                    nombre.strip()
-                if not nombre:
-                    button.set_sensitive(False)
-                else:
+                if self.nombre.get_text().strip():
                     button.set_sensitive(True)
+                else:
+                    button.set_sensitive(False)
                 break
 
 
@@ -389,11 +377,9 @@ class WidgetAutores(Gtk.Box):
         for autor in self.get_children():
             nombre = autor.get_children()[0].get_child()
             mail = autor.get_children()[1].get_child()
-            nombre = nombre.get_text()
-            nombre = nombre.strip()
-            mail = mail.get_text()
-            mail = mail.strip()
-            autores.append((nombre, mail))
+            nombre = nombre.get_text().strip()
+            mail = mail.get_text().strip()
+            autores.append((unicode(nombre, "utf-8"), unicode(mail, "utf-8")))
         return autores
 
     def set_autores(self, autores):

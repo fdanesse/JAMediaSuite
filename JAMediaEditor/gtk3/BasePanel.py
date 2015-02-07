@@ -235,10 +235,11 @@ class BasePanel(Gtk.Paned):
 
     def __cargar_proyecto(self, proyecto):
         # Carga los datos del proyecto en la interfaz de la aplicación.
-        self.proyecto = proyecto
-        path = proyecto.get("path", False)
-        main = proyecto.get("main", False)
-        self.__abrir_archivo(False, os.path.join(path, main))
+        pass
+    #    self.proyecto = proyecto
+    #    path = proyecto.get("path", False)
+    #    main = proyecto.get("main", False)
+    #    self.__abrir_archivo(False, os.path.join(path, main))
 
     def __abrir_archivo(self, widget, archivo):
         if archivo:
@@ -254,198 +255,208 @@ class BasePanel(Gtk.Paned):
             self.workpanel.abrir_archivo(False)
 
     def __abrir_proyecto(self, widget, archivo):
-        archivo = os.path.realpath(archivo)
-        extension = os.path.splitext(os.path.split(archivo)[1])[1]
-        if not extension == ".ide":
-            return
+        pass
+        #archivo = unicode(os.path.realpath(archivo), "utf-8")
+        #extension = os.path.splitext(os.path.split(archivo)[1])[1]
+        #if not extension == ".ide":
+        #    return
 
-        pro = codecs.open(archivo, "r", "utf-8")
-        proyecto = json.JSONDecoder("utf-8").decode(pro.read())
-        proyecto["path"] = os.path.dirname(archivo)
+        #arch = open(archivo, "r")
+        #proyecto = json.load(arch, "utf-8")
+        #arch.close()
+        #proyecto["path"] = os.path.dirname(archivo)
 
         # Validación de datos del proyecto.
-        if not proyecto.get("nombre", False):
-            return
-        if not proyecto.get("main", False):
-            return
-        if not os.path.exists(os.path.join(
-            proyecto["path"], proyecto["main"])):
-                return
+        #if not proyecto.get("nombre", False):
+        #    return
+        #if not proyecto.get("main", False):
+        #    return
 
-        anterior_cerrado = self.cerrar_proyecto()
+        #if not os.path.exists(os.path.join(
+        #    proyecto["path"], proyecto["main"])):
+        #        return
+
+        #anterior_cerrado = self.cerrar_proyecto()
         # El proyecto se carga sólo si se cerró el anterior.
-        if anterior_cerrado:
-            self.__cargar_proyecto(proyecto)
+        #if anterior_cerrado:
+        #    self.__cargar_proyecto(proyecto)
 
     def __guardar_archivos_de_proyecto(self):
         # Guarda todos los archivos del proyecto abierto.
-        if not self.proyecto:
-            return
-        codeviews = self.workpanel.get_archivos_de_proyecto(
-            self.proyecto["path"])
-        for view in codeviews:
-            view.guardar()
+        pass
+        #if not self.proyecto:
+        #    return
+        #codeviews = self.workpanel.get_archivos_de_proyecto(
+        #    self.proyecto["path"])
+        #for view in codeviews:
+        #    view.guardar()
 
     def __guardar_proyecto(self, proyecto):
         # Guarda el proyecto actual.
         # Todo Proyecto Requiere un Nombre.
-        if not proyecto.get("nombre", False):
-            return
+        pass
+        #if not proyecto.get("nombre", False):
+        #    return
 
         # Seteo automático del path del proyecto.
-        path = proyecto.get("path", False)
-        if not path:
-            path = os.path.join(BatovideWorkSpace, proyecto["nombre"])
-        if not os.path.exists(path):
-            os.mkdir(path)
+        #path = proyecto.get("path", False)
+        #if not path:
+        #    path = os.path.join(BatovideWorkSpace, proyecto["nombre"])
+        #if not os.path.exists(path):
+        #    os.mkdir(path)
 
-        proyecto["path"] = path
+        #proyecto["path"] = path
         # Seteo automático del main del proyecto.
-        if not proyecto.get("main", False):
-            proyecto["main"] = "Main.py"
+        #if not proyecto.get("main", False):
+        #    proyecto["main"] = "Main.py"
 
-        main_path = os.path.join(proyecto["path"], proyecto["main"])
-        if not os.path.exists(main_path):
-            arch = open(main_path, "w")
-            arch.write("#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n")
-            arch.close()
+        #main_path = os.path.join(proyecto["path"], proyecto["main"])
+        #if not os.path.exists(main_path):
+        #    arch = open(main_path, "w")
+        #    arch.write("#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n")
+        #    arch.close()
 
         # Seteo automático de licencia
-        licencia_path = os.path.join(proyecto["path"], "COPYING")
-        arch = open(licencia_path, "w")
-        arch.write(Lic.dict[proyecto["licencia"]])
-        arch.close()
+        #licencia_path = os.path.join(proyecto["path"], "COPYING")
+        #arch = open(licencia_path, "w")
+        #arch.write(Lic.dict[proyecto["licencia"]])
+        #arch.close()
 
         # Seteo automático de autores.
-        autores_path = os.path.join(proyecto["path"], "AUTHORS")
-        arch = open(autores_path, "w")
-        try:
-            for autor in proyecto["autores"]:
-                arch.write(u"%s %s\n" % (autor[0], autor[1]))
-        except:
-            print "FIXME: UnicodeEncodeError: 'ascii' codec can't encode"
-            print "character u'\xed' in position 13: ordinal not in range(128)"
-        arch.close()
+        #autores_path = os.path.join(proyecto["path"], "AUTHORS")
+        #arch = open(autores_path, "w")
+        #for autor in proyecto["autores"]:
+        #    arch.write(u"%s %s\n" % (autor[0], autor[1]))
+        #arch.close()
+
         # Guardar el Proyecto.
-        proyecto_file = os.path.join(path, "proyecto.ide")
-        archivo = open(proyecto_file, "w")
-        archivo.write(json.dumps(proyecto, indent=4,
-            separators=(", ", ":"), sort_keys=True))
-        archivo.close()
+        #proyecto_file = os.path.join(path, "proyecto.ide")
+        #archivo = open(proyecto_file, "w")
+        #archivo.write(
+        #    json.dumps(
+        #        proyecto,
+        #        indent=4,
+        #        ensure_ascii=False,
+        #        separators=(", ", ":"),
+        #        encoding="utf-8"))
+        #archivo.close()
 
     def __remove_proyect(self, widget):
         # Cuando se elimina el proyecto desde la vista de estructura.
-        self.workpanel.remove_proyect(self.proyecto["path"])
-        self.infonotebook.set_path_estructura(False)
-        self.proyecto = {}
-        return True
+        pass
+        #self.workpanel.remove_proyect(self.proyecto["path"])
+        #self.infonotebook.set_path_estructura(False)
+        #self.proyecto = {}
+        #return True
 
     def cerrar_proyecto(self):
-        if not self.proyecto:
-            self.proyecto = {}
-            self.infonotebook.set_path_estructura(False)
-            return True
-        codeviews = self.workpanel.get_archivos_de_proyecto(
-            self.proyecto.get("path", ""))
-        if codeviews:
-            # Cerrar Archivos. Esto pedirá guardar si hay cambios en él.
-            for view in codeviews:
-                view.set_accion("Cerrar Archivo")
-        else:
-            self.proyecto = {}
-            self.infonotebook.set_path_estructura(False)
-            return True
+        pass
+        #if not self.proyecto:
+        #    self.proyecto = {}
+        #    self.infonotebook.set_path_estructura(False)
+        #    return True
+        #codeviews = self.workpanel.get_archivos_de_proyecto(
+        #    self.proyecto.get("path", ""))
+        #if codeviews:
+        #    # Cerrar Archivos. Esto pedirá guardar si hay cambios en él.
+        #    for view in codeviews:
+        #        view.set_accion("Cerrar Archivo")
+        #else:
+        #    self.proyecto = {}
+        #    self.infonotebook.set_path_estructura(False)
+        #    return True
         # Si algún archivo ha debido guardarse, no se ha cerrado.
-        if not self.proyecto:
-            self.proyecto = {}
-            self.infonotebook.set_path_estructura(False)
-            return True
-        codeviews = self.workpanel.get_archivos_de_proyecto(
-            self.proyecto.get("path", ""))
-        if codeviews:
-            # Cerrar Archivos.
-            for view in codeviews:
-                view.set_accion("Cerrar Archivo")
-        else:
-            self.proyecto = {}
-            self.infonotebook.set_path_estructura(False)
-            return True
+        #if not self.proyecto:
+        #    self.proyecto = {}
+        #    self.infonotebook.set_path_estructura(False)
+        #    return True
+        #codeviews = self.workpanel.get_archivos_de_proyecto(
+        #    self.proyecto.get("path", ""))
+        #if codeviews:
+        #    # Cerrar Archivos.
+        #    for view in codeviews:
+        #        view.set_accion("Cerrar Archivo")
+        #else:
+        #    self.proyecto = {}
+        #    self.infonotebook.set_path_estructura(False)
+        #    return True
         # Si todavía hay archivos abiertos, el usuario no desea cerrarlos.
-        if not self.proyecto:
-            self.proyecto = {}
-            self.infonotebook.set_path_estructura(False)
-            return True
-        codeviews = self.workpanel.get_archivos_de_proyecto(
-            self.proyecto.get("path", ""))
-        if codeviews:
-            return False
-        else:
-            self.proyecto = {}
-            self.infonotebook.set_path_estructura(False)
-            return True
+        #if not self.proyecto:
+        #    self.proyecto = {}
+        #    self.infonotebook.set_path_estructura(False)
+        #    return True
+        #codeviews = self.workpanel.get_archivos_de_proyecto(
+        #    self.proyecto.get("path", ""))
+        #if codeviews:
+        #    return False
+        #else:
+        #    self.proyecto = {}
+        #    self.infonotebook.set_path_estructura(False)
+        #    return True
 
     def set_accion_proyecto(self, widget, accion):
         """
         Cuando se hace click en la toolbar de proyecto o
         se manda ejecutar una acción desde el menú.
         """
-        if accion == "Nuevo Proyecto":
-            dialog = DialogoProyecto(parent_window=self.get_toplevel(),
-                title="Crear Nuevo Proyecto")
-            response = dialog.run()
-            nuevoproyecto = False
-            if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
-                nuevoproyecto = dialog.get_proyecto()
-            dialog.destroy()
-            # El Proyecto se crea solo cuando se ha cerrado el anterior.
-            if nuevoproyecto:
-                if nuevoproyecto["nombre"] in os.listdir(BatovideWorkSpace):
-                    print "FIXME: Ya existe un Proyecto con este Nombre"
-                    return
-                anterior_cerrado = self.cerrar_proyecto()
-                if anterior_cerrado:
-                    self.__guardar_proyecto(nuevoproyecto)
-                    self.__abrir_proyecto(None,
-                        os.path.join(nuevoproyecto["path"], "proyecto.ide"))
-        elif accion == "Editar Proyecto":
-            if self.proyecto:
-                dialog = DialogoProyecto(parent_window=self.get_toplevel(),
-                    title="Editar Proyecto", accion="editar")
-                dialog.set_proyecto(self.proyecto)
-                response = dialog.run()
-                if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
-                    nuevoproyecto = dialog.get_proyecto()
-                    self.__guardar_proyecto(nuevoproyecto)
-                    self.__abrir_proyecto(None,
-                        os.path.join(nuevoproyecto["path"], "proyecto.ide"))
-                dialog.destroy()
-        elif accion == "Abrir Proyecto":
-            filechooser = My_FileChooser(parent_window=self.get_toplevel(),
-                action_type=Gtk.FileChooserAction.OPEN, filter_type=["*.ide"],
-                title="Abrir proyecto", path=BatovideWorkSpace)
-            filechooser.connect('load', self.__abrir_proyecto)
-        elif accion == "Guardar Proyecto":
-            self.__guardar_archivos_de_proyecto()
-            self.__guardar_proyecto(self.proyecto)
-        elif accion == "Cerrar Proyecto":
-            if self.cerrar_proyecto():
-                self.proyecto = {}
-        elif accion == "Ejecutar Proyecto":
-            if self.proyecto:
-                main = os.path.join(self.proyecto["path"],
-                    self.proyecto["main"])
-                self.workpanel.ejecutar(archivo=main)
-        elif accion == "Detener Ejecución":
-            self.workpanel.detener_ejecucion()
-        elif accion == "Construir":
-            self.get_toplevel().set_sensitive(False)
-            dialog = DialogoSetup(parent_window=self.get_toplevel(),
-                proyecto=self.proyecto)
-            dialog.run()
-            dialog.destroy()
-            self.get_toplevel().set_sensitive(True)
-        else:
-            print "Acccion sin asignar en BasePanel", accion
+        pass
+        #if accion == "Nuevo Proyecto":
+        #    dialog = DialogoProyecto(parent_window=self.get_toplevel(),
+        #        title="Crear Nuevo Proyecto")
+        #    response = dialog.run()
+        #    nuevoproyecto = False
+        #    if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
+        #        nuevoproyecto = dialog.get_proyecto()
+        #    dialog.destroy()
+        #    # El Proyecto se crea solo cuando se ha cerrado el anterior.
+        #    if nuevoproyecto:
+        #        if nuevoproyecto["nombre"] in os.listdir(BatovideWorkSpace):
+        #            print "FIXME: Ya existe un Proyecto con este Nombre"
+        #            return
+        #        anterior_cerrado = self.cerrar_proyecto()
+        #        if anterior_cerrado:
+        #            self.__guardar_proyecto(nuevoproyecto)
+        #            self.__abrir_proyecto(None,
+        #                os.path.join(nuevoproyecto["path"], "proyecto.ide"))
+        #elif accion == "Editar Proyecto":
+        #    if self.proyecto:
+        #        dialog = DialogoProyecto(parent_window=self.get_toplevel(),
+        #            title="Editar Proyecto", accion="editar")
+        #        dialog.set_proyecto(self.proyecto)
+        #        response = dialog.run()
+        #        if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
+        #            nuevoproyecto = dialog.get_proyecto()
+        #            self.__guardar_proyecto(nuevoproyecto)
+        #            self.__abrir_proyecto(None,
+        #                os.path.join(nuevoproyecto["path"], "proyecto.ide"))
+        #        dialog.destroy()
+        #elif accion == "Abrir Proyecto":
+        #    filechooser = My_FileChooser(parent_window=self.get_toplevel(),
+        #        action_type=Gtk.FileChooserAction.OPEN, filter_type=["*.ide"],
+        #        title="Abrir proyecto", path=BatovideWorkSpace)
+        #    filechooser.connect('load', self.__abrir_proyecto)
+        #elif accion == "Guardar Proyecto":
+        #    self.__guardar_archivos_de_proyecto()
+        #    self.__guardar_proyecto(self.proyecto)
+        #elif accion == "Cerrar Proyecto":
+        #    if self.cerrar_proyecto():
+        #        self.proyecto = {}
+        #elif accion == "Ejecutar Proyecto":
+        #    if self.proyecto:
+        #        main = os.path.join(self.proyecto["path"],
+        #            self.proyecto["main"])
+        #        self.workpanel.ejecutar(archivo=main)
+        #elif accion == "Detener Ejecución":
+        #    self.workpanel.detener_ejecucion()
+        #elif accion == "Construir":
+        #    self.get_toplevel().set_sensitive(False)
+        #    dialog = DialogoSetup(parent_window=self.get_toplevel(),
+        #        proyecto=self.proyecto)
+        #    dialog.run()
+        #    dialog.destroy()
+        #    self.get_toplevel().set_sensitive(True)
+        #else:
+        #    print "Acccion sin asignar en BasePanel", accion
 
     def set_accion_codigo(self, widget, accion):
         # Cuando se hace click en una opción del menú Código.
@@ -495,8 +506,9 @@ class BasePanel(Gtk.Paned):
 
     def external_open_proyect(self, ide_file):
         # Cuando se abre el editor con archivo como parámetro.
-        self.__abrir_proyecto(None, ide_file)
+        #self.__abrir_proyecto(None, unicode(ide_file, "utf-8"))
+        pass
 
     def external_open_file(self, archivo):
         # Cuando se abre el editor con archivo como parámetro.
-        self.__abrir_archivo(None, archivo)
+        self.__abrir_archivo(None, unicode(archivo, "utf-8"))
