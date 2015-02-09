@@ -399,16 +399,16 @@ class BasePanel(Gtk.Paned):
         Cuando se hace click en la toolbar de proyecto o
         se manda ejecutar una acción desde el menú.
         """
-        pass
-        #if accion == "Nuevo Proyecto":
-        #    dialog = DialogoProyecto(parent_window=self.get_toplevel(),
-        #        title="Crear Nuevo Proyecto")
-        #    response = dialog.run()
-        #    nuevoproyecto = False
-        #    if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
-        #        nuevoproyecto = dialog.get_proyecto()
-        #    dialog.destroy()
-        #    # El Proyecto se crea solo cuando se ha cerrado el anterior.
+        if accion == "Nuevo Proyecto":
+            dialog = DialogoProyecto(parent_window=self.get_toplevel(),
+                title="Nuevo Proyecto")
+            dialog.show_all()
+            #response = dialog.run()
+            #nuevoproyecto = False
+            #if Gtk.ResponseType(response) == Gtk.ResponseType.ACCEPT:
+            #    nuevoproyecto = dialog.get_proyecto()
+            #dialog.destroy()
+            # El Proyecto se crea solo cuando se ha cerrado el anterior.
         #    if nuevoproyecto:
         #        if nuevoproyecto["nombre"] in os.listdir(BatovideWorkSpace):
         #            print "FIXME: Ya existe un Proyecto con este Nombre"
@@ -455,8 +455,8 @@ class BasePanel(Gtk.Paned):
         #    dialog.run()
         #    dialog.destroy()
         #    self.get_toplevel().set_sensitive(True)
-        #else:
-        #    print "Acccion sin asignar en BasePanel", accion
+        else:
+            print "Acccion sin asignar en BasePanel", accion
 
     def set_accion_codigo(self, widget, accion):
         # Cuando se hace click en una opción del menú Código.

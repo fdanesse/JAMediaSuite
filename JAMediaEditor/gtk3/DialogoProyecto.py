@@ -24,16 +24,20 @@ import os
 import glob
 
 from gi.repository import Gtk
+from gi.repository import GdkX11
 
 BASE_PATH = os.path.dirname(__file__)
 ICONOS = os.path.join(BASE_PATH, "Iconos")
 
-from Globales import get_boton
+#from Globales import get_boton
 
 LICENCIAS = ['GPL2', 'GPL3', 'LGPL 2.1', 'LGPL 3', 'BSD', 'MIT X11']
+screen = GdkX11.X11Screen.get_default()
+w = screen.width()
+h = screen.height()
 
 
-class DialogoProyecto(Gtk.Dialog):
+class DialogoProyecto(Gtk.Window):
     """
     Diálogo para crear un nuevo proyecto.
     """
@@ -41,137 +45,91 @@ class DialogoProyecto(Gtk.Dialog):
     __gtype_name__ = 'JAMediaEditorDialogoProyecto'
 
     def __init__(self, parent_window=None,
-        title="Crear Proyecto Nuevo", accion="nuevo"):
+        title="Proyecto Nuevo", accion="nuevo"):
 
-        Gtk.Dialog.__init__(self, title=title,
-            parent=parent_window, flags=Gtk.DialogFlags.MODAL,
-            buttons=[
-                "Guardar", Gtk.ResponseType.ACCEPT,
-                "Cancelar", Gtk.ResponseType.CANCEL])
+        Gtk.Window.__init__(self)
 
-        self.sizes = [(600, 150), (600, 450)]
-
-        if accion == "nuevo":
-            self.set_size_request(600, 150)
-        else:
-            self.set_size_request(600, 450)
-
+        self.parent_window = parent_window
+        self.set_title(title)
+        self.set_transient_for(self.parent_window)
         self.set_border_width(15)
 
-        # Entradas de datos.
+        tabla = Gtk.Table(rows=10, columns=2, homogeneous=True)
+
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scroll.add(tabla)
+
+        # Fila 1
         self.nombre = Gtk.Entry()
-        self.main = Gtk.ComboBoxText()
-        self.path = Gtk.Label()
-        self.mimetypes = Gtk.Entry()
-        self.categories = Gtk.Entry()
+        box = self.__pack_entry("Nombre:", self.nombre)
+        tabla.attach(box, 0, 1, 0, 1)
+        # self.nombre.connect("key_release_event", self.__check_nombre)
 
         self.version = Gtk.Entry()
-        self.version.connect("changed", self.__check_version)
-        self.version.set_text("0.0.1")
+        box = self.__pack_entry("Version:", self.version)
+        tabla.attach(box, 1, 2, 0, 1)
+        # self.version.connect("changed", self.__check_version)
 
+        # Fila 3
+        self.categories = Gtk.Entry()
+        box = self.__pack_entry("Categoría:", self.categories)
+        tabla.attach(box, 0, 2, 1, 2)
+        # self.version.connect("changed", self.__check_version)
+
+        # Fila 4
+        self.mimetypes = Gtk.Entry()
+        box = self.__pack_entry("MimeTypes:", self.mimetypes)
+        tabla.attach(box, 0, 2, 2, 3)
+        # self.nombre.connect("key_release_event", self.__check_nombre)
+
+        # Fila 5
+        self.url = Gtk.Entry()
+        box = self.__pack_entry("Sitio Web:", self.url)
+        tabla.attach(box, 0, 2, 3, 4)
+        # self.nombre.connect("key_release_event", self.__check_nombre)
+
+        # Fila 6
+        self.licencia = Gtk.ComboBoxText()
+        for licencia in LICENCIAS:
+            self.licencia.append_text(licencia)
+        self.licencia.set_active(0)
+        box = self.__pack_entry("Licencia:", self.licencia)
+        tabla.attach(box, 0, 1, 4, 5)
+        # self.nombre.connect("key_release_event", self.__check_nombre)
+
+        '''
+        # Entradas de datos.
+        self.main = Gtk.ComboBoxText()
+        self.path = Gtk.Label()
         self.descripcion = Gtk.TextView()
         self.descripcion.set_editable(True)
         self.descripcion.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
-
         scroll_descripcion = Gtk.ScrolledWindow()
         scroll_descripcion.set_policy(Gtk.PolicyType.NEVER,
             Gtk.PolicyType.AUTOMATIC)
         scroll_descripcion.add_with_viewport(self.descripcion)
         scroll_descripcion.set_size_request(200, 100)
-
-        self.licencia = Gtk.ComboBoxText()
-        self.url = Gtk.Entry()
         self.icon_path = Gtk.Label()
-
-        # Box para despues agregarlo a un scroll
-        self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-
-        # Scroll
-        scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        scroll.add_with_viewport(self.box)
-
-        self.vbox.pack_start(scroll, True, True, 0)
-
         # Autores
         self.autores = WidgetAutores()
-
-        if accion == "nuevo":
-            boton = Gtk.Button("Ver más Opciones...")
-        else:
-            boton = Gtk.Button("Ocultar Opciones...")
-
-        boton.connect("clicked", self.__show_options)
-
-        self.internal_widgets = [
-            self.__get_pack_box(
-                [self.__get_label('Nombre:'), self.nombre]),
-            self.__get_pack_box(
-                [boton]),
-            self.__get_pack_box(
-                [self.__get_label('Archivo Principal:'),
-                self.main]),
-            self.__get_pack_box(
-                [self.__get_label('Directorio del proyecto:'),
-                self.path]),
-            self.__get_pack_box(
-                [self.__get_label('MimeTypes:'), self.mimetypes]),
-            self.__get_pack_box(
-                [self.__get_label('Categoría:'), self.categories]),
-            self.__get_pack_box(
-                [self.__get_label('Versión:'), self.version]),
-            self.__get_pack_box(
-                [self.__get_label('Licencia:'), self.licencia]),
-            self.__get_pack_box(
-                [self.__get_label('Web:'), self.url]),
-            self.__get_pack_box(
-                [self.__get_label("Autores:"),
-                self.autores]),
-            self.__get_pack_box(
-                [self.__get_label('Descripción:'), scroll_descripcion])]
-
-        for widget in self.internal_widgets:
-            self.box.pack_start(widget, False, False, 3)
-
-        for licencia in LICENCIAS:
-            self.licencia.append_text(licencia)
-
-        self.licencia.set_active(0)
-        self.show_all()
-
-        if accion == "nuevo":
-            for widget in self.internal_widgets[2:]:
-                widget.hide()
-
-        self.nombre.connect("key_release_event", self.__check_nombre)
-
         # Si se abre para editar, no se le puede cambiar el nombre.
         if accion == "editar":
             self.nombre.set_sensitive(False)
+        '''
 
-        for button in self.get_action_area().get_children():
-            if self.get_response_for_widget(button) == Gtk.ResponseType.ACCEPT:
-                button.set_sensitive(False)
-                break
+        self.resize(w/3, h-40)
+        self.move(w-w/3, 40)
 
-    def __show_options(self, button):
-        options = False
-        for widget in self.internal_widgets[2:]:
-            if widget.get_visible():
-                widget.hide()
-                options = False
-            else:
-                widget.show()
-                options = True
-        if options:
-            self.resize(self.sizes[1][0], self.sizes[1][1])
-            self.set_size_request(self.sizes[1][0], self.sizes[1][1])
-            button.set_label("Ocultar Opciones...")
-        else:
-            self.resize(self.sizes[0][0], self.sizes[0][1])
-            self.set_size_request(self.sizes[0][0], self.sizes[0][1])
-            button.set_label("Ver más Opciones...")
+        self.add(scroll)
+        self.show_all()
 
+    def __pack_entry(self, text, entry):
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        box.pack_start(Gtk.Label(text), False, False, 5)
+        box.pack_start(entry, True, True, 5)
+        return box
+    '''
     def __check_version(self, widget):
         """
         En el campo versión solo pueden haber numeros y puntos.
@@ -309,8 +267,8 @@ class DialogoProyecto(Gtk.Dialog):
                 else:
                     button.set_sensitive(False)
                 break
-
-
+    '''
+'''
 class WidgetAutores(Gtk.Box):
     """
     Box para agregar datos de los Autores
@@ -390,3 +348,4 @@ class WidgetAutores(Gtk.Box):
             linea = self.get_children()[autores.index(autor)]
             linea.get_children()[0].get_child().set_text(nombre)
             linea.get_children()[1].get_child().set_text(mail)
+'''
