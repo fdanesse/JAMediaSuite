@@ -173,6 +173,8 @@ class JAMediaEditor(Gtk.Window):
         """
         self.menu.activar_proyecto(valor)
         self.base_panel.toolbarproyecto.activar_proyecto(valor)
+        if not valor and self.base_panel.dialogo_proyecto:
+            self.base_panel.dialogo_proyecto.hide()
         # Ejecuciones
         self.base_panel.toolbararchivo.activar_ejecucion(False)
         self.base_panel.toolbarproyecto.activar_ejecucion(False)
