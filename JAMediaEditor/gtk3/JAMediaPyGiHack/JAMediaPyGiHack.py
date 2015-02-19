@@ -20,12 +20,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-
 from gi.repository import Gtk
 from gi.repository import GObject
 
 from Widgets import Toolbar
 from BaseBox import BaseBox
+from InformeWidget import InformeWidget
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -46,6 +46,7 @@ class JAMediaPyGiHack(Gtk.Box):
         self.basebox = BaseBox()
         self.pack_start(self.basebox, True, True, 0)
 
+        self.informewidget = False
         self.show_all()
 
         self.toolbar.connect("import", self.__import)
@@ -67,33 +68,11 @@ class JAMediaPyGiHack(Gtk.Box):
         Abre nueva lengueta en Workpanel con la información de Introspección
         del archivo seleccionado.
         """
-        # FIXME: Continuar Desarrollo de esta funcionalidad
-        #text = ""
-        #_dict = self.infonotebook.introspeccion._dict
-        #for key in _dict:
-        #    text = "%s\n%s" % (text, _dict[key])
-        #source = GtkSource.View()
-        #source.set_insert_spaces_instead_of_tabs(True)
-        #source.set_tab_width(4)
-        #source.set_auto_indent(True)
-        #source.set_highlight_current_line(True)
-        #source.set_editable(False)
-        #source.set_border_width(5)
-        #source.set_buffer(GtkSource.Buffer())
-        #win = Gtk.Window()
-        #win.set_transient_for(self.get_toplevel())
-        #win.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#f0e6aa"))
-        #win.set_title("Informe de Introspección")
-        #win.set_border_width(5)
-        #win.set_position(Gtk.WindowPosition.CENTER)
-        #win.set_size_request(400, 400)
-        #scroll = Gtk.ScrolledWindow()
-        #scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        #scroll.add(source)
-        #source.get_buffer().set_text(text)
-        #win.add(scroll)
-        #win.show_all()
-        print self.__informar
+        if self.informewidget:
+            self.informewidget.destroy()
+        self.informewidget = InformeWidget(self.get_toplevel())
+        text = self.basebox.get_estructura()
+        self.informewidget.setting(text)
 
     def __buscar(self, widget, text):
         self.basebox.buscar(text)

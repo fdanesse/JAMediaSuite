@@ -24,7 +24,7 @@ from gi.repository import Gtk
 
 from Widgets import TextView
 from Widgets import Lista
-
+from BusquedasTreeView import get_estructura
 
 def get_inspect(elemento):
     return commands.getoutput('gst-inspect-1.0 %s' % (elemento))
@@ -89,6 +89,9 @@ class JAMediaGstreamer(Gtk.Paned):
 
     def zoom(self, zoom):
         self.textview.zoom(zoom)
+
+    def get_estructura(self):
+        return get_estructura(self.lista, self.lista.get_model())
 
 
 def exit(self, widget=None, senial=None):

@@ -35,6 +35,7 @@ from WorkPanel import WorkPanel
 from Toolbars import ToolbarProyecto
 from Toolbars import ToolbarArchivo
 from JAMediaPyGiHack.Widgets import ToolbarBusquedas
+from JAMediaPyGiHack.InformeWidget import InformeWidget
 from Widgets1 import Multiple_FileChooser
 from DialogoProyecto import DialogoProyecto
 from Widgets1 import My_FileChooser
@@ -64,6 +65,7 @@ class BasePanel(Gtk.Paned):
         self.set_border_width(5)
         self.proyecto = {}
         self.dialogo_proyecto = False
+        self.informewidget = False
 
         self.workpanel = WorkPanel()
         self.infonotebook = InfoNotebook()
@@ -109,32 +111,11 @@ class BasePanel(Gtk.Paned):
         Abre nueva lengueta en Workpanel con la información de Introspección
         del archivo seleccionado.
         """
-        # FIXME: Continuar Desarrollo de esta funcionalidad
-        text = ""
-        _dict = self.infonotebook.introspeccion._dict
-        for key in _dict:
-            text = "%s\n%s" % (text, _dict[key])
-        source = GtkSource.View()
-        source.set_insert_spaces_instead_of_tabs(True)
-        source.set_tab_width(4)
-        source.set_auto_indent(True)
-        source.set_highlight_current_line(True)
-        source.set_editable(False)
-        source.set_border_width(5)
-        source.set_buffer(GtkSource.Buffer())
-        win = Gtk.Window()
-        win.set_transient_for(self.get_toplevel())
-        win.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#f0e6aa"))
-        win.set_title("Informe de Introspección")
-        win.set_border_width(5)
-        win.set_position(Gtk.WindowPosition.CENTER)
-        win.set_size_request(400, 400)
-        scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        scroll.add(source)
-        source.get_buffer().set_text(text)
-        win.add(scroll)
-        win.show_all()
+        if self.informewidget:
+            self.informewidget.destroy()
+        self.informewidget = InformeWidget(self.get_toplevel())
+        text = self.infonotebook.get_estructura()
+        self.informewidget.setting(text)
 
     def __re_emit_update(self, widget, _dict):
         # Emite una señal con el estado general del archivo.
@@ -218,8 +199,7 @@ class BasePanel(Gtk.Paned):
         # solo sería activa si el archivo seleccionado está en el proyecto.
         path = self.proyecto.get("path", False)
         if path:
-            codeviews = self.workpanel.get_archivos_de_proyecto(path)
-            if codeviews:
+            if self.workpanel.get_archivos_de_proyecto(path):
                 self.infonotebook.set_path_estructura(path)
                 self.emit("proyecto_abierto", True)
             else:
@@ -287,11 +267,12 @@ class BasePanel(Gtk.Paned):
         #self.proyecto = {}
         #return True
 
-    def __dialogo_proyecto_run(self, title="Proyecto Nuevo", path=""):
-        if not self.dialogo_proyecto:
-            self.dialogo_proyecto = DialogoProyecto(
-                parent_window=self.get_toplevel())
-            self.dialogo_proyecto.connect("load", self.__abrir_proyecto)
+    def __dialogo_proyecto_run(self, title="Nuevo Proyecto", path=""):
+        if self.dialogo_proyecto:
+            self.dialogo_proyecto.destroy()
+        self.dialogo_proyecto = DialogoProyecto(
+            parent_window=self.get_toplevel())
+        self.dialogo_proyecto.connect("load", self.__abrir_proyecto)
         self.dialogo_proyecto.setting(title, path)
 
     def cerrar_proyecto(self):
@@ -343,6 +324,8 @@ class BasePanel(Gtk.Paned):
         Cuando se hace click en la toolbar de proyecto o
         se manda ejecutar una acción desde el menú.
         """
+        if self.dialogo_proyecto:
+            self.dialogo_proyecto.hide()
         if accion == "Nuevo Proyecto":
             if self.cerrar_proyecto():
                 self.__dialogo_proyecto_run("Nuevo Proyecto")

@@ -208,6 +208,7 @@ class SourceView(GtkSource.View):
                 page = notebook.get_children()[indice]
                 if page == scroll:
                     notebook.remove_page(indice)
+                    page.destroy()
                     return
 
     def __key_press_event(self, widget, event):

@@ -431,6 +431,7 @@ class Notebook_SourceView(Gtk.Notebook):
                 continue
             if proyecto_path in view.archivo:
                 self.remove(pagina)
+                pagina.destroy()
 
     def get_default_path(self):
         # Devuelve el Directorio del archivo seleccionado.

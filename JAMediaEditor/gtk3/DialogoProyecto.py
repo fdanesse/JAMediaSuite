@@ -316,16 +316,16 @@ class DialogoProyecto(Gtk.Window):
         self.button_crear.set_sensitive(False)
 
     def __set_dialogo(self, _dict):
-        self.nombre.set_text(str(_dict["nombre"]))
-        self.version.set_text(str(_dict["version"]))
-        self.mimetypes.set_text(str(_dict["mimetypes"]))
-        self.categories.set_text(str(_dict["categoria"]))
-        self.descripcion.get_buffer().set_text(str(_dict["descripcion"]))
-        self.licencia.set_active(LICENCIAS.index(str(_dict["licencia"])))
-        self.url.set_text(str(_dict["url"]))
-        self.autores.get_buffer().set_text(str(_dict["autores"]))
-        self.path.set_text(str(_dict["path"]))
-        arch = glob.glob("%s/*.py" % str(_dict["path"]))
+        self.nombre.set_text(_dict["nombre"])
+        self.version.set_text(_dict["version"])
+        self.mimetypes.set_text(_dict["mimetypes"])
+        self.categories.set_text(_dict["categoria"])
+        self.descripcion.get_buffer().set_text(_dict["descripcion"])
+        self.licencia.set_active(LICENCIAS.index(_dict["licencia"]))
+        self.url.set_text(_dict["url"])
+        self.autores.get_buffer().set_text(_dict["autores"])
+        self.path.set_text(_dict["path"])
+        arch = glob.glob("%s/*.py" % _dict["path"])
         for archivo in arch:
             self.main.append_text(os.path.basename(archivo))
         model = self.main.get_model()
@@ -341,7 +341,7 @@ class DialogoProyecto(Gtk.Window):
     def setting(self, title, path):
         self.__limpiar()
         self.set_title(title)
-        if title == "Proyecto Nuevo":
+        if title == "Nuevo Proyecto":
             self.button_crear.set_label("Crear")
         elif title == "Editar Proyecto":
             self.button_crear.set_label("Guardar")

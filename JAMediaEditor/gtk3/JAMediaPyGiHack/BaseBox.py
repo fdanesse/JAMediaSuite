@@ -108,6 +108,15 @@ class BaseBox(Gtk.Box):
             if self.jamedia_gstreamer.get_visible():
                 self.jamedia_gstreamer.zoom(zoom)
 
+    def get_estructura(self):
+        if self.base_notebook:
+            if self.base_notebook.get_visible():
+                return self.base_notebook.get_estructura()
+        if self.jamedia_gstreamer:
+            if self.jamedia_gstreamer.get_visible():
+                return self.jamedia_gstreamer.get_estructura()
+        return ""
+
 
 class BaseNotebook(Gtk.Notebook):
 
@@ -133,7 +142,9 @@ class BaseNotebook(Gtk.Notebook):
             boton = self.get_tab_label(
                 self.get_children()[indice]).get_children()[1]
             if boton == widget:
+                pagina = self.get_children()[indice]
                 self.remove_page(indice)
+                pagina.destroy()
                 break
         if not self.get_n_pages():
             self.emit("nobusquedas")
@@ -174,6 +185,11 @@ class BaseNotebook(Gtk.Notebook):
             boton.connect("clicked", self.__cerrar)
             self.set_current_page(-1)
             self.set_tab_reorderable(introspectionwidget, True)
+
+    def get_estructura(self):
+        paginas = self.get_children()
+        scrolled = paginas[self.get_current_page()]
+        return scrolled.get_children()[0].get_estructura()
 
 
 class IntrospectionWidget(Gtk.Box):
@@ -293,6 +309,9 @@ class IntrospectionPanel(Gtk.Paned):
 
     def buscar_mas(self, accion, texto):
         self.apiwidget.buscar_mas(accion, texto)
+
+    def get_estructura(self):
+        return self.apiwidget.get_estructura()
 
 
 class InfoNotebook(Gtk.Notebook):

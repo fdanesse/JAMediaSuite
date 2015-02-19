@@ -145,3 +145,28 @@ def buscar_mas(treeview, accion, texto):
             if __buscar_detras(treeview, texto, _iter2, child=True):
                 return True
     return False
+
+
+def __get_estructura_en_nodo(treeview, model, _iter, tab=0):
+    t = "    " * tab
+    text = "%s%s" % (t, model.get_value(_iter, 1))
+    if model.iter_has_child(_iter):
+        _iter = model.iter_children(_iter)
+        while _iter:
+            text = "%s\n%s" % (text, __get_estructura_en_nodo(treeview, model, _iter, tab+1))
+            _iter = model.iter_next(_iter)
+    return text
+
+
+def get_estructura(treeview, model):
+    text = ""
+    _iter = model.get_iter_first()
+    while _iter:
+        if text:
+            text = "%s\n%s" % (text, __get_estructura_en_nodo(
+                treeview, model, _iter))
+        else:
+            text = "%s" % (__get_estructura_en_nodo(
+                treeview, model, _iter))
+        _iter = model.iter_next(_iter)
+    return text

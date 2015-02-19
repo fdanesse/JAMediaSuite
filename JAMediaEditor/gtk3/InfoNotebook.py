@@ -35,6 +35,7 @@ from gi.repository import GLib
 #from Widgets2 import BusquedaGrep
 from JAMediaPyGiHack.BusquedasTreeView import buscar_delante
 from JAMediaPyGiHack.BusquedasTreeView import buscar_mas
+from JAMediaPyGiHack.BusquedasTreeView import get_estructura
 
 
 def get_contenido_python(texto):
@@ -319,6 +320,10 @@ class InfoNotebook(Gtk.Notebook):
         self.get_nth_page(self.get_current_page(
             )).get_child().buscar_mas(accion, texto)
 
+    def get_estructura(self):
+        return self.get_nth_page(
+            self.get_current_page()).get_child().get_estructura()
+
 
 class Introspeccion(Gtk.TreeView):
     """
@@ -485,6 +490,9 @@ class Introspeccion(Gtk.TreeView):
             pass
         return False
 
+    def get_estructura(self):
+        return get_estructura(self, self.get_model())
+
 
 class Estructura_Proyecto(Gtk.TreeView):
     """
@@ -547,7 +555,7 @@ class Estructura_Proyecto(Gtk.TreeView):
 
         item = estructura[0]
         directorio, path = item
-        estructura.remove(item)
+        estructura.remove(estructura[0])
 
         # Establecer el iter donde debe agregarse el item
         if path:
@@ -569,7 +577,6 @@ class Estructura_Proyecto(Gtk.TreeView):
                 archivo == "build" or \
                 archivo == "dist":
                     continue
-
             direccion = os.path.join(directorio, archivo)
             # Si es un directorio, se agrega y se guarda
             # en una lista para hacer recurrencia sobre esta función.
@@ -585,8 +592,8 @@ class Estructura_Proyecto(Gtk.TreeView):
 
         # Agregar todos los archivos en este nivel.
         for x in archivos:
-            archivo = os.path.basename(x)
-            self.get_model().append(_iter, [Gtk.STOCK_FILE, archivo, x])
+            self.get_model().append(
+                _iter, [Gtk.STOCK_FILE, os.path.basename(x), x])
 
         # Recursividad en la función.
         self.__load_estructura(estructura)
@@ -659,7 +666,7 @@ class Estructura_Proyecto(Gtk.TreeView):
             os.path.basename(path), path])
         estructura = []
         estructura.append((path, None))
-        GLib.idle_add(self.__load_estructura, estructura)
+        self.__load_estructura(estructura)
 
     def do_row_activated(self, path, column):
         # Cuando se hace doble click sobre una fila
@@ -677,3 +684,6 @@ class Estructura_Proyecto(Gtk.TreeView):
             if "text" in datos or "x-python" in datos or \
                 "x-empty" in datos or "svg+xml" in datos:
                 self.emit('open', direccion)
+
+    def get_estructura(self):
+        return get_estructura(self, self.get_model())

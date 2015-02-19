@@ -29,6 +29,7 @@ from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from BusquedasTreeView import buscar_delante
 from BusquedasTreeView import buscar_mas
+from BusquedasTreeView import get_estructura
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -208,3 +209,6 @@ class ApiWidget(Gtk.TreeView):
 
     def buscar_mas(self, accion, texto):
         buscar_mas(self, accion, texto)
+
+    def get_estructura(self):
+        return get_estructura(self, self.get_model())
