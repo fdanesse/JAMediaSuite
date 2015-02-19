@@ -162,14 +162,13 @@ class DialogoProyecto(Gtk.Window):
         _dict = self.__get_proyecto()
         if widget.get_label() == "Crear":
             self.__guardar_proyecto(_dict)
-            self.__salir()
             nombre = _dict.get("nombre", "")
             path = os.path.join(BatovideWorkSpace, nombre)
             self.emit("load", os.path.join(path, "proyecto.ide"))
         elif widget.get_label() == "Guardar":
             self.__actualizar_proyecto(_dict)
-            self.__salir()
             self.parent_window.base_panel.proyecto = _dict
+        self.__salir()
 
     def __actualizar_proyecto(self, _dict):
         path = _dict["path"]
@@ -243,7 +242,7 @@ class DialogoProyecto(Gtk.Window):
             self.button_crear.set_sensitive(False)
 
     def __salir(self, widget=None):
-        self.hide()
+        self.destroy()
 
     def __check_version(self, widget):
         version = self.version.get_text().strip()

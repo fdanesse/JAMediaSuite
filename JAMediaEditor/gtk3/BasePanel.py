@@ -39,7 +39,7 @@ from JAMediaPyGiHack.InformeWidget import InformeWidget
 from Widgets1 import Multiple_FileChooser
 from DialogoProyecto import DialogoProyecto
 from Widgets1 import My_FileChooser
-from Widget_Setup import DialogoSetup
+from Instaladores.Instalador import Instalador
 
 home = os.environ["HOME"]
 BatovideWorkSpace = os.path.join(home, 'BatovideWorkSpace')
@@ -66,6 +66,7 @@ class BasePanel(Gtk.Paned):
         self.proyecto = {}
         self.dialogo_proyecto = False
         self.informewidget = False
+        self.instalador = False
 
         self.workpanel = WorkPanel()
         self.infonotebook = InfoNotebook()
@@ -268,12 +269,13 @@ class BasePanel(Gtk.Paned):
         #return True
 
     def __dialogo_proyecto_run(self, title="Nuevo Proyecto", path=""):
-        if self.dialogo_proyecto:
-            self.dialogo_proyecto.destroy()
         self.dialogo_proyecto = DialogoProyecto(
             parent_window=self.get_toplevel())
         self.dialogo_proyecto.connect("load", self.__abrir_proyecto)
         self.dialogo_proyecto.setting(title, path)
+
+    def __dialogo_instalador_run(self, path):
+        self.instalador = Instalador(self.get_toplevel(), path)
 
     def cerrar_proyecto(self):
         if not self.proyecto:
@@ -325,7 +327,11 @@ class BasePanel(Gtk.Paned):
         se manda ejecutar una acción desde el menú.
         """
         if self.dialogo_proyecto:
-            self.dialogo_proyecto.hide()
+            self.dialogo_proyecto.destroy()
+            self.dialogo_proyecto = False
+        if self.instalador:
+            self.instalador.destroy()
+            self.instalador = False
         if accion == "Nuevo Proyecto":
             if self.cerrar_proyecto():
                 self.__dialogo_proyecto_run("Nuevo Proyecto")
@@ -349,13 +355,8 @@ class BasePanel(Gtk.Paned):
                 self.workpanel.ejecutar(archivo=main)
         elif accion == "Detener Ejecución":
             self.workpanel.detener_ejecucion()
-        #elif accion == "Construir":
-        #    self.get_toplevel().set_sensitive(False)
-        #    dialog = DialogoSetup(parent_window=self.get_toplevel(),
-        #        proyecto=self.proyecto)
-        #    dialog.run()
-        #    dialog.destroy()
-        #    self.get_toplevel().set_sensitive(True)
+        elif accion == "Construir":
+            self.__dialogo_instalador_run(self.proyecto["path"])
         else:
             print "Acccion sin asignar en BasePanel", accion
 
