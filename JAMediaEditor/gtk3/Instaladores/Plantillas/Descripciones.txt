@@ -1,0 +1,18 @@
+Para saber que directorios sen ecuentran en el path:
+echo $PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+
+/bin
+    Ejecutables del sistema utilizados durante el arranque
+/sbin
+    Igual que el anterior pero para ejecutables creados por el root
+/usr/bin
+    Ejecutables de la distribución para todo el sistema.
+/usr/sbin
+    Igual que el anterior pero para ejecutables creados por el root
+
+La ruta /usr/local son para aquellos ejecutables que no están administrados por el sistema o la distribución.
+Los ejecutables de las aplicaciones deben instalarse en una de estas rutas:
+
+/usr/local/bin
+/usr/local/sbin

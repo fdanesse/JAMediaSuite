@@ -21,6 +21,8 @@
 from gi.repository import Gtk
 from gi.repository import GdkX11
 
+from Menu import Menu
+
 screen = GdkX11.X11Screen.get_default()
 w = screen.width()
 h = screen.height()
@@ -37,13 +39,20 @@ class Instalador(Gtk.Window):
 
         Gtk.Window.__init__(self)
 
+        self.proyecto_path = path
         self.parent_window = parent_window
+
         self.set_title("Constructor de Instaladores de Proyecto")
         self.set_transient_for(self.parent_window)
         self.set_border_width(15)
 
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.menu = Menu()
+
+        vbox.pack_start(self.menu, False, False, 0)
+
         self.resize(w / 2, h - 40)
         self.move(w - w / 2, 40)
 
-        #self.add(scroll)
+        self.add(vbox)
         self.show_all()
