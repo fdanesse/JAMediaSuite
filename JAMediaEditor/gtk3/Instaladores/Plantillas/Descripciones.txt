@@ -1,4 +1,4 @@
-Para saber que directorios sen ecuentran en el path:
+Para saber que directorios se encuentran en el path:
 echo $PATH
 /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 

@@ -21,16 +21,14 @@
 from gi.repository import Gtk
 from gi.repository import GObject
 
-#BASE_PATH = os.path.dirname(__file__)
-
 
 class Menu(Gtk.MenuBar):
 
-    #__gtype_name__ = 'JAMediaEditorMenu'
+    __gtype_name__ = 'JAMediaEditorMenuInstaladores'
 
     __gsignals__ = {
-    'accion': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+    'accion-menu': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, GObject.TYPE_BOOLEAN))}
 
     def __init__(self):
 
@@ -91,9 +89,8 @@ class Menu(Gtk.MenuBar):
         self.show_all()
 
     def __emit_accion(self, widget, tipo):
-        print tipo
         valor = not widget.get_children()[0].get_children()[0].get_active()
         if valor:
             widget.get_children()[0].get_children()[0].set_active(valor)
-            #label = widget.get_children()[0].get_children()[1]
-            #self.emit("accion-menu", menu, label.get_text(), valor)
+            label = widget.get_children()[0].get_children()[1]
+            self.emit("accion-menu", label.get_text(), valor)

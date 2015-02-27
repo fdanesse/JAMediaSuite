@@ -22,6 +22,7 @@ from gi.repository import Gtk
 from gi.repository import GdkX11
 
 from Menu import Menu
+from Debian import DebianWidget
 
 screen = GdkX11.X11Screen.get_default()
 w = screen.width()
@@ -41,18 +42,38 @@ class Instalador(Gtk.Window):
 
         self.proyecto_path = path
         self.parent_window = parent_window
+        self.instalador = False
 
         self.set_title("Constructor de Instaladores de Proyecto")
         self.set_transient_for(self.parent_window)
         self.set_border_width(15)
 
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.menu = Menu()
 
-        vbox.pack_start(self.menu, False, False, 0)
+        self.vbox.pack_start(self.menu, False, False, 0)
+        self.vbox.pack_start(Gtk.Label("Constructor de Instaladores"),
+            False, False, 0)
 
         self.resize(w / 2, h - 40)
         self.move(w - w / 2, 40)
 
-        self.add(vbox)
+        self.add(self.vbox)
+        self.show_all()
+
+        self.menu.connect("accion-menu", self.__accion_menu)
+
+    def __accion_menu(self, widget, texto, valor):
+        self.instalador = False
+        child = self.vbox.get_children()[-1]
+        if child:
+            self.vbox.remove(child)
+            child.destroy()
+        if "debian" in texto and valor:
+            self.instalador = DebianWidget(self.proyecto_path)
+            self.vbox.pack_start(self.instalador, True, True, 0)
+        elif "python" in texto and valor:
+            self.vbox.pack_start(Gtk.Label("python"), True, True, 0)
+        elif "sugar" in texto and valor:
+            self.vbox.pack_start(Gtk.Label("sugar"), True, True, 0)
         self.show_all()

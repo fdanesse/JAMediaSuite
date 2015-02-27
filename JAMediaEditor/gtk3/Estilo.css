@@ -21,15 +21,15 @@ JAMediaEditorMy_FileChooser, Multiple_FileChooser, JAMediaEditorDialogoErrores,
 JAMediaEditorDialogoAlertaSinGuardar, JAMediaEditorDialogoSobreEscritura,
 JAMediaEditorDialogoEliminar, JAMediaEditorBusquedaGrep, JAMediaEditorCredits,
 GtkViewport, GtkFrame, JAMediaEditorPanelWidget_setup,
-JAMediaEditorNotebook_Setup, JAMediaEditorGnome_Notebook,
-JAMediaEditorSugar_Notebook, JAMediaEditorDialogoInstall,
-JAMediaEditorCeibal_Notebook, JAMediaEditorDialogoInfoInstall,
-JAMediaEditorWidget_icon {
+JAMediaEditorDebianWidget,
+JAMediaEditorScrollPage, JAMediaEditorNotebookInstalador,
+JAMediaEditorWidgetIcon {
     background-color: #edf5ff;
     color: #000000;
 }
 
-JAMediaEditorMenu, JAMediaEditorToolbarEstado, PygiHackToolbarTry {
+JAMediaEditorMenu, JAMediaEditorToolbarEstado, PygiHackToolbarTry,
+JAMediaEditorMenuInstaladores {
     background-color: #000000;
     color: #ffffff;
 }

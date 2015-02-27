@@ -152,7 +152,8 @@ def __get_estructura_en_nodo(treeview, model, _iter, tab=0):
     if model.iter_has_child(_iter):
         _iter = model.iter_children(_iter)
         while _iter:
-            text = "%s\n%s" % (text, __get_estructura_en_nodo(treeview, model, _iter, tab+1))
+            text = "%s\n%s" % (text, __get_estructura_en_nodo(
+                treeview, model, _iter, tab+1))
             _iter = model.iter_next(_iter)
     return text
 
