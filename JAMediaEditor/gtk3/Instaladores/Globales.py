@@ -20,11 +20,6 @@
 
 import os
 
-CONFPATH = os.path.join(os.environ["HOME"], "JAMediaEditorCONF")
-DEBPATH = os.path.join(CONFPATH, "DEB")
-GNOMEPATH = os.path.join(CONFPATH, "GNOME")
-SUGARPATH = os.path.join(CONFPATH, "SUGAR")
-
 
 def get_guion_desktop(proyecto, iconpath):
     texto = "[Desktop Entry]\n"
@@ -64,10 +59,16 @@ def get_guion_lanzador_python(proyecto):
 
 
 def get_path(name):
+    CONFPATH = os.path.join(os.environ["HOME"], "JAMediaEditorCONF")
+    DEBPATH = os.path.join(CONFPATH, "DEB")
+    GNOMEPATH = os.path.join(CONFPATH, "GNOME")
+    SUGARPATH = os.path.join(CONFPATH, "SUGAR")
     for path in [CONFPATH, DEBPATH, GNOMEPATH, SUGARPATH]:
         if not os.path.exists(path):
             os.mkdir(path)
-    if name == "deb":
+    if name == "conf":
+        return CONFPATH
+    elif name == "deb":
         return DEBPATH
     elif name == "gnome":
         return GNOMEPATH

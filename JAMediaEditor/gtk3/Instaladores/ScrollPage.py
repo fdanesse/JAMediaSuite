@@ -32,17 +32,17 @@ class ScrollPage(Gtk.ScrolledWindow):
 
         self.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
-        self.file_path = file_path
-        self.add(SourceView(lenguaje, texto))
+        self.add(SourceView(file_path, lenguaje, texto))
         self.show_all()
 
 
 class SourceView(GtkSource.View):
 
-    def __init__(self, lenguaje, texto):
+    def __init__(self, file_path, lenguaje, texto):
 
         GtkSource.View.__init__(self)
 
+        self.file_path = file_path
         manager = GtkSource.LanguageManager()
         self.set_buffer(GtkSource.Buffer())
         self.set_insert_spaces_instead_of_tabs(True)
@@ -53,5 +53,12 @@ class SourceView(GtkSource.View):
         self.get_buffer().set_highlight_syntax(True)
         self.get_buffer().set_language(manager.get_language(lenguaje))
         self.get_buffer().set_text(texto)
-
         self.show_all()
+
+    def guardar(self):
+        _buffer = self.get_buffer()
+        inicio, fin = _buffer.get_bounds()
+        texto = _buffer.get_text(inicio, fin, 0)
+        arch = open(self.file_path, "w")
+        arch.write(texto)
+        arch.close()

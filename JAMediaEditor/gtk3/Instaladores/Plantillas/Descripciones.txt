@@ -16,3 +16,5 @@ Los ejecutables de las aplicaciones deben instalarse en una de estas rutas:
 
 /usr/local/bin
 /usr/local/sbin
+
+No se debn utilizar nombres de archivos o directorios que contengan caracteres como tildes o ñ

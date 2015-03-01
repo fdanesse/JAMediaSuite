@@ -31,6 +31,21 @@ from Globales import get_guion_desktop
 
 from ScrollPage import ScrollPage
 from WidgetIcon import WidgetIcon
+from ApiProyecto import get_installers_data
+
+"""
+proyecto
+    DEBIAN
+        control
+    usr
+        bin
+            lanzador
+        share
+            applications
+                desktop
+            proyecto
+                (la aplicación a instalar)
+"""
 
 
 class DebianWidget(Gtk.EventBox):
@@ -42,6 +57,10 @@ class DebianWidget(Gtk.EventBox):
         Gtk.EventBox.__init__(self)
 
         self.proyecto_path = proyecto_path
+        archivo = os.path.join(proyecto_path, "proyecto.ide")
+        arch = open(archivo, "r")
+        self.proyecto = json.load(arch, "utf-8")
+        arch.close()
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
@@ -58,14 +77,31 @@ class DebianWidget(Gtk.EventBox):
         self.widgeticon.connect("make", self.__make)
 
     def __make(self, widget):
-        print self.__make
+        # FIXME: Puede demorar, se necesita widget de espera
+        self.notebook.guardar()
+        install_path = os.path.join(get_path("deb"), self.proyecto["nombre"])
+        # Establecer permisos de archivos y directorios
+        get_installers_data(install_path)
+        control = os.path.join(install_path, "DEBIAN", "control")
+        desktop = os.path.join(install_path, "usr", "share", "applications",
+            "%s.desktop" % self.proyecto["nombre"])
+        lanzador = os.path.join(install_path, "usr", "bin",
+            self.proyecto["nombre"].lower())
+        for path in [control, desktop, lanzador]:
+            os.chmod(path, 0755)
+        destino = os.path.join(get_path("conf"),
+            "%s.deb" % self.proyecto["nombre"])
+        commands.getoutput('dpkg -b %s %s' % (install_path, destino))
+        os.chmod(destino, 0755)
 
     def __set_iconpath(self, widget, iconpath):
         new = iconpath
         if not self.proyecto_path in iconpath:
-            commands.getoutput('cp \"%s\" \"%s\"' % (
-                iconpath, self.proyecto_path))
-            new = os.path.join(self.proyecto_path, os.path.basename(iconpath))
+            install_path = os.path.join(get_path("deb"),
+                self.proyecto["nombre"])
+            new = os.path.join(install_path, "usr", "share",
+                self.proyecto["nombre"], os.path.basename(iconpath))
+            shutil.copyfile(iconpath, new)
         self.notebook.set_icon(new)
 
 
@@ -101,6 +137,7 @@ class Notebook(Gtk.Notebook):
         os.mkdir(os.path.join(self.usr_path, "share", "applications"))
 
         # copiar proyecto a os.path.join(self.usr_path, "share")
+        # FIXME: Limpiar de archivos pyc, pyo, etc . . . y directorios
         commands.getoutput('cp -r \"%s\" \"%s\"' % (self.proyecto_path,
             os.path.join(self.usr_path, "share")))
 
@@ -137,3 +174,8 @@ class Notebook(Gtk.Notebook):
             if label == "Desktop":
                 self.get_nth_page(x).get_child().get_buffer().set_text(texto)
                 break
+
+    def guardar(self):
+        paginas = len(self.get_children())
+        for x in range(paginas):
+            self.get_nth_page(x).get_child().guardar()

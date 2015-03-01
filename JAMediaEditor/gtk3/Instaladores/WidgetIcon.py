@@ -103,7 +103,8 @@ class WidgetIcon(Gtk.Frame):
             mimes, self.proyecto_path)
         ret = filechooser.run()
         if ret == Gtk.ResponseType.ACCEPT:
-            self.__set_icon_path(filechooser.get_filename())
+            path = u'%s'.encode('utf8') % filechooser.get_filename()
+            self.__set_icon_path(path)
         filechooser.destroy()
 
     def __set_icon_path(self, iconpath):
