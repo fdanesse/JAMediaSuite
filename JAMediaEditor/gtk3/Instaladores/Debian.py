@@ -80,7 +80,7 @@ class DebianWidget(Gtk.EventBox):
         # FIXME: Puede demorar, se necesita widget de espera
         self.notebook.guardar()
         install_path = os.path.join(get_path("deb"), self.proyecto["nombre"])
-        # Establecer permisos de archivos y directorios
+        # Limpiar y establecer permisos de archivos y directorios
         get_installers_data(install_path)
         control = os.path.join(install_path, "DEBIAN", "control")
         desktop = os.path.join(install_path, "usr", "share", "applications",
@@ -89,10 +89,12 @@ class DebianWidget(Gtk.EventBox):
             self.proyecto["nombre"].lower())
         for path in [control, desktop, lanzador]:
             os.chmod(path, 0755)
-        destino = os.path.join(get_path("conf"),
-            "%s.deb" % self.proyecto["nombre"])
+        destino = os.path.join(get_path("conf"), "%s_%s.deb" % (
+            self.proyecto["nombre"],
+            self.proyecto["version"].replace(".", "_")))
         commands.getoutput('dpkg -b %s %s' % (install_path, destino))
         os.chmod(destino, 0755)
+        # FIXME: Avisar que el proceso terminó
 
     def __set_iconpath(self, widget, iconpath):
         new = iconpath
@@ -137,9 +139,12 @@ class Notebook(Gtk.Notebook):
         os.mkdir(os.path.join(self.usr_path, "share", "applications"))
 
         # copiar proyecto a os.path.join(self.usr_path, "share")
-        # FIXME: Limpiar de archivos pyc, pyo, etc . . . y directorios
         commands.getoutput('cp -r \"%s\" \"%s\"' % (self.proyecto_path,
             os.path.join(self.usr_path, "share")))
+        # FIXME: bug en shutil al copiar directorios o archivos que
+        # poseen ñ en el path: UnicodeDecodeError:
+        # 'ascii' codec can't decode byte 0xc3 in position 5:
+        # ordinal not in range(128)
 
         # deb control
         path = os.path.join(self.deb_path, "control")
