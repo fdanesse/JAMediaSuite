@@ -23,6 +23,8 @@ import json
 import commands
 import shutil
 from gi.repository import Gtk
+from gi.repository import GLib
+from gi.repository import GObject
 
 from Globales import get_path
 from Globales import get_guion_lanzador_python
@@ -77,7 +79,6 @@ class DebianWidget(Gtk.EventBox):
         self.widgeticon.connect("make", self.__make)
 
     def __make(self, widget):
-        # FIXME: Puede demorar, se necesita widget de espera
         self.notebook.guardar()
         install_path = os.path.join(get_path("deb"), self.proyecto["nombre"])
         # Limpiar y establecer permisos de archivos y directorios
@@ -92,7 +93,7 @@ class DebianWidget(Gtk.EventBox):
         destino = os.path.join(get_path("conf"), "%s_%s.deb" % (
             self.proyecto["nombre"],
             self.proyecto["version"].replace(".", "_")))
-        commands.getoutput('dpkg -b %s %s' % (install_path, destino))
+        print commands.getoutput('dpkg -b %s %s' % (install_path, destino))
         os.chmod(destino, 0755)
         # FIXME: Avisar que el proceso terminó
 
@@ -118,9 +119,17 @@ class Notebook(Gtk.Notebook):
         self.set_scrollable(True)
 
         self.proyecto_path = proyecto_path
+        self.proyecto = False
+        self.path = False
+        self.deb_path = False
+        self.usr_path = False
 
+        self.connect("realize", self.__run)
+        self.show_all()
+
+    def __run(self, dialog):
         # cargar proyecto
-        archivo = os.path.join(proyecto_path, "proyecto.ide")
+        archivo = os.path.join(self.proyecto_path, "proyecto.ide")
         arch = open(archivo, "r")
         self.proyecto = json.load(arch, "utf-8")
         arch.close()

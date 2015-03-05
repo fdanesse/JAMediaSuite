@@ -63,7 +63,7 @@ class JAMediaEditor(Gtk.Window):
 
         self.set_title("JAMediaEditor")
         self.set_icon_from_file(os.path.join(BASE_PATH, "Iconos",
-            "JAMediaEditor2.svg"))
+            "JAMediaEditor.svg"))
         self.set_resizable(True)
         self.set_size_request(640, 480)
         self.set_border_width(5)

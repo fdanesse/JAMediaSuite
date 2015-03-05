@@ -70,7 +70,6 @@ class Instalador(Gtk.Window):
             self.vbox.remove(child)
             child.destroy()
         if "debian" in texto and valor:
-            # FIXME: Se requiere un dialogo de carga
             self.instalador = DebianWidget(self.proyecto_path)
             self.vbox.pack_start(self.instalador, True, True, 0)
         elif "python" in texto and valor:
