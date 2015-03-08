@@ -62,7 +62,9 @@ def get_guion_deb_control(proyecto):
 def get_guion_lanzador_python(proyecto):
     nombre = proyecto["nombre"]
     main = proyecto["main"]
-    return "#!/bin/sh\nexec \"/usr/bin/python\" \"/usr/share/%s/%s\" \"$@\"" % (nombre, main)
+    t = "#!/bin/sh\nexec \"/usr/bin/python\" \"/usr/share/"
+    t = "%s%s/%s\" \"$@\"" % (t, nombre, main)
+    return t
 
 
 def get_path(name):

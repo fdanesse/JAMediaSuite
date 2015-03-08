@@ -23,8 +23,6 @@ import json
 import commands
 import shutil
 from gi.repository import Gtk
-from gi.repository import GLib
-from gi.repository import GObject
 
 from Globales import get_path
 from Globales import get_guion_lanzador_python
@@ -187,7 +185,7 @@ class Notebook(Gtk.Notebook):
         # desktop
         path = os.path.join(self.usr_path, "share", "applications",
             "%s.desktop" % self.proyecto["nombre"])
-        texto = get_guion_desktop(self.proyecto, "FIXME")
+        texto = get_guion_desktop(self.proyecto, "")
         page = ScrollPage(path, "desktop", texto)
         self.append_page(page, Gtk.Label("Desktop"))
         self.set_tab_reorderable(page, True)
