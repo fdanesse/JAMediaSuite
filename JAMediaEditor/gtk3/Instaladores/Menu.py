@@ -54,7 +54,7 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_accion, "deb")
         menu.append(item)
 
-        item = Gtk.MenuItem('Instalador python')
+        item = Gtk.MenuItem('Instalador fedora (rmp)')
         try:
             item.get_child().destroy()
         except:
@@ -64,13 +64,13 @@ class Menu(Gtk.MenuBar):
         boton2.join_group(boton1)
         boton2.set_active(False)
         hbox.pack_start(boton2, False, False, 0)
-        label = Gtk.Label('Instalador python')
+        label = Gtk.Label('Instalador fedora (rmp)')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate", self.__emit_accion, "gnome")
+        item.connect("activate", self.__emit_accion, "rmp")
         menu.append(item)
 
-        item = Gtk.MenuItem('Instalador sugar')
+        item = Gtk.MenuItem('Instalador python (standard)')
         try:
             item.get_child().destroy()
         except:
@@ -80,10 +80,63 @@ class Menu(Gtk.MenuBar):
         boton3.join_group(boton1)
         boton3.set_active(False)
         hbox.pack_start(boton3, False, False, 0)
+        label = Gtk.Label('Instalador python (standard)')
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate", self.__emit_accion, "standard")
+        menu.append(item)
+
+        item = Gtk.MenuItem('Instalador python (sin root)')
+        try:
+            item.get_child().destroy()
+        except:
+            pass
+        hbox = Gtk.HBox()
+        boton4 = Gtk.RadioButton()
+        boton4.join_group(boton1)
+        boton4.set_active(False)
+        hbox.pack_start(boton4, False, False, 0)
+        label = Gtk.Label('Instalador python (sin root)')
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate", self.__emit_accion, "sin root")
+        menu.append(item)
+
+        item = Gtk.MenuItem('Instalador sugar')
+        try:
+            item.get_child().destroy()
+        except:
+            pass
+        hbox = Gtk.HBox()
+        boton5 = Gtk.RadioButton()
+        boton5.join_group(boton1)
+        boton5.set_active(False)
+        hbox.pack_start(boton5, False, False, 0)
         label = Gtk.Label('Instalador sugar')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
         item.connect("activate", self.__emit_accion, "sugar")
+        menu.append(item)
+
+        item = Gtk.MenuItem('Ayuda')
+        menu = Gtk.Menu()
+        item.set_submenu(menu)
+        self.append(item)
+
+        item = Gtk.MenuItem('Instalador debian (deb)')
+        try:
+            item.get_child().destroy()
+        except:
+            pass
+        hbox = Gtk.HBox()
+        boton6 = Gtk.RadioButton()
+        boton6.join_group(boton1)
+        boton6.set_active(False)
+        hbox.pack_start(boton6, False, False, 0)
+        label = Gtk.Label('Instalador debian (deb)')
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate", self.__emit_accion, "help deb")
         menu.append(item)
 
         self.show_all()

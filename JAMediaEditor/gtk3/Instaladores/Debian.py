@@ -23,6 +23,8 @@ import json
 import commands
 import shutil
 from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import Pango
 
 from Globales import get_path
 from Globales import get_guion_lanzador_python
@@ -68,6 +70,11 @@ class DebianWidget(Gtk.EventBox):
         self.notebook = Notebook(proyecto_path)
         self.widgeticon = WidgetIcon("deb", proyecto_path)
 
+        label = Gtk.Label(u"Instalador debian para: %s versión: %s" % (
+            self.proyecto["nombre"], self.proyecto["version"]))
+        label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
+        label.modify_fg(0, Gdk.Color(0, 0, 65000))
+        vbox.pack_start(label, False, False, 0)
         vbox.pack_start(self.widgeticon, False, False, 0)
         vbox.pack_start(self.notebook, True, True, 0)
 

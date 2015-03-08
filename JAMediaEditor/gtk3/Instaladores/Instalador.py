@@ -78,12 +78,18 @@ class Instalador(Gtk.Window):
             dialogo.run()
 
     def __load(self, dialogo, texto):
-        if "debian" in texto:
+        if texto == "debian":
             self.instalador = DebianWidget(self.proyecto_path)
             self.vbox.pack_start(self.instalador, True, True, 0)
-        elif "python" in texto:
-            self.vbox.pack_start(Gtk.Label("python"), True, True, 0)
-        elif "sugar" in texto:
+        elif texto == "rmp":
+            self.vbox.pack_start(Gtk.Label("rpm"), True, True, 0)
+        elif texto == "standard":
+            self.vbox.pack_start(Gtk.Label("standard"), True, True, 0)
+        elif texto == "sin root":
+            self.vbox.pack_start(Gtk.Label("sin root"), True, True, 0)
+        elif texto == "sugar":
             self.vbox.pack_start(Gtk.Label("sugar"), True, True, 0)
+        else:
+            self.vbox.pack_start(Gtk.Label(texto), True, True, 0)
         dialogo.destroy()
         self.show_all()
