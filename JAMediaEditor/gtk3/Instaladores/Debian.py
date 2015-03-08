@@ -30,7 +30,7 @@ from Globales import get_path
 from Globales import get_guion_lanzador_python
 from Globales import get_guion_deb_control
 from Globales import get_guion_desktop
-
+from Globales import DialogoLoad
 from ScrollPage import ScrollPage
 from WidgetIcon import WidgetIcon
 from ApiProyecto import get_installers_data
@@ -79,6 +79,13 @@ class DebianWidget(Gtk.EventBox):
         self.widgeticon.connect("make", self.__make)
 
     def __make(self, widget):
+        t = "Construyendo el Instalador."
+        t = "%s\n%s" % (t, "Por favor espera un momento . . .")
+        dialogo = DialogoLoad(self.get_toplevel(), t)
+        dialogo.connect("running", self.__run_make)
+        dialogo.run()
+
+    def __run_make(self, dialogo):
         self.notebook.guardar()
         install_path = os.path.join(get_path("deb"), self.proyecto["nombre"])
         # Limpiar y establecer permisos de archivos y directorios
@@ -95,6 +102,7 @@ class DebianWidget(Gtk.EventBox):
             self.proyecto["version"].replace(".", "_")))
         print commands.getoutput('dpkg -b %s %s' % (install_path, destino))
         os.chmod(destino, 0755)
+        dialogo.destroy()
         # FIXME: Avisar que el proceso terminó
 
     def __set_iconpath(self, widget, iconpath):
