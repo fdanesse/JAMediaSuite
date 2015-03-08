@@ -31,6 +31,7 @@ from Globales import get_guion_lanzador_python
 from Globales import get_guion_deb_control
 from Globales import get_guion_desktop
 from Globales import DialogoLoad
+from Globales import DialogoInformar
 from ScrollPage import ScrollPage
 from WidgetIcon import WidgetIcon
 from ApiProyecto import get_installers_data
@@ -103,7 +104,12 @@ class DebianWidget(Gtk.EventBox):
         print commands.getoutput('dpkg -b %s %s' % (install_path, destino))
         os.chmod(destino, 0755)
         dialogo.destroy()
-        # FIXME: Avisar que el proceso terminó
+        t = "Proceso Concluido."
+        t = "%s\n%s" % (t, "El instalador se encuentra en")
+        t = "%s: %s" % (t, get_path("conf"))
+        dialogo = DialogoInformar(self.get_toplevel(), t)
+        dialogo.run()
+        dialogo.destroy()
 
     def __set_iconpath(self, widget, iconpath):
         new = iconpath

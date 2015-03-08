@@ -91,7 +91,6 @@ class DialogoLoad(Gtk.Dialog):
         "running": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
-
     def __init__(self, parent, texto):
 
         Gtk.Dialog.__init__(self,
@@ -113,3 +112,21 @@ class DialogoLoad(Gtk.Dialog):
     def __emit_running(self):
         self.emit("running")
         return False
+
+
+class DialogoInformar(Gtk.Dialog):
+
+    __gtype_name__ = 'DialogoInformar'
+
+    def __init__(self, parent, texto):
+
+        Gtk.Dialog.__init__(self,
+            parent=parent, buttons=["OK", Gtk.ResponseType.ACCEPT],
+            flags=Gtk.DialogFlags.MODAL)
+
+        self.set_decorated(False)
+        self.set_border_width(15)
+
+        label = Gtk.Label(texto)
+        label.show()
+        self.vbox.pack_start(label, True, True, 5)
