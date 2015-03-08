@@ -21,7 +21,7 @@ JAMediaEditorMy_FileChooser, Multiple_FileChooser, JAMediaEditorDialogoErrores,
 JAMediaEditorDialogoAlertaSinGuardar, JAMediaEditorDialogoSobreEscritura,
 JAMediaEditorDialogoEliminar, JAMediaEditorBusquedaGrep, JAMediaEditorCredits,
 GtkViewport, GtkFrame, JAMediaEditorPanelWidget_setup,
-JAMediaEditorDebianWidget,
+JAMediaEditorDebianWidget, DialogoLoad,
 JAMediaEditorScrollPage, JAMediaEditorNotebookInstalador,
 JAMediaEditorWidgetIcon {
     background-color: #edf5ff;

@@ -19,6 +19,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+from gi.repository import Gtk
+from gi.repository import GLib
+from gi.repository import GObject
 
 
 def get_guion_desktop(proyecto, iconpath):
@@ -47,8 +50,12 @@ def get_guion_deb_control(proyecto):
     texto = "%sMaintainer: \n" % (texto)
     texto = "%sHomepage: %s\n" % (texto, proyecto["url"])
     texto = "%sDepends: \n" % (texto)
-    texto = "%sDescription: %s\n" % (texto, proyecto["descripcion"])
-    texto = "%s %s\n" % (texto, proyecto["descripcion"])
+    if proyecto["descripcion"]:
+        texto = "%sDescription: %s\n" % (texto, proyecto["descripcion"])
+        texto = "%s %s\n" % (texto, proyecto["descripcion"])
+    else:
+        texto = "%sDescription: Este campo es obligatorio\n" % (texto)
+        texto = "%s Este campo es obligatorio\n" % (texto)
     return texto
 
 
@@ -74,3 +81,35 @@ def get_path(name):
         return GNOMEPATH
     elif name == "sugar":
         return SUGARPATH
+
+
+class DialogoLoad(Gtk.Dialog):
+
+    __gtype_name__ = 'DialogoLoad'
+
+    __gsignals__ = {
+        "running": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, [])}
+
+
+    def __init__(self, parent, texto):
+
+        Gtk.Dialog.__init__(self,
+            parent=parent,
+            flags=Gtk.DialogFlags.MODAL)
+
+        self.set_decorated(False)
+        self.set_border_width(15)
+
+        label = Gtk.Label(texto)
+        label.show()
+        self.vbox.pack_start(label, True, True, 5)
+
+        self.connect("realize", self.__do_realize)
+
+    def __do_realize(self, widget):
+        GLib.timeout_add(500, self.__emit_running)
+
+    def __emit_running(self):
+        self.emit("running")
+        return False

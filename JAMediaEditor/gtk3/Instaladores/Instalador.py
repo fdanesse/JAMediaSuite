@@ -23,6 +23,7 @@ from gi.repository import GdkX11
 
 from Menu import Menu
 from Debian import DebianWidget
+from Globales import DialogoLoad
 
 screen = GdkX11.X11Screen.get_default()
 w = screen.width()
@@ -69,11 +70,20 @@ class Instalador(Gtk.Window):
         if child:
             self.vbox.remove(child)
             child.destroy()
-        if "debian" in texto and valor:
+        if valor:
+            t = "Creando Estructura del Instalador."
+            t = "%s\n%s" % (t, "Por favor espera un momento . . .")
+            dialogo = DialogoLoad(self, t)
+            dialogo.connect("running", self.__load, texto)
+            dialogo.run()
+
+    def __load(self, dialogo, texto):
+        if "debian" in texto:
             self.instalador = DebianWidget(self.proyecto_path)
             self.vbox.pack_start(self.instalador, True, True, 0)
-        elif "python" in texto and valor:
+        elif "python" in texto:
             self.vbox.pack_start(Gtk.Label("python"), True, True, 0)
-        elif "sugar" in texto and valor:
+        elif "sugar" in texto:
             self.vbox.pack_start(Gtk.Label("sugar"), True, True, 0)
+        dialogo.destroy()
         self.show_all()
