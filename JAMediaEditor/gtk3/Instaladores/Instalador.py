@@ -78,7 +78,7 @@ class Instalador(Gtk.Window):
             dialogo.run()
 
     def __load(self, dialogo, texto):
-        if texto == "debian":
+        if texto == "deb":
             self.instalador = DebianWidget(self.proyecto_path)
             self.vbox.pack_start(self.instalador, True, True, 0)
         elif texto == "rmp":

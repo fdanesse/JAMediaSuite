@@ -205,9 +205,8 @@ class Menu(Gtk.MenuBar):
 
         self.show_all()
 
-    def __emit_accion(self, widget, tipo):
+    def __emit_accion(self, widget, text):
         valor = not widget.get_children()[0].get_children()[0].get_active()
         if valor:
             widget.get_children()[0].get_children()[0].set_active(valor)
-            label = widget.get_children()[0].get_children()[1]
-            self.emit("accion-menu", label.get_text(), valor)
+            self.emit("accion-menu", text, valor)
