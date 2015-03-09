@@ -103,6 +103,7 @@ class DialogoLoad(Gtk.Dialog):
         self.set_border_width(15)
 
         label = Gtk.Label(texto)
+        label.set_justify(Gtk.Justification.CENTER)
         label.show()
         self.vbox.pack_start(label, True, True, 5)
 
@@ -130,5 +131,6 @@ class DialogoInformar(Gtk.Dialog):
         self.set_border_width(15)
 
         label = Gtk.Label(texto)
+        label.set_justify(Gtk.Justification.CENTER)
         label.show()
         self.vbox.pack_start(label, True, True, 5)

@@ -24,6 +24,7 @@ from gi.repository import GdkX11
 from Menu import Menu
 from Debian import DebianWidget
 from Globales import DialogoLoad
+from Help.HelpWidget import HelpWidget
 
 screen = GdkX11.X11Screen.get_default()
 w = screen.width()
@@ -43,7 +44,6 @@ class Instalador(Gtk.Window):
 
         self.proyecto_path = path
         self.parent_window = parent_window
-        self.instalador = False
 
         self.set_title("Constructor de Instaladores de Proyecto")
         self.set_transient_for(self.parent_window)
@@ -65,22 +65,21 @@ class Instalador(Gtk.Window):
         self.menu.connect("accion-menu", self.__accion_menu)
 
     def __accion_menu(self, widget, texto, valor):
-        self.instalador = False
         child = self.vbox.get_children()[-1]
         if child:
             self.vbox.remove(child)
             child.destroy()
         if valor:
-            t = "Creando Estructura del Instalador."
-            t = "%s\n%s" % (t, "Por favor espera un momento . . .")
+            t = "Cargando . . ."
+            t = "%s\n%s" % (t, "Por favor espera un momento.")
             dialogo = DialogoLoad(self, t)
             dialogo.connect("running", self.__load, texto)
             dialogo.run()
 
     def __load(self, dialogo, texto):
         if texto == "deb":
-            self.instalador = DebianWidget(self.proyecto_path)
-            self.vbox.pack_start(self.instalador, True, True, 0)
+            instalador = DebianWidget(self.proyecto_path)
+            self.vbox.pack_start(instalador, True, True, 0)
         elif texto == "rmp":
             self.vbox.pack_start(Gtk.Label("rpm"), True, True, 0)
         elif texto == "standard":
@@ -90,6 +89,7 @@ class Instalador(Gtk.Window):
         elif texto == "sugar":
             self.vbox.pack_start(Gtk.Label("sugar"), True, True, 0)
         else:
-            self.vbox.pack_start(Gtk.Label(texto), True, True, 0)
+            help = HelpWidget(texto)
+            self.vbox.pack_start(help, True, True, 0)
         dialogo.destroy()
         self.show_all()

@@ -123,7 +123,8 @@ class Menu(Gtk.MenuBar):
         item.set_submenu(menu)
         self.append(item)
 
-        item = Gtk.MenuItem('Instalador debian (deb)')
+        item = Gtk.MenuItem('Instaladores en General')
+        inicial = item
         try:
             item.get_child().destroy()
         except:
@@ -133,6 +134,22 @@ class Menu(Gtk.MenuBar):
         boton6.join_group(boton1)
         boton6.set_active(False)
         hbox.pack_start(boton6, False, False, 0)
+        label = Gtk.Label('Instaladores en General')
+        hbox.pack_start(label, False, False, 5)
+        item.add(hbox)
+        item.connect("activate", self.__emit_accion, "help instaladores")
+        menu.append(item)
+
+        item = Gtk.MenuItem('Instalador debian (deb)')
+        try:
+            item.get_child().destroy()
+        except:
+            pass
+        hbox = Gtk.HBox()
+        boton7 = Gtk.RadioButton()
+        boton7.join_group(boton1)
+        boton7.set_active(False)
+        hbox.pack_start(boton7, False, False, 0)
         label = Gtk.Label('Instalador debian (deb)')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
@@ -145,10 +162,10 @@ class Menu(Gtk.MenuBar):
         except:
             pass
         hbox = Gtk.HBox()
-        boton7 = Gtk.RadioButton()
-        boton7.join_group(boton1)
-        boton7.set_active(False)
-        hbox.pack_start(boton7, False, False, 0)
+        boton8 = Gtk.RadioButton()
+        boton8.join_group(boton1)
+        boton8.set_active(False)
+        hbox.pack_start(boton8, False, False, 0)
         label = Gtk.Label('Instalador fedora (rmp)')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
@@ -161,10 +178,10 @@ class Menu(Gtk.MenuBar):
         except:
             pass
         hbox = Gtk.HBox()
-        boton8 = Gtk.RadioButton()
-        boton8.join_group(boton1)
-        boton8.set_active(False)
-        hbox.pack_start(boton8, False, False, 0)
+        boton9 = Gtk.RadioButton()
+        boton9.join_group(boton1)
+        boton9.set_active(False)
+        hbox.pack_start(boton9, False, False, 0)
         label = Gtk.Label('Instalador python (standard)')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
@@ -177,10 +194,10 @@ class Menu(Gtk.MenuBar):
         except:
             pass
         hbox = Gtk.HBox()
-        boton9 = Gtk.RadioButton()
-        boton9.join_group(boton1)
-        boton9.set_active(False)
-        hbox.pack_start(boton9, False, False, 0)
+        boton10 = Gtk.RadioButton()
+        boton10.join_group(boton1)
+        boton10.set_active(False)
+        hbox.pack_start(boton10, False, False, 0)
         label = Gtk.Label('Instalador python (sin root)')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
@@ -193,17 +210,22 @@ class Menu(Gtk.MenuBar):
         except:
             pass
         hbox = Gtk.HBox()
-        boton10 = Gtk.RadioButton()
-        boton10.join_group(boton1)
-        boton10.set_active(False)
-        hbox.pack_start(boton10, False, False, 0)
+        boton11 = Gtk.RadioButton()
+        boton11.join_group(boton1)
+        boton11.set_active(False)
+        hbox.pack_start(boton11, False, False, 0)
         label = Gtk.Label('Instalador sugar')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
         item.connect("activate", self.__emit_accion, "help sugar")
         menu.append(item)
 
+        #self.connect("realize", self.__run, inicial)
+
         self.show_all()
+
+    #def __run(self, widget, inicial):
+    #    self.__emit_accion(inicial, "help instaladores")
 
     def __emit_accion(self, widget, text):
         valor = not widget.get_children()[0].get_children()[0].get_active()
