@@ -41,12 +41,8 @@ def format_RPM(buffer_help, tags_table):
 
 
 def format_DEB(buffer_help, tags_table):
-    pass
-
-
-def format_INSTALADORES(buffer_help, tags_table):
     tag1 = Gtk.TextTag.new("1")
-    tag1.set_property("weight", Pango.Weight.BOLD)
+    #tag1.set_property("weight", Pango.Weight.BOLD)
     tags_table.add(tag1)
 
     tag2 = Gtk.TextTag.new("2")
@@ -70,11 +66,59 @@ def format_INSTALADORES(buffer_help, tags_table):
     tag5.set_property("foreground-gdk", Gdk.Color(65000, 0, 0))
     tags_table.add(tag5)
 
-    tit2 = [1, 18, 72, 93]
-    tit3 = [20, 24, 28, 36, 76]
-    code1 = [31, 32, 58, 60, 62, 64, 69, 70, 77, 78, 79, 80, 81, 82,
-        83, 84, 85, 86, 87, 88, 89]
-    code2 = [42, 44, 52, 54]
+    tit2 = [3, 28, 33, 49, 101]
+    tit3 = [16, 51, 56, 66, 79]
+    code1 = [68, 69, 70, 71, 72, 73, 74, 75, 76, 77,
+        81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91]
+    code2 = [97, 114]
+
+    __apply_tag(buffer_help, 1, tag1)
+
+    for _id in tit2:
+        __apply_tag(buffer_help, _id, tag2)
+
+    for _id in tit3:
+        __apply_tag(buffer_help, _id, tag3)
+
+    for _id in code1:
+        __apply_tag(buffer_help, _id, tag4)
+
+    for _id in code2:
+        __apply_tag(buffer_help, _id, tag5)
+
+
+def format_INSTALADORES(buffer_help, tags_table):
+    tag1 = Gtk.TextTag.new("1")
+    #tag1.set_property("weight", Pango.Weight.BOLD)
+    tags_table.add(tag1)
+
+    tag2 = Gtk.TextTag.new("2")
+    tag2.set_property("weight", Pango.Weight.BOLD)
+    tag2.set_property("background-gdk", Gdk.Color(0, 0, 0))
+    tag2.set_property("foreground-gdk", Gdk.Color(65000, 65000, 65000))
+    tags_table.add(tag2)
+
+    tag3 = Gtk.TextTag.new("3")
+    tag3.set_property("weight", Pango.Weight.BOLD)
+    tag3.set_property("background-gdk", Gdk.Color(60000, 60000, 60000))
+    tags_table.add(tag3)
+
+    tag4 = Gtk.TextTag.new("4")
+    #tag4.set_property("weight", Pango.Weight.BOLD)
+    tag4.set_property("foreground-gdk", Gdk.Color(0, 0, 65000))
+    tags_table.add(tag4)
+
+    tag5 = Gtk.TextTag.new("5")
+    #tag5.set_property("weight", Pango.Weight.BOLD)
+    tag5.set_property("foreground-gdk", Gdk.Color(65000, 0, 0))
+    tags_table.add(tag5)
+
+    tit2 = [1, 19, 80, 103]
+    tit3 = [21, 26, 31, 40, 85]
+    code1 = [35, 36, 66, 68, 70, 72,
+        77, 78, 87, 88, 89, 90, 91, 92,
+        93, 94, 95, 96, 97, 98, 99]
+    code2 = [47, 50, 59, 62]
 
     __apply_tag(buffer_help, 1, tag1)
 

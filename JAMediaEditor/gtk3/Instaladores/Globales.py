@@ -55,7 +55,9 @@ def get_guion_deb_control(proyecto):
         texto = "%s %s\n" % (texto, proyecto["descripcion"])
     else:
         texto = "%sDescription: Este campo es obligatorio\n" % (texto)
-        texto = "%s Este campo es obligatorio\n" % (texto)
+        texto = "%s Este campo es obligatorio, debe tener" % (texto)
+        texto = "%s un espacio vacio al principio y" % (texto)
+        texto = "%s una linea vacia al final.\n" % (texto)
     return texto
 
 
