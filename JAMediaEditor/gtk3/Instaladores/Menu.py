@@ -70,7 +70,7 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_accion, "rmp")
         menu.append(item)
 
-        item = Gtk.MenuItem('Instalador python (standard)')
+        item = Gtk.MenuItem('Instalador python')
         try:
             item.get_child().destroy()
         except:
@@ -80,13 +80,13 @@ class Menu(Gtk.MenuBar):
         boton3.join_group(boton1)
         boton3.set_active(False)
         hbox.pack_start(boton3, False, False, 0)
-        label = Gtk.Label('Instalador python (standard)')
+        label = Gtk.Label('Instalador python')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate", self.__emit_accion, "standard")
+        item.connect("activate", self.__emit_accion, "python")
         menu.append(item)
 
-        item = Gtk.MenuItem('Instalador python (sin root)')
+        item = Gtk.MenuItem('Instalador sin root')
         try:
             item.get_child().destroy()
         except:
@@ -96,7 +96,7 @@ class Menu(Gtk.MenuBar):
         boton4.join_group(boton1)
         boton4.set_active(False)
         hbox.pack_start(boton4, False, False, 0)
-        label = Gtk.Label('Instalador python (sin root)')
+        label = Gtk.Label('Instalador sin root')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
         item.connect("activate", self.__emit_accion, "sin root")

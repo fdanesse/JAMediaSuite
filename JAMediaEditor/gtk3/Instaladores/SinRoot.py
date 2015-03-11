@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   Debian.py por:
+#   SinRoot.py por:
 #       Flavio Danesse      <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and/or modify
@@ -36,24 +36,10 @@ from ScrollPage import ScrollPage
 from WidgetIcon import WidgetIcon
 from ApiProyecto import get_installers_data
 
-"""
-proyecto
-    DEBIAN
-        control
-    usr
-        bin
-            lanzador
-        share
-            applications
-                desktop
-            proyecto
-                (la aplicación a instalar)
-"""
 
+class SinRootWidget(Gtk.EventBox):
 
-class DebianWidget(Gtk.EventBox):
-
-    __gtype_name__ = 'JAMediaEditorDebianWidget'
+    __gtype_name__ = 'JAMediaEditorSinRootWidget'
 
     def __init__(self, proyecto_path):
 
@@ -68,9 +54,9 @@ class DebianWidget(Gtk.EventBox):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         self.notebook = Notebook(proyecto_path)
-        self.widgeticon = WidgetIcon("deb", proyecto_path)
+        self.widgeticon = WidgetIcon("sinroot", proyecto_path)
 
-        label = Gtk.Label(u"Instalador debian para: %s versión: %s" % (
+        label = Gtk.Label(u"Instalador sin root para: %s versión: %s" % (
             self.proyecto["nombre"], self.proyecto["version"]))
         label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
         label.modify_fg(0, Gdk.Color(0, 0, 65000))
@@ -92,6 +78,7 @@ class DebianWidget(Gtk.EventBox):
         dialogo.run()
 
     def __run_make(self, dialogo):
+        '''
         self.notebook.guardar()
         install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
         # Limpiar y establecer permisos de archivos y directorios
@@ -109,6 +96,7 @@ class DebianWidget(Gtk.EventBox):
         print commands.getoutput('dpkg -b %s %s' % (install_path, destino))
         os.chmod(destino, 0755)
         dialogo.destroy()
+        '''
         t = "Proceso Concluido."
         t = "%s\n%s" % (t, "El instalador se encuentra en")
         t = "%s: %s" % (t, CONFPATH)
@@ -129,7 +117,7 @@ class DebianWidget(Gtk.EventBox):
 
 class Notebook(Gtk.Notebook):
 
-    __gtype_name__ = 'JAMediaEditorNotebookInstalador'
+    #__gtype_name__ = 'JAMediaEditorNotebookInstalador'
 
     def __init__(self, proyecto_path):
 
@@ -152,7 +140,7 @@ class Notebook(Gtk.Notebook):
         arch = open(archivo, "r")
         self.proyecto = json.load(arch, "utf-8")
         arch.close()
-
+        '''
         # crear estructura
         self.path = os.path.join(CONFPATH, self.proyecto["nombre"])
         if os.path.exists(self.path):
@@ -196,7 +184,7 @@ class Notebook(Gtk.Notebook):
         page = ScrollPage(path, "desktop", texto)
         self.append_page(page, Gtk.Label("Desktop"))
         self.set_tab_reorderable(page, True)
-
+        '''
         self.show_all()
 
     def set_icon(self, iconpath):

@@ -20,7 +20,7 @@ JAMediaEditorDialogoBuscar, JAMediaEditorDialogoReemplazar,
 JAMediaEditorMy_FileChooser, Multiple_FileChooser, JAMediaEditorDialogoErrores,
 JAMediaEditorDialogoAlertaSinGuardar, JAMediaEditorDialogoSobreEscritura,
 JAMediaEditorDialogoEliminar, JAMediaEditorBusquedaGrep, JAMediaEditorCredits,
-GtkViewport, GtkFrame, JAMediaEditorPanelWidget_setup,
+GtkViewport, GtkFrame, JAMediaEditorPanelWidget_setup, SinRootWidget,
 JAMediaEditorDebianWidget, DialogoLoad, DialogoInformar,
 JAMediaEditorScrollPage, JAMediaEditorNotebookInstalador,
 JAMediaEditorWidgetIcon {

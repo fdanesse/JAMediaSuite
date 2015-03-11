@@ -23,6 +23,10 @@ from gi.repository import Gtk
 from gi.repository import GLib
 from gi.repository import GObject
 
+CONFPATH = os.path.join(os.environ["HOME"], "JAMediaEditorCONF")
+if not os.path.exists(CONFPATH):
+    os.mkdir(CONFPATH)
+
 
 def get_guion_desktop(proyecto, iconpath):
     texto = "[Desktop Entry]\n"
@@ -67,24 +71,6 @@ def get_guion_lanzador_python(proyecto):
     t = "#!/bin/sh\nexec \"/usr/bin/python\" \"/usr/share/"
     t = "%s%s/%s\" \"$@\"" % (t, nombre, main)
     return t
-
-
-def get_path(name):
-    CONFPATH = os.path.join(os.environ["HOME"], "JAMediaEditorCONF")
-    DEBPATH = os.path.join(CONFPATH, "DEB")
-    GNOMEPATH = os.path.join(CONFPATH, "GNOME")
-    SUGARPATH = os.path.join(CONFPATH, "SUGAR")
-    for path in [CONFPATH, DEBPATH, GNOMEPATH, SUGARPATH]:
-        if not os.path.exists(path):
-            os.mkdir(path)
-    if name == "conf":
-        return CONFPATH
-    elif name == "deb":
-        return DEBPATH
-    elif name == "gnome":
-        return GNOMEPATH
-    elif name == "sugar":
-        return SUGARPATH
 
 
 class DialogoLoad(Gtk.Dialog):

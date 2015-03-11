@@ -23,6 +23,7 @@ from gi.repository import GdkX11
 
 from Menu import Menu
 from Debian import DebianWidget
+from SinRoot import SinRootWidget
 from Globales import DialogoLoad
 from Help.HelpWidget import HelpWidget
 
@@ -82,10 +83,11 @@ class Instalador(Gtk.Window):
             self.vbox.pack_start(instalador, True, True, 0)
         elif texto == "rmp":
             self.vbox.pack_start(Gtk.Label("rpm"), True, True, 0)
-        elif texto == "standard":
-            self.vbox.pack_start(Gtk.Label("standard"), True, True, 0)
+        elif texto == "python":
+            self.vbox.pack_start(Gtk.Label("python"), True, True, 0)
         elif texto == "sin root":
-            self.vbox.pack_start(Gtk.Label("sin root"), True, True, 0)
+            instalador = SinRootWidget(self.proyecto_path)
+            self.vbox.pack_start(instalador, True, True, 0)
         elif texto == "sugar":
             self.vbox.pack_start(Gtk.Label("sugar"), True, True, 0)
         else:
