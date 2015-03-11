@@ -114,14 +114,13 @@ Sobre JAMediaEditor:
     solo debes editar los archivos del mismo durante el proceso de construcción o luego de creado el paquete base.
 
     Los paquetes instaladores creados por JAMediaEditor, se guardan en: /directorio del usuario/JAMediaEditorCONF/
-    Dentro de ese directorio, hay varios directorios que refieren al tipo de instalador que JAMediaEditor va a crear (DEB, SUGAR, etc . . .)
-    Por ejemplo, cuando creas un instalador .deb para el proyecto Bichos, JAMediaEditor creará un directorio Bichos dentro del directorio DEB y
-    Construirá allí toda la estructura necesaria para construir el instalador. El archivo .deb final, se guardará en JAMediaEditorCONF indicando además su versión.
+    Por ejemplo, cuando creas un instalador .deb para el proyecto Bichos, JAMediaEditor creará un directorio Bichos dentro de /directorio del usuario/JAMediaEditorCONF/ y
+    Construirá allí toda la estructura necesaria para construir el instalador. El archivo .deb final, se guardará en /directorio del usuario/JAMediaEditorCONF/ indicando además su versión.
     Este proceso se sigue para todos los tipos de instaladores generados por JAMediaEditor, de modo que incluso en los archivos finales siempre puedes realizar los
     cambios que desees y volver a construir manualmente los instaladores.
 
     Debes considerar que cada vez que inicias la interfaz de construcción de un tipo particular de instalador en JAMediaEditor para un proyecto determinado,
-    JAMediaEditor limpiará el directorio correspondiente a ese tipo de instalador y volverá a construir toda la estructura de archivos y directorios necesaria.
+    JAMediaEditor limpiará el directorio correspondiente a ese instalador y volverá a construir toda la estructura de archivos y directorios necesaria.
 """
 
 
@@ -232,7 +231,7 @@ Sobre JAMediaEditor:
     basta con lo demostrado acá para construir un instalador .deb funcional.
     A medida que aprendas más sobre instaladores .deb, podrás ir mejorando el archivo control e ir incorporando otros archivos que suelen utilizarse.
 
-    JAMediaEditor sólo pretende automatizar el proceso para hacer fácil lo sencillo y tu puedas aprender sobre ello.
+    JAMediaEditor sólo pretende automatizar el proceso para hacer esto fácil y tu puedas aprender sobre ello.
     Los instaladores .deb construidos con JAMediaEditor, si bien son muy simples, deben funcionar sin que hagas cambio alguno.
     Si alguno de ellos falla, asegúrate que no se debe a cambios realizados por tí en alguno de los archivos involucrados en el proceso.
 

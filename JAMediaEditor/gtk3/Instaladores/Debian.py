@@ -139,9 +139,6 @@ class Notebook(Gtk.Notebook):
 
         self.proyecto_path = proyecto_path
         self.proyecto = False
-        self.path = False
-        self.deb_path = False
-        self.usr_path = False
 
         self.connect("realize", self.__run)
         self.show_all()
@@ -154,35 +151,35 @@ class Notebook(Gtk.Notebook):
         arch.close()
 
         # crear estructura
-        self.path = os.path.join(CONFPATH, self.proyecto["nombre"])
-        if os.path.exists(self.path):
-            shutil.rmtree(self.path)
-        self.deb_path = os.path.join(self.path, "DEBIAN")
-        self.usr_path = os.path.join(self.path, "usr")
-        os.mkdir(self.path)
-        os.mkdir(self.deb_path)
-        os.mkdir(self.usr_path)
-        os.mkdir(os.path.join(self.usr_path, "bin"))
-        os.mkdir(os.path.join(self.usr_path, "share"))
-        os.mkdir(os.path.join(self.usr_path, "share", "applications"))
+        path = os.path.join(CONFPATH, self.proyecto["nombre"])
+        if os.path.exists(path):
+            shutil.rmtree(path)
+        deb_path = os.path.join(path, "DEBIAN")
+        usr_path = os.path.join(path, "usr")
+        os.mkdir(path)
+        os.mkdir(deb_path)
+        os.mkdir(usr_path)
+        os.mkdir(os.path.join(usr_path, "bin"))
+        os.mkdir(os.path.join(usr_path, "share"))
+        os.mkdir(os.path.join(usr_path, "share", "applications"))
 
         # copiar proyecto a os.path.join(self.usr_path, "share")
         commands.getoutput('cp -r \"%s\" \"%s\"' % (self.proyecto_path,
-            os.path.join(self.usr_path, "share")))
+            os.path.join(usr_path, "share")))
         # FIXME: bug en shutil al copiar directorios o archivos que
         # poseen ñ en el path: UnicodeDecodeError:
         # 'ascii' codec can't decode byte 0xc3 in position 5:
         # ordinal not in range(128)
 
         # deb control
-        path = os.path.join(self.deb_path, "control")
+        path = os.path.join(deb_path, "control")
         texto = get_guion_deb_control(self.proyecto)
         page = ScrollPage(path, "txt", texto)
         self.append_page(page, Gtk.Label("Control"))
         self.set_tab_reorderable(page, True)
 
         # Lanzador
-        path = os.path.join(self.usr_path, "bin",
+        path = os.path.join(usr_path, "bin",
             self.proyecto["nombre"].lower())
         texto = get_guion_lanzador_python(self.proyecto)
         page = ScrollPage(path, "sh", texto)
@@ -190,7 +187,7 @@ class Notebook(Gtk.Notebook):
         self.set_tab_reorderable(page, True)
 
         # desktop
-        path = os.path.join(self.usr_path, "share", "applications",
+        path = os.path.join(usr_path, "share", "applications",
             "%s.desktop" % self.proyecto["nombre"])
         texto = get_guion_desktop(self.proyecto, "")
         page = ScrollPage(path, "desktop", texto)

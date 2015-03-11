@@ -127,9 +127,6 @@ class Notebook(Gtk.Notebook):
 
         self.proyecto_path = proyecto_path
         self.proyecto = False
-        self.path = False
-        self.deb_path = False
-        self.usr_path = False
 
         self.connect("realize", self.__run)
         self.show_all()
@@ -140,35 +137,17 @@ class Notebook(Gtk.Notebook):
         arch = open(archivo, "r")
         self.proyecto = json.load(arch, "utf-8")
         arch.close()
-        '''
+
         # crear estructura
-        self.path = os.path.join(CONFPATH, self.proyecto["nombre"])
-        if os.path.exists(self.path):
-            shutil.rmtree(self.path)
-        self.deb_path = os.path.join(self.path, "DEBIAN")
-        self.usr_path = os.path.join(self.path, "usr")
-        os.mkdir(self.path)
-        os.mkdir(self.deb_path)
-        os.mkdir(self.usr_path)
-        os.mkdir(os.path.join(self.usr_path, "bin"))
-        os.mkdir(os.path.join(self.usr_path, "share"))
-        os.mkdir(os.path.join(self.usr_path, "share", "applications"))
+        path = os.path.join(CONFPATH, self.proyecto["nombre"])
+        if os.path.exists(path):
+            shutil.rmtree(path)
+        os.mkdir(path)
 
         # copiar proyecto a os.path.join(self.usr_path, "share")
-        commands.getoutput('cp -r \"%s\" \"%s\"' % (self.proyecto_path,
-            os.path.join(self.usr_path, "share")))
-        # FIXME: bug en shutil al copiar directorios o archivos que
-        # poseen ñ en el path: UnicodeDecodeError:
-        # 'ascii' codec can't decode byte 0xc3 in position 5:
-        # ordinal not in range(128)
-
-        # deb control
-        path = os.path.join(self.deb_path, "control")
-        texto = get_guion_deb_control(self.proyecto)
-        page = ScrollPage(path, "txt", texto)
-        self.append_page(page, Gtk.Label("Control"))
-        self.set_tab_reorderable(page, True)
-
+        commands.getoutput('cp -r \"%s\" \"%s\"' % (
+            self.proyecto_path, CONFPATH))
+        '''
         # Lanzador
         path = os.path.join(self.usr_path, "bin",
             self.proyecto["nombre"].lower())
