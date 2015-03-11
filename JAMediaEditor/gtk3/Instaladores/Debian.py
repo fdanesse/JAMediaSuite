@@ -119,8 +119,7 @@ class DebianWidget(Gtk.EventBox):
     def __set_iconpath(self, widget, iconpath):
         new = iconpath
         if not self.proyecto_path in iconpath:
-            install_path = os.path.join(CONFPATH,
-                self.proyecto["nombre"])
+            install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
             new = os.path.join(install_path, "usr", "share",
                 self.proyecto["nombre"], os.path.basename(iconpath))
             shutil.copyfile(iconpath, new)
@@ -129,7 +128,7 @@ class DebianWidget(Gtk.EventBox):
 
 class Notebook(Gtk.Notebook):
 
-    __gtype_name__ = 'JAMediaEditorNotebookInstalador'
+    __gtype_name__ = 'JAMediaEditorNotebookInstalador1'
 
     def __init__(self, proyecto_path):
 

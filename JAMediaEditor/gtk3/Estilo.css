@@ -10,7 +10,7 @@ Terminal, DialogoFormato, JAMediaEditorInstalador, PygiHackMenu,
 PygiHackToolbar, JAMediaEditorInformeWidget, JAMediaEditorDialogoProyecto,
 PygiHackBaseNotebook, PygiHackIntrospectionPanel, PygiHackInfoNotebook,
 JAMediaTerminal2, NoteBookTerminal2, Terminal2, ToolbarTerminal2,
-DialogoFormato2, JAMediaGstreamerPyGiHack{
+DialogoFormato2, JAMediaGstreamerPyGiHack, DialogoLoad, DialogoInformar{
     background-color: #f0e6aa;
     color: #000000;
 }
@@ -21,9 +21,9 @@ JAMediaEditorMy_FileChooser, Multiple_FileChooser, JAMediaEditorDialogoErrores,
 JAMediaEditorDialogoAlertaSinGuardar, JAMediaEditorDialogoSobreEscritura,
 JAMediaEditorDialogoEliminar, JAMediaEditorBusquedaGrep, JAMediaEditorCredits,
 GtkViewport, GtkFrame, JAMediaEditorPanelWidget_setup, SinRootWidget,
-JAMediaEditorDebianWidget, DialogoLoad, DialogoInformar,
-JAMediaEditorScrollPage, JAMediaEditorNotebookInstalador,
-JAMediaEditorWidgetIcon {
+JAMediaEditorDebianWidget, JAMediaEditorSinRootWidget,
+JAMediaEditorScrollPage, JAMediaEditorNotebookInstalador1,
+JAMediaEditorNotebookInstalador2, JAMediaEditorWidgetIcon {
     background-color: #edf5ff;
     color: #000000;
 }

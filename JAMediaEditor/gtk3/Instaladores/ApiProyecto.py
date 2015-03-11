@@ -23,7 +23,7 @@
 import os
 import commands
 
-RECHAZAExtension = [".pyc", ".pyo", ".bak"]
+RECHAZAExtension = [".pyc", ".pyo", ".bak", ".ide", ".gitignore", ".git"]
 RECHAZAFiles = ["proyecto.ide", ".gitignore"]
 RECHAZADirs = [".git", "build", "dist"]
 
