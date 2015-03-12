@@ -18,9 +18,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
 from gi.repository import Gtk
 from gi.repository import GdkX11
-
 from Menu import Menu
 from Debian import DebianWidget
 from SinRoot import SinRootWidget
@@ -30,6 +30,8 @@ from Help.HelpWidget import HelpWidget
 screen = GdkX11.X11Screen.get_default()
 w = screen.width()
 h = screen.height()
+
+BASEPATH = os.path.dirname(__file__)
 
 
 class Instalador(Gtk.Window):
@@ -47,6 +49,8 @@ class Instalador(Gtk.Window):
         self.parent_window = parent_window
 
         self.set_title("Constructor de Instaladores de Proyecto")
+        self.set_icon_from_file(
+            os.path.join(BASEPATH, "Iconos", "gandalftux.png"))
         self.set_transient_for(self.parent_window)
         self.set_border_width(15)
 

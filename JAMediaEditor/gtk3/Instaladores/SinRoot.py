@@ -26,7 +26,7 @@ import zipfile
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Pango
-
+from gi.repository import GdkPixbuf
 from Globales import CONFPATH
 from Globales import DialogoLoad
 from Globales import DialogoInformar
@@ -60,8 +60,19 @@ class SinRootWidget(Gtk.EventBox):
             self.proyecto["nombre"], self.proyecto["version"]))
         label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
         label.modify_fg(0, Gdk.Color(0, 0, 65000))
-        vbox.pack_start(label, False, False, 0)
-        vbox.pack_start(self.widgeticon, False, False, 0)
+
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        image = Gtk.Image()
+        arch = os.path.join(BASEPATH, "Iconos", "gandalftux.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(arch, 100, 100)
+        image.set_from_pixbuf(pixbuf)
+        hbox.pack_start(image, False, False, 0)
+        vbox2 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        vbox2.pack_start(label, False, False, 0)
+        vbox2.pack_start(self.widgeticon, False, False, 0)
+        hbox.pack_start(vbox2, True, True, 0)
+        vbox.pack_start(hbox, False, False, 0)
+
         vbox.pack_start(self.notebook, True, True, 0)
 
         self.add(vbox)
