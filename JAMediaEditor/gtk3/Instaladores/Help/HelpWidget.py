@@ -29,7 +29,40 @@ def format_SUGAR(buffer_help, tags_table):
 
 
 def format_SINROOT(buffer_help, tags_table):
-    pass
+    tag1 = Gtk.TextTag.new("1")
+    #tag1.set_property("weight", Pango.Weight.BOLD)
+    tags_table.add(tag1)
+
+    tag2 = Gtk.TextTag.new("2")
+    tag2.set_property("weight", Pango.Weight.BOLD)
+    tag2.set_property("background-gdk", Gdk.Color(0, 0, 0))
+    tag2.set_property("foreground-gdk", Gdk.Color(65000, 65000, 65000))
+    tags_table.add(tag2)
+
+    tag3 = Gtk.TextTag.new("3")
+    tag3.set_property("weight", Pango.Weight.BOLD)
+    tag3.set_property("background-gdk", Gdk.Color(60000, 60000, 60000))
+    tags_table.add(tag3)
+
+    tag4 = Gtk.TextTag.new("4")
+    #tag4.set_property("weight", Pango.Weight.BOLD)
+    tag4.set_property("foreground-gdk", Gdk.Color(0, 0, 65000))
+    tags_table.add(tag4)
+
+    tit2 = [1, 11, 36]
+    tit3 = [21, 28]
+    code1 = [23, 24, 25, 26]
+
+    __apply_tag(buffer_help, 1, tag1)
+
+    for _id in tit2:
+        __apply_tag(buffer_help, _id, tag2)
+
+    for _id in tit3:
+        __apply_tag(buffer_help, _id, tag3)
+
+    for _id in code1:
+        __apply_tag(buffer_help, _id, tag4)
 
 
 def format_STANDARD(buffer_help, tags_table):
@@ -66,11 +99,11 @@ def format_DEB(buffer_help, tags_table):
     tag5.set_property("foreground-gdk", Gdk.Color(65000, 0, 0))
     tags_table.add(tag5)
 
-    tit2 = [3, 28, 33, 49, 101]
-    tit3 = [16, 51, 56, 66, 79]
-    code1 = [68, 69, 70, 71, 72, 73, 74, 75, 76, 77,
-        81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91]
-    code2 = [97, 114]
+    tit2 = [3, 28, 33, 49, 107]
+    tit3 = [16, 51, 56, 67, 80, 103]
+    code1 = [69, 70, 71, 72, 73, 74, 75, 76, 77, 78,
+        82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92]
+    code2 = [98, 105, 120]
 
     __apply_tag(buffer_help, 1, tag1)
 
@@ -153,7 +186,7 @@ class HelpWidget(Gtk.EventBox):
             "help instaladores": format_INSTALADORES,
             "help deb": format_DEB,
             "help rmp": format_RPM,
-            "help standard": format_STANDARD,
+            "help python": format_STANDARD,
             "help sin root": format_SINROOT,
             "help sugar": format_SUGAR,
             }

@@ -172,7 +172,7 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_accion, "help rmp")
         menu.append(item)
 
-        item = Gtk.MenuItem('Instalador python (standard)')
+        item = Gtk.MenuItem('Instalador python')
         try:
             item.get_child().destroy()
         except:
@@ -182,10 +182,10 @@ class Menu(Gtk.MenuBar):
         boton9.join_group(boton1)
         boton9.set_active(False)
         hbox.pack_start(boton9, False, False, 0)
-        label = Gtk.Label('Instalador python (standard)')
+        label = Gtk.Label('Instalador python')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate", self.__emit_accion, "help standard")
+        item.connect("activate", self.__emit_accion, "help python")
         menu.append(item)
 
         item = Gtk.MenuItem('Instalador python (sin root)')

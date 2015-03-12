@@ -186,7 +186,8 @@ Como crear un paquete .deb:
     Esta estructura debe replicar la estructura final de instalación de nuestro software, de modo que creamos dos directorios, (bin y share).
     Dentro del directorio share, copiamos el directorio que contiene nuestro software a instalar.
     Dentro del directorio bin, escribimos el lanzador de nuestra aplicación, (ver Ayuda sobre "Instaladores en General").
-    Si deseas un lanzador en algún menú del entorno gráfico, dentro de share creas el directorio applications y en él escribes tu archivo .desktop, (ver Ayuda sobre "Instaladores en General").
+    Si deseas un lanzador en algún menú del entorno gráfico, dentro de share creas el directorio applications y en él escribes tu archivo .desktop,
+    (ver Ayuda sobre "Instaladores en General").
 
     Además, en el directorio "Proyecto", debes crear el directorio DEBIAN y dentro escribir el archivo control.
 
@@ -224,6 +225,11 @@ Como crear un paquete .deb:
         dpkg -b ./deb /directorio_construido_anteriormente /directorio_destino_del_paquete_deb/nombre_paquete.deb
 
     El archivo .deb resultante está listo para ser distribuido o instalado con el gestor de paquetes. (Recuerda darle permisos de ejecución).
+    Bastará con que el usuario haga doble click sobre él, para que el gestor de paquetes lo abra y pueda comenzar su instalación.
+
+    Luego, para desinstalar la aplicación, el usuario debe hacer:
+
+        sudo apt-get remove nombre_de_la_aplicación
 
 Sobre JAMediaEditor:
 
@@ -242,6 +248,63 @@ Sobre JAMediaEditor:
 """
 
 
+SINROOT = """
+La Clave de root:
+
+    Para instalar una aplicación en tu sistema necesitas ser administrador del mismo, es decir, tener la clave de root.
+    Esta es una de las medidas de seguridad de linux para prevenir la perdida o robo de información por parte de usuarios no autorizados.
+    Para linux, la seguridad de la información de los usuarios, es lo principal.
+
+    Como ya habrás visto, los instaladores pueden a su vez, llamar a instalar a otras aplicaciones y bibliotecas de código necesarias.
+    Si linux permitiera que cualquiera instale paquetes en el sistema, nunca estarías seguro sobre que estaría haciendo ese código,
+    en cambio, el administrador del sistema, se supone que es garante de no tener código malicioso instalado en el sistema.
+
+Instalaciones locales:
+
+    Sin embargo, linux permite que un usuario particular sin acceso al root, instale aplicaciones dentro de su entorno, sin afectar al
+    resto de los usuarios. En este caso, si no tienes acceso al root y tu aplicación no necesita instalar nada extra,
+    ya sean bibliotecas u otras aplicaciones, puedes instalarla en el entorno de tu usuario.
+    (si tu instalador necesita instalar otras cosas, linux no te permitirá hacerlo sin la clave de root).
+
+    Para hacer esto, se utilizan los directorios dentro de /home/tu usuario/.local
+    En ese path, debes replicar los path que utiliza el sistema para instalar las aplicaciones, guardar los archivos .desktop y los lanzadores.
+
+    Es decir, debes utilizar estos directorios:
+
+        /home/tu usuario/.local
+            /bin
+            /share
+                /applications
+
+    Si alguno de ellos no existe, puedes crearlo, y luego, solo debes:
+
+        Copiar el directorio de tu aplicación a /home/tu usuario/.local/share
+        Escribir el lanzador en /home/tu usuario/.local/bin
+        Escribir el archivo .desktop en /home/tu usuario/.local/share/applications
+
+    Para comprender mejor lo anterior, puedes consultar la Ayuda sobre "Instaladores en General".
+
+Sobre JAMediaEditor:
+
+    Para ayudarte a construir este instalador, JAMediaEditor cuenta con una plantilla que permite crear todos los archivos necesarios y
+    copiarlos a los sitios referidos anteriormente, en el mismo momento de instalar tu aplicación.
+
+    Básicamente, cuando selecciones para construir este tipo de instalador, JAMediaEditor te presentará un script python con el código
+    que permitirá crear toda la estructura de directorios en caso de que no existieran, e instalar tu aplicación al momento de ser ejecutado.
+    Esta forma de hacerlo se debe a que el instalador debe tomar algunos datos del sistema donde vayas a instalarlo para crear el archivo .desktop.
+
+    Cuando construyas el instalador, JAMediaEditor guardará todo y construirá un archivo .zip con el paquete de tu aplicación indicando la versión,
+    dejandolo listo para ser distribuido.
+
+    Para instalar la aplicación, el usuario, luego de descargar el .zip y descomprimirlo, tendrá que ejecutar el archivo install.py
+    Para desinstalarla, el usuario tendrá que borrar el archivo .desktop y el directorio de la aplicación que se encontrarán en la estructura de
+    directorios anteriormente detallada.
+
+    Por defecto, este instalador no crear un lanzador ya que no es necesario si el archivo .desktop apunta al main de tu aplicación.
+    Tampoco crea un desinstalador, pero en ambos casos, tu puedes agregarlos si lo deseas, modificando install.py para que los cree al ser ejecutado.
+"""
+
+
 def get_help(help):
     if help == "help instaladores":
         return INSTALADORES
@@ -249,10 +312,10 @@ def get_help(help):
         return DEB
     elif help == "help rmp":
         return ""
-    elif help == "help standard":
+    elif help == "help python":
         return ""
     elif help == "help sin root":
-        return ""
+        return SINROOT
     elif help == "help sugar":
         return ""
     else:
