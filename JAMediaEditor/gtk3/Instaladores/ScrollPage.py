@@ -32,7 +32,8 @@ class ScrollPage(Gtk.ScrolledWindow):
 
         self.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
-        self.add(SourceView(file_path, lenguaje, texto))
+        self.source = SourceView(file_path, lenguaje, texto)
+        self.add(self.source)
         self.show_all()
 
 

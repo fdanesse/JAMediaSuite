@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   SinRoot.py por:
+#   PythonWidget.py por:
 #       Flavio Danesse      <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and/or modify
@@ -22,12 +22,15 @@ import os
 import json
 import commands
 import shutil
-import zipfile
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Pango
 from gi.repository import GdkPixbuf
 from Globales import CONFPATH
+from Globales import get_guion_lanzador_sh
+from Globales import get_guion_desktop
+from Globales import get_guion_setup_cfg
+from Globales import get_guion_setup_py
 from Globales import DialogoLoad
 from Globales import DialogoInformar
 from ScrollPage import ScrollPage
@@ -37,9 +40,9 @@ from ApiProyecto import get_installers_data
 BASEPATH = os.path.dirname(__file__)
 
 
-class SinRootWidget(Gtk.EventBox):
+class PythonWidget(Gtk.EventBox):
 
-    __gtype_name__ = 'JAMediaEditorSinRootWidget'
+    __gtype_name__ = 'JAMediaEditorPythonWidget'
 
     def __init__(self, proyecto_path):
 
@@ -54,9 +57,9 @@ class SinRootWidget(Gtk.EventBox):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         self.notebook = Notebook(proyecto_path)
-        self.widgeticon = WidgetIcon("sinroot", proyecto_path)
+        self.widgeticon = WidgetIcon("deb", proyecto_path)
 
-        label = Gtk.Label(u"Instalador sin root para: %s versión: %s" % (
+        label = Gtk.Label(u"Instalador python para: %s versión: %s" % (
             self.proyecto["nombre"], self.proyecto["version"]))
         label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
         label.modify_fg(0, Gdk.Color(0, 0, 65000))
@@ -79,7 +82,7 @@ class SinRootWidget(Gtk.EventBox):
         self.show_all()
 
         self.widgeticon.connect("iconpath", self.__set_iconpath)
-        self.widgeticon.connect("make", self.__make)
+        #self.widgeticon.connect("make", self.__make)
 
     def __make(self, widget):
         t = "Construyendo el Instalador."
@@ -93,26 +96,19 @@ class SinRootWidget(Gtk.EventBox):
         install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
         # Limpiar y establecer permisos de archivos y directorios
         get_installers_data(install_path)
-
-        # Generar archivo de distribución "*.zip"
-        zippath = "%s_%s.zip" % (install_path, self.proyecto["version"])
-
-        # Eliminar anterior.
-        if os.path.exists(zippath):
-            os.remove(zippath)
-
-        zipped = zipfile.ZipFile(zippath, "w")
-
-        # Comprimir archivos del proyecto.
-        for (archiveDirPath, dirNames, fileNames) in os.walk(install_path):
-            for fileName in fileNames:
-                filePath = os.path.join(archiveDirPath, fileName)
-                zipped.write(filePath, filePath.split(install_path)[1])
-
-        zipped.close()
-        os.chmod(zippath, 0755)
+        control = os.path.join(install_path, "DEBIAN", "control")
+        desktop = os.path.join(install_path, "usr", "share", "applications",
+            "%s.desktop" % self.proyecto["nombre"])
+        lanzador = os.path.join(install_path, "usr", "bin",
+            self.proyecto["nombre"].lower())
+        for path in [control, desktop, lanzador]:
+            os.chmod(path, 0755)
+        destino = os.path.join(CONFPATH, "%s_%s.deb" % (
+            self.proyecto["nombre"],
+            self.proyecto["version"].replace(".", "_")))
+        print commands.getoutput('dpkg -b %s %s' % (install_path, destino))
+        os.chmod(destino, 0755)
         dialogo.destroy()
-
         t = "Proceso Concluido."
         t = "%s\n%s" % (t, "El instalador se encuentra en")
         t = "%s: %s" % (t, CONFPATH)
@@ -124,15 +120,15 @@ class SinRootWidget(Gtk.EventBox):
         new = iconpath
         if not self.proyecto_path in iconpath:
             install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
-            new = os.path.join(install_path, self.proyecto["nombre"],
-                os.path.basename(iconpath))
+            new = os.path.join(install_path, "usr", "share",
+                self.proyecto["nombre"], os.path.basename(iconpath))
             shutil.copyfile(iconpath, new)
         self.notebook.set_icon(new)
 
 
 class Notebook(Gtk.Notebook):
 
-    __gtype_name__ = 'JAMediaEditorNotebookInstalador2'
+    __gtype_name__ = 'JAMediaEditorNotebookInstalador3'
 
     def __init__(self, proyecto_path):
 
@@ -154,48 +150,79 @@ class Notebook(Gtk.Notebook):
         arch.close()
 
         # crear estructura
-        path = os.path.join(CONFPATH, self.proyecto["nombre"])
-        if os.path.exists(path):
-            shutil.rmtree(path)
-        os.mkdir(path)
+        temppath = os.path.join(CONFPATH, self.proyecto["nombre"])
+        if os.path.exists(temppath):
+            shutil.rmtree(temppath)
 
         # copiar proyecto
         commands.getoutput('cp -r \"%s\" \"%s\"' % (
             self.proyecto_path, CONFPATH))
 
-        archivo = open(os.path.join(BASEPATH, "installmodel.txt"))
-        texto = u"%s" % archivo.read()
-        archivo.close()
-
-        texto = texto.replace('mainfile', self.proyecto["main"])
-        texto = texto.replace('GnomeCat', self.proyecto["categoria"])
-        texto = texto.replace('GnomeMimeTypes', self.proyecto["mimetypes"])
-
-        page = ScrollPage(os.path.join(path, "install.py"), "python", texto)
-        self.append_page(page, Gtk.Label("Instalador"))
+        # setup.cfg
+        path = os.path.join(temppath, "setup.cfg")
+        texto = get_guion_setup_cfg(self.proyecto)
+        page = ScrollPage(path, "txt", texto)
+        self.append_page(page, Gtk.Label("setup.cfg"))
         self.set_tab_reorderable(page, True)
         page.source.guardar()
+
+        # Lanzador
+        path = os.path.join(temppath, self.proyecto["nombre"].lower())
+        texto = get_guion_lanzador_sh(self.proyecto)
+        page = ScrollPage(path, "sh", texto)
+        self.append_page(page, Gtk.Label("Lanzador"))
+        self.set_tab_reorderable(page, True)
+        page.source.guardar()
+
+        # desktop
+        path = os.path.join(temppath, "%s.desktop" % self.proyecto["nombre"])
+        texto = get_guion_desktop(self.proyecto, "")
+        page = ScrollPage(path, "desktop", texto)
+        self.append_page(page, Gtk.Label("Desktop"))
+        self.set_tab_reorderable(page, True)
+        page.source.guardar()
+
+        # manifest
+        path = os.path.join(temppath, "MANIFEST")
+        texto = ""
+        manifestpage = ScrollPage(path, "txt", texto)
+        self.append_page(manifestpage, Gtk.Label("MANIFEST"))
+        self.set_tab_reorderable(manifestpage, True)
+        manifestpage.source.guardar()
+
+        # setup.py
+        path = os.path.join(temppath, "setup.py")
+        texto = ""
+        setuppage = ScrollPage(path, "python", texto)
+        self.append_page(setuppage, Gtk.Label("setup.py"))
+        self.set_tab_reorderable(setuppage, True)
+        setuppage.source.guardar()
+
+        # Llenar MANIFEST
+        manifest_list, data_files = get_installers_data(temppath)
+        texto = ""
+        for item in manifest_list:
+            texto = "%s\n%s" % (item, texto)
+        manifestpage.source.get_buffer().set_text(texto)
+        manifestpage.source.guardar()
+
+        # Llenar setup.py
+        texto = get_guion_setup_py(self.proyecto, data_files)
+        setuppage.source.get_buffer().set_text(texto)
+        setuppage.source.guardar()
 
         self.show_all()
 
     def set_icon(self, iconpath):
-        iconpath = iconpath.split(self.proyecto_path)[-1]
-
-        archivo = open(os.path.join(BASEPATH, "installmodel.txt"))
-        texto = u"%s" % archivo.read()
-        archivo.close()
-
-        texto = texto.replace('mainfile', self.proyecto["main"])
-        texto = texto.replace('iconfile', iconpath)
-        texto = texto.replace('GnomeCat', self.proyecto["categoria"])
-        texto = texto.replace('GnomeMimeTypes', self.proyecto["mimetypes"])
-
-        paginas = len(self.get_children())
-        for x in range(paginas):
-            label = self.get_tab_label_text(self.get_nth_page(x))
-            if label == "Instalador":
-                self.get_nth_page(x).get_child().get_buffer().set_text(texto)
-                break
+        texto = get_guion_desktop(self.proyecto, iconpath)
+        #paginas = len(self.get_children())
+        #for x in range(paginas):
+        #    label = self.get_tab_label_text(self.get_nth_page(x))
+        #    if label == "Desktop":
+        #        self.get_nth_page(x).get_child().get_buffer().set_text(texto)
+        #        break
+        pass
+        # FIXME: Reconstruir Desktop, MANIFEST, setup.py
 
     def guardar(self):
         paginas = len(self.get_children())

@@ -21,7 +21,20 @@
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Pango
-from HELP import get_help
+from HELPINSTALADORES import get_help
+
+tag1 = Gtk.TextTag.new("1")
+tag2 = Gtk.TextTag.new("2")
+tag2.set_property("weight", Pango.Weight.BOLD)
+tag2.set_property("background-gdk", Gdk.Color(0, 0, 0))
+tag2.set_property("foreground-gdk", Gdk.Color(65000, 65000, 65000))
+tag3 = Gtk.TextTag.new("3")
+tag3.set_property("weight", Pango.Weight.BOLD)
+tag3.set_property("background-gdk", Gdk.Color(60000, 60000, 60000))
+tag4 = Gtk.TextTag.new("4")
+tag4.set_property("foreground-gdk", Gdk.Color(0, 0, 65000))
+tag5 = Gtk.TextTag.new("5")
+tag5.set_property("foreground-gdk", Gdk.Color(65000, 0, 0))
 
 
 def format_SUGAR(buffer_help, tags_table):
@@ -29,38 +42,18 @@ def format_SUGAR(buffer_help, tags_table):
 
 
 def format_SINROOT(buffer_help, tags_table):
-    tag1 = Gtk.TextTag.new("1")
-    #tag1.set_property("weight", Pango.Weight.BOLD)
     tags_table.add(tag1)
-
-    tag2 = Gtk.TextTag.new("2")
-    tag2.set_property("weight", Pango.Weight.BOLD)
-    tag2.set_property("background-gdk", Gdk.Color(0, 0, 0))
-    tag2.set_property("foreground-gdk", Gdk.Color(65000, 65000, 65000))
     tags_table.add(tag2)
-
-    tag3 = Gtk.TextTag.new("3")
-    tag3.set_property("weight", Pango.Weight.BOLD)
-    tag3.set_property("background-gdk", Gdk.Color(60000, 60000, 60000))
     tags_table.add(tag3)
-
-    tag4 = Gtk.TextTag.new("4")
-    #tag4.set_property("weight", Pango.Weight.BOLD)
-    tag4.set_property("foreground-gdk", Gdk.Color(0, 0, 65000))
     tags_table.add(tag4)
-
-    tit2 = [1, 11, 36]
-    tit3 = [21, 28]
+    tit1 = [1, 11, 36]
+    tit2 = [21, 28]
     code1 = [23, 24, 25, 26]
-
     __apply_tag(buffer_help, 1, tag1)
-
-    for _id in tit2:
+    for _id in tit1:
         __apply_tag(buffer_help, _id, tag2)
-
-    for _id in tit3:
+    for _id in tit2:
         __apply_tag(buffer_help, _id, tag3)
-
     for _id in code1:
         __apply_tag(buffer_help, _id, tag4)
 
@@ -74,96 +67,46 @@ def format_RPM(buffer_help, tags_table):
 
 
 def format_DEB(buffer_help, tags_table):
-    tag1 = Gtk.TextTag.new("1")
-    #tag1.set_property("weight", Pango.Weight.BOLD)
     tags_table.add(tag1)
-
-    tag2 = Gtk.TextTag.new("2")
-    tag2.set_property("weight", Pango.Weight.BOLD)
-    tag2.set_property("background-gdk", Gdk.Color(0, 0, 0))
-    tag2.set_property("foreground-gdk", Gdk.Color(65000, 65000, 65000))
     tags_table.add(tag2)
-
-    tag3 = Gtk.TextTag.new("3")
-    tag3.set_property("weight", Pango.Weight.BOLD)
-    tag3.set_property("background-gdk", Gdk.Color(60000, 60000, 60000))
     tags_table.add(tag3)
-
-    tag4 = Gtk.TextTag.new("4")
-    #tag4.set_property("weight", Pango.Weight.BOLD)
-    tag4.set_property("foreground-gdk", Gdk.Color(0, 0, 65000))
     tags_table.add(tag4)
-
-    tag5 = Gtk.TextTag.new("5")
-    #tag5.set_property("weight", Pango.Weight.BOLD)
-    tag5.set_property("foreground-gdk", Gdk.Color(65000, 0, 0))
     tags_table.add(tag5)
-
-    tit2 = [3, 28, 33, 49, 107]
-    tit3 = [16, 51, 56, 67, 80, 103]
+    tit1 = [3, 28, 33, 49, 107]
+    tit2 = [16, 51, 56, 67, 80, 103]
     code1 = [69, 70, 71, 72, 73, 74, 75, 76, 77, 78,
         82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92]
     code2 = [98, 105, 120]
-
     __apply_tag(buffer_help, 1, tag1)
-
-    for _id in tit2:
+    for _id in tit1:
         __apply_tag(buffer_help, _id, tag2)
-
-    for _id in tit3:
+    for _id in tit2:
         __apply_tag(buffer_help, _id, tag3)
-
     for _id in code1:
         __apply_tag(buffer_help, _id, tag4)
-
     for _id in code2:
         __apply_tag(buffer_help, _id, tag5)
 
 
 def format_INSTALADORES(buffer_help, tags_table):
-    tag1 = Gtk.TextTag.new("1")
-    #tag1.set_property("weight", Pango.Weight.BOLD)
     tags_table.add(tag1)
-
-    tag2 = Gtk.TextTag.new("2")
-    tag2.set_property("weight", Pango.Weight.BOLD)
-    tag2.set_property("background-gdk", Gdk.Color(0, 0, 0))
-    tag2.set_property("foreground-gdk", Gdk.Color(65000, 65000, 65000))
     tags_table.add(tag2)
-
-    tag3 = Gtk.TextTag.new("3")
-    tag3.set_property("weight", Pango.Weight.BOLD)
-    tag3.set_property("background-gdk", Gdk.Color(60000, 60000, 60000))
     tags_table.add(tag3)
-
-    tag4 = Gtk.TextTag.new("4")
-    #tag4.set_property("weight", Pango.Weight.BOLD)
-    tag4.set_property("foreground-gdk", Gdk.Color(0, 0, 65000))
     tags_table.add(tag4)
-
-    tag5 = Gtk.TextTag.new("5")
-    #tag5.set_property("weight", Pango.Weight.BOLD)
-    tag5.set_property("foreground-gdk", Gdk.Color(65000, 0, 0))
     tags_table.add(tag5)
-
-    tit2 = [1, 19, 80, 103]
-    tit3 = [21, 26, 31, 40, 85]
+    tit1 = [1, 19, 80, 103]
+    tit2 = [21, 26, 31, 40, 85]
     code1 = [35, 36, 66, 68, 70, 72,
         77, 78, 87, 88, 89, 90, 91, 92,
         93, 94, 95, 96, 97, 98, 99]
     code2 = [47, 50, 59, 62]
-
     __apply_tag(buffer_help, 1, tag1)
-
-    for _id in tit2:
+    for _id in tit1:
         __apply_tag(buffer_help, _id, tag2)
-
-    for _id in tit3:
+    for _id in tit2:
         __apply_tag(buffer_help, _id, tag3)
-
     for _id in code1:
         __apply_tag(buffer_help, _id, tag4)
-
     for _id in code2:
         __apply_tag(buffer_help, _id, tag5)
 
@@ -174,6 +117,16 @@ def __apply_tag(buffer_help, _id, tag):
     buffer_help.apply_tag(tag, iter_inicio, iter_fin)
 
 
+_dict = {
+    "help instaladores": format_INSTALADORES,
+    "help deb": format_DEB,
+    "help rmp": format_RPM,
+    "help python": format_STANDARD,
+    "help sin root": format_SINROOT,
+    "help sugar": format_SUGAR,
+    }
+
+
 class HelpWidget(Gtk.EventBox):
 
     #__gtype_name__ = 'HelpWidget'
@@ -181,15 +134,6 @@ class HelpWidget(Gtk.EventBox):
     def __init__(self, help):
 
         Gtk.EventBox.__init__(self)
-
-        _dict = {
-            "help instaladores": format_INSTALADORES,
-            "help deb": format_DEB,
-            "help rmp": format_RPM,
-            "help python": format_STANDARD,
-            "help sin root": format_SINROOT,
-            "help sugar": format_SUGAR,
-            }
 
         tags_table = Gtk.TextTagTable()
         buffer_help = Gtk.TextBuffer.new(tags_table)

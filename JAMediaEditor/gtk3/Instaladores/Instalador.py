@@ -25,6 +25,7 @@ from gi.repository import GdkX11
 from Menu import Menu
 from Debian import DebianWidget
 from SinRoot import SinRootWidget
+from PythonWidget import PythonWidget
 from Globales import DialogoLoad
 
 screen = GdkX11.X11Screen.get_default()
@@ -95,7 +96,8 @@ class Instalador(Gtk.Window):
         elif texto == "rmp":
             self.vbox.pack_start(Gtk.Label("rpm"), True, True, 0)
         elif texto == "python":
-            self.vbox.pack_start(Gtk.Label("python"), True, True, 0)
+            instalador = PythonWidget(self.proyecto_path)
+            self.vbox.pack_start(instalador, True, True, 0)
         elif texto == "sin root":
             instalador = SinRootWidget(self.proyecto_path)
             self.vbox.pack_start(instalador, True, True, 0)

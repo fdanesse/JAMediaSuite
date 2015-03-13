@@ -27,7 +27,7 @@ from gi.repository import Gdk
 from gi.repository import Pango
 from gi.repository import GdkPixbuf
 from Globales import CONFPATH
-from Globales import get_guion_lanzador_python
+from Globales import get_guion_lanzador_sh
 from Globales import get_guion_deb_control
 from Globales import get_guion_desktop
 from Globales import DialogoLoad
@@ -189,14 +189,16 @@ class Notebook(Gtk.Notebook):
         page = ScrollPage(path, "txt", texto)
         self.append_page(page, Gtk.Label("Control"))
         self.set_tab_reorderable(page, True)
+        page.source.guardar()
 
         # Lanzador
         path = os.path.join(usr_path, "bin",
             self.proyecto["nombre"].lower())
-        texto = get_guion_lanzador_python(self.proyecto)
+        texto = get_guion_lanzador_sh(self.proyecto)
         page = ScrollPage(path, "sh", texto)
         self.append_page(page, Gtk.Label("Lanzador"))
         self.set_tab_reorderable(page, True)
+        page.source.guardar()
 
         # desktop
         path = os.path.join(usr_path, "share", "applications",
@@ -205,6 +207,7 @@ class Notebook(Gtk.Notebook):
         page = ScrollPage(path, "desktop", texto)
         self.append_page(page, Gtk.Label("Desktop"))
         self.set_tab_reorderable(page, True)
+        page.source.guardar()
 
         self.show_all()
 

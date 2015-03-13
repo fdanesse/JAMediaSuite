@@ -65,11 +65,62 @@ def get_guion_deb_control(proyecto):
     return texto
 
 
-def get_guion_lanzador_python(proyecto):
+def get_guion_lanzador_sh(proyecto):
     nombre = proyecto["nombre"]
     main = proyecto["main"]
     t = "#!/bin/sh\nexec \"/usr/bin/python\" \"/usr/share/"
     t = "%s%s/%s\" \"$@\"" % (t, nombre, main)
+    return t
+
+
+def get_guion_setup_cfg(proyecto):
+    nombre = proyecto["nombre"]
+    t = "[install]\ninstall_lib=/usr/local/share/%s\n" % nombre
+    t = "%s%s" % (t, "install_data=/usr/local/share/%s\n" % nombre)
+    t = "%s%s" % (t, "install_scripts=/usr/local/bin")
+    return t
+
+
+def get_guion_setup_py(proyecto, data_files):
+    nombre = proyecto["nombre"]
+    version = proyecto["version"]
+    lanzador = proyecto["nombre"].lower()
+
+    t = "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n\n"
+    t = "%s%s" % (t, "from distutils.core import setup\n\n")
+    t = "%s%s" % (t, "setup(\n\tname = \"%s\",\n\tversion = \"%s\",\n\t" % (
+        nombre, version))
+    t = "%sauthor = \"%s\",\n\t" % (t, proyecto["autores"])
+
+    t = "%surl = \"%s\",\n\tlicense = \"%s\",\n\n\t" % (
+        t, proyecto["url"], proyecto["licencia"])
+    t = "%sscripts = [\"%s\"],\n\n\tpy_modules = [\"%s\"],\n\n\t" % (
+        t, lanzador, proyecto["main"].split(".")[0])
+    t = "%sdata_files =[\n\t\t(\"/usr/share/applications/\"" % t
+    t = "%s, [\"%s.desktop\"]),\n\t\t" % (t, nombre)
+
+    for key in data_files.keys():
+        newkey = key
+        if key.startswith("/"):
+            newkey = ""
+            for l in key[1:]:
+                newkey = "%s%s" % (newkey, l)
+        if newkey:
+            t = "%s(\"%s/\",[\n\t\t\t" % (t, newkey)
+        else:
+            t = "%s(\"%s\",[\n\t\t\t" % (t, newkey)
+        for item in data_files[key]:
+            t = "%s\"%s\",\n\t\t\t" % (t, item)
+        t = "%s]),\n\n\t\t" % t[:-5]
+
+    t = "%s])\n\n" % t[:-5]
+    t = "%s%s\n" % (t, "import commands")
+    t = "%s%s" % (t, "commands.getoutput(\"chmod 755")
+    t = "%s%s\n" % (t, " /usr/local/bin/%s\")" % lanzador)
+    t = "%s%s" % (t, "commands.getoutput(\"chmod -R")
+    t = "%s%s\n" % (t, " 755 /usr/local/share/%s\")" % nombre)
+    t = "%s%s" % (t, "commands.getoutput(\"chmod 755")
+    t = "%s%s\n" % (t, "/usr/share/applications/%s.desktop\")" % nombre)
     return t
 
 
