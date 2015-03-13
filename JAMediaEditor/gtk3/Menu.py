@@ -29,6 +29,7 @@ from gi.repository import GObject
 from gi.repository import GLib
 
 from Widgets2 import Credits
+from Help.Menu import ItemMenuInstaladores
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -51,7 +52,9 @@ class Menu(Gtk.MenuBar):
     'accion_codigo': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
     'run_jamediapygihack': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, []),
+    'help': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self, accel_group):
 
@@ -316,7 +319,18 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_run_jamediapygihack)
         menu_ayuda.append(item)
 
+        item = Gtk.SeparatorMenuItem()
+        menu_ayuda.append(item)
+
+        # Ayuda Sobre Construcción de Instaladores
+        item = ItemMenuInstaladores()
+        item.connect("help", self.__emit_help)
+        menu_ayuda.append(item)
+
         self.show_all()
+
+    def __emit_help(self, widget, text):
+        self.emit("help", text)
 
     def __emit_run_jamediapygihack(self, widget):
         self.emit('run_jamediapygihack')

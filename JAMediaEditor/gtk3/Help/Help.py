@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   Instalador.py por:
+#   Help.py por:
 #       Flavio Danesse      <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,9 @@
 
 import os
 from gi.repository import Gtk
-from gi.repository import GObject
 from gi.repository import GdkX11
-from Menu import Menu
-from Debian import DebianWidget
-from SinRoot import SinRootWidget
-from Globales import DialogoLoad
+from Widgets import DialogoLoad
+from HelpWidget import HelpWidget
 
 screen = GdkX11.X11Screen.get_default()
 w = screen.width()
@@ -34,34 +31,23 @@ h = screen.height()
 BASEPATH = os.path.dirname(__file__)
 
 
-class Instalador(Gtk.Window):
-    """
-    Dialogo para presentar Información de Instaladores.
-    """
+class Help(Gtk.Window):
 
-    __gtype_name__ = 'JAMediaEditorInstalador'
+    __gtype_name__ = 'JAMediaEditorHelp'
 
-    __gsignals__ = {
-    'help': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
-
-    def __init__(self, parent_window, path):
+    def __init__(self, parent_window):
 
         Gtk.Window.__init__(self)
 
-        self.proyecto_path = path
         self.parent_window = parent_window
 
-        self.set_title("Constructor de Instaladores de Proyecto")
+        self.set_title("Help de JAMediaEditor")
         self.set_icon_from_file(
-            os.path.join(BASEPATH, "Iconos", "gandalftux.png"))
+            os.path.join(BASEPATH, "Iconos", "einsteintux.png"))
         self.set_transient_for(self.parent_window)
         self.set_border_width(15)
 
         self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.menu = Menu()
-
-        self.vbox.pack_start(self.menu, False, False, 0)
         self.vbox.pack_start(Gtk.Label("Constructor de Instaladores"),
             False, False, 0)
 
@@ -71,15 +57,8 @@ class Instalador(Gtk.Window):
         self.add(self.vbox)
         self.show_all()
 
-        self.menu.connect("accion-menu", self.__accion_menu)
-        self.menu.connect("help", self.__emit_help)
-
-    def __emit_help(self, widget, text):
-        self.emit("help", text)
-
-    def __accion_menu(self, widget, texto):
-        child = self.vbox.get_children()[-1]
-        if child:
+    def set_help(self, texto):
+        for child in self.vbox.get_children():
             self.vbox.remove(child)
             child.destroy()
         t = "Cargando . . ."
@@ -89,17 +68,7 @@ class Instalador(Gtk.Window):
         dialogo.run()
 
     def __load(self, dialogo, texto):
-        if texto == "deb":
-            instalador = DebianWidget(self.proyecto_path)
-            self.vbox.pack_start(instalador, True, True, 0)
-        elif texto == "rmp":
-            self.vbox.pack_start(Gtk.Label("rpm"), True, True, 0)
-        elif texto == "python":
-            self.vbox.pack_start(Gtk.Label("python"), True, True, 0)
-        elif texto == "sin root":
-            instalador = SinRootWidget(self.proyecto_path)
-            self.vbox.pack_start(instalador, True, True, 0)
-        elif texto == "sugar":
-            self.vbox.pack_start(Gtk.Label("sugar"), True, True, 0)
+        help = HelpWidget(texto)
+        self.vbox.pack_start(help, True, True, 0)
         dialogo.destroy()
         self.show_all()

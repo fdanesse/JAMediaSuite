@@ -10,7 +10,8 @@ Terminal, DialogoFormato, JAMediaEditorInstalador, PygiHackMenu,
 PygiHackToolbar, JAMediaEditorInformeWidget, JAMediaEditorDialogoProyecto,
 PygiHackBaseNotebook, PygiHackIntrospectionPanel, PygiHackInfoNotebook,
 JAMediaTerminal2, NoteBookTerminal2, Terminal2, ToolbarTerminal2,
-DialogoFormato2, JAMediaGstreamerPyGiHack, DialogoLoad, DialogoInformar{
+DialogoFormato2, JAMediaGstreamerPyGiHack, InstaladorDialogoLoad,
+InstaladorDialogoInformar, JAMediaEditorHelp{
     background-color: #f0e6aa;
     color: #000000;
 }
@@ -29,7 +30,7 @@ JAMediaEditorNotebookInstalador2, JAMediaEditorWidgetIcon {
 }
 
 JAMediaEditorMenu, JAMediaEditorToolbarEstado, PygiHackToolbarTry,
-JAMediaEditorMenuInstaladores {
+JAMediaEditorMenuInstaladores{
     background-color: #000000;
     color: #ffffff;
 }

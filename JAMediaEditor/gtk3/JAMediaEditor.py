@@ -32,6 +32,7 @@ from Menu import Menu
 from BasePanel import BasePanel
 from Toolbars import ToolbarEstado
 from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack
+from Help.Help import Help
 
 home = os.environ["HOME"]
 BatovideWorkSpace = os.path.join(home, 'BatovideWorkSpace')
@@ -69,6 +70,8 @@ class JAMediaEditor(Gtk.Window):
         self.set_border_width(5)
         self.set_position(Gtk.WindowPosition.CENTER)
 
+        self.help = False
+
         accel_group = Gtk.AccelGroup()
         self.add_accel_group(accel_group)
 
@@ -95,11 +98,13 @@ class JAMediaEditor(Gtk.Window):
         self.menu.connect('accion_proyecto', self.__ejecutar_accion_proyecto)
         self.menu.connect('accion_archivo', self.__ejecutar_accion_archivo)
         self.menu.connect('run_jamediapygihack', self.__run_jamediapygihack)
+        self.menu.connect('help', self.__run_help)
         self.jamediapygihack.connect('salir', self.__run_editor)
         self.base_panel.connect("update", self.__set_toolbar_archivo_and_menu)
         self.base_panel.connect("proyecto_abierto",
             self.__set_toolbar_proyecto_and_menu)
         self.base_panel.connect("ejecucion", self.__set_toolbars_ejecucion)
+        self.base_panel.connect("help", self.__run_help)
         self.connect("delete-event", self.__exit)
 
         # Cuando se abre el editor con archivo como parámetro.
@@ -119,6 +124,14 @@ class JAMediaEditor(Gtk.Window):
                             archivo)
         # FIXME: Agregar informe de utilizacion de recursos
         print "JAMediaEditor:", os.getpid()
+
+    def __run_help(self, widget, texto):
+        if self.help:
+            self.help.destroy()
+        self.help = Help(self)
+        self.help.set_help(texto)
+        if self.base_panel.instalador:
+            self.help.move(0, 40)
 
     def __run_editor(self, widget):
         self.jamediapygihack.hide()

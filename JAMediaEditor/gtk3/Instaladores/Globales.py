@@ -75,7 +75,7 @@ def get_guion_lanzador_python(proyecto):
 
 class DialogoLoad(Gtk.Dialog):
 
-    __gtype_name__ = 'DialogoLoad'
+    __gtype_name__ = 'InstaladorDialogoLoad'
 
     __gsignals__ = {
         "running": (GObject.SIGNAL_RUN_LAST,
@@ -107,7 +107,7 @@ class DialogoLoad(Gtk.Dialog):
 
 class DialogoInformar(Gtk.Dialog):
 
-    __gtype_name__ = 'DialogoInformar'
+    __gtype_name__ = 'InstaladorDialogoInformar'
 
     def __init__(self, parent, texto):
 

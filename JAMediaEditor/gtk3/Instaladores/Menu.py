@@ -28,7 +28,9 @@ class Menu(Gtk.MenuBar):
 
     __gsignals__ = {
     'accion-menu': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, GObject.TYPE_BOOLEAN))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
+    'help': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -124,7 +126,6 @@ class Menu(Gtk.MenuBar):
         self.append(item)
 
         item = Gtk.MenuItem('Instaladores en General')
-        inicial = item
         try:
             item.get_child().destroy()
         except:
@@ -137,7 +138,7 @@ class Menu(Gtk.MenuBar):
         label = Gtk.Label('Instaladores en General')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate", self.__emit_accion, "help instaladores")
+        item.connect("activate", self.__emit_help, "help instaladores")
         menu.append(item)
 
         item = Gtk.MenuItem('Instalador debian (deb)')
@@ -153,7 +154,7 @@ class Menu(Gtk.MenuBar):
         label = Gtk.Label('Instalador debian (deb)')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate", self.__emit_accion, "help deb")
+        item.connect("activate", self.__emit_help, "help deb")
         menu.append(item)
 
         item = Gtk.MenuItem('Instalador fedora (rmp)')
@@ -169,7 +170,7 @@ class Menu(Gtk.MenuBar):
         label = Gtk.Label('Instalador fedora (rmp)')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate", self.__emit_accion, "help rmp")
+        item.connect("activate", self.__emit_help, "help rmp")
         menu.append(item)
 
         item = Gtk.MenuItem('Instalador python')
@@ -185,7 +186,7 @@ class Menu(Gtk.MenuBar):
         label = Gtk.Label('Instalador python')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate", self.__emit_accion, "help python")
+        item.connect("activate", self.__emit_help, "help python")
         menu.append(item)
 
         item = Gtk.MenuItem('Instalador python (sin root)')
@@ -201,7 +202,7 @@ class Menu(Gtk.MenuBar):
         label = Gtk.Label('Instalador python (sin root)')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate", self.__emit_accion, "help sin root")
+        item.connect("activate", self.__emit_help, "help sin root")
         menu.append(item)
 
         item = Gtk.MenuItem('Instalador sugar')
@@ -217,18 +218,19 @@ class Menu(Gtk.MenuBar):
         label = Gtk.Label('Instalador sugar')
         hbox.pack_start(label, False, False, 5)
         item.add(hbox)
-        item.connect("activate", self.__emit_accion, "help sugar")
+        item.connect("activate", self.__emit_help, "help sugar")
         menu.append(item)
-
-        #self.connect("realize", self.__run, inicial)
 
         self.show_all()
 
-    #def __run(self, widget, inicial):
-    #    self.__emit_accion(inicial, "help instaladores")
+    def __emit_help(self, widget, text):
+        valor = not widget.get_children()[0].get_children()[0].get_active()
+        if valor:
+            widget.get_children()[0].get_children()[0].set_active(valor)
+            self.emit("help", text)
 
     def __emit_accion(self, widget, text):
         valor = not widget.get_children()[0].get_children()[0].get_active()
         if valor:
             widget.get_children()[0].get_children()[0].set_active(valor)
-            self.emit("accion-menu", text, valor)
+            self.emit("accion-menu", text)
