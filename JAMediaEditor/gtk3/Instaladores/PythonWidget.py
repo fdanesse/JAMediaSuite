@@ -82,7 +82,7 @@ class PythonWidget(Gtk.EventBox):
         self.show_all()
 
         self.widgeticon.connect("iconpath", self.__set_iconpath)
-        #self.widgeticon.connect("make", self.__make)
+        self.widgeticon.connect("make", self.__make)
 
     def __make(self, widget):
         t = "Construyendo el Instalador."
@@ -94,20 +94,16 @@ class PythonWidget(Gtk.EventBox):
     def __run_make(self, dialogo):
         self.notebook.guardar()
         install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
-        # Limpiar y establecer permisos de archivos y directorios
-        get_installers_data(install_path)
-        control = os.path.join(install_path, "DEBIAN", "control")
-        desktop = os.path.join(install_path, "usr", "share", "applications",
+        desktop = os.path.join(install_path,
             "%s.desktop" % self.proyecto["nombre"])
-        lanzador = os.path.join(install_path, "usr", "bin",
-            self.proyecto["nombre"].lower())
-        for path in [control, desktop, lanzador]:
+        lanzador = os.path.join(install_path, self.proyecto["nombre"].lower())
+        setup = os.path.join(install_path, "setup.py")
+        for path in [setup, desktop, lanzador]:
             os.chmod(path, 0755)
-        destino = os.path.join(CONFPATH, "%s_%s.deb" % (
-            self.proyecto["nombre"],
-            self.proyecto["version"].replace(".", "_")))
-        print commands.getoutput('dpkg -b %s %s' % (install_path, destino))
-        os.chmod(destino, 0755)
+
+        # FIXME: python setup.py sdist
+        # mover archivo final, dar permisos 755
+
         dialogo.destroy()
         t = "Proceso Concluido."
         t = "%s\n%s" % (t, "El instalador se encuentra en")
@@ -214,15 +210,35 @@ class Notebook(Gtk.Notebook):
         self.show_all()
 
     def set_icon(self, iconpath):
+        paginas = len(self.get_children())
+        temppath = os.path.join(CONFPATH, self.proyecto["nombre"])
+
+        # desktop
         texto = get_guion_desktop(self.proyecto, iconpath)
-        #paginas = len(self.get_children())
-        #for x in range(paginas):
-        #    label = self.get_tab_label_text(self.get_nth_page(x))
-        #    if label == "Desktop":
-        #        self.get_nth_page(x).get_child().get_buffer().set_text(texto)
-        #        break
-        pass
-        # FIXME: Reconstruir Desktop, MANIFEST, setup.py
+        for x in range(paginas):
+            label = self.get_tab_label_text(self.get_nth_page(x))
+            if label == "Desktop":
+                self.get_nth_page(x).get_child().get_buffer().set_text(texto)
+                break
+
+        # MANIFEST
+        manifest_list, data_files = get_installers_data(temppath)
+        texto = ""
+        for item in manifest_list:
+            texto = "%s\n%s" % (item, texto)
+        for x in range(paginas):
+            label = self.get_tab_label_text(self.get_nth_page(x))
+            if label == "MANIFEST":
+                self.get_nth_page(x).get_child().get_buffer().set_text(texto)
+                break
+
+        # setup.py
+        texto = get_guion_setup_py(self.proyecto, data_files)
+        for x in range(paginas):
+            label = self.get_tab_label_text(self.get_nth_page(x))
+            if label == "setup.py":
+                self.get_nth_page(x).get_child().get_buffer().set_text(texto)
+                break
 
     def guardar(self):
         paginas = len(self.get_children())

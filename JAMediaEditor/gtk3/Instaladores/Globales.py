@@ -75,9 +75,9 @@ def get_guion_lanzador_sh(proyecto):
 
 def get_guion_setup_cfg(proyecto):
     nombre = proyecto["nombre"]
-    t = "[install]\ninstall_lib=/usr/local/share/%s\n" % nombre
-    t = "%s%s" % (t, "install_data=/usr/local/share/%s\n" % nombre)
-    t = "%s%s" % (t, "install_scripts=/usr/local/bin")
+    t = "[install]\ninstall_lib=/usr/share/%s\n" % nombre
+    t = "%s%s" % (t, "install_data=/usr/share/%s\n" % nombre)
+    t = "%s%s" % (t, "install_scripts=/usr/bin")
     return t
 
 
@@ -116,11 +116,11 @@ def get_guion_setup_py(proyecto, data_files):
     t = "%s])\n\n" % t[:-5]
     t = "%s%s\n" % (t, "import commands")
     t = "%s%s" % (t, "commands.getoutput(\"chmod 755")
-    t = "%s%s\n" % (t, " /usr/local/bin/%s\")" % lanzador)
+    t = "%s%s\n" % (t, " /usr/bin/%s\")" % lanzador)
     t = "%s%s" % (t, "commands.getoutput(\"chmod -R")
-    t = "%s%s\n" % (t, " 755 /usr/local/share/%s\")" % nombre)
+    t = "%s%s\n" % (t, " 755 /usr/share/%s\")" % nombre)
     t = "%s%s" % (t, "commands.getoutput(\"chmod 755")
-    t = "%s%s\n" % (t, "/usr/share/applications/%s.desktop\")" % nombre)
+    t = "%s%s\n" % (t, "/usr/applications/%s.desktop\")" % nombre)
     return t
 
 
