@@ -104,4 +104,3 @@ class Instalador(Gtk.Window):
         elif texto == "sugar":
             self.vbox.pack_start(Gtk.Label("sugar"), True, True, 0)
         dialogo.destroy()
-        self.show_all()

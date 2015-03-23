@@ -82,6 +82,8 @@ def get_guion_setup_cfg(proyecto):
 
 
 def get_guion_setup_py(proyecto, data_files):
+
+
     nombre = proyecto["nombre"]
     version = proyecto["version"]
     lanzador = proyecto["nombre"].lower()
@@ -90,10 +92,18 @@ def get_guion_setup_py(proyecto, data_files):
     t = "%s%s" % (t, "from distutils.core import setup\n\n")
     t = "%s%s" % (t, "setup(\n\tname = \"%s\",\n\tversion = \"%s\",\n\t" % (
         nombre, version))
-    t = "%sauthor = \"%s\",\n\t" % (t, proyecto["autores"])
 
+    autores = "Este Campo es Obligatorio"
+    if proyecto["autores"]:
+        autores = proyecto["autores"]
+    t = "%sauthor = \"%s\",\n\t" % (t, autores)
+    t = "%sauthor_email = \"%s\",\n\t" % (t, autores)
+
+    url = "Este Campo es Obligatorio"
+    if proyecto["url"]:
+        url = proyecto["url"]
     t = "%surl = \"%s\",\n\tlicense = \"%s\",\n\n\t" % (
-        t, proyecto["url"], proyecto["licencia"])
+        t, url, proyecto["licencia"])
     t = "%sscripts = [\"%s\"],\n\n\tpy_modules = [\"%s\"],\n\n\t" % (
         t, lanzador, proyecto["main"].split(".")[0])
     t = "%sdata_files =[\n\t\t(\"/usr/share/applications/\"" % t

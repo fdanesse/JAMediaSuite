@@ -25,7 +25,7 @@ GtkViewport, GtkFrame, SinRootWidget,
 JAMediaEditorDebianWidget, JAMediaEditorSinRootWidget,
 JAMediaEditorScrollPage, JAMediaEditorNotebookInstalador1,
 JAMediaEditorNotebookInstalador2, JAMediaEditorNotebookInstalador3,
-JAMediaEditorWidgetIcon, JAMediaEditorPythonWidget{
+JAMediaEditorWidgetIcon, JAMediaEditorPythonWidget, TerminalInstalador{
     background-color: #edf5ff;
     color: #000000;
 }

@@ -36,7 +36,7 @@ from Globales import DialogoInformar
 from ScrollPage import ScrollPage
 from WidgetIcon import WidgetIcon
 from ApiProyecto import get_installers_data
-from JAMediaTerminal.Terminal import Terminal
+from Terminal import Terminal
 
 BASEPATH = os.path.dirname(__file__)
 
@@ -57,8 +57,9 @@ class PythonWidget(Gtk.EventBox):
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        self.notebook = Notebook(proyecto_path)
         self.widgeticon = WidgetIcon("deb", proyecto_path)
+        self.notebook = Notebook(proyecto_path)
+        self.terminal = Terminal()
 
         label = Gtk.Label(u"Instalador python para: %s versión: %s" % (
             self.proyecto["nombre"], self.proyecto["version"]))
@@ -78,14 +79,17 @@ class PythonWidget(Gtk.EventBox):
         vbox.pack_start(hbox, False, False, 0)
 
         vbox.pack_start(self.notebook, True, True, 0)
-        terminal = Terminal()
-        vbox.pack_start(terminal, True, True, 5)
+        vbox.pack_start(self.terminal, True, True, 5)
 
         self.add(vbox)
+        self.connect("realize", self.__realize)
         self.show_all()
 
         self.widgeticon.connect("iconpath", self.__set_iconpath)
         self.widgeticon.connect("make", self.__make)
+
+    def __realize(self, widget):
+        self.terminal.hide()
 
     def __make(self, widget):
         t = "Construyendo el Instalador."
@@ -95,6 +99,7 @@ class PythonWidget(Gtk.EventBox):
         dialogo.run()
 
     def __run_make(self, dialogo):
+        self.terminal.reset()
         self.notebook.guardar()
         install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
         desktop = os.path.join(install_path,
@@ -104,40 +109,6 @@ class PythonWidget(Gtk.EventBox):
         for path in [setup, desktop, lanzador]:
             os.chmod(path, 0755)
 
-        dialog = DialogoTerminal(self.get_toplevel())
-        dialog.run()
-        dialog.destroy()
-        # FIXME: python setup.py sdist
-        # mover archivo final, dar permisos 755
-        #destino = os.path.join(CONFPATH, "%s_%s.deb" % (
-        #    self.proyecto["nombre"],
-        #    self.proyecto["version"].replace(".", "_")))
-        #print commands.getoutput('dpkg -b %s %s' % (install_path, destino))
-        #os.chmod(destino, 0755)
-
-        '''
-        self.gnome_notebook.make()
-        dialog = DialogoInstall(parent_window=self.get_toplevel(),
-            dirpath=self.gnome_notebook.activitydirpath,
-            destino_path=self.proyecto["path"])
-        dialog.run()
-        dialog.destroy()
-
-        # Mover Instalador
-        dist_path = os.path.join(
-            self.gnome_notebook.activitydirpath, "dist")
-        destino = os.path.join(self.proyecto["path"], "dist")
-
-        if not os.path.exists(destino):
-            os.mkdir(destino)
-
-        for archivo in os.listdir(dist_path):
-            path = os.path.join(dist_path, archivo)
-            commands.getoutput("cp %s %s" % (path, destino))
-
-        # FIXME: Ejecutar: python setup.py sdist Construyendo el instalador gnome.
-        '''
-        '''
         python_path = "/usr/bin/python"
         if os.path.exists(os.path.join("/bin", "python")):
             python_path = os.path.join("/bin", "python")
@@ -148,16 +119,19 @@ class PythonWidget(Gtk.EventBox):
         elif os.path.exists(os.path.join("/usr/local", "python")):
             python_path = os.path.join("/usr/local", "python")
 
-        from gi.repository import Vte
-        Vte.Terminal
+        self.terminal.show_all()
+        self.terminal.connect("reset", self.__Informar, dialogo, install_path)
+        self.terminal.ejecute_script(install_path, python_path, setup, "sdist")
 
-        self.terminal.ejecute_script(self.dirpath, python_path,
-            os.path.join(self.dirpath, "setup.py"), "sdist")
-
-        pty_flags = Vte.PtyFlags(0)
-        terminal.fork_command_full(pty_flags, dirpath,
-            (interprete, path_script, param), "", 0, None, None)
-        '''
+    def __Informar(self, terminal, dialogo, install_path):
+        origen = os.path.join(install_path, "dist")
+        for f in os.listdir(origen):
+            arch = os.path.join(origen, f)
+            commands.getoutput('mv %s %s' % (arch, CONFPATH))
+            destino = os.path.join(CONFPATH, f)
+            os.chmod(destino, 0755)
+        if os.path.exists(origen):
+            shutil.rmtree(origen)
         dialogo.destroy()
         t = "Proceso Concluido."
         t = "%s\n%s" % (t, "El instalador se encuentra en")
@@ -165,6 +139,7 @@ class PythonWidget(Gtk.EventBox):
         dialogo = DialogoInformar(self.get_toplevel(), t)
         dialogo.run()
         dialogo.destroy()
+        self.terminal.disconnect_by_func(self.__Informar)
 
     def __set_iconpath(self, widget, iconpath):
         new = iconpath
