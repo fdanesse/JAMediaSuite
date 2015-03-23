@@ -36,6 +36,7 @@ from Globales import DialogoInformar
 from ScrollPage import ScrollPage
 from WidgetIcon import WidgetIcon
 from ApiProyecto import get_installers_data
+from JAMediaTerminal.Terminal import Terminal
 
 BASEPATH = os.path.dirname(__file__)
 
@@ -77,6 +78,8 @@ class PythonWidget(Gtk.EventBox):
         vbox.pack_start(hbox, False, False, 0)
 
         vbox.pack_start(self.notebook, True, True, 0)
+        terminal = Terminal()
+        vbox.pack_start(terminal, True, True, 5)
 
         self.add(vbox)
         self.show_all()
@@ -101,9 +104,60 @@ class PythonWidget(Gtk.EventBox):
         for path in [setup, desktop, lanzador]:
             os.chmod(path, 0755)
 
+        dialog = DialogoTerminal(self.get_toplevel())
+        dialog.run()
+        dialog.destroy()
         # FIXME: python setup.py sdist
         # mover archivo final, dar permisos 755
+        #destino = os.path.join(CONFPATH, "%s_%s.deb" % (
+        #    self.proyecto["nombre"],
+        #    self.proyecto["version"].replace(".", "_")))
+        #print commands.getoutput('dpkg -b %s %s' % (install_path, destino))
+        #os.chmod(destino, 0755)
 
+        '''
+        self.gnome_notebook.make()
+        dialog = DialogoInstall(parent_window=self.get_toplevel(),
+            dirpath=self.gnome_notebook.activitydirpath,
+            destino_path=self.proyecto["path"])
+        dialog.run()
+        dialog.destroy()
+
+        # Mover Instalador
+        dist_path = os.path.join(
+            self.gnome_notebook.activitydirpath, "dist")
+        destino = os.path.join(self.proyecto["path"], "dist")
+
+        if not os.path.exists(destino):
+            os.mkdir(destino)
+
+        for archivo in os.listdir(dist_path):
+            path = os.path.join(dist_path, archivo)
+            commands.getoutput("cp %s %s" % (path, destino))
+
+        # FIXME: Ejecutar: python setup.py sdist Construyendo el instalador gnome.
+        '''
+        '''
+        python_path = "/usr/bin/python"
+        if os.path.exists(os.path.join("/bin", "python")):
+            python_path = os.path.join("/bin", "python")
+        elif os.path.exists(os.path.join("/usr/bin", "python")):
+            python_path = os.path.join("/usr/bin", "python")
+        elif os.path.exists(os.path.join("/sbin", "python")):
+            python_path = os.path.join("/sbin", "python")
+        elif os.path.exists(os.path.join("/usr/local", "python")):
+            python_path = os.path.join("/usr/local", "python")
+
+        from gi.repository import Vte
+        Vte.Terminal
+
+        self.terminal.ejecute_script(self.dirpath, python_path,
+            os.path.join(self.dirpath, "setup.py"), "sdist")
+
+        pty_flags = Vte.PtyFlags(0)
+        terminal.fork_command_full(pty_flags, dirpath,
+            (interprete, path_script, param), "", 0, None, None)
+        '''
         dialogo.destroy()
         t = "Proceso Concluido."
         t = "%s\n%s" % (t, "El instalador se encuentra en")
