@@ -58,8 +58,30 @@ def format_SINROOT(buffer_help, tags_table):
         __apply_tag(buffer_help, _id, tag4)
 
 
-def format_STANDARD(buffer_help, tags_table):
-    pass
+def format_PYTHON(buffer_help, tags_table):
+    tags_table.add(tag1)
+    tags_table.add(tag2)
+    tags_table.add(tag3)
+    tags_table.add(tag4)
+    tags_table.add(tag5)
+    tit1 = [1, 158, 180]
+    tit2 = [45, 53, 55, 64, 68, 72, 83, 122, 142, 146, 150, 154, 164, 175]
+    code1 = [3, 4, 5,
+        12, 13, 14, 15,
+        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
+        38, 39, 40, 41, 42, 43, 57, 58, 59, 60, 61, 62, 66, 70, 74, 75, 76, 77,
+        78, 79, 80, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+        100, 101, 102, 103, 124, 132, 133, 134, 135, 136, 137, 144, 148]
+    code2 = [166, 171]
+    __apply_tag(buffer_help, 1, tag1)
+    for _id in tit1:
+        __apply_tag(buffer_help, _id, tag2)
+    for _id in tit2:
+        __apply_tag(buffer_help, _id, tag3)
+    for _id in code1:
+        __apply_tag(buffer_help, _id, tag4)
+    for _id in code2:
+        __apply_tag(buffer_help, _id, tag5)
 
 
 def format_RPM(buffer_help, tags_table):
@@ -121,7 +143,7 @@ _dict = {
     "help instaladores": format_INSTALADORES,
     "help deb": format_DEB,
     "help rmp": format_RPM,
-    "help python": format_STANDARD,
+    "help python": format_PYTHON,
     "help sin root": format_SINROOT,
     "help sugar": format_SUGAR,
     }

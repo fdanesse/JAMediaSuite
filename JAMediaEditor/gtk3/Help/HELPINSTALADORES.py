@@ -305,6 +305,201 @@ Sobre JAMediaEditor:
 """
 
 
+PYTHON = """
+Un instalador python requiere de los siguientes archivos:
+
+    setup.cfg
+    setup.py
+    MANIFEST
+
+    Además de estos archivos, hay que agregar el lanzador y el .desktop ya que son necesarios para ejecutar la aplicación cuando esté instalada.
+    Para saber que información llevan estos dos últimos archivos, lee la Ayuda sobre "Instaladores en General").
+
+    El archivo setup.cfg debe contener los paths de instalación de tu proyecto como se muestra en el siguiente ejemplo:
+
+        [install]
+        install_lib=/usr/local/share/JAMediaTube
+        install_data=/usr/local/share/JAMediaTube
+        install_scripts=/usr/local/bin
+
+    El archivo MANIFEST, debe contener toda la estructura de archivos y directorios interna de tu proyecto. Cualquier archivo que desees distribuir
+    con tu aplicación, debe estar listado en MANIFEST. A continuación vemos un fragmento de uno de estos archivos:
+
+        JAMedia/Iconos/JAMedia.svg
+        JAMedia/Iconos/agregar.svg
+        JAMedia/Iconos/JAMediaCredits.svg
+        JAMedia/JAMediaReproductor/JAMediaGrabador.py
+        JAMedia/JAMediaReproductor/JAMediaBins.py
+        JAMedia/JAMediaReproductor/JAMediaReproductor.py
+        JAMedia/JAMediaReproductor/__init__.py
+        AUTHORS
+        jamediatube_run
+        PanelTube.py
+        JAMediaTube.desktop
+        Globales.py
+        COPYING
+        jamediatube_uninstall
+        youtube-dl
+        setup.cfg
+        JAMediaYoutube.py
+        __init__.py
+        Widgets.py
+        PanelTubeWidgets.py
+        setup.py
+        MANIFEST
+        TubeListDialog.py
+        JAMediaTube.py
+
+    Nota:
+        En el archivo MANIFEST, también deben estar listados los archivos de instalación: setup.cfg, setup.py y MANIFEST
+        Obviamente es muy engorroso llenar a mano este archivo si tu proyecto es muy grande.
+
+    El archivo setup.py es el más complejo de los tres, en él, hay que importar la función setup de distutils.core y
+    llamarla pasándole en sus parámetros, la información de nuestro proyecto para que ella pueda construir el paquete distribuible
+    de nuestro instalador.
+
+    Esta función, setup, toma muchos parámetros los cuales se detallan a continuación:
+
+    Metadatos del proyecto:
+
+        name = "JAMediaTube",
+        version = "10.0.0",
+        author = "Flavio Danesse",
+        author_email = "fdanesse@gmail.com",
+        url = "https://sites.google.com/site/sugaractivities/jamediaobjects/jamediatube",
+        license = "GPL3",
+
+    Lanzadores de la aplicación:
+
+        scripts = ["jamediatube_run", "jamediatube_uninstall"],
+
+    Main ejecutable de la aplicación:
+
+        py_modules = ["JAMediaTube"],
+
+    Archivos de la aplicación:
+
+        data_files =[
+        ("/usr/share/applications/", ["JAMediaTube.desktop"]),
+        ("",[
+            "JAMediaTube.py",
+            "TubeListDialog.py",
+            "MANIFEST",
+            "setup.py",
+            etc . . .
+
+    La estructura general de este archivo es:
+
+        from distutils.core import setup
+
+        setup(
+            name = "",
+            version = "",
+            author = "",
+            author_email = "",
+            url = "",
+            license = "",
+
+            scripts = [],
+
+            py_modules = [],
+
+            data_files =[
+                (path destino, [archivos en mi proyecto]),
+                (otro path destino,[archivos en mi proyecto]),
+                (etc . . .,[etc . . .]),
+                ])
+
+    Los primeros datos sólo son metadatos del proyecto, por lo cual no es difícil de incorporarlos, pero los otros entrañan mucha
+    dificultad si debes escribirlos a mano, dado que que hay que especificar los paths correctamente de cada archivo en el proyecto.
+
+    Los archivos detallados en scripts son los lanzadores de la aplicación y deben escribirse con el path relativo en que se encuentran
+    dentro del directorio de tu proyecto. Estos archivos se instalarán en el path establecido en el campo install_scripts del archivo setup.cfg
+    Además, deben estar correctamente listados en MANIFEST.
+
+    Como ya habrás comprendido, los archivos setup.cfg, setup.py y MANIFEST, trabajan juntos.
+
+    El parámetro py_modules debe listar los archivos "main" de python de tu proyecto, es decir, el archivo principal de tu aplicación, o
+    los archivos principales si hubiera más de uno. También acá debe respetarse el path relativo al directorio de tu proyecto y este archivo debe
+    estar correctamente listado en MANIFEST. Este archivo se instalará en el path establecido en el campo install_data de setup.cfg
+
+    El parámetro data_files, debe contener la lista completa de archivos a instalar.
+    Cada elemento de esta lista, es una tupla de dos elementos.
+    El primer elemento es el directorio destino de los archivos listados en el segundo elemento de la tupla.
+
+    Por ejemplo, para el archivo desktop:
+
+        ("/usr/share/applications/", ["JAMediaTube.desktop"])
+
+    Lo que se establece allí es que todos los archivos de la lista que ocupan el segundo lugar de la tupla (en este caso solo JAMediaTube.desktop),
+    se instalarán en /usr/share/applications/
+
+    Si por ejemplo, tuviera una lista de íconos a instalar y quisiera instalarlos dentro de un directorio "Iconos" que a su vez estuviera dentro
+    del path de instalación de mi proyecto, escribiría:
+
+        ("Iconos/",[
+            "Iconos/JAMedia.svg",
+            "Iconos/yt_videos_black.png",
+            "Iconos/JAMedia-help.svg",
+            etc . . .
+            ])
+
+    Básicamente ahí estoy diciendo que cuando mi aplicación se instale, en el path en que se instaló, debe crearse el directorio "Iconos" y dentro
+    deben copiarse todos los íconos listados.
+
+    De modo que si el archivo setup.cfg dice:
+
+        install_data=/usr/local/share/JAMediaTube
+
+    Mis íconos se copiarán en:
+
+        /usr/local/share/JAMediaTube/Iconos/
+
+    Resumen:
+        El elemento de la izquierda de la tupla, determina el path destino de los elementos de la derecha de la tupla.
+        El path definitivo, depende de lo que se establezca en el campo install_data de setup.cfg
+
+    Nota:
+        En el archivo setup.py puedes escribir el código que desees fuera de la llamada a la función setup de distutils.core.
+        Esto es útil para establecer permisos de archivos o limpiar directorios antes o después de la instalación de tu aplicación.
+
+Construcción del paquete distribuible:
+
+    Una vez escritos los archivos necesarios, hay que construir el instalador y el distribuible.
+    El archivo distribuible es un archivo tar.gz que contiene al instalador.
+    Se pueden construir por separado pero no tiene mucho sentido hacerlo de esa forma ya que se pueden hacer ambas cosas en un solo paso.
+
+    Para construir el paquete definitivo debes ejecutar:
+
+        python setup.py sdist
+
+    Con ese sencillo paso, se construirá el paquete tar.gz que debes distribuir en internet para que puedan instalar tu aplicación.
+    Quien desee utilizarlo, luego de descargarlo debe descomprimirlo, abrir una terminal, entrar en el directorio donde descomprimió el paquete y ejecutar:
+
+        sudo python setup.py install
+
+    Si no lanza ningún error, la instalación estará completa y la aplicación lista para ser utilizada.
+
+    Nota:
+        Para desinstalar la aplicación, el usuario debe borrar el directorio donde fue instalada, los lanzadores y el archivo .desktop, a menos que crees un script
+        que haga todo esto y lo distribuyas con tu aplicación. En este caso, ese escript debie incluirse en el parámetro "scripts" de la función "setup" de "setup.py"
+        Cuando ejecutas: python setup.py, puedes pasarle varios parámetros, acá solo se nombraron install y sdist, consulta la web de python para aprender sobre esto.
+
+Sobre JAMediaEditor:
+
+    Como habrás visto, resulta bastante engorroso construir este instalador, sobre todo si tu proyecto es muy complejo.
+    Por eso JAMediaEditor automatiza todo este proceso analizando el directorio de tu proyecto y presentandote los archivos de instalación para que tu corrijas, agregues
+    o quites lo que desees de ellos. Por defecto, JAMediaEditor debiera construir este instalador correctamente sin que cambies nada y ese instalador debiera funcionar
+    sin ningún tipo de problemas. Si este no fuera el caso, asegúrate que no has hecho cambios que contengan errores en los archivos del instalador.
+
+    Si quieres aprender más sobre esta forma de hacer un instalador, puedes crear un proyecto pequeño en JAMediaEditor y construir este instalador en él, luego
+    descomprime el tar.gz resulante y analiza los archivos involucrados (MANIFEST, setup.py, setup.cfg, el lanzador y el .desktop).
+
+    Si quieres analizar la forma en que JAMediaEditor arma este instalador, mira el archivo JAMediaEditor/Instaladores/ApiProyecto.py dentro del path de instalación
+    de JAMediaEditor.
+"""
+
+
 def get_help(help):
     if help == "help instaladores":
         return INSTALADORES
@@ -313,7 +508,7 @@ def get_help(help):
     elif help == "help rmp":
         return ""
     elif help == "help python":
-        return ""
+        return PYTHON
     elif help == "help sin root":
         return SINROOT
     elif help == "help sugar":
