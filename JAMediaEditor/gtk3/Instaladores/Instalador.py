@@ -23,9 +23,10 @@ from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import GdkX11
 from Menu import Menu
-from Debian import DebianWidget
-from SinRoot import SinRootWidget
+from DebianWidget import DebianWidget
+from SinRootWidget import SinRootWidget
 from PythonWidget import PythonWidget
+from SugarWidget import SugarWidget
 from Globales import DialogoLoad
 
 screen = GdkX11.X11Screen.get_default()
@@ -102,5 +103,6 @@ class Instalador(Gtk.Window):
             instalador = SinRootWidget(self.proyecto_path)
             self.vbox.pack_start(instalador, True, True, 0)
         elif texto == "sugar":
-            self.vbox.pack_start(Gtk.Label("sugar"), True, True, 0)
+            instalador = SugarWidget(self.proyecto_path)
+            self.vbox.pack_start(instalador, True, True, 0)
         dialogo.destroy()

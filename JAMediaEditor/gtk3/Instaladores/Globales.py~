@@ -82,6 +82,8 @@ def get_guion_setup_cfg(proyecto):
 
 
 def get_guion_setup_py(proyecto, data_files):
+
+
     nombre = proyecto["nombre"]
     version = proyecto["version"]
     lanzador = proyecto["nombre"].lower()
@@ -129,17 +131,6 @@ def get_guion_setup_py(proyecto, data_files):
     t = "%s%s\n" % (t, " 755 /usr/share/%s\")" % nombre)
     t = "%s%s" % (t, "commands.getoutput(\"chmod 755")
     t = "%s%s\n" % (t, "/usr/applications/%s.desktop\")" % nombre)
-    return t
-
-
-def get_guion_activity_info(proyecto, iconname):
-    t = "[Activity]\n"
-    t = "%sname = %s\n" % (t, proyecto["nombre"])
-    t = "%sbundle_id = org.laptop.%s\n" % (t, proyecto["nombre"])
-    t = "%sexec = sugar-activity MaindelProyecto.ClaseActivity\n" % (t)
-    t = "%sicon = %s\n" % (t, iconname)
-    t = "%sactivity_version = %s\n" % (t, proyecto["version"])
-    t = "%sshow_launcher = yes\n" % (t)
     return t
 
 

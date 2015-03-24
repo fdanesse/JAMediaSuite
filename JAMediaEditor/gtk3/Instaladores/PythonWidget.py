@@ -50,15 +50,15 @@ class PythonWidget(Gtk.EventBox):
         Gtk.EventBox.__init__(self)
 
         self.proyecto_path = proyecto_path
-        archivo = os.path.join(proyecto_path, "proyecto.ide")
+        archivo = os.path.join(self.proyecto_path, "proyecto.ide")
         arch = open(archivo, "r")
         self.proyecto = json.load(arch, "utf-8")
         arch.close()
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        self.widgeticon = WidgetIcon("deb", proyecto_path)
-        self.notebook = Notebook(proyecto_path)
+        self.widgeticon = WidgetIcon("deb", self.proyecto_path)
+        self.notebook = Notebook(self.proyecto_path)
         self.terminal = Terminal()
 
         label = Gtk.Label(u"Instalador python para: %s versión: %s" % (
@@ -136,6 +136,7 @@ class PythonWidget(Gtk.EventBox):
         t = "Proceso Concluido."
         t = "%s\n%s" % (t, "El instalador se encuentra en")
         t = "%s: %s" % (t, CONFPATH)
+        # FIXME: Pedir para borrar directorio temporal ?
         dialogo = DialogoInformar(self.get_toplevel(), t)
         dialogo.run()
         dialogo.destroy()
