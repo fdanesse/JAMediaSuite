@@ -70,7 +70,8 @@ class DebianWidget(Gtk.EventBox):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         self.notebook = Notebook(self.proyecto_path)
-        self.widgeticon = WidgetIcon("deb", self.proyecto_path)
+        install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
+        self.widgeticon = WidgetIcon("deb", install_path)
 
         label = Gtk.Label(u"Instalador debian para: %s versión: %s" % (
             self.proyecto["nombre"], self.proyecto["version"]))

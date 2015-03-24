@@ -53,8 +53,9 @@ class SinRootWidget(Gtk.EventBox):
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
+        install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
+        self.widgeticon = WidgetIcon("sinroot", install_path)
         self.notebook = Notebook(self.proyecto_path)
-        self.widgeticon = WidgetIcon("sinroot", self.proyecto_path)
 
         label = Gtk.Label(u"Instalador sin root para: %s versión: %s" % (
             self.proyecto["nombre"], self.proyecto["version"]))

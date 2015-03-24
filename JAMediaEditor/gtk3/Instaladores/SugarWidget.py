@@ -46,16 +46,17 @@ class SugarWidget(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
-        self.proyecto_path = proyecto_path
-        archivo = os.path.join(self.proyecto_path, "proyecto.ide")
+        archivo = os.path.join(proyecto_path, "proyecto.ide")
         arch = open(archivo, "r")
         self.proyecto = json.load(arch, "utf-8")
         arch.close()
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        self.notebook = Notebook(self.proyecto_path)
-        self.widgeticon = WidgetIcon("sugar", self.proyecto_path)
+        self.notebook = Notebook(proyecto_path)
+        self.install_path = os.path.join(CONFPATH,
+            "%s.activity" % self.proyecto["nombre"])
+        self.widgeticon = WidgetIcon("sugar", self.install_path)
 
         label = Gtk.Label(u"Instalador Sugar para: %s versión: %s" % (
             self.proyecto["nombre"], self.proyecto["version"]))
@@ -91,21 +92,19 @@ class SugarWidget(Gtk.EventBox):
 
     def __run_make(self, dialogo):
         self.notebook.guardar()
-        install_path = os.path.join(CONFPATH,
-            "%s.activity" % self.proyecto["nombre"])
         # Limpiar y establecer permisos de archivos y directorios
-        get_installers_data(install_path)
+        get_installers_data(self.install_path)
 
-        zippath = "%s.xo" % (install_path)
+        zippath = "%s.xo" % (self.install_path)
         # Borrar anterior
         if os.path.exists(zippath):
             os.remove(zippath)
         zipped = zipfile.ZipFile(zippath, "w")
 
-        for (archiveDirPath, dirNames, fileNames) in os.walk(install_path):
+        for (archiveDirPath, dirNames, fileNames) in os.walk(self.install_path):
             for fileName in fileNames:
                 filePath = os.path.join(archiveDirPath, fileName)
-                zipped.write(filePath, filePath.split(install_path)[1])
+                zipped.write(filePath, filePath.split(self.install_path)[1])
         zipped.close()
         os.chmod(zippath, 0755)
 
@@ -119,9 +118,7 @@ class SugarWidget(Gtk.EventBox):
         dialogo.destroy()
 
     def __set_iconpath(self, widget, iconpath):
-        install_path = os.path.join(CONFPATH,
-            "%s.activity" % self.proyecto["nombre"])
-        path = os.path.join(install_path, "activity",
+        path = os.path.join(self.install_path, "activity",
             os.path.basename(iconpath))
         if iconpath != path:
             shutil.copyfile(iconpath, path)

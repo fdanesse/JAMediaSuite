@@ -57,7 +57,8 @@ class PythonWidget(Gtk.EventBox):
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        self.widgeticon = WidgetIcon("deb", self.proyecto_path)
+        install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
+        self.widgeticon = WidgetIcon("python", install_path)
         self.notebook = Notebook(self.proyecto_path)
         self.terminal = Terminal()
 
