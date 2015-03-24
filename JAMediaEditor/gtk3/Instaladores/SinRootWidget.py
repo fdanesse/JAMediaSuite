@@ -45,17 +45,16 @@ class SinRootWidget(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
-        self.proyecto_path = proyecto_path
-        archivo = os.path.join(self.proyecto_path, "proyecto.ide")
+        archivo = os.path.join(proyecto_path, "proyecto.ide")
         arch = open(archivo, "r")
         self.proyecto = json.load(arch, "utf-8")
         arch.close()
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
-        self.widgeticon = WidgetIcon("sinroot", install_path)
-        self.notebook = Notebook(self.proyecto_path)
+        self.install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
+        self.widgeticon = WidgetIcon("sinroot", self.install_path)
+        self.notebook = Notebook(proyecto_path)
 
         label = Gtk.Label(u"Instalador sin root para: %s versión: %s" % (
             self.proyecto["nombre"], self.proyecto["version"]))
@@ -91,29 +90,22 @@ class SinRootWidget(Gtk.EventBox):
 
     def __run_make(self, dialogo):
         self.notebook.guardar()
-        install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
         # Limpiar y establecer permisos de archivos y directorios
-        get_installers_data(install_path)
-
+        get_installers_data(self.install_path)
         # Generar archivo de distribución "*.zip"
-        zippath = "%s_%s.zip" % (install_path, self.proyecto["version"])
-
+        zippath = "%s_%s.zip" % (self.install_path, self.proyecto["version"])
         # Eliminar anterior.
         if os.path.exists(zippath):
             os.remove(zippath)
-
         zipped = zipfile.ZipFile(zippath, "w")
-
         # Comprimir archivos del proyecto.
-        for (archiveDirPath, dirNames, fileNames) in os.walk(install_path):
+        for (archiveDirPath, dirNames, fileNames) in os.walk(self.install_path):
             for fileName in fileNames:
                 filePath = os.path.join(archiveDirPath, fileName)
-                zipped.write(filePath, filePath.split(install_path)[1])
-
+                zipped.write(filePath, filePath.split(self.install_path)[1])
         zipped.close()
         os.chmod(zippath, 0755)
         dialogo.destroy()
-
         t = "Proceso Concluido."
         t = "%s\n%s" % (t, "El instalador se encuentra en")
         t = "%s: %s" % (t, CONFPATH)
@@ -124,10 +116,8 @@ class SinRootWidget(Gtk.EventBox):
 
     def __set_iconpath(self, widget, iconpath):
         new = iconpath
-        if not self.proyecto_path in iconpath:
-            install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
-            new = os.path.join(install_path, self.proyecto["nombre"],
-                os.path.basename(iconpath))
+        if not self.install_path in iconpath:
+            new = os.path.join(self.install_path, os.path.basename(iconpath))
             shutil.copyfile(iconpath, new)
         self.notebook.set_icon(new)
 
