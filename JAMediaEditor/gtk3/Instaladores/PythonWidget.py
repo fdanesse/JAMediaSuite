@@ -49,17 +49,16 @@ class PythonWidget(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
-        self.proyecto_path = proyecto_path
-        archivo = os.path.join(self.proyecto_path, "proyecto.ide")
+        archivo = os.path.join(proyecto_path, "proyecto.ide")
         arch = open(archivo, "r")
         self.proyecto = json.load(arch, "utf-8")
         arch.close()
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
-        self.widgeticon = WidgetIcon("python", install_path)
-        self.notebook = Notebook(self.proyecto_path)
+        self.install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
+        self.widgeticon = WidgetIcon("python", self.install_path)
+        self.notebook = Notebook(proyecto_path)
         self.terminal = Terminal()
 
         label = Gtk.Label(u"Instalador python para: %s versión: %s" % (
@@ -102,11 +101,10 @@ class PythonWidget(Gtk.EventBox):
     def __run_make(self, dialogo):
         self.terminal.reset()
         self.notebook.guardar()
-        install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
-        desktop = os.path.join(install_path,
+        desktop = os.path.join(self.install_path,
             "%s.desktop" % self.proyecto["nombre"])
-        lanzador = os.path.join(install_path, self.proyecto["nombre"].lower())
-        setup = os.path.join(install_path, "setup.py")
+        lanzador = os.path.join(self.install_path, self.proyecto["nombre"].lower())
+        setup = os.path.join(self.install_path, "setup.py")
         for path in [setup, desktop, lanzador]:
             os.chmod(path, 0755)
 
@@ -121,11 +119,11 @@ class PythonWidget(Gtk.EventBox):
             python_path = os.path.join("/usr/local", "python")
 
         self.terminal.show_all()
-        self.terminal.connect("reset", self.__Informar, dialogo, install_path)
-        self.terminal.ejecute_script(install_path, python_path, setup, "sdist")
+        self.terminal.connect("reset", self.__Informar, dialogo)
+        self.terminal.ejecute_script(self.install_path, python_path, setup, "sdist")
 
-    def __Informar(self, terminal, dialogo, install_path):
-        origen = os.path.join(install_path, "dist")
+    def __Informar(self, terminal, dialogo):
+        origen = os.path.join(self.install_path, "dist")
         for f in os.listdir(origen):
             arch = os.path.join(origen, f)
             commands.getoutput('mv %s %s' % (arch, CONFPATH))
@@ -145,10 +143,8 @@ class PythonWidget(Gtk.EventBox):
 
     def __set_iconpath(self, widget, iconpath):
         new = iconpath
-        if not self.proyecto_path in iconpath:
-            install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
-            new = os.path.join(install_path, "usr", "share",
-                self.proyecto["nombre"], os.path.basename(iconpath))
+        if not self.install_path in iconpath:
+            new = os.path.join(self.install_path, os.path.basename(iconpath))
             shutil.copyfile(iconpath, new)
         self.notebook.set_icon(new)
 

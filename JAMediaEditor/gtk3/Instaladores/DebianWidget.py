@@ -61,17 +61,18 @@ class DebianWidget(Gtk.EventBox):
 
         Gtk.EventBox.__init__(self)
 
-        self.proyecto_path = proyecto_path
-        archivo = os.path.join(self.proyecto_path, "proyecto.ide")
+        archivo = os.path.join(proyecto_path, "proyecto.ide")
         arch = open(archivo, "r")
         self.proyecto = json.load(arch, "utf-8")
         arch.close()
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        self.notebook = Notebook(self.proyecto_path)
-        install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
-        self.widgeticon = WidgetIcon("deb", install_path)
+        self.notebook = Notebook(proyecto_path)
+        self.install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
+        destino = os.path.join(self.install_path, "usr",
+            "share", self.proyecto["nombre"])
+        self.widgeticon = WidgetIcon("deb", destino)
 
         label = Gtk.Label(u"Instalador debian para: %s versión: %s" % (
             self.proyecto["nombre"], self.proyecto["version"]))
@@ -107,20 +108,19 @@ class DebianWidget(Gtk.EventBox):
 
     def __run_make(self, dialogo):
         self.notebook.guardar()
-        install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
         # Limpiar y establecer permisos de archivos y directorios
-        get_installers_data(install_path)
-        control = os.path.join(install_path, "DEBIAN", "control")
-        desktop = os.path.join(install_path, "usr", "share", "applications",
+        get_installers_data(self.install_path)
+        control = os.path.join(self.install_path, "DEBIAN", "control")
+        desktop = os.path.join(self.install_path, "usr", "share", "applications",
             "%s.desktop" % self.proyecto["nombre"])
-        lanzador = os.path.join(install_path, "usr", "bin",
+        lanzador = os.path.join(self.install_path, "usr", "bin",
             self.proyecto["nombre"].lower())
         for path in [control, desktop, lanzador]:
             os.chmod(path, 0755)
         destino = os.path.join(CONFPATH, "%s_%s.deb" % (
             self.proyecto["nombre"],
             self.proyecto["version"].replace(".", "_")))
-        print commands.getoutput('dpkg -b %s %s' % (install_path, destino))
+        print commands.getoutput('dpkg -b %s %s' % (self.install_path, destino))
         os.chmod(destino, 0755)
         dialogo.destroy()
         t = "Proceso Concluido."
@@ -133,10 +133,10 @@ class DebianWidget(Gtk.EventBox):
 
     def __set_iconpath(self, widget, iconpath):
         new = iconpath
-        if not self.proyecto_path in iconpath:
-            install_path = os.path.join(CONFPATH, self.proyecto["nombre"])
-            new = os.path.join(install_path, "usr", "share",
-                self.proyecto["nombre"], os.path.basename(iconpath))
+        destino = os.path.join(self.install_path, "usr",
+            "share", self.proyecto["nombre"])
+        if not destino in iconpath:
+            new = os.path.join(destino, os.path.basename(iconpath))
             shutil.copyfile(iconpath, new)
         self.notebook.set_icon(new)
 
