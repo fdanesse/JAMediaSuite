@@ -26,7 +26,7 @@ import commands
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
-from gi.repository import GLib
+from gi.repository import GdkPixbuf
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -44,20 +44,25 @@ class DialogoErrores(Gtk.Dialog):
             flags=Gtk.DialogFlags.MODAL,
             buttons=["Aceptar", Gtk.ResponseType.ACCEPT])
 
-        self.set_size_request(600, 250)
+        self.set_size_request(600, 350)
         self.set_border_width(15)
+
+        hbox = Gtk.HBox()
+        image = Gtk.Image()
+        arch = os.path.join(BASE_PATH, "Help", "Iconos", "constructortux.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(arch, 100, 100)
+        image.set_from_pixbuf(pixbuf)
+        hbox.pack_start(image, False, False, 0)
+        hbox.pack_start(Gtk.Label("Chequeo de Errores de JAMediaEditor"), True, True, 3)
+        hbox.show_all()
 
         errores = ErroresTreeview(view)
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scroll.add(errores)
-
-        label = Gtk.Label("Errores")
-
-        label.show()
         scroll.show_all()
 
-        self.vbox.pack_start(label, False, False, 0)
+        self.vbox.pack_start(hbox, False, False, 0)
         self.vbox.pack_start(scroll, True, True, 3)
 
 
