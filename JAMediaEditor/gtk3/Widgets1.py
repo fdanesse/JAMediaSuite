@@ -26,6 +26,7 @@ import commands
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
+from gi.repository import GdkPixbuf
 from gi.repository import GLib
 
 BASE_PATH = os.path.dirname(__file__)
@@ -47,6 +48,11 @@ class DialogoBuscar(Gtk.Dialog):
         self.entrada = Gtk.Entry()
 
         hbox = Gtk.HBox()
+        image = Gtk.Image()
+        arch = os.path.join(BASE_PATH, "Help", "Iconos", "sherlocktux.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(arch, 100, 100)
+        image.set_from_pixbuf(pixbuf)
+        hbox.pack_start(image, False, False, 0)
         hbox.pack_start(Gtk.Label("Buscar:"), True, True, 3)
         hbox.pack_start(self.entrada, False, False, 0)
         hbox.show_all()
@@ -166,29 +172,43 @@ class DialogoReemplazar(Gtk.Dialog):
         self.buscar_entry = Gtk.Entry()
         self.reemplazar_entry = Gtk.Entry()
 
+        # Imagen + 2 hbox con entrys
         hbox = Gtk.HBox()
-        hbox.pack_start(Gtk.Label("Buscar:"), True, True, 3)
-        hbox.pack_start(self.buscar_entry, False, False, 0)
-        hbox.show_all()
+        image = Gtk.Image()
+        arch = os.path.join(BASE_PATH, "Help", "Iconos", "sherlocktux.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(arch, 100, 100)
+        image.set_from_pixbuf(pixbuf)
+        hbox.pack_start(image, False, False, 0)
         self.vbox.pack_start(hbox, False, False, 3)
 
-        hbox = Gtk.HBox()
-        hbox.pack_start(Gtk.Label("Reemplazar:"), True, True, 3)
-        hbox.pack_start(self.reemplazar_entry, False, False, 0)
+        vbox = Gtk.VBox()
+        hbox.pack_start(vbox, True, True, 0)
+
+        hbox1 = Gtk.HBox()
+        hbox1.pack_start(Gtk.Label("Buscar:"), True, True, 3)
+        hbox1.pack_start(self.buscar_entry, False, False, 0)
+        #hbox1.show_all()
+        vbox.pack_start(hbox1, False, False, 3)
+
+        hbox2 = Gtk.HBox()
+        hbox2.pack_start(Gtk.Label("Reemplazar:"), True, True, 3)
+        hbox2.pack_start(self.reemplazar_entry, False, False, 0)
+        #hbox2.show_all()
+        vbox.pack_start(hbox2, False, False, 10)
+
         hbox.show_all()
-        self.vbox.pack_start(hbox, False, False, 10)
 
         # Buttons.
         cerrar = Gtk.Button("Cerrar")
         self.reemplazar = Gtk.Button("Reemplazar")
         self.button_buscar = Gtk.Button("Saltear")
 
-        hbox = Gtk.HBox()
-        hbox.pack_start(self.reemplazar, True, True, 3)
-        hbox.pack_start(self.button_buscar, True, True, 3)
-        hbox.pack_start(cerrar, True, True, 0)
-        hbox.show_all()
-        self.vbox.pack_start(hbox, False, False, 0)
+        hbox3 = Gtk.HBox()
+        hbox3.pack_start(self.reemplazar, True, True, 3)
+        hbox3.pack_start(self.button_buscar, True, True, 3)
+        hbox3.pack_start(cerrar, True, True, 0)
+        hbox3.show_all()
+        self.vbox.pack_start(hbox3, False, False, 0)
 
         self.reemplazar.set_sensitive(False)
         self.button_buscar.set_sensitive(False)
