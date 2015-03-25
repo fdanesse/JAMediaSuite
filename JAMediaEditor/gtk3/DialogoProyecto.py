@@ -24,6 +24,9 @@ import os
 import json
 import glob
 from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import Pango
+from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from gi.repository import GdkX11
 import Licencias as Lic
@@ -73,6 +76,20 @@ class DialogoProyecto(Gtk.Window):
         self.set_title(title)
         self.set_transient_for(self.parent_window)
         self.set_border_width(15)
+
+        hbox = Gtk.HBox()
+        image = Gtk.Image()
+        arch = os.path.join(BASE_PATH, "Help", "Iconos", "constructortux.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(arch, 100, 100)
+        image.set_from_pixbuf(pixbuf)
+        hbox.pack_start(image, False, False, 0)
+        label = Gtk.Label("Constructor de Proyectos")
+        hbox.pack_start(label, True, True, 3)
+        label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
+        label.modify_fg(0, Gdk.Color(0, 0, 65000))
+
+        vbox = Gtk.VBox()
+        vbox.pack_start(hbox, False, False, 0)
 
         tabla = Gtk.Table(rows=11, columns=2, homogeneous=True)
 
@@ -155,7 +172,8 @@ class DialogoProyecto(Gtk.Window):
         self.resize(w / 3, h - 40)
         self.move(w - w / 3, 40)
 
-        self.add(scroll)
+        vbox.pack_start(scroll, True, True, 0)
+        self.add(vbox)
         self.show_all()
 
     def __crear_cargar_proyecto(self, widget):

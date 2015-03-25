@@ -23,7 +23,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import Pango
 
-from BusquedasTreeView import buscar_delante
+#from BusquedasTreeView import buscar_delante
 from BusquedasTreeView import buscar_mas
 
 

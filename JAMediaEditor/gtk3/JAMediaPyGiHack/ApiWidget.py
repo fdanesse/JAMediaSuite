@@ -27,7 +27,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
-from BusquedasTreeView import buscar_delante
+#from BusquedasTreeView import buscar_delante
 from BusquedasTreeView import buscar_mas
 from BusquedasTreeView import get_estructura
 

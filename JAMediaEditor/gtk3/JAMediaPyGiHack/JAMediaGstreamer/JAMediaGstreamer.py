@@ -26,6 +26,7 @@ from Widgets import TextView
 from Widgets import Lista
 from BusquedasTreeView import get_estructura
 
+
 def get_inspect(elemento):
     return commands.getoutput('gst-inspect-1.0 %s' % (elemento))
 

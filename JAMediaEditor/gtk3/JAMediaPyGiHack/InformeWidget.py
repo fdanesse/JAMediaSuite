@@ -18,9 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110 - 1301 USA
 
-import os
 from gi.repository import Gtk
-from gi.repository import GObject
 from gi.repository import GdkX11
 from gi.repository import GtkSource
 

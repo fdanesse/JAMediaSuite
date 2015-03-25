@@ -22,8 +22,8 @@
 
 import os
 import commands
-
 from gi.repository import Gtk
+from gi.repository import Pango
 from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import GdkPixbuf
@@ -53,7 +53,10 @@ class DialogoErrores(Gtk.Dialog):
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(arch, 100, 100)
         image.set_from_pixbuf(pixbuf)
         hbox.pack_start(image, False, False, 0)
-        hbox.pack_start(Gtk.Label("Chequeo de Errores de JAMediaEditor"), True, True, 3)
+        label = Gtk.Label("Chequeo de Errores de JAMediaEditor")
+        hbox.pack_start(label, True, True, 3)
+        label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
+        label.modify_fg(0, Gdk.Color(0, 0, 65000))
         hbox.show_all()
 
         errores = ErroresTreeview(view)

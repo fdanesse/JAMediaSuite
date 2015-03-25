@@ -23,7 +23,7 @@
 import os
 import commands
 from collections import OrderedDict
-import shutil
+#import shutil
 
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -33,7 +33,7 @@ from gi.repository import GLib
 #from Widgets2 import Estructura_Menu
 #from Widgets2 import DialogoEliminar
 #from Widgets2 import BusquedaGrep
-from JAMediaPyGiHack.BusquedasTreeView import buscar_delante
+#from JAMediaPyGiHack.BusquedasTreeView import buscar_delante
 from JAMediaPyGiHack.BusquedasTreeView import buscar_mas
 from JAMediaPyGiHack.BusquedasTreeView import get_estructura
 

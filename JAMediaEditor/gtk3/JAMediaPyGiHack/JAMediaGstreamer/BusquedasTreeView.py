@@ -80,7 +80,7 @@ def __Buscar_detras_en_nodo(treeview, texto, _iter):
     while item:
         _iter2 = item
         item = model.iter_next(item)
-    while _iter2 :
+    while _iter2:
         if model.iter_has_child(_iter2):
             if __Buscar_detras_en_nodo(treeview, texto, _iter2):
                 return True
@@ -103,7 +103,7 @@ def __buscar_detras(treeview, texto, _iter, child=True):
             return True
         _iter2 = _iter
         _iter = model.iter_previous(_iter)
-        child=True
+        child = True
     _iter = model.iter_parent(_iter2)
     if _iter:
         if __buscar_detras(treeview, texto, _iter, child=False):
@@ -153,7 +153,8 @@ def __get_estructura_en_nodo(treeview, model, _iter, tab=0):
     if model.iter_has_child(_iter):
         _iter = model.iter_children(_iter)
         while _iter:
-            text = "%s\n%s" % (text, __get_estructura_en_nodo(treeview, model, _iter, tab+1))
+            text = "%s\n%s" % (text, __get_estructura_en_nodo(
+                treeview, model, _iter, tab + 1))
             _iter = model.iter_next(_iter)
     return text
 
