@@ -38,7 +38,21 @@ tag5.set_property("foreground-gdk", Gdk.Color(65000, 0, 0))
 
 
 def format_SUGAR(buffer_help, tags_table):
-    pass
+    tags_table.add(tag1)
+    tags_table.add(tag2)
+    tags_table.add(tag3)
+    tags_table.add(tag4)
+    tit1 = [1, 16, 91]
+    tit2 = [5, 9, 22, 32, 40, 45, 57, 64, 69, 74, 83]
+    code1 = [7, 11, 24, 25, 26, 27, 28, 29, 30, 34, 35, 36, 37, 38, 47, 48, 49,
+        50, 51, 52, 53, 76, 77, 78, 79, 80, 81]
+    __apply_tag(buffer_help, 1, tag1)
+    for _id in tit1:
+        __apply_tag(buffer_help, _id, tag2)
+    for _id in tit2:
+        __apply_tag(buffer_help, _id, tag3)
+    for _id in code1:
+        __apply_tag(buffer_help, _id, tag4)
 
 
 def format_SINROOT(buffer_help, tags_table):

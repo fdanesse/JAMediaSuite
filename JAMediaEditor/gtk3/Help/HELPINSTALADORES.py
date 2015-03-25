@@ -500,6 +500,105 @@ Sobre JAMediaEditor:
 """
 
 
+SUGAR = """
+El Instalador Sugar:
+
+    Un Instalador Sugar es un simple archivo zip que contiene un directorio con toda la aplicación a instalar.
+
+    Ese zip debe nombrarse de la siguiente forma:
+
+        NombreAplicación.activity.xo
+
+    Es decir que para JAMediaEditor, sería:
+
+        JAMediaEditor.activity.xo
+
+    Para este ejemplo, cuando JAMediaEditor se instale en sugar, se creará un directorio JAMediaEditor.activity dentro de /home/olpc/Activities/
+    y dentro se copiarán todos los archivos y directorios de la aplicación.
+
+Crear una Aplicación Sugar:
+
+    Para crear una aplicación Sugar, debes crear un directorio con el nombre de la aplicación y agregarle ".activity".
+    Dentro, desarrollas toda tu aplicación, tomando en cuenta que el archivo main de tu proyecto, debe estar en ese directorio y
+    debe contener una clase que herede de sugar.activity.activity.Activity
+
+    Un ejemplo de esta clase principal es:
+
+        from sugar.activity.activity import Activity
+
+        class Bichos(Activity):
+
+            def __init__(self, handle):
+
+                Activity.__init__(self, handle, False)
+
+    También dentro de ese directorio, debe haber un archivo setup.py que debe contener lo siguiente:
+
+        #!/usr/bin/python
+        # -*- coding: utf-8 -*-
+
+        from sugar.activity import bundlebuilder
+        bundlebuilder.start()
+
+    Además, dentro de ese mismo directorio, debe haber otro directorio llamado "activity", el cual debe contener:
+
+        el ícono de la aplicación en formato svg y de 50 x 50 pixeles.
+        un archivo llamado activity.info
+
+    El archivo activity.info es como un .desktop (ver Ayuda sobre "Instaladores en General") con contenido similar al siguiente:
+
+        [Activity]
+        name = Bichos
+        bundle_id = org.laptop.Bichos
+        exec = sugar-activity SugarBichos.Bichos
+        icon = Bichos
+        activity_version = 1
+        show_launcher = yes
+
+    Los campos verdaderamente importantes en este archivo son bundle_id, exec y activity_version.
+
+        bundle_id:
+
+            Es un identificador único para la aplicación.
+            En el sitio de descargas de Sugar nunca podrás subir un paquete .xo que contenga en este campo el mismo valor que
+            otra aplicación existente. Tampoco podrás subir una actualización de una aplicación que no contenga el mismo identificador que
+            el explicitado en el sitio de descargas para esa aplicación.
+
+        exec:
+
+            Refiere al archivo y clase principal de la aplicación (SugarBichos.Bichos)
+            Si estableces mal este campo, la aplicación no iniciará luego de instalada.
+
+        activity_version:
+
+            Este campo es importante al momento de descargar e instalar una aplicación en sugar.
+            Esto se debe a que sugar solo instala versiones más nuevas de una aplicación que ya tiene instalada.
+
+    Resumiendo, la estructura de tu proyecto sugar debe contener:
+
+        MiAplicacion.activity/
+            activity/
+                icono.svg
+                activity.info
+            setup.py
+            ArchivoPrincipal.py (con Clase Principal que herede de sugar.activity.activity.Activity)
+
+        Luego de tener todo esto en orden, debes:
+
+            Establecer los permisos de archivos y directorios en forma correcta.
+                Cada archivo debe tener los permisos 644 y los directorios 755, incluso el directorio principal de la aplicación.
+            Luego comprimes el directorio principal de tu aplicación en un archivo zip.
+            Le cambias la extensión a .xo.
+            Al archivo .xo, le das los permisos 755 y estará listo para subirlo a internet y distribuirlo o instalarlo en sugar.
+
+Sobre JAMediaEditor:
+
+    JAMediaEditor realiza todo este proceso en forma automática pero el resultado depende de que tu establezcas correctamente el main
+    del proyecto y toda la información del archivo activity.info.
+    JAMediaEditor solo intenta guiarte en cada instalador creando plantillas de los archivos necesarios, pero nunca modificará los archivos de tu proyecto.
+"""
+
+
 def get_help(help):
     if help == "help instaladores":
         return INSTALADORES
@@ -512,6 +611,6 @@ def get_help(help):
     elif help == "help sin root":
         return SINROOT
     elif help == "help sugar":
-        return ""
+        return SUGAR
     else:
         return ""

@@ -40,7 +40,7 @@ BASEPATH = os.path.dirname(__file__)
 
 class SugarWidget(Gtk.EventBox):
 
-    #__gtype_name__ = 'JAMediaEditorSugarWidget'
+    __gtype_name__ = 'JAMediaEditorSugarWidget'
 
     def __init__(self, proyecto_path):
 
@@ -127,7 +127,7 @@ class SugarWidget(Gtk.EventBox):
 
 class Notebook(Gtk.Notebook):
 
-    #__gtype_name__ = 'JAMediaEditorNotebookInstalador1'
+    __gtype_name__ = 'JAMediaEditorNotebookInstalador4'
 
     def __init__(self, proyecto_path):
 
