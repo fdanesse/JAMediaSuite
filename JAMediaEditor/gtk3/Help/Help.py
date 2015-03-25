@@ -20,7 +20,10 @@
 
 import os
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GdkX11
+from gi.repository import Pango
+from gi.repository import GdkPixbuf
 from Widgets import DialogoLoad
 from HelpWidget import HelpWidget
 
@@ -47,14 +50,28 @@ class Help(Gtk.Window):
         self.set_transient_for(self.parent_window)
         self.set_border_width(15)
 
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        image = Gtk.Image()
+        arch = os.path.join(BASEPATH, "Iconos", "einsteintux.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(arch, 100, 100)
+        image.set_from_pixbuf(pixbuf)
+        hbox.pack_start(image, False, False, 0)
+        label = Gtk.Label(u"Sistema de Ayuda de JAMediaEditor")
+        label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
+        label.modify_fg(0, Gdk.Color(0, 0, 65000))
+        hbox.pack_start(label, True, True, 0)
+        vbox.pack_start(hbox, False, False, 0)
+
         self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.vbox.pack_start(Gtk.Label("Constructor de Instaladores"),
             False, False, 0)
+        vbox.pack_start(self.vbox, True, True, 0)
 
         self.resize(w / 2, h - 40)
         self.move(w - w / 2, 40)
 
-        self.add(self.vbox)
+        self.add(vbox)
         self.show_all()
 
     def set_help(self, texto):
