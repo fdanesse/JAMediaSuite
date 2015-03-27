@@ -25,7 +25,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 
-from Widgets2 import Credits
+from Creditos.Creditos import Creditos
 from Help.Menu import ItemMenuInstaladores
 
 BASE_PATH = os.path.dirname(__file__)
@@ -57,6 +57,7 @@ class Menu(Gtk.MenuBar):
 
         Gtk.MenuBar.__init__(self)
 
+        self.creditos = False
         self.dict_archivo = {}
         self.dict_proyecto = {}
 
@@ -333,9 +334,12 @@ class Menu(Gtk.MenuBar):
         self.emit('run_jamediapygihack')
 
     def __run_about(self, widget):
-        dialog = Credits(parent=self.get_toplevel())
-        dialog.run()
-        dialog.destroy()
+        if self.creditos:
+            self.creditos.destroy()
+            del(self.creditos)
+            self.creditos = False
+        self.creditos = Creditos(self.get_toplevel())
+        self.creditos.run()
 
     def __emit_accion_codigo(self, widget, accion):
         self.emit('accion_codigo', accion)

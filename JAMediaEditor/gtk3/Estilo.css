@@ -20,7 +20,7 @@ JAMediaEditorIntrospeccion, JAMediaEditorEstructura_Proyecto,
 JAMediaEditorDialogoBuscar, JAMediaEditorDialogoReemplazar,
 JAMediaEditorMy_FileChooser, Multiple_FileChooser, JAMediaEditorDialogoErrores,
 JAMediaEditorDialogoAlertaSinGuardar, JAMediaEditorDialogoSobreEscritura,
-JAMediaEditorDialogoEliminar, JAMediaEditorBusquedaGrep, JAMediaEditorCredits,
+JAMediaEditorDialogoEliminar, JAMediaEditorBusquedaGrep,
 GtkViewport, GtkFrame, SinRootWidget,
 JAMediaEditorDebianWidget, JAMediaEditorSinRootWidget,
 JAMediaEditorScrollPage, JAMediaEditorNotebookInstalador1,
@@ -33,7 +33,7 @@ JAMediaEditorSugarWidget{
 }
 
 JAMediaEditorMenu, JAMediaEditorToolbarEstado, PygiHackToolbarTry,
-JAMediaEditorMenuInstaladores{
+JAMediaEditorMenuInstaladores, JAMediaEditorCredits{
     background-color: #000000;
     color: #ffffff;
 }

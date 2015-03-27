@@ -136,26 +136,6 @@ class ErroresTreeview(Gtk.TreeView):
         return True
 
 
-class Credits(Gtk.Dialog):
-
-    __gtype_name__ = 'JAMediaEditorCredits'
-
-    def __init__(self, parent=None):
-
-        Gtk.Dialog.__init__(self, parent=parent,
-            flags=Gtk.DialogFlags.MODAL,
-            buttons=["Cerrar", Gtk.ResponseType.ACCEPT])
-
-        self.set_border_width(15)
-
-        imagen = Gtk.Image()
-        imagen.set_from_file(os.path.join(BASE_PATH,
-            "Iconos", "JAMediaEditorCredits.svg"))
-
-        self.vbox.pack_start(imagen, False, False, 0)
-        self.vbox.show_all()
-
-
 '''
 class Estructura_Menu(Gtk.Menu):
     """
