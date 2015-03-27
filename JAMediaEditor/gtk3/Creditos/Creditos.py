@@ -24,6 +24,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkX11
 from gi.repository import GLib
+from Player import Player
 
 screen = GdkX11.X11Screen.get_default()
 w = screen.width()
@@ -50,11 +51,14 @@ class Creditos(Gtk.Window):
         self.set_resizable(False)
 
         self.visor = Visor()
+        self.player = Player()
+        self.player.connect("endfile", self.__replay)
 
         self.add(self.visor)
         self.show_all()
 
         self.connect("key-press-event", self.__key_press_even)
+        self.connect("delete-event", self.stop)
 
     def __key_press_even(self, widget, event):
         if Gdk.keyval_name(event.keyval) == "Escape":
@@ -62,13 +66,20 @@ class Creditos(Gtk.Window):
             self.destroy()
         return False
 
-    def stop(self):
+    def __replay(self, player):
+        uri = os.path.join(BASEPATH, "Sonidos", "yarina.ogg")
+        self.player.load(uri)
+
+    def stop(self, widget=False, event=False):
+        self.player.stop()
         self.visor.new_handle(False)
         self.hide()
 
     def run(self):
         self.show()
         self.visor.new_handle(True)
+        uri = os.path.join(BASEPATH, "Sonidos", "yarina.ogg")
+        self.player.load(uri)
 
 
 class Visor(Gtk.DrawingArea):
