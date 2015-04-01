@@ -22,6 +22,43 @@ from gi.repository import Gtk
 from gi.repository import GObject
 
 
+class ItemMenuJAMediaEditor(Gtk.MenuItem):
+
+    #__gtype_name__ = 'ItemMenuInstaladores'
+
+    __gsignals__ = {
+    'help': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+
+    def __init__(self):
+
+        Gtk.MenuItem.__init__(self, 'Uso de JAMediaEditor')
+
+        menu = Gtk.Menu()
+
+        item = Gtk.MenuItem('Modo Normal')
+        #item.connect("activate", self.__emit_accion, "help instaladores")
+        menu.append(item)
+
+        item = Gtk.MenuItem('Modo Proyecto')
+        #item.connect("activate", self.__emit_accion, "help instaladores")
+        menu.append(item)
+
+        item = Gtk.MenuItem('Uso de JAMediaPyGiHack')
+        #item.connect("activate", self.__emit_accion, "help instaladores")
+        menu.append(item)
+
+        menu_instaladores = ItemMenuInstaladores()
+        menu_instaladores.connect("help", self.__emit_accion)
+        menu.append(menu_instaladores)
+
+        self.set_submenu(menu)
+        self.show_all()
+
+    def __emit_accion(self, widget, text):
+        self.emit("help", text)
+
+
 class ItemMenuInstaladores(Gtk.MenuItem):
 
     #__gtype_name__ = 'ItemMenuInstaladores'
@@ -32,7 +69,7 @@ class ItemMenuInstaladores(Gtk.MenuItem):
 
     def __init__(self):
 
-        Gtk.MenuItem.__init__(self, 'Instaladores')
+        Gtk.MenuItem.__init__(self, 'Construcción de Instaladores')
 
         menu_instaladores = MenuInstaladores()
         menu_instaladores.connect("help", self.__emit_accion)

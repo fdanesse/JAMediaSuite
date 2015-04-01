@@ -26,7 +26,7 @@ from gi.repository import Gdk
 from gi.repository import GObject
 
 from Creditos.Creditos import Creditos
-from Help.Menu import ItemMenuInstaladores
+from Help.ItemMenuJAMediaEditor import ItemMenuJAMediaEditor
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -320,9 +320,33 @@ class Menu(Gtk.MenuBar):
         item = Gtk.SeparatorMenuItem()
         menu_ayuda.append(item)
 
-        # Ayuda Sobre Construcción de Instaladores
-        item = ItemMenuInstaladores()
+        # Ayuda
+        item = ItemMenuJAMediaEditor()
         item.connect("help", self.__emit_help)
+        menu_ayuda.append(item)
+
+        item = Gtk.MenuItem('Programar')
+        #item.connect("activate", self.__emit_accion, "help instaladores")
+        menu_ayuda.append(item)
+
+        item = Gtk.MenuItem('Programar en python')
+        #item.connect("activate", self.__emit_accion, "help instaladores")
+        menu_ayuda.append(item)
+
+        item = Gtk.MenuItem('Programar en pygame')
+        #item.connect("activate", self.__emit_accion, "help instaladores")
+        menu_ayuda.append(item)
+
+        item = Gtk.MenuItem('Programar en gtk')
+        #item.connect("activate", self.__emit_accion, "help instaladores")
+        menu_ayuda.append(item)
+
+        item = Gtk.MenuItem('Programar en gtk y gstreamer')
+        #item.connect("activate", self.__emit_accion, "help instaladores")
+        menu_ayuda.append(item)
+
+        item = Gtk.MenuItem('Utilizar git')
+        #item.connect("activate", self.__emit_accion, "help instaladores")
         menu_ayuda.append(item)
 
         self.show_all()
