@@ -27,6 +27,7 @@ from gi.repository import GObject
 
 from Creditos.Creditos import Creditos
 from Help.ItemMenuJAMediaEditor import ItemMenuJAMediaEditor
+from Help.ItemMenuProgramar import ItemMenuProgramar
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -325,8 +326,8 @@ class Menu(Gtk.MenuBar):
         item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
-        item = Gtk.MenuItem('Programar')
-        #item.connect("activate", self.__emit_accion, "help instaladores")
+        item = ItemMenuProgramar()
+        item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
         item = Gtk.MenuItem('Programar en python')

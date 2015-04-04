@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+
+BASEPATH = os.path.dirname(__file__)
+
 
 INSTALADORES = """
 Conceptos Generales:
@@ -600,7 +604,13 @@ Sobre JAMediaEditor:
 
 
 def get_help(help):
-    if help == "help instaladores":
+    if help == "Programar Clase 0":
+        arch = open(os.path.join(BASEPATH, "ProgramarPython", "001.txt"), "r")
+        text = arch.read()
+        arch.close()
+        return text
+
+    elif help == "help instaladores":
         return INSTALADORES
     elif help == "help deb":
         return DEB

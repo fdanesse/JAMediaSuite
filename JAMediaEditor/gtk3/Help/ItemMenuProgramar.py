@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# ItemMenuJAMediaEditor.py por:
+# ItemMenuProgramar.py por:
 #     Flavio Danesse     <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and / or modify
@@ -22,7 +22,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 
 
-class ItemMenuJAMediaEditor(Gtk.MenuItem):
+class ItemMenuProgramar(Gtk.MenuItem):
 
     #__gtype_name__ = 'ItemMenuInstaladores'
 
@@ -32,25 +32,25 @@ class ItemMenuJAMediaEditor(Gtk.MenuItem):
 
     def __init__(self):
 
-        Gtk.MenuItem.__init__(self, 'Uso de JAMediaEditor')
+        Gtk.MenuItem.__init__(self, 'Comenzar a Programar')
 
         menu = Gtk.Menu()
 
-        item = Gtk.MenuItem('Modo Normal')
-        #item.connect("activate", self.__emit_accion, "help instaladores")
+        item = Gtk.MenuItem('Clase 0')
+        item.connect("activate", self.__emit_accion, "Programar Clase 0")
         menu.append(item)
 
-        item = Gtk.MenuItem('Modo Proyecto')
+        #item = Gtk.MenuItem('Modo Proyecto')
         #item.connect("activate", self.__emit_accion, "help instaladores")
-        menu.append(item)
+        #menu.append(item)
 
-        item = Gtk.MenuItem('Uso de JAMediaPyGiHack')
+        #item = Gtk.MenuItem('Uso de JAMediaPyGiHack')
         #item.connect("activate", self.__emit_accion, "help instaladores")
-        menu.append(item)
+        #menu.append(item)
 
-        menu_instaladores = ItemMenuInstaladores()
-        menu_instaladores.connect("help", self.__emit_accion)
-        menu.append(menu_instaladores)
+        #menu_instaladores = ItemMenuInstaladores()
+        #menu_instaladores.connect("help", self.__emit_accion)
+        #menu.append(menu_instaladores)
 
         self.set_submenu(menu)
         self.show_all()
@@ -58,7 +58,7 @@ class ItemMenuJAMediaEditor(Gtk.MenuItem):
     def __emit_accion(self, widget, text):
         self.emit("help", text)
 
-
+'''
 class ItemMenuInstaladores(Gtk.MenuItem):
 
     #__gtype_name__ = 'ItemMenuInstaladores'
@@ -120,3 +120,4 @@ class MenuInstaladores(Gtk.Menu):
 
     def __emit_accion(self, widget, text):
         self.emit("help", text)
+'''

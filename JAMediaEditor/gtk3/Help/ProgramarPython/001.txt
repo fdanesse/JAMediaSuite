@@ -1,0 +1,162 @@
+Programar CAP. 0:
+
+    En este capítulo, se intenta explicar lo básico necesario para comenzar a aprender a programar en python.
+    Pero por motivo de espacio y tiempo, no se desarrollan las explicaciones sobre varios de los temas que toca esta ayuda.
+    Es necesario que amplies esos temas investigando en internet.
+    Ahora, veremos el uso básico de la terminal y algunos comandos de bash necesarios para aprender luego conceptos fundamentales.
+    La idea es que aprendas a escribir un archivo con tu programa y luego puedas ejecutarlo, copiarlo, moverlo, borrarlo, etc . . .
+
+¿Qué es programar?.
+
+    Es hacer un programa, una lista de instrucciones que mi computadora debe ejecutar.
+    Para ello lo que hacemos es escribir esas instrucciones en un archivo y luego decirle a la computadora que lea ese archivo y
+    ejecute las instrucciones que allí se encuentran escritas.
+
+    Los programadores trabajan en editores de código, que en realidad son editores de texto con funciones especiales
+    para la tarea que deben realizar. JAMediaEditor es un editor de código orientado sobre todo a programar en el lenguaje python, pero
+    puedes utilizarlo para cualquier otro lenguaje de programación que conozcas.
+
+    La mécanica que sigue un programador cuando hace un programa es muy sencilla:
+    En un archivo de texto escribe las instrucciones y luego para lanzar el programa, ejecuta el archivo.
+    Pero los programas se escriben en un lenguaje de programación y por lo tanto hay que aprender uno de esos lenguajes para poder programar.
+    También es necesario conocer los comandos básicos de bash y saber utilizar la terminal.
+
+La terminal:
+
+    Es una interfase del sistema operativo GNU/Linux que nos permite utilizar el interprete de comandos llamado bash (bourne-again shell).
+    El interprete de comandos lo que hace es ejecutar tareas del sistema operativo según los comandos que el usuario escribe en la terminal.
+
+    bash cuenta con un manual donde explica el uso de cada comando.
+    Lamentablemente en la XO no está disponible, pero puedes consultar lo que hace cada comando en otra computadora con GNU/linux escribiendo
+    man y el nombre del comando (man de manual y el comando a consultar). También puedes buscar el man de linux en internet.
+
+Los Interpretes:
+
+    Los interpretes son interfases capaces de entender (interpretar), determinados lenguajes.
+    Bash es el interprete de comandos de linux. Cuando abres la terminal, abres el interprete de bash.
+    Esto quiere decir que la terminal responderá a cualquier comando de bash pues sabe interpretarlos.
+
+    python es un lenguaje interpretado, por lo tanto, tiene su propio interprete.
+    Si en la terminal escribes python y das enter, entrarás en el interprete de python. Te darás cuenta de esto porque el promp mostrará los simbolos ">>>"
+    indicandote que espera instrucciones python. Para salir del interprete de python debes hacer control + d.
+
+    Más adelante veremos como utilizar el interprete de python directamente, ahora nos centraremos más en escribir un programa en un archivo y ejecutarlo.
+    Esto se hace diciendo en la terminal que queremos ejecutar ese archivo con el interprete de python, lo cual se escribe: python miarchivo.py
+
+    Es común que cuando estás aprendiendo a programar en python intentes ejecutar un archivo y escribas python olvidando poner el nombre del archivo que
+    deseeas ejecutar, con lo cual entrarás en el interprete de python, por eso recuerda, que para salir del interprete de python, debes hacer control + d.
+
+Escribir un programa en python:
+
+    Utilizando JAMediaEditor, en un archivo nuevo, escribe lo siguiente:
+
+        print "Hola"
+
+    Luego guarda ese archivo con el nombre "programa" y la extensión ".py" (programa.py)
+    Si ejecutas ese archivo, en la terminal imprimirá "Hola".
+
+    Ahora bien, JAMediaEditor tiene una función especial que te permite ejecutar el archivo haciendo click en un botón, pero para poder
+    hacerlo tu directamente, debes aprender a moverte por la estructura de directorios utiliando la terminal.
+    Tienes que aprender también a copiar, mover y borrar archivos y directorios, a crear directorios y cambiarles los permisos, etc . . .
+    Para hacer todo eso debes conocer la estructura de directorios de linux. Todo eso, que es el manejo básico de la terminal, requiere
+    que aprendas los comandos básicos de bash.
+
+Uso básico de bash y la terminal:
+
+    Cuando abres la terminal, ella se posiciona en el home de tu usuario.
+    Por ejemplo, en mi caso, mi usuario se llama "flavio", por lo tanto, al abrir la terminal, ella se posicionará en /home/flavio.
+    Si mi programa lo guardé en el directorio Documentos, para entrar en ese directorio luego de abrir la terminal, debo escribir cd Documentos.
+    Luego para ejecutar mi programa, debo escribir: python programa.py
+
+    Ese manejo básico de la terminal, debes aprenderlo antes de comenzar a programar.
+    Para ayudarte en esto, dejo a continuación una lista de los comandos básicos de bash que más necesitarás:
+
+        ls = Lista el contenido del directorio donde estamos parados.
+        ls -a = Lista todo el contenido del directorio, incluso los archivos y directorios ocultos.
+            (Los archivos y directorios ocultos son los que comienzan con un punto).
+        ls -l = Lista el contenido, mostrando los permisos de cada archivo y directoro.
+            (Tambien puedes combinar los parámetros, por ejemplo, puedes hacer ls -la).
+        cd /directoriodestino = Te lleva a un determinado directorio.
+        cd .. = Sube un nivel en la jerarquía de directorios.
+        cd = Te lleva al directorio home.
+        pwd = Te muestra el directorio en que te encuentras.
+        rm archivo = Borra un archivo.
+        rm -r directorio = Borra un directorio y todo su contenido.
+        cp archivo-origen directorio-destino = Copia un archivo en un determinado directorio.
+        cp -r directorio-origen directorio-destino = Copia un directorio y todo su contenido en el directorio destino.
+        mv archivo-origen directorio-destino = Mueve un archivo a un determinado directorio.
+        mkdir nombre-directorio = Crea un Directorio con un determinado nombre.
+        chmod archivo permisos = Cambia los permisos de archivos y directorios.
+        chown grupo:propietario archivo = Cambia el grupo de usuario y el propietario de un archivo o directorio.
+
+    Nota:
+        Si te fijas, a veces se utiliza luego del comando, un guión con una letra que hace que varíe el comportamiento del comando utilizado.
+        Estos son los llamados parámetros y sirven para especificar como debe ejecutarse el comando. Si lees en el manual de linux sobre un determinado
+        comando, verás que parámetros acepta ese comando y para que sirve cada uno de ellos. (Por ejemplo, para ver el manual del comando ls, escribes: man ls).
+
+    En la terminal, tienes la capacidad de utilizar muchísimos comandos para diferentes cosas, vas a aprenderlos en la medida que investigues y practiques, pero al
+    final solo utilizarás unos pocos comandos, los más necesarios según el uso que hagas de tu máquina. En principio, los más importantes son estos que he detallado
+    ya que son los que te permiten moverte por la estructura de directorios y gestionarlos. Esto te permitirá ejecutar tus programas y con ello aprenderás
+    conceptos que son muy necesarios luego para programar en cualquier lenguaje.
+
+Estructura de Directorios de Linux:
+
+    La estructura de directorios de linux comienza a partir de la raíz del sistema "/".
+    A partir de allí, el sistema tiene varios directorios, cada uno de ellos almacena información específica para determinadas tareas.
+    Uno de esos directorios es /home. En el hay un directorio para cada usuario del sistema.
+    Dentro del directorio de cada usuario, se guardan sus archivos y directorios.
+    Por lo tanto, en mi caso, como mi usuario es "flavio", todos mis archivos se encuentran en /home/flavio.
+    A partir de /home/flavio, encontraré Documentos (/home/flavio/Documentos), Descargas (/home/flavio/Descargas), etc . . .
+
+    La estructura es así:
+
+        /home
+            /flavio
+                /Documentos
+                /Descargas
+                etc . . .
+            etc . . .
+        etc . . .
+
+    Puedes ver toda la estructura de directorios escribiendo:
+
+        tree /
+
+    O si quieres verla a partir de determinado Directorio con:
+
+        tree /home/flavio
+
+    Nota:
+        Tree es un programa, puede que no lo tengas instalado, si es así primero instálalo.
+        Para conocer mejor la estructura de directorios de linux, debes buscar esa información en internet.
+
+    De acuerdo al ejemplo anterior, cuando abro la terminal, ella se posiciona en /home/flavio
+
+    Si mi programa estaba guardado en mi directorio Documentos, para ir allí debo escribir:
+        cd Documentos o cd /home/flavio/Documentos
+
+    Luego, para ejecutar mi programa escrito en python, le digo al sistema que con python ejecute dicho archivo mediante:
+        python programa.py o python /home/flavio/Documentos/programa.py
+
+    Ahora para volver a mi directorio home hago:
+        cd .. o cd /home/flavio
+
+    Si quiero crear un directorio hago:
+        mkdir NuevoDirectorio o mkdir /home/flavio/NuevoDirectorio
+
+    si quiero borrar ese directorio hago:
+        rm -r NuevoDirectorio o rm -r /home/flavio/NuevoDirectorio
+
+Nota:
+    Como comprenderás esto es muy básico y requiere que investigues y experimentes para luego poder aprender a programar y estas cosas te
+    resulten sencillas y familiares, de modo que debes dedicar algo de tiempo a aprender sobre esto.
+
+    La ayuda de JAMediaEditor trata sobre todo de mostrarte lo básico para que puedas hacerte una idea de que se necesita y como puedes
+    comenzar, pero no profundiza en estos temas dado que explicar cada uno de ellos llevaría mucho tiempo de desarrollo.
+
+    El objetivo que persigue esta ayuda es indicarte por donde comenzar, pero el esfuerzo por aprender tienes que ponerlo tu.
+    Con mucha paciencia:
+        "Actitud que lleva al ser humano a poder soportar contratiempos y dificultades para conseguir algún bien."
+        Proviene del latín pati, que significa sufrir.
+        De hecho el participio patiens se introdujo al castellano como paciente (en los hospitales) o "el que sufre".
+    Sin paciencia, no aprenderás, te equivocarás muchas veces antes de aprender, eso es lo normal cuando se intenta aprender a programar.

@@ -37,6 +37,23 @@ tag5 = Gtk.TextTag.new("5")
 tag5.set_property("foreground-gdk", Gdk.Color(65000, 0, 0))
 
 
+def format_PROGRAMAR0(buffer_help, tags_table):
+    tags_table.add(tag1)
+    tags_table.add(tag2)
+    tags_table.add(tag3)
+    tags_table.add(tag4)
+    tit1 = []
+    tit2 = []
+    code1 = []
+    __apply_tag(buffer_help, 1, tag1)
+    for _id in tit1:
+        __apply_tag(buffer_help, _id, tag2)
+    for _id in tit2:
+        __apply_tag(buffer_help, _id, tag3)
+    for _id in code1:
+        __apply_tag(buffer_help, _id, tag4)
+
+
 def format_SUGAR(buffer_help, tags_table):
     tags_table.add(tag1)
     tags_table.add(tag2)
@@ -154,6 +171,7 @@ def __apply_tag(buffer_help, _id, tag):
 
 
 _dict = {
+    "Programar Clase 0": format_PROGRAMAR0,
     "help instaladores": format_INSTALADORES,
     "help deb": format_DEB,
     "help rmp": format_RPM,
@@ -170,15 +188,15 @@ class HelpWidget(Gtk.EventBox):
     def __init__(self, help):
 
         Gtk.EventBox.__init__(self)
-
+        print help
         tags_table = Gtk.TextTagTable()
         buffer_help = Gtk.TextBuffer.new(tags_table)
         textview = Gtk.TextView()
         textview.set_buffer(buffer_help)
         textview.set_editable(False)
         textview.set_border_width(15)
-        buffer_help.set_text(get_help(help))
-        _dict[help](buffer_help, tags_table)
+        buffer_help.set_text(get_help(help))  # Texto
+        _dict[help](buffer_help, tags_table)  # Formato
 
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
