@@ -1,8 +1,9 @@
 Programar CAP. 0:
 
-    En este capítulo, se intenta explicar lo básico necesario para comenzar a aprender a programar en python.
-    Pero por motivo de espacio y tiempo, no se desarrollan las explicaciones sobre varios de los temas que toca esta ayuda.
-    Es necesario que amplies esos temas investigando en internet.
+    En este capítulo, se intenta explicar lo básico para que puedas comenzar a programar en python.
+    Por motivo de espacio y tiempo, no se desarrollan las explicaciones sobre varios de los temas que toca esta ayuda, de modo que
+    es necesario que amplies esos temas investigando en internet.
+
     Ahora, veremos el uso básico de la terminal y algunos comandos de bash necesarios para aprender luego conceptos fundamentales.
     La idea es que aprendas a escribir un archivo con tu programa y luego puedas ejecutarlo, copiarlo, moverlo, borrarlo, etc . . .
 
@@ -11,14 +12,11 @@ Programar CAP. 0:
     Es hacer un programa, una lista de instrucciones que mi computadora debe ejecutar.
     Para ello lo que hacemos es escribir esas instrucciones en un archivo y luego decirle a la computadora que lea ese archivo y
     ejecute las instrucciones que allí se encuentran escritas.
+    Pero los programas se escriben en un lenguaje de programación y por lo tanto hay que aprender uno de esos lenguajes para poder programar.
 
     Los programadores trabajan en editores de código, que en realidad son editores de texto con funciones especiales
-    para la tarea que deben realizar. JAMediaEditor es un editor de código orientado sobre todo a programar en el lenguaje python, pero
-    puedes utilizarlo para cualquier otro lenguaje de programación que conozcas.
-
-    La mécanica que sigue un programador cuando hace un programa es muy sencilla:
-    En un archivo de texto escribe las instrucciones y luego para lanzar el programa, ejecuta el archivo.
-    Pero los programas se escriben en un lenguaje de programación y por lo tanto hay que aprender uno de esos lenguajes para poder programar.
+    para la tarea que deben realizar. JAMediaEditor es un editor de código orientado sobre todo a programar en el lenguaje python,
+    pero puedes utilizarlo para cualquier otro lenguaje de programación que conozcas.
     También es necesario conocer los comandos básicos de bash y saber utilizar la terminal.
 
 La terminal:
@@ -40,11 +38,11 @@ Los Interpretes:
     Si en la terminal escribes python y das enter, entrarás en el interprete de python. Te darás cuenta de esto porque el promp mostrará los simbolos ">>>"
     indicandote que espera instrucciones python. Para salir del interprete de python debes hacer control + d.
 
-    Más adelante veremos como utilizar el interprete de python directamente, ahora nos centraremos más en escribir un programa en un archivo y ejecutarlo.
+    Más adelante veremos como utilizar el interprete de python directamente, ahora nos centraremos en escribir un programa en un archivo y ejecutarlo.
     Esto se hace diciendo en la terminal que queremos ejecutar ese archivo con el interprete de python, lo cual se escribe: python miarchivo.py
 
     Es común que cuando estás aprendiendo a programar en python intentes ejecutar un archivo y escribas python olvidando poner el nombre del archivo que
-    deseeas ejecutar, con lo cual entrarás en el interprete de python, por eso recuerda, que para salir del interprete de python, debes hacer control + d.
+    deseeas ejecutar, con lo cual entrarás en el interprete de python, recuerda, que para salir del interprete de python, debes hacer control + d.
 
 Escribir un programa en python:
 
@@ -91,13 +89,14 @@ Uso básico de bash y la terminal:
 
     Nota:
         Si te fijas, a veces se utiliza luego del comando, un guión con una letra que hace que varíe el comportamiento del comando utilizado.
-        Estos son los llamados parámetros y sirven para especificar como debe ejecutarse el comando. Si lees en el manual de linux sobre un determinado
-        comando, verás que parámetros acepta ese comando y para que sirve cada uno de ellos. (Por ejemplo, para ver el manual del comando ls, escribes: man ls).
+        Estos son los llamados parámetros y sirven para especificar como debe ejecutarse el comando.
+        Si lees en el manual de linux sobre un determinado comando, verás que parámetros acepta ese comando y para que sirve cada uno de ellos.
+        (Por ejemplo, para ver el manual del comando ls, escribes: man ls).
 
-    En la terminal, tienes la capacidad de utilizar muchísimos comandos para diferentes cosas, vas a aprenderlos en la medida que investigues y practiques, pero al
-    final solo utilizarás unos pocos comandos, los más necesarios según el uso que hagas de tu máquina. En principio, los más importantes son estos que he detallado
-    ya que son los que te permiten moverte por la estructura de directorios y gestionarlos. Esto te permitirá ejecutar tus programas y con ello aprenderás
-    conceptos que son muy necesarios luego para programar en cualquier lenguaje.
+    En la terminal, tienes la capacidad de utilizar muchísimos comandos para diferentes cosas, vas a aprenderlos en la medida que investigues y
+    practiques, pero al final solo utilizarás unos pocos. Los más necesarios según el uso que hagas de tu máquina.
+    En principio, los más importantes para programar son estos que he detallado ya que son los que te permiten moverte por la estructura de directorios y
+    gestionarlos. Esto te permitirá ejecutar tus programas y con ello aprenderás conceptos que son muy necesarios luego para programar en cualquier lenguaje.
 
 Estructura de Directorios de Linux:
 
@@ -148,11 +147,8 @@ Estructura de Directorios de Linux:
         rm -r NuevoDirectorio o rm -r /home/flavio/NuevoDirectorio
 
 Nota:
-    Como comprenderás esto es muy básico y requiere que investigues y experimentes para luego poder aprender a programar y estas cosas te
-    resulten sencillas y familiares, de modo que debes dedicar algo de tiempo a aprender sobre esto.
-
-    La ayuda de JAMediaEditor trata sobre todo de mostrarte lo básico para que puedas hacerte una idea de que se necesita y como puedes
-    comenzar, pero no profundiza en estos temas dado que explicar cada uno de ellos llevaría mucho tiempo de desarrollo.
+    Como comprenderás esto es muy básico y requiere que investigues y experimentes para que cuando comiences a aprender a programar
+    estas cosas te resulten sencillas y familiares. Debes dedicar algo de tiempo a estos temas antes de continuar.
 
     El objetivo que persigue esta ayuda es indicarte por donde comenzar, pero el esfuerzo por aprender tienes que ponerlo tu.
     Con mucha paciencia:

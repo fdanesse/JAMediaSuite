@@ -26,11 +26,11 @@ from HELPINSTALADORES import get_help
 tag1 = Gtk.TextTag.new("1")
 tag2 = Gtk.TextTag.new("2")
 tag2.set_property("weight", Pango.Weight.BOLD)
-tag2.set_property("background-gdk", Gdk.Color(0, 0, 0))
-tag2.set_property("foreground-gdk", Gdk.Color(65000, 65000, 65000))
+#tag2.set_property("background-gdk", Gdk.Color(0, 0, 0))
+tag2.set_property("foreground-gdk", Gdk.Color(0, 0, 65000))
 tag3 = Gtk.TextTag.new("3")
 tag3.set_property("weight", Pango.Weight.BOLD)
-tag3.set_property("background-gdk", Gdk.Color(60000, 60000, 60000))
+#tag3.set_property("background-gdk", Gdk.Color(60000, 60000, 60000))
 tag4 = Gtk.TextTag.new("4")
 tag4.set_property("foreground-gdk", Gdk.Color(0, 0, 65000))
 tag5 = Gtk.TextTag.new("5")
@@ -42,9 +42,10 @@ def format_PROGRAMAR0(buffer_help, tags_table):
     tags_table.add(tag2)
     tags_table.add(tag3)
     tags_table.add(tag4)
-    tit1 = []
-    tit2 = []
-    code1 = []
+    tit1 = [0, 9, 21, 30, 46, 61, 100, 148]
+    tit2 = [89, 109, 119, 123, 127]
+    code1 = [50, 111, 112, 113, 114, 115, 116, 117, 121, 125, 134, 137, 140,
+        143, 146]
     __apply_tag(buffer_help, 1, tag1)
     for _id in tit1:
         __apply_tag(buffer_help, _id, tag2)
@@ -188,7 +189,7 @@ class HelpWidget(Gtk.EventBox):
     def __init__(self, help):
 
         Gtk.EventBox.__init__(self)
-        print help
+
         tags_table = Gtk.TextTagTable()
         buffer_help = Gtk.TextBuffer.new(tags_table)
         textview = Gtk.TextView()
