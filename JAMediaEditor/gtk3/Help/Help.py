@@ -37,13 +37,42 @@ BASEPATH = os.path.dirname(__file__)
 
 _dict = {
     "Programar Clase 0": os.path.join(BASEPATH, "ProgramarPython", "001.html"),
-    #"help instaladores": format_INSTALADORES,
-    #"help deb": format_DEB,
+    "help instaladores": os.path.join(BASEPATH, "JAMediaEditor", "Instaladores.html"),
+    "help deb": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorDEB.html"),
     #"help rmp": format_RPM,
-    #"help python": format_PYTHON,
-    #"help sin root": format_SINROOT,
-    #"help sugar": format_SUGAR,
+    "help python": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorPYTHON.html"),
+    "help sin root": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorSINROOT.html"),
+    "help sugar": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorSUGAR.html"),
     }
+
+
+def get_separador(draw=False, ancho=0, expand=False):
+    separador = Gtk.SeparatorToolItem()
+    separador.props.draw = draw
+    separador.set_size_request(ancho, -1)
+    separador.set_expand(expand)
+    return separador
+
+
+def get_boton(archivo, flip=False, rotacion=None,
+    pixels=0, tooltip_text=None):
+    if not pixels:
+        pixels = 37
+    boton = Gtk.ToolButton()
+    imagen = Gtk.Image()
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(archivo, pixels, pixels)
+    if flip:
+        pixbuf = pixbuf.flip(True)
+    if rotacion:
+        pixbuf = pixbuf.rotate_simple(rotacion)
+    imagen.set_from_pixbuf(pixbuf)
+    boton.set_icon_widget(imagen)
+    imagen.show()
+    boton.show()
+    if tooltip_text:
+        boton.set_tooltip_text(tooltip_text)
+        boton.TOOLTIP = tooltip_text
+    return boton
 
 
 class Help(Gtk.Window):
@@ -62,29 +91,20 @@ class Help(Gtk.Window):
         self.set_transient_for(self.parent_window)
         self.set_border_width(15)
 
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        image = Gtk.Image()
-        arch = os.path.join(BASEPATH, "Iconos", "einsteintux.png")
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(arch, 100, 100)
-        image.set_from_pixbuf(pixbuf)
-        hbox.pack_start(image, False, False, 0)
-        label = Gtk.Label(u"Sistema de Ayuda de JAMediaEditor")
-        label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
-        label.modify_fg(0, Gdk.Color(0, 0, 65000))
-        hbox.pack_start(label, True, True, 0)
-        vbox.pack_start(hbox, False, False, 0)
-
-        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.toolbar = Toolbar()
         self.helpwidget = HelpWidget()
-        self.vbox.pack_start(self.helpwidget, True, True, 0)
-        vbox.pack_start(self.vbox, True, True, 0)
+
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        vbox.pack_start(self.toolbar, False, False, 0)
+        vbox.pack_start(self.helpwidget, True, True, 0)
 
         self.resize(w / 2, h - 40)
         self.move(w - w / 2, 40)
 
         self.add(vbox)
         self.show_all()
+
+        self.toolbar.connect("zoom", self.helpwidget.zoom)
 
     def set_help(self, texto):
         t = "Cargando . . ."
@@ -106,23 +126,85 @@ class Help(Gtk.Window):
             self.helpwidget.webview.open("")
 
 
-class HelpWidget(Gtk.EventBox):
+class Toolbar(Gtk.EventBox):
 
-    #__gtype_name__ = 'HelpWidget'
+    #__gtype_name__ = 'PygiHackToolbar'
+
+    __gsignals__ = {
+    "zoom": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
         Gtk.EventBox.__init__(self)
 
-        scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        toolbar = Gtk.Toolbar()
+
+        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
+
+        image = Gtk.Image()
+        arch = os.path.join(BASEPATH, "Iconos", "einsteintux.png")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(arch, 100, 100)
+        image.set_from_pixbuf(pixbuf)
+        item = Gtk.ToolItem()
+        item.set_expand(False)
+        item.add(image)
+        toolbar.insert(item, -1)
+
+        label = Gtk.Label(u"Sistema de Ayuda de JAMediaEditor")
+        label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
+        label.modify_fg(0, Gdk.Color(0, 0, 65000))
+        item = Gtk.ToolItem()
+        item.set_expand(True)
+        item.add(label)
+        toolbar.insert(item, -1)
+
+        archivo = os.path.join(BASEPATH, "Iconos", "Zoomout.svg")
+        boton = get_boton(archivo, flip=False, pixels=18,
+            tooltip_text="Alejar")
+        boton.connect("clicked", self.__emit_zoom)
+        toolbar.insert(boton, -1)
+
+        archivo = os.path.join(BASEPATH, "Iconos", "Zoomin.svg")
+        boton = get_boton(archivo, flip=False, pixels=18,
+            tooltip_text="Acercar")
+        boton.connect("clicked", self.__emit_zoom)
+        toolbar.insert(boton, -1)
+
+        self.add(toolbar)
+        self.show_all()
+
+    def __emit_zoom(self, widget):
+        self.emit('zoom', widget.TOOLTIP)
+
+
+class HelpWidget(Gtk.ScrolledWindow):
+
+    #__gtype_name__ = 'HelpWidget'
+
+    def __init__(self):
+
+        Gtk.ScrolledWindow.__init__(self)
+
+        self.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.webview = WebKit.WebView()
         self.webview.set_settings(WebKit.WebSettings())
         self.webview.set_zoom_level(0.8)
-        scroll.add(self.webview)
-
-        self.add(scroll)
+        self.add(self.webview)
         self.show_all()
+
+    def zoom(self, widget, zoom):
+        x = float("{:.2f}".format(self.webview.get_zoom_level()))
+        if zoom == "Alejar":
+            x -= 0.1
+            if x < 0.3:
+                x = 0.3
+        elif zoom == "Acercar":
+            x += 0.1
+            if x > 3.0:
+                x = 3.0
+        self.webview.set_zoom_level(x)
 
 
 class DialogoLoad(Gtk.Dialog):

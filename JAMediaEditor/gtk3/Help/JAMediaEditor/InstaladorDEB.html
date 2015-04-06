@@ -1,0 +1,390 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 4.3.3.2 (Linux)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="2015-04-06T09:37:00.540535354"/>
+	<style type="text/css">
+		@page { margin-left: 1cm; margin-right: 1cm }
+		p { margin-bottom: 0.25cm; color: #000000; line-height: 120% }
+		a:link { so-language: zxx }
+	</style>
+</head>
+<body lang="es-UY" text="#000000" dir="ltr" style="background: transparent">
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000080"><u><font size="4" style="font-size: 14pt"><b>Sistema
+de gestión de paquetes:</b></font></u></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<meta name="created" content="00:00:00"><meta name="changed" content="2015-04-05T13:57:31.719922067"><meta name="created" content="2015-04-05T10:31:12.353267808"><meta name="changed" content="2015-04-05T12:18:00.541923304">Los
+paquetes .deb son instaladores gestionados por el Sistema de gestión
+de paquetes de debian</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+(apt = Advanced Packaging Tool).</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Un sistema de gestión de paquetes, es una colección de herramientas
+que sirven para automatizar el proceso de instalación,
+actualización, configuración y eliminación de paquetes de
+software. El término se usa comúnmente para referirse a los
+gestores de paquetes en sistemas Unix-like, especialmente GNU/Linux,
+ya que se apoyan considerablemente en ellos.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+En estos sistemas, el software se distribuye en forma de paquetes,
+frecuentemente encapsulado en un solo fichero. Estos paquetes
+incluyen otra información importante, además del software en sí,
+como pueden ser el nombre completo, una descripción de su
+funcionalidad, el número de versión, el distribuidor del software,
+la suma de verificación y una lista de otros paquetes requeridos
+para el correcto funcionamiento del software.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Esta metainformación se introduce normalmente en una base de datos
+de paquetes local.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los sistemas de gestión de paquetes tienen la tarea de organizar
+todos los paquetes instalados en el sistema y se encargan de mantener
+su usabilidad.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Esto se consigue combinando las siguientes técnicas:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<ul>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+	Comprobación de la suma de verificación para evitar que haya
+	diferencias entre la versión local de un paquete y la versión
+	oficial.</p>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+	Comprobación de la firma digital.</p>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+	Instalación, actualización y eliminación simple de paquetes.</p>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+	Resolución de dependencias para garantizar que el software funcione
+	correctamente.</p>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+	Búsqueda de actualizaciones para proveer la última versión de un
+	paquete.</p>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+	Agrupamiento de paquetes según su función para evitar la confusión
+	al instalarlos o mantenerlos.</p>
+</ul>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Muchos de los sistemas de gestión de paquetes ampliamente utilizados
+utilizan backends simples para instalar los paquetes. Por ejemplo,
+YUM utiliza RPM y APT utiliza dpkg.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Sistemas basados en paquetes binarios:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+dpkg, usado originalmente por Debian y ahora también por otros
+sistemas, usa el formato .deb y fue el primero en poseer una
+herramienta de resolución de dependencias ampliamente conocida, APT.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000080"><font size="4" style="font-size: 14pt"><u><b>Advanced
+Packaging Tool (apt):</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Es un sistema de gestión de paquetes creado por el proyecto Debian.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+APT simplifica en gran medida la instalación y eliminación de
+programas en los sistemas GNU/Linux.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+No existe un programa apt en sí mismo, sino que APT es una
+biblioteca de funciones C++ que es empleada por varios programas de
+línea de comandos para distribuir paquetes. En especial, apt-get y
+apt-cache.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Existen también programas que proporcionan un frontend para APT,
+generalmente basados en apt-get, como aptitude con una interfaz de
+texto ncurses, Synaptic con una interfaz gráfica GTK+, o Adept con
+una interfaz gráfica Qt.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Existe un repositorio central con más de 25.000 paquetes apt
+utilizados por apt-get y programas derivados para descargar e
+instalar aplicaciones directamente desde Internet, conocida como una
+de las mejores cualidades de Debian.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+APT fue rápidamente utilizado para funcionar con paquetes .deb, en
+los sistemas Debian y distribuciones derivadas, pero desde entonces
+ha sido modificado para trabajar con paquetes RPM, con la herramienta
+apt-rpm, y para funcionar en otros sistemas operativos, como Mac OS X
+y OpenSolaris.</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000080"><font size="4" style="font-size: 14pt"><u><b>Como
+crear un paquete .deb:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Un paquete debian, utiliza:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<ul>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+	Un archivo de control para manejar la información del paquete.</p>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+	Una estructura de directorios con el software a distribuir.</p>
+</ul>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Hagamos un ejemplo práctico:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+En un directorio llamado &quot;Proyecto&quot;, creamos la estructura
+de directorios de instalación del software.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Esta estructura debe replicar la estructura final de instalación de
+nuestro software, de modo que creamos dos directorios, (bin y share).</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Dentro del directorio share, copiamos el directorio que contiene
+nuestro software a instalar.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Dentro del directorio bin, escribimos el lanzador de nuestra
+aplicación, <i>(ver Ayuda sobre &quot;Instaladores en General&quot;)</i>.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Si deseas un lanzador en algún menú del entorno gráfico, dentro de
+share creas el directorio applications y en él escribes tu archivo
+.desktop, <i>(ver Ayuda sobre &quot;Instaladores en General&quot;)</i>.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Además, en el directorio &quot;Proyecto&quot;, debes crear el
+directorio DEBIAN y dentro escribir el archivo control.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>La estructura final de directorios y archivos para el caso de
+JAMediaEditor, será:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">JAMediaEditor</font></p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">DEBIAN</font></p>
+<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">control</font></p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">bin</font></p>
+<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">lanzador</font></p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">share</font></p>
+<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">applications</font></p>
+<p align="justify" style="margin-left: 6.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">jamediaeditor.desktop</font></p>
+<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">JAMediaEditor</font></p>
+<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000099">Todo el código de JAMediaEditor . . .</font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Ejemplo de archivo control:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Package: bichos</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Source: Bichos</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Version: 1</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Section: Game</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Priority: optional</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Architecture: all</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Maintainer: flavio danesse &lt;fdanesse@gmail.com&gt;</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Homepage:
+https://sites.google.com/site/sugaractivities/cucarasims</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Depends:</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Description: Este campo es obligatorio</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">Este campo es obligatorio y debe tener un
+espacio vacío al comienzo</font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Luego de tener toda la estructura de directorios y archivos lista,
+debes asegurarte de dar los permisos de lectura y ejecución
+adecuados a cada archivo y directorio. En particular, todos los
+ejecutables deben tener permisos de ejecución, esto incluye el
+lanzador y el archivo .desktop. Cuando esté todo listo, desde la
+terminal <b>construimos el paquete .deb utilizando dpkg:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="left" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">dpkg -b ./deb
+/directorio_construido_anteriormente
+/directorio_destino_del_paquete_deb/nombre_paquete.deb</font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+El archivo .deb resultante está listo para ser distribuido o
+instalado con el gestor de paquetes. (Recuerda darle permisos de
+ejecución). Bastará con que el usuario haga doble click sobre él,
+para que el gestor de paquetes lo abra y pueda comenzar su
+instalación.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Luego, para desinstalar la aplicación, el usuario debe hacer:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">sudo apt-get remove nombre_de_la_aplicación</font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#000080"><font size="4" style="font-size: 14pt"><u><b>Sobre
+JAMediaEditor:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los paquetes .deb son generalmente muchísimo más complejos que el
+ejemplo explicado aquí, sin embargo,</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+basta con lo demostrado acá para construir un instalador .deb
+funcional.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+A medida que aprendas más sobre instaladores .deb, podrás ir
+mejorando el archivo control e ir incorporando otros archivos que
+suelen utilizarse.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+JAMediaEditor sólo pretende automatizar el proceso para hacer esto
+fácil y tu puedas aprender sobre ello.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los instaladores .deb construidos con JAMediaEditor, si bien son muy
+simples, deben funcionar sin que hagas cambio alguno. Si alguno de
+ellos falla, asegúrate que no se debe a cambios realizados por tí
+en alguno de los archivos involucrados en el proceso.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Una forma de aprender sobre esto, por inmersión, puede ser descargar
+archivos .deb, descomprimirlos y leer los archivos involucrados. Si
+bien un archivo .deb puedes descomprimirlo igual que un zip común,
+lo correcto es hacerlo mediante:</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#990000">dpkg -x paquete.deb directorio</font></p>
+</body>
+</html>
