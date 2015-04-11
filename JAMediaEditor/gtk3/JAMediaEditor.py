@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   JAMediaEditor.py por:
-#       Cristian García     <cristian99garcia@gmail.com>
-#       Ignacio Rodriguez   <nachoel01@gmail.com>
-#       Flavio Danesse      <fdanesse@gmail.com>
+# JAMediaEditor.py por:
+#   Cristian García <cristian99garcia@gmail.com>
+#   Ignacio Rodriguez <nachoel01@gmail.com>
+#   Flavio Danesse <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

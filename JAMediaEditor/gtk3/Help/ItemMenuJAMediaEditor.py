@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # ItemMenuJAMediaEditor.py por:
-#     Flavio Danesse     <fdanesse@gmail.com>
+#   Flavio Danesse <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,16 +36,12 @@ class ItemMenuJAMediaEditor(Gtk.MenuItem):
 
         menu = Gtk.Menu()
 
-        item = Gtk.MenuItem('Modo Normal')
-        #item.connect("activate", self.__emit_accion, "help instaladores")
+        item = Gtk.MenuItem('Uso de JAMediaPyGiHack')
+        item.connect("activate", self.__emit_accion, "JAMediaPyGiHack")
         menu.append(item)
 
         item = Gtk.MenuItem('Modo Proyecto')
-        #item.connect("activate", self.__emit_accion, "help instaladores")
-        menu.append(item)
-
-        item = Gtk.MenuItem('Uso de JAMediaPyGiHack')
-        #item.connect("activate", self.__emit_accion, "help instaladores")
+        item.connect("activate", self.__emit_accion, 'Modo Proyecto')
         menu.append(item)
 
         menu_instaladores = ItemMenuInstaladores()
@@ -100,9 +96,9 @@ class MenuInstaladores(Gtk.Menu):
         item.connect("activate", self.__emit_accion, "help deb")
         self.append(item)
 
-        item = Gtk.MenuItem('Instalador fedora (rmp)')
-        item.connect("activate", self.__emit_accion, "help rmp")
-        self.append(item)
+        #item = Gtk.MenuItem('Instalador fedora (rmp)')
+        #item.connect("activate", self.__emit_accion, "help rmp")
+        #self.append(item)
 
         item = Gtk.MenuItem('Instalador python')
         item.connect("activate", self.__emit_accion, "help python")

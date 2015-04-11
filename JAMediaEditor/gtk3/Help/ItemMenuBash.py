@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# ItemMenuProgramar.py por:
+# ItemMenuBash.py por:
 #     Flavio Danesse     <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and / or modify
@@ -22,7 +22,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 
 
-class ItemMenuProgramar(Gtk.MenuItem):
+class ItemMenuBash(Gtk.MenuItem):
 
     #__gtype_name__ = 'ItemMenuInstaladores'
 
@@ -32,12 +32,12 @@ class ItemMenuProgramar(Gtk.MenuItem):
 
     def __init__(self):
 
-        Gtk.MenuItem.__init__(self, 'Programar en python')
+        Gtk.MenuItem.__init__(self, 'Uso básico de bash')
 
         menu = Gtk.Menu()
 
-        item = Gtk.MenuItem('Clase 0 (Escribir un programa)')
-        item.connect("activate", self.__emit_accion, "Programar Clase 0")
+        item = Gtk.MenuItem('Clase 0')
+        item.connect("activate", self.__emit_accion, "bash Clase 0")
         menu.append(item)
 
         #item = Gtk.MenuItem('Clase 1')

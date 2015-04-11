@@ -11,7 +11,7 @@ PygiHackToolbar, JAMediaEditorInformeWidget, JAMediaEditorDialogoProyecto,
 PygiHackBaseNotebook, PygiHackIntrospectionPanel, PygiHackInfoNotebook,
 JAMediaTerminal2, NoteBookTerminal2, Terminal2, ToolbarTerminal2,
 DialogoFormato2, JAMediaGstreamerPyGiHack, InstaladorDialogoLoad,
-InstaladorDialogoInformar, JAMediaEditorHelp{
+InstaladorDialogoInformar, JAMediaEditorHelp, HelpDialogoLoad{
     background-color: #f0e6aa;
     color: #000000;
 }
@@ -27,7 +27,7 @@ JAMediaEditorScrollPage, JAMediaEditorNotebookInstalador1,
 JAMediaEditorNotebookInstalador2, JAMediaEditorNotebookInstalador3,
 JAMediaEditorNotebookInstalador4,
 JAMediaEditorWidgetIcon, JAMediaEditorPythonWidget, TerminalInstalador,
-JAMediaEditorSugarWidget{
+JAMediaEditorSugarWidget, HelpToolbar{
     background-color: #edf5ff;
     color: #000000;
 }

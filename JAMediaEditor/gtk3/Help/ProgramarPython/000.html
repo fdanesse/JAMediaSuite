@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 4.3.3.2 (Linux)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="2015-04-11T12:28:53.239305280"/>
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2015-04-05T13:56:08.067072852">
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2015-04-05T12:50:09.660753274">
+	<meta name="created" content="2015-04-05T10:31:12.353267808">
+	<meta name="changed" content="2015-04-05T11:38:28.229594070">
+	<style type="text/css">
+		@page { margin-left: 1cm; margin-right: 1cm }
+		p { margin-bottom: 0.25cm; color: #000000; line-height: 120% }
+		a:link { so-language: zxx }
+	</style>
+</head>
+<body lang="es-UY" text="#000000" dir="ltr" style="background: transparent">
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><u><font size="4" style="font-size: 14pt"><b>Programar
+CAP. 0:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Conocimientos previos necesarios: <a href="/~/Documentos/JAMediaSuite/JAMediaEditor/gtk3/Help/bash/000.html">bash</a></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+En este capítulo, se intenta explicar lo básico para que puedas
+comenzar a programar en python.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+La idea es que puedas escribir un pequeño programa en un archivo y
+luego puedas ejecutarlo.</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>¿Qué
+es programar?:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Es hacer una lista de instrucciones que mi computadora debe ejecutar.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Para ello lo que hacemos es escribir esas instrucciones en un archivo
+y luego decirle a la computadora que lea ese archivo y ejecute las
+instrucciones que allí se encuentran escritas.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Pero los programas se escriben en un lenguaje de programación y por
+lo tanto hay que aprender uno de esos lenguajes. En esta ayuda
+aprenderás a programar en python.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los programadores trabajan en editores de código, que en realidad
+son editores de texto con funciones especiales para la tarea que
+deben realizar. <i>JAMediaEditor es un editor de código orientado
+sobre todo a programar en el lenguaje python, pero puedes utilizarlo
+para cualquier otro lenguaje de programación que conozcas.</i></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Los
+Interpretes:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los interpretes son interfases capaces de entender (interpretar),
+determinados lenguajes.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Por ejemplo, bash es el interprete de comandos de GNU/linux. Cuando
+abres la terminal, abres el interprete de bash. Esto quiere decir que
+la terminal responderá a cualquier comando de bash pues sabe
+interpretarlo.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+python es un lenguaje interpretado, por lo tanto, tiene su propio
+interprete.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Si en la terminal escribes python y das enter, entrarás en el
+interprete de python. Te darás cuenta de esto porque el promp
+mostrará los simbolos <font color="#cc0066">&quot;&gt;&gt;&gt;&quot;</font>
+indicandote que espera instrucciones python.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i>Para salir del interprete de python debes hacer <b>control + d</b>.</i></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Más adelante veremos como utilizar el interprete de python
+directamente, ahora nos centraremos en escribir un programa en un
+archivo y ejecutarlo.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los programas python se escriben en archivos de texto con la
+extensión “py” y luego, para ejecutar ese archivo, debes decirle
+al interprete de python que lo haga (<font color="#006699"><i>python
+miarchivo.py</i></font><font color="#000000"><i>).</i></font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i>Es común que cuando estás aprendiendo a programar en python
+intentes ejecutar un archivo y escribas python olvidando poner el
+nombre del archivo que deseas ejecutar, con lo cual entrarás en el
+interprete de python, recuerda entonces, que para salir del
+interprete de python, debes hacer control + d.</i></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Escribir
+un programa en python:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Utilizando JAMediaEditor, en un archivo nuevo, escribe lo
+siguiente:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#cc0066"><i>print(&quot;Hola&quot;)</i></font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Luego guarda ese archivo con el nombre &quot;programa&quot; y la
+extensión &quot;.py&quot; (<font color="#006699"><i>programa.py</i></font>)</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Si ejecutas ese archivo, en la terminal imprimirá &quot;Hola&quot;.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Este podríamos considerarlo como el programa python más básico que
+podemos construir.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+En él se ejecuta la función de python llamada <font color="#cc0066"><i>print</i></font>
+que imprime en pantalla el texto contenido entre paréntesis. Las
+comillas que rodean al texto le indican a python que esos datos son
+de tipo <font color="#cc0066"><i>string</i></font> <i>(cadena de
+caracteres)</i> y deben tomarse textualmente y no como una orden o
+función python.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Sin esas comillas, python trataría de interpretar ese texto como una
+función y dado que <font color="#006699">Hola</font> no es una
+función python, tu programa fallaría, lo cual sería un error.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los errores en los programas se denominan <font color="#cc0066"><i>bugs</i></font>.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los programas son en definitiva una serie de ordenes escritas en un
+archivo.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Cada orden se escribe en un renglón.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+El interprete de python interpreta cada renglón en forma ordenada
+desde arriba hacia abajo.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Cualquier error <i>(bug)</i> que contenga el programa, hará que la
+ejecución del mismo se corte en la linea donde se encuentra el
+error.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Si ejecutas un programa que contiene un error, python detendrá su
+ejecución y te indicará en que línea hay un error y que tipo de
+error es.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Por ejemplo, si mi programa dijera:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#cc0066">print(Hola)</font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>fallaría y en la terminal me aparecería el siguiente mensaje:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#0066cc">File &quot;/home/flavio/Documentos/miprograma.py&quot;,
+line 1, in &lt;module&gt;</font></p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#0066cc">print(Hola)</font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#0066cc">NameError: name 'Hola' is not defined</font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Como no puse comillas alrededor de la palabra Hola, python intenta
+interpretar esa palabra como una función del lenguaje y como Hola no
+existe como tal, mi programa falla, <i>(python no sabe como
+interpretar el dato que le pasamos a la función print).</i></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+De aquí se desprende que python posee funciones propias y a ellas se
+les pasan datos de diferente tipo.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Aprender a programar en python es en definitiva conocer las funciones
+de python y los tipos de datos que cada una de ellas es capaz de
+interpretar y manejar.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Todas las funciones de python son lo que llamamos el API del lenguaje
+y se encuentran documentadas en la página web del lenguaje
+(<a href="https://www.python.org/">https://www.python.org/</a>),
+algunas de esas funciones las iremos explicando poco a poco en esta
+ayuda a medida que las vayamos necesitando para desarrollar los
+diferentes ejemplos planteados.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los tipos de datos que python es capaz de manejar, serán el tema
+central del próximo capítulo de esta ayuda.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Nota:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+El objetivo que persigue esta ayuda es indicarte por donde comenzar,
+pero el esfuerzo por aprender tienes que ponerlo tu. El API de python
+debe ser de consulta permanente para ti. Tendrás que leer y
+experimentar mucho si realmente quieres aprender.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Con mucha paciencia:</b></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i>&quot;Actitud que lleva al ser humano a poder soportar
+contratiempos y dificultades para conseguir algún bien.&quot;
+Proviene del latín pati, que significa sufrir.</i></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i>De hecho el participio patiens se introdujo al castellano como
+paciente (en los hospitales) o &quot;el que sufre&quot;.</i></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Sin paciencia, no aprenderás. Te equivocarás muchas veces antes de
+aprender, eso es lo normal cuando se intenta aprender a programar.</p>
+</body>
+</html>

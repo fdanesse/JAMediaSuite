@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#   Help.py por:
-#       Flavio Danesse      <fdanesse@gmail.com>
+# Help.py por:
+#   Flavio Danesse <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ h = screen.height()
 BASEPATH = os.path.dirname(__file__)
 
 _dict = {
-    "Programar Clase 0": os.path.join(BASEPATH, "ProgramarPython", "001.html"),
+    "bash Clase 0": os.path.join(BASEPATH, "bash", "000.html"),
+    "Programar Clase 0": os.path.join(BASEPATH, "ProgramarPython", "000.html"),
     "help instaladores": os.path.join(BASEPATH, "JAMediaEditor", "Instaladores.html"),
     "help deb": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorDEB.html"),
     #"help rmp": format_RPM,
@@ -128,7 +129,7 @@ class Help(Gtk.Window):
 
 class Toolbar(Gtk.EventBox):
 
-    #__gtype_name__ = 'PygiHackToolbar'
+    __gtype_name__ = 'HelpToolbar'
 
     __gsignals__ = {
     "zoom": (GObject.SIGNAL_RUN_LAST,
@@ -139,9 +140,10 @@ class Toolbar(Gtk.EventBox):
         Gtk.EventBox.__init__(self)
 
         toolbar = Gtk.Toolbar()
+        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#edf5ff'))
 
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
+        #toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
 
         image = Gtk.Image()
         arch = os.path.join(BASEPATH, "Iconos", "einsteintux.png")
@@ -209,7 +211,7 @@ class HelpWidget(Gtk.ScrolledWindow):
 
 class DialogoLoad(Gtk.Dialog):
 
-    #__gtype_name__ = 'DialogoLoad'
+    __gtype_name__ = 'HelpDialogoLoad'
 
     __gsignals__ = {
         "running": (GObject.SIGNAL_RUN_LAST,

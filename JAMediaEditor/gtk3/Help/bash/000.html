@@ -1,0 +1,278 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 4.3.3.2 (Linux)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="2015-04-11T11:18:34.891729567"/>
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2015-04-05T13:56:08.067072852">
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2015-04-05T12:50:09.660753274">
+	<meta name="created" content="2015-04-05T10:31:12.353267808">
+	<meta name="changed" content="2015-04-05T11:38:28.229594070">
+	<style type="text/css">
+		@page { margin-left: 1cm; margin-right: 1cm }
+		p { margin-bottom: 0.25cm; color: #000000; line-height: 120% }
+		a:link { so-language: zxx }
+	</style>
+</head>
+<body lang="es-UY" text="#000000" dir="ltr" style="background: transparent">
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><u><font size="4" style="font-size: 14pt"><b>bash
+CAP. 0:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-weight: normal; line-height: 0.6cm; text-decoration: none">
+<font size="3" style="font-size: 12pt">Antes de comenzar a aprender a
+programar en GNU/linux es necesario que conozcas como se organizan
+los archivos y directorios en el sistema y que aprendas a utilizar la
+terminal. Al menos debes conocer los comandos básicos para poder
+moverte por la estructura de directorios y así poder mover, copiar,
+borrar y ejecutar archivos, crear directorios, etc . . .</font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-weight: normal; line-height: 0.6cm; text-decoration: none">
+<font size="3" style="font-size: 12pt">A continuación se intenta
+explicar como debes hacer para gestionar tus archivos y directorios
+utilizando la terminal, esto será muy importante luego, cuando
+comiences a programar.</font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Estructura
+de Directorios de </b></u></font></font><font color="#006699"><font size="4" style="font-size: 14pt"><u><b>GNU/</b></u></font></font><font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Linux:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+La estructura de directorios de GNU/linux comienza a partir de la
+raíz del sistema &quot;/&quot;.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+A partir de allí, el sistema tiene varios directorios, cada uno de
+ellos almacena información específica para determinadas tareas.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Uno de esos directorios es <font color="#0066cc">/home</font>. En el
+hay un directorio para cada usuario del sistema.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Dentro del directorio de cada usuario, se guardan sus archivos y
+directorios.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Por lo tanto, en mi caso, como mi usuario es <i>&quot;flavio&quot;</i>,
+todos mis archivos se encuentran en <font color="#0066cc">/home/flavio</font>.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+A partir de /home/flavio, encontraré Documentos
+(<font color="#0066cc"><i>/home/flavio/Documentos</i></font>),
+Descargas (<font color="#0066cc"><i>/home/flavio/Descargas</i></font>),
+etc . . .</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>La estructura es así:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><i>/home</i></font></p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><i>/flavio</i></font></p>
+<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><i>/Documentos</i></font></p>
+<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><i>/Descargas</i></font></p>
+<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><i>etc . . .</i></font></p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><i>etc . . .</i></font></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><i>etc . . .</i></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Puedes ver toda la estructura de directorios escribiendo:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699">tree /</font></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>O si quieres verla a partir de determinado Directorio con:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699">tree /home/flavio</font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Nota:</b></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i>tree es un programa, puede que no lo tengas instalado.</i></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-style: normal; line-height: 0.6cm">
+Puedes instalarlo mediante:</p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i><font color="#cc0066">sudo apt-get install tree</font> (en caso de
+tener debian o ubuntu).</i></p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i><font color="#cc0066">sudo yum install tree</font> (en caso de
+tener fedora).</i></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>La
+terminal:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Es una interfase del sistema operativo GNU/Linux que nos permite
+utilizar el interprete de comandos llamado bash (bourne-again shell).</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+El interprete de comandos lo que hace es ejecutar tareas del sistema
+operativo según los comandos que el usuario escribe en la terminal.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+bash cuenta con un manual donde explica el uso de cada comando.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Puedes consultar lo que hace cada comando escribiendo man y el nombre
+del comando (man de manual y el comando a consultar).</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Bash es el interprete de comandos de linux. Cuando abres la terminal,
+abres el interprete de bash.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Esto quiere decir que la terminal responderá a cualquier comando de
+bash pues sabe interpretarlo.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Nota:</b></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i>Si tu máquina no tiene el manual de bash, tendrás consultarlo en
+internet.</i></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Uso
+básico de bash y la terminal:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Cuando abres la terminal, ella se posiciona en el home de tu usuario.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Por ejemplo, en mi caso, mi usuario se llama &quot;flavio&quot;, por
+lo tanto, al abrir la terminal, ella se posicionará en <font color="#cc0066"><i>/home/flavio</i></font>.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Comandos básicos de bash:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>ls</b> = Lista el contenido del directorio donde estamos parados.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>ls -a</b> = Lista todo el contenido del directorio, incluso los
+archivos y directorios ocultos.</p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i>(Los archivos y directorios ocultos son los que comienzan con un
+punto).</i></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>ls -l</b> = Lista el contenido, mostrando los permisos de cada
+archivo y directoro.</p>
+<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i>(Tambien puedes combinar los parámetros, por ejemplo, puedes
+hacer ls -la).</i></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>cd /directoriodestino</b> = Te lleva a un determinado directorio.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>cd ..</b> = Sube un nivel en la jerarquía de directorios.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>cd</b> = Te lleva al directorio home.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>pwd</b> = Te muestra el directorio en que te encuentras.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>rm archivo</b> = Borra un archivo.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>rm -r directorio</b> = Borra un directorio y todo su contenido.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>cp archivo-origen directorio-destino </b>= Copia un archivo en un
+determinado directorio.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>cp -r directorio-origen directorio-destino</b> = Copia un
+directorio y todo su contenido en el directorio destino.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>mv archivo-origen directorio-destino</b> = Mueve un archivo a un
+determinado directorio.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>mkdir nombre-directorio</b> = Crea un Directorio con un
+determinado nombre.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>chmod archivo permisos</b> = Cambia los permisos de archivos y
+directorios.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>chown grupo:propietario archivo</b> = Cambia el grupo de usuario y
+el propietario de un archivo o directorio.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Nota:</b></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Si te fijas, a veces se utiliza luego del comando, un guión con una
+letra que hace que varíe el comportamiento del comando utilizado.
+Estos son los llamados parámetros y sirven para especificar como
+debe ejecutarse el comando.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Si lees en el manual de linux sobre un determinado comando, verás
+que parámetros acepta ese comando y para que sirve cada uno de
+ellos. (Por ejemplo, para ver el manual del comando ls, escribes: <font color="#cc0066"><i>man
+ls</i></font>).</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+En la terminal, tienes la capacidad de utilizar muchísimos comandos
+para diferentes cosas, vas a aprenderlos en la medida que investigues
+y practiques, pero al final solo utilizarás unos pocos. Los más
+necesarios según el uso cotidiano que hagas de tu máquina. En
+principio, los más importantes para programar son estos que he
+detallado ya que son los que te permiten moverte por la estructura de
+directorios y gestionarlos. Esto te permitirá ejecutar tus programas
+y con ello aprenderás conceptos que son muy necesarios luego para
+programar en cualquier lenguaje.</p>
+</body>
+</html>
