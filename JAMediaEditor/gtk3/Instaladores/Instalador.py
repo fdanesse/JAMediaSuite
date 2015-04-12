@@ -45,7 +45,8 @@ class Instalador(Gtk.Window):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
 
     def __init__(self, parent_window, path):
 
@@ -76,8 +77,8 @@ class Instalador(Gtk.Window):
         self.menu.connect("accion-menu", self.__accion_menu)
         self.menu.connect("help", self.__emit_help)
 
-    def __emit_help(self, widget, text):
-        self.emit("help", text)
+    def __emit_help(self, widget, text, titulo):
+        self.emit("help", text, titulo)
 
     def __accion_menu(self, widget, texto):
         child = self.vbox.get_children()[-1]

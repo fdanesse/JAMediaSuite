@@ -28,7 +28,8 @@ class ItemMenuProgramar(Gtk.MenuItem):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -60,4 +61,4 @@ class ItemMenuProgramar(Gtk.MenuItem):
         self.show_all()
 
     def __emit_accion(self, widget, text):
-        self.emit("help", text)
+        self.emit("help", text, widget.get_label())

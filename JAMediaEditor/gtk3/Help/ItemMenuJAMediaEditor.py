@@ -28,7 +28,8 @@ class ItemMenuJAMediaEditor(Gtk.MenuItem):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -37,11 +38,13 @@ class ItemMenuJAMediaEditor(Gtk.MenuItem):
         menu = Gtk.Menu()
 
         item = Gtk.MenuItem('Uso de JAMediaPyGiHack')
-        item.connect("activate", self.__emit_accion, "JAMediaPyGiHack")
+        item.connect("activate", self.__emit_accion,
+            "JAMediaPyGiHack", item.get_label())
         menu.append(item)
 
         item = Gtk.MenuItem('Modo Proyecto')
-        item.connect("activate", self.__emit_accion, 'Modo Proyecto')
+        item.connect("activate", self.__emit_accion,
+            'Modo Proyecto', item.get_label())
         menu.append(item)
 
         menu_instaladores = ItemMenuInstaladores()
@@ -51,8 +54,8 @@ class ItemMenuJAMediaEditor(Gtk.MenuItem):
         self.set_submenu(menu)
         self.show_all()
 
-    def __emit_accion(self, widget, text):
-        self.emit("help", text)
+    def __emit_accion(self, widget, text, titulo):
+        self.emit("help", text, titulo)
 
 
 class ItemMenuInstaladores(Gtk.MenuItem):
@@ -61,7 +64,8 @@ class ItemMenuInstaladores(Gtk.MenuItem):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -72,8 +76,8 @@ class ItemMenuInstaladores(Gtk.MenuItem):
         self.set_submenu(menu_instaladores)
         self.show_all()
 
-    def __emit_accion(self, widget, text):
-        self.emit("help", text)
+    def __emit_accion(self, widget, text, titulo):
+        self.emit("help", text, titulo)
 
 
 class MenuInstaladores(Gtk.Menu):
@@ -82,7 +86,8 @@ class MenuInstaladores(Gtk.Menu):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -115,4 +120,4 @@ class MenuInstaladores(Gtk.Menu):
         self.show_all()
 
     def __emit_accion(self, widget, text):
-        self.emit("help", text)
+        self.emit("help", text, widget.get_label())

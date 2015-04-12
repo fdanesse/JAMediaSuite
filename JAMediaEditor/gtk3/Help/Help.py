@@ -80,7 +80,7 @@ class Help(Gtk.Window):
 
     __gtype_name__ = 'JAMediaEditorHelp'
 
-    def __init__(self, parent_window):
+    def __init__(self, parent_window, titulo):
 
         Gtk.Window.__init__(self)
 
@@ -92,7 +92,7 @@ class Help(Gtk.Window):
         self.set_transient_for(self.parent_window)
         self.set_border_width(15)
 
-        self.toolbar = Toolbar()
+        self.toolbar = Toolbar(titulo)
         self.helpwidget = HelpWidget()
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -135,7 +135,7 @@ class Toolbar(Gtk.EventBox):
     "zoom": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
-    def __init__(self):
+    def __init__(self, titulo):
 
         Gtk.EventBox.__init__(self)
 
@@ -154,7 +154,7 @@ class Toolbar(Gtk.EventBox):
         item.add(image)
         toolbar.insert(item, -1)
 
-        label = Gtk.Label(u"Sistema de Ayuda de JAMediaEditor")
+        label = Gtk.Label(titulo)
         label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
         label.modify_fg(0, Gdk.Color(0, 0, 65000))
         item = Gtk.ToolItem()

@@ -55,7 +55,7 @@ class BasePanel(Gtk.Paned):
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_BOOLEAN)),
     'help': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, GObject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -277,8 +277,8 @@ class BasePanel(Gtk.Paned):
         self.instalador = Instalador(self.get_toplevel(), path)
         self.instalador.connect("help", self.__emit_help)
 
-    def __emit_help(self, widget, text):
-        self.emit("help", text)
+    def __emit_help(self, widget, text, titulo):
+        self.emit("help", text, titulo)
 
     def cerrar_proyecto(self):
         if not self.proyecto:

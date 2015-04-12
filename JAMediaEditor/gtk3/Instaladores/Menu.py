@@ -30,7 +30,8 @@ class Menu(Gtk.MenuBar):
     'accion-menu': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
     'help': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
 
     def __init__(self):
 
@@ -93,7 +94,7 @@ class Menu(Gtk.MenuBar):
         self.show_all()
 
     def __emit_help(self, widget, text):
-        self.emit("help", text)
+        self.emit("help", text, widget.get_label())
 
     def __emit_accion(self, widget, text):
         self.emit("accion-menu", text)

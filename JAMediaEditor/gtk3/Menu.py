@@ -53,7 +53,8 @@ class Menu(Gtk.MenuBar):
     'run_jamediapygihack': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, []),
     'help': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
 
     def __init__(self, accel_group):
 
@@ -335,26 +336,26 @@ class Menu(Gtk.MenuBar):
         item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
-        item = Gtk.MenuItem('Programar en pygame')
+        #item = Gtk.MenuItem('Programar en pygame')
         #item.connect("activate", self.__emit_accion, "help instaladores")
-        menu_ayuda.append(item)
+        #menu_ayuda.append(item)
 
-        item = Gtk.MenuItem('Programar en gtk')
+        #item = Gtk.MenuItem('Programar en gtk')
         #item.connect("activate", self.__emit_accion, "help instaladores")
-        menu_ayuda.append(item)
+        #menu_ayuda.append(item)
 
-        item = Gtk.MenuItem('Programar en gtk y gstreamer')
+        #item = Gtk.MenuItem('Programar en gtk y gstreamer')
         #item.connect("activate", self.__emit_accion, "help instaladores")
-        menu_ayuda.append(item)
+        #menu_ayuda.append(item)
 
-        item = Gtk.MenuItem('Utilizar git')
+        #item = Gtk.MenuItem('Utilizar git')
         #item.connect("activate", self.__emit_accion, "help instaladores")
-        menu_ayuda.append(item)
+        #menu_ayuda.append(item)
 
         self.show_all()
 
-    def __emit_help(self, widget, text):
-        self.emit("help", text)
+    def __emit_help(self, widget, text, titulo):
+        self.emit("help", text, titulo)
 
     def __emit_run_jamediapygihack(self, widget):
         self.emit('run_jamediapygihack')

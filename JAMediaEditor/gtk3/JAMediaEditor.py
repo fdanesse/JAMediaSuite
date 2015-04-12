@@ -125,10 +125,10 @@ class JAMediaEditor(Gtk.Window):
         # FIXME: Agregar informe de utilizacion de recursos
         print "JAMediaEditor:", os.getpid()
 
-    def __run_help(self, widget, texto):
+    def __run_help(self, widget, texto, titulo):
         if self.help:
             self.help.destroy()
-        self.help = Help(self)
+        self.help = Help(self, titulo)
         self.help.set_help(texto)
         if self.base_panel.instalador:
             self.help.move(0, 40)
