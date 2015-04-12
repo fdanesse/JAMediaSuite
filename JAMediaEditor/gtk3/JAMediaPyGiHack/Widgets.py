@@ -64,7 +64,8 @@ class Toolbar(Gtk.EventBox):
         toolbar = Gtk.Toolbar()
 
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
+        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#f0e6aa'))
+        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
 
         item = Gtk.ToolItem()
         item.set_expand(False)
@@ -155,6 +156,7 @@ class ToolbarTry(Gtk.EventBox):
         toolbar = Gtk.Toolbar()
 
         toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
+        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
         toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
 
         item = Gtk.ToolItem()
