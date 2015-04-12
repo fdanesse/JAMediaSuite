@@ -37,6 +37,7 @@ BASEPATH = os.path.dirname(__file__)
 
 _dict = {
     "bash Clase 0": os.path.join(BASEPATH, "bash", "000.html"),
+    "bash Clase 1": os.path.join(BASEPATH, "bash", "001.html"),
     "Programar Clase 0": os.path.join(BASEPATH, "ProgramarPython", "000.html"),
     "help instaladores": os.path.join(BASEPATH, "JAMediaEditor", "Instaladores.html"),
     "help deb": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorDEB.html"),

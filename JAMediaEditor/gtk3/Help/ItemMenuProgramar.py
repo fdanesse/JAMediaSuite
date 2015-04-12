@@ -37,7 +37,7 @@ class ItemMenuProgramar(Gtk.MenuItem):
 
         menu = Gtk.Menu()
 
-        item = Gtk.MenuItem('Clase 0 (Escribir un programa)')
+        item = Gtk.MenuItem('python (Escribir un programa)')
         item.connect("activate", self.__emit_accion, "Programar Clase 0")
         menu.append(item)
 

@@ -37,13 +37,13 @@ class ItemMenuBash(Gtk.MenuItem):
 
         menu = Gtk.Menu()
 
-        item = Gtk.MenuItem('Clase 0 (Directorios y Archivos)')
+        item = Gtk.MenuItem('Bash (Directorios y Archivos)')
         item.connect("activate", self.__emit_accion, "bash Clase 0")
         menu.append(item)
 
-        #item = Gtk.MenuItem('Clase 1')
-        #item.connect("activate", self.__emit_accion, "Programar Clase 1")
-        #menu.append(item)
+        item = Gtk.MenuItem('Bash (Permisos de archivos y directorios)')
+        item.connect("activate", self.__emit_accion, "bash Clase 1")
+        menu.append(item)
 
         #item = Gtk.MenuItem('Clase 2')
         #item.connect("activate", self.__emit_accion, "Programar Clase 2")
