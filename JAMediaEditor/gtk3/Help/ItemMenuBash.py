@@ -36,7 +36,7 @@ class ItemMenuBash(Gtk.MenuItem):
 
         menu = Gtk.Menu()
 
-        item = Gtk.MenuItem('Clase 0')
+        item = Gtk.MenuItem('Clase 0 (Directorios y Archivos)')
         item.connect("activate", self.__emit_accion, "bash Clase 0")
         menu.append(item)
 
