@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 
@@ -62,6 +63,7 @@ class WidgetIcon(Gtk.Frame):
         self.proyecto_path = proyecto_path
 
         toolbar = Gtk.Toolbar()
+        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#edf5ff'))
 
         self.image = Gtk.Image()
         self.image.set_size_request(50, 50)
