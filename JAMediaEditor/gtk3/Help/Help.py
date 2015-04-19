@@ -87,7 +87,7 @@ class Help(Gtk.Window):
 
         self.parent_window = parent_window
 
-        self.set_title("Help de JAMediaEditor")
+        self.set_title("Ayuda de JAMediaEditor")
         self.set_icon_from_file(
             os.path.join(BASEPATH, "Iconos", "einsteintux.png"))
         self.set_transient_for(self.parent_window)

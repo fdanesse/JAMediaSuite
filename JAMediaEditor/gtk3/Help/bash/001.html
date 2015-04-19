@@ -5,7 +5,11 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 4.3.3.2 (Linux)"/>
 	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2015-04-12T20:29:01.154543545"/>
+	<meta name="changed" content="2015-04-16T18:39:23.906004273"/>
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2015-04-15T19:13:08.799831485">
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2015-04-12T20:29:01.154543545">
 	<meta name="created" content="00:00:00">
 	<meta name="changed" content="2015-04-12T12:06:30.432461483">
 	<meta name="created" content="00:00:00">
@@ -30,21 +34,451 @@ CAP. 1:</b></u></font></font></p>
 <br/>
 
 </p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-weight: normal; line-height: 0.6cm; text-decoration: none">
-<font size="3" style="font-size: 12pt">Antes de comenzar a aprender a
-programar en GNU/linux es necesario que conozcas como se organizan
-los archivos y directorios en el sistema y que aprendas a utilizar la
-terminal. Al menos debes conocer los comandos básicos para poder
-moverte por la estructura de directorios y así poder mover, copiar,
-borrar y ejecutar archivos, crear directorios, etc . . .</font></p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-weight: normal; line-height: 0.6cm; text-decoration: none">
-<font size="3" style="font-size: 12pt">A continuación se intenta
-explicar como debes hacer para gestionar tus archivos y directorios
-utilizando la terminal, esto será muy importante luego, cuando
-comiences a programar.</font></p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; font-style: normal; line-height: 0.6cm">
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Usuarios
+y grupos de usuarios:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
 <br/>
 
 </p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Para linux es muy importante la seguridad de la información de sus
+<b>usuarios</b>.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Para preservar esa información, linux utiliza un sistema de permisos
+y privilegios que pueden definirse o asignarse a algunos usuarios y
+quitarse o restringirse a otros.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+De este modo se evita que un usuario elimine o modifique la
+información de otro.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Por eso en la estructura de directorios hay un directorio para cada
+usuario y cada usuario solo puede modificar la estructura de
+directorios y archivos a partir de allí <i>(de su directorio home)</i>.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Además, linux también gestiona <b>grupos de usuarios</b> y permite
+definir o asignar y quitar o restringir permisos para cada grupo de
+usuarios. Esto da la posibilidad de configurar la seguridad de cada
+archivo, directorio o incluso servicios, aplicaciones y dispositivos
+en dos niveles, es decir, para cada usuario en particular y para cada
+grupo de usuarios.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Básicamente, en linux podemos determinar quien puede hacer
+determinadas cosas y quien no.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Por eso linux nunca va a permitir que inicies sesión sin
+identificarte con un nombre de usuario existente en el sistema y su
+clave específica.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Bien, pero: ¿quien es capaz de restringir el acceso y los permisos a
+los usuarios de linux?</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Queda claro que esto puede hacerlo otro usuario que tenga permiso
+para hacer estas modificaciones.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+En linux existe por defecto un superusuario llamado “<b>root</b>”,
+que es quien tiene todos los permisos sobre el sistema y es capaz de
+hacer lo que desee, es el administrador del sistema.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Como este usuario tiene acceso a todo el sistema, puede otorgar y
+quitar permisos a otros usuarios, modificar sus archivos, etc . . .</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Nota:</b></p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Los administradores de sistemas, trabajan en esta área de la
+informática, asignando y restringiendo permisos a los usuarios,
+respaldando información, instalando y configurando aplicaciones y
+servicios, etc . . .</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Requiere mucho conocimiento de bash pues utilizando scripts en este
+lenguaje pueden hacer cosas como por ejemplo: restringir el acceso a
+internet en determinadas horas para ciertos usuarios o grupos de
+usuarios, hacer que las máquinas auto respalden la información, se
+apaguen solas, se prendan, etc . . . En fin, muchas cosas dependiendo
+de su conocimiento de bash y de las necesidades de los sistemas y
+usuarios que administren.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Usuarios
+y propietarios de la información:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Para linux es muy importante saber quien es el propietario de la
+información, por eso, quien crea un archivo o un directorio además
+de ser usuario de esa información, es el propietario de la misma y
+por lo tanto, puede restringir el acceso a ella a cualquier otro
+usuario <span style="font-variant: normal"><span style="font-style: normal">que
+tenga menos o iguales permisos que él, </span></span><i>(el root
+siempre tendrá acceso a esa información).</i></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+De modo que cada archivo o directorio, tiene como propiedades que
+afectan a la seguridad de la información que contienen: el <b>usuario
+propietario</b>, el <b>grupo de usuarios al que pertenece el
+propietario</b>, los <b>permisos de acceso que tienen ambos</b>, <i>(por
+separado)</i> y los <b>permisos que tiene cualquier otro usuario que
+no pertenezca al grupo de usuarios al que pertenece el propietario</b>.</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Para explicar mejor esto pongamos un ejemplo:</b></p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Supongamos que trabajas en una empresa como cajero y en tu sistema
+eres el usuario “cajero1”.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Seguramente el administrador del sistema habrá creado un grupo de
+usuarios llamado “cajeros” y habrá agregado tu usuario a ese
+grupo.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+El administrador habrá definido ciertos permisos para el grupo de
+usuarios “cajeros”.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Esos permisos son comunes a todos los miembros de ese grupo, por lo
+tanto tu usuario tiene todos los permisos asignados al grupo
+“cajeros”.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+Cuando tu creas un archivo o un directorio, eres el propietario de
+esa información y por lo tanto, puedes redefinir los permisos que le
+das a los otros usuarios de tu grupo sobre esa información, y
+también puedes redefinir los permisos sobre esa información para
+cualquier otro usuario que no pertenezca a tu grupo.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<i>(Por defecto, los miembros de tu mismo grupo, no pueden modificar
+tu información, pero tu puedes darle permiso para hacerlo,
+obviamente, también puede hacerlo el root del sistema, incluso puede
+quitarte la propiedad sobre esa información).</i></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Permisos
+de archivos y directorios:</b></u></font></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<b>Tres son los permisos que un determinado usuario puede tener sobre
+un archivo, ellos son:</b></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<ul>
+	<ul>
+		<ul>
+			<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+			De lectura (se representa con la letra <font color="#006699">r</font>
+			<i>por read</i>).</p>
+			<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+			De Escritura (se representa con la letra <font color="#006699">w
+			</font><i>por write</i>).</p>
+			<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+			De Ejecución (se representa con la letra <font color="#006699">x</font>
+			<i>por execute</i>).</p>
+		</ul>
+	</ul>
+</ul>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm">Ejecutando “<font color="#990066">ls
+-l</font>” veremos como por cada archivo y directorio contenido en
+el directorio donde estemos, aparece una línea parecida a la
+siguiente:</p>
+<p style="margin-left: 1.25cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 2.5cm"><font color="#006699">-rwxr-xr-x 1
+user1 grupo1 128931 Feb 19 2000 gpl.txt</font></p>
+<p style="margin-left: 2.5cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm">Los primeros diez caracteres
+<i>(empezando por la izquierda)</i> nos indican los permisos del
+archivo o directorio de la siguiente forma:<br><br><b>Caracter</b> <b>1:</b></p>
+<p style="margin-left: 1.25cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 2.5cm">Nos indica si es un archivo o un
+directorio. En caso de ser un archivo aparece el caracter “-”,
+mientras que para los directorios aparece una “d”. También puede
+darse el caso de que sea un link, <i>(acceso directo)</i>, “l”.</p>
+<p style="margin-left: 2.5cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm"><b>Caracteres 2, 3 y 4:</b></p>
+<p style="margin-left: 1.25cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 2.5cm">Nos indican, respectivamente, los
+permisos de lectura, escritura y ejecución para el propietario del
+archivo. En caso de no tener el permiso correspondiente activado
+encontramos el caracter “-” y sino “r”, “w” o “x”
+según si se le permite leer (Read), escribir (Write) o ejecutar
+(eXecute).</p>
+<p style="margin-left: 2.5cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm"><b>Caracteres 5, 6 y 7:</b></p>
+<p style="margin-left: 1.25cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 2.5cm">Representan lo mismo que los tres
+anteriores, pero para todos los miembros del grupo de usuarios al que
+pertenece el propietario del archivo o directorio. <i>En el 7°
+carácter, además, podemos encontrarnos una “s”, que nos indica
+si el archivo es de tipo SetUserId, que quiere decir que al
+ejecutarlo obtendrá los permisos del propietario del archivo. Si
+sólo tiene el permiso “x”, cuando el programa se ejecuta lo hace
+con los permisos de quién lo haya lanzado.</i></p>
+<p><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm"><b>Caracteres 8, 9 y 10:</b></p>
+<p style="margin-left: 1.25cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 2.5cm">Representan lo mismo que los tres
+anteriores pero, para cualquier usuario que no sea miembro del grupo
+de usuarios al que pertenece el propietario del archivo o directorio.
+<i>En el 10° caracter, además, podemos encontrarnos una “s”,
+que nos indica si el archivo es de tipo SetUserId, que quiere decir
+que al ejecutarlo obtendrá los permisos del propietario del archivo.
+Si sólo tiene el permiso “x”, cuando el programa se ejecuta lo
+hace con los permisos de quién lo haya lanzado.</i></p>
+<p style="margin-left: 2.5cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm"><b>Nota:</b></p>
+<p style="margin-left: 2.5cm">Si te fijas, la opción “s” en los
+permisos de ejecución dice que cuando se ejecuta un archivo con este
+permiso de ejecución, se lo ejecuta con los permisos del
+propietario.</p>
+<p style="margin-left: 2.5cm">En este caso se habla de los permisos
+sobre el sistema en general, por ejemplo: puede que el archivo
+ejecutado sea un script bash que acceda a una determinada unidad de
+almacenamiento para almacenar o leer información al cual solo tiene
+acceso el propietario del script.</p>
+<p style="margin-left: 2.5cm">Si el script tuviera definido el
+permiso de ejecución con “x” para todos los usuarios del
+sistema, aun así, solo el propietario lograría que el script
+funcione ya que solo él tiene permiso de acceso a la unidad de
+almacenamiento a la cual desea acceder el código dentro del script.</p>
+<p style="margin-left: 2.5cm">Que tengas permiso de ejecución sobre
+un archivo no implica que tengas permiso para hacer lo que diga el
+código escrito en ese archivo.</p>
+<p style="margin-left: 2.5cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm"><b>Volviendo al ejemplo:</b></p>
+<p style="margin-left: 2.5cm"><font color="#006699">-rwxr-xr-x 1
+user1 grupo1 128931 Feb 19 2000 gpl.txt</font></p>
+<p style="margin-left: 2.5cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm">Después del 10° caracter encontramos
+un número que nos indica el número de enlaces fuertes que tiene el
+fichero <i>(esto lo veremos más adelante)</i>.</p>
+<p style="margin-left: 1.25cm">Para los directorios, este número
+indica cuántos directorios hay dentro de él, además de los enlaces
+fuertes que tiene <i>(cuando no hay ninguno, el número es 2 debido a
+la gestión interna del sistema Operativo).</i></p>
+<p style="margin-left: 1.25cm">A continuación vemos el propietario y
+el grupo del archivo, seguido del tamaño <i>(en bytes)</i> y la
+fecha de la ultima modificación. <i>En todos los archivos</i> <i>se
+guarda su fecha de creación, último acceso y modificación, datos
+que</i> <i>podemos manipular con el comando </i><font color="#800000"><i>touch</i></font><i>.</i></p>
+<p style="margin-left: 1.25cm">Al final está el nombre del archivo.<br><br/>
+<br/>
+
+</p>
+<p><font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Numeración
+binaria</b></u></font></font><font color="#006699"><font size="4" style="font-size: 14pt"><u><b>:</b></u></font></font></p>
+<p><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm; font-style: normal; font-weight: normal; text-decoration: none">
+<font size="3" style="font-size: 12pt">Para poder comprender como se
+modifican los permisos sobre un archivo, es necesario que comprendas
+la numeración binaria. Estamos acostumbrados a utilizar la
+numeración decimal donde las características fundamentales de este
+sistema de numeración son las siguientes:</font></p>
+<p style="margin-left: 1.25cm; font-style: normal; font-weight: normal; text-decoration: none">
+<br/>
+<br/>
+
+</p>
+<ul>
+	<li/>
+<p style="font-style: normal; font-weight: normal; text-decoration: none">
+	<font size="3" style="font-size: 12pt">Todos los números se
+	representan con diez caracteres (0 a 9).</font></p>
+	<li/>
+<p style="font-style: normal; font-weight: normal; text-decoration: none">
+	<font size="3" style="font-size: 12pt">la posición de cada caracter
+	vale diez veces lo que vale el carácter a su derecha.</font></p>
+</ul>
+<p style="font-style: normal; font-weight: normal; text-decoration: none">
+<br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm; font-style: normal; text-decoration: none">
+<font size="3" style="font-size: 12pt"><b>por ejemplo:</b></font></p>
+<p style="margin-left: 2.5cm; font-style: normal; text-decoration: none">
+<font size="3" style="font-size: 12pt"><span style="font-weight: normal">Si
+ al decimal 10, le agrego otro caracter 0, </span><span style="font-weight: normal">el</span><span style="font-weight: normal">
+valor </span><span style="font-weight: normal">del uno </span><span style="font-weight: normal">aumenta
+en 10 y se convierte en 100 </span><i><span style="font-weight: normal">(10
+* 10 = 100 y 100 / 10 = 10).</span></i></font></p>
+<p style="margin-left: 1.25cm; font-style: normal; font-weight: normal; text-decoration: none">
+<br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm; font-style: normal; font-weight: normal; text-decoration: none">
+<font size="3" style="font-size: 12pt">En la numeración binaria
+ocurre lo mismo solo que en base 2 por eso se llama binario.</font></p>
+<p style="margin-left: 1.25cm; font-style: normal; font-weight: normal; text-decoration: none">
+<font size="3" style="font-size: 12pt">Es decir que en la numeración
+binaria:</font></p>
+<p style="margin-left: 1.25cm; font-style: normal; font-weight: normal; text-decoration: none">
+<br/>
+<br/>
+
+</p>
+<ul>
+	<li/>
+<p style="font-style: normal; font-weight: normal; text-decoration: none">
+	<font size="3" style="font-size: 12pt">Todos los números se
+	representan con dos caracteres (0 a 1).</font></p>
+	<li/>
+<p style="font-style: normal; font-weight: normal; text-decoration: none">
+	<font size="3" style="font-size: 12pt">Los caracteres valen dos
+	veces lo que vale el carácter a su derecha.</font></p>
+</ul>
+<p style="margin-left: 1.25cm; font-style: normal; font-weight: normal; text-decoration: none">
+<br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm; font-style: normal; font-weight: normal; text-decoration: none">
+<font size="3" style="font-size: 12pt">En binario, el número 10
+equivale al 2 decimal.</font></p>
+<p style="margin-left: 1.25cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm"><br/>
+<br/>
+
+</p>
+<p><font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Modificar
+los permisos sobre</b></u></font></font><font color="#006699"><font size="4" style="font-size: 14pt"><u><b>
+archivos y directorios:</b></u></font></font></p>
+<p><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm">Para cambiar los permisos de un
+determinado archivo o directorio debemos utilizar el comando <font color="#800000">chmod</font>.
+Podemos utilizar este comando de varias formas, pero las dos más
+frecuentes son las siguientes:</p>
+<p style="margin-left: 1.25cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm"><b>La primera forma es del estilo:</b></p>
+<p style="margin-left: 2.5cm"><font color="#800000">chmod xxx
+nombreArchivo</font></p>
+<p style="margin-left: 2.5cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm">Las “x” deben ser tres números
+entre 0 y 7 y representarán los niveles de permisos sobre el archivo
+o directorio en cuestión. De esos tres números, el primero indica
+los permisos que queremos establecer para el propietario, el segundo
+para el grupo de usuarios al que pertenece el propietario y el
+tercero para todos los demás usuarios del sistema. <i>(Cada número
+de estos tres, es la representación decimal de un número binario de
+3 bites. Es decir, el número binario máximo formado por tres bites
+es: 111, eso en decimales es 4+2+1 = 7).</i></p>
+<p style="margin-left: 1.25cm"><br/>
+<br/>
+
+</p>
+<p style="margin-left: 1.25cm"><b>Expliquemos mejor esto:</b></p>
+<p style="margin-left: 2.5cm">Dijimos que los permisos de un archivo
+o directorio son una secuencia de 9 caracteres agrupados de a 3. Los
+3 primeros son los permisos del propietario, los 3 siguientes del
+grupo de usuarios al que pertenece el propietario y los últimos 3
+son los de todos los demás usuarios del sistema.</p>
+<p style="margin-left: 2.5cm">Cada grupo de 3 caracteres, representa
+los permisos de lectura, escritura y ejecución respectivamente. De
+modo que para establecer todos los permisos sobre un archivo, se debe
+pasar el binario 111 o sea el decimal 7 <i>(4+2+1). </i><span style="font-style: normal">Para
+quitarle todos los permisos tendríamos que pasar el binario 000 o
+sea el decimal 0</span><i> (0+0+0). </i><i>(111 significa: permisos
+de lectura encendido, permisos de escritura encendido y permisos de
+ejecución encendido).</i></p>
+<p style="margin-left: 2.5cm"><i>De forma que para activar todos los
+permisos sobre un archivo y para todos los usuarios del sistema, se
+le debe pasar el decimal 777.</i></p>
+<p style="margin-left: 2.5cm"><i>7 para el propietario, 7 para el
+grupo de usuarios al que pertenece el propietario y 7 para cualquier
+otro usuario. (</i><font color="#800000"><i>Decimales = 7 7 7</i></font><i>
+= </i><font color="#006699"><i>binarios 111 111 111</i></font><i> =
+</i><font color="#800000"><i>permisos = rwx rwx rwx</i></font><font color="#000000"><i>).</i></font></p>
 </body>
 </html>
