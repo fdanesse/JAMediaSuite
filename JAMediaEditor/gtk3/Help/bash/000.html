@@ -3,9 +3,15 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<title></title>
-	<meta name="generator" content="LibreOffice 4.3.3.2 (Linux)"/>
+	<meta name="generator" content="LibreOffice 4.3.7.2 (Linux)"/>
 	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2015-04-15T18:43:41.451767125"/>
+	<meta name="changed" content="2015-04-30T18:43:11.832229158"/>
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2015-04-27T12:31:39.039855849">
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2015-04-27T12:23:16.979975171">
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2015-04-15T18:43:41.451767125">
 	<meta name="created" content="00:00:00">
 	<meta name="changed" content="2015-04-12T12:06:30.432461483">
 	<meta name="created" content="00:00:00">
@@ -60,7 +66,7 @@ raíz del sistema &quot;/&quot;.</p>
 A partir de allí, el sistema tiene varios directorios, cada uno de
 ellos almacena información específica para determinadas tareas.</p>
 <p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Uno de esos directorios es <font color="#0066cc">/home</font>. En el
+Uno de esos directorios es <font color="#0066cc">/home</font>. En él
 hay un directorio para cada usuario del sistema.</p>
 <p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
 Dentro del directorio de cada usuario, se guardan sus archivos y
@@ -114,13 +120,13 @@ etc . . .</p>
 
 </p>
 <p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>O si quieres verla a partir de determinado Directorio con:</b></p>
+<b>O si quieres verla a partir de /home:</b></p>
 <p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
 <br/>
 
 </p>
 <p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#006699">tree /home/flavio</font></p>
+<font color="#006699">tree /home/</font></p>
 <p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
 <br/>
 
@@ -128,7 +134,8 @@ etc . . .</p>
 <p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
 <b>Nota:</b></p>
 <p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<i>tree es un programa, puede que no lo tengas instalado.</i></p>
+<i><font color="#990000">tree</font> es un programa, puede que no lo
+tengas instalado.</i></p>
 <p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; font-style: normal; line-height: 0.6cm">
 Puedes instalarlo mediante:</p>
 <p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
@@ -238,12 +245,6 @@ determinado directorio.</p>
 <p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
 <b>mkdir nombre-directorio</b> = Crea un Directorio con un
 determinado nombre.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>chmod archivo permisos</b> = Cambia los permisos de archivos y
-directorios.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>chown grupo:propietario archivo</b> = Cambia el grupo de usuario y
-el propietario de un archivo o directorio.</p>
 <p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
 <br/>
 
@@ -253,8 +254,8 @@ el propietario de un archivo o directorio.</p>
 <p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
 Si te fijas, a veces se utiliza luego del comando, un guión con una
 letra que hace que varíe el comportamiento del comando utilizado.
-Estos son los llamados parámetros y sirven para especificar como
-debe ejecutarse el comando.</p>
+Estos son los llamados “parámetros” y sirven para especificar
+como debe ejecutarse el comando.</p>
 <p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
 <br/>
 
@@ -331,11 +332,14 @@ necesario que sepas lo siguiente:</b></p>
 <p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; font-style: normal; line-height: 0.6cm">
 		El primer carácter indica si es un directorio <font color="#000080"><i>(d)</i></font>,
 		un archivo <font color="#000080"><i>(-)</i></font> o un acceso
-		directo o link <font color="#000080"><i>(</i></font><font color="#000080"><i>l</i></font><font color="#000080"><i>)</i></font>.</p>
+		directo o link <font color="#000080"><i>(l)</i></font>.</p>
 		<li/>
 <p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; font-style: normal; line-height: 0.6cm">
 		Luego, los permisos de archivos y directorios están representados
 		por la secuencia de letras iniciales <font color="#000080"><i>rwx</i></font>.</p>
+		<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; font-style: normal; line-height: 0.6cm">
+		Luego el número de enlaces fuertes, <i>(lo veremos más adelante)</i>.</p>
 		<li/>
 <p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; font-style: normal; line-height: 0.6cm">
 		Luego viene el <b>usuario propietario</b> <span style="font-weight: normal">del
@@ -406,5 +410,41 @@ problemas, en la terminal no aparecen datos de este tipo. Es muy
 común que se cometan este tipo de errores, por ejemplo, querer ir a
 Documentos y escribir documentos, en este caso, si no existe un
 directorio documentos (en minúsculas), bash lanzará un error.</p>
+<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; line-height: 0.6cm">
+<font color="#336699"><i><b>¿Qué espero que aprendas leyendo este
+capítulo?:</b></i></font></p>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<ul>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; line-height: 0.6cm">
+	<font color="#336699"><i>Moverte por la estructura de directorios.</i></font></p>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; line-height: 0.6cm">
+	<font color="#336699"><i>Listar los archivos y directorios de un
+	determinado directorio.</i></font></p>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; line-height: 0.6cm">
+	<font color="#336699"><i>Crear y borrar directorios.</i></font></p>
+	<li/>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-variant: normal; line-height: 0.6cm">
+	<font color="#336699"><i>Copiar, mover y eliminar archivos y
+	directorios.</i></font></p>
+</ul>
+<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<br/>
+
+</p>
+<p align="right" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
+<a href="001.html"><span style="font-variant: normal"><font color="#336699"><span style="text-decoration: none"><span style="font-style: normal">Siguiente
+</span></span></font></span><span style="font-variant: normal"><font color="#336699"><span style="text-decoration: none"><i>(permisos
+de archivos y directorios)</i></span></font></span></a><span style="font-variant: normal"><font color="#336699"><span style="text-decoration: none">
+</span></font></span><span style="font-variant: normal"><font color="#336699"><span style="text-decoration: none"><i>=&gt;</i></span></font></span></p>
 </body>
 </html>
