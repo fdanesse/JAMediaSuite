@@ -38,7 +38,10 @@ BASEPATH = os.path.dirname(__file__)
 _dict = {
     "bash Clase 0": os.path.join(BASEPATH, "bash", "000.html"),
     "bash Clase 1": os.path.join(BASEPATH, "bash", "001.html"),
+    "bash Clase 2": os.path.join(BASEPATH, "bash", "002.html"),
+
     "Programar Clase 0": os.path.join(BASEPATH, "ProgramarPython", "000.html"),
+
     "help instaladores": os.path.join(BASEPATH, "JAMediaEditor", "Instaladores.html"),
     "help deb": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorDEB.html"),
     #"help rmp": format_RPM,
@@ -93,7 +96,7 @@ class Help(Gtk.Window):
         self.set_transient_for(self.parent_window)
         self.set_border_width(15)
 
-        self.toolbar = Toolbar(titulo)
+        self.toolbar = Toolbar()
         self.helpwidget = HelpWidget()
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -107,13 +110,10 @@ class Help(Gtk.Window):
         self.show_all()
 
         self.toolbar.connect("zoom", self.helpwidget.zoom)
+        self.helpwidget.connect("title", self.__set_title)
 
-    def set_help(self, texto):
-        t = "Cargando . . ."
-        t = "%s\n%s" % (t, "Por favor espera un momento.")
-        dialogo = DialogoLoad(self, t)
-        dialogo.connect("running", self.__load, texto)
-        dialogo.run()
+    def __set_title(self, widget, title):
+        self.toolbar.set_title(title)
 
     def __load(self, dialogo, texto):
         print "Cargando Ayuda:", texto
@@ -127,6 +127,13 @@ class Help(Gtk.Window):
         else:
             self.helpwidget.webview.open("")
 
+    def set_help(self, texto):
+        t = "Cargando . . ."
+        t = "%s\n%s" % (t, "Por favor espera un momento.")
+        dialogo = DialogoLoad(self, t)
+        dialogo.connect("running", self.__load, texto)
+        dialogo.run()
+
 
 class Toolbar(Gtk.EventBox):
 
@@ -136,7 +143,7 @@ class Toolbar(Gtk.EventBox):
     "zoom": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
-    def __init__(self, titulo):
+    def __init__(self):
 
         Gtk.EventBox.__init__(self)
 
@@ -155,12 +162,12 @@ class Toolbar(Gtk.EventBox):
         item.add(image)
         toolbar.insert(item, -1)
 
-        label = Gtk.Label(titulo)
-        label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
-        label.modify_fg(0, Gdk.Color(0, 0, 65000))
+        self.label = Gtk.Label("")
+        self.label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
+        self.label.modify_fg(0, Gdk.Color(0, 0, 65000))
         item = Gtk.ToolItem()
         item.set_expand(True)
-        item.add(label)
+        item.add(self.label)
         toolbar.insert(item, -1)
 
         archivo = os.path.join(BASEPATH, "Iconos", "Zoomout.svg")
@@ -181,10 +188,16 @@ class Toolbar(Gtk.EventBox):
     def __emit_zoom(self, widget):
         self.emit('zoom', widget.TOOLTIP)
 
+    def set_title(self, title):
+        self.label.set_text(title)
+
 
 class HelpWidget(Gtk.ScrolledWindow):
 
     #__gtype_name__ = 'HelpWidget'
+    __gsignals__ = {
+        "title": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self):
 
@@ -196,6 +209,11 @@ class HelpWidget(Gtk.ScrolledWindow):
         self.webview.set_zoom_level(0.8)
         self.add(self.webview)
         self.show_all()
+
+        self.webview.connect("title-changed", self.__title_changed)
+
+    def __title_changed(self, widget, webkit, title):
+        self.emit("title", title)
 
     def zoom(self, widget, zoom):
         x = float("{:.2f}".format(self.webview.get_zoom_level()))

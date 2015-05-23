@@ -1,0 +1,105 @@
+
+public static int main(string[] args) {
+    GLib.stdout.printf("Hello, World\n");
+    return 0;
+}
+
+
+El método principal no tiene porque ser definido dentro de una clase.
+Sin embargo, si se define dentro de una clase debe ser estático.
+No importa si es público o privado.
+El retorno puede ser int o null.
+Si retorna void, el programa terminará con salida 0.
+No es necesario importar GLib ya que se hace siempre en todo programa vala.
+
+Compilar mediante:
+    valac hello.vala
+
+Ejecutar mediante:
+    ./hello
+
+valac es el compilador de Vala.
+El binario resultante tendrá el mismo nombre que el archivo de origen salvo que indiquemos el nombre final mediante -o nombre
+
+Si tienes más de un archivo vala en tu proyecto, al compilar debes indicarselo al compilador:
+    valac -o archivosalida archivo1 archivo2 archivo3
+
+Si deseas obtener el codigo c de tu programa, debes pasarle el parámetro -C al compilador.
+Si quieres cabeceras c de tu código, debes pasarle el parámetro -H al compilador.
+
+Tipos de Datos:
+    Byte, char, uchar;
+    Character, unichar; a 32-bit Unicode character
+    Integer, int, uint
+    Long Integer, long, ulong
+    Short Integer, short, ushort
+    Guaranteed-size Integer, int8, int16, int32, int64, uint8, uint16, uint32, uint64. Los números indican las longitudes en bits.
+    Float number, float, double
+    Boolean, bool;
+    Compound, struct
+    Enumeration, enum; representada por enteros, no son clases como las enumeraciones de Java
+
+    Ejemplos:
+        /* atomic types */
+        unichar c = 'u';
+        float percentile = 0.75f;
+        const double MU_BOHR = 927.400915E-26;
+        bool the_box_has_crashed = false;
+
+        /* defining a struct */
+        struct Vector {
+            public double x;
+            public double y;
+            public double z;
+        }
+
+        /* defining an enum */
+        enum WindowType {
+            TOPLEVEL,
+            POPUP
+        }
+
+    El operador sizeof devuelve el tamaño en bytes de una variable.
+        ulong nbytes = sizeof(int32);    // nbytes will be 4 (= 32 bits)
+
+    Puedes determinar el valor mínimo y máximo de un tipo numérico con:
+        int.MIN y int.MAX.
+
+Strings:
+
+    Las cadenas literales se ponen entre """. (En este caso no se respetan los escapes).
+
+    Las cadenas con el prefijo '@' son plantillas.
+    Pueden evaluar las variables incrustadas y expresiones con el prefijo "$":
+        int a = 6, b = 7;
+        string s = @"$a * $b = $(a * b)";
+
+    Esto devolverá:
+        6 * 7 = 42
+
+    Se pueden cortar las cadenas por los índices de sus caracteres [inicio: fin]:
+        saludo cadena = "hola, mundo";
+    string s1 = saludo [7: 12];         // => "mundo"
+        cadena s2 = saludo [- 4: - 2];  // => "o"
+        uint8 b = saludo [7];           // => 0x77
+
+    Parseos y conversiones a cadenas:
+        bool b = bool.parse("false");           // => false
+        int i = int.parse("-52");               // => -52
+        double d = double.parse("6.67428E-11"); // => 6.67428E-11
+        string s1 = true.to_string();           // => "true"
+        string s2 = 21.to_string();             // => "21"
+
+    Para imprimir y leer en consola, utiliza:
+        tdout.printf(), stderr.printf() y stdin.read_line()
+
+        stdout.printf("Hello, world\n");
+        stdout.printf("%d %g %s\n", 42, 3.1415, "Vala");
+        string input = stdin.read_line();
+        int number = int.parse(stdin.read_line());
+
+    Se puede determinar si una cadena está dentro de otra:
+        if ("ere" in "Able was I ere I saw Elba.")
+
+        http://www.valadoc.org/#!api=glib-2.0/string
+        https://wiki.gnome.org/Projects/Vala/StringSample

@@ -3,7 +3,7 @@
 /*background: url{../images/imagen.png} no-repeat;*/
 
 WindowJAMediaEditor, JAMediaEditorBasePanel, JAMediaEditorInfoNotebook,
-JAMediaEditorToolbarBusquedas, JAMediaEditorToolbarProyecto,
+JAMediaEditorToolbarBusquedas, JAMediaEditorToolbarProyecto, ToolbarProyecto,
 JAMediaEditorToolbarArchivo, JAMediaEditorWorkPanel, ToolbarTerminal,
 JAMediaEditorNotebook_SourceView, JAMediaTerminal, NoteBookTerminal,
 Terminal, DialogoFormato, JAMediaEditorInstalador, PygiHackMenu,

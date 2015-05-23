@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <title>Bash (Formatos de Archivos)</title>
+        <style type="text/css">
+            @page { margin-left: 1cm; margin-right: 1cm }
+            p { margin-bottom: 0.25cm; color: #000000; line-height: 120% }
+            a:link { so-language: zxx }
+        </style>
+    </head>
+
+<body lang="es-UY">
+
+    <p align="left">
+        <a href="001.html"><font color="#336699"><= Anterior <i>(Permisos de archivos y directorios) =></i></font></a>
+    </p>
+
+    <br />
+
+    <p align="left">
+        <u><font size="4" color="#006699" style="font-size: 14pt">
+            <b>bash CAP. 2:</b>
+        </u></font>
+    </p>
+
+    <p align="left" style="margin-left: 1.25cm; margin-bottom: 0cm">
+        <font color="#336699"><i><b>¿Qué debo aprender estudiando este capítulo?:</b></i>
+        <ul style="margin-left: 1.25cm; margin-top: 0cm">
+            <li/><i>Reconocer los tipos de archivos más comunes.</i>
+        </ul></font>
+    </p>
+
+    <br />
+
+    <p align="left">
+        <font color="#006699" size="4" style="font-size: 14pt"><u><b>
+        Formatos de Archivos:
+        </b></u></font>
+    </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+            Un formato de archivo es un estándar que define la manera en que está codificada la información en un archivo.<br />
+            Dado que los datos en una computadora sé almacenan en bits, es necesario tener alguna manera de convertir esos datos a ceros y unos y viceversa. Cómo debe hacerse esa conversión, depende del formato del archivo.<br />
+            Hay diferentes tipos de formatos para diferentes tipos de datos, incluso, hay diferentes formatos para un mismo tipo de dato.<br />
+            Por ejemplo, los archivos que contienen audio tienen un formato diferente a los archivos que contienen imágenes, pero también, hay diferentes formatos de audio y diferentes formatos de imagen.<br />
+            Se puede hacer conversiones entre formatos del mismo tipo sobre un archivo.<br />
+            Por ejemplo un archivo de audio en formato mp3, se puede convertir al formato wav, pues mp3 y wav son ambos, formatos de audio.
+        </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+        <b>Ejemplos de formatos de texto:</b></p>
+        <p align="left" style="margin-left: 2.5cm">
+            utf <br />
+            ascii <br />
+            rtf
+        </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+        <b>Ejemplos de formatos de audio:</b></p>
+        <p align="left" style="margin-left: 2.5cm">
+            aac <br />
+            mp3 <br />
+            aiff <br />
+            flac <br />
+            wav
+        </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+        <b>Ejemplos de formatos de imagen:</b></p>
+        <p align="left" style="margin-left: 2.5cm">
+            jpeg / jpg <br />
+            png <br />
+            gif <br />
+            tiff <br />
+            bmp <br />
+            svg <br />
+            pdf
+        </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+        <b>Ejemplos de formatos contenedores:</b></p>
+            <p align="left" style="margin-left: 2.5cm">
+            <i>Usados para agrupar distintos tipos de información, generalmente vídeo y sonido, en un único archivo.</i>
+            </p>
+
+            <p align="left" style="margin-left: 2.5cm">
+            <b>Formatos Genéricos:</b></p>
+            <p align="left" style="margin-left: 3.75cm">
+                binario / bin
+            </p>
+
+            <p align="left" style="margin-left: 2.5cm">
+            <b>Formatos de empaquetado y compresión:</b></p>
+            <p align="left" style="margin-left: 3.75cm">
+                tar <br />
+                zip <br />
+                rar <br />
+                gzip <br />
+                bzip2
+            </p>
+
+            <p align="left" style="margin-left: 2.5cm">
+            <b>Formatos de Vídeo:</b></p>
+            <p align="left" style="margin-left: 3.75cm">
+                avi <br />
+                mov <br />
+                Ogg <br />
+                Matroska (mkv) <br />
+                3GP
+            </p>
+
+        <br />
+
+    <p align="left">
+        <font color="#006699" size="4" style="font-size: 14pt"><u><b>
+        Extensiones de Archivos:
+        </b></u></font>
+    </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+            La extensión de un archivo es una cadena de caracteres anexada al nombre de un archivo, usualmente, luego de un punto.<br />
+            Es decir: usualmente, el nombre de un archivo se compone de <b>nombre.extensión</b>, <i>(mitexto.txt, mimúsica.mp3, etc...)</i><br />
+            Esto se hace para que podamos ver a simple vista que tipo de datos contiene el archivo.<br />
+            Sin embargo, la extensión, es totalmente independiente del contenido real del archivo.<br />
+            Por ejemplo, los archivos en formato mp3, usualmente se guardan con la extensión "mp3" <i>(mi_música.mp3)</i>, sin embargo, no es obligatorio guardarlo de esa forma.<br />
+            Un archivo de audio en formato mp3 podría tener cualquier extensión de archivo en su nombre o incluso no tener ninguna, su contenido no se ve afectado por esto.<br />
+            Para linux no son realmente importante las extensiones de los archivos ya que reconoce el tipo de datos que contienen utilizando otros medios.<br />
+            De modo que es importante entender que si bien se estila guardar los archivos con una extensión que identifica su formato, esto no es obligatorio.<br />
+            Un archivo puede contener información en un formato distinto al que aparenta según la extensión de su nombre.
+        </p>
+
+    <p align="left" style="margin-left: 1.25cm; margin-bottom: 0cm;">
+        <b>Por ejemplo:</b>
+    </p>
+        <p align="left" style="margin-left: 2.5cm; margin-top: 0cm">
+            Supongamos que tienes un archivo de audio llamado "mimusica.wav".<br />
+            Ahora haces una copia de ese archivo y le cambias la extensión a txt.<br />
+            Entonces tendras dos archivos "mimusica.wav" y "mimusica.txt".<br />
+            Si confiaras en sus extensiones pensarías que esos archivos contiene datos de diferente tipo, sin embargo, contienen lo mismo.<br />
+            Puedes verificarlo, utilizando el comando "file", <i>(file mimusica.wav y file mimusica.txt)</i>, verás que en ambos casos devuelve la misma información. Ambos son archivos de audio.<br />
+            Sin embargo, el comando "mimetype" no es capaz de detectar el verdadero tipo de datos que contienen.<br />
+            Si haces "mimetype mimusica.wav", te dirá que es un archivo de audio, y "mimetype mimusica.txt" te dirá que es un archivo de texto.
+        </p>
+
+    <br />
+
+    <p align="left" style="margin-bottom: 0cm">
+        <font color="#336699"><i><b>¿Qué debo aprender estudiando este capítulo?:</b></i>
+        <ul style="margin-top: 0cm">
+            <li/><i>Reconocer los tipos de archivos más comunes.</i>
+        </ul></font>
+    </p>
+
+    <br />
+
+    <p align="right">
+        <a href="003.html"><font color="#336699">Siguiente <i>(???????) =></i></font></a>
+    </p>
+
+</body>
+</html>
