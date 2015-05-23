@@ -8,6 +8,46 @@
             p { margin-bottom: 0.25cm; color: #000000; line-height: 120% }
             a:link { so-language: zxx }
         </style>
+        <script type="text/javascript">
+            function cheboxActivated() {
+                var text = '';
+                var checkbox1 = document.getElementById('binario1');
+                var checkbox2 = document.getElementById('binario2');
+                var checkbox3 = document.getElementById('binario3');
+                var checkbox4 = document.getElementById('binario4');
+                var checkbox5 = document.getElementById('binario5');
+                var checkbox6 = document.getElementById('binario6');
+                var checkbox7 = document.getElementById('binario7');
+                var checkbox8 = document.getElementById('binario8');
+
+                if (checkbox1.checked) {text = '1'}
+                else {text = '0'}
+
+                if (checkbox2.checked) {text = text + '1'}
+                else {text = text + '0'}
+
+                if (checkbox3.checked) {text = text + '1'}
+                else {text = text + '0'}
+
+                if (checkbox4.checked) {text = text + '1'}
+                else {text = text + '0'}
+
+                if (checkbox5.checked) {text = text + '1'}
+                else {text = text + '0'}
+
+                if (checkbox6.checked) {text = text + '1'}
+                else {text = text + '0'}
+
+                if (checkbox7.checked) {text = text + '1'}
+                else {text = text + '0'}
+
+                if (checkbox8.checked) {text = text + '1'}
+                else {text = text + '0'}
+
+                document.getElementById('label-binario').innerHTML = 'Binario: ' + text;
+                document.getElementById('label-decimal').innerHTML = 'Decimal: ' + parseInt(text, 2);
+            }
+        </script>
     </head>
 
 <body lang="es-UY">
@@ -429,6 +469,24 @@
                 decimal 9 binario 1001<br />
                 decimal 10 binario 1010
             </p>
+
+    <br />
+
+    <p align="left" style="margin-left: 1.25cm">
+        <b>Pequeña calculadora binaria</b>, <i>(has click en los bits para obtener el resultado)</i><b>:</b>
+    </p>
+        <p align="left" style="margin-left: 2.5cm">
+        <input type="checkbox" id='binario1' onclick="cheboxActivated()"/>
+        <input type="checkbox" id='binario2' onclick="cheboxActivated()"/>
+        <input type="checkbox" id='binario3' onclick="cheboxActivated()"/>
+        <input type="checkbox" id='binario4' onclick="cheboxActivated()"/>
+        <input type="checkbox" id='binario5' onclick="cheboxActivated()"/>
+        <input type="checkbox" id='binario6' onclick="cheboxActivated()"/>
+        <input type="checkbox" id='binario7' onclick="cheboxActivated()"/>
+        <input type="checkbox" id='binario8' onclick="cheboxActivated()"/>
+
+        <b id='label-binario'>Binario: 00000000</b>
+        <b id='label-decimal'>Decimal: 0</b></p>
 
     <br />
 
