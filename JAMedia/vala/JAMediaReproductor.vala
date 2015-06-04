@@ -44,7 +44,7 @@ public class JAMediaReproductor : GLib.Object{
             case Gst.MessageType.ELEMENT:
                 if (message.get_structure().get_name() == "prepare-window-handle"){
                     Gst.Video.Overlay overlay = message.src as Gst.Video.Overlay;
-			        assert (overlay != null);
+                    assert (overlay != null);
                     overlay.set_window_handle(this._ventana_id);
                     }
                 break;
@@ -89,8 +89,8 @@ public class JAMediaReproductor : GLib.Object{
             case Gst.MessageType.TAG:
                 Gst.TagList taglist;
                 message.parse_tag(out taglist);
-                //GLib.stdout.printf("%s\n", taglist.to_string());
-                //GLib.stdout.flush();
+                GLib.stdout.printf("%s\n", taglist.to_string());
+                GLib.stdout.flush();
                 string datos = taglist.to_string();
                 if ("video-codec" in datos){
                   if (this._video == false){
@@ -110,21 +110,16 @@ public class JAMediaReproductor : GLib.Object{
                 GLib.Error err;
                 string debug;
                 message.parse_error(out err, out debug);
-                //GLib.stdout.printf("Error: %s\n", err.message);
-                //GLib.stdout.flush();
+                GLib.stdout.printf("Player Error: %s\n", err.message);
+                GLib.stdout.flush();
                 this.__new_handle(false);
                 break;
 
             case Gst.MessageType.BUFFERING:
                 GLib.Value dat = message.get_structure().get_value("buffer-percent");
                 int buf = dat.get_int();
-                if (buf < 100 && this._estado == Gst.State.PLAYING){
+                if (this._estado == Gst.State.PLAYING){
                     this.loading_buffer(buf);
-                    //this.__pause();
-                    }
-                else if (buf > 99 && this._estado == Gst.State.PLAYING){
-                    this.loading_buffer(buf);
-                    //this.play();
                     }
                 break;
 
