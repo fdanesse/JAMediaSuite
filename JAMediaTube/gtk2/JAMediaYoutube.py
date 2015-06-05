@@ -60,6 +60,27 @@ def __BuscarVideos(consulta, limite):
     return urls
 
 
+def __DetalleVideo(_tupla2):
+    """
+    Recibe un video en un feed y devuelve un diccionario con su información.
+    """
+    #_tupla2 = ('WkL_oCx2HOQ': {'url': 'http://www.youtube.com/watch?v=WkL_oCx2HOQ'})
+    # youtube-dl -s -e --get-id --get-thumbnail --get-description --get-duration --get-format https://www.youtube.com/watch?v=8C6xDjQ66wM
+    import commands
+    dat = commands.getoutput("youtube-dl -s -e --get-thumbnail --get-description --get-duration %s" % _tupla2[1]['url']).splitlines()
+    t = dat[-1].split(":")
+    t = int(t[0])*60 + int(t[1])
+    video = {}
+    video["id"] = _tupla2[0]
+    video["titulo"] = dat[0]
+    video["descripcion"] = dat[2]
+    video["categoria"] = ""
+    video["url"] = _tupla2[1]['url']
+    video["duracion"] = t
+    video["previews"] = [dat[1]]
+    return video
+
+
 def Buscar(palabras):
     buscar = ""
     for palabra in palabras.split(" "):
@@ -68,39 +89,15 @@ def Buscar(palabras):
         buscar = str(buscar[:-1])
     try:  # FIXME: Porque Falla si no hay Conexión.
         if buscar:
-            videos = __BuscarVideos(buscar, 100)
+            videos = __BuscarVideos(buscar, 15)
             v = []
             for video in videos.items():
-                v.append(DetalleVideo(video))
+                v.append(__DetalleVideo(video))
             return v
         else:
             return []
     except:
         return []
-
-
-def DetalleVideo(_tupla2):
-    """
-    Recibe un video en un feed y devuelve un diccionario con su información.
-    """
-    #_tupla2 = ('WkL_oCx2HOQ': {'url': 'http://www.youtube.com/watch?v=WkL_oCx2HOQ'})
-    video = {}
-    video["id"] = _tupla2[0]
-    video["titulo"] = _tupla2[0]
-    video["descripcion"] = ""
-    video["categoria"] = ""
-    video["url"] = _tupla2[1]['url']
-    video["duracion"] = 500
-    video["previews"] = []
-    #try:
-    #    previews = []
-    #    for thumbnail in metadata['thumbnail']:
-    #        tubn = [thumbnail.url, thumbnail.height, thumbnail.width]
-    #        previews.append(tubn)
-    #    video["previews"] = previews
-    #except:
-    #    pass
-    return video
 
 
 class JAMediaYoutube(gtk.Widget):

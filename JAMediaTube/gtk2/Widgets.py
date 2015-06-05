@@ -220,15 +220,13 @@ class WidgetVideoItem(gtk.EventBox):
         hbox = gtk.HBox()
         vbox = gtk.VBox()
 
-        keys = self.videodict.keys()
-        if "previews" in keys:
+        if self.videodict.get("previews", False):
             imagen = gtk.Image()
             hbox.pack_start(imagen, False, False, 3)
-            ''' FIXME: No hay previews por ahora
             if type(self.videodict["previews"]) == list:
-                # siempre hay 4 previews.
-                url = self.videodict["previews"][0][0]
-                archivo = "/dev/shm/preview%d" % time.time()
+                # 1 lista con 1 url, o base64 en un archivo de busquedas.
+                url = self.videodict["previews"][0]
+                archivo = "/tmp/preview%s" % time.time()
                 try:
                     # FIXME: Porque Falla si no hay Conexión.
                     fileimage, headers = urllib.urlretrieve(url, archivo)
@@ -252,7 +250,7 @@ class WidgetVideoItem(gtk.EventBox):
                 loader.close()
                 pixbuf = loader.get_pixbuf()
                 imagen.set_from_pixbuf(pixbuf)
-            '''
+
         vbox.pack_start(gtk.Label("%s: %s" % ("id",
             self.videodict["id"])), True, True, 0)
         vbox.pack_start(gtk.Label("%s: %s" % ("Título",
