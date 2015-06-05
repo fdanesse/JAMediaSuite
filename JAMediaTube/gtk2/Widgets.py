@@ -224,7 +224,7 @@ class WidgetVideoItem(gtk.EventBox):
         if "previews" in keys:
             imagen = gtk.Image()
             hbox.pack_start(imagen, False, False, 3)
-
+            ''' FIXME: No hay previews por ahora
             if type(self.videodict["previews"]) == list:
                 # siempre hay 4 previews.
                 url = self.videodict["previews"][0][0]
@@ -252,22 +252,16 @@ class WidgetVideoItem(gtk.EventBox):
                 loader.close()
                 pixbuf = loader.get_pixbuf()
                 imagen.set_from_pixbuf(pixbuf)
-
+            '''
         vbox.pack_start(gtk.Label("%s: %s" % ("id",
             self.videodict["id"])), True, True, 0)
         vbox.pack_start(gtk.Label("%s: %s" % ("Título",
             self.videodict["titulo"])), True, True, 0)
         vbox.pack_start(gtk.Label("%s: %s" % ("Categoría",
             self.videodict["categoria"])), True, True, 0)
-        #vbox.pack_start(gtk.Label("%s: %s" % ("Etiquetas",
-        #    self.videodict["etiquetas"])), True, True, 0)
-        #vbox.pack_start(gtk.Label("%s: %s" % ("Descripción",
-        #   self.videodict["descripcion"])), True, True, 0)
         vbox.pack_start(gtk.Label("%s: %s %s" % ("Duración",
             int(float(self.videodict["duracion"]) / 60.0), "Minutos")),
             True, True, 0)
-        #vbox.pack_start(gtk.Label("%s: %s" % ("Reproducción en la Web",
-        #   self.videodict["flash player"])), True, True, 0)
         vbox.pack_start(gtk.Label("%s: %s" % ("url",
             self.videodict["url"])), True, True, 0)
 

@@ -28,77 +28,78 @@ import gtk
 import gobject
 import time
 import subprocess
-
-import gdata.youtube
-import gdata.youtube.service
+import urllib
 
 from Globales import get_tube_directory
 
 BASE_PATH = os.path.dirname(__file__)
-
-YOUTUBE = "gdata.youtube.com"
-
 STDERR = "/dev/null"
 youtubedl = os.path.join(BASE_PATH, "youtube-dl")
 
 
-def Buscar(palabras):
-    """
-    Recibe una cadena de texto, separa las palabras, busca videos que
-    coincidan con ellas y devuelve un feed no mayor a 50 videos.
-    """
-    yt_service = gdata.youtube.service.YouTubeService()
-    query = gdata.youtube.service.YouTubeVideoQuery()
-    query.feed = 'http://%s/feeds/videos' % (YOUTUBE)
-    query.max_results = 50
-    query.orderby = 'viewCount'
-    query.racy = 'include'
+def __BuscarVideos(consulta, limite):
+    # Obtener web principal con resultado de busqueda y recorrer todas las pag
+    # de la busqueda obtenida hasta conseguir el id de 100 videos.
+    params = urllib.urlencode({'search_query': consulta})
+    urls = {}
+    #print "Comezando la búsqueda de %i videos sobre %s" % (limite, consulta)
+    for pag in range(1, 10):
+        f = urllib.urlopen("http://www.youtube.com/results?%s&filters=video&page=%i" % (params, pag))
+        text = f.read().replace("\n", "")
+        f.close()
+        for item in text.split("data-context-item-id=")[1:]:
+            _id = item.split("\"")[1].strip()
+            url = "http://www.youtube.com/watch?v=%s" % _id
+            if not _id in urls.keys():
+                urls[_id] = {"url": url}
+                #print "\tVideo Encontrado:", _id, url
+            if len(urls.keys()) >= limite:
+                break
+        if len(urls.keys()) >= limite:
+            break
+    return urls
 
+
+def Buscar(palabras):
+    buscar = ""
     for palabra in palabras.split(" "):
-        query.categories.append('/%s' % palabra.lower())
+        buscar = "%s%s+" % (buscar, palabra.lower())
+    if buscar.endswith("+"):
+        buscar = str(buscar[:-1])
     try:  # FIXME: Porque Falla si no hay Conexión.
-        feed = yt_service.YouTubeQuery(query)
-        return DetalleFeed(feed)
+        if buscar:
+            videos = __BuscarVideos(buscar, 100)
+            v = []
+            for video in videos.items():
+                v.append(DetalleVideo(video))
+            return v
+        else:
+            return []
     except:
         return []
 
 
-def DetalleFeed(feed):
-    """
-    Recibe un feed de videos y devuelve una lista con diccionarios por video.
-    """
-    videos = []
-    for entry in feed.entry:
-        videos.append(DetalleVideo(entry))
-    return videos
-
-
-def DetalleVideo(entry):
+def DetalleVideo(_tupla2):
     """
     Recibe un video en un feed y devuelve un diccionario con su información.
     """
-    metadata = entry.media.__dict__
-    entrada = entry.__dict__
-
+    #_tupla2 = ('WkL_oCx2HOQ': {'url': 'http://www.youtube.com/watch?v=WkL_oCx2HOQ'})
     video = {}
-    video["id"] = entrada['_GDataEntry__id'].text
-    video["titulo"] = metadata['title'].text
-    video["descripcion"] = metadata['description'].text
-    video["categoria"] = metadata['category'][0].text
-    #video["etiquetas"] = entry.media.keywords.text
-    video["url"] = metadata['player'].url.split("&")[0]
-    #video["flash player"] = entry.GetSwfUrl()
-    video["duracion"] = metadata['duration'].seconds
-
-    try:
-        previews = []
-        for thumbnail in metadata['thumbnail']:
-            tubn = [thumbnail.url, thumbnail.height, thumbnail.width]
-            previews.append(tubn)
-        video["previews"] = previews
-    except:
-        pass
-
+    video["id"] = _tupla2[0]
+    video["titulo"] = _tupla2[0]
+    video["descripcion"] = ""
+    video["categoria"] = ""
+    video["url"] = _tupla2[1]['url']
+    video["duracion"] = 500
+    video["previews"] = []
+    #try:
+    #    previews = []
+    #    for thumbnail in metadata['thumbnail']:
+    #        tubn = [thumbnail.url, thumbnail.height, thumbnail.width]
+    #        previews.append(tubn)
+    #    video["previews"] = previews
+    #except:
+    #    pass
     return video
 
 
@@ -134,8 +135,8 @@ class JAMediaYoutube(gtk.Widget):
             [43, "WebM", "360p VP8 N/A 0.5 Vorbis 128"],
             #[101, "WebM", "360p VP8 3D N/A Vorbis 192"],
             #[6, "FLV", "270p Sorenson H.263 N/A 0.8 MP3 64"],
-            [5, "FLV", "240p Sorenson H.263	N/A	0.25 MP3 64"],
-            #[13, "3GP", "N/A MPEG-4 Visual	N/A	0.5	AAC	N/A"],
+            [5, "FLV", "240p Sorenson H.263    N/A    0.25 MP3 64"],
+            #[13, "3GP", "N/A MPEG-4 Visual    N/A    0.5    AAC    N/A"],
             #[17, "3GP", "144p MPEG-4 Visual Simple 0.05 AAC 24"],
             [18, "MP4", "270p/360p H.264 Baseline 0.5 AAC 96"],
             #[22, "MP4", "720p H.264 High 2-2.9 AAC 192"],
@@ -174,7 +175,7 @@ class JAMediaYoutube(gtk.Widget):
         for l in titulo:
             if not l in excluir:
                 texto += l
-        return str(texto)
+        return str(texto).replace(" ", "_")
 
     def download(self, url, titulo):
         """
@@ -192,7 +193,7 @@ class JAMediaYoutube(gtk.Widget):
         # http://youtu.be/XWDZMMMbvhA => codigo compartir
         # url del video => 'http://www.youtube.com/watch?v=XWDZMMMbvhA'
         # FIXME: HACK: 5 de octubre 2012
-        # self.url = url
+        #self.url = url
         self.url = "http://youtu.be/" + url.split(
             "http://www.youtube.com/watch?v=")[1]
 
@@ -268,60 +269,3 @@ if __name__ == "__main__":
     for video in videos:
         for item in video.items():
             print item
-
-
-'''
-Ejemplo: detalles en un video.
-Corresponde a def DetalleVideo(entry)
-
-metadata {
-    'category': [<gdata.media.Category object at 0x19f8c10>],
-    'extension_attributes': {},
-    'title': <gdata.media.Title object at 0x19f8f10>,
-    'text': None,
-    'description': <gdata.media.Description object at 0x19f8d10>,
-    'private': None,
-    'content': [<gdata.media.Content object at 0x19f8c50>,
-        <gdata.media.Content object at 0x19f8c90>,
-        <gdata.media.Content object at 0x19f8cd0>],
-    'credit': None,
-    'player': <gdata.media.Player object at 0x19f8d90>,
-    'keywords': <gdata.media.Keywords object at 0x19f8d50>,
-    'extension_elements': [<atom.ExtensionElement object at 0x19f8dd0>],
-    'thumbnail': [<gdata.media.Thumbnail object at 0x19f8e10>,
-        <gdata.media.Thumbnail object at 0x19f8e50>,
-        <gdata.media.Thumbnail object at 0x19f8e90>,
-        <gdata.media.Thumbnail object at 0x19f8ed0>],
-    'duration': <gdata.media.Duration object at 0x19f8f50>,
-    'name': None}
-
-entrada {
-    'control': None,
-    'rating': <gdata.youtube.Rating object at 0x19f8650>,
-    '_GDataEntry__id': <atom.Id object at 0x19f8750>,
-    'text': None,
-    'contributor': [],
-    'summary': None,
-    'category': [<atom.Category object at 0x19f86d0>,
-        <atom.Category object at 0x19f8710>],
-    'statistics': <gdata.youtube.Statistics object at 0x19f8bd0>,
-    'author': [<atom.Author object at 0x19f8790>],
-    'media': <gdata.media.Group object at 0x19f8b50>,
-    'recorded': None,
-    'comments': <gdata.youtube.Comments object at 0x19f8b10>,
-    'content': <atom.Content object at 0x19f87d0>,
-    'source': None,
-    'extension_elements': [],
-    'updated': <atom.Updated object at 0x1750890>,
-    'link': [<atom.Link object at 0x19f8910>,
-        <atom.Link object at 0x19f8950>,
-        <atom.Link object at 0x19f89d0>,
-        <atom.Link object at 0x19f8a50>,
-        <atom.Link object at 0x19f8a90>],
-    'geo': None,
-    'noembed': None,
-    'extension_attributes': {},
-    'rights': None,
-    'title': <atom.Title object at 0x19f88d0>,
-    'racy': None,
-    'published': <atom.Published object at 0x1750a90>} '''
