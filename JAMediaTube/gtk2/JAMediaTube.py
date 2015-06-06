@@ -239,15 +239,7 @@ class JAMediaTube(gtk.Window):
         """
         Cuando Termina la Búsqueda, se actualizan los widgets de videos.
         """
-        self.paneltube.set_sensitive(False)
-        items = self.paneltube.encontrados.get_children()
-        for item in items:
-            if not item in self.paneltube.encontrados.get_children():
-                # Corrige posibles errores vistos en la práctica
-                continue
-            if not item.update(get_dict_video):
-                continue
-        self.paneltube.set_sensitive(True)
+        self.paneltube.update_widgets_videos_encontrados(get_dict_video)
 
     def __comenzar_busqueda(self, widget, palabras):
         """

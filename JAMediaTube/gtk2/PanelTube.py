@@ -411,3 +411,14 @@ class PanelTube(gtk.HPaned):
         Las toolbar accion deben estar ocultas inicialmente.
         """
         map(self.__cancel_toolbars, self.toolbars_flotantes)
+
+    def update_widgets_videos_encontrados(self, get_dict_video):
+        self.set_sensitive(False)
+        items = self.encontrados.get_children()
+        for item in items:
+            if not item in self.encontrados.get_children():
+                # Corrige posibles errores vistos en la práctica
+                continue
+            if not item.update(get_dict_video):
+                continue
+        self.set_sensitive(True)
