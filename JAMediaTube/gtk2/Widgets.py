@@ -220,9 +220,10 @@ class WidgetVideoItem(gtk.EventBox):
         hbox = gtk.HBox()
         vbox = gtk.VBox()
 
+        self.imagen = gtk.Image()
+        hbox.pack_start(self.imagen, False, False, 3)
+
         if self.videodict.get("previews", False):
-            imagen = gtk.Image()
-            hbox.pack_start(imagen, False, False, 3)
             if type(self.videodict["previews"]) == list:
                 # 1 lista con 1 url, o base64 en un archivo de busquedas.
                 url = self.videodict["previews"][0]
@@ -232,14 +233,14 @@ class WidgetVideoItem(gtk.EventBox):
                     fileimage, headers = urllib.urlretrieve(url, archivo)
                     pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
                         fileimage, 200, 150)
-                    imagen.set_from_pixbuf(pixbuf)
+                    self.imagen.set_from_pixbuf(pixbuf)
                     # Convertir imagen a string por si se quiere guardar.
                     pixbuf_file = open(fileimage, 'rb')
                     image_string = base64.b64encode(pixbuf_file.read())
                     pixbuf_file.close()
                     self.videodict["previews"] = image_string
                 except:
-                    print "No hay Conexión a Internet."
+                    print "ERROR: Quizas no hay conexión", self.__init__
                 if os.path.exists(archivo):
                     os.remove(archivo)
             else:
@@ -249,19 +250,22 @@ class WidgetVideoItem(gtk.EventBox):
                 loader.write(image_string)
                 loader.close()
                 pixbuf = loader.get_pixbuf()
-                imagen.set_from_pixbuf(pixbuf)
+                self.imagen.set_from_pixbuf(pixbuf)
 
-        vbox.pack_start(gtk.Label("%s: %s" % ("id",
-            self.videodict["id"])), True, True, 0)
-        vbox.pack_start(gtk.Label("%s: %s" % ("Título",
-            self.videodict["titulo"])), True, True, 0)
-        vbox.pack_start(gtk.Label("%s: %s" % ("Categoría",
-            self.videodict["categoria"])), True, True, 0)
-        vbox.pack_start(gtk.Label("%s: %s %s" % ("Duración",
-            int(float(self.videodict["duracion"]) / 60.0), "Minutos")),
-            True, True, 0)
-        vbox.pack_start(gtk.Label("%s: %s" % ("url",
-            self.videodict["url"])), True, True, 0)
+        self.id_label = gtk.Label("%s: %s" % ("id", self.videodict["id"]))
+        self.id_titulo = gtk.Label("%s: %s" % ("Título",
+            self.videodict["titulo"]))
+        self.id_categoria = gtk.Label("%s: %s" % ("Categoría",
+            self.videodict["categoria"]))
+        self.id_duracion = gtk.Label("%s: %s %s" % ("Duración",
+            int(float(self.videodict["duracion"]) / 60.0), "Minutos"))
+        self.id_url = gtk.Label("%s: %s" % ("url", self.videodict["url"]))
+
+        vbox.pack_start(self.id_label, True, True, 0)
+        vbox.pack_start(self.id_titulo, True, True, 0)
+        vbox.pack_start(self.id_categoria, True, True, 0)
+        vbox.pack_start(self.id_duracion, True, True, 0)
+        vbox.pack_start(self.id_url, True, True, 0)
 
         for label in vbox.get_children():
             label.set_alignment(0.0, 0.5)
@@ -273,11 +277,52 @@ class WidgetVideoItem(gtk.EventBox):
         self.connect("button_press_event", self.__button_press)
 
     def __button_press(self, widget, event):
-    #    self.modify_bg(0, self.colorclicked)
-    #    if event.button == 1:
-    #        self.emit("clicked", event)
-    #    elif event.button == 3:
-            self.emit("click_derecho", event)
+        #self.modify_bg(0, self.colorclicked)
+        #if event.button == 1:
+        #   self.emit("clicked", event)
+        #elif event.button == 3:
+        self.emit("click_derecho", event)
+
+    def update(self, get_dict_video):
+        _id = self.videodict["id"]
+        _url = self.videodict["url"]
+        self.videodict = get_dict_video(_id, _url)
+        while gtk.events_pending():
+            gtk.main_iteration()
+        if self.videodict.get("previews", False):
+            # 1 lista con 1 url
+            url = self.videodict["previews"][0]
+            archivo = "/tmp/preview%s" % time.time()
+            try:
+                # FIXME: Porque Falla si no hay Conexión.
+                fileimage, headers = urllib.urlretrieve(url, archivo)
+                while gtk.events_pending():
+                    gtk.main_iteration()
+                pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(
+                    fileimage, 200, 150)
+                self.imagen.set_from_pixbuf(pixbuf)
+                while gtk.events_pending():
+                    gtk.main_iteration()
+                # Convertir imagen a string por si se quiere guardar.
+                pixbuf_file = open(fileimage, 'rb')
+                image_string = base64.b64encode(pixbuf_file.read())
+                pixbuf_file.close()
+                self.videodict["previews"] = image_string
+            except:
+                print "ERROR: Quizas no hay conexión", self.update
+            if os.path.exists(archivo):
+                os.remove(archivo)
+        self.id_label.set_text("%s: %s" % ("id", self.videodict["id"]))
+        self.id_titulo.set_text("%s: %s" % ("Título",
+            self.videodict["titulo"]))
+        self.id_categoria.set_text("%s: %s" % ("Categoría",
+            self.videodict["categoria"]))
+        self.id_duracion.set_text("%s: %s %s" % ("Duración",
+            int(float(self.videodict["duracion"]) / 60.0), "Minutos"))
+        self.id_url.set_text("%s: %s" % ("url", self.videodict["url"]))
+        while gtk.events_pending():
+            gtk.main_iteration()
+        return True
 
 
 class Toolbar_Descarga(gtk.VBox):

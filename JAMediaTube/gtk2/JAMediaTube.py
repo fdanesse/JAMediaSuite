@@ -33,6 +33,8 @@ from Widgets import ToolbarSalir
 from JAMedia.JAMedia import JAMedia
 from JAMedia.JAMedia import check_path
 from JAMediaYoutube import Buscar
+from JAMediaYoutube import get_dict_video
+from JAMediaYoutube import FEED
 from Widgets import WidgetVideoItem
 from Globales import get_colors
 
@@ -68,7 +70,7 @@ class JAMediaTube(gtk.Window):
         self.jamedia = None
 
         self.archivos = []
-        self.videos_temp = []
+        self.buscador = Buscar()
 
         gobject.idle_add(self.__setup_init)
         print "JAMediaTube process:", os.getpid()
@@ -156,7 +158,8 @@ class JAMediaTube(gtk.Window):
         self.paneltube.connect('open_shelve_list', self.__open_shelve_list)
         self.toolbar_descarga.connect('end', self.__run_download)
         self.paneltube.connect("cancel_toolbar", self.__cancel_toolbar)
-
+        self.buscador.connect("encontrado", self.__add_video_encontrado)
+        self.buscador.connect("end", self.__end_busqueda)
         self.resize(640, 480)
 
     def __cancel_toolbar(self, widget=None):
@@ -215,6 +218,37 @@ class JAMediaTube(gtk.Window):
                 text = TipEncontrados
             videoitem.set_tooltip_text(text)
 
+    def __add_video_encontrado(self, buscador, _id, url):
+        """
+        Cuando el buscador encuentra un video, se agrega al panel.
+        """
+        video = dict(FEED)
+        video["id"] = _id
+        video["titulo"] = ""
+        video["descripcion"] = ""
+        video["categoria"] = ""
+        video["url"] = url
+        video["duracion"] = 0
+        video["previews"] = ""
+        gobject.idle_add(self.__add_videos, [video],
+            self.paneltube.encontrados)
+        while gtk.events_pending():
+            gtk.main_iteration()
+
+    def __end_busqueda(self, buscador):
+        """
+        Cuando Termina la Búsqueda, se actualizan los widgets de videos.
+        """
+        self.paneltube.set_sensitive(False)
+        items = self.paneltube.encontrados.get_children()
+        for item in items:
+            if not item in self.paneltube.encontrados.get_children():
+                # Corrige posibles errores vistos en la práctica
+                continue
+            if not item.update(get_dict_video):
+                continue
+        self.paneltube.set_sensitive(True)
+
     def __comenzar_busqueda(self, widget, palabras):
         """
         Muestra la alerta de busqueda y lanza secuencia de busqueda y
@@ -237,23 +271,15 @@ class JAMediaTube(gtk.Window):
         Lanza la Búsqueda y comienza secuencia que agrega los videos al panel.
         """
         # FIXME: Reparar (Si no hay conexión)
-        for video in Buscar(palabras):
-            self.videos_temp.append(video)
-        gobject.idle_add(self.__add_videos, self.videos_temp,
-            self.paneltube.encontrados)
+        self.buscador.buscar(palabras, 10)
         return False
 
     def __add_videos(self, videos, destino):
         """
         Se crean los video_widgets y se agregan al panel, segun destino.
         """
-        if len(self.videos_temp) < 1:
-            # self.videos_temp contiene solo los videos
-            # encontrados en las búsquedas, no los que se cargan
-            # desde un archivo.
-            map(self.__ocultar, [self.alerta_busqueda])
-
         if not videos:
+            map(self.__ocultar, [self.alerta_busqueda])
             self.paneltube.set_sensitive(True)
             self.toolbar_busqueda.set_sensitive(True)
             return False
