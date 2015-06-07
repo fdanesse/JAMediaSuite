@@ -286,11 +286,23 @@ class WidgetVideoItem(gtk.EventBox):
         #elif event.button == 3:
         self.emit("click_derecho", event)
 
-    def __get_progress(self, salida, STDOUT, process):
+    def __get_progress(self, salida, STDOUT, process, error, STERR):
         """
         Lectura del subproceso que obtiene los metadatos del video.
         """
         progress = salida.readline().strip()
+        err = error.readline().strip()
+        if err:
+            print "Error al actualizar metadatos de:", self.videodict["url"], err
+            process.kill()
+            for arch in [salida, error]:
+                arch.close()
+            for arch in [STDOUT, STERR]:
+                if os.path.exists(arch):
+                    os.unlink(arch)
+            del(self._temp_dat)
+            self.emit("end-update")
+            return False
         if progress:
             self._temp_dat.append(progress)
         if len(self._temp_dat) == 3:
@@ -298,10 +310,11 @@ class WidgetVideoItem(gtk.EventBox):
             self.videodict["previews"] = [self._temp_dat[1]]
             self.videodict["duracion"] = self._temp_dat[2]
             process.kill()
-            if salida:
-                salida.close()
-            if os.path.exists(STDOUT):
-                os.unlink(STDOUT)
+            for arch in [salida, error]:
+                arch.close()
+            for arch in [STDOUT, STERR]:
+                if os.path.exists(arch):
+                    os.unlink(arch)
             del(self._temp_dat)
             self.emit("end-update")
             return False
@@ -362,13 +375,16 @@ class WidgetVideoItem(gtk.EventBox):
         """
         _url = self.videodict["url"]
         STDOUT = "/tmp/jamediatube-dl%s" % self.videodict["id"]
+        STERR = "/tmp/jamediatube-dlERR%s" % self.videodict["id"] #"/dev/null"
         estructura = "youtube-dl -s -e --get-thumbnail --get-duration %s" % _url
         process = subprocess.Popen(estructura, shell=True,
-            stdout=open(STDOUT, "w+b"), stderr=open("/dev/null", "r+b"),
+            stdout=open(STDOUT, "w+b"), stderr=open(STERR, "w+b"),
             universal_newlines=True)
         salida = open(STDOUT, "r")
+        error = open(STERR, "r")
         self.connect("end-update", self.__run_update)
-        gobject.timeout_add(100, self.__get_progress, salida, STDOUT, process)
+        gobject.timeout_add(100, self.__get_progress, salida, STDOUT,
+            process, error, STERR)
 
 
 class Toolbar_Descarga(gtk.VBox):
