@@ -241,7 +241,7 @@ class JAMediaTube(gtk.Window):
         self.paneltube.update_widgets_videos_encontrados()
         self.paneltube.set_sensitive(True)
 
-    def __comenzar_busqueda(self, widget, palabras):
+    def __comenzar_busqueda(self, widget, palabras, cantidad):
         """
         Muestra la alerta de busqueda y lanza secuencia de busqueda y
         agregado de videos al panel.
@@ -256,14 +256,14 @@ class JAMediaTube(gtk.Window):
         for objeto in objetos:
             objeto.get_parent().remove(objeto)
             objeto.destroy()
-        gobject.timeout_add(300, self.__lanzar_busqueda, palabras)
+        gobject.timeout_add(300, self.__lanzar_busqueda, palabras, cantidad)
 
-    def __lanzar_busqueda(self, palabras):
+    def __lanzar_busqueda(self, palabras, cantidad):
         """
         Lanza la Búsqueda y comienza secuencia que agrega los videos al panel.
         """
         # FIXME: Reparar (Si no hay conexión)
-        self.buscador.buscar(palabras, 100)
+        self.buscador.buscar(palabras, cantidad)
         return False
 
     def __add_videos(self, videos, destino, sensitive=True):

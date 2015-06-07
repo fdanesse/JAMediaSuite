@@ -111,7 +111,7 @@ class Toolbar_Busqueda(gtk.Toolbar):
 
     __gsignals__ = {
     "comenzar_busqueda": (gobject.SIGNAL_RUN_FIRST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
+        gobject.TYPE_NONE, (gobject.TYPE_STRING, gobject.TYPE_INT))}
 
     def __init__(self):
 
@@ -122,7 +122,30 @@ class Toolbar_Busqueda(gtk.Toolbar):
         self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         item = gtk.ToolItem()
-        label = gtk.Label("Buscar por: ")
+        label = gtk.Label("Buscar")
+        label.show()
+        item.add(label)
+        self.insert(item, -1)
+
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
+
+        item = gtk.ToolItem()
+        self.entrycantidad = gtk.Entry()
+        self.entrycantidad.set_text("50")
+        self.entrycantidad.set_property("xalign", 0.5)
+        self.entrycantidad.set_size_request(40, -1)
+        self.entrycantidad.set_max_length(3)
+        self.entrycantidad.set_tooltip_text(
+            "Escribe la cantidad de videos que deseas")
+        self.entrycantidad.show()
+        self.entrycantidad.connect('changed', self.__changed_entrycantidad)
+        item.add(self.entrycantidad)
+        self.insert(item, -1)
+
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
+
+        item = gtk.ToolItem()
+        label = gtk.Label("Videos Sobre")
         label.show()
         item.add(label)
         self.insert(item, -1)
@@ -133,9 +156,10 @@ class Toolbar_Busqueda(gtk.Toolbar):
         self.entrytext = gtk.Entry()
         self.entrytext.set_size_request(400, -1)
         self.entrytext.set_max_length(50)
+        self.entrytext.set_property("xalign", 0.5)
         self.entrytext.set_tooltip_text("Escribe lo que Buscas")
         self.entrytext.show()
-        self.entrytext.connect('activate', self.__activate_entrytext)
+        self.entrytext.connect('activate', self.__emit_buscar)
         item.add(self.entrytext)
         self.insert(item, -1)
 
@@ -152,16 +176,36 @@ class Toolbar_Busqueda(gtk.Toolbar):
         self.show_all()
 
     def __emit_buscar(self, widget=None):
-        texto = self.entrytext.get_text()
-        self.entrytext.set_text("")
-        if texto:
-            self.emit("comenzar_busqueda", texto)
+        try:
+            texto = self.entrytext.get_text().strip()
+            cantidad = int(self.entrycantidad.get_text())
+            if texto and cantidad in range(1, 1000):
+                self.entrytext.set_text("")
+                self.emit("comenzar_busqueda", texto, cantidad)
+            else:
+                self.__alerta_busqueda_invalida()
+        except:
+            self.__alerta_busqueda_invalida()
 
-    def __activate_entrytext(self, widget):
-        """
-        Cuando se da enter en el entrytext.
-        """
-        self.__emit_buscar()
+    def __alerta_busqueda_invalida(self):
+        # FIXME: Recordar dar estilo a este dialog
+        dialog = gtk.Dialog(parent=self.get_toplevel(),
+            flags=gtk.DIALOG_MODAL, buttons=("OK", gtk.RESPONSE_OK))
+        t = "No se puede realizar esta búsqueda.\n"
+        t = "%s%s" % (t, "Revisa la cantidad y el texto para la búsqueda.")
+        label = gtk.Label(t)
+        label.show()
+        dialog.vbox.pack_start(label, True, True, 5)
+        dialog.run()
+        dialog.destroy()
+
+    def __changed_entrycantidad(self, widget):
+        text = widget.get_text()
+        try:
+            if text and not int(text) in range(1, 1000):
+                widget.set_text("1")
+        except:
+            widget.set_text("")
 
 
 class Alerta_Busqueda(gtk.Toolbar):
