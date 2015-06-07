@@ -24,12 +24,10 @@
 # http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
 
 import os
-import gtk
 import gobject
 import time
 import subprocess
 import urllib
-import commands
 
 from Globales import get_tube_directory
 
@@ -53,22 +51,6 @@ CODECS = [
     [18, "MP4", "270p/360p H.264 Baseline 0.5 AAC 96"],
     [82, "MP4", "360p H.264 3D 0.5 AAC 96"],
     ]
-
-
-def get_dict_video(tupla):
-    # FIXME: Verificar posibles errores.
-    # youtube-dl -s -e --get-id --get-thumbnail --get-description --get-duration --get-format https://www.youtube.com/watch?v=8C6xDjQ66wM
-    _id, url = tupla
-    dat = commands.getoutput("youtube-dl -s -e --get-thumbnail --get-description --get-duration %s" % url).splitlines()
-    video = dict(FEED)
-    video["id"] = _id
-    video["titulo"] = dat[0]
-    video["descripcion"] = dat[2]
-    video["categoria"] = ""
-    video["url"] = url
-    video["duracion"] = dat[-1].strip()
-    video["previews"] = [dat[1]]
-    return video
 
 
 class Buscar(gobject.GObject):

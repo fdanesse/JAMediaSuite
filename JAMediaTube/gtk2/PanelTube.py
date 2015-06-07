@@ -412,14 +412,15 @@ class PanelTube(gtk.HPaned):
         """
         map(self.__cancel_toolbars, self.toolbars_flotantes)
 
-    def update_widgets_videos_encontrados(self, get_dict_video):
-        self.set_sensitive(False)
+    def update_widgets_videos_encontrados(self):
+        """
+        Luego de agregados todos los widgets de videos, cada uno actualiza sus
+        previews y demás metadatos, utilizando un subproceso para no afectar a
+        la interfaz gráfica.
+        """
         items = self.encontrados.get_children()
         for item in items:
             if not item in self.encontrados.get_children():
                 # Corrige posibles errores vistos en la práctica
                 continue
-            if not item.update(get_dict_video):
-                continue
-            print "Actualizado item %i de %i" % (items.index(item) + 1, len(items))
-        self.set_sensitive(True)
+            item.update()

@@ -22,9 +22,9 @@
 import os
 import gtk
 import gobject
-import time
 import urllib
 import base64
+import subprocess
 
 from JAMediaYoutube import JAMediaYoutube
 
@@ -205,6 +205,8 @@ class WidgetVideoItem(gtk.EventBox):
     __gsignals__ = {
     #"clicked": (gobject.SIGNAL_RUN_FIRST,
     #    gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+    "end-update": (gobject.SIGNAL_RUN_FIRST,
+        gobject.TYPE_NONE, []),
     "click_derecho": (gobject.SIGNAL_RUN_FIRST,
         gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))}
 
@@ -215,6 +217,7 @@ class WidgetVideoItem(gtk.EventBox):
         self.modify_bg(0, get_colors("widgetvideoitem"))
         self.set_border_width(2)
 
+        self._temp_dat = []
         self.videodict = videodict
 
         hbox = gtk.HBox()
@@ -227,7 +230,7 @@ class WidgetVideoItem(gtk.EventBox):
             if type(self.videodict["previews"]) == list:
                 # 1 lista con 1 url, o base64 en un archivo de busquedas.
                 url = self.videodict["previews"][0]
-                archivo = "/tmp/preview%s" % time.time()
+                archivo = "/tmp/preview%s" % self.videodict["id"]
                 try:
                     # FIXME: Porque Falla si no hay Conexión.
                     fileimage, headers = urllib.urlretrieve(url, archivo)
@@ -283,21 +286,43 @@ class WidgetVideoItem(gtk.EventBox):
         #elif event.button == 3:
         self.emit("click_derecho", event)
 
-    def update(self, get_dict_video):
-        _id = self.videodict["id"]
-        _url = self.videodict["url"]
+    def __get_progress(self, salida, STDOUT, process):
+        """
+        Lectura del subproceso que obtiene los metadatos del video.
+        """
+        progress = salida.readline().strip()
+        if progress:
+            self._temp_dat.append(progress)
+        if len(self._temp_dat) == 3:
+            self.videodict["titulo"] = self._temp_dat[0]
+            self.videodict["previews"] = [self._temp_dat[1]]
+            self.videodict["duracion"] = self._temp_dat[2]
+            process.kill()
+            if salida:
+                salida.close()
+            if os.path.exists(STDOUT):
+                os.unlink(STDOUT)
+            del(self._temp_dat)
+            self.emit("end-update")
+            return False
+        return True
 
-        self.videodict = get_dict_video((_id, _url))
-        #from multiprocessing import Pool
-        #p = Pool(1)
-        #self.videodict = p.map(get_dict_video, [(_id, _url)])[0]
+    def __run_update(self, widget):
+        """
+        Obtenidos todos los metadatos del video, se actualizan los widgets.
+        """
+        gobject.timeout_add(100, self.__update)
 
+    def __update(self):
+        """
+        Obtenidos todos los metadatos del video, se actualizan los widgets.
+        """
         while gtk.events_pending():
             gtk.main_iteration()
         if self.videodict.get("previews", False):
             # 1 lista con 1 url
             url = self.videodict["previews"][0]
-            archivo = "/tmp/preview%s" % time.time()
+            archivo = "/tmp/preview%s" % self.videodict["id"]
             try:
                 # FIXME: Porque Falla si no hay Conexión.
                 fileimage, headers = urllib.urlretrieve(url, archivo)
@@ -327,7 +352,23 @@ class WidgetVideoItem(gtk.EventBox):
         self.id_url.set_text("%s: %s" % ("url", self.videodict["url"]))
         while gtk.events_pending():
             gtk.main_iteration()
-        return True
+        return False
+
+    def update(self):
+        """
+        Luego de agregados todos los widgets de videos, cada uno actualiza sus
+        previews y demás metadatos, utilizando un subproceso para no afectar a
+        la interfaz gráfica.
+        """
+        _url = self.videodict["url"]
+        STDOUT = "/tmp/jamediatube-dl%s" % self.videodict["id"]
+        estructura = "youtube-dl -s -e --get-thumbnail --get-duration %s" % _url
+        process = subprocess.Popen(estructura, shell=True,
+            stdout=open(STDOUT, "w+b"), stderr=open("/dev/null", "r+b"),
+            universal_newlines=True)
+        salida = open(STDOUT, "r")
+        self.connect("end-update", self.__run_update)
+        gobject.timeout_add(100, self.__get_progress, salida, STDOUT, process)
 
 
 class Toolbar_Descarga(gtk.VBox):

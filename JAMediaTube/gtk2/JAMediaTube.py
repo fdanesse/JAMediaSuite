@@ -33,7 +33,6 @@ from Widgets import ToolbarSalir
 from JAMedia.JAMedia import JAMedia
 from JAMedia.JAMedia import check_path
 from JAMediaYoutube import Buscar
-from JAMediaYoutube import get_dict_video
 from JAMediaYoutube import FEED
 from Widgets import WidgetVideoItem
 from Globales import get_colors
@@ -239,7 +238,7 @@ class JAMediaTube(gtk.Window):
         """
         Cuando Termina la Búsqueda, se actualizan los widgets de videos.
         """
-        self.paneltube.update_widgets_videos_encontrados(get_dict_video)
+        self.paneltube.update_widgets_videos_encontrados()
 
     def __comenzar_busqueda(self, widget, palabras):
         """
@@ -263,7 +262,7 @@ class JAMediaTube(gtk.Window):
         Lanza la Búsqueda y comienza secuencia que agrega los videos al panel.
         """
         # FIXME: Reparar (Si no hay conexión)
-        self.buscador.buscar(palabras, 10)
+        self.buscador.buscar(palabras, 50)
         return False
 
     def __add_videos(self, videos, destino):
