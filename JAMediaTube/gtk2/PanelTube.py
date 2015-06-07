@@ -397,6 +397,29 @@ class PanelTube(gtk.HPaned):
         self.emit("cancel_toolbar")
         widget.cancelar()
 
+    def __update_next(self, widget, items):
+        """
+        Un video ha actualizado sus metadatos, lanza la actualización del
+        siguiente video manteniendo lo mas baja posible la actividad en la red.
+        """
+        if widget:
+            widget.set_sensitive(True)
+        if not items:
+            del(items)
+            self.toolbar_videos_izquierda.set_sensitive(True)
+            self.toolbar_encontrados.set_sensitive(True)
+            return False
+        item = items[0]
+        items = list(items[1:])
+        if item:
+            if item.get_parent():
+                item.connect("end-update", self.__update_next, items)
+                item.update()
+            else:
+                self.__update_next(False, items)
+        else:
+            self.__update_next(False, items)
+
     def cancel_toolbars_flotantes(self):
         """
         Óculta las toolbars flotantes, se llama desde la raíz de la aplicación
@@ -418,9 +441,9 @@ class PanelTube(gtk.HPaned):
         previews y demás metadatos, utilizando un subproceso para no afectar a
         la interfaz gráfica.
         """
-        items = self.encontrados.get_children()
+        self.toolbar_videos_izquierda.set_sensitive(False)
+        self.toolbar_encontrados.set_sensitive(False)
+        items = list(self.encontrados.get_children())
         for item in items:
-            if not item in self.encontrados.get_children():
-                # Corrige posibles errores vistos en la práctica
-                continue
-            item.update()
+            item.set_sensitive(False)
+        self.__update_next(False, items)

@@ -229,16 +229,17 @@ class JAMediaTube(gtk.Window):
         video["url"] = url
         video["duracion"] = 0
         video["previews"] = ""
-        gobject.idle_add(self.__add_videos, [video],
-            self.paneltube.encontrados)
+        self.__add_videos([video], self.paneltube.encontrados, sensitive=False)
         while gtk.events_pending():
             gtk.main_iteration()
+        # Para evitar mover videos antes de lanzar actualización de metadatos
 
     def __end_busqueda(self, buscador):
         """
         Cuando Termina la Búsqueda, se actualizan los widgets de videos.
         """
         self.paneltube.update_widgets_videos_encontrados()
+        self.paneltube.set_sensitive(True)
 
     def __comenzar_busqueda(self, widget, palabras):
         """
@@ -262,16 +263,17 @@ class JAMediaTube(gtk.Window):
         Lanza la Búsqueda y comienza secuencia que agrega los videos al panel.
         """
         # FIXME: Reparar (Si no hay conexión)
-        self.buscador.buscar(palabras, 50)
+        self.buscador.buscar(palabras, 100)
         return False
 
-    def __add_videos(self, videos, destino):
+    def __add_videos(self, videos, destino, sensitive=True):
         """
         Se crean los video_widgets y se agregan al panel, segun destino.
         """
         if not videos:
             map(self.__ocultar, [self.alerta_busqueda])
-            self.paneltube.set_sensitive(True)
+            if sensitive:
+                self.paneltube.set_sensitive(True)
             self.toolbar_busqueda.set_sensitive(True)
             return False
 
@@ -296,7 +298,7 @@ class JAMediaTube(gtk.Window):
             texto = str(texto[0:50]) + " . . . "
 
         self.alerta_busqueda.label.set_text(texto)
-        gobject.idle_add(self.__add_videos, videos, destino)
+        gobject.idle_add(self.__add_videos, videos, destino, sensitive)
         return False
 
     def __switch(self, widget, valor):
