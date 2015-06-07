@@ -421,4 +421,5 @@ class PanelTube(gtk.HPaned):
                 continue
             if not item.update(get_dict_video):
                 continue
+            print "Actualizado item %i de %i" % (items.index(item) + 1, len(items))
         self.set_sensitive(True)

@@ -55,19 +55,18 @@ CODECS = [
     ]
 
 
-def get_dict_video(_id, url):
+def get_dict_video(tupla):
     # FIXME: Verificar posibles errores.
     # youtube-dl -s -e --get-id --get-thumbnail --get-description --get-duration --get-format https://www.youtube.com/watch?v=8C6xDjQ66wM
+    _id, url = tupla
     dat = commands.getoutput("youtube-dl -s -e --get-thumbnail --get-description --get-duration %s" % url).splitlines()
-    t = dat[-1].split(":")
-    t = int(t[0])*60 + int(t[1])
     video = dict(FEED)
     video["id"] = _id
     video["titulo"] = dat[0]
     video["descripcion"] = dat[2]
     video["categoria"] = ""
     video["url"] = url
-    video["duracion"] = t
+    video["duracion"] = dat[-1].strip()
     video["previews"] = [dat[1]]
     return video
 

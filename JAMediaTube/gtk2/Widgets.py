@@ -258,7 +258,7 @@ class WidgetVideoItem(gtk.EventBox):
         self.id_categoria = gtk.Label("%s: %s" % ("Categoría",
             self.videodict["categoria"]))
         self.id_duracion = gtk.Label("%s: %s %s" % ("Duración",
-            int(float(self.videodict["duracion"]) / 60.0), "Minutos"))
+            self.videodict["duracion"], "Minutos"))
         self.id_url = gtk.Label("%s: %s" % ("url", self.videodict["url"]))
 
         vbox.pack_start(self.id_label, True, True, 0)
@@ -286,7 +286,12 @@ class WidgetVideoItem(gtk.EventBox):
     def update(self, get_dict_video):
         _id = self.videodict["id"]
         _url = self.videodict["url"]
-        self.videodict = get_dict_video(_id, _url)
+
+        self.videodict = get_dict_video((_id, _url))
+        #from multiprocessing import Pool
+        #p = Pool(1)
+        #self.videodict = p.map(get_dict_video, [(_id, _url)])[0]
+
         while gtk.events_pending():
             gtk.main_iteration()
         if self.videodict.get("previews", False):
@@ -318,7 +323,7 @@ class WidgetVideoItem(gtk.EventBox):
         self.id_categoria.set_text("%s: %s" % ("Categoría",
             self.videodict["categoria"]))
         self.id_duracion.set_text("%s: %s %s" % ("Duración",
-            int(float(self.videodict["duracion"]) / 60.0), "Minutos"))
+            self.videodict["duracion"], "Minutos"))
         self.id_url.set_text("%s: %s" % ("url", self.videodict["url"]))
         while gtk.events_pending():
             gtk.main_iteration()
