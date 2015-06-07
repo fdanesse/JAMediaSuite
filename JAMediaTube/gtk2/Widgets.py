@@ -221,17 +221,6 @@ class Alerta_Busqueda(gtk.Toolbar):
 
         self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
-        imagen = gtk.Image()
-        icono = os.path.join(BASE_PATH, "Iconos", "yt_videos_black.png")
-        pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(icono, -1, 24)
-        imagen.set_from_pixbuf(pixbuf)
-        imagen.show()
-        item = gtk.ToolItem()
-        item.add(imagen)
-        self.insert(item, -1)
-
-        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
-
         item = gtk.ToolItem()
         item.set_expand(True)
         self.label = gtk.Label("")

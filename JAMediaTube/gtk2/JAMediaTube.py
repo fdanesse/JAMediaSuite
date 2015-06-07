@@ -243,7 +243,7 @@ class JAMediaTube(gtk.Window):
 
     def __comenzar_busqueda(self, widget, palabras, cantidad):
         """
-        Muestra la alerta de busqueda y lanza secuencia de busqueda y
+        Muestra alerta de busqueda y lanza secuencia de busqueda y
         agregado de videos al panel.
         """
         self.paneltube.set_sensitive(False)

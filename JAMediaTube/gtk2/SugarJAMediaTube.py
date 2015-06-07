@@ -34,6 +34,7 @@ from Widgets import ToolbarSalir
 from JAMedia.JAMedia import JAMedia
 from JAMedia.JAMedia import check_path
 from JAMediaYoutube import Buscar
+from JAMediaYoutube import FEED
 from Widgets import WidgetVideoItem
 from Globales import get_colors
 
@@ -76,7 +77,7 @@ class SugarJAMediaTube(activity.Activity):
         self.jamedia = None
 
         self.archivos = []
-        self.videos_temp = []
+        self.buscador = Buscar()
 
         gobject.idle_add(self.__setup_init)
         print "JAMediaTube process:", os.getpid()
@@ -167,7 +168,8 @@ class SugarJAMediaTube(activity.Activity):
         self.paneltube.connect('open_shelve_list', self.__open_shelve_list)
         self.toolbar_descarga.connect('end', self.__run_download)
         self.paneltube.connect("cancel_toolbar", self.__cancel_toolbar)
-
+        self.buscador.connect("encontrado", self.__add_video_encontrado)
+        self.buscador.connect("end", self.__end_busqueda)
         self.resize(640, 480)
 
     def __cancel_toolbar(self, widget=None):
@@ -226,9 +228,33 @@ class SugarJAMediaTube(activity.Activity):
                 text = TipEncontrados
             videoitem.set_tooltip_text(text)
 
-    def __comenzar_busqueda(self, widget, palabras):
+    def __add_video_encontrado(self, buscador, _id, url):
         """
-        Muestra la alerta de busqueda y lanza secuencia de busqueda y
+        Cuando el buscador encuentra un video, se agrega al panel.
+        """
+        video = dict(FEED)
+        video["id"] = _id
+        video["titulo"] = ""
+        video["descripcion"] = ""
+        video["categoria"] = ""
+        video["url"] = url
+        video["duracion"] = 0
+        video["previews"] = ""
+        self.__add_videos([video], self.paneltube.encontrados, sensitive=False)
+        while gtk.events_pending():
+            gtk.main_iteration()
+        # Para evitar mover videos antes de lanzar actualización de metadatos
+
+    def __end_busqueda(self, buscador):
+        """
+        Cuando Termina la Búsqueda, se actualizan los widgets de videos.
+        """
+        self.paneltube.update_widgets_videos_encontrados()
+        self.paneltube.set_sensitive(True)
+
+    def __comenzar_busqueda(self, widget, palabras, cantidad):
+        """
+        Muestra alerta de busqueda y lanza secuencia de busqueda y
         agregado de videos al panel.
         """
         self.paneltube.set_sensitive(False)
@@ -241,30 +267,24 @@ class SugarJAMediaTube(activity.Activity):
         for objeto in objetos:
             objeto.get_parent().remove(objeto)
             objeto.destroy()
-        gobject.timeout_add(300, self.__lanzar_busqueda, palabras)
+        gobject.timeout_add(300, self.__lanzar_busqueda, palabras, cantidad)
 
-    def __lanzar_busqueda(self, palabras):
+    def __lanzar_busqueda(self, palabras, cantidad):
         """
         Lanza la Búsqueda y comienza secuencia que agrega los videos al panel.
         """
         # FIXME: Reparar (Si no hay conexión)
-        for video in Buscar(palabras):
-            self.videos_temp.append(video)
-        gobject.idle_add(self.__add_videos, self.videos_temp,
-            self.paneltube.encontrados)
+        self.buscador.buscar(palabras, cantidad)
         return False
 
-    def __add_videos(self, videos, destino):
+    def __add_videos(self, videos, destino, sensitive=True):
         """
         Se crean los video_widgets y se agregan al panel, segun destino.
         """
-        if len(self.videos_temp) < 1:
-            # self.videos_temp contiene solo los videos
-            # encontrados en las búsquedas, no los que se cargan
-            # desde un archivo.
-            map(self.__ocultar, [self.alerta_busqueda])
         if not videos:
-            self.paneltube.set_sensitive(True)
+            map(self.__ocultar, [self.alerta_busqueda])
+            if sensitive:
+                self.paneltube.set_sensitive(True)
             self.toolbar_busqueda.set_sensitive(True)
             return False
 
@@ -289,7 +309,7 @@ class SugarJAMediaTube(activity.Activity):
             texto = str(texto[0:50]) + " . . . "
 
         self.alerta_busqueda.label.set_text(texto)
-        gobject.idle_add(self.__add_videos, videos, destino)
+        gobject.idle_add(self.__add_videos, videos, destino, sensitive)
         return False
 
     def __switch(self, widget, valor):
