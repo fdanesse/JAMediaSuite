@@ -93,7 +93,7 @@ class SinRootWidget(Gtk.EventBox):
         # Limpiar y establecer permisos de archivos y directorios
         get_installers_data(self.install_path)
         # Generar archivo de distribución "*.zip"
-        zippath = "%s_%s.zip" % (self.install_path, self.proyecto["version"])
+        zippath = "%s.zip" % self.install_path
         # Eliminar anterior.
         if os.path.exists(zippath):
             os.remove(zippath)
@@ -153,6 +153,7 @@ class Notebook(Gtk.Notebook):
         # copiar proyecto
         commands.getoutput('cp -r \"%s\" \"%s\"' % (
             self.proyecto_path, CONFPATH))
+        self.proyecto_path = path
 
         archivo = open(os.path.join(BASEPATH, "installmodel.txt"))
         texto = u"%s" % archivo.read()
@@ -171,7 +172,6 @@ class Notebook(Gtk.Notebook):
 
     def set_icon(self, iconpath):
         iconpath = iconpath.split(self.proyecto_path)[-1]
-
         archivo = open(os.path.join(BASEPATH, "installmodel.txt"))
         texto = u"%s" % archivo.read()
         archivo.close()

@@ -22,22 +22,24 @@ if os.path.exists(final_path):
 
 # Crear Directorios.
 if not os.path.exists(os.path.join(os.environ["HOME"], '.local')):
+    print "Creando Directorio %s" % os.path.join(os.environ["HOME"], '.local')
     os.mkdir(os.path.join(os.environ["HOME"], '.local'))
 
 if not os.path.exists(os.path.join(os.environ["HOME"], '.local/bin')):
+    print "Creando Directorio %s" % os.path.join(os.environ["HOME"], '.local/bin')
     os.mkdir(os.path.join(os.environ["HOME"], '.local/bin'))
 
 if not os.path.exists(os.path.join(os.environ["HOME"], '.local/share')):
+    print "Creando Directorio %s" % os.path.join(os.environ["HOME"], '.local/share')
     os.mkdir(os.path.join(os.environ["HOME"], '.local/share'))
 
-if not os.path.exists(os.path.join(os.environ["HOME"],
-    '.local/share/applications')):
+if not os.path.exists(os.path.join(os.environ["HOME"], '.local/share/applications')):
+    print "Creando Directorio %s" % os.path.join(os.environ["HOME"], '.local/share/applications')
     os.mkdir(os.path.join(os.environ["HOME"], '.local/share/applications'))
 
 # Copiar proyecto a destino final.
-print "Copiando proyecto a destino final . . ."
-commands.getoutput('cp -r %s %s' % (
-    self_path, os.path.join(os.environ["HOME"], '.local/share')))
+print "Copiando proyecto a %s" % os.path.join(os.environ["HOME"], '.local/share')
+commands.getoutput('cp -r %s %s' % (self_path, os.path.join(os.environ["HOME"], '.local/share')))
 commands.getoutput('chmod 755 -R %s' % final_path)
 
 # Crear Archivo .desktop
@@ -55,19 +57,15 @@ Type=Application
 Icon=%s
 Categories=%s
 MimeType=%s
-StartupNotify=true""" % (NAME, NAME, main_path,
-    icon_path, "GnomeCat", "GnomeMimeTypes")
+StartupNotify=true""" % (NAME, NAME, main_path, icon_path, "GnomeCat", "GnomeMimeTypes")
 
 print desktoptext
 
-desktop = open(os.path.join(os.environ["HOME"],
-    ".local/share/applications/%s.desktop" % NAME), "w")
+desktop = open(os.path.join(os.environ["HOME"], ".local/share/applications/%s.desktop" % NAME), "w")
 desktop.write(desktoptext)
 desktop.close()
 
-commands.getoutput('chmod 755 %s' % os.path.join(os.environ["HOME"],
-    ".local/share/applications/%s.desktop" % NAME))
-commands.getoutput("update-desktop-database %s" % os.path.join(
-    os.environ["HOME"], ".local/share/applications/"))
+commands.getoutput('chmod 755 %s' % os.path.join(os.environ["HOME"], ".local/share/applications/%s.desktop" % NAME))
+commands.getoutput("update-desktop-database %s" % os.path.join(os.environ["HOME"], ".local/share/applications/"))
 
 print "Instalacion Finalizada."
