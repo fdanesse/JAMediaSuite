@@ -1,5 +1,6 @@
+from __future__ import unicode_literals
+
 import json
-import netrc
 import re
 import socket
 
@@ -10,81 +11,90 @@ from ..utils import (
     compat_urllib_error,
     compat_urllib_parse,
     compat_urllib_request,
+    urlencode_postdata,
 
     ExtractorError,
 )
 
 
 class FacebookIE(InfoExtractor):
-    """Information Extractor for Facebook"""
-
-    _VALID_URL = r'^(?:https?://)?(?:\w+\.)?facebook\.com/(?:video/video|photo)\.php\?(?:.*?)v=(?P<ID>\d+)(?:.*)'
-    _LOGIN_URL = 'https://login.facebook.com/login.php?m&next=http%3A%2F%2Fm.facebook.com%2Fhome.php&'
+    _VALID_URL = r'''(?x)
+        https?://(?:\w+\.)?facebook\.com/
+        (?:[^#?]*\#!/)?
+        (?:video/video\.php|photo\.php|video/embed)\?(?:.*?)
+        (?:v|video_id)=(?P<id>[0-9]+)
+        (?:.*)'''
+    _LOGIN_URL = 'https://www.facebook.com/login.php?next=http%3A%2F%2Ffacebook.com%2Fhome.php&login_attempt=1'
+    _CHECKPOINT_URL = 'https://www.facebook.com/checkpoint/?next=http%3A%2F%2Ffacebook.com%2Fhome.php&_fb_noscript=1'
     _NETRC_MACHINE = 'facebook'
-    IE_NAME = u'facebook'
+    IE_NAME = 'facebook'
     _TEST = {
-        u'url': u'https://www.facebook.com/photo.php?v=120708114770723',
-        u'file': u'120708114770723.mp4',
-        u'md5': u'48975a41ccc4b7a581abd68651c1a5a8',
-        u'info_dict': {
-            u"duration": 279, 
-            u"title": u"PEOPLE ARE AWESOME 2013"
+        'url': 'https://www.facebook.com/photo.php?v=120708114770723',
+        'md5': '48975a41ccc4b7a581abd68651c1a5a8',
+        'info_dict': {
+            'id': '120708114770723',
+            'ext': 'mp4',
+            'duration': 279,
+            'title': 'PEOPLE ARE AWESOME 2013',
         }
     }
 
-    def report_login(self):
-        """Report attempt to log in."""
-        self.to_screen(u'Logging in')
-
-    def _real_initialize(self):
-        if self._downloader is None:
-            return
-
-        useremail = None
-        password = None
-        downloader_params = self._downloader.params
-
-        # Attempt to use provided username and password or .netrc data
-        if downloader_params.get('username', None) is not None:
-            useremail = downloader_params['username']
-            password = downloader_params['password']
-        elif downloader_params.get('usenetrc', False):
-            try:
-                info = netrc.netrc().authenticators(self._NETRC_MACHINE)
-                if info is not None:
-                    useremail = info[0]
-                    password = info[2]
-                else:
-                    raise netrc.NetrcParseError('No authenticators for %s' % self._NETRC_MACHINE)
-            except (IOError, netrc.NetrcParseError) as err:
-                self._downloader.report_warning(u'parsing .netrc: %s' % compat_str(err))
-                return
-
+    def _login(self):
+        (useremail, password) = self._get_login_info()
         if useremail is None:
             return
 
-        # Log in
+        login_page_req = compat_urllib_request.Request(self._LOGIN_URL)
+        login_page_req.add_header('Cookie', 'locale=en_US')
+        login_page = self._download_webpage(login_page_req, None,
+            note='Downloading login page',
+            errnote='Unable to download login page')
+        lsd = self._search_regex(
+            r'<input type="hidden" name="lsd" value="([^"]*)"',
+            login_page, 'lsd')
+        lgnrnd = self._search_regex(r'name="lgnrnd" value="([^"]*?)"', login_page, 'lgnrnd')
+
         login_form = {
             'email': useremail,
             'pass': password,
-            'login': 'Log+In'
+            'lsd': lsd,
+            'lgnrnd': lgnrnd,
+            'next': 'http://facebook.com/home.php',
+            'default_persistent': '0',
+            'legacy_return': '1',
+            'timezone': '-60',
+            'trynum': '1',
             }
-        request = compat_urllib_request.Request(self._LOGIN_URL, compat_urllib_parse.urlencode(login_form))
+        request = compat_urllib_request.Request(self._LOGIN_URL, urlencode_postdata(login_form))
+        request.add_header('Content-Type', 'application/x-www-form-urlencoded')
         try:
-            self.report_login()
-            login_results = compat_urllib_request.urlopen(request).read()
+            login_results = self._download_webpage(request, None,
+                note='Logging in', errnote='unable to fetch login page')
             if re.search(r'<form(.*)name="login"(.*)</form>', login_results) is not None:
-                self._downloader.report_warning(u'unable to log in: bad username/password, or exceded login rate limit (~3/min). Check credentials or wait.')
+                self._downloader.report_warning('unable to log in: bad username/password, or exceded login rate limit (~3/min). Check credentials or wait.')
                 return
+
+            check_form = {
+                'fb_dtsg': self._search_regex(r'name="fb_dtsg" value="(.+?)"', login_results, 'fb_dtsg'),
+                'h': self._search_regex(r'name="h" value="(\w*?)"', login_results, 'h'),
+                'name_action_selected': 'dont_save',
+            }
+            check_req = compat_urllib_request.Request(self._CHECKPOINT_URL, urlencode_postdata(check_form))
+            check_req.add_header('Content-Type', 'application/x-www-form-urlencoded')
+            check_response = self._download_webpage(check_req, None,
+                note='Confirming login')
+            if re.search(r'id="checkpointSubmitButton"', check_response) is not None:
+                self._downloader.report_warning('Unable to confirm login, you have to login in your brower and authorize the login.')
         except (compat_urllib_error.URLError, compat_http_client.HTTPException, socket.error) as err:
-            self._downloader.report_warning(u'unable to log in: %s' % compat_str(err))
+            self._downloader.report_warning('unable to log in: %s' % compat_str(err))
             return
+
+    def _real_initialize(self):
+        self._login()
 
     def _real_extract(self, url):
         mobj = re.match(self._VALID_URL, url)
-        if mobj is None:
-            raise ExtractorError(u'Invalid URL: %s' % url)
-        video_id = mobj.group('ID')
+        video_id = mobj.group('id')
 
         url = 'https://www.facebook.com/video/video.php?v=%s' % video_id
         webpage = self._download_webpage(url, video_id)
@@ -93,7 +103,13 @@ class FacebookIE(InfoExtractor):
         AFTER = '.forEach(function(variable) {swf.addVariable(variable[0], variable[1]);});'
         m = re.search(re.escape(BEFORE) + '(.*?)' + re.escape(AFTER), webpage)
         if not m:
-            raise ExtractorError(u'Cannot parse data')
+            m_msg = re.search(r'class="[^"]*uiInterstitialContent[^"]*"><div>(.*?)</div>', webpage)
+            if m_msg is not None:
+                raise ExtractorError(
+                    'The video is not available, Facebook said: "%s"' % m_msg.group(1),
+                    expected=True)
+            else:
+                raise ExtractorError('Cannot parse data')
         data = dict(json.loads(m.group(1)))
         params_raw = compat_urllib_parse.unquote(data['params'])
         params = json.loads(params_raw)
@@ -102,19 +118,15 @@ class FacebookIE(InfoExtractor):
         if not video_url:
             video_url = video_data['sd_src']
         if not video_url:
-            raise ExtractorError(u'Cannot find video URL')
-        video_duration = int(video_data['video_duration'])
-        thumbnail = video_data['thumbnail_src']
+            raise ExtractorError('Cannot find video URL')
 
-        video_title = self._html_search_regex('<h2 class="uiHeaderTitle">([^<]+)</h2>',
-            webpage, u'title')
+        video_title = self._html_search_regex(
+            r'<h2 class="uiHeaderTitle">([^<]*)</h2>', webpage, 'title')
 
-        info = {
+        return {
             'id': video_id,
             'title': video_title,
             'url': video_url,
-            'ext': 'mp4',
-            'duration': video_duration,
-            'thumbnail': thumbnail,
+            'duration': int(video_data['video_duration']),
+            'thumbnail': video_data['thumbnail_src'],
         }
-        return [info]

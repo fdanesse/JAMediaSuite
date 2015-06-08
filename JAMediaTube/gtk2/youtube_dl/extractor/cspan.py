@@ -1,51 +1,83 @@
+from __future__ import unicode_literals
+
 import re
 
 from .common import InfoExtractor
 from ..utils import (
-    compat_urllib_parse,
+    int_or_none,
+    unescapeHTML,
+    find_xpath_attr,
 )
 
+
 class CSpanIE(InfoExtractor):
-    _VALID_URL = r'http://www.c-spanvideo.org/program/(.*)'
-    _TEST = {
-        u'url': u'http://www.c-spanvideo.org/program/HolderonV',
-        u'file': u'315139.flv',
-        u'md5': u'74a623266956f69e4df0068ab6c80fe4',
-        u'info_dict': {
-            u"title": u"Attorney General Eric Holder on Voting Rights Act Decision"
+    _VALID_URL = r'http://(?:www\.)?c-span\.org/video/\?(?P<id>[0-9a-f]+)'
+    IE_DESC = 'C-SPAN'
+    _TESTS = [{
+        'url': 'http://www.c-span.org/video/?313572-1/HolderonV',
+        'md5': '8e44ce11f0f725527daccc453f553eb0',
+        'info_dict': {
+            'id': '315139',
+            'ext': 'mp4',
+            'title': 'Attorney General Eric Holder on Voting Rights Act Decision',
+            'description': 'Attorney General Eric Holder spoke to reporters following the Supreme Court decision in Shelby County v. Holder in which the court ruled that the preclearance provisions of the Voting Rights Act could not be enforced until Congress established new guidelines for review.',
         },
-        u'skip': u'Requires rtmpdump'
-    }
+        'skip': 'Regularly fails on travis, for unknown reasons',
+    }, {
+        'url': 'http://www.c-span.org/video/?c4486943/cspan-international-health-care-models',
+        # For whatever reason, the served video alternates between
+        # two different ones
+        #'md5': 'dbb0f047376d457f2ab8b3929cbb2d0c',
+        'info_dict': {
+            'id': '340723',
+            'ext': 'mp4',
+            'title': 'International Health Care Models',
+            'description': 'md5:7a985a2d595dba00af3d9c9f0783c967',
+        }
+    }]
 
     def _real_extract(self, url):
         mobj = re.match(self._VALID_URL, url)
-        prog_name = mobj.group(1)
-        webpage = self._download_webpage(url, prog_name)
-        video_id = self._search_regex(r'programid=(.*?)&', webpage, 'video id')
-        data = compat_urllib_parse.urlencode({'programid': video_id,
-                                              'dynamic':'1'})
-        info_url = 'http://www.c-spanvideo.org/common/services/flashXml.php?' + data
-        video_info = self._download_webpage(info_url, video_id, u'Downloading video info')
+        page_id = mobj.group('id')
+        webpage = self._download_webpage(url, page_id)
+        video_id = self._search_regex(r'progid=\'?([0-9]+)\'?>', webpage, 'video id')
 
-        self.report_extraction(video_id)
+        description = self._html_search_regex(
+            [
+                # The full description
+                r'<div class=\'expandable\'>(.*?)<a href=\'#\'',
+                # If the description is small enough the other div is not
+                # present, otherwise this is a stripped version
+                r'<p class=\'initial\'>(.*?)</p>'
+            ],
+            webpage, 'description', flags=re.DOTALL)
 
-        title = self._html_search_regex(r'<string name="title">(.*?)</string>',
-                                        video_info, 'title')
-        description = self._html_search_regex(r'<meta (?:property="og:|name=")description" content="(.*?)"',
-                                              webpage, 'description',
-                                              flags=re.MULTILINE|re.DOTALL)
+        info_url = 'http://c-spanvideo.org/videoLibrary/assets/player/ajax-player.php?os=android&html5=program&id=' + video_id
+        data = self._download_json(info_url, video_id)
 
-        url = self._search_regex(r'<string name="URL">(.*?)</string>',
-                                 video_info, 'video url')
-        url = url.replace('$(protocol)', 'rtmp').replace('$(port)', '443')
-        path = self._search_regex(r'<string name="path">(.*?)</string>',
-                            video_info, 'rtmp play path')
+        doc = self._download_xml(
+            'http://www.c-span.org/common/services/flashXml.php?programid=' + video_id,
+            video_id)
 
-        return {'id': video_id,
-                'title': title,
-                'ext': 'flv',
-                'url': url,
-                'play_path': path,
-                'description': description,
-                'thumbnail': self._og_search_thumbnail(webpage),
-                }
+        title = find_xpath_attr(doc, './/string', 'name', 'title').text
+        thumbnail = find_xpath_attr(doc, './/string', 'name', 'poster').text
+
+        files = data['video']['files']
+
+        entries = [{
+            'id': '%s_%d' % (video_id, partnum + 1),
+            'title': (
+                title if len(files) == 1 else
+                '%s part %d' % (title, partnum + 1)),
+            'url': unescapeHTML(f['path']['#text']),
+            'description': description,
+            'thumbnail': thumbnail,
+            'duration': int_or_none(f.get('length', {}).get('#text')),
+        } for partnum, f in enumerate(files)]
+
+        return {
+            '_type': 'playlist',
+            'entries': entries,
+            'title': title,
+            'id': video_id,
+        }

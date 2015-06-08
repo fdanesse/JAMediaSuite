@@ -33,6 +33,7 @@ from Globales import get_separador
 from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
+youtubedl = os.path.join(BASE_PATH, "youtube-dl")
 
 
 class Toolbar(gtk.Toolbar):
@@ -408,8 +409,8 @@ class WidgetVideoItem(gtk.EventBox):
         """
         _url = self.videodict["url"]
         STDOUT = "/tmp/jamediatube-dl%s" % self.videodict["id"]
-        STERR = "/tmp/jamediatube-dlERR%s" % self.videodict["id"] #"/dev/null"
-        estructura = "youtube-dl -s -e --get-thumbnail --get-duration %s" % _url
+        STERR = "/tmp/jamediatube-dlERR%s" % self.videodict["id"]
+        estructura = "python %s -s -e --get-thumbnail --get-duration %s" % (youtubedl, _url)
         process = subprocess.Popen(estructura, shell=True,
             stdout=open(STDOUT, "w+b"), stderr=open(STERR, "w+b"),
             universal_newlines=True)

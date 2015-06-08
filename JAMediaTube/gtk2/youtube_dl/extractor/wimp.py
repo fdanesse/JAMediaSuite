@@ -1,36 +1,55 @@
+from __future__ import unicode_literals
+
 import re
-import base64
 
 from .common import InfoExtractor
+from .youtube import YoutubeIE
 
 
 class WimpIE(InfoExtractor):
-    _VALID_URL = r'(?:http://)?(?:www\.)?wimp\.com/([^/]+)/'
-    _TEST = {
-        u'url': u'http://www.wimp.com/deerfence/',
-        u'file': u'deerfence.flv',
-        u'md5': u'8b215e2e0168c6081a1cf84b2846a2b5',
-        u'info_dict': {
-            u"title": u"Watch Till End: Herd of deer jump over a fence."
+    _VALID_URL = r'http://(?:www\.)?wimp\.com/([^/]+)/'
+    _TESTS = [{
+        'url': 'http://www.wimp.com/maruexhausted/',
+        'md5': 'f1acced123ecb28d9bb79f2479f2b6a1',
+        'info_dict': {
+            'id': 'maruexhausted',
+            'ext': 'flv',
+            'title': 'Maru is exhausted.',
+            'description': 'md5:57e099e857c0a4ea312542b684a869b8',
         }
-    }
+    }, {
+        # youtube video
+        'url': 'http://www.wimp.com/clowncar/',
+        'info_dict': {
+            'id': 'cG4CEr2aiSg',
+            'ext': 'mp4',
+            'title': 'Basset hound clown car...incredible!',
+            'description': 'md5:8d228485e0719898c017203f900b3a35',
+            'uploader': 'Gretchen Hoey',
+            'uploader_id': 'gretchenandjeff1',
+            'upload_date': '20140303',
+        },
+        'add_ie': ['Youtube'],
+    }]
 
     def _real_extract(self, url):
         mobj = re.match(self._VALID_URL, url)
         video_id = mobj.group(1)
         webpage = self._download_webpage(url, video_id)
-        title = self._search_regex(r'<meta name="description" content="(.+?)" />',webpage, 'video title')
-        thumbnail_url = self._search_regex(r'<meta property="og\:image" content="(.+?)" />', webpage,'video thumbnail')
-        googleString = self._search_regex("googleCode = '(.*?)'", webpage, 'file url')
-        googleString = base64.b64decode(googleString).decode('ascii')
-        final_url = self._search_regex('","(.*?)"', googleString,'final video url')
-        ext = final_url.rpartition(u'.')[2]
+        video_url = self._search_regex(
+            r's1\.addVariable\("file",\s*"([^"]+)"\);', webpage, 'video URL')
+        if YoutubeIE.suitable(video_url):
+            self.to_screen('Found YouTube video')
+            return {
+                '_type': 'url',
+                'url': video_url,
+                'ie_key': YoutubeIE.ie_key(),
+            }
 
-        return [{
-            'id':        video_id,
-            'url':       final_url,
-            'ext':       ext,
-            'title':     title,
-            'thumbnail': thumbnail_url,
-        }]
-
+        return {
+            'id': video_id,
+            'url': video_url,
+            'title': self._og_search_title(webpage),
+            'thumbnail': self._og_search_thumbnail(webpage),
+            'description': self._og_search_description(webpage),
+        }

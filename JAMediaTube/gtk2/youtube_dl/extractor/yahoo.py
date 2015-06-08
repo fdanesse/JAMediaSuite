@@ -1,4 +1,5 @@
-import datetime
+from __future__ import unicode_literals
+
 import itertools
 import json
 import re
@@ -6,116 +7,168 @@ import re
 from .common import InfoExtractor, SearchInfoExtractor
 from ..utils import (
     compat_urllib_parse,
-
-    ExtractorError,
+    compat_urlparse,
+    clean_html,
+    int_or_none,
 )
 
+
 class YahooIE(InfoExtractor):
-    IE_DESC = u'Yahoo screen'
-    _VALID_URL = r'http://screen\.yahoo\.com/.*?-(?P<id>\d*?)\.html'
-    _TEST = {
-        u'url': u'http://screen.yahoo.com/julian-smith-travis-legg-watch-214727115.html',
-        u'file': u'214727115.flv',
-        u'md5': u'2e717f169c1be93d84d3794a00d4a325',
-        u'info_dict': {
-            u"title": u"Julian Smith & Travis Legg Watch Julian Smith"
+    IE_DESC = 'Yahoo screen and movies'
+    _VALID_URL = r'https?://(?:screen|movies)\.yahoo\.com/.*?-(?P<id>[0-9]+)(?:-[a-z]+)?\.html'
+    _TESTS = [
+        {
+            'url': 'http://screen.yahoo.com/julian-smith-travis-legg-watch-214727115.html',
+            'md5': '4962b075c08be8690a922ee026d05e69',
+            'info_dict': {
+                'id': '2d25e626-2378-391f-ada0-ddaf1417e588',
+                'ext': 'mp4',
+                'title': 'Julian Smith & Travis Legg Watch Julian Smith',
+                'description': 'Julian and Travis watch Julian Smith',
+            },
         },
-        u'skip': u'Requires rtmpdump'
-    }
+        {
+            'url': 'http://screen.yahoo.com/wired/codefellas-s1-ep12-cougar-lies-103000935.html',
+            'md5': 'd6e6fc6e1313c608f316ddad7b82b306',
+            'info_dict': {
+                'id': 'd1dedf8c-d58c-38c3-8963-e899929ae0a9',
+                'ext': 'mp4',
+                'title': 'Codefellas - The Cougar Lies with Spanish Moss',
+                'description': 'Agent Topple\'s mustache does its dirty work, and Nicole brokers a deal for peace. But why is the NSA collecting millions of Instagram brunch photos? And if your waffles have nothing to hide, what are they so worried about?',
+            },
+        },
+        {
+            'url': 'https://movies.yahoo.com/video/world-loves-spider-man-190819223.html',
+            'md5': '410b7104aa9893b765bc22787a22f3d9',
+            'info_dict': {
+                'id': '516ed8e2-2c4f-339f-a211-7a8b49d30845',
+                'ext': 'mp4',
+                'title': 'The World Loves Spider-Man',
+                'description': '''People all over the world are celebrating the release of \"The Amazing Spider-Man 2.\" We're taking a look at the enthusiastic response Spider-Man has received from viewers all over the world.''',
+            }
+        }
+    ]
 
     def _real_extract(self, url):
         mobj = re.match(self._VALID_URL, url)
-        if mobj is None:
-            raise ExtractorError(u'Invalid URL: %s' % url)
         video_id = mobj.group('id')
         webpage = self._download_webpage(url, video_id)
-        m_id = re.search(r'YUI\.namespace\("Media"\)\.CONTENT_ID = "(?P<new_id>.+?)";', webpage)
 
-        if m_id is None: 
-            # TODO: Check which url parameters are required
-            info_url = 'http://cosmos.bcst.yahoo.com/rest/v2/pops;lmsoverride=1;outputformat=mrss;cb=974419660;id=%s;rd=news.yahoo.com;datacontext=mdb;lg=KCa2IihxG3qE60vQ7HtyUy' % video_id
-            webpage = self._download_webpage(info_url, video_id, u'Downloading info webpage')
-            info_re = r'''<title><!\[CDATA\[(?P<title>.*?)\]\]></title>.*
-                        <description><!\[CDATA\[(?P<description>.*?)\]\]></description>.*
-                        <media:pubStart><!\[CDATA\[(?P<date>.*?)\ .*\]\]></media:pubStart>.*
-                        <media:content\ medium="image"\ url="(?P<thumb>.*?)"\ name="LARGETHUMB"
-                        '''
-            self.report_extraction(video_id)
-            m_info = re.search(info_re, webpage, re.VERBOSE|re.DOTALL)
-            if m_info is None:
-                raise ExtractorError(u'Unable to extract video info')
-            video_title = m_info.group('title')
-            video_description = m_info.group('description')
-            video_thumb = m_info.group('thumb')
-            video_date = m_info.group('date')
-            video_date = datetime.datetime.strptime(video_date, '%m/%d/%Y').strftime('%Y%m%d')
-    
-            # TODO: Find a way to get mp4 videos
-            rest_url = 'http://cosmos.bcst.yahoo.com/rest/v2/pops;element=stream;outputformat=mrss;id=%s;lmsoverride=1;bw=375;dynamicstream=1;cb=83521105;tech=flv,mp4;rd=news.yahoo.com;datacontext=mdb;lg=KCa2IihxG3qE60vQ7HtyUy' % video_id
-            webpage = self._download_webpage(rest_url, video_id, u'Downloading video url webpage')
-            m_rest = re.search(r'<media:content url="(?P<url>.*?)" path="(?P<path>.*?)"', webpage)
-            video_url = m_rest.group('url')
-            video_path = m_rest.group('path')
-            if m_rest is None:
-                raise ExtractorError(u'Unable to extract video url')
+        items_json = self._search_regex(
+            r'mediaItems: ({.*?})$', webpage, 'items', flags=re.MULTILINE,
+            default=None)
+        if items_json is None:
+            CONTENT_ID_REGEXES = [
+                r'YUI\.namespace\("Media"\)\.CONTENT_ID\s*=\s*"([^"]+)"',
+                r'root\.App\.Cache\.context\.videoCache\.curVideo = \{"([^"]+)"'
+            ]
+            long_id = self._search_regex(CONTENT_ID_REGEXES, webpage, 'content ID')
+            video_id = long_id
+        else:
+            items = json.loads(items_json)
+            info = items['mediaItems']['query']['results']['mediaObj'][0]
+            # The 'meta' field is not always in the video webpage, we request it
+            # from another page
+            long_id = info['id']
+        return self._get_info(long_id, video_id, webpage)
 
-        else: # We have to use a different method if another id is defined
-            long_id = m_id.group('new_id')
-            info_url = 'http://video.query.yahoo.com/v1/public/yql?q=SELECT%20*%20FROM%20yahoo.media.video.streams%20WHERE%20id%3D%22' + long_id + '%22%20AND%20format%3D%22mp4%2Cflv%22%20AND%20protocol%3D%22rtmp%2Chttp%22%20AND%20plrs%3D%2286Gj0vCaSzV_Iuf6hNylf2%22%20AND%20acctid%3D%22389%22%20AND%20plidl%3D%22%22%20AND%20pspid%3D%22792700001%22%20AND%20offnetwork%3D%22false%22%20AND%20site%3D%22ivy%22%20AND%20lang%3D%22en-US%22%20AND%20region%3D%22US%22%20AND%20override%3D%22none%22%3B&env=prod&format=json&callback=YUI.Env.JSONP.yui_3_8_1_1_1368368376830_335'
-            webpage = self._download_webpage(info_url, video_id, u'Downloading info json')
-            json_str = re.search(r'YUI.Env.JSONP.yui.*?\((.*?)\);', webpage).group(1)
-            info = json.loads(json_str)
-            res = info[u'query'][u'results'][u'mediaObj'][0]
-            stream = res[u'streams'][0]
-            video_path = stream[u'path']
-            video_url = stream[u'host']
-            meta = res[u'meta']
-            video_title = meta[u'title']
-            video_description = meta[u'description']
-            video_thumb = meta[u'thumbnail']
-            video_date = None # I can't find it
+    def _get_info(self, long_id, video_id, webpage):
+        query = ('SELECT * FROM yahoo.media.video.streams WHERE id="%s"'
+                 ' AND plrs="86Gj0vCaSzV_Iuf6hNylf2" AND region="US"'
+                 ' AND protocol="http"' % long_id)
+        data = compat_urllib_parse.urlencode({
+            'q': query,
+            'env': 'prod',
+            'format': 'json',
+        })
+        query_result = self._download_json(
+            'http://video.query.yahoo.com/v1/public/yql?' + data,
+            video_id, 'Downloading video info')
+        info = query_result['query']['results']['mediaObj'][0]
+        meta = info['meta']
 
-        info_dict = {
-                     'id': video_id,
-                     'url': video_url,
-                     'play_path': video_path,
-                     'title':video_title,
-                     'description': video_description,
-                     'thumbnail': video_thumb,
-                     'upload_date': video_date,
-                     'ext': 'flv',
-                     }
-        return info_dict
+        formats = []
+        for s in info['streams']:
+            format_info = {
+                'width': int_or_none(s.get('width')),
+                'height': int_or_none(s.get('height')),
+                'tbr': int_or_none(s.get('bitrate')),
+            }
+
+            host = s['host']
+            path = s['path']
+            if host.startswith('rtmp'):
+                format_info.update({
+                    'url': host,
+                    'play_path': path,
+                    'ext': 'flv',
+                })
+            else:
+                format_url = compat_urlparse.urljoin(host, path)
+                format_info['url'] = format_url
+            formats.append(format_info)
+
+        self._sort_formats(formats)
+
+        return {
+            'id': video_id,
+            'title': meta['title'],
+            'formats': formats,
+            'description': clean_html(meta['description']),
+            'thumbnail': meta['thumbnail'] if meta.get('thumbnail') else self._og_search_thumbnail(webpage),
+        }
+
+
+class YahooNewsIE(YahooIE):
+    IE_NAME = 'yahoo:news'
+    _VALID_URL = r'http://news\.yahoo\.com/video/.*?-(?P<id>\d*?)\.html'
+
+    _TESTS = [{
+        'url': 'http://news.yahoo.com/video/china-moses-crazy-blues-104538833.html',
+        'md5': '67010fdf3a08d290e060a4dd96baa07b',
+        'info_dict': {
+            'id': '104538833',
+            'ext': 'mp4',
+            'title': 'China Moses Is Crazy About the Blues',
+            'description': 'md5:9900ab8cd5808175c7b3fe55b979bed0',
+        },
+    }]
+
+    def _real_extract(self, url):
+        mobj = re.match(self._VALID_URL, url)
+        video_id = mobj.group('id')
+        webpage = self._download_webpage(url, video_id)
+        long_id = self._search_regex(r'contentId: \'(.+?)\',', webpage, 'long id')
+        return self._get_info(long_id, video_id, webpage)
+
 
 class YahooSearchIE(SearchInfoExtractor):
-    IE_DESC = u'Yahoo screen search'
+    IE_DESC = 'Yahoo screen search'
     _MAX_RESULTS = 1000
-    IE_NAME = u'screen.yahoo:search'
+    IE_NAME = 'screen.yahoo:search'
     _SEARCH_KEY = 'yvsearch'
 
     def _get_n_results(self, query, n):
         """Get a specified number of results for a query"""
-
-        res = {
-            '_type': 'playlist',
-            'id': query,
-            'entries': []
-        }
-        for pagenum in itertools.count(0): 
-            result_url = u'http://video.search.yahoo.com/search/?p=%s&fr=screen&o=js&gs=0&b=%d' % (compat_urllib_parse.quote_plus(query), pagenum * 30)
-            webpage = self._download_webpage(result_url, query,
-                                             note='Downloading results page '+str(pagenum+1))
-            info = json.loads(webpage)
-            m = info[u'm']
-            results = info[u'results']
+        entries = []
+        for pagenum in itertools.count(0):
+            result_url = 'http://video.search.yahoo.com/search/?p=%s&fr=screen&o=js&gs=0&b=%d' % (compat_urllib_parse.quote_plus(query), pagenum * 30)
+            info = self._download_json(result_url, query,
+                note='Downloading results page '+str(pagenum+1))
+            m = info['m']
+            results = info['results']
 
             for (i, r) in enumerate(results):
-                if (pagenum * 30) +i >= n:
+                if (pagenum * 30) + i >= n:
                     break
                 mobj = re.search(r'(?P<url>screen\.yahoo\.com/.*?-\d*?\.html)"', r)
                 e = self.url_result('http://' + mobj.group('url'), 'Yahoo')
-                res['entries'].append(e)
-            if (pagenum * 30 +i >= n) or (m[u'last'] >= (m[u'total'] -1 )):
+                entries.append(e)
+            if (pagenum * 30 + i >= n) or (m['last'] >= (m['total'] - 1)):
                 break
 
-        return res
+        return {
+            '_type': 'playlist',
+            'id': query,
+            'entries': entries,
+        }

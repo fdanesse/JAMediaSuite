@@ -1,115 +1,106 @@
-import json
+from __future__ import unicode_literals
+
 import re
-import socket
 
 from .common import InfoExtractor
 from ..utils import (
-    compat_http_client,
-    compat_str,
-    compat_urllib_error,
-    compat_urllib_request,
-
+    compat_urllib_parse,
     ExtractorError,
+    int_or_none,
+    parse_iso8601,
 )
 
 
 class MixcloudIE(InfoExtractor):
-    _WORKING = False # New API, but it seems good http://www.mixcloud.com/developers/documentation/
-    _VALID_URL = r'^(?:https?://)?(?:www\.)?mixcloud\.com/([\w\d-]+)/([\w\d-]+)'
-    IE_NAME = u'mixcloud'
+    _VALID_URL = r'^(?:https?://)?(?:www\.)?mixcloud\.com/([^/]+)/([^/]+)'
+    IE_NAME = 'mixcloud'
 
-    def report_download_json(self, file_id):
-        """Report JSON download."""
-        self.to_screen(u'Downloading json')
-
-    def get_urls(self, jsonData, fmt, bitrate='best'):
-        """Get urls from 'audio_formats' section in json"""
-        try:
-            bitrate_list = jsonData[fmt]
-            if bitrate is None or bitrate == 'best' or bitrate not in bitrate_list:
-                bitrate = max(bitrate_list) # select highest
-
-            url_list = jsonData[fmt][bitrate]
-        except TypeError: # we have no bitrate info.
-            url_list = jsonData[fmt]
-        return url_list
+    _TEST = {
+        'url': 'http://www.mixcloud.com/dholbach/cryptkeeper/',
+        'info_dict': {
+            'id': 'dholbach-cryptkeeper',
+            'ext': 'mp3',
+            'title': 'Cryptkeeper',
+            'description': 'After quite a long silence from myself, finally another Drum\'n\'Bass mix with my favourite current dance floor bangers.',
+            'uploader': 'Daniel Holbach',
+            'uploader_id': 'dholbach',
+            'upload_date': '20111115',
+            'timestamp': 1321359578,
+            'thumbnail': 're:https?://.*\.jpg',
+            'view_count': int,
+            'like_count': int,
+        },
+    }
 
     def check_urls(self, url_list):
         """Returns 1st active url from list"""
         for url in url_list:
             try:
-                compat_urllib_request.urlopen(url)
+                # We only want to know if the request succeed
+                # don't download the whole file
+                self._request_webpage(url, None, False)
                 return url
-            except (compat_urllib_error.URLError, compat_http_client.HTTPException, socket.error):
+            except ExtractorError:
                 url = None
 
         return None
 
-    def _print_formats(self, formats):
-        print('Available formats:')
-        for fmt in formats.keys():
-            for b in formats[fmt]:
-                try:
-                    ext = formats[fmt][b][0]
-                    print('%s\t%s\t[%s]' % (fmt, b, ext.split('.')[-1]))
-                except TypeError: # we have no bitrate info
-                    ext = formats[fmt][0]
-                    print('%s\t%s\t[%s]' % (fmt, '??', ext.split('.')[-1]))
-                    break
+    def _get_url(self, template_url):
+        return self.check_urls(template_url % i for i in range(30))
 
     def _real_extract(self, url):
         mobj = re.match(self._VALID_URL, url)
-        if mobj is None:
-            raise ExtractorError(u'Invalid URL: %s' % url)
-        # extract uploader & filename from url
-        uploader = mobj.group(1).decode('utf-8')
-        file_id = uploader + "-" + mobj.group(2).decode('utf-8')
+        uploader = mobj.group(1)
+        cloudcast_name = mobj.group(2)
+        track_id = compat_urllib_parse.unquote('-'.join((uploader, cloudcast_name)))
 
-        # construct API request
-        file_url = 'http://www.mixcloud.com/api/1/cloudcast/' + '/'.join(url.split('/')[-3:-1]) + '.json'
-        # retrieve .json file with links to files
-        request = compat_urllib_request.Request(file_url)
-        try:
-            self.report_download_json(file_url)
-            jsonData = compat_urllib_request.urlopen(request).read()
-        except (compat_urllib_error.URLError, compat_http_client.HTTPException, socket.error) as err:
-            raise ExtractorError(u'Unable to retrieve file: %s' % compat_str(err))
+        webpage = self._download_webpage(url, track_id)
 
-        # parse JSON
-        json_data = json.loads(jsonData)
-        player_url = json_data['player_swf_url']
-        formats = dict(json_data['audio_formats'])
+        preview_url = self._search_regex(
+            r'\s(?:data-preview-url|m-preview)="(.+?)"', webpage, 'preview url')
+        song_url = preview_url.replace('/previews/', '/c/originals/')
+        template_url = re.sub(r'(stream\d*)', 'stream%d', song_url)
+        final_song_url = self._get_url(template_url)
+        if final_song_url is None:
+            self.to_screen('Trying with m4a extension')
+            template_url = template_url.replace('.mp3', '.m4a').replace('originals/', 'm4a/64/')
+            final_song_url = self._get_url(template_url)
+        if final_song_url is None:
+            raise ExtractorError('Unable to extract track url')
 
-        req_format = self._downloader.params.get('format', None)
+        PREFIX = (
+            r'<div class="cloudcast-play-button-container"'
+            r'(?:\s+[a-zA-Z0-9-]+(?:="[^"]+")?)*?\s+')
+        title = self._html_search_regex(
+            PREFIX + r'm-title="([^"]+)"', webpage, 'title')
+        thumbnail = self._proto_relative_url(self._html_search_regex(
+            PREFIX + r'm-thumbnail-url="([^"]+)"', webpage, 'thumbnail',
+            fatal=False))
+        uploader = self._html_search_regex(
+            PREFIX + r'm-owner-name="([^"]+)"',
+            webpage, 'uploader', fatal=False)
+        uploader_id = self._search_regex(
+            r'\s+"profile": "([^"]+)",', webpage, 'uploader id', fatal=False)
+        description = self._og_search_description(webpage)
+        like_count = int_or_none(self._search_regex(
+            r'<meta itemprop="interactionCount" content="UserLikes:([0-9]+)"',
+            webpage, 'like count', fatal=False))
+        view_count = int_or_none(self._search_regex(
+            r'<meta itemprop="interactionCount" content="UserPlays:([0-9]+)"',
+            webpage, 'play count', fatal=False))
+        timestamp = parse_iso8601(self._search_regex(
+            r'<time itemprop="dateCreated" datetime="([^"]+)">',
+            webpage, 'upload date'))
 
-        if self._downloader.params.get('listformats', None):
-            self._print_formats(formats)
-            return
-
-        if req_format is None or req_format == 'best':
-            for format_param in formats.keys():
-                url_list = self.get_urls(formats, format_param)
-                # check urls
-                file_url = self.check_urls(url_list)
-                if file_url is not None:
-                    break # got it!
-        else:
-            if req_format not in formats:
-                raise ExtractorError(u'Format is not available')
-
-            url_list = self.get_urls(formats, req_format)
-            file_url = self.check_urls(url_list)
-            format_param = req_format
-
-        return [{
-            'id': file_id.decode('utf-8'),
-            'url': file_url.decode('utf-8'),
-            'uploader': uploader.decode('utf-8'),
-            'upload_date': None,
-            'title': json_data['name'],
-            'ext': file_url.split('.')[-1].decode('utf-8'),
-            'format': (format_param is None and u'NA' or format_param.decode('utf-8')),
-            'thumbnail': json_data['thumbnail_url'],
-            'description': json_data['description'],
-            'player_url': player_url.decode('utf-8'),
-        }]
+        return {
+            'id': track_id,
+            'title': title,
+            'url': final_song_url,
+            'description': description,
+            'thumbnail': thumbnail,
+            'uploader': uploader,
+            'uploader_id': uploader_id,
+            'timestamp': timestamp,
+            'view_count': view_count,
+            'like_count': like_count,
+        }

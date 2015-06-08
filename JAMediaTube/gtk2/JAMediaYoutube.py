@@ -188,7 +188,7 @@ class JAMediaYoutube(gobject.GObject):
         archivo = "%s%s%s" % ("\"", self.titulo, "\"")
         destino = os.path.join(get_tube_directory(), archivo)
 
-        estructura = "%s %s -i -R %s -f %s --no-part -o %s" % (
+        estructura = "python %s %s -i -R %s -f %s --no-part -o %s" % (
             youtubedl, self.url, 1, CODECS[self.codec][0], destino)
 
         self.youtubedl = subprocess.Popen(estructura, shell=True,

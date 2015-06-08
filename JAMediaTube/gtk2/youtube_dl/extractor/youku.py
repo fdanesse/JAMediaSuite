@@ -13,12 +13,12 @@ from ..utils import (
 
 
 class YoukuIE(InfoExtractor):
-    _VALID_URL =  r'(?:http://)?(v|player)\.youku\.com/(v_show/id_|player\.php/sid/)(?P<ID>[A-Za-z0-9]+)(\.html|/v.swf)'
+    _VALID_URL =  r'(?:(?:http://)?(?:v|player)\.youku\.com/(?:v_show/id_|player\.php/sid/)|youku:)(?P<ID>[A-Za-z0-9]+)(?:\.html|/v\.swf|)'
     _TEST =   {
         u"url": u"http://v.youku.com/v_show/id_XNDgyMDQ2NTQw.html",
         u"file": u"XNDgyMDQ2NTQw_part00.flv",
         u"md5": u"ffe3f2e435663dc2d1eea34faeff5b5b",
-        u"params": { u"test": False },
+        u"params": {u"test": False},
         u"info_dict": {
             u"title": u"youtube-dl test video \"'/\\ä↭𝕐"
         }
@@ -37,8 +37,8 @@ class YoukuIE(InfoExtractor):
         source = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/\:._-1234567890")
         seed = float(seed)
         for i in range(len(source)):
-            seed  =  (seed * 211 + 30031 ) % 65536
-            index  =  math.floor(seed / 65536 * len(source) )
+            seed  =  (seed * 211 + 30031) % 65536
+            index  =  math.floor(seed / 65536 * len(source))
             mixed.append(source[int(index)])
             source.remove(source[int(index)])
         #return ''.join(mixed)
@@ -66,6 +66,12 @@ class YoukuIE(InfoExtractor):
         self.report_extraction(video_id)
         try:
             config = json.loads(jsondata)
+            error_code = config['data'][0].get('error_code')
+            if error_code:
+                # -8 means blocked outside China.
+                error = config['data'][0].get('error')  # Chinese and English, separated by newline.
+                raise ExtractorError(error or u'Server reported error %i' % error_code,
+                    expected=True)
 
             video_title =  config['data'][0]['title']
             seed = config['data'][0]['seed']
@@ -89,6 +95,7 @@ class YoukuIE(InfoExtractor):
 
             fileid = config['data'][0]['streamfileids'][format]
             keys = [s['k'] for s in config['data'][0]['segs'][format]]
+            # segs is usually a dictionary, but an empty *list* if an error occured.
         except (UnicodeDecodeError, ValueError, KeyError):
             raise ExtractorError(u'Unable to extract info section')
 

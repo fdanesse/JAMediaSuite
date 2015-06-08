@@ -1,42 +1,65 @@
+from __future__ import unicode_literals
+
 import re
-import xml.etree.ElementTree
 
 from .common import InfoExtractor
+from .mtv import MTVServicesInfoExtractor
 from ..utils import (
     compat_str,
     compat_urllib_parse,
-
     ExtractorError,
+    float_or_none,
     unified_strdate,
 )
 
 
-class ComedyCentralIE(InfoExtractor):
-    IE_DESC = u'The Daily Show / Colbert Report'
+class ComedyCentralIE(MTVServicesInfoExtractor):
+    _VALID_URL = r'''(?x)https?://(?:www\.)?cc\.com/
+        (video-clips|episodes|cc-studios|video-collections|full-episodes)
+        /(?P<title>.*)'''
+    _FEED_URL = 'http://comedycentral.com/feeds/mrss/'
+
+    _TEST = {
+        'url': 'http://www.cc.com/video-clips/kllhuv/stand-up-greg-fitzsimmons--uncensored---too-good-of-a-mother',
+        'md5': 'c4f48e9eda1b16dd10add0744344b6d8',
+        'info_dict': {
+            'id': 'cef0cbb3-e776-4bc9-b62e-8016deccb354',
+            'ext': 'mp4',
+            'title': 'CC:Stand-Up|Greg Fitzsimmons: Life on Stage|Uncensored - Too Good of a Mother',
+            'description': 'After a certain point, breastfeeding becomes c**kblocking.',
+        },
+    }
+
+
+class ComedyCentralShowsIE(InfoExtractor):
+    IE_DESC = 'The Daily Show / The Colbert Report'
     # urls can be abbreviations like :thedailyshow or :colbert
     # urls for episodes like:
     # or urls for clips like: http://www.thedailyshow.com/watch/mon-december-10-2012/any-given-gun-day
     #                     or: http://www.colbertnation.com/the-colbert-report-videos/421667/november-29-2012/moon-shattering-news
     #                     or: http://www.colbertnation.com/the-colbert-report-collections/422008/festival-of-lights/79524
-    _VALID_URL = r"""^(:(?P<shortname>tds|thedailyshow|cr|colbert|colbertnation|colbertreport)
-                      |(https?://)?(www\.)?
-                          (?P<showname>thedailyshow|colbertnation)\.com/
-                         (full-episodes/(?P<episode>.*)|
+    _VALID_URL = r'''(?x)^(:(?P<shortname>tds|thedailyshow|cr|colbert|colbertnation|colbertreport)
+                      |https?://(:www\.)?
+                          (?P<showname>thedailyshow|thecolbertreport)\.(?:cc\.)?com/
+                         ((?:full-)?episodes/(?:[0-9a-z]{6}/)?(?P<episode>.*)|
                           (?P<clip>
-                              (the-colbert-report-(videos|collections)/(?P<clipID>[0-9]+)/[^/]*/(?P<cntitle>.*?))
-                              |(watch/(?P<date>[^/]*)/(?P<tdstitle>.*)))|
+                              (?:(?:guests/[^/]+|videos|video-playlists|special-editions)/[^/]+/(?P<videotitle>[^/?#]+))
+                              |(the-colbert-report-(videos|collections)/(?P<clipID>[0-9]+)/[^/]*/(?P<cntitle>.*?))
+                              |(watch/(?P<date>[^/]*)/(?P<tdstitle>.*))
+                          )|
                           (?P<interview>
-                              extended-interviews/(?P<interID>[0-9]+)/playlist_tds_extended_(?P<interview_title>.*?)/.*?)))
-                     $"""
+                              extended-interviews/(?P<interID>[0-9a-z]+)/(?:playlist_tds_extended_)?(?P<interview_title>.*?)(/.*?)?)))
+                     (?:[?#].*|$)'''
     _TEST = {
-        u'url': u'http://www.thedailyshow.com/watch/thu-december-13-2012/kristen-stewart',
-        u'file': u'422212.mp4',
-        u'md5': u'4e2f5cb088a83cd8cdb7756132f9739d',
-        u'info_dict': {
-            u"upload_date": u"20121214", 
-            u"description": u"Kristen Stewart", 
-            u"uploader": u"thedailyshow", 
-            u"title": u"thedailyshow-kristen-stewart part 1"
+        'url': 'http://thedailyshow.cc.com/watch/thu-december-13-2012/kristen-stewart',
+        'md5': '4e2f5cb088a83cd8cdb7756132f9739d',
+        'info_dict': {
+            'id': 'ab9ab3e7-5a98-4dbe-8b21-551dc0523d55',
+            'ext': 'mp4',
+            'upload_date': '20121213',
+            'description': 'Kristen Stewart learns to let loose in "On the Road."',
+            'uploader': 'thedailyshow',
+            'title': 'thedailyshow kristen-stewart part 1',
         }
     }
 
@@ -51,40 +74,39 @@ class ComedyCentralIE(InfoExtractor):
         '400': 'mp4',
     }
     _video_dimensions = {
-        '3500': '1280x720',
-        '2200': '960x540',
-        '1700': '768x432',
-        '1200': '640x360',
-        '750': '512x288',
-        '400': '384x216',
+        '3500': (1280, 720),
+        '2200': (960, 540),
+        '1700': (768, 432),
+        '1200': (640, 360),
+        '750': (512, 288),
+        '400': (384, 216),
     }
 
-    @classmethod
-    def suitable(cls, url):
-        """Receives a URL and returns True if suitable for this IE."""
-        return re.match(cls._VALID_URL, url, re.VERBOSE) is not None
-
-    def _print_formats(self, formats):
-        print('Available formats:')
-        for x in formats:
-            print('%s\t:\t%s\t[%s]' %(x, self._video_extensions.get(x, 'mp4'), self._video_dimensions.get(x, '???')))
-
+    @staticmethod
+    def _transform_rtmp_url(rtmp_video_url):
+        m = re.match(r'^rtmpe?://.*?/(?P<finalid>gsp\.comedystor/.*)$', rtmp_video_url)
+        if not m:
+            raise ExtractorError('Cannot transform RTMP url')
+        base = 'http://mtvnmobile.vo.llnwd.net/kip0/_pxn=1+_pxI0=Ripod-h264+_pxL0=undefined+_pxM0=+_pxK=18639+_pxE=mp4/44620/mtvnorigin/'
+        return base + m.group('finalid')
 
     def _real_extract(self, url):
         mobj = re.match(self._VALID_URL, url, re.VERBOSE)
         if mobj is None:
-            raise ExtractorError(u'Invalid URL: %s' % url)
+            raise ExtractorError('Invalid URL: %s' % url)
 
         if mobj.group('shortname'):
             if mobj.group('shortname') in ('tds', 'thedailyshow'):
-                url = u'http://www.thedailyshow.com/full-episodes/'
+                url = 'http://thedailyshow.cc.com/full-episodes/'
             else:
-                url = u'http://www.colbertnation.com/full-episodes/'
+                url = 'http://thecolbertreport.cc.com/full-episodes/'
             mobj = re.match(self._VALID_URL, url, re.VERBOSE)
             assert mobj is not None
 
         if mobj.group('clip'):
-            if mobj.group('showname') == 'thedailyshow':
+            if mobj.group('videotitle'):
+                epTitle = mobj.group('videotitle')
+            elif mobj.group('showname') == 'thedailyshow':
                 epTitle = mobj.group('tdstitle')
             else:
                 epTitle = mobj.group('cntitle')
@@ -98,97 +120,96 @@ class ComedyCentralIE(InfoExtractor):
                 epTitle = mobj.group('showname')
             else:
                 epTitle = mobj.group('episode')
+        show_name = mobj.group('showname')
 
-        self.report_extraction(epTitle)
-        webpage,htmlHandle = self._download_webpage_handle(url, epTitle)
+        webpage, htmlHandle = self._download_webpage_handle(url, epTitle)
         if dlNewest:
             url = htmlHandle.geturl()
             mobj = re.match(self._VALID_URL, url, re.VERBOSE)
             if mobj is None:
-                raise ExtractorError(u'Invalid redirected URL: ' + url)
+                raise ExtractorError('Invalid redirected URL: ' + url)
             if mobj.group('episode') == '':
-                raise ExtractorError(u'Redirected URL is still not specific: ' + url)
-            epTitle = mobj.group('episode')
+                raise ExtractorError('Redirected URL is still not specific: ' + url)
+            epTitle = (mobj.group('episode') or mobj.group('videotitle')).rpartition('/')[-1]
 
         mMovieParams = re.findall('(?:<param name="movie" value="|var url = ")(http://media.mtvnservices.com/([^"]*(?:episode|video).*?:.*?))"', webpage)
-
         if len(mMovieParams) == 0:
             # The Colbert Report embeds the information in a without
             # a URL prefix; so extract the alternate reference
             # and then add the URL prefix manually.
 
-            altMovieParams = re.findall('data-mgid="([^"]*(?:episode|video).*?:.*?)"', webpage)
+            altMovieParams = re.findall('data-mgid="([^"]*(?:episode|video|playlist).*?:.*?)"', webpage)
             if len(altMovieParams) == 0:
-                raise ExtractorError(u'unable to find Flash URL in webpage ' + url)
+                raise ExtractorError('unable to find Flash URL in webpage ' + url)
             else:
                 mMovieParams = [("http://media.mtvnservices.com/" + altMovieParams[0], altMovieParams[0])]
 
         uri = mMovieParams[0][1]
-        indexUrl = 'http://shadow.comedycentral.com/feeds/video_player/mrss/?' + compat_urllib_parse.urlencode({'uri': uri})
-        indexXml = self._download_webpage(indexUrl, epTitle,
-                                          u'Downloading show index',
-                                          u'unable to download episode index')
+        # Correct cc.com in uri
+        uri = re.sub(r'(episode:[^.]+)(\.cc)?\.com', r'\1.cc.com', uri)
 
-        results = []
+        index_url = 'http://%s.cc.com/feeds/mrss?%s' % (show_name, compat_urllib_parse.urlencode({'uri': uri}))
+        idoc = self._download_xml(
+            index_url, epTitle,
+            'Downloading show index', 'Unable to download episode index')
 
-        idoc = xml.etree.ElementTree.fromstring(indexXml)
-        itemEls = idoc.findall('.//item')
-        for partNum,itemEl in enumerate(itemEls):
-            mediaId = itemEl.findall('./guid')[0].text
-            shortMediaId = mediaId.split(':')[-1]
-            showId = mediaId.split(':')[-2].replace('.com', '')
-            officialTitle = itemEl.findall('./title')[0].text
-            officialDate = unified_strdate(itemEl.findall('./pubDate')[0].text)
+        title = idoc.find('./channel/title').text
+        description = idoc.find('./channel/description').text
 
-            configUrl = ('http://www.comedycentral.com/global/feeds/entertainment/media/mediaGenEntertainment.jhtml?' +
-                        compat_urllib_parse.urlencode({'uri': mediaId}))
-            configXml = self._download_webpage(configUrl, epTitle,
-                                               u'Downloading configuration for %s' % shortMediaId)
+        entries = []
+        item_els = idoc.findall('.//item')
+        for part_num, itemEl in enumerate(item_els):
+            upload_date = unified_strdate(itemEl.findall('./pubDate')[0].text)
+            thumbnail = itemEl.find('.//{http://search.yahoo.com/mrss/}thumbnail').attrib.get('url')
 
-            cdoc = xml.etree.ElementTree.fromstring(configXml)
+            content = itemEl.find('.//{http://search.yahoo.com/mrss/}content')
+            duration = float_or_none(content.attrib.get('duration'))
+            mediagen_url = content.attrib['url']
+            guid = itemEl.find('./guid').text.rpartition(':')[-1]
+
+            cdoc = self._download_xml(
+                mediagen_url, epTitle,
+                'Downloading configuration for segment %d / %d' % (part_num + 1, len(item_els)))
+
             turls = []
             for rendition in cdoc.findall('.//rendition'):
                 finfo = (rendition.attrib['bitrate'], rendition.findall('./src')[0].text)
                 turls.append(finfo)
 
-            if len(turls) == 0:
-                self._downloader.report_error(u'unable to download ' + mediaId + ': No videos found')
-                continue
+            formats = []
+            for format, rtmp_video_url in turls:
+                w, h = self._video_dimensions.get(format, (None, None))
+                formats.append({
+                    'format_id': 'vhttp-%s' % format,
+                    'url': self._transform_rtmp_url(rtmp_video_url),
+                    'ext': self._video_extensions.get(format, 'mp4'),
+                    'height': h,
+                    'width': w,
+                })
+                formats.append({
+                    'format_id': 'rtmp-%s' % format,
+                    'url': rtmp_video_url.replace('viacomccstrm', 'viacommtvstrm'),
+                    'ext': self._video_extensions.get(format, 'mp4'),
+                    'height': h,
+                    'width': w,
+                })
+                self._sort_formats(formats)
 
-            if self._downloader.params.get('listformats', None):
-                self._print_formats([i[0] for i in turls])
-                return
+            virtual_id = show_name + ' ' + epTitle + ' part ' + compat_str(part_num + 1)
+            entries.append({
+                'id': guid,
+                'title': virtual_id,
+                'formats': formats,
+                'uploader': show_name,
+                'upload_date': upload_date,
+                'duration': duration,
+                'thumbnail': thumbnail,
+                'description': description,
+            })
 
-            # For now, just pick the highest bitrate
-            format,rtmp_video_url = turls[-1]
-
-            # Get the format arg from the arg stream
-            req_format = self._downloader.params.get('format', None)
-
-            # Select format if we can find one
-            for f,v in turls:
-                if f == req_format:
-                    format, rtmp_video_url = f, v
-                    break
-
-            m = re.match(r'^rtmpe?://.*?/(?P<finalid>gsp.comedystor/.*)$', rtmp_video_url)
-            if not m:
-                raise ExtractorError(u'Cannot transform RTMP url')
-            base = 'http://mtvnmobile.vo.llnwd.net/kip0/_pxn=1+_pxI0=Ripod-h264+_pxL0=undefined+_pxM0=+_pxK=18639+_pxE=mp4/44620/mtvnorigin/'
-            video_url = base + m.group('finalid')
-
-            effTitle = showId + u'-' + epTitle + u' part ' + compat_str(partNum+1)
-            info = {
-                'id': shortMediaId,
-                'url': video_url,
-                'uploader': showId,
-                'upload_date': officialDate,
-                'title': effTitle,
-                'ext': 'mp4',
-                'format': format,
-                'thumbnail': None,
-                'description': compat_str(officialTitle),
-            }
-            results.append(info)
-
-        return results
+        return {
+            '_type': 'playlist',
+            'entries': entries,
+            'title': show_name + ' ' + title,
+            'description': description,
+        }

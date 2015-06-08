@@ -1,6 +1,5 @@
 import json
 import re
-import xml.etree.ElementTree
 
 from .common import InfoExtractor
 
@@ -36,12 +35,10 @@ class TriluliluIE(InfoExtractor):
 
         format_url = (u'http://fs%(server)s.trilulilu.ro/%(hash)s/'
                       u'video-formats2' % log)
-        format_str = self._download_webpage(
+        format_doc = self._download_xml(
             format_url, video_id,
             note=u'Downloading formats',
             errnote=u'Error while downloading formats')
-
-        format_doc = xml.etree.ElementTree.fromstring(format_str)
  
         video_url_template = (
             u'http://fs%(server)s.trilulilu.ro/stream.php?type=video'
@@ -52,12 +49,13 @@ class TriluliluIE(InfoExtractor):
             {
                 'format': fnode.text,
                 'url': video_url_template % fnode.text,
+                'ext': fnode.text.partition('-')[0]
             }
 
             for fnode in format_doc.findall('./formats/format')
         ]
 
-        info = {
+        return {
             '_type': 'video',
             'id': video_id,
             'formats': formats,
@@ -66,8 +64,3 @@ class TriluliluIE(InfoExtractor):
             'thumbnail': thumbnail,
         }
 
-        # TODO: Remove when #980 has been merged
-        info['url'] = formats[-1]['url']
-        info['ext'] = formats[-1]['format'].partition('-')[0]
-
-        return info

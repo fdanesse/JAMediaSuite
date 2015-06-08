@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import re
 
 from .common import InfoExtractor
@@ -13,15 +15,15 @@ from ..utils import (
 
 class AddAnimeIE(InfoExtractor):
 
-    _VALID_URL = r'^http://(?:\w+\.)?add-anime\.net/watch_video.php\?(?:.*?)v=(?P<video_id>[\w_]+)(?:.*)'
-    IE_NAME = u'AddAnime'
+    _VALID_URL = r'^http://(?:\w+\.)?add-anime\.net/watch_video\.php\?(?:.*?)v=(?P<video_id>[\w_]+)(?:.*)'
     _TEST = {
-        u'url': u'http://www.add-anime.net/watch_video.php?v=24MR3YO5SAS9',
-        u'file': u'24MR3YO5SAS9.flv',
-        u'md5': u'1036a0e0cd307b95bd8a8c3a5c8cfaf1',
-        u'info_dict': {
-            u"description": u"One Piece 606",
-            u"title": u"One Piece 606"
+        'url': 'http://www.add-anime.net/watch_video.php?v=24MR3YO5SAS9',
+        'md5': '72954ea10bc979ab5e2eb288b21425a0',
+        'info_dict': {
+            'id': '24MR3YO5SAS9',
+            'ext': 'mp4',
+            'description': 'One Piece 606',
+            'title': 'One Piece 606',
         }
     }
 
@@ -31,16 +33,17 @@ class AddAnimeIE(InfoExtractor):
             video_id = mobj.group('video_id')
             webpage = self._download_webpage(url, video_id)
         except ExtractorError as ee:
-            if not isinstance(ee.cause, compat_HTTPError):
+            if not isinstance(ee.cause, compat_HTTPError) or \
+               ee.cause.code != 503:
                 raise
 
             redir_webpage = ee.cause.read().decode('utf-8')
             action = self._search_regex(
                 r'<form id="challenge-form" action="([^"]+)"',
-                redir_webpage, u'Redirect form')
+                redir_webpage, 'Redirect form')
             vc = self._search_regex(
                 r'<input type="hidden" name="jschl_vc" value="([^"]+)"/>',
-                redir_webpage, u'redirect vc value')
+                redir_webpage, 'redirect vc value')
             av = re.search(
                 r'a\.value = ([0-9]+)[+]([0-9]+)[*]([0-9]+);',
                 redir_webpage)
@@ -51,25 +54,34 @@ class AddAnimeIE(InfoExtractor):
             parsed_url = compat_urllib_parse_urlparse(url)
             av_val = av_res + len(parsed_url.netloc)
             confirm_url = (
-                parsed_url.scheme + u'://' + parsed_url.netloc +
+                parsed_url.scheme + '://' + parsed_url.netloc +
                 action + '?' +
                 compat_urllib_parse.urlencode({
                     'jschl_vc': vc, 'jschl_answer': compat_str(av_val)}))
             self._download_webpage(
                 confirm_url, video_id,
-                note=u'Confirming after redirect')
+                note='Confirming after redirect')
             webpage = self._download_webpage(url, video_id)
 
-        video_url = self._search_regex(r"var normal_video_file = '(.*?)';",
-                                       webpage, u'video file URL')
+        formats = []
+        for format_id in ('normal', 'hq'):
+            rex = r"var %s_video_file = '(.*?)';" % re.escape(format_id)
+            video_url = self._search_regex(rex, webpage, 'video file URLx',
+                                           fatal=False)
+            if not video_url:
+                continue
+            formats.append({
+                'format_id': format_id,
+                'url': video_url,
+            })
+        self._sort_formats(formats)
         video_title = self._og_search_title(webpage)
         video_description = self._og_search_description(webpage)
 
         return {
             '_type': 'video',
-            'id':  video_id,
-            'url': video_url,
-            'ext': 'flv',
+            'id': video_id,
+            'formats': formats,
             'title': video_title,
             'description': video_description
         }

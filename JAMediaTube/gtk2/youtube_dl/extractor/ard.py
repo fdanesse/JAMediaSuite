@@ -1,23 +1,40 @@
+# coding: utf-8
+from __future__ import unicode_literals
+
 import re
 
 from .common import InfoExtractor
 from ..utils import (
+    determine_ext,
     ExtractorError,
+    qualities,
+    compat_urllib_parse_urlparse,
+    compat_urllib_parse,
 )
 
+
 class ARDIE(InfoExtractor):
-    _VALID_URL = r'^(?:https?://)?(?:(?:www\.)?ardmediathek\.de|mediathek\.daserste\.de)/(?:.*/)(?P<video_id>[^/\?]+)(?:\?.*)?'
-    _TITLE = r'<h1(?: class="boxTopHeadline")?>(?P<title>.*)</h1>'
-    _MEDIA_STREAM = r'mediaCollection\.addMediaStream\((?P<media_type>\d+), (?P<quality>\d+), "(?P<rtmp_url>[^"]*)", "(?P<video_url>[^"]*)", "[^"]*"\)'
-    _TEST = {
-        u'url': u'http://www.ardmediathek.de/das-erste/tagesschau-in-100-sek?documentId=14077640',
-        u'file': u'14077640.mp4',
-        u'md5': u'6ca8824255460c787376353f9e20bbd8',
-        u'info_dict': {
-            u"title": u"11.04.2013 09:23 Uhr - Tagesschau in 100 Sekunden"
+    _VALID_URL = r'^https?://(?:(?:www\.)?ardmediathek\.de|mediathek\.daserste\.de)/(?:.*/)(?P<video_id>[0-9]+|[^0-9][^/\?]+)[^/\?]*(?:\?.*)?'
+
+    _TESTS = [{
+        'url': 'http://mediathek.daserste.de/sendungen_a-z/328454_anne-will/22429276_vertrauen-ist-gut-spionieren-ist-besser-geht',
+        'file': '22429276.mp4',
+        'md5': '469751912f1de0816a9fc9df8336476c',
+        'info_dict': {
+            'title': 'Vertrauen ist gut, Spionieren ist besser - Geht so deutsch-amerikanische Freundschaft?',
+            'description': 'Das Erste Mediathek [ARD]: Vertrauen ist gut, Spionieren ist besser - Geht so deutsch-amerikanische Freundschaft?, Anne Will, Über die Spionage-Affäre diskutieren Clemens Binninger, Katrin Göring-Eckardt, Georg Mascolo, Andrew B. Denison und Constanze Kurz.. Das Video zur Sendung Anne Will am Mittwoch, 16.07.2014',
         },
-        u'skip': u'Requires rtmpdump'
-    }
+        'skip': 'Blocked outside of Germany',
+    }, {
+        'url': 'http://www.ardmediathek.de/tv/Tatort/Das-Wunder-von-Wolbeck-Video-tgl-ab-20/Das-Erste/Video?documentId=22490580&bcastId=602916',
+        'info_dict': {
+            'id': '22490580',
+            'ext': 'mp4',
+            'title': 'Das Wunder von Wolbeck (Video tgl. ab 20 Uhr)',
+            'description': 'Auf einem restaurierten Hof bei Wolbeck wird der Heilpraktiker Raffael Lembeck eines morgens von seiner Frau Stella tot aufgefunden. Das Opfer war offensichtlich in seiner Praxis zu Fall gekommen und ist dann verblutet, erklärt Prof. Boerne am Tatort.',
+        },
+        'skip': 'Blocked outside of Germany',
+    }]
 
     def _real_extract(self, url):
         # determine video id from url
@@ -29,26 +46,82 @@ class ARDIE(InfoExtractor):
         else:
             video_id = m.group('video_id')
 
-        # determine title and media streams from webpage
-        html = self._download_webpage(url, video_id)
-        title = re.search(self._TITLE, html).group('title')
-        streams = [mo.groupdict() for mo in re.finditer(self._MEDIA_STREAM, html)]
-        if not streams:
-            assert '"fsk"' in html
-            raise ExtractorError(u'This video is only available after 8:00 pm')
+        urlp = compat_urllib_parse_urlparse(url)
+        url = urlp._replace(path=compat_urllib_parse.quote(urlp.path.encode('utf-8'))).geturl()
 
-        # choose default media type and highest quality for now
-        stream = max([s for s in streams if int(s["media_type"]) == 0],
-                     key=lambda s: int(s["quality"]))
+        webpage = self._download_webpage(url, video_id)
 
-        # there's two possibilities: RTMP stream or HTTP download
-        info = {'id': video_id, 'title': title, 'ext': 'mp4'}
-        if stream['rtmp_url']:
-            self.to_screen(u'RTMP download detected')
-            assert stream['video_url'].startswith('mp4:')
-            info["url"] = stream["rtmp_url"]
-            info["play_path"] = stream['video_url']
-        else:
-            assert stream["video_url"].endswith('.mp4')
-            info["url"] = stream["video_url"]
-        return [info]
+        title = self._html_search_regex(
+            [r'<h1(?:\s+class="boxTopHeadline")?>(.*?)</h1>',
+             r'<meta name="dcterms.title" content="(.*?)"/>',
+             r'<h4 class="headline">(.*?)</h4>'],
+            webpage, 'title')
+        description = self._html_search_meta(
+            'dcterms.abstract', webpage, 'description', default=None)
+        if description is None:
+            description = self._html_search_meta(
+                'description', webpage, 'meta description')
+
+        # Thumbnail is sometimes not present.
+        # It is in the mobile version, but that seems to use a different URL
+        # structure altogether.
+        thumbnail = self._og_search_thumbnail(webpage, default=None)
+
+        media_streams = re.findall(r'''(?x)
+            mediaCollection\.addMediaStream\([0-9]+,\s*[0-9]+,\s*"[^"]*",\s*
+            "([^"]+)"''', webpage)
+
+        if media_streams:
+            QUALITIES = qualities(['lo', 'hi', 'hq'])
+            formats = []
+            for furl in set(media_streams):
+                if furl.endswith('.f4m'):
+                    fid = 'f4m'
+                else:
+                    fid_m = re.match(r'.*\.([^.]+)\.[^.]+$', furl)
+                    fid = fid_m.group(1) if fid_m else None
+                formats.append({
+                    'quality': QUALITIES(fid),
+                    'format_id': fid,
+                    'url': furl,
+                })
+        else:  # request JSON file
+            media_info = self._download_json(
+                'http://www.ardmediathek.de/play/media/%s' % video_id, video_id)
+            # The second element of the _mediaArray contains the standard http urls
+            streams = media_info['_mediaArray'][1]['_mediaStreamArray']
+            if not streams:
+                if '"fsk"' in webpage:
+                    raise ExtractorError('This video is only available after 20:00')
+
+            formats = []
+            for s in streams:
+                if type(s['_stream']) == list:
+                    for index, url in enumerate(s['_stream'][::-1]):
+                        quality = s['_quality'] + index
+                        formats.append({
+                            'quality': quality,
+                            'url': url,
+                            'format_id': '%s-%s' % (determine_ext(url), quality)
+                        })
+                    continue
+
+                format = {
+                    'quality': s['_quality'],
+                    'url': s['_stream'],
+                }
+
+                format['format_id'] = '%s-%s' % (
+                    determine_ext(format['url']), format['quality'])
+
+                formats.append(format)
+
+        self._sort_formats(formats)
+
+        return {
+            'id': video_id,
+            'title': title,
+            'description': description,
+            'formats': formats,
+            'thumbnail': thumbnail,
+        }
