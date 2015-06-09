@@ -23,6 +23,7 @@ import json
 import commands
 import shutil
 import zipfile
+from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Pango
@@ -169,8 +170,14 @@ class Notebook(Gtk.Notebook):
         page.source.guardar()
 
         self.show_all()
+        GLib.timeout_add(30, self.__hide)
+
+    def __hide(self):
+        self.hide()
+        return False
 
     def set_icon(self, iconpath):
+        self.show_all()
         iconpath = iconpath.split(self.proyecto_path)[-1]
         archivo = open(os.path.join(BASEPATH, "installmodel.txt"))
         texto = u"%s" % archivo.read()

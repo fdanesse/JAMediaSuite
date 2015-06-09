@@ -22,6 +22,7 @@ import os
 import json
 import commands
 import shutil
+from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Pango
@@ -212,8 +213,14 @@ class Notebook(Gtk.Notebook):
         page.source.guardar()
 
         self.show_all()
+        GLib.timeout_add(30, self.__hide)
+
+    def __hide(self):
+        self.hide()
+        return False
 
     def set_icon(self, iconpath):
+        self.show_all()
         texto = get_guion_desktop(self.proyecto, iconpath)
         paginas = len(self.get_children())
         for x in range(paginas):

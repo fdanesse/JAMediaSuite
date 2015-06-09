@@ -23,6 +23,7 @@ import json
 import commands
 import zipfile
 import shutil
+from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Pango
@@ -185,8 +186,14 @@ class Notebook(Gtk.Notebook):
         page.source.guardar()
 
         self.show_all()
+        GLib.timeout_add(30, self.__hide)
+
+    def __hide(self):
+        self.hide()
+        return False
 
     def set_icon(self, iconpath):
+        self.show_all()
         iconname = os.path.basename(iconpath).split(".")[0].strip()
         texto = get_guion_activity_info(self.proyecto, iconname)
         paginas = len(self.get_children())

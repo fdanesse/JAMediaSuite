@@ -291,17 +291,17 @@ class DialogoProyecto(Gtk.Window):
         if main:
             main = main.strip()
         if mimetypes:
-            mimetypes = mimetypes.replace("\n", " ").strip()
+            mimetypes = mimetypes.replace("\n", "").strip()
         if categories:
-            categories = categories.replace("\n", " ").strip()
+            categories = categories.replace("\n", "").strip()
         if descripcion:
-            descripcion = descripcion.replace("\n", " ").strip()
+            descripcion = descripcion.replace("\n", "").strip()
         if version:
             version = version.strip()
         if licencia:
             licencia = licencia.strip()
         if url:
-            url = url.replace("\n", " ").strip()
+            url = url.replace("\n", "").strip()
         _dict = {
             "nombre": nombre,
             "path": path,

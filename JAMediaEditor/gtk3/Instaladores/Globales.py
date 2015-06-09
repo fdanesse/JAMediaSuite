@@ -75,7 +75,7 @@ def get_guion_lanzador_sh(proyecto):
 
 def get_guion_setup_cfg(proyecto):
     nombre = proyecto["nombre"]
-    t = "[install]\ninstall_lib=/usr/share/%s\n" % nombre
+    t = "[install]\ninstall_lib=/usr/lib/\n"
     t = "%s%s" % (t, "install_data=/usr/share/%s\n" % nombre)
     t = "%s%s" % (t, "install_scripts=/usr/bin")
     return t
@@ -136,10 +136,13 @@ def get_guion_activity_info(proyecto, iconname):
     t = "[Activity]\n"
     t = "%sname = %s\n" % (t, proyecto["nombre"])
     t = "%sbundle_id = org.laptop.%s\n" % (t, proyecto["nombre"])
-    t = "%sexec = sugar-activity MaindelProyecto.ClaseActivity\n" % (t)
+    t = "%sexec = sugar-activity MaindelProyecto.ClaseActivity -s\n" % (t)
     t = "%sicon = %s\n" % (t, iconname)
     t = "%sactivity_version = %s\n" % (t, proyecto["version"])
     t = "%sshow_launcher = yes\n" % (t)
+    t = "%smime_types = %s\n" % (t, proyecto["mimetypes"])
+    t = "%slicense = %s\n" % (t, proyecto["licencia"])
+    t = "%ssummary = %s\n" % (t, proyecto["descripcion"])
     return t
 
 

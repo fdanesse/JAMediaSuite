@@ -22,6 +22,7 @@ import os
 import json
 import commands
 import shutil
+from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Pango
@@ -180,6 +181,7 @@ class Notebook(Gtk.Notebook):
         # copiar proyecto
         commands.getoutput('cp -r \"%s\" \"%s\"' % (
             self.proyecto_path, CONFPATH))
+        self.proyecto_path = temppath
 
         # setup.cfg
         path = os.path.join(temppath, "setup.cfg")
@@ -235,8 +237,16 @@ class Notebook(Gtk.Notebook):
         setuppage.source.guardar()
 
         self.show_all()
+        GLib.timeout_add(30, self.__hide)
+
+    def __hide(self):
+        self.hide()
+        return False
 
     def set_icon(self, iconpath):
+        self.show_all()
+        iconpath = "/usr/share/%s%s" % (self.proyecto["nombre"],
+            iconpath.split(self.proyecto_path)[-1])
         paginas = len(self.get_children())
         temppath = os.path.join(CONFPATH, self.proyecto["nombre"])
 

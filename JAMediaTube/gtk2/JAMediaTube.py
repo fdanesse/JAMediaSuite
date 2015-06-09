@@ -330,7 +330,7 @@ class JAMediaTube(gtk.Window):
 
     def set_archivos(self, pistas):
         """
-        Cuando se ejecuta pasandole un archivo.
+        Cuando se ejecuta pasandole archivos como parámetros.
         """
         self.archivos = pistas
 
