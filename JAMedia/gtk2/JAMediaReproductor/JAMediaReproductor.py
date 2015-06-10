@@ -22,7 +22,7 @@
 import os
 import gobject
 import gst
-import gtk
+#import gtk
 
 from JAMediaBins import JAMedia_Audio_Pipeline
 from JAMediaBins import JAMedia_Video_Pipeline
@@ -250,5 +250,5 @@ class JAMediaReproductor(gobject.GObject):
     def set_volumen(self, volumen):
         self.player.set_property('volume', volumen / 10)
 
-    def get_volumen(self):
-        return self.player.get_property('volume') * 10
+    #def get_volumen(self):
+    #    return self.player.get_property('volume') * 10
