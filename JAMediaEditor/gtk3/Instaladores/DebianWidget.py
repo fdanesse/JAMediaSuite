@@ -181,6 +181,7 @@ class Notebook(Gtk.Notebook):
         # copiar proyecto a os.path.join(self.usr_path, "share")
         commands.getoutput('cp -r \"%s\" \"%s\"' % (self.proyecto_path,
             os.path.join(usr_path, "share")))
+        self.proyecto_path = path
         # FIXME: bug en shutil al copiar directorios o archivos que
         # poseen ñ en el path: UnicodeDecodeError:
         # 'ascii' codec can't decode byte 0xc3 in position 5:
@@ -221,6 +222,7 @@ class Notebook(Gtk.Notebook):
 
     def set_icon(self, iconpath):
         self.show_all()
+        iconpath = iconpath.split(self.proyecto_path)[-1]
         texto = get_guion_desktop(self.proyecto, iconpath)
         paginas = len(self.get_children())
         for x in range(paginas):
