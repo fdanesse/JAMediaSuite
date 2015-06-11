@@ -4,60 +4,6 @@
 
 * {}
 
-/*Contenedores Principales*/
-/*WindowJAMediaEditor, JAMediaEditorBasePanel,
-JAMediaEditorInfoNotebook, JAMediaEditorWorkPanel,
-JAMediaEditorNotebook_SourceView{
-    color: #000000;
-    background-color: #f0e6aa;
-}
-
-JAMediaEditorToolbarProyecto *, JAMediaEditorToolbarArchivo *{
-    color: #000000;
-    background-color: #f0e6aa;
-}
-
-JAMediaEditorIntrospeccion, JAMediaEditorEstructura_Proyecto{
-    background-color: #fafafa;
-    color: #000000;
-}*/
-
-/* Barra de menús*/
-/*JAMediaEditorMenu *{
-    color: #ffffff;
-    background-color: #000000;
-}
-JAMediaEditorMenu * :insensitive{
-    color: #4d4d4d;
-    background-color: #999999;
-}
-JAMediaEditorMenu * :prelight{
-    color: #000000;
-    background-color: #ffffff;
-}*/
-
-/* Barras de estado    border-width: 5px;*/
-/*JAMediaEditorToolbarEstado *, PygiHackToolbarTry *{
-    color: #ffffff;
-    background-color: #000000;
-}*/
-
-/*Otros*/
-/*JAMediaEditorToolbarBusquedas * {
-    background-color: #f0e6aa;
-    color: #000000;
-}
-JAMediaEditorToolbarBusquedas GtkEntry {
-    background-color: #ffffff;
-    color: #000000;
-}*/
-
-/*Terminal*/
-/*JAMediaTerminal *{
-    background-color: #f0e6aa;
-    color: #000000;
-}*/
-
 GtkWindow{
     background-color: #f0e6aa;
     color: #000000;
@@ -70,6 +16,36 @@ GtkMenuBar, GtkMenu{
     color: #ffffff;
     background-color: #000000;
     }
+
+/* > Ventana Principal */
+WindowJAMediaEditor JAMediaEditorToolbarEstado,
+WindowJAMediaEditor JAMediaEditorMenu,
+WindowJAMediaEditor JAMediaEditorMenu GtkMenu{
+    background-color: #000000;
+    color: #ffffff;
+    }/* < Ventana Principal */
+
+/* > Panel Base */
+JAMediaEditorBasePanel,
+JAMediaEditorBasePanel JAMediaEditorToolbarProyecto,
+JAMediaEditorBasePanel JAMediaEditorToolbarArchivo,
+JAMediaEditorBasePanel JAMediaEditorToolbarBusquedas{
+    background-color: #f0e6aa;
+    color: #000000;
+    }/* < Panel Base */
+
+/* > Panel Izquierdo */
+JAMediaEditorInfoNotebook{
+    background-color: #edf5ff;
+    color: #000000;
+    }/* < Panel Izquierdo */
+
+/* > Panel Derecho */
+JAMediaEditorWorkPanel,
+JAMediaEditorWorkPanel JAMediaEditorNotebook_SourceView{
+    background-color: #edf5ff;
+    color: #000000;
+    }/* < Panel Derecho */
 
 /* > Instaladores */
 JAMediaEditorInstalador,
