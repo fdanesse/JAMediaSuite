@@ -32,6 +32,8 @@ BASE_PATH = os.path.dirname(__file__)
 
 class JAMediaPyGiHack(Gtk.Box):
 
+    __gtype_name__ = 'JAMediaPyGiHack'
+
     __gsignals__ = {
     'salir': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}

@@ -86,3 +86,33 @@ JAMediaEditorHelp GtkToolbar{
     background-color: #edf5ff;
     color: #000000;
     }/* < Help */
+
+/* > Creditos */
+JAMediaEditorCredits,
+JAMediaEditorCredits GtkDrawingArea{
+    background-color: #000000;
+    }/* < Creditos */
+
+/* > Terminal */
+JAMediaTerminal, JAMediaTerminal GtkNotebook,
+JAMediaTerminal GtkToolbar{
+    background-color: #f0e6aa;
+    color: #000000;
+    }/* < Terminal */
+
+/* > JAMediaPyGiHack */
+JAMediaPyGiHack, JAMediaPyGiHack GtkToolbar,
+JAMediaPyGiHack GtkMenuBar, JAMediaPyGiHack GtkMenu,
+JAMediaPyGiHack JAMediaEditorToolbarBusquedas,
+JAMediaPyGiHack GtkPaned{
+    background-color: #f0e6aa;
+    color: #000000;
+    }
+JAMediaPyGiHack GtkNotebook{
+    background-color: #edf5ff;
+    color: #ffffff;
+    }
+JAMediaPyGiHack GtkStatusbar{
+    background-color: #000000;
+    color: #ffffff;
+    }/* < JAMediaPyGiHack */

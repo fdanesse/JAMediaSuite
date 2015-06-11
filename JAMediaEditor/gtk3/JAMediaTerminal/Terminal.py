@@ -22,7 +22,6 @@
 import os
 import mimetypes
 from gi.repository import Gtk
-from gi.repository import Gdk
 from gi.repository import GObject
 from gi.repository import Vte
 from gi.repository import Pango
@@ -315,8 +314,8 @@ class VTETerminal(Vte.Terminal):
         self.set_encoding('utf-8')
         self.set_font(fuente)
 
-        self.set_colors(Gdk.color_parse('#ffffff'),
-            Gdk.color_parse('#000000'), [])
+        #self.set_colors(Gdk.color_parse('#ffffff'),
+        #    Gdk.color_parse('#000000'), [])
 
         self.path = path
         self.interprete = interprete
