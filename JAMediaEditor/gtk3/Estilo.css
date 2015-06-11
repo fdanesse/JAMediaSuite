@@ -62,9 +62,16 @@ GtkWindow{
     background-color: #f0e6aa;
     color: #000000;
     }
+GtkDialog, GtkFileChooserDialog{
+    background-color: #edf5ff;
+    color: #000000;
+    }
+GtkMenuBar, GtkMenu{
+    color: #ffffff;
+    background-color: #000000;
+    }
 
 /* > Instaladores */
-GtkDialog, GtkFileChooserDialog,
 JAMediaEditorInstalador,
 JAMediaEditorInstalador GtkEventBox,
 JAMediaEditorInstalador GtkFrame,
@@ -72,10 +79,10 @@ JAMediaEditorInstalador GtkFrame GtkToolbar,
 JAMediaEditorInstalador GtkNotebook{
     background-color: #edf5ff;
     color: #000000;
-    }
-JAMediaEditorInstalador GtkMenuBar,
-JAMediaEditorInstalador GtkMenu{
-    color: #ffffff;
-    background-color: #000000;
-}
-/* < Instaladores */
+    }/* < Instaladores */
+
+/* > Help */
+JAMediaEditorHelp GtkToolbar{
+    background-color: #edf5ff;
+    color: #000000;
+    }/* < Help */

@@ -95,8 +95,8 @@ class Instalador(Gtk.Window):
         if texto == "deb":
             instalador = DebianWidget(self.proyecto_path)
             self.vbox.pack_start(instalador, True, True, 0)
-        elif texto == "rmp":
-            self.vbox.pack_start(Gtk.Label("rpm"), True, True, 0)
+        #elif texto == "rmp":
+        #    self.vbox.pack_start(Gtk.Label("rpm"), True, True, 0)
         elif texto == "python":
             instalador = PythonWidget(self.proyecto_path)
             self.vbox.pack_start(instalador, True, True, 0)

@@ -104,7 +104,8 @@ class PythonWidget(Gtk.EventBox):
         self.notebook.guardar()
         desktop = os.path.join(self.install_path,
             "%s.desktop" % self.proyecto["nombre"])
-        lanzador = os.path.join(self.install_path, self.proyecto["nombre"].lower())
+        lanzador = os.path.join(self.install_path,
+            self.proyecto["nombre"].lower())
         setup = os.path.join(self.install_path, "setup.py")
         for path in [setup, desktop, lanzador]:
             os.chmod(path, 0755)
@@ -121,7 +122,8 @@ class PythonWidget(Gtk.EventBox):
 
         self.terminal.show_all()
         self.terminal.connect("reset", self.__Informar, dialogo)
-        self.terminal.ejecute_script(self.install_path, python_path, setup, "sdist")
+        self.terminal.ejecute_script(self.install_path,
+            python_path, setup, "sdist")
 
     def __Informar(self, terminal, dialogo):
         origen = os.path.join(self.install_path, "dist")

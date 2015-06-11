@@ -24,8 +24,6 @@ from gi.repository import GObject
 
 class ItemMenuBash(Gtk.MenuItem):
 
-    #__gtype_name__ = 'ItemMenuInstaladores'
-
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,

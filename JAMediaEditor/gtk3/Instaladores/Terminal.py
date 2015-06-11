@@ -71,8 +71,6 @@ class VTETerminal(Vte.Terminal):
     Terminal Configurable en distintos intérpretes.
     """
 
-    #__gtype_name__ = 'Terminal'
-
     __gsignals__ = {
     "reset": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}

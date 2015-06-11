@@ -24,8 +24,6 @@ from gi.repository import GObject
 
 class ItemMenuJAMediaEditor(Gtk.MenuItem):
 
-    #__gtype_name__ = 'ItemMenuInstaladores'
-
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
@@ -60,8 +58,6 @@ class ItemMenuJAMediaEditor(Gtk.MenuItem):
 
 class ItemMenuInstaladores(Gtk.MenuItem):
 
-    #__gtype_name__ = 'ItemMenuInstaladores'
-
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
@@ -81,8 +77,6 @@ class ItemMenuInstaladores(Gtk.MenuItem):
 
 
 class MenuInstaladores(Gtk.Menu):
-
-    #__gtype_name__ = 'JAMediaEditorMenuInstaladores'
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,

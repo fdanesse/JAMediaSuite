@@ -46,9 +46,9 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_accion, "deb")
         menu.append(item)
 
-        item = Gtk.MenuItem('Instalador fedora (rmp)')
-        item.connect("activate", self.__emit_accion, "rmp")
-        menu.append(item)
+        #item = Gtk.MenuItem('Instalador fedora (rmp)')
+        #item.connect("activate", self.__emit_accion, "rmp")
+        #menu.append(item)
 
         item = Gtk.MenuItem('Instalador python')
         item.connect("activate", self.__emit_accion, "python")
@@ -75,9 +75,9 @@ class Menu(Gtk.MenuBar):
         item.connect("activate", self.__emit_help, "help deb")
         menu.append(item)
 
-        item = Gtk.MenuItem('Instalador fedora (rmp)')
-        item.connect("activate", self.__emit_help, "help rmp")
-        menu.append(item)
+        #item = Gtk.MenuItem('Instalador fedora (rmp)')
+        #item.connect("activate", self.__emit_help, "help rmp")
+        #menu.append(item)
 
         item = Gtk.MenuItem('Instalador python')
         item.connect("activate", self.__emit_help, "help python")

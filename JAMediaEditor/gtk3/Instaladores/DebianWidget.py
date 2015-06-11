@@ -112,7 +112,8 @@ class DebianWidget(Gtk.EventBox):
         # Limpiar y establecer permisos de archivos y directorios
         get_installers_data(self.install_path)
         control = os.path.join(self.install_path, "DEBIAN", "control")
-        desktop = os.path.join(self.install_path, "usr", "share", "applications",
+        desktop = os.path.join(self.install_path, "usr",
+            "share", "applications",
             "%s.desktop" % self.proyecto["nombre"])
         lanzador = os.path.join(self.install_path, "usr", "bin",
             self.proyecto["nombre"].lower())
@@ -121,7 +122,8 @@ class DebianWidget(Gtk.EventBox):
         destino = os.path.join(CONFPATH, "%s_%s.deb" % (
             self.proyecto["nombre"],
             self.proyecto["version"].replace(".", "_")))
-        print commands.getoutput('dpkg -b %s %s' % (self.install_path, destino))
+        print commands.getoutput('dpkg -b %s %s' % (
+            self.install_path, destino))
         os.chmod(destino, 0755)
         dialogo.destroy()
         t = "Proceso Concluido."

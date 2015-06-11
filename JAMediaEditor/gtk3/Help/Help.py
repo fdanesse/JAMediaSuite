@@ -20,11 +20,9 @@
 
 import os
 from gi.repository import Gtk
-from gi.repository import Gdk
 from gi.repository import GdkX11
 from gi.repository import GLib
 from gi.repository import GObject
-from gi.repository import Pango
 from gi.repository import GdkPixbuf
 
 from gi.repository import WebKit
@@ -42,12 +40,16 @@ _dict = {
 
     "Programar Clase 0": os.path.join(BASEPATH, "ProgramarPython", "000.html"),
 
-    "help instaladores": os.path.join(BASEPATH, "JAMediaEditor", "Instaladores.html"),
+    "help instaladores": os.path.join(BASEPATH, "JAMediaEditor",
+        "Instaladores.html"),
     "help deb": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorDEB.html"),
     #"help rmp": format_RPM,
-    "help python": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorPYTHON.html"),
-    "help sin root": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorSINROOT.html"),
-    "help sugar": os.path.join(BASEPATH, "JAMediaEditor", "InstaladorSUGAR.html"),
+    "help python": os.path.join(BASEPATH, "JAMediaEditor",
+        "InstaladorPYTHON.html"),
+    "help sin root": os.path.join(BASEPATH, "JAMediaEditor",
+        "InstaladorSINROOT.html"),
+    "help sugar": os.path.join(BASEPATH, "JAMediaEditor",
+        "InstaladorSUGAR.html"),
     }
 
 
@@ -159,8 +161,6 @@ class Toolbar(Gtk.Toolbar):
         self.insert(item, -1)
 
         self.label = Gtk.Label("")
-        #self.label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
-        #self.label.modify_fg(0, Gdk.Color(0, 0, 65000))
         item = Gtk.ToolItem()
         item.set_expand(True)
         item.add(self.label)
@@ -189,7 +189,6 @@ class Toolbar(Gtk.Toolbar):
 
 class HelpWidget(Gtk.ScrolledWindow):
 
-    #__gtype_name__ = 'HelpWidget'
     __gsignals__ = {
         "title": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
