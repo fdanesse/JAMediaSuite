@@ -36,7 +36,7 @@ BASE_PATH = os.path.dirname(__file__)
 icons = os.path.join(BASE_PATH, "Iconos")
 
 
-class ToolbarProyecto(Gtk.EventBox):
+class ToolbarProyecto(Gtk.Toolbar):
     """
     Toolbar para el proyecto.
     """
@@ -49,12 +49,9 @@ class ToolbarProyecto(Gtk.EventBox):
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        Gtk.Toolbar.__init__(self)
 
         self.dict_proyecto = OrderedDict()
-        toolbar = Gtk.Toolbar()
-        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#f0e6aa'))
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         nuevo_proyecto = get_boton(icon_path, pixels=18,
@@ -95,20 +92,19 @@ class ToolbarProyecto(Gtk.EventBox):
         self.dict_proyecto["Detener Ejecución"] = [detener_ejecucion,
             "media-playback-stop.svg"]
 
-        toolbar.insert(nuevo_proyecto, - 1)
-        toolbar.insert(abrir_proyecto, - 1)
-        toolbar.insert(editar_proyecto, - 1)
-        toolbar.insert(guardar_proyecto, - 1)
-        toolbar.insert(cerrar_proyecto, - 1)
+        self.insert(nuevo_proyecto, - 1)
+        self.insert(abrir_proyecto, - 1)
+        self.insert(editar_proyecto, - 1)
+        self.insert(guardar_proyecto, - 1)
+        self.insert(cerrar_proyecto, - 1)
 
-        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
 
-        toolbar.insert(ejecutar_proyecto, - 1)
-        toolbar.insert(detener_ejecucion, - 1)
+        self.insert(ejecutar_proyecto, - 1)
+        self.insert(detener_ejecucion, - 1)
 
-        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), - 1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), - 1)
 
-        self.add(toolbar)
         self.show_all()
 
         for key in self.dict_proyecto.keys():
@@ -167,7 +163,7 @@ class ToolbarProyecto(Gtk.EventBox):
             map(self.__desactivar, self.dict_proyecto.keys()[2:])
 
 
-class ToolbarArchivo(Gtk.EventBox):
+class ToolbarArchivo(Gtk.Toolbar):
     """
     Toolbar para el archivo
     """
@@ -180,12 +176,9 @@ class ToolbarArchivo(Gtk.EventBox):
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        Gtk.Toolbar.__init__(self)
 
         self.dict_archivo = OrderedDict()
-        toolbar = Gtk.Toolbar()
-        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#f0e6aa'))
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
 
         icon_path = make_icon_active(os.path.join(icons, "document-new.svg"))
         nuevo_archivo = get_boton(os.path.join(icons, icon_path),
@@ -250,27 +243,27 @@ class ToolbarArchivo(Gtk.EventBox):
         self.dict_archivo["Seleccionar Todo"] = [seleccionar_todo,
             "edit-select-all.svg"]
 
-        toolbar.insert(get_separador(draw=False, ancho=10, expand=False), - 1)
+        self.insert(get_separador(draw=False, ancho=10, expand=False), - 1)
 
-        toolbar.insert(nuevo_archivo, - 1)
-        toolbar.insert(abrir_archivo, - 1)
-        toolbar.insert(guardar_archivo, - 1)
-        toolbar.insert(guardar_como, - 1)
-        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
-        toolbar.insert(ejecutar, - 1)
-        toolbar.insert(detener, - 1)
-        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
-        toolbar.insert(deshacer, - 1)
-        toolbar.insert(rehacer, - 1)
-        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
-        toolbar.insert(copiar, - 1)
-        toolbar.insert(cortar, - 1)
-        toolbar.insert(pegar, - 1)
-        toolbar.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
-        toolbar.insert(seleccionar_todo, - 1)
+        self.insert(nuevo_archivo, - 1)
+        self.insert(abrir_archivo, - 1)
+        self.insert(guardar_archivo, - 1)
+        self.insert(guardar_como, - 1)
+        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        self.insert(ejecutar, - 1)
+        self.insert(detener, - 1)
+        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        self.insert(deshacer, - 1)
+        self.insert(rehacer, - 1)
+        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        self.insert(copiar, - 1)
+        self.insert(cortar, - 1)
+        self.insert(pegar, - 1)
+        self.insert(get_separador(draw=True, ancho=0, expand=False), - 1)
+        self.insert(seleccionar_todo, - 1)
 
-        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), - 1)
-        self.add(toolbar)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), - 1)
+
         self.show_all()
 
         for key in self.dict_archivo.keys():
@@ -364,43 +357,25 @@ class ToolbarArchivo(Gtk.EventBox):
         map(self.__desactivar, desactivar)
 
 
-class ToolbarEstado(Gtk.EventBox):
-    """
-    Barra de estado.
-    """
+class ToolbarEstado(Gtk.Statusbar):
+    # Gtk.Statusbar = GtkFrame > GtkBox > GtkLabel
 
     __gtype_name__ = 'JAMediaEditorToolbarEstado'
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
-
-        toolbar = Gtk.Toolbar()
-        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
-
-        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
-
-        item = Gtk.ToolItem()
-        item.set_expand(True)
-        self.label = Gtk.Label("")
-        self.label.set_alignment(0.0, 0.5)
-        self.label.show()
-        item.add(self.label)
-        toolbar.insert(item, -1)
-
-        self.add(toolbar)
+        Gtk.Statusbar.__init__(self)
         self.show_all()
 
     def set_info(self, _dict):
         reng = _dict['renglones']
         carac = _dict['caracteres']
         arch = _dict['archivo']
-        text = self.label.get_text()
+        text = self.pop(0)
         new_text = u"Archivo: %s  Lineas: %s  Caracteres: %s" % (
             arch, reng, carac)
         try:
             if text != new_text:
-                self.label.set_text(new_text)
+                self.push(0, new_text)
         except:
             pass

@@ -63,7 +63,6 @@ class WidgetIcon(Gtk.Frame):
         self.proyecto_path = proyecto_path
 
         toolbar = Gtk.Toolbar()
-        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#edf5ff'))
 
         self.image = Gtk.Image()
         self.image.set_size_request(50, 50)

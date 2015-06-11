@@ -2,79 +2,80 @@
 /*https://developer.gnome.org/gtk3/3.0/GtkCssProvider.html*/
 /*background: url{../images/imagen.png} no-repeat;*/
 
-WindowJAMediaEditor, JAMediaEditorBasePanel, JAMediaEditorInfoNotebook,
-JAMediaEditorToolbarBusquedas, JAMediaEditorToolbarProyecto, ToolbarProyecto,
-JAMediaEditorToolbarArchivo, JAMediaEditorWorkPanel, ToolbarTerminal,
-JAMediaEditorNotebook_SourceView, JAMediaTerminal, NoteBookTerminal,
-Terminal, DialogoFormato, JAMediaEditorInstalador, PygiHackMenu,
-JAMediaEditorInformeWidget, JAMediaEditorDialogoProyecto, PygiHackToolbar,
-PygiHackBaseNotebook, PygiHackIntrospectionPanel, PygiHackInfoNotebook,
-JAMediaTerminal2, NoteBookTerminal2, Terminal2, ToolbarTerminal2,
-DialogoFormato2, JAMediaGstreamerPyGiHack, InstaladorDialogoLoad,
-InstaladorDialogoInformar, JAMediaEditorHelp, HelpDialogoLoad{
+* {}
+
+/*Contenedores Principales*/
+/*WindowJAMediaEditor, JAMediaEditorBasePanel,
+JAMediaEditorInfoNotebook, JAMediaEditorWorkPanel,
+JAMediaEditorNotebook_SourceView{
+    color: #000000;
+    background-color: #f0e6aa;
+}
+
+JAMediaEditorToolbarProyecto *, JAMediaEditorToolbarArchivo *{
+    color: #000000;
+    background-color: #f0e6aa;
+}
+
+JAMediaEditorIntrospeccion, JAMediaEditorEstructura_Proyecto{
+    background-color: #fafafa;
+    color: #000000;
+}*/
+
+/* Barra de menús*/
+/*JAMediaEditorMenu *{
+    color: #ffffff;
+    background-color: #000000;
+}
+JAMediaEditorMenu * :insensitive{
+    color: #4d4d4d;
+    background-color: #999999;
+}
+JAMediaEditorMenu * :prelight{
+    color: #000000;
+    background-color: #ffffff;
+}*/
+
+/* Barras de estado    border-width: 5px;*/
+/*JAMediaEditorToolbarEstado *, PygiHackToolbarTry *{
+    color: #ffffff;
+    background-color: #000000;
+}*/
+
+/*Otros*/
+/*JAMediaEditorToolbarBusquedas * {
     background-color: #f0e6aa;
     color: #000000;
 }
+JAMediaEditorToolbarBusquedas GtkEntry {
+    background-color: #ffffff;
+    color: #000000;
+}*/
 
-JAMediaEditorIntrospeccion, JAMediaEditorEstructura_Proyecto,
-JAMediaEditorDialogoBuscar, JAMediaEditorDialogoReemplazar,
-JAMediaEditorMy_FileChooser, Multiple_FileChooser, JAMediaEditorDialogoErrores,
-JAMediaEditorDialogoAlertaSinGuardar, JAMediaEditorDialogoSobreEscritura,
-JAMediaEditorDialogoEliminar, JAMediaEditorBusquedaGrep,
-GtkViewport, GtkFrame, SinRootWidget,
-JAMediaEditorDebianWidget, JAMediaEditorSinRootWidget,
-JAMediaEditorScrollPage, JAMediaEditorNotebookInstalador1,
-JAMediaEditorNotebookInstalador2, JAMediaEditorNotebookInstalador3,
-JAMediaEditorNotebookInstalador4,
-JAMediaEditorWidgetIcon, JAMediaEditorPythonWidget, TerminalInstalador,
-JAMediaEditorSugarWidget, HelpToolbar{
+/*Terminal*/
+/*JAMediaTerminal *{
+    background-color: #f0e6aa;
+    color: #000000;
+}*/
+
+GtkWindow{
+    background-color: #f0e6aa;
+    color: #000000;
+    }
+
+/* > Instaladores */
+GtkDialog, GtkFileChooserDialog,
+JAMediaEditorInstalador,
+JAMediaEditorInstalador GtkEventBox,
+JAMediaEditorInstalador GtkFrame,
+JAMediaEditorInstalador GtkFrame GtkToolbar,
+JAMediaEditorInstalador GtkNotebook{
     background-color: #edf5ff;
     color: #000000;
-}
-
-JAMediaEditorMenu, JAMediaEditorToolbarEstado, PygiHackToolbarTry,
-JAMediaEditorMenuInstaladores, JAMediaEditorCredits{
-    background-color: #000000;
+    }
+JAMediaEditorInstalador GtkMenuBar,
+JAMediaEditorInstalador GtkMenu{
     color: #ffffff;
-}
-
-TreeViewFonts, TreeViewTamanio {
-    background-color: #ffffff;
-    color: #000000;
-}
-
-/*
-JAMediaEditorDialogoProyecto {
-    background-color: #edf5ff;
-    color: #000000;
-    background-image: -gtk-gradient(linear,
-        left top, left bottom,
-        from(shade(#edf5ff, 0.50)),
-        to(shade(#edf5ff, 1.00)));
-}
-
-GtkPaned {
-    background-color: #edf5ff;
-}
-
-JAMediaEditorMenu, JAMediaEditorToolbarEstado {
     background-color: #000000;
-    color: #ffffff;
 }
-
-JAMediaEditorToolbarArchivo, JAMediaEditorToolbarProyecto, PygiHackToolbar, PygiHackMenu {
-    background-color: #ffffff;
-    background-image: -gtk-gradient(linear,
-        left top, left bottom,
-        from(shade(#edf5ff, 0.50)),
-        to(shade(#edf5ff, 1.00)));
-}
-
-ToolbarTerminal, JAMediaEditorToolbarBusquedas {
-    background-color: #ffffff;
-    background-image: -gtk-gradient(linear,
-        left top, left bottom,
-        from(shade(#edf5ff, 1.00)),
-        to(shade(#edf5ff, 0.50)));
-}
-*/
+/* < Instaladores */

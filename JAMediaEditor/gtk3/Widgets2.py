@@ -56,7 +56,7 @@ class DialogoErrores(Gtk.Dialog):
         label = Gtk.Label("Chequeo de Errores de JAMediaEditor")
         hbox.pack_start(label, True, True, 3)
         label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
-        label.modify_fg(0, Gdk.Color(0, 0, 65000))
+        #label.modify_fg(0, Gdk.Color(0, 0, 65000))
         hbox.show_all()
 
         errores = ErroresTreeview(view)

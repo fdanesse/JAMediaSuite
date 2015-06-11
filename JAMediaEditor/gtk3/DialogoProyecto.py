@@ -86,7 +86,7 @@ class DialogoProyecto(Gtk.Window):
         label = Gtk.Label("Constructor de Proyectos")
         hbox.pack_start(label, True, True, 3)
         label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
-        label.modify_fg(0, Gdk.Color(0, 0, 65000))
+        #label.modify_fg(0, Gdk.Color(0, 0, 65000))
 
         vbox = Gtk.VBox()
         vbox.pack_start(hbox, False, False, 0)

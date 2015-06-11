@@ -135,7 +135,7 @@ class Help(Gtk.Window):
         dialogo.run()
 
 
-class Toolbar(Gtk.EventBox):
+class Toolbar(Gtk.Toolbar):
 
     __gtype_name__ = 'HelpToolbar'
 
@@ -145,13 +145,9 @@ class Toolbar(Gtk.EventBox):
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        Gtk.Toolbar.__init__(self)
 
-        toolbar = Gtk.Toolbar()
-        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#edf5ff'))
-
-        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
-        #toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         image = Gtk.Image()
         arch = os.path.join(BASEPATH, "Iconos", "einsteintux.png")
@@ -160,29 +156,28 @@ class Toolbar(Gtk.EventBox):
         item = Gtk.ToolItem()
         item.set_expand(False)
         item.add(image)
-        toolbar.insert(item, -1)
+        self.insert(item, -1)
 
         self.label = Gtk.Label("")
-        self.label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
-        self.label.modify_fg(0, Gdk.Color(0, 0, 65000))
+        #self.label.modify_font(Pango.FontDescription("%s %s" % ("Monospace", 12)))
+        #self.label.modify_fg(0, Gdk.Color(0, 0, 65000))
         item = Gtk.ToolItem()
         item.set_expand(True)
         item.add(self.label)
-        toolbar.insert(item, -1)
+        self.insert(item, -1)
 
         archivo = os.path.join(BASEPATH, "Iconos", "Zoomout.svg")
         boton = get_boton(archivo, flip=False, pixels=18,
             tooltip_text="Alejar")
         boton.connect("clicked", self.__emit_zoom)
-        toolbar.insert(boton, -1)
+        self.insert(boton, -1)
 
         archivo = os.path.join(BASEPATH, "Iconos", "Zoomin.svg")
         boton = get_boton(archivo, flip=False, pixels=18,
             tooltip_text="Acercar")
         boton.connect("clicked", self.__emit_zoom)
-        toolbar.insert(boton, -1)
+        self.insert(boton, -1)
 
-        self.add(toolbar)
         self.show_all()
 
     def __emit_zoom(self, widget):

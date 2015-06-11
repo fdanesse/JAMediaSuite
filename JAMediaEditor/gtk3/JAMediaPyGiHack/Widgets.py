@@ -34,7 +34,7 @@ from Globales import get_separador
 from Globales import get_boton
 
 
-class Toolbar(Gtk.EventBox):
+class Toolbar(Gtk.Toolbar):
 
     __gtype_name__ = 'PygiHackToolbar'
 
@@ -59,13 +59,9 @@ class Toolbar(Gtk.EventBox):
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
+        Gtk.Toolbar.__init__(self)
 
-        toolbar = Gtk.Toolbar()
-
-        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
-        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#f0e6aa'))
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         item = Gtk.ToolItem()
         item.set_expand(False)
@@ -74,44 +70,43 @@ class Toolbar(Gtk.EventBox):
         self.menu.connect("accion-menu", self.__emit_accion_menu)
         self.menu.show()
         item.add(self.menu)
-        toolbar.insert(item, -1)
+        self.insert(item, -1)
 
-        toolbar.insert(get_separador(draw=False, ancho=10, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=10, expand=False), -1)
 
         item = Gtk.ToolItem()
         item.set_expand(True)
         self.toolbarbusquedas = ToolbarBusquedas()
         item.add(self.toolbarbusquedas)
-        toolbar.insert(item, -1)
+        self.insert(item, -1)
 
-        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
+        self.insert(get_separador(draw=False, ancho=0, expand=True), -1)
 
         archivo = os.path.join(ICONOS, "Zoomout.svg")
         boton = get_boton(archivo, flip=False, pixels=18,
             tooltip_text="Alejar")
         boton.connect("clicked", self.__emit_zoom)
-        toolbar.insert(boton, -1)
+        self.insert(boton, -1)
 
         archivo = os.path.join(ICONOS, "Zoomin.svg")
         boton = get_boton(archivo, flip=False, pixels=18,
             tooltip_text="Acercar")
         boton.connect("clicked", self.__emit_zoom)
-        toolbar.insert(boton, -1)
+        self.insert(boton, -1)
 
-        toolbar.insert(get_separador(draw=False, ancho=10, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=10, expand=False), -1)
 
         archivo = os.path.join(ICONOS, "button-cancel.svg")
         boton = get_boton(archivo, flip=False, pixels=32, tooltip_text="Salir")
         boton.connect("clicked", self.__emit_salir)
-        toolbar.insert(boton, -1)
+        self.insert(boton, -1)
 
-        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
+        self.insert(get_separador(draw=False, ancho=3, expand=False), -1)
 
         self.toolbarbusquedas.connect("accion", self.__re_emit_accion)
         self.toolbarbusquedas.connect("informe", self.__re_emit_informe)
         self.toolbarbusquedas.connect("buscar", self.__re_emit_buscar)
 
-        self.add(toolbar)
         self.show_all()
 
     def __emit_zoom(self, widget):
@@ -145,34 +140,17 @@ class Toolbar(Gtk.EventBox):
         self.toolbarbusquedas.activar(valor)
 
 
-class ToolbarTry(Gtk.EventBox):
+class ToolbarTry(Gtk.Statusbar):
 
     __gtype_name__ = 'PygiHackToolbarTry'
 
     def __init__(self):
 
-        Gtk.EventBox.__init__(self)
-
-        toolbar = Gtk.Toolbar()
-
-        toolbar.insert(get_separador(draw=False, ancho=3, expand=False), -1)
-        toolbar.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('#000000'))
-        toolbar.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse('#ffffff'))
-
-        item = Gtk.ToolItem()
-        item.set_expand(False)
-        self.label = Gtk.Label("Info:")
-        self.label.show()
-        item.add(self.label)
-        toolbar.insert(item, -1)
-
-        toolbar.insert(get_separador(draw=False, ancho=0, expand=True), -1)
-
-        self.add(toolbar)
+        Gtk.Statusbar.__init__(self)
         self.show_all()
 
     def set_info(self, info):
-        self.label.set_text("Info: %s" % info)
+        self.push(0, "Info: %s" % info)
 
 
 class Menu(Gtk.MenuBar):

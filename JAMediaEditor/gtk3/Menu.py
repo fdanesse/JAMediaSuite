@@ -60,6 +60,7 @@ class Menu(Gtk.MenuBar):
 
         Gtk.MenuBar.__init__(self)
 
+        # GtkMenuItem > GtkAccelLabel
         self.creditos = False
         self.dict_archivo = {}
         self.dict_proyecto = {}

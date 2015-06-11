@@ -320,7 +320,7 @@ class SourceView(GtkSource.View):
                     color = Gdk.Color(65000, 26000, 0)
                 pag = notebook.get_children()[indice]
                 label = notebook.get_tab_label(pag).get_children()[0]
-                label.modify_fg(0, color)
+                #label.modify_fg(0, color)
                 return
 
     def __handle(self):

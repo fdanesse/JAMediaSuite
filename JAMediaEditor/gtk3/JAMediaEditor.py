@@ -49,7 +49,7 @@ css_provider.load_from_path(style_path)
 context = Gtk.StyleContext()
 
 context.add_provider_for_screen(screen, css_provider,
-    Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
 GObject.threads_init()
 
