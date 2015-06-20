@@ -22,7 +22,7 @@
 import os
 import gtk
 import gobject
-
+from multiprocessing import Process
 from Globales import get_colors
 from Globales import get_boton
 from Globales import download_streamings
@@ -174,7 +174,7 @@ class Help(gtk.Dialog):
                 return self.helps.index(help)
 
 
-class MouseSpeedDetector(gobject.GObject):
+class MouseSpeedDetector(gobject.GObject, Process):
     """
     Verifica posición y movimiento del mouse.
     estado puede ser:
@@ -190,6 +190,7 @@ class MouseSpeedDetector(gobject.GObject):
     def __init__(self, parent):
 
         gobject.GObject.__init__(self)
+        Process.__init__(self)
 
         self.parent = parent
 

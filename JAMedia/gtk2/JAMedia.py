@@ -25,7 +25,7 @@ import gobject
 import time
 import datetime
 import sys
-import threading
+#import threading
 
 from Toolbars import Toolbar
 from Toolbars import ToolbarSalir
@@ -130,6 +130,7 @@ class JAMedia(gtk.Window):
         # Controlador del mouse.
         #   http://www.pygtk.org/pygtk2reference/class-gdkdisplay.html
         self.mouse_listener = MouseSpeedDetector(self)
+        self.mouse_listener.start()
         self.mouse_listener.new_handler(True)
 
         self.toolbar.connect("accion", self.__accion_toolbar)
@@ -198,8 +199,10 @@ class JAMedia(gtk.Window):
         self.grabador.connect('update', self.__update_grabador)
         self.grabador.connect('endfile', self.__detener_grabacion)
 
-        _thread = threading.Thread(target=self.grabador.play)
-        _thread.start()
+        self.grabador.start()
+        self.grabador.play()
+        #_thread = threading.Thread(target=self.grabador.play)
+        #_thread.start()
 
         self.set_sensitive(True)
 
@@ -211,6 +214,7 @@ class JAMedia(gtk.Window):
             self.grabador.disconnect_by_func(self.__update_grabador)
             self.grabador.disconnect_by_func(self.__detener_grabacion)
             self.grabador.stop()
+            self.grabador.terminate()
             del(self.grabador)
             self.grabador = False
         self.base_panel.izquierda.toolbar_record.stop()
@@ -317,6 +321,7 @@ class JAMedia(gtk.Window):
             pass
 
     def __salir(self, widget=None, senial=None):
+        self.mouse_listener.new_handler(False)
         self.__detener_grabacion()
         self.base_panel.salir()
         gtk.main_quit()

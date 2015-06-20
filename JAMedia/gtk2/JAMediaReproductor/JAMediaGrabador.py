@@ -23,11 +23,11 @@ import os
 import sys
 import gobject
 import gst
-
+from multiprocessing import Process
 gobject.threads_init()
 
 
-class JAMediaGrabador(gobject.GObject):
+class JAMediaGrabador(gobject.GObject, Process):
 
     __gsignals__ = {
     "update": (gobject.SIGNAL_RUN_LAST,
@@ -38,6 +38,7 @@ class JAMediaGrabador(gobject.GObject):
     def __init__(self, uri, archivo, tipo):
 
         gobject.GObject.__init__(self)
+        Process.__init__(self)
 
         self.tipo = tipo
 

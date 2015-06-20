@@ -22,18 +22,14 @@
 import os
 import gobject
 import gst
-#import gtk
-
+from multiprocessing import Process
 from JAMediaBins import JAMedia_Audio_Pipeline
 from JAMediaBins import JAMedia_Video_Pipeline
-
 PR = False
-
 gobject.threads_init()
-#gtk.gdk.threads_init()
 
 
-class JAMediaReproductor(gobject.GObject):
+class JAMediaReproductor(gobject.GObject, Process):
 
     __gsignals__ = {
     "endfile": (gobject.SIGNAL_RUN_LAST,
@@ -53,6 +49,7 @@ class JAMediaReproductor(gobject.GObject):
     def __init__(self, ventana_id):
 
         gobject.GObject.__init__(self)
+        Process.__init__(self)
 
         self.nombre = "JAMediaReproductor"
 
