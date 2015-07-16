@@ -178,10 +178,10 @@ class JAMediaYoutube(gobject.GObject):
         # http://youtu.be/XWDZMMMbvhA => codigo compartir
         # url del video => 'http://www.youtube.com/watch?v=XWDZMMMbvhA'
         # FIXME: HACK: 5 de octubre 2012
-        #self.url = url
-        self.url = "http://youtu.be/" + url.split(
-            "http://www.youtube.com/watch?v=")[1]
-
+        #self.url = url # https://youtu.be/wgdbZhnFD5g #https://www.youtube.com/watch?t=187&v=wgdbZhnFD5g
+        #self.url = "http://youtu.be/" + url.split(
+        #    "http://www.youtube.com/watch?v=")[1]
+        self.url = "http://youtu.be/" + url.split("=")[1]
         self.titulo = self.__get_titulo(titulo)
         self.STDOUT = "/tmp/jamediatube%d" % time.time()
 

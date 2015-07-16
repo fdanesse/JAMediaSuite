@@ -48,33 +48,15 @@ class JAMediaWeb(Gtk.Plug):
         Gtk.Plug.__init__(self, 0L)
 
         self.navegador = None
-
         self.show_all()
-
         self.connect("embedded", self.embed_event)
 
     def setup_init(self):
-        """
-        Se crea la interfaz grafica,
-        se setea y se empaqueta todo.
-        """
-
         self.navegador = Navegador()
-
         base_panel = Gtk.Paned(orientation = Gtk.Orientation.HORIZONTAL)
-
-        # Izquierda
-        scroll = Gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        #scroll.add_with_viewport (self.lista_de_reproduccion)
-
-        #base_panel.pack1(scroll, resize = True, shrink = True)
-
-        # Derecha
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scroll.add_with_viewport(self.navegador)
-
         base_panel.pack2(scroll, resize = True, shrink = True)
 
         self.add(base_panel)
@@ -98,60 +80,28 @@ class JAMediaWeb(Gtk.Plug):
         #self.navegador.set_view_mode(WebKit.WebViewViewMode.FLOATING)
 
     def load(self, url):
-
         self.navegador.load(url)
 
     def anterior(self, widget):
-        """
-        Carga la página anterior.
-        """
-
         self.navegador.go_back()
 
     def siguiente(self, widget):
-        """
-        Carga la página siguiente.
-        """
-
         self.navegador.go_forward()
 
     def recargar(self, widget):
-        """
-        Recarga la página actual.
-        """
-
         self.navegador.reload()
 
     def detener(self, widget):
-        """
-        Detiene la carga de la página.
-        """
-
         self.navegador.stop_loading()
 
     def acercar(self, widget):
-        """Hace zoom in."""
-
         pass
 
     def alejar(self, widget):
-        """Hace zoom out."""
-
         pass
 
     def embed_event(self, widget):
-        """
-        No hace nada por ahora.
-        """
-
         print "JAMediaWeb => OK"
 
     def emit_salir(self, widget):
-        """
-        Emite salir para que cuando esta embebida, la
-        aplicacion decida que hacer, si salir, o cerrar solo
-        JAMediaWeb.
-        """
-
         self.emit('salir')
-

@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import gi
-from gi.repository import WebKit
+from gi.repository import WebKit2
 
 '''
 client = pdfcrowd.Client("cristian99garcia", "736774e3e4e9f16c862f3630f1259f7a")
@@ -47,32 +47,31 @@ archivo.write(pdf)
 archivo.close()
 '''
 
-class Navegador(WebKit.WebView):
-    """
-    Navegador Web
-    """
+class Navegador(WebKit2.WebView):
 
     def __init__(self):
 
-        WebKit.WebView.__init__(self)
+        WebKit2.WebView.__init__(self)
 
         self.show_all()
 
         #self.open('https://www.google.com/')
 
         self.set_zoom_level(1.0)
-
-        print self.get_settings() # WebKit.WebSettings()
-
+        self.settings = self.get_settings()
+        self.settings.set_property("enable-plugins", True)
+        #self.settings.set_property("enable-scripts", True)
+        self.set_settings(self.settings)
         #self.connect("draw", self.__check)
 
-    def load(self, url):
+        #self.load_uri("http://www.capitalfm.com/tv/player/")
+        self.load_uri("http://www.capitalfm.com/tv/player/")
 
+    def load(self, url):
         self.load_uri(url)
 
     '''
     def __check(self, widget, context):
-
         rect = self.get_allocation()
         print rect.width, rect.height
         print widget, context
@@ -84,12 +83,10 @@ class Navegador(WebKit.WebView):
         print 'do_close_web_view'
 
     def do_console_message(self, uno, dos, tres):
-
         print 'do_console_message',
         print "*", uno
         print "*",dos
         print "*",tres
-
         """
         do_console_message
         * The page at https://sites.google.com/site/flaviodanesse/ displayed insecure content from http://activities.sugarlabs.org/en-US/sugar/images/t/540/1292037530.
@@ -136,7 +133,6 @@ class Navegador(WebKit.WebView):
     #def do_should_allow_editing_action(self):
     #    """Cuando se hace click en el frame, o
     #    cuando se escribe en el buscador."""
-
     #    print 'do_should_allow_editing_action'
 
     def do_undo(self):

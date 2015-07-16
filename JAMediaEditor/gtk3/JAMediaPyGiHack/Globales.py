@@ -123,7 +123,7 @@ def get_dict():
             'Pango', 'PangoCairo', 'PangoFT2', 'PangoXft', 'Peas',
             'PeasGtk', 'Polkit', 'PolkitAgent', 'Poppler', 'Rsvg',
             'Soup', 'SoupGNOME', 'TelepathyGLib', 'TelepathyLogger',
-            'Totem', 'UPowerGlib', 'Unity', 'Vte', 'WebKit', 'Wnck',
+            'Totem', 'UPowerGlib', 'Unity', 'Vte', 'WebKit', 'WebKit2', 'Wnck',
             'cairo', 'fontconfig', 'freetype2', 'libxml2', 'xfixes',
             'xft', 'xlib', 'xrandr', 'gi', 'GUdev']),
 
