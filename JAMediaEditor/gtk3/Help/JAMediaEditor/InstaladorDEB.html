@@ -148,7 +148,7 @@
     <p align="left" style="margin-left: 1.25cm">
         <b>Ejemplo de archivo control:</b>
     </p>
-        <p align="justify" style="margin-left: 2.5cm"><font color="#990000">
+        <p align="left" style="margin-left: 2.5cm"><font color="#990000">
         Package: bichos<br/>
         Source: Bichos<br/>
         Version: 1<br/>
@@ -162,7 +162,7 @@
         Aquí debes poner la descripción larga y debe contener un espacio vacío al comienzo
         </font></p>
 
-    <p align="justify" style="margin-left: 1.25cm">
+    <p align="left" style="margin-left: 1.25cm">
         Luego de tener toda la estructura de directorios y archivos lista, debes asegurarte de dar los permisos de lectura y ejecución adecuados a cada archivo y directorio.<br/>
         En particular: todos los ejecutables deben tener permisos de ejecución, esto incluye el lanzador y el archivo .desktop.<br/>
         Cuando esté todo listo, desde la terminal, <b>construimos el paquete .deb utilizando dpkg:</b>
@@ -172,7 +172,7 @@
             dpkg -b ./deb /directorio_construido_anteriormente /directorio_destino_del_paquete_deb/nombre_paquete.deb
         </font></p>
 
-    <p align="justify" style="margin-left: 1.25cm">
+    <p align="left" style="margin-left: 1.25cm">
         El archivo .deb resultante está listo para ser distribuido o instalado con el gestor de paquetes. (Recuerda darle permisos de ejecución). Bastará con que el usuario haga doble click sobre él, para que el gestor de paquetes lo abra y pueda comenzar su instalación.
     </p>
 
@@ -207,7 +207,7 @@
         Una forma de aprender sobre esto, por inmersión, puede ser descargar archivos .deb, descomprimirlos y leer los archivos involucrados.<br/>
         Si bien un archivo .deb puedes descomprimirlo igual que un zip común, lo correcto es hacerlo mediante:
     </p>
-        <p align="justify" style="margin-left: 2.5cm"><font color="#990000">
+        <p align="left" style="margin-left: 2.5cm"><font color="#990000">
             dpkg -x paquete.deb directorio
         </font> </p>
     </body>
