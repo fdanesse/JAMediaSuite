@@ -1,556 +1,300 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<title></title>
-	<meta name="generator" content="LibreOffice 4.3.3.2 (Linux)"/>
-	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2015-04-05T13:55:01.069211313"/>
-	<meta name="created" content="2015-04-05T10:31:12.353267808">
-	<meta name="changed" content="2015-04-05T12:19:32.910130563">
-	<style type="text/css">
-		@page { margin-left: 1cm; margin-right: 1cm }
-		p { margin-bottom: 0.25cm; line-height: 120% }
-		a:link { so-language: zxx }
-	</style>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Instalador python</title>
+    <style type="text/css">
+        @page { margin-left: 1cm; margin-right: 1cm }
+        p { margin-bottom: 0.25cm; line-height: 120% }
+        a:link { so-language: zxx }
+    </style>
 </head>
-<body lang="es-UY" dir="ltr" style="background: transparent">
-<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#006699"><u><font size="4" style="font-size: 14pt"><b>Un
-instalador python requiere de los siguientes archivos:</b></u></font></font></p>
-<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
 
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#0066cc">setup.cfg</font></p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#0066cc">setup.py</font></p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#0066cc">MANIFEST</font></p>
-<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+<body lang="es-UY">
+    <p align="left">
+        <u><font size="4" color="#000099" style="font-size: 14pt">
+            <b>Un instalador python requiere de los siguientes archivos:</b>
+        </u></font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Además de estos archivos, hay que agregar el lanzador y el .desktop
-ya que son necesarios para ejecutar la aplicación cuando esté
-instalada.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Para saber que información llevan estos dos últimos archivos, lee
-la Ayuda sobre &quot;Instaladores en General&quot;.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 1.25cm">
+        <font color="#0066cc">
+        <ul>
+            <li/>setup.cfg
+            <li/>setup.py
+            <li/>MANIFEST
+        </ul></font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; font-weight: normal; line-height: 0.6cm">
-<b>El archivo setup.cfg</b> debe contener los paths de instalación
-de tu proyecto como se muestra en el siguiente ejemplo:</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 1.25cm">
+        Además de estos archivos, hay que agregar el lanzador y el archivo .desktop, ya que son necesarios para ejecutar la aplicación cuando esté instalada.</br>
+        </br>
+        Para saber que información deben contener estos dos últimos archivos, lee: <a href="Instaladores.html">&quot;Instaladores en General&quot;</a>.</br>
+        </br>
+        <b>El archivo setup.cfg</b> debe contener los paths de instalación de tu proyecto como se muestra en el siguiente ejemplo:
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">[install]</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">install_lib=/usr/local/share/JAMediaTube</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">install_data=/usr/local/share/JAMediaTube</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">install_scripts=/usr/local/bin</font></p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <font color="#cc0066">[install]</br>
+        install_lib=/usr/local/share/JAMediaTube</br>
+        install_data=/usr/local/share/JAMediaTube</br>
+        install_scripts=/usr/local/bin</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>El archivo </b><font color="#0066cc"><b>MANIFEST</b></font>, debe
-contener toda la estructura de archivos y directorios interna de tu
-proyecto. Cualquier archivo que desees distribuir con tu aplicación,
-debe estar listado en MANIFEST. A continuación vemos un fragmento de
-uno de estos archivos:</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 1.25cm">
+        <b>El archivo </b><font color="#0066cc"><b>MANIFEST</b></font>, debe contener toda la estructura de archivos y directorios interna de tu proyecto. Cualquier archivo que desees distribuir con tu aplicación, debe estar listado en MANIFEST.</br>
+        A continuación vemos un fragmento de uno de estos archivos:
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMedia/Iconos/JAMedia.svg</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMedia/Iconos/agregar.svg</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMedia/Iconos/JAMediaCredits.svg</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMedia/JAMediaReproductor/JAMediaGrabador.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMedia/JAMediaReproductor/JAMediaBins.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMedia/JAMediaReproductor/JAMediaReproductor.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMedia/JAMediaReproductor/__init__.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">AUTHORS</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">jamediatube_run</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">PanelTube.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMediaTube.desktop</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">Globales.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">COPYING</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">jamediatube_uninstall</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">youtube-dl</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">setup.cfg</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMediaYoutube.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">__init__.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">Widgets.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">PanelTubeWidgets.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">setup.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">MANIFEST</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">TubeListDialog.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">JAMediaTube.py</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <font color="#cc0066">JAMedia/Iconos/JAMedia.svg</br>
+        JAMedia/Iconos/agregar.svg</br>
+        JAMedia/Iconos/JAMediaCredits.svg</br>
+        JAMedia/JAMediaReproductor/JAMediaGrabador.py</br>
+        JAMedia/JAMediaReproductor/JAMediaBins.py</br>
+        JAMedia/JAMediaReproductor/JAMediaReproductor.py</br>
+        JAMedia/JAMediaReproductor/__init__.py</br>
+        AUTHORS</br>
+        jamediatube_run</br>
+        PanelTube.py</br>
+        JAMediaTube.desktop</br>
+        Globales.py</br>
+        COPYING</br>
+        jamediatube_uninstall</br>
+        youtube-dl</br>
+        setup.cfg</br>
+        JAMediaYoutube.py</br>
+        __init__.py</br>
+        Widgets.py</br>
+        PanelTubeWidgets.py</br>
+        setup.py</br>
+        MANIFEST</br>
+        TubeListDialog.py</br>
+        JAMediaTube.py</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Nota:</b></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-En el archivo MANIFEST, también deben estar listados los archivos de
-instalación: <font color="#cc0066"><i>setup.cfg</i></font>, <font color="#cc0066"><i>setup.py</i></font>
-y <font color="#cc0066"><i>MANIFEST</i></font> Obviamente es muy
-engorroso llenar a mano este archivo si tu proyecto es muy grande.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <b>Nota:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>El archivo </b><font color="#cc0066"><i><b>setup.py</b></i></font>
-es el más complejo de los tres, en él, hay que importar la función
-<font color="#006699">setup</font> de <font color="#006699">distutils.core</font>
-y llamarla pasándole en sus parámetros, la información de nuestro
-proyecto para que ella pueda construir el paquete distribuible de
-nuestro instalador.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        En el archivo MANIFEST, también deben estar listados los archivos de instalación: <font color="#cc0066"><i>setup.cfg</i></font>, <font color="#cc0066"><i>setup.py</i></font> y <font color="#cc0066"><i>MANIFEST</i></font>.
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Esta función, <font color="#cc0066">setup</font>, toma muchos
-parámetros los cuales se detallan a continuación:</b></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 1.25cm">
+        <b>El archivo </b><font color="#cc0066"><i><b>setup.py</b></i></font> es el más complejo de los tres. En él, hay que importar la función <font color="#006699">setup</font> de <font color="#006699">distutils.core</font> y llamarla pasándole como parámetros, la información de nuestro proyecto para que ella pueda construir el paquete distribuible de nuestro instalador.
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Metadatos del proyecto:</b></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <b>Esta función, <font color="#cc0066">setup</font>, toma muchos parámetros los cuales se detallan a continuación:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">name = &quot;JAMediaTube&quot;,</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">version = &quot;10.0.0&quot;,</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">author = &quot;Flavio Danesse&quot;,</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">author_email = &quot;fdanesse@gmail.com&quot;,</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">url =
-&quot;https://sites.google.com/site/sugaractivities/jamediaobjects/jamediatube&quot;,</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">license = &quot;GPL3&quot;,</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <b>Metadatos del proyecto:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Lanzadores de la aplicación:</b></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 5cm">
+        <font color="#cc0066">name = &quot;JAMediaTube&quot;,</br>
+        version = &quot;10.0.0&quot;,</br>
+        author = &quot;Flavio Danesse&quot;,</br>
+        author_email = &quot;fdanesse@gmail.com&quot;,</br>
+        url = &quot;https://sites.google.com/site/sugaractivities/jamediaobjects/jamediatube&quot;,</br>
+        license = &quot;GPL3&quot;,</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">scripts = [&quot;jamediatube_run&quot;,
-&quot;jamediatube_uninstall&quot;],</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <b>Lanzadores de la aplicación:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Main ejecutable de la aplicación:</b></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 5cm">
+        <font color="#cc0066">scripts = [&quot;jamediatube_run&quot;, &quot;jamediatube_uninstall&quot;],</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">py_modules = [&quot;JAMediaTube&quot;],</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <b>Main ejecutable de la aplicación:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Archivos de la aplicación:</b></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 5cm">
+        <font color="#cc0066">py_modules = [&quot;JAMediaTube&quot;],</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">data_files =[</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">(&quot;/usr/share/applications/&quot;,
-[&quot;JAMediaTube.desktop&quot;]),</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">(&quot;&quot;,[</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">&quot;JAMediaTube.py&quot;,</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">&quot;TubeListDialog.py&quot;,</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">&quot;MANIFEST&quot;,</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">&quot;setup.py&quot;,</font></p>
-<p align="justify" style="margin-left: 5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">etc . . .</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <b>Archivos de la aplicación:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>La estructura general de este archivo es:</b></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 5cm">
+        <font color="#cc0066">data_files =[</br>
+        (&quot;/usr/share/applications/&quot;, </br>
+        [&quot;JAMediaTube.desktop&quot;]), (&quot;&quot;,[</br>
+        &quot;JAMediaTube.py&quot;,</br>
+        &quot;TubeListDialog.py&quot;,</br>
+        &quot;MANIFEST&quot;,</br>
+        &quot;setup.py&quot;,</br>
+        etc . . .</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">from distutils.core import setup</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <b>La estructura general de este archivo es:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">setup(</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">name = &quot;&quot;,</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">version = &quot;&quot;,</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">author = &quot;&quot;,</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">author_email = &quot;&quot;,</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">url = &quot;&quot;,</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">license = &quot;&quot;,</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <font color="#cc0066">from distutils.core import setup</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">scripts = [],</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <font color="#cc0066">setup(</br>
+        name = &quot;&quot;,</br>
+        version = &quot;&quot;,</br>
+        author = &quot;&quot;,</br>
+        author_email = &quot;&quot;,</br>
+        url = &quot;&quot;,</br>
+        license = &quot;&quot;,</br>
+        </br>
+        scripts = [],</br>
+        </br>
+        py_modules = [],</br>
+        </br>
+        data_files =[</br>
+        (path destino, [archivos en mi proyecto]),</br>
+        (otro path destino,[archivos en mi proyecto]),</br>
+        (etc . . .,[etc . . .]),</br>
+        ])</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">py_modules = [],</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        Los primeros datos sólo son metadatos del proyecto, por lo cual no es difícil de incorporarlos, pero los otros entrañan mucha dificultad si debes escribirlos a mano, dado que que hay que especificar los paths correctamente para cada archivo en el proyecto.</br>
+        </br>
+        Los archivos detallados en scripts son los lanzadores de la aplicación y deben escribirse con el path relativo en que se encuentran dentro del directorio de tu proyecto. Estos archivos se instalarán en el path establecido en el campo <font color="#cc0066">install_scripts</font> del archivo <font color="#cc0066"><i>setup.cfg</i></font></br>
+        Además, deben estar correctamente listados en MANIFEST.</br>
+        </br>
+        Como ya habrás comprendido, los archivos setup.cfg, setup.py y MANIFEST, trabajan juntos.</br>
+        </br>
+        El parámetro<font color="#cc0066"> py_modules</font> debe listar los archivos &quot;main&quot; de python de tu proyecto, es decir, el archivo principal de tu aplicación, o los archivos principales si hubiera más de uno. También acá debe respetarse el path relativo al directorio de tu proyecto y este archivo debe estar correctamente listado en MANIFEST. Este archivo se instalará en el path establecido en el campo <font color="#cc0066">install_data</font> de <font color="#cc0066"><i>setup.cfg</i></font></br>
+        </br>
+        El parámetro <font color="#cc0066">data_files</font>, debe contener la lista completa de archivos a instalar.</br>
+        Cada elemento de esta lista, es una tupla de dos elementos.</br>
+        El primer elemento es el directorio destino de los archivos listados en el segundo elemento de la tupla.</br>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">data_files =[</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">(path destino, [archivos en mi proyecto]),</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">(otro path destino,[archivos en mi proyecto]),</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">(etc . . .,[etc . . .]),</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">])</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <b>Por ejemplo, para el archivo desktop:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Los primeros datos sólo son metadatos del proyecto, por lo cual no
-es difícil de incorporarlos, pero los otros entrañan mucha
-dificultad si debes escribirlos a mano, dado que que hay que
-especificar los paths correctamente de cada archivo en el proyecto.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <font color="#cc0066">(&quot;/usr/share/applications/&quot;, [&quot;JAMediaTube.desktop&quot;])</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Los archivos detallados en scripts son los lanzadores de la
-aplicación y deben escribirse con el path relativo en que se
-encuentran dentro del directorio de tu proyecto. Estos archivos se
-instalarán en el path establecido en el campo <font color="#cc0066">install_scripts</font>
-del archivo <font color="#cc0066"><i>setup.cfg</i></font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Además, deben estar correctamente listados en MANIFEST.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        Lo que se establece allí es que todos los archivos de la lista que ocupan el segundo lugar de la tupla (en este caso solo JAMediaTube.desktop), se instalarán en /usr/share/applications/</br>
+        </br>
+        Si por ejemplo, tuviera una lista de íconos a instalar y quisiera instalarlos dentro de un directorio &quot;Iconos&quot; que a su vez estuviera dentro del path de instalación de mi proyecto, escribiría:
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Como ya habrás comprendido, los archivos setup.cfg, setup.py y
-MANIFEST, trabajan juntos.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <font color="#cc0066">(&quot;Iconos/&quot;,[</br>
+        &quot;Iconos/JAMedia.svg&quot;,</br>
+        &quot;Iconos/yt_videos_black.png&quot;,</br>
+        &quot;Iconos/JAMedia-help.svg&quot;,</br>
+        etc . . .])</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-El parámetro<font color="#cc0066"> py_modules</font> debe listar los
-archivos &quot;main&quot; de python de tu proyecto, es decir, el
-archivo principal de tu aplicación, o los archivos principales si
-hubiera más de uno. También acá debe respetarse el path relativo
-al directorio de tu proyecto y este archivo debe estar correctamente
-listado en MANIFEST. Este archivo se instalará en el path
-establecido en el campo <font color="#cc0066">install_data</font> de
-<font color="#cc0066"><i>setup.cfg</i></font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        Básicamente ahí estoy diciendo que cuando mi aplicación se instale, en el path en que se instaló, debe crearse el directorio &quot;Iconos&quot; y dentro deben copiarse todos los íconos listados.</br>
+        </br>
+        <b>De modo que si el archivo setup.cfg dice:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-El parámetro <font color="#cc0066">data_files</font>, debe contener
-la lista completa de archivos a instalar.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Cada elemento de esta lista, es una tupla de dos elementos.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-El primer elemento es el directorio destino de los archivos listados
-en el segundo elemento de la tupla.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <font color="#cc0066">install_data=/usr/local/share/JAMediaTube</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Por ejemplo, para el archivo desktop:</b></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <b>Mis íconos se copiarán en:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">(&quot;/usr/share/applications/&quot;,
-[&quot;JAMediaTube.desktop&quot;])</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        <font color="#cc0066">/usr/local/share/JAMediaTube/Iconos/</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Lo que se establece allí es que todos los archivos de la lista que
-ocupan el segundo lugar de la tupla (en este caso solo
-JAMediaTube.desktop), se instalarán en /usr/share/applications/</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <b>Resumen:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Si por ejemplo, tuviera una lista de íconos a instalar y quisiera
-instalarlos dentro de un directorio &quot;Iconos&quot; que a su vez
-estuviera dentro del path de instalación de mi proyecto, escribiría:</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        El elemento de la izquierda de la tupla, determina el path destino de los elementos de la derecha de la tupla.</br>
+        El path definitivo, depende de lo que se establezca en el campo <font color="#cc0066">install_data</font> de<font color="#cc0066"><i> setup.cfg</i></font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">(&quot;Iconos/&quot;,[</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">&quot;Iconos/JAMedia.svg&quot;,</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">&quot;Iconos/yt_videos_black.png&quot;,</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">&quot;Iconos/JAMedia-help.svg&quot;,</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">etc . . .</font></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">])</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <b>Nota:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Básicamente ahí estoy diciendo que cuando mi aplicación se
-instale, en el path en que se instaló, debe crearse el directorio
-&quot;Iconos&quot; y dentro deben copiarse todos los íconos
-listados.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 3.75cm">
+        En el archivo setup.py puedes escribir el código que desees fuera de la llamada a la función setup de distutils.core. Esto es útil para establecer permisos de archivos o limpiar directorios antes o después de la instalación de tu aplicación.
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>De modo que si el archivo setup.cfg dice:</b></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    </br>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">install_data=/usr/local/share/JAMediaTube</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left">
+        <u><font size="4" color="#000099" style="font-size: 14pt">
+            <b>Construcción del paquete distribuible:</b>
+        </u></font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Mis íconos se copiarán en:</b></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 1.25cm">
+        Una vez escritos los archivos necesarios, hay que construir el instalador y el distribuible.</br>
+        El archivo distribuible es un archivo tar.gz que contiene al instalador.</br>
+        Se pueden construir por separado pero no tiene mucho sentido hacerlo de esa forma ya que se pueden hacer ambas cosas en un solo paso.</br>
+        </br>
+        <b>Para construir el paquete definitivo debes ejecutar:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">/usr/local/share/JAMediaTube/Iconos/</font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <font color="#cc0066">python setup.py sdist</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Resumen:</b></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-El elemento de la izquierda de la tupla, determina el path destino de
-los elementos de la derecha de la tupla.</p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-El path definitivo, depende de lo que se establezca en el campo
-<font color="#cc0066">install_data</font> de<font color="#cc0066"><i>
-setup.cfg</i></font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 1.25cm">
+        Con ese sencillo paso, se construirá el paquete tar.gz que debes distribuir en internet para que puedan instalar tu aplicación.</br>
+        Quien desee utilizarlo, luego de descargarlo debe descomprimirlo, abrir una terminal, entrar en el directorio donde descomprimió el paquete y ejecutar:
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Nota:</b></p>
-<p align="justify" style="margin-left: 3.75cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-En el archivo setup.py puedes escribir el código que desees fuera de
-la llamada a la función setup de distutils.core. Esto es útil para
-establecer permisos de archivos o limpiar directorios antes o después
-de la instalación de tu aplicación.</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        <font color="#cc0066">sudo python setup.py install</font>
+    </p>
 
-</p>
-<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Construcción
-del paquete distribuible:</b></u></font></font></p>
-<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 1.25cm">
+        Si no lanza ningún error, la instalación estará completa y la aplicación lista para ser utilizada.
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Una vez escritos los archivos necesarios, hay que construir el
-instalador y el distribuible.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-El archivo distribuible es un archivo tar.gz que contiene al
-instalador.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Se pueden construir por separado pero no tiene mucho sentido hacerlo
-de esa forma ya que se pueden hacer ambas cosas en un solo paso.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 1.25cm">
+        <b>Nota:</b>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Para construir el paquete definitivo debes ejecutar:</b></p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 2.5cm">
+        Para desinstalar la aplicación, el usuario debe borrar el directorio donde fue instalada la aplicacion, los lanzadores y el archivo .desktop, a menos que crees un script que haga todo esto y lo distribuyas con tu aplicación.</br>
+        En ese caso, ese escript debe incluirse en el parámetro <font color="#cc0066">&quot;scripts&quot;</font> de la función <font color="#cc0066">&quot;setup&quot;</font> de <font color="#cc0066"><i>&quot;setup.py&quot;</i></font></br>
+        </br>
+        Cuando ejecutas: <font color="#cc0066">python setup.py</font>, puedes pasarle varios parámetros, acá solo se nombraron <font color="#cc0066">install</font> y <font color="#cc0066">sdist</font>, consulta la web de python para aprender sobre esto.
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">python setup.py sdist</font></p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    </br>
 
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Con ese sencillo paso, se construirá el paquete tar.gz que debes
-distribuir en internet para que puedan instalar tu aplicación.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Quien desee utilizarlo, luego de descargarlo debe descomprimirlo,
-abrir una terminal, entrar en el directorio donde descomprimió el
-paquete y ejecutar:</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left">
+        <u><font size="4" color="#000099" style="font-size: 14pt">
+            <b>Sobre JAMediaEditor:</b>
+        </u></font>
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#cc0066">sudo python setup.py install</font></p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
+    <p align="left" style="margin-left: 1.25cm">
+        Como habrás visto, resulta bastante engorroso construir este instalador, sobre todo si tu proyecto es muy complejo.</br>
+        Por eso JAMediaEditor automatiza todo este proceso analizando el directorio de tu proyecto y presentándote los archivos de instalación para que tu corrijas, agregues o quites lo que desees de ellos.</br>
+        </br>
+        Por defecto, JAMediaEditor debiera construir este instalador correctamente sin que cambies nada y ese instalador debiera funcionar sin ningún tipo de problemas. Si este no fuera el caso, asegúrate que no has hecho cambios que contengan errores en los archivos del instalador.</br>
+        </br>
+        Si quieres aprender más sobre esta forma de hacer un instalador, puedes crear un proyecto pequeño en JAMediaEditor y construir este instalador en él, luego descomprime el tar.gz resultante y analiza los archivos involucrados (MANIFEST, setup.py, setup.cfg, el lanzador y el .desktop).</br>
+        </br>
+        Si quieres analizar la forma en que JAMediaEditor arma este instalador, mira el archivo <font color="#cc0066"><i>JAMediaEditor/Instaladores/ApiProyecto.py</i></font> dentro del path de instalación de JAMediaEditor.
+    </p>
 
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Si no lanza ningún error, la instalación estará completa y la
-aplicación lista para ser utilizada.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
-
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<b>Nota:</b></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Para desinstalar la aplicación, el usuario debe borrar el directorio
-donde fue instalada, los lanzadores y el archivo .desktop, a menos
-que crees un script que haga todo esto y lo distribuyas con tu
-aplicación. En este caso, ese escript debie incluirse en el
-parámetro <font color="#cc0066">&quot;scripts&quot;</font> de la
-función <font color="#cc0066">&quot;setup&quot;</font> de <font color="#cc0066"><i>&quot;setup.py&quot;</i></font></p>
-<p align="justify" style="margin-left: 2.5cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Cuando ejecutas: <font color="#cc0066">python setup.py</font>, puedes
-pasarle varios parámetros, acá solo se nombraron <font color="#cc0066">install</font>
-y <font color="#cc0066">sdist</font>, consulta la web de python para
-aprender sobre esto.</p>
-<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
-
-</p>
-<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<font color="#006699"><font size="4" style="font-size: 14pt"><u><b>Sobre
-JAMediaEditor:</b></u></font></font></p>
-<p align="justify" style="margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
-
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Como habrás visto, resulta bastante engorroso construir este
-instalador, sobre todo si tu proyecto es muy complejo.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Por eso JAMediaEditor automatiza todo este proceso analizando el
-directorio de tu proyecto y presentándote los archivos de
-instalación para que tu corrijas, agregues o quites lo que desees de
-ellos.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Por defecto, JAMediaEditor debiera construir este instalador
-correctamente sin que cambies nada y ese instalador debiera funcionar
-sin ningún tipo de problemas. Si este no fuera el caso, asegúrate
-que no has hecho cambios que contengan errores en los archivos del
-instalador.</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
-
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Si quieres aprender más sobre esta forma de hacer un instalador,
-puedes crear un proyecto pequeño en JAMediaEditor y construir este
-instalador en él, luego descomprime el tar.gz resultante y analiza
-los archivos involucrados (MANIFEST, setup.py, setup.cfg, el lanzador
-y el .desktop).</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-<br/>
-
-</p>
-<p align="justify" style="margin-left: 1.25cm; margin-top: 0.1cm; margin-bottom: 0cm; background: transparent; line-height: 0.6cm">
-Si quieres analizar la forma en que JAMediaEditor arma este
-instalador, mira el archivo <font color="#cc0066"><i>JAMediaEditor/Instaladores/ApiProyecto.py</i></font>
-dentro del path de instalación de JAMediaEditor.</p>
-</body>
+    </body>
 </html>
