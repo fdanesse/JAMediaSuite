@@ -27,6 +27,9 @@ import commands
 from NoteBookDirectorios import NoteBookDirectorios
 from JAMFileSystem import DeviceManager
 from JAMFileSystem import describe_uri
+from JAMFileSystem import describe_acceso_uri
+from JAMFileSystem import mover
+from JAMFileSystem import copiar
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 ICONOS = os.path.join(BASE_PATH, "Iconos")
@@ -213,11 +216,30 @@ class Unidades(gtk.TreeView):
             return
 
     def __get_accion(self, widget, path, accion):
+        notebookdirectorios = self.get_parent().get_parent(
+            ).notebookdirectorios
         iter_ = self.get_model().get_iter(path)
         direccion = self.get_model().get_value(iter_, 2)
         if accion == "Abrir":
             self.dir_select = direccion
             self.emit('add-leer', self.dir_select)
+            self.emit('info', self.dir_select)
+        elif accion == "Pegar":
+            if notebookdirectorios.copiando:
+                oldpath = notebookdirectorios.copiando
+                if copiar(oldpath, direccion):
+                    print "Copiado:", oldpath,"En:", direccion
+            elif notebookdirectorios.cortando:
+                oldpath = notebookdirectorios.cortando[0]
+                if mover(oldpath, direccion):
+                    print "Movido:", oldpath,"A:", direccion
+                # FIXME: mover y actualizar notebookdirectorios
+                #if mover(dire, direccion):
+                #    widget.collapse_row(path)
+                #    widget.expand_to_path(path)
+            notebookdirectorios.cortando = False
+            self.dir_select = direccion
+            self.emit('leer', self.dir_select)
             self.emit('info', self.dir_select)
 
     def __update_unidades(self, widget):
@@ -350,10 +372,29 @@ class MenuListUnidades(gtk.Menu):
         self.modelo = modelo
         self.parent_objet = widget
 
+        lectura, escritura, ejecucion = (False, False, False)
+        unidad, directorio, archivo, enlace = (False, False, False, False)
+
+        iter_ = self.modelo.get_iter(path)
+        direccion = self.modelo.get_value(iter_, 2)
+
+        if describe_acceso_uri(direccion):
+            lectura, escritura, ejecucion = describe_acceso_uri(direccion)
+            unidad, directorio, archivo, enlace = describe_uri(direccion)
+
         abrir_pestania = gtk.MenuItem("Abrir en Pestaña Nueva")
         self.append(abrir_pestania)
         abrir_pestania.connect_object("activate",
             self.__emit_accion, path, "Abrir")
+
+        notebook = self.parent_objet.get_parent(
+            ).get_parent().notebookdirectorios
+        if escritura and (directorio or unidad) and \
+            (notebook.copiando or notebook.cortando):
+            pegar = gtk.MenuItem("Pegar")
+            self.append(pegar)
+            pegar.connect_object("activate",
+                self.__emit_accion, path, "Pegar")
 
         self.show_all()
         self.attach_to_widget(widget, self.__null)
