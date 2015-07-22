@@ -27,6 +27,7 @@ from JAMFileSystem import describe_acceso_uri
 from JAMFileSystem import describe_archivo
 from JAMFileSystem import crear_directorio
 from JAMFileSystem import describe_uri
+from JAMFileSystem import mover
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 ICONOS = os.path.join(BASE_PATH, "Iconos")
@@ -59,6 +60,7 @@ class Directorios(gtk.TreeView):
         self.set_property("enable-grid-lines", True)
         self.set_property("rules-hint", True)
         self.set_property("enable-tree-lines", True)
+        self.set_property("enable-search", True)
 
         self.set_tooltip_text("Click Derecho para Opciones")
         self.__construir_columnas()
@@ -124,6 +126,8 @@ class Directorios(gtk.TreeView):
         self.append_column(columna)
 
         celda_de_texto = gtk.CellRendererText()
+        celda_de_texto.set_property('editable', True)
+        celda_de_texto.connect("edited", self.__edited_item)
         columna = gtk.TreeViewColumn('Nombre', celda_de_texto, text=1)
         columna.set_property('resizable', False)
         columna.set_property('visible', True)
@@ -143,6 +147,16 @@ class Directorios(gtk.TreeView):
         columna.set_property('visible', True)
         #columna.set_sizing(gtk.TreeViewColumnSizing.AUTOSIZE)
         self.append_column(columna)
+
+    def __edited_item(self, widget, path, newtext):
+        _iter = self.get_model().get_iter(path)
+        oldpath = self.get_model().get_value(_iter, 2)
+        uno = os.path.dirname(oldpath)
+        newpath = os.path.join(uno, newtext)
+        if newpath != oldpath:
+            if mover(oldpath, newpath):
+                self.get_model().set_value(_iter, 2, newpath)
+                self.get_model().set_value(_iter, 1, newtext)
 
     def __leer(self, dire):
         archivo = ""
