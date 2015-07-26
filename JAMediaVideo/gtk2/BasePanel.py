@@ -681,7 +681,8 @@ class BasePanel(gtk.HPaned):
         self.progressplayer.hide()
 
         if tipo == "menu":
-            self.__camara_menu_run()
+            #self.__camara_menu_run()
+            pass
 
         elif tipo == "video":
             self.__camara_video_run()
