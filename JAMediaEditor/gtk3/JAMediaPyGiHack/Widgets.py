@@ -334,6 +334,7 @@ class ToolbarBusquedas(Gtk.EventBox):
         self.entry = Gtk.Entry()
         self.entry.show()
         self.entry.connect("changed", self.__check_sensitive)
+        self.entry.connect("activate", self.__emit_accion_buscar)
         hbox.pack_start(self.entry, False, False, 0)
 
         self.anterior = get_boton(os.path.join(ICONOS, "go-next.svg"),
@@ -363,6 +364,11 @@ class ToolbarBusquedas(Gtk.EventBox):
 
     def __emit_informe(self, widget):
         self.emit("informe")
+
+    def __emit_accion_buscar(self, widget):
+        text = self.entry.get_text().strip()
+        if text:
+            self.emit("accion", "Buscar Siguiente", text)
 
     def __emit_accion(self, widget):
         """
