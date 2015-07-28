@@ -22,7 +22,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 
 
-class ItemMenuProgramar(Gtk.MenuItem):
+class MenuProgramar_python(Gtk.MenuItem):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,

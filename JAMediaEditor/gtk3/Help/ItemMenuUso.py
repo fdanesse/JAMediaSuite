@@ -22,6 +22,32 @@ from gi.repository import Gtk
 from gi.repository import GObject
 
 
+class ItemMenuJAMediaPygiHack(Gtk.MenuItem):
+
+    __gsignals__ = {
+    'help': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
+
+    def __init__(self):
+
+        Gtk.MenuItem.__init__(self, 'Uso de JAMediaPygiHack')
+
+        menu = Gtk.Menu()
+
+        #item = Gtk.MenuItem('Uso de JAMediaPyGiHack')
+        #item.connect("activate", self.__emit_accion,
+        #    "JAMediaPyGiHack", item.get_label())
+        #menu.append(item)
+
+        self.set_submenu(menu)
+        self.show_all()
+        self.set_sensitive(False)
+
+    def __emit_accion(self, widget, text, titulo):
+        self.emit("help", text, titulo)
+
+
 class ItemMenuJAMediaEditor(Gtk.MenuItem):
 
     __gsignals__ = {
@@ -35,15 +61,11 @@ class ItemMenuJAMediaEditor(Gtk.MenuItem):
 
         menu = Gtk.Menu()
 
-        item = Gtk.MenuItem('Uso de JAMediaPyGiHack')
-        item.connect("activate", self.__emit_accion,
-            "JAMediaPyGiHack", item.get_label())
-        menu.append(item)
-
         item = Gtk.MenuItem('Modo Proyecto')
         item.connect("activate", self.__emit_accion,
             'Modo Proyecto', item.get_label())
         menu.append(item)
+        item.set_sensitive(False)
 
         menu_instaladores = ItemMenuInstaladores()
         menu_instaladores.connect("help", self.__emit_accion)
@@ -95,9 +117,10 @@ class MenuInstaladores(Gtk.Menu):
         item.connect("activate", self.__emit_accion, "help deb")
         self.append(item)
 
-        #item = Gtk.MenuItem('Instalador fedora (rmp)')
-        #item.connect("activate", self.__emit_accion, "help rmp")
-        #self.append(item)
+        item = Gtk.MenuItem('Instalador fedora (rmp)')
+        item.connect("activate", self.__emit_accion, "help rmp")
+        self.append(item)
+        item.set_sensitive(False)
 
         item = Gtk.MenuItem('Instalador python')
         item.connect("activate", self.__emit_accion, "help python")

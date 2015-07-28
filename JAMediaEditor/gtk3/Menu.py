@@ -26,8 +26,9 @@ from gi.repository import Gdk
 from gi.repository import GObject
 
 from Creditos.Creditos import Creditos
-from Help.ItemMenuJAMediaEditor import ItemMenuJAMediaEditor
-from Help.ItemMenuProgramar import ItemMenuProgramar
+from Help.ItemMenuUso import ItemMenuJAMediaEditor
+from Help.ItemMenuUso import ItemMenuJAMediaPygiHack
+from Help.MenuProgramar_python import MenuProgramar_python
 from Help.ItemMenuBash import ItemMenuBash
 
 BASE_PATH = os.path.dirname(__file__)
@@ -329,11 +330,18 @@ class Menu(Gtk.MenuBar):
         item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
+        item = ItemMenuJAMediaPygiHack()
+        item.connect("help", self.__emit_help)
+        menu_ayuda.append(item)
+
+        item = Gtk.SeparatorMenuItem()
+        menu_ayuda.append(item)
+
         item = ItemMenuBash()
         item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
-        item = ItemMenuProgramar()
+        item = MenuProgramar_python()
         item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
