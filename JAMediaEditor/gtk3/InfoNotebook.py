@@ -312,10 +312,6 @@ class InfoNotebook(Gtk.Notebook):
         self.set_tab_label_text(self.get_nth_page(0), nombre)
         self.introspeccion.set_introspeccion(nombre, texto, view, tipo)
 
-    def buscar(self, texto):
-        # Recibe el texto a buscar y realiza la busqueda en el treeview activo.
-        self.get_nth_page(self.get_current_page()).get_child().buscar(texto)
-
     def buscar_mas(self, accion, texto):
         self.get_nth_page(self.get_current_page(
             )).get_child().buscar_mas(accion, texto)
@@ -380,11 +376,6 @@ class Introspeccion(Gtk.TreeView):
         columna.set_property('resizable', True)
         columna.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         self.append_column(columna)
-
-    def buscar(self, texto):
-        # FIXME: Requiere un _iter
-        #buscar_delante(self, texto, _iter)
-        pass
 
     def buscar_mas(self, accion, texto):
         buscar_mas(self, accion, texto)
@@ -644,11 +635,6 @@ class Estructura_Proyecto(Gtk.TreeView):
         else:
             pass
         return False
-
-    def buscar(self, texto):
-        # FIXME: Requiere un _iter
-        #buscar_delante(self, texto, _iter)
-        pass
 
     def buscar_mas(self, accion, texto):
         buscar_mas(self, accion, texto)

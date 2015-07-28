@@ -55,7 +55,6 @@ class JAMediaPyGiHack(Gtk.Box):
         self.toolbar.connect("accion-menu", self.__set_accion)
         self.toolbar.connect("salir", self.__emit_salir)
         self.toolbar.connect("zoom", self.__zoom)
-        self.toolbar.connect("buscar", self.__buscar)
         self.toolbar.connect("accion", self.__buscar_mas)
         self.toolbar.connect("informe", self.__informar)
 
@@ -75,9 +74,6 @@ class JAMediaPyGiHack(Gtk.Box):
         self.informewidget = InformeWidget(self.get_toplevel())
         text = self.basebox.get_estructura()
         self.informewidget.setting(text)
-
-    def __buscar(self, widget, text):
-        self.basebox.buscar(text)
 
     def __buscar_mas(self, widget, accion, text):
         self.basebox.buscar_mas(accion, text)

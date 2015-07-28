@@ -202,11 +202,6 @@ class ApiWidget(Gtk.TreeView):
         self.objetos[lista[0]] = (lista[0], lista[1], lista[2], lista[3],
             modulo_path, tipo)
 
-    def buscar(self, texto):
-        # FIXME: Requiere un _iter
-        #buscar_delante(self, texto, _iter)
-        pass
-
     def buscar_mas(self, accion, texto):
         buscar_mas(self, accion, texto)
 

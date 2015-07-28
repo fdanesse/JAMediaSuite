@@ -97,7 +97,6 @@ class BasePanel(Gtk.Paned):
         self.toolbararchivo.connect('accion', self.set_accion_archivo)
         self.toolbarproyecto.connect('accion', self.set_accion_proyecto)
 
-        self.toolbarbusquedas.connect("buscar", self.__buscar)
         self.toolbarbusquedas.connect("accion", self.__buscar_mas)
         self.toolbarbusquedas.connect("informe", self.__informar)
 
@@ -154,9 +153,6 @@ class BasePanel(Gtk.Paned):
         dialogo.destroy()
         sourceview.set_show_line_numbers(visible)
         '''
-
-    def __buscar(self, widget, texto):
-        self.infonotebook.buscar(texto)
 
     def __buscar_mas(self, widget, accion, texto):
         self.infonotebook.buscar_mas(accion, texto)

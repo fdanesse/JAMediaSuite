@@ -52,8 +52,6 @@ class Toolbar(Gtk.Toolbar):
     "accion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING)),
-    "buscar": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
     "informe": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
@@ -105,7 +103,6 @@ class Toolbar(Gtk.Toolbar):
 
         self.toolbarbusquedas.connect("accion", self.__re_emit_accion)
         self.toolbarbusquedas.connect("informe", self.__re_emit_informe)
-        self.toolbarbusquedas.connect("buscar", self.__re_emit_buscar)
 
         self.show_all()
 
@@ -120,9 +117,6 @@ class Toolbar(Gtk.Toolbar):
 
     def __emit_import(self, widget, paquete, modulo):
         self.emit("import", paquete, modulo)
-
-    def __re_emit_buscar(self, widget, texto):
-        self.emit("buscar", texto)
 
     def __re_emit_informe(self, widget):
         self.emit("informe")
@@ -324,8 +318,6 @@ class ToolbarBusquedas(Gtk.EventBox):
     "accion": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,
         GObject.TYPE_STRING)),
-    "buscar": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_STRING, )),
     "informe": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, [])}
 
@@ -341,7 +333,7 @@ class ToolbarBusquedas(Gtk.EventBox):
 
         self.entry = Gtk.Entry()
         self.entry.show()
-        self.entry.connect("changed", self.__emit_buscar)
+        self.entry.connect("changed", self.__check_sensitive)
         hbox.pack_start(self.entry, False, False, 0)
 
         self.anterior = get_boton(os.path.join(ICONOS, "go-next.svg"),
@@ -380,17 +372,17 @@ class ToolbarBusquedas(Gtk.EventBox):
         if text:
             self.emit("accion", widget.TOOLTIP, text)
 
-    def __emit_buscar(self, entry):
+    def __check_sensitive(self, entry):
         """
         Cuando cambia el texto a buscar.
         """
         if self.entry.get_text().strip():
             self.anterior.set_sensitive(True)
             self.siguiente.set_sensitive(True)
+            #self.emit("buscar", self.entry.get_text().strip())
         else:
             self.anterior.set_sensitive(False)
             self.siguiente.set_sensitive(False)
-        self.emit("buscar", self.entry.get_text().strip())
 
     def activar(self, valor):
         self.activo = valor

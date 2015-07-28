@@ -22,8 +22,6 @@
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import Pango
-
-#from BusquedasTreeView import buscar_delante
 from BusquedasTreeView import buscar_mas
 
 
@@ -126,11 +124,6 @@ class Lista(Gtk.TreeView):
             self.emit('nueva-seleccion', self.valor_select)
             self.scroll_to_cell(path)
         return True
-
-    def buscar(self, texto):
-        # FIXME: Requiere un _iter
-        #buscar_delante(self, texto, _iter)
-        pass
 
     def buscar_mas(self, accion, texto):
         buscar_mas(self, accion, texto)

@@ -81,14 +81,6 @@ class BaseBox(Gtk.Box):
         self.set_accion("ver", "Apis PyGiHack", True)
         self.base_notebook.import_modulo(paquete, modulo)
 
-    def buscar(self, texto):
-        if self.base_notebook:
-            if self.base_notebook.get_visible():
-                self.base_notebook.buscar(texto)
-        if self.jamedia_gstreamer:
-            if self.jamedia_gstreamer.get_visible():
-                self.jamedia_gstreamer.buscar(texto)
-
     def buscar_mas(self, accion, texto):
         if self.base_notebook:
             if self.base_notebook.get_visible():
@@ -154,9 +146,6 @@ class BaseNotebook(Gtk.Notebook):
         for indice in range(paginas):
             self.get_children()[indice].get_children()[0].zoom(zoom)
 
-    def buscar(self, texto):
-        self.get_nth_page(self.get_current_page()).buscar(texto)
-
     def buscar_mas(self, accion, texto):
         self.get_nth_page(self.get_current_page()).buscar_mas(accion, texto)
 
@@ -214,9 +203,6 @@ class IntrospectionWidget(Gtk.Box):
 
     def zoom(self, zoom):
         self.introspection_panel.zoom(zoom)
-
-    def buscar(self, texto):
-        self.introspection_panel.buscar(texto)
 
     def buscar_mas(self, accion, texto):
         self.introspection_panel.buscar_mas(accion, texto)
@@ -303,9 +289,6 @@ class IntrospectionPanel(Gtk.Paned):
 
     def zoom(self, zoom):
         self.infonotebook.zoom(zoom)
-
-    def buscar(self, texto):
-        self.apiwidget.buscar(texto)
 
     def buscar_mas(self, accion, texto):
         self.apiwidget.buscar_mas(accion, texto)
