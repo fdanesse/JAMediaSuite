@@ -104,6 +104,7 @@ class DialogoProyecto(Gtk.Window):
         tabla.attach(box, 0, 2, 0, 1)
 
         self.nombre = Gtk.Entry()
+        self.nombre.set_sensitive(False)
         box = pack_entry("Nombre:", self.nombre)
         tabla.attach(box, 0, 1, 1, 2)
         self.nombre.connect("changed", self.__check_nombre)
@@ -236,6 +237,9 @@ class DialogoProyecto(Gtk.Window):
                 arch = open(autores_path, "w")
                 arch.write(_dict["autores"])
                 arch.close()
+                # Seteo automático de main.
+                if not _dict["main"]:
+                    _dict["main"] = "main.py"
                 # Guardar archivo de Proyecto.
                 proyecto_file = os.path.join(path, "proyecto.ide")
                 archivo = open(proyecto_file, "w")
@@ -360,8 +364,10 @@ class DialogoProyecto(Gtk.Window):
         self.set_title(title)
         if title == "Nuevo Proyecto":
             self.button_crear.set_label("Crear")
+            self.nombre.set_sensitive(True)
         elif title == "Editar Proyecto":
             self.button_crear.set_label("Guardar")
+            self.nombre.set_sensitive(False)
             arch = open(os.path.join(path, "proyecto.ide"), "r")
             _dict = json.load(arch, "utf-8")
             arch.close()
