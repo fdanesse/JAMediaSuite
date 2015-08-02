@@ -21,7 +21,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import commands
+import shutil
 
 RECHAZAExtension = [".pyc", ".pyo", ".bak", ".ide", ".gitignore", ".git"]
 RECHAZAFiles = ["proyecto.ide", ".gitignore"]
@@ -48,7 +48,7 @@ def __colectdir(direccion, directorios):
                     os.chmod(directorio, 0755)
                     directorios.append(directorio)
                 else:
-                    commands.getoutput('rm -r \"%s\"' % directorio)
+                    shutil.rmtree(directorio)
     return directorios
 
 

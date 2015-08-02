@@ -164,7 +164,8 @@ class Notebook(Gtk.Notebook):
         texto = texto.replace('GnomeCat', self.proyecto["categoria"])
         texto = texto.replace('GnomeMimeTypes', self.proyecto["mimetypes"])
 
-        page = ScrollPage(os.path.join(path, "install.py"), "python", texto)
+        page = ScrollPage(os.path.join(
+            self.proyecto_path, "install.py"), "python", texto)
         self.append_page(page, Gtk.Label("Instalador"))
         self.set_tab_reorderable(page, True)
         page.source.guardar()

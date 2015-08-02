@@ -116,6 +116,8 @@ class WidgetIcon(Gtk.Frame):
 
 class FileChooser(Gtk.FileChooserDialog):
 
+    # FIXME: No permitir elegir archivos fuera del path
+
     def __init__(self, window, mimes, path):
 
         Gtk.FileChooserDialog.__init__(self, parent=window,
