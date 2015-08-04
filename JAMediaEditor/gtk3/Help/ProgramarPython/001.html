@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Programar en python (Tipos de Datos)</title>
+    <meta name="changed" content="2015-04-05T11:38:28.229594070">
+    <style type="text/css">
+        @page { margin-left: 1cm; margin-right: 1cm }
+        p { margin-bottom: 0.25cm; color: #000000; line-height: 120% }
+        a:link { so-language: zxx }
+    </style>
+</head>
+
+    <body lang="es-UY">
+
+    <p align="left">
+        <a href="000.html"><font color="#336699"><= Anterior <i>(Escribir un Programa) =></i></font></a>
+    </p>
+
+    </br>
+
+    <p align="left">
+        <u><font size="4" color="#006699" style="font-size: 14pt">
+            <b>Programar en python CAP. 1:</b>
+        </u></font>
+    </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+            python es un lenguaje interpretado, por lo tanto, tiene su propio interprete.</br>
+            En este capitulo de la ayuda, trabajaremos con el interprete de python, por lo cual, para probar los ejemplos que siguen, debes ingresar en la terminal, escribir python y dar enter.</br>
+            </br>
+            Si en la terminal escribes python y das enter, entras en el interprete de python.</br>
+            Te darás cuenta de esto porque el promp mostrará los simbolos ">>>" indicandote que espera instrucciones python.</br>
+            Para salir del interprete de python debes hacer <b>control + d</b>.</br>
+            </br>
+            <b>Tipos de Datos:</b>
+        </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+            Cuando almacenamos datos en una variable, lo que podemos hacer con esa variable, depende del tipo de datos que contiene.</br>
+            Si tengo los datos 1 y 2 y hago 1+2 obtendré como resultado 3 siempre y cuando estos datos sean de tipo numérico.</br>
+            Si son de tipo “texto”, obtendré 12, igual que cuando tengo los datos "Hola" y " que tal" y hago "Hola"+" que tal" obtengo "Hola que tal".</br>
+            </br>
+            <b>Un ejemplo:</b>
+        </p>
+            <p align="left" style="margin-left: 2.5cm">
+                <font color="#800000">
+                >>> 1 + 2</br>
+                3</br>
+                </br>
+                >>> "1" + "2"</br>
+                '12'</br>
+                </font>
+            </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+            En este ejemplo, podemos ver que he hecho dos veces casi lo mismo, pero la primera vez no utilicé comillas y en la segunda si.</br>
+            Esto ha hecho que python se de cuenta de que tipos de datos quiero manejar y los ha convertido automáticamente a los tipos correspondientes devolviéndome el resultado correcto.</br>
+            Por esto es necesario conocer cuáles son los tipos de datos que python maneja y como tenemos que hacer nosotros para indicarle que tipo de datos queremos utilizar, así no correremos riesgo de que python convierta equivocadamente nuestros datos a tipos que no queremos.</br>
+            </br>
+            A continuacion veremos sólo algunos de estos tipos de datos, que son los que más utilizaremos por ahora.</br>
+        </p>
+
+        </br>
+
+    <p align="left">
+        <u><font size="4" color="#006699" style="font-size: 14pt">
+            <b>Tipos de Datos:</b>
+        </u></font>
+    </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+            <font color="#006699"><b>int</b></font></br>
+            Una variable de tipo <font color="#800000">integer</font> o <font color="#800000">entero</font> sólo puede guardar números enteros.</br>
+            Es decir sin coma.</br>
+            </br>
+            <font color="#006699"><b>float</b></font></br>
+            Una variable de tipo <font color="#800000">float</font> o <font color="#800000">flotante</font> sólo puede almacenar números decimales.</br>
+            Tomar en cuenta que en python, los números decimales se escriben con punto en lugar de coma.</br>
+            </br>
+            <font color="#006699"><b>chr</b></font></br>
+            Una variable de tipo <font color="#800000">character</font> o <font color="#800000">caracter</font> sólo puede guardar un caracter.</br>
+            O sea, un símbolo tipográfico que puede ser una letra, un número, un espacio, una coma, etc . . .</br>
+            (Más adelante en esta ayuda te quedará más claro que es un caracter).</br>
+            </br>
+            <font color="#006699"><b>str</b></font></br>
+            Una variable de tipo <font color="#800000">string</font> o <font color="#800000">cadena</font> sólo puede almacenar una cadena de caracteres, pueden ser letras y números, puntos, comas, espacios, etc . . .</br>
+            </br>
+            <font color="#006699"><b>bool</b></font></br>
+            Una variable <font color="#800000">booleana</font> sólo puede guardar uno de los siguientes valores: True o False (verdadero o falso).
+        </p>
+
+    </br>
+
+    <p align="left">
+        <u><font size="4" color="#006699" style="font-size: 14pt">
+            <b>Convertir valores a tipos de datos específicos:</b>
+        </u></font>
+    </p>
+
+        <p align="left" style="margin-left: 1.25cm">
+            <font color="#006699"><b>int</b></font></br>
+            <font color="#800000">
+            >>> 1</br>
+            1</br>
+            </font></br>
+            python convierte cualquier número sin coma en un entero en forma automática.</br>
+            </br>
+            <font color="#800000">
+            >>> int(12.35)</br>
+            12</br>
+            </font></br>
+            De esta forma convertimos un número decimal en un entero.</br>
+            Fíjate que en python, utilizamos el punto en lugar de la coma para escribir un número decimal.</br>
+            </br>
+            <font color="#800000">
+            >>> int("325. ")</br>
+            325</br>
+            </font></br>
+            python puede convertir algunas cadena de caracteres, (un texto), a entero.</br>
+            </br>
+            <b>Esto es un error !!</b></br>
+            <font color="#800000">
+            >>> int("hola")</br>
+            Traceback (most recent call last):</br>
+            File "<stdin>", line 1, in <module></br>
+            ValueError: invalid literal for int() with base 10: 'hola'</font></br>
+            </br>
+            <font color="#006699"><b>float</b></font></br>
+            <font color="#800000">
+            >>> 12.35</br>
+            12.35</br>
+            </font></br>
+            python convierte cualquier número con coma en un float o decimal en forma automática.</br>
+            </br>
+            <font color="#800000">
+            >>> float("325")</br>
+            325.0</br>
+            </font></br>
+            python puede convertir algunas cadenas en un dato de tipo float.</br>
+            </br>
+            <b>Esto es un error !!</b></br>
+            <font color="#800000">
+            >>> float("Hola")</br>
+            Traceback (most recent call last):</br>
+            File "<stdin>", line 1, in <module></br>
+            ValueError: invalid literal for float(): Hola</font></br>
+            </br>
+            <font color="#006699"><b>chr</b></font></br>
+            <font color="#800000">
+            >>> chr(90)</br>
+            'Z'</br>
+            </font></br>
+            En informática, un caracter o character, representa al código correspondiente de su tecla en el teclado de la computadora, por eso, nos imprime 'Z' ya que el caracter 90 del teclado es la letra Z.</br>
+            </br>
+            <b>Para aclarar esta idea, podemos hacer:</b></br>
+            <font color="#800000">
+            >>> chr(128)</br>
+            '\x80'</br>
+            </font></br>
+            <b>El resultado es raro para nosotros, pero si hacemos:</b></br>
+            <font color="#800000">
+            >>> print chr(128)</br>
+            �</br>
+            </font></br>
+            Ahora vemos que el carácter 128 corresponde en el teclado al símbolo �</br>
+            Esto pasa porque siempre que utilizamos la función print de python, para mostrar un dato en pantalla, python se ve obligado a convertir el dato en un tipo string o cadena de texto (un texto) para poder mostrarlo.</br>
+            </br>
+            De modo que, un caracter es cualquier signo tipográfico.</br>
+            Puede ser una letra, un número, un signo de puntuación, un espacio, etc.</br>
+            </br>
+            <b>Nota:</b></br>
+            Para hacer lo contrario, utilizamos la función <font color="#006699">ord()</font>, que a partir de un carácter, nos devuelve su código chr.</br>
+            <font color="#800000">
+            >>> chr(90)</br>
+            'Z'</br>
+            </br>
+            >>> ord("Z")</br>
+            90</br>
+            </font>
+            </br>
+            <font color="#006699"><b>str</b></font></br>
+            <font color="#800000">
+            >>> str(150)</br>
+            '150'</br>
+            </br>
+            >>> str(150.25)</br>
+            '150.25'</br>
+            </font>
+            </br>
+            Un string es una cadena de caracteres.</br>
+            <font color="#800000">
+            >>> str(1500) + " Km"</br>
+            '1500 Km'</br>
+            </font>
+            </br>
+            En este último ejemplo queda claro que str(1500) no es un número ya que no se puede sumar números más letras, las operaciones siempre se hacen entre datos del mismo tipo.</br>
+            El tipo de datos string es tan importante y utilizado en informática, que python cuenta con una clase especial para manejar cadenas de caracteres, más adelante trabajaremos con ella.</br>
+            </br>
+            <font color="#006699"><b>bool</b></font></br>
+            <font color="#800000">
+            >>> a = bool(1)</br>
+            >>> print a</br>
+            True</br>
+            </font></br>
+            Para python, sólo 0 es False, todo lo demás es True.</br>
+            <font color="#800000">
+            >>> a = bool("x")</br>
+            >>> print a</br>
+            True</br>
+            </font></br>
+            Cualquier cosa que no esté vacía es True.</br>
+            <font color="#800000">
+            >>> a = "hola que tal?"</br>
+            >>> b = bool(a)</br>
+            </br>
+            >>> print a</br>
+            hola que tal?</br>
+            </br>
+            >>> print b</br>
+            True</br>
+            </font></br>
+            Cualquier cosa vacía es False.</br>
+            <font color="#800000">
+            >>> a = ""</br>
+            >>> print a</br>
+            False</br>
+            </br>
+            >>> b = bool(a)</br>
+            >>> print b</br>
+            False</br>
+            </font></br>
+            <b>Ejemplo final del Tema:</b></br>
+            <font color="#800000">
+            >>> a = 90</br>
+            >>> int(a)</br>
+            90</br>
+            </br>
+            >>> float(a)</br>
+            90.0</br>
+            </br>
+            >>> chr(a)</br>
+            'Z'</br>
+            </br>
+            >>> str(a)</br>
+            '90'</br>
+            </br>
+            >>> bool(a)</br>
+            True</br>
+            </font></br>
+            <b>Referencias:</b></br>
+            http://docs.python.org/library/functions.html</br>
+            http://docs.python.org/library/types.html</br>
+            http://es.wikipedia.org/wiki/Unicode</br>
+        </p>
+
+    </body>
+</html>

@@ -39,9 +39,9 @@ class MenuProgramar_python(Gtk.MenuItem):
         item.connect("activate", self.__emit_accion, "Programar Clase 0")
         menu.append(item)
 
-        #item = Gtk.MenuItem('Clase 1')
-        #item.connect("activate", self.__emit_accion, "Programar Clase 1")
-        #menu.append(item)
+        item = Gtk.MenuItem('python (Tipos de Datos)')
+        item.connect("activate", self.__emit_accion, "Programar Clase 1")
+        menu.append(item)
 
         #item = Gtk.MenuItem('Clase 2')
         #item.connect("activate", self.__emit_accion, "Programar Clase 2")

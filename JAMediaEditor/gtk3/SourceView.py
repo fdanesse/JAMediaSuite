@@ -386,7 +386,7 @@ class SourceView(GtkSource.View):
                 self.set_buffer(GtkSource.Buffer())
                 self.get_buffer().begin_not_undoable_action()
                 self.lenguaje = self.lenguaje_manager.guess_language(
-                    self.archivo)
+                    self.archivo, "text")
                 self.get_buffer().set_highlight_syntax(True)
                 self.get_buffer().set_language(self.lenguaje)
                 GLib.timeout_add(3, self.__force_emit_new_select)
