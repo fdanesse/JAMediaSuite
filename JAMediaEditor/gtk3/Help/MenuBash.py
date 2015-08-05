@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# ItemMenuBash.py por:
+# MenuBash.py por:
 #     Flavio Danesse     <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and / or modify
@@ -22,7 +22,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 
 
-class ItemMenuBash(Gtk.MenuItem):
+class MenuBash(Gtk.MenuItem):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,

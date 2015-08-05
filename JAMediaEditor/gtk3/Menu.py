@@ -26,10 +26,12 @@ from gi.repository import Gdk
 from gi.repository import GObject
 
 from Creditos.Creditos import Creditos
-from Help.ItemMenuUso import ItemMenuJAMediaEditor
-from Help.ItemMenuUso import ItemMenuJAMediaPygiHack
+from Help.MenuUso import MenuJAMediaEditor
+from Help.MenuUso import MenuJAMediaPygiHack
+from Help.MenuBash import MenuBash
 from Help.MenuProgramar_python import MenuProgramar_python
-from Help.ItemMenuBash import ItemMenuBash
+from Help.MenuProgramar_pygame import MenuProgramar_pygame
+from Help.MenuProgramar_python_gtk import MenuProgramar_python_gtk
 
 BASE_PATH = os.path.dirname(__file__)
 
@@ -326,18 +328,31 @@ class Menu(Gtk.MenuBar):
         menu_ayuda.append(item)
 
         # Ayuda
-        item = ItemMenuJAMediaEditor()
+        item = MenuJAMediaEditor()
         item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
-        item = ItemMenuJAMediaPygiHack()
+        item = MenuJAMediaPygiHack()
         item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
         item = Gtk.SeparatorMenuItem()
         menu_ayuda.append(item)
 
-        item = ItemMenuBash()
+        item = Gtk.MenuItem('Guia para aprender')
+        #item.connect("activate", self.__emit_accion, "Programar Clase 0")
+        menu_ayuda.append(item)
+        item.set_sensitive(False)
+
+        item = Gtk.MenuItem('Guia para enseñar')
+        #item.connect("activate", self.__emit_accion, "Programar Clase 0")
+        menu_ayuda.append(item)
+        item.set_sensitive(False)
+
+        item = Gtk.SeparatorMenuItem()
+        menu_ayuda.append(item)
+
+        item = MenuBash()
         item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
@@ -345,21 +360,21 @@ class Menu(Gtk.MenuBar):
         item.connect("help", self.__emit_help)
         menu_ayuda.append(item)
 
-        #item = Gtk.MenuItem('Programar en pygame')
-        #item.connect("activate", self.__emit_accion, "help instaladores")
-        #menu_ayuda.append(item)
+        item = MenuProgramar_pygame()
+        item.connect("help", self.__emit_help)
+        menu_ayuda.append(item)
 
-        #item = Gtk.MenuItem('Programar en gtk')
-        #item.connect("activate", self.__emit_accion, "help instaladores")
-        #menu_ayuda.append(item)
+        item = MenuProgramar_python_gtk()
+        item.connect("help", self.__emit_help)
+        menu_ayuda.append(item)
 
-        #item = Gtk.MenuItem('Programar en gtk y gstreamer')
-        #item.connect("activate", self.__emit_accion, "help instaladores")
-        #menu_ayuda.append(item)
+        item = Gtk.SeparatorMenuItem()
+        menu_ayuda.append(item)
 
-        #item = Gtk.MenuItem('Utilizar git')
-        #item.connect("activate", self.__emit_accion, "help instaladores")
-        #menu_ayuda.append(item)
+        item = Gtk.MenuItem('Ejemplos')
+        #item.connect("activate", self.__emit_accion, "Programar Clase 0")
+        menu_ayuda.append(item)
+        item.set_sensitive(False)
 
         self.show_all()
 

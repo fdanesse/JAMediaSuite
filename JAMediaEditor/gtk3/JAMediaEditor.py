@@ -128,6 +128,7 @@ class JAMediaEditor(Gtk.Window):
     def __run_help(self, widget, texto, titulo):
         if self.help:
             self.help.destroy()
+            self.help = False
         self.help = Help(self, titulo)
         self.help.set_help(texto)
         if self.base_panel.instalador:

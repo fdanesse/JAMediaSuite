@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# MenuProgramar_python.py por:
+# MenuProgramar_pygame.py por:
 #     Flavio Danesse     <fdanesse@gmail.com>
 
 # This program is free software; you can redistribute it and / or modify
@@ -22,7 +22,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 
 
-class MenuProgramar_python(Gtk.MenuItem):
+class MenuProgramar_pygame(Gtk.MenuItem):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
@@ -31,32 +31,17 @@ class MenuProgramar_python(Gtk.MenuItem):
 
     def __init__(self):
 
-        Gtk.MenuItem.__init__(self, 'Programar en python')
+        Gtk.MenuItem.__init__(self, 'Programar en pygame')
 
         menu = Gtk.Menu()
 
-        item = Gtk.MenuItem('Escribir un programa')
-        item.connect("activate", self.__emit_accion, "Programar Clase 0")
-        menu.append(item)
-
-        item = Gtk.MenuItem('Tipos de Datos')
-        item.connect("activate", self.__emit_accion, "Programar Clase 1")
-        menu.append(item)
-
-        #item = Gtk.MenuItem('Clase 2')
-        #item.connect("activate", self.__emit_accion, "Programar Clase 2")
-        #menu.append(item)
-
-        #item = Gtk.MenuItem('Clase 3')
-        #item.connect("activate", self.__emit_accion, "Programar Clase 3")
-        #menu.append(item)
-
-        #item = Gtk.MenuItem('Clase 4')
-        #item.connect("activate", self.__emit_accion, "Programar Clase 4")
+        #item = Gtk.MenuItem('python (Escribir un programa)')
+        #item.connect("activate", self.__emit_accion, "Programar Clase 0")
         #menu.append(item)
 
         self.set_submenu(menu)
         self.show_all()
+        self.set_sensitive(False)
 
     def __emit_accion(self, widget, text):
         self.emit("help", text, widget.get_label())

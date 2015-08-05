@@ -22,7 +22,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 
 
-class ItemMenuJAMediaPygiHack(Gtk.MenuItem):
+class MenuJAMediaPygiHack(Gtk.MenuItem):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
@@ -48,7 +48,7 @@ class ItemMenuJAMediaPygiHack(Gtk.MenuItem):
         self.emit("help", text, titulo)
 
 
-class ItemMenuJAMediaEditor(Gtk.MenuItem):
+class MenuJAMediaEditor(Gtk.MenuItem):
 
     __gsignals__ = {
     'help': (GObject.SIGNAL_RUN_LAST,
