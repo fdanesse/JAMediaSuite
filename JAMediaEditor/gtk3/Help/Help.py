@@ -40,6 +40,7 @@ _dict = {
 
     "Programar Clase 0": os.path.join(BASEPATH, "ProgramarPython", "000.html"),
     "Programar Clase 1": os.path.join(BASEPATH, "ProgramarPython", "001.html"),
+    "Programar Clase 2": os.path.join(BASEPATH, "ProgramarPython", "002.html"),
 
     "help instaladores": os.path.join(BASEPATH, "JAMediaEditor",
         "Instaladores.html"),
