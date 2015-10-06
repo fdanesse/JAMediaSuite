@@ -42,14 +42,16 @@ class ApiWidget(Gtk.TreeView):
 
     __gsignals__ = {
     "update": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,))}
+        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
+    "abrir": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
     def __init__(self, paquete, modulo):
 
         Gtk.TreeView.__init__(self,
             Gtk.TreeStore(GdkPixbuf.Pixbuf, GObject.TYPE_STRING))
 
-        self.objetos = {}
+        self.__objetos = {}
         self.old_update = False
 
         self.add_events(
@@ -64,6 +66,7 @@ class ApiWidget(Gtk.TreeView):
 
         self.connect("row-activated", self.__activar, None)
         self.connect("key-press-event", self.__keypress)
+        self.connect("button-press-event", self.__click_derecho_en_lista)
 
         self.get_selection().set_select_function(
             self.__selecciones, self.get_model())
@@ -122,9 +125,42 @@ class ApiWidget(Gtk.TreeView):
         datos = modelo.get_value(_iter, 1)
         if not is_selected and self.old_update != datos:
             self.old_update = datos
-            self.emit('update', self.objetos.get(datos, {}))
+            self.emit('update', self.__objetos.get(datos, {}))
             self.scroll_to_cell(path)
         return True
+
+    def __click_derecho_en_lista(self, widget, event):
+        boton = event.button
+        pos = (event.x, event.y)
+        tiempo = event.time
+        path, columna, xdefondo, ydefondo = (None, None, None, None)
+        try:
+            path, columna, xdefondo, ydefondo = widget.get_path_at_pos(
+                int(pos[0]), int(pos[1]))
+        except:
+            return
+        if boton == 3:
+            modelo = widget.get_model()
+            _iter = modelo.get_iter(path)
+            datos = modelo.get_value(_iter, 1)
+            tupla = self.__objetos.get(datos, {})
+            modulo_path = ""
+            _type = ""
+            if tupla:
+                objeto, gdoc, doc, _type, modulo_path, tipo = tupla
+            if modulo_path:
+                modulo_path = modulo_path
+                if ".pyc" in modulo_path:
+                    modulo_path = modulo_path.replace(".pyc", ".py")
+                if os.path.exists(modulo_path):
+                    if os.path.isfile(modulo_path):
+                        menu = Menu(widget, boton, pos, tiempo, modulo_path)
+                        menu.connect('accion', self.__set_accion_menu)
+                        menu.popup(None, None, None, None, boton, tiempo)
+
+    def __set_accion_menu(self, widget, accion, modulo_path):
+        if accion == "Abrir":
+            self.emit("abrir", modulo_path)
 
     def __load(self, tipo, modulo):
         """
@@ -132,7 +168,7 @@ class ApiWidget(Gtk.TreeView):
         (Clases, funciones, constantes y otros.)
         """
         self.get_model().clear()
-        self.objetos = {}
+        self.__objetos = {}
         if tipo == "python-gi":
             if modulo == "gi":
                 ejecutable = os.path.join(BASE_PATH,
@@ -199,7 +235,7 @@ class ApiWidget(Gtk.TreeView):
 
     def __add(self, _iter, pixbuf, lista, modulo_path, tipo):
         self.get_model().append(_iter, [pixbuf, lista[0]])
-        self.objetos[lista[0]] = (lista[0], lista[1], lista[2], lista[3],
+        self.__objetos[lista[0]] = (lista[0], lista[1], lista[2], lista[3],
             modulo_path, tipo)
 
     def buscar_mas(self, accion, texto):
@@ -207,3 +243,30 @@ class ApiWidget(Gtk.TreeView):
 
     def get_estructura(self):
         return get_estructura(self, self.get_model())
+
+
+class Menu(Gtk.Menu):
+
+    __gsignals__ = {
+    'accion': (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,
+        GObject.TYPE_STRING))}
+
+    def __init__(self, widget, boton, pos, tiempo, modulo_path):
+
+        Gtk.Menu.__init__(self)
+
+        self.__get_item("Abrir", modulo_path)
+        self.show_all()
+        self.attach_to_widget(widget, self.__null)
+
+    def __null(self):
+        pass
+
+    def __get_item(self, accion, modulo_path):
+        item = Gtk.MenuItem(accion)
+        self.append(item)
+        item.connect_object("activate", self.__set_accion, accion, modulo_path)
+
+    def __set_accion(self, accion, modulo_path):
+        self.emit('accion', accion, modulo_path)

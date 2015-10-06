@@ -90,6 +90,8 @@ class SourceView(GtkSource.View):
         return False
 
     def __procesar_y_guardar(self):
+        if not os.access(self.archivo, os.W_OK):
+            return
         _buffer = self.get_buffer()
         inicio, fin = _buffer.get_bounds()
         texto = _buffer.get_text(inicio, fin, 0)

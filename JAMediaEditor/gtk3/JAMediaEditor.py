@@ -100,6 +100,7 @@ class JAMediaEditor(Gtk.Window):
         self.menu.connect('run_jamediapygihack', self.__run_jamediapygihack)
         self.menu.connect('help', self.__run_help)
         self.jamediapygihack.connect('salir', self.__run_editor)
+        self.jamediapygihack.connect('abrir', self.__open_modulo)
         self.base_panel.connect("update", self.__set_toolbar_archivo_and_menu)
         self.base_panel.connect("proyecto_abierto",
             self.__set_toolbar_proyecto_and_menu)
@@ -124,6 +125,13 @@ class JAMediaEditor(Gtk.Window):
                             archivo)
         # FIXME: Agregar informe de utilizacion de recursos
         print "JAMediaEditor:", os.getpid()
+
+    def __open_modulo(self, widget, modulo_path):
+        """
+        Abrir path de un modulo analizado en JAMediaPyGiHack.
+        """
+        self.__run_editor(False)
+        self.base_panel.external_open_file(modulo_path)
 
     def __run_help(self, widget, texto, titulo):
         if self.help:

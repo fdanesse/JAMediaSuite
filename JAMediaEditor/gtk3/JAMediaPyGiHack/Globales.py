@@ -134,7 +134,11 @@ def get_dict():
             'gio', 'vte', 'gconf', 'smtplib', 'feedparser',
             'twitter', 'pangocairo', 'matplotlib', 'setuptools',
             'ftplib', 'hippo', 'goocanvas', 'spyderlib', 'pilas',
-            'Box2D', 'zope', 'twisted', 'pyggel', 'gnash', 'psutil']),
+            'Box2D', 'zope', 'twisted', 'pyggel', 'gnash', 'psutil',
+            'nxt.motor', 'nxt.bluesock', 'nxt.compass', 'nxt.error',
+            'nxt.locator', 'nxt.sensor', 'nxt.system', 'nxt.usbsock',
+            'nxt.brick', 'nxt.direct', 'nxt.htcompass', 'nxt.lightblueglue',
+            'nxt.telegram', 'nxt.server', 'IPython']),
             }
 
     '''python-gi

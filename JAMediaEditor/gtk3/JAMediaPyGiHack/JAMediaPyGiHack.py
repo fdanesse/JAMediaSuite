@@ -36,7 +36,9 @@ class JAMediaPyGiHack(Gtk.Box):
 
     __gsignals__ = {
     'salir': (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, []),
+    "abrir": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
     def __init__(self):
 
@@ -59,7 +61,11 @@ class JAMediaPyGiHack(Gtk.Box):
         self.toolbar.connect("informe", self.__informar)
 
         self.basebox.connect("update", self.__update)
+        self.basebox.connect('abrir', self.__open_file)
         self.basebox.connect("nobusquedas", self.__desactivar_busquedas)
+
+    def __open_file(self, widget, modulo_path):
+        self.emit("abrir", modulo_path)
 
     def __zoom(self, widget, zoom):
         self.basebox.zoom(zoom)

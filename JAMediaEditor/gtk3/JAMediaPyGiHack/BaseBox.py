@@ -42,7 +42,9 @@ class BaseBox(Gtk.Box):
     "update": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
     "nobusquedas": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, []),
+    "abrir": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
     def __init__(self):
 
@@ -74,8 +76,12 @@ class BaseBox(Gtk.Box):
                     self.pack_start(self.base_notebook, True, True, 0)
                     self.base_notebook.connect("nobusquedas",
                         self.__re_emit_nobusquedas)
+                    self.base_notebook.connect('abrir', self.__open_file)
                 self.base_notebook.show()
             self.emit("update", wid_lab)
+
+    def __open_file(self, widget, modulo_path):
+        self.emit("abrir", modulo_path)
 
     def import_modulo(self, paquete, modulo):
         self.set_accion("ver", "Apis PyGiHack", True)
@@ -116,7 +122,9 @@ class BaseNotebook(Gtk.Notebook):
 
     __gsignals__ = {
     "nobusquedas": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, [])}
+        GObject.TYPE_NONE, []),
+    "abrir": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
     def __init__(self):
 
@@ -175,6 +183,11 @@ class BaseNotebook(Gtk.Notebook):
             self.set_current_page(-1)
             self.set_tab_reorderable(introspectionwidget, True)
 
+            introspectionwidget.connect('abrir', self.__open_file)
+
+    def __open_file(self, widget, modulo_path):
+        self.emit("abrir", modulo_path)
+
     def get_estructura(self):
         paginas = self.get_children()
         scrolled = paginas[self.get_current_page()]
@@ -184,6 +197,10 @@ class BaseNotebook(Gtk.Notebook):
 class IntrospectionWidget(Gtk.Box):
 
     __gtype_name__ = 'PygiHackIntrospectionWidget'
+
+    __gsignals__ = {
+    "abrir": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
     def __init__(self, paquete, modulo):
 
@@ -197,6 +214,10 @@ class IntrospectionWidget(Gtk.Box):
 
         self.show_all()
         self.introspection_panel.connect('info-try', self.__set_info_tray)
+        self.introspection_panel.connect('abrir', self.__open_file)
+
+    def __open_file(self, widget, modulo_path):
+        self.emit("abrir", modulo_path)
 
     def __set_info_tray(self, widget, info):
         self.toolbartray.set_info(info)
@@ -214,6 +235,8 @@ class IntrospectionPanel(Gtk.Paned):
 
     __gsignals__ = {
     "info-try": (GObject.SIGNAL_RUN_LAST,
+        GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+    "abrir": (GObject.SIGNAL_RUN_LAST,
         GObject.TYPE_NONE, (GObject.TYPE_STRING,))}
 
     def __init__(self, paquete, modulo):
@@ -232,6 +255,10 @@ class IntrospectionPanel(Gtk.Paned):
 
         self.show_all()
         self.apiwidget.connect('update', self.__update)
+        self.apiwidget.connect('abrir', self.__open_file)
+
+    def __open_file(self, widget, modulo_path):
+        self.emit("abrir", modulo_path)
 
     def __update(self, widget, tupla):
         if tupla:
