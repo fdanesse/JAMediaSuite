@@ -166,7 +166,7 @@ class Menu(Gtk.MenuBar):
 
         Gtk.MenuBar.__init__(self)
 
-        _dict = get_dict()
+        _dict, self.informe = get_dict()
 
         ### Items del Menú Abrir
         self.item_abrir = Gtk.MenuItem('Importar')

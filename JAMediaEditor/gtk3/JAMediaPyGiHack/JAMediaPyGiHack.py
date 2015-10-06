@@ -22,7 +22,7 @@
 import os
 from gi.repository import Gtk
 from gi.repository import GObject
-
+from gi.repository import GLib
 from Widgets import Toolbar
 from BaseBox import BaseBox
 from InformeWidget import InformeWidget
@@ -51,6 +51,8 @@ class JAMediaPyGiHack(Gtk.Box):
         self.pack_start(self.basebox, True, True, 0)
 
         self.informewidget = False
+
+        self.connect("realize", self.__realize)
         self.show_all()
 
         self.toolbar.connect("import", self.__import)
@@ -63,6 +65,29 @@ class JAMediaPyGiHack(Gtk.Box):
         self.basebox.connect("update", self.__update)
         self.basebox.connect('abrir', self.__open_file)
         self.basebox.connect("nobusquedas", self.__desactivar_busquedas)
+
+    def __realize(self, widget):
+        GLib.timeout_add(1000, self.__informe_pygihack)
+
+    def __informe_pygihack(self):
+        self.get_toplevel().set_sensitive(False)
+        dialog = Gtk.Dialog(parent=self.get_toplevel(),
+        flags=Gtk.DialogFlags.MODAL,
+        buttons=["Aceptar", Gtk.ResponseType.ACCEPT])
+        dialog.set_border_width(15)
+        dialog.set_size_request(250, 400)
+        textview = Gtk.TextView()
+        textview.set_editable(False)
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scroll.add(textview)
+        textview.get_buffer().set_text(self.toolbar.menu.informe)
+        dialog.vbox.pack_start(scroll, True, True, 0)
+        dialog.vbox.show_all()
+        dialog.run()
+        dialog.destroy()
+        self.get_toplevel().set_sensitive(True)
+        return False
 
     def __open_file(self, widget, modulo_path):
         self.emit("abrir", modulo_path)

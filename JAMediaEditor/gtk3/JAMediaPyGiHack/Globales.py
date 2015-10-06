@@ -21,23 +21,24 @@
 
 import os
 import json
+import commands
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
 
-#BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(__file__)
 WorkPath = os.environ["HOME"]
 
 
-def set_dict(_dict):
-    """
-    Crea el json base desde donde opera la función get_dict()
-    """
-    # FIXME: No se está utilizando
-    archivo = os.path.join(WorkPath, "JAMediaPyGiHack.cfg")
-    archivo = open(archivo, "w")
-    archivo.write(json.dumps(_dict, indent=4, separators=(", ", ":"),
-        sort_keys=True))
-    archivo.close()
+#def set_dict(_dict):
+#    """
+#    Crea el json base desde donde opera la función get_dict()
+#    """
+#    # FIXME: No se está utilizando
+#    archivo = os.path.join(WorkPath, "JAMediaPyGiHack.cfg")
+#    archivo = open(archivo, "w")
+#    archivo.write(json.dumps(_dict, indent=4, separators=(", ", ":"),
+#        sort_keys=True))
+#    archivo.close()
 
 
 def get_dict():
@@ -54,6 +55,7 @@ def get_dict():
     #archivo.close()
     #return dict
 
+    print "JAMediaPyGiHack está Obteniendo Modulos instalados en el Sistema..."
     # http://docs.python.org/2.7/py-modindex.html
     BASEDICT = {
         "python": sorted([
@@ -160,7 +162,68 @@ def get_dict():
     'gwibber.lib', 'pynotify', 'launchpadlib.launchpad',
     'zeitgeist.client', 'zeitgeist.datamodel',
     '''
-    return BASEDICT
+    informe = "Informe de Módulos no encontrados por JAMediaPyGiHack:"
+    print "JAMediaPyGiHack está Limpiando la Lista de Módulos de gi.repository..."
+    # Limpieza gi.repository
+    text = "\nModulos gi.repository:"
+    informe = "%s\n%s" % (informe, text)
+    _bool = True
+    try:
+        pygi = __import__("gi.repository")
+    except:
+        _bool = False
+    if not _bool:
+        text = "\tJAMediaPyGiHack no encuentra: gi.repository"
+        print text
+        informe = "%s\n%s" % (informe, text)
+        del(BASEDICT["python-gi"])
+    else:
+        pygi = __import__("gi.repository")
+        remover = []
+        for item in BASEDICT["python-gi"]:
+            try:
+                modulo = pygi.module.IntrospectionModule(item)
+            except:
+                remover.append(item)
+        for item in remover:
+            text = "\tNo se encuentra: %s" % item
+            print text
+            informe = "%s\n%s" % (informe, text)
+            BASEDICT["python-gi"].remove(item)
+
+    # Limpieza python y otros
+    print "JAMediaPyGiHack está Limpiando la Lista de Módulos de python..."
+    text = "\nModulos python:"
+    informe = "%s\n%s" % (informe, text)
+    ejecutable = os.path.join(BASE_PATH, "SpyderHack", "Check.py")
+    remover = []
+    for item in BASEDICT["python"]:
+        if commands.getoutput('python %s %s' % (ejecutable, item)) == 'False':
+            remover.append(item)
+    for item in remover:
+        text = "\tNo se encuentra: %s" % item
+        print text
+        informe = "%s\n%s" % (informe, text)
+        BASEDICT["python"].remove(item)
+    print "JAMediaPyGiHack está Limpiando la Lista de Módulos de Otros..."
+    text = "\nModulos Otros:"
+    informe = "%s\n%s" % (informe, text)
+    remover = []
+    for item in BASEDICT["Otros"]:
+        if commands.getoutput('python %s %s' % (ejecutable, item)) == 'False':
+            remover.append(item)
+    for item in remover:
+        text = "\tNo se encuentra: %s" % item
+        print text
+        informe = "%s\n%s" % (informe, text)
+        BASEDICT["Otros"].remove(item)
+    if not BASEDICT["Otros"]:
+        del(BASEDICT["Otros"])
+    print "Modulos Encontrados:"
+    print "\tDe python:", len(BASEDICT.get("python", []))
+    print "\tDe gi.repository:", len(BASEDICT.get("python-gi", []))
+    print "\tDe Otros:", len(BASEDICT.get("Otros", []))
+    return (BASEDICT, informe)
 
 
 def get_separador(draw=False, ancho=0, expand=False):
