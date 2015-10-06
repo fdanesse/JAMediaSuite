@@ -154,9 +154,17 @@ class ApiWidget(Gtk.TreeView):
                     modulo_path = modulo_path.replace(".pyc", ".py")
                 if os.path.exists(modulo_path):
                     if os.path.isfile(modulo_path):
-                        menu = Menu(widget, boton, pos, tiempo, modulo_path)
-                        menu.connect('accion', self.__set_accion_menu)
-                        menu.popup(None, None, None, None, boton, tiempo)
+                        modulo_path = os.path.realpath(modulo_path)
+                        datos = commands.getoutput(
+                            'file -ik \"%s\"' % (modulo_path))
+                        if "text" in datos or "x-python" in datos or \
+                            "x-empty" in datos or "svg+xml" in datos or \
+                            "application/xml" in datos:
+                                menu = Menu(widget, boton, pos, tiempo,
+                                    modulo_path)
+                                menu.connect('accion', self.__set_accion_menu)
+                                menu.popup(None, None, None, None,
+                                    boton, tiempo)
 
     def __set_accion_menu(self, widget, accion, modulo_path):
         if accion == "Abrir":
