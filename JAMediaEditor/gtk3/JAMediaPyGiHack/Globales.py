@@ -163,6 +163,8 @@ def get_dict():
     'zeitgeist.client', 'zeitgeist.datamodel',
     '''
     informe = "Informe de Módulos no encontrados por JAMediaPyGiHack:"
+    # FIXME: Activar para obtener informe de módulos
+    """
     print "JAMediaPyGiHack está Limpiando la Lista de Módulos de gi.repository..."
     # Limpieza gi.repository
     text = "\nModulos gi.repository:"
@@ -223,6 +225,7 @@ def get_dict():
     print "\tDe python:", len(BASEDICT.get("python", []))
     print "\tDe gi.repository:", len(BASEDICT.get("python-gi", []))
     print "\tDe Otros:", len(BASEDICT.get("Otros", []))
+    """
     return (BASEDICT, informe)
 
 
