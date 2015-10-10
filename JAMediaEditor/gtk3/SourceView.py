@@ -90,8 +90,11 @@ class SourceView(GtkSource.View):
         return False
 
     def __procesar_y_guardar(self):
-        if not os.access(self.archivo, os.W_OK):
-            return
+        if self.archivo:
+            if os.path.exists(self.archivo):
+                if not os.access(self.archivo, os.W_OK):
+                    print "No tienes permiso para guardar:", self.archivo
+                    return False
         _buffer = self.get_buffer()
         inicio, fin = _buffer.get_bounds()
         texto = _buffer.get_text(inicio, fin, 0)
@@ -423,9 +426,9 @@ class SourceView(GtkSource.View):
         de lo contrario ejecuta Guardar Como.
         """
         if self.archivo:
-            _buffer = self.get_buffer()
-            if _buffer.get_modified() and os.path.exists(self.archivo):
-                self.__procesar_y_guardar()
+            if self.get_buffer().get_modified() and \
+                os.path.exists(self.archivo):
+                    self.__procesar_y_guardar()
             elif not os.path.exists(self.archivo):
                 return self.guardar_archivo_como()
         else:

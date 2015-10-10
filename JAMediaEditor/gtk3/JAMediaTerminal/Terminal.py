@@ -137,7 +137,7 @@ class Terminal(Gtk.EventBox):
         terminal = self.notebook.get_children()[
             self.notebook.get_current_page()].get_child()
         pty_flags = Vte.PtyFlags(0)
-        terminal.fork_command_full(pty_flags, dirpath,
+        terminal.spawn_sync(pty_flags, dirpath,
             (interprete, path_script, param), "", 0, None, None)
 
 
@@ -346,14 +346,14 @@ class VTETerminal(Vte.Terminal):
                 return self.set_interprete()
             path = os.path.dirname(archivo)
             pty_flags = Vte.PtyFlags(0)
-            self.fork_command_full(pty_flags, path, (interprete, archivo),
+            self.spawn_sync(pty_flags, path, (interprete, archivo),
                 "", 0, None, None)
         else:
             interprete = self.interprete
             path = self.path
             pty_flags = Vte.PtyFlags(0)
-            self.fork_command_full(pty_flags, path, (interprete,),
-                "", 0, None, None)
+            # FIXME: en python 2 spawn_sync, era fork_command_full
+            self.spawn_sync(pty_flags, path, (interprete,), "", 0, None, None)
         self.child_focus(True)
 
     def re_set_font(self, fuente):

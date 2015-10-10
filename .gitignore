@@ -1,8 +1,4 @@
-*.py[co]
+*.py[co~]
 *.bak
 *.vala~
-*.log
-dist
-build
-sdist
-*.mo
+*.gitignore~

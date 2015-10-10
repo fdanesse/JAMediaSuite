@@ -52,7 +52,8 @@ class JAMediaPyGiHack(Gtk.Box):
 
         self.informewidget = False
 
-        self.connect("realize", self.__realize)
+        # FIXME: Activar para obtener informe de módulos
+        #self.connect("realize", self.__realize)
         self.show_all()
 
         self.toolbar.connect("import", self.__import)
@@ -65,7 +66,8 @@ class JAMediaPyGiHack(Gtk.Box):
         self.basebox.connect("update", self.__update)
         self.basebox.connect('abrir', self.__open_file)
         self.basebox.connect("nobusquedas", self.__desactivar_busquedas)
-
+        
+    """
     def __realize(self, widget):
         GLib.timeout_add(1000, self.__informe_pygihack)
 
@@ -88,7 +90,8 @@ class JAMediaPyGiHack(Gtk.Box):
         dialog.destroy()
         self.get_toplevel().set_sensitive(True)
         return False
-
+    """
+    
     def __open_file(self, widget, modulo_path):
         self.emit("abrir", modulo_path)
 
