@@ -59,13 +59,19 @@ class JAMediaImagenes(gtk.Window):
         self.__menu.has_file(False, False)
         #print "FIXME: Resetear Toolbars y StatusBars", self.__close_file
 
-    def __update_pixbuf(self, processor, pixbuf):
+    def __update_pixbuf(self, processor, pixbuf, info):
         """
         Solo Actualiza lo que se ve.
         """
         #print "FIXME: agregar rotaciones y escalas, actualizar StatusBars", self.__update_pixbuf
         self.__visor_imagen.set_from_pixbuf(pixbuf)
-        self.__status_bar.push(0, "Text")
+        text = "Img: "
+        if pixbuf:
+            text = "%s %s   Size: %s   Ext: %s   Mime: %s   Kb: %.2f" % (
+                text, info.get("path", ""), info.get("size", ""),
+                info.get("name", ""), info.get("mime_types", ""),
+                info.get("mb", 0.0) / 1024.0)
+        self.__status_bar.push(0, text)
 
     def __open_file(self, menu, filepath):
         """
