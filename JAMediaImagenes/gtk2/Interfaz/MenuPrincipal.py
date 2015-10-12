@@ -10,30 +10,41 @@ class MenuPrincipal(gtk.MenuBar):
 
     __gsignals__ = {
     "open": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "close": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
         gtk.MenuBar.__init__(self)
 
         archivo = gtk.MenuItem('Archivo')
-        marchivo = MenuArchivo()
-        archivo.set_submenu(marchivo)
+        self.__marchivo = MenuArchivo()
+        archivo.set_submenu(self.__marchivo)
         self.append(archivo)
 
         self.show_all()
 
-        marchivo.connect("open", self.__emit_open)
+        self.__marchivo.connect("open", self.__emit_open_file)
+        self.__marchivo.connect("close", self.__emit_close_file)
 
-    def __emit_open(self, submenu, filepath):
+    def __emit_close_file(self, submenu):
+        self.emit("close")
+
+    def __emit_open_file(self, submenu, filepath):
         self.emit("open", filepath)
+
+    def has_file(self, hasfile, writable):
+        self.__marchivo.has_file(hasfile, writable)
 
 
 class MenuArchivo(gtk.Menu):
 
     __gsignals__ = {
     "open": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING, ))}
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+    "close": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, [])}
 
     def __init__(self):
 
@@ -41,24 +52,29 @@ class MenuArchivo(gtk.Menu):
 
         self.__dir_path = False
 
-        abrir = gtk.MenuItem('Abrir...')
+        self.__abrir = gtk.MenuItem('Abrir...')
         separador1 = gtk.SeparatorMenuItem()
-        guardar = gtk.MenuItem('Guardar')
-        guardar_como = gtk.MenuItem('Guardar Como...')
+        self.__guardar = gtk.MenuItem('Guardar')
+        self.__guardar_como = gtk.MenuItem('Guardar Como...')
         separador2 = gtk.SeparatorMenuItem()
-        imprimir = gtk.MenuItem('Imprimir...')
+        self.__imprimir = gtk.MenuItem('Imprimir...')
         separador3 = gtk.SeparatorMenuItem()
-        propiedades = gtk.MenuItem('Propiedades...')
+        self.__propiedades = gtk.MenuItem('Propiedades...')
         separador4 = gtk.SeparatorMenuItem()
-        cerrar = gtk.MenuItem('Cerrar')
+        self.__cerrar = gtk.MenuItem('Cerrar')
 
-        for item in [abrir, separador1, guardar, guardar_como, separador2,
-            imprimir, separador3, propiedades, separador4, cerrar]:
+        for item in [self.__abrir, separador1, self.__guardar,
+            self.__guardar_como, separador2, self.__imprimir, separador3,
+            self.__propiedades, separador4, self.__cerrar]:
                 self.append(item)
 
         self.show_all()
 
-        abrir.connect("activate", self.__open_file)
+        self.__abrir.connect("activate", self.__open_file)
+        self.__cerrar.connect("activate", self.__close_file)
+
+    def __close_file(self, widget):
+        self.emit("close")
 
     def __open_file(self, widget):
         dialog = gtk.FileChooserDialog(parent=self.get_toplevel(),
@@ -80,3 +96,10 @@ class MenuArchivo(gtk.Menu):
             self.__dir_path = os.path.dirname(filepath)
             self.emit("open", filepath)
         dialog.destroy()
+
+    def has_file(self, hasfile, writable):
+        for item in [self.__guardar, self.__guardar_como, self.__imprimir,
+            self.__propiedades, self.__cerrar]:
+                item.set_sensitive(hasfile)
+        if hasfile and not writable:
+            self.__guardar.set_sensitive(False)

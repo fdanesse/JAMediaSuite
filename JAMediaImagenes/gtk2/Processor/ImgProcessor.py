@@ -16,9 +16,31 @@ class ImgProcessor(gobject.GObject):
         gobject.GObject.__init__(self)
 
         self.__pixbuf = False
-        self.__array = False
+        self.__original_array = False
+        self.__changed = False
 
     def open(self, filepath):
+        """
+        Se abre un nuevo archivo, el procesador se resetea.
+        """
         self.__pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
-        self.__array = self.__pixbuf.get_pixels_array()
+        self.__original_array = self.__pixbuf.get_pixels_array()
+        self.__changed = False
         self.emit("update", self.__pixbuf)
+        return True
+
+    def close_file(self):
+        """
+        ImgProcessor se resetea.
+        """
+        self.__pixbuf = False
+        self.__original_array = False
+        self.__changed = False
+        self.emit("update", None)
+
+    def has_changes(self):
+        """
+        Devuelve si hay cambios en el array visible con respecto al array del
+        archivo abierto actualmente.
+        """
+        return self.__changed
