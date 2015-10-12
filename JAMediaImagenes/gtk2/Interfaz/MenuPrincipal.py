@@ -18,10 +18,20 @@ class MenuPrincipal(gtk.MenuBar):
 
         gtk.MenuBar.__init__(self)
 
-        archivo = gtk.MenuItem('Archivo')
+        archivo = gtk.MenuItem("Archivo")
         self.__marchivo = MenuArchivo()
         archivo.set_submenu(self.__marchivo)
         self.append(archivo)
+
+        utiles = gtk.MenuItem("Utiles")
+        self.__utiles = MenuUtiles()
+        utiles.set_submenu(self.__utiles)
+        self.append(utiles)
+
+        ayuda = gtk.MenuItem("Ayuda")
+        self.__ayuda = MenuAyuda()
+        ayuda.set_submenu(self.__ayuda)
+        self.append(ayuda)
 
         self.show_all()
 
@@ -36,6 +46,7 @@ class MenuPrincipal(gtk.MenuBar):
 
     def has_file(self, hasfile, writable):
         self.__marchivo.has_file(hasfile, writable)
+        self.__utiles.get_attach_widget().set_sensitive(hasfile)
 
 
 class MenuArchivo(gtk.Menu):
@@ -52,16 +63,16 @@ class MenuArchivo(gtk.Menu):
 
         self.__dir_path = False
 
-        self.__abrir = gtk.MenuItem('Abrir...')
+        self.__abrir = gtk.MenuItem("Abrir...")
         separador1 = gtk.SeparatorMenuItem()
-        self.__guardar = gtk.MenuItem('Guardar')
-        self.__guardar_como = gtk.MenuItem('Guardar Como...')
+        self.__guardar = gtk.MenuItem("Guardar")
+        self.__guardar_como = gtk.MenuItem("Guardar Como...")
         separador2 = gtk.SeparatorMenuItem()
-        self.__imprimir = gtk.MenuItem('Imprimir...')
+        self.__imprimir = gtk.MenuItem("Imprimir...")
         separador3 = gtk.SeparatorMenuItem()
-        self.__propiedades = gtk.MenuItem('Propiedades...')
+        self.__propiedades = gtk.MenuItem("Propiedades...")
         separador4 = gtk.SeparatorMenuItem()
-        self.__cerrar = gtk.MenuItem('Cerrar')
+        self.__cerrar = gtk.MenuItem("Cerrar")
 
         for item in [self.__abrir, separador1, self.__guardar,
             self.__guardar_como, separador2, self.__imprimir, separador3,
@@ -103,3 +114,21 @@ class MenuArchivo(gtk.Menu):
                 item.set_sensitive(hasfile)
         if hasfile and not writable:
             self.__guardar.set_sensitive(False)
+
+
+class MenuUtiles(gtk.Menu):
+
+    def __init__(self):
+
+        gtk.Menu.__init__(self)
+
+        self.show_all()
+
+
+class MenuAyuda(gtk.Menu):
+
+    def __init__(self):
+
+        gtk.Menu.__init__(self)
+
+        self.show_all()

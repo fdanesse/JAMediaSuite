@@ -48,9 +48,24 @@ class JAMediaImagenes(gtk.Window):
         self.__menu.connect("open", self.__open_file)
         self.__menu.connect("close", self.__close_file)
         self.connect("delete-event", self.__salir)
+        self.connect("key-press-event", self.__key_press_event)
 
         print "JAMediaImagenes process:", os.getpid()
         self.__close_file(False)
+
+    def __key_press_event(self, widget, event):
+        key = gtk.gdk.keyval_name(event.keyval)
+        if key == "Right":
+            pass
+        elif key == "Left":
+            pass
+        elif key == "Delete":
+            pass # Eliminar
+        elif key == "KP_Add":
+            pass # zoom in
+        elif key == "KP_Subtract":
+            pass # zoom out
+        return False
 
     def __close_file(self, menu=False):
         if self.__processor.has_changes():
