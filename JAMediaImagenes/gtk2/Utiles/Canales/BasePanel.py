@@ -5,25 +5,22 @@ import gtk
 import gobject
 
 
-class BasePanel(gtk.VPaned):
+class BasePanel(gtk.Table):
 
     def __init__(self):
 
-        gtk.VPaned.__init__(self)
+        gtk.Table.__init__(self, columns=4, rows=4, homogeneous=True)
 
         self.set_border_width(2)
 
         self.__visor_imagen = gtk.Image()
-        self.__vbox_canales = gtk.VBox()
+        self.__visor_imagen.set_size_request(320, 240)
+        self.__canales = ContenedorCanales(" Colores: ")
+        self.__grises = ContenedorCanales(" Grises: ")
 
-        self.__canales = ContenedorCanales("canales")
-        self.__grises = ContenedorCanales("grises")
-
-        self.__vbox_canales.pack_start(self.__canales, False, False, 0)
-        self.__vbox_canales.pack_start(self.__grises, False, False, 0)
-
-        self.pack1(self.__visor_imagen, resize=True, shrink=True)
-        self.pack2(self.__vbox_canales, resize=False, shrink=False)
+        self.attach_defaults(self.__visor_imagen, 0, 4, 0, 2)
+        self.attach_defaults(self.__canales, 0, 4, 2, 3)
+        self.attach_defaults(self.__grises, 0, 4, 3, 4)
 
         self.show_all()
 
@@ -36,14 +33,12 @@ class ContenedorCanales(gtk.Frame):
 
         self.set_border_width(4)
         self.set_label(text)
-        #self.set_size_request(-1, 100)
 
         tabla = gtk.Table(columns=4, rows=1, homogeneous=True)
-        lista = [" Original ", " Rojo (R = red) ",
-            " Verde (G = green) ", " Azul (B = blue) "]
-        if text == "grises":
-            lista = [" Lightness ", " Luminosity ",
-                " Average ", " Percentual "]
+        lista = [" Original: ", " Rojo: ", " Verde: ", " Azul: "]
+        if "Grises" in text:
+            lista = [" Lightness: ", " Luminosity: ",
+                " Average: ", " Percentual: "]
         for text in lista:
             _id = lista.index(text)
             tabla.attach_defaults(FrameCanal(text), _id, _id + 1, 0, 1)

@@ -28,4 +28,4 @@ class Canales(gtk.Window):
         self.add(self.__base_panel)
 
         self.show_all()
-        self.resize(640, 480)
+        #self.resize(640, 480)
