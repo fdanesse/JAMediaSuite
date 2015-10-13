@@ -55,7 +55,5 @@ class FrameCanal(gtk.Frame):
 
         self.set_border_width(4)
         self.set_label(text)
-
         self.add(gtk.Image())
-
         self.show_all()
