@@ -6,6 +6,7 @@ import os
 import gtk
 from Interfaz.MenuPrincipal import MenuPrincipal
 from Processor.ImgProcessor import ImgProcessor
+from Utiles.Canales.Canales import Canales
 
 PATH = os.path.dirname(__file__)
 
@@ -23,6 +24,7 @@ class JAMediaImagenes(gtk.Window):
         self.set_border_width(2)
         self.set_position(gtk.WIN_POS_CENTER)
 
+        self.__utiles = {}
         self.__processor = ImgProcessor()
 
         __vbox_base = gtk.VBox()
@@ -47,6 +49,7 @@ class JAMediaImagenes(gtk.Window):
         self.__processor.connect("update", self.__update_pixbuf)
         self.__menu.connect("open", self.__open_file)
         self.__menu.connect("close", self.__close_file)
+        self.__menu.connect("open-util", self.__open_util)
         self.connect("delete-event", self.__salir)
         self.connect("key-press-event", self.__key_press_event)
 
@@ -67,6 +70,18 @@ class JAMediaImagenes(gtk.Window):
             pass # zoom out
         return False
 
+    def __open_util(self, menu, text):
+        util = self.__utiles.get(text, False)
+        if not util:
+            self.__utiles[text] = Canales(self)
+            self.__utiles[text].connect("delete-event", self.__close_util)
+
+    def __close_util(self, widget=False, senial=False):
+        utiles = self.__utiles.items()
+        for util in utiles:
+            if widget in util:
+                del(self.__utiles[util[0]])
+
     def __close_file(self, menu=False):
         if self.__processor.has_changes():
             print "FIXME: Abrir Dialogo pidiendo confirmación para guardar o guardar como", self.__close_file
@@ -74,11 +89,29 @@ class JAMediaImagenes(gtk.Window):
         self.__menu.has_file(False, False)
         #print "FIXME: Resetear Toolbars y StatusBars", self.__close_file
 
+    def __scale_full(self, pixbuf):
+        """
+        Escala ocupando todo el espacio visible del widget donde debe dibukarse
+        """
+        rect = self.__visor_imagen.get_parent().get_allocation()
+        src_width, src_height = pixbuf.get_width(), pixbuf.get_height()
+        scale = min(float(rect.width) / src_width,
+            float(rect.height) / src_height)
+        new_width = int(scale * src_width)
+        new_height = int(scale * src_height)
+        pixbuf = pixbuf.scale_simple(new_width,
+            new_height, gtk.gdk.INTERP_BILINEAR)
+        return pixbuf
+
     def __update_pixbuf(self, processor, pixbuf, info):
         """
         Solo Actualiza lo que se ve.
         """
         #print "FIXME: agregar rotaciones y escalas, actualizar StatusBars", self.__update_pixbuf
+
+        if pixbuf:
+            pixbuf = self.__scale_full(pixbuf)
+
         self.__visor_imagen.set_from_pixbuf(pixbuf)
         text = "Img: "
         if pixbuf:
