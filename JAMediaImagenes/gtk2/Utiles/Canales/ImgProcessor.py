@@ -19,6 +19,98 @@ class ImgProcessor(gobject.GObject):
 
         self.__file_path = False
         self.__array = False
+        self.__pixbuf = None
+
+    def __get_color(self, array, color):
+        print color
+        pixels = numpy.copy(array)
+        i0 = 0
+        for x in pixels:
+            i1 = 0
+            for i in x:
+                if "Rojo" in color:
+                    pixels[i0, i1, 1] = 0
+                    pixels[i0, i1, 2] = 0
+                elif "Verde" in color:
+                    pixels[i0, i1, 0] = 0
+                    pixels[i0, i1, 2] = 0
+                elif "Azul" in color:
+                    pixels[i0, i1, 0] = 0
+                    pixels[i0, i1, 1] = 0
+                elif "Cian" in color:
+                    pixels[i0, i1, 0] = 0
+                elif "Magenta" in color:
+                    pixels[i0, i1, 1] = 0
+                elif "Amarillo" in color:
+                    pixels[i0, i1, 2] = 0
+                i1 += 1
+            i0 += 1
+        return pixels
+
+    def __get_lightness(self, array):
+        """
+        The graylevel will be calculated as Lightness = 1/2 × (max(R,G,B) + min(R,G,B))
+        """
+        pixels = numpy.copy(array)
+        i0 = 0
+        for x in pixels:
+            i1 = 0
+            for i in x:
+                ma = pixels[i0, i1, numpy.argmax(pixels[i0, i1])]
+                mi = pixels[i0, i1, numpy.argmin(pixels[i0, i1])]
+                lightness = 1.0 / 2.0 * (float(ma) + float(mi))
+                if lightness < 0:
+                    lightness = 0
+                elif lightness > 255:
+                    lightness = 255
+                pixels[i0, i1, 0] = int(lightness)
+                pixels[i0, i1, 1] = int(lightness)
+                pixels[i0, i1, 2] = int(lightness)
+                i1 += 1
+            i0 += 1
+        return pixels
+
+    def __get_luminosity(self, array):
+        """
+        The graylevel will be calculated as Luminosity = 0.21 × R + 0.72 × G + 0.07 × B
+        """
+        pixels = numpy.copy(array)
+        i0 = 0
+        for x in pixels:
+            i1 = 0
+            for i in x:
+                #R = 0.2126
+                #G = 0.7152
+                #B = 0.0722
+                luminosity = 0.21 * pixels[i0, i1, 0] + 0.72 * \
+                    pixels[i0, i1, 1] + 0.07 * pixels[i0, i1, 2]
+                if luminosity < 0:
+                    luminosity = 0
+                elif luminosity > 255:
+                    luminosity = 255
+                pixels[i0, i1, 0] = int(luminosity)
+                pixels[i0, i1, 1] = int(luminosity)
+                pixels[i0, i1, 2] = int(luminosity)
+                i1 += 1
+            i0 += 1
+        return pixels
+
+    def __get_average(self, array):
+        """
+        The graylevel will be calculated as Average Brightness = (R + G + B) / 3
+        """
+        pixels = numpy.copy(array)
+        i0 = 0
+        for x in pixels:
+            i1 = 0
+            for i in x:
+                average = numpy.mean(pixels[i0, i1])
+                pixels[i0, i1, 0] = int(average)
+                pixels[i0, i1, 1] = int(average)
+                pixels[i0, i1, 2] = int(average)
+                i1 += 1
+            i0 += 1
+        return pixels
 
     def __get_percentual(self, array):
         """
@@ -47,30 +139,33 @@ class ImgProcessor(gobject.GObject):
         Se abre un nuevo archivo, el procesador se resetea.
         """
         self.__file_path = filepath
-        pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
-        self.__array = pixbuf.get_pixels_array()
-        self.emit("update", pixbuf)
+        self.__pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
+        self.__array = self.__pixbuf.get_pixels_array()
+        self.emit("update", self.__pixbuf)
 
-    def get_pixbuf(self, text):
-        pixbuf = None
+    def get_pixbuf(self, widget, text):
+        pixbuf = self.scale_full(widget, self.__pixbuf)
+        array = pixbuf.get_pixels_array()
         if "Original" in text:
-            array = numpy.copy(self.__array)
+            pass
+        elif "Rojo" in text or "Verde" in text or "Azul" in text or "Cian" in text or "Magenta" in text or "Amarillo" in text:
+            array = self.__get_color(array, text)
             pixbuf = gtk.gdk.pixbuf_new_from_array(
                 array, gtk.gdk.COLORSPACE_RGB, 8)
-        elif "Rojo" in text:
-            pass
-        elif "Verde" in text:
-            pass
-        elif "Azul" in text:
-            pass
         elif "Lightness" in text:
-            pass
+            array = self.__get_lightness(array)
+            pixbuf = gtk.gdk.pixbuf_new_from_array(
+                array, gtk.gdk.COLORSPACE_RGB, 8)
         elif "Luminosity" in text:
-            pass
+            array = self.__get_luminosity(array)
+            pixbuf = gtk.gdk.pixbuf_new_from_array(
+                array, gtk.gdk.COLORSPACE_RGB, 8)
         elif "Average" in text:
-            pass
+            array = self.__get_average(array)
+            pixbuf = gtk.gdk.pixbuf_new_from_array(
+                array, gtk.gdk.COLORSPACE_RGB, 8)
         elif "Percentual" in text:
-            array = self.__get_percentual(self.__array)
+            array = self.__get_percentual(array)
             pixbuf = gtk.gdk.pixbuf_new_from_array(
                 array, gtk.gdk.COLORSPACE_RGB, 8)
         return pixbuf

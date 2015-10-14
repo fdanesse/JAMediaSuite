@@ -10,7 +10,7 @@ class BasePanel(gtk.Table):
 
     def __init__(self):
 
-        gtk.Table.__init__(self, columns=4, rows=4, homogeneous=True)
+        gtk.Table.__init__(self, columns=4, rows=5, homogeneous=True)
 
         self.set_border_width(2)
 
@@ -19,27 +19,34 @@ class BasePanel(gtk.Table):
         self.__visor_imagen = gtk.Image()
         self.__visor_imagen.set_size_request(320, 240)
         self.__canales = ContenedorCanales(" Colores: ")
+        self.__primarios = ContenedorCanales(" Primarios: ")
         self.__grises = ContenedorCanales(" Grises: ")
 
         self.attach_defaults(self.__visor_imagen, 0, 4, 0, 2)
         self.attach_defaults(self.__canales, 0, 4, 2, 3)
-        self.attach_defaults(self.__grises, 0, 4, 3, 4)
+        self.attach_defaults(self.__primarios, 0, 4, 3, 4)
+        self.attach_defaults(self.__grises, 0, 4, 4, 5)
 
         self.show_all()
 
-        self.__processor.connect("update", self.__update_pixbuf)
+        #self.__processor.connect("update", self.__update_pixbuf)
 
-    def __update_pixbuf(self, processor, pixbuf):
-        """
-        El procesador actualiza el pixbuf en la interfaz
-        """
-        pixbuf = processor.scale_full(self.__visor_imagen, pixbuf)
-        self.__visor_imagen.set_from_pixbuf(pixbuf)
-        self.__canales.open(processor)
-        self.__grises.open(processor)
+    #def __update_pixbuf(self, processor, pixbuf):
+    #    """
+    #    El procesador actualiza el pixbuf en la interfaz
+    #    """
+    #    pixbuf = processor.scale_full(self.__visor_imagen, pixbuf)
+    #    self.__visor_imagen.set_from_pixbuf(pixbuf)
+    #    self.__canales.open(processor)
+    #    self.__grises.open(processor)
 
     def set_file(self, filepath):
         self.__processor.open(filepath)
+        pixbuf = self.__processor.get_pixbuf(self.__visor_imagen, "Original")
+        self.__visor_imagen.set_from_pixbuf(pixbuf)
+        self.__canales.open(self.__processor)
+        self.__primarios.open(self.__processor)
+        self.__grises.open(self.__processor)
 
 
 class ContenedorCanales(gtk.Frame):
@@ -54,8 +61,9 @@ class ContenedorCanales(gtk.Frame):
         tabla = gtk.Table(columns=4, rows=1, homogeneous=True)
         lista = [" Original: ", " Rojo: ", " Verde: ", " Azul: "]
         if "Grises" in text:
-            lista = [" Lightness: ", " Luminosity: ",
-                " Average: ", " Percentual: "]
+            lista = [" Lightness: ", " Luminosity: ", " Average: ", " Percentual: "]
+        elif "Primarios" in text:
+             lista = [" Cian: ", " Magenta: ", " Amarillo: "]
         for text in lista:
             _id = lista.index(text)
             tabla.attach_defaults(FrameCanal(text), _id, _id + 1, 0, 1)
@@ -80,7 +88,5 @@ class FrameCanal(gtk.Frame):
         self.show_all()
 
     def open(self, processor):
-        pixbuf = processor.get_pixbuf(self.get_label())
-        if pixbuf:
-            pixbuf = processor.scale_full(self.get_child(), pixbuf)
+        pixbuf = processor.get_pixbuf(self.get_child(), self.get_label())
         self.get_child().set_from_pixbuf(pixbuf)
