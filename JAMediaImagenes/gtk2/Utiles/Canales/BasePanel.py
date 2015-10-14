@@ -3,6 +3,7 @@
 
 import gtk
 import gobject
+from ImgProcessor import ImgProcessor
 
 
 class BasePanel(gtk.Table):
@@ -12,6 +13,8 @@ class BasePanel(gtk.Table):
         gtk.Table.__init__(self, columns=4, rows=4, homogeneous=True)
 
         self.set_border_width(2)
+
+        self.__processor = ImgProcessor()
 
         self.__visor_imagen = gtk.Image()
         self.__visor_imagen.set_size_request(320, 240)
@@ -23,6 +26,20 @@ class BasePanel(gtk.Table):
         self.attach_defaults(self.__grises, 0, 4, 3, 4)
 
         self.show_all()
+
+        self.__processor.connect("update", self.__update_pixbuf)
+
+    def __update_pixbuf(self, processor, pixbuf):
+        """
+        El procesador actualiza el pixbuf en la interfaz
+        """
+        pixbuf = processor.scale_full(self.__visor_imagen, pixbuf)
+        self.__visor_imagen.set_from_pixbuf(pixbuf)
+        self.__canales.open(processor)
+        self.__grises.open(processor)
+
+    def set_file(self, filepath):
+        self.__processor.open(filepath)
 
 
 class ContenedorCanales(gtk.Frame):
@@ -46,6 +63,10 @@ class ContenedorCanales(gtk.Frame):
         self.add(tabla)
         self.show_all()
 
+    def open(self, processor):
+        for frame in self.get_child().get_children():
+            frame.open(processor)
+
 
 class FrameCanal(gtk.Frame):
 
@@ -57,3 +78,9 @@ class FrameCanal(gtk.Frame):
         self.set_label(text)
         self.add(gtk.Image())
         self.show_all()
+
+    def open(self, processor):
+        pixbuf = processor.get_pixbuf(self.get_label())
+        if pixbuf:
+            pixbuf = processor.scale_full(self.get_child(), pixbuf)
+        self.get_child().set_from_pixbuf(pixbuf)

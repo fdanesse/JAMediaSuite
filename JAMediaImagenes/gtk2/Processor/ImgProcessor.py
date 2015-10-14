@@ -65,3 +65,6 @@ class ImgProcessor(gobject.GObject):
         archivo abierto actualmente.
         """
         return self.__changed
+
+    def get_file_path(self):
+        return self.__file_path

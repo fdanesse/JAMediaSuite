@@ -16,10 +16,13 @@ class Canales(gtk.Window):
         gtk.Window.__init__(self)
 
         self.set_title("Canales")
-        self.set_resizable(True)
+        self.set_resizable(False)
         self.set_border_width(2)
         self.set_position(gtk.WIN_POS_CENTER)
         self.set_transient_for(top)
         self.__base_panel = BasePanel()
         self.add(self.__base_panel)
         self.show_all()
+
+    def set_file(self, file_path):
+        self.__base_panel.set_file(file_path)

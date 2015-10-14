@@ -3,6 +3,7 @@
 
 import sys
 import os
+import gobject
 import gtk
 from Interfaz.MenuPrincipal import MenuPrincipal
 from Processor.ImgProcessor import ImgProcessor
@@ -75,6 +76,8 @@ class JAMediaImagenes(gtk.Window):
         if not util:
             self.__utiles[text] = Canales(self)
             self.__utiles[text].connect("delete-event", self.__close_util)
+            gobject.idle_add(self.__utiles[text].set_file,
+                self.__processor.get_file_path())
 
     def __close_util(self, widget=False, senial=False):
         utiles = self.__utiles.items()
@@ -91,7 +94,7 @@ class JAMediaImagenes(gtk.Window):
 
     def __scale_full(self, pixbuf):
         """
-        Escala ocupando todo el espacio visible del widget donde debe dibukarse
+        Escala ocupando todo el espacio visible del widget donde debe dibujarse
         """
         rect = self.__visor_imagen.get_parent().get_allocation()
         src_width, src_height = pixbuf.get_width(), pixbuf.get_height()
