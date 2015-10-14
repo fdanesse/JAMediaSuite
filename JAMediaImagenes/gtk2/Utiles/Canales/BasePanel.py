@@ -72,9 +72,12 @@ class FrameCanal(gtk.Frame):
 
         self.set_border_width(4)
         self.set_label(text)
-        self.add(gtk.Image())
+        button = gtk.ToggleButton()
+        button.set_image(gtk.Image())
+        self.add(button)
         self.show_all()
 
     def open(self, processor):
+        image = self.get_child().get_image()
         pixbuf = processor.get_pixbuf(self.get_child(), self.get_label())
-        self.get_child().set_from_pixbuf(pixbuf)
+        image.set_from_pixbuf(pixbuf)
