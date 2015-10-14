@@ -3,18 +3,17 @@
 
 import gtk
 import gobject
-from ImgProcessor import ImgProcessor
 
 
 class BasePanel(gtk.Table):
 
-    def __init__(self):
+    def __init__(self, processor):
 
         gtk.Table.__init__(self, columns=4, rows=5, homogeneous=True)
 
         self.set_border_width(2)
 
-        self.__processor = ImgProcessor()
+        self.__processor = processor
 
         self.__visor_imagen = gtk.Image()
         self.__visor_imagen.set_size_request(320, 240)
@@ -28,17 +27,6 @@ class BasePanel(gtk.Table):
         self.attach_defaults(self.__grises, 0, 4, 4, 5)
 
         self.show_all()
-
-        #self.__processor.connect("update", self.__update_pixbuf)
-
-    #def __update_pixbuf(self, processor, pixbuf):
-    #    """
-    #    El procesador actualiza el pixbuf en la interfaz
-    #    """
-    #    pixbuf = processor.scale_full(self.__visor_imagen, pixbuf)
-    #    self.__visor_imagen.set_from_pixbuf(pixbuf)
-    #    self.__canales.open(processor)
-    #    self.__grises.open(processor)
 
     def set_file(self, filepath):
         self.__processor.open(filepath)

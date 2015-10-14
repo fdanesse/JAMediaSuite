@@ -23,6 +23,7 @@ class JAMediaImagenes(gtk.Window):
             "iconos", "JAMediaImagenes.svg"))
         self.set_resizable(True)
         self.set_border_width(2)
+        self.set_size_request(640, 480)
         self.set_position(gtk.WIN_POS_CENTER)
 
         self.__utiles = {}
@@ -45,9 +46,6 @@ class JAMediaImagenes(gtk.Window):
         self.add(__vbox_base)
         self.show_all()
 
-        self.resize(640, 480)
-
-        self.__processor.connect("update", self.__update_pixbuf)
         self.__menu.connect("open", self.__open_file)
         self.__menu.connect("close", self.__close_file)
         self.__menu.connect("open-util", self.__open_util)
@@ -74,7 +72,7 @@ class JAMediaImagenes(gtk.Window):
     def __open_util(self, menu, text):
         util = self.__utiles.get(text, False)
         if not util:
-            self.__utiles[text] = Canales(self)
+            self.__utiles[text] = Canales(self, self.__processor)
             self.__utiles[text].connect("delete-event", self.__close_util)
             gobject.idle_add(self.__utiles[text].set_file,
                 self.__processor.get_file_path())
@@ -86,38 +84,16 @@ class JAMediaImagenes(gtk.Window):
                 del(self.__utiles[util[0]])
 
     def __close_file(self, menu=False):
-        if self.__processor.has_changes():
-            print "FIXME: Abrir Dialogo pidiendo confirmación para guardar o guardar como", self.__close_file
+        #if self.__processor.has_changes():
+        #    print "FIXME: Abrir Dialogo pidiendo confirmación para guardar o guardar como", self.__close_file
         self.__processor.close_file()
         self.__menu.has_file(False, False)
+        self.__update_status_bar(False)
         #print "FIXME: Resetear Toolbars y StatusBars", self.__close_file
 
-    def __scale_full(self, pixbuf):
-        """
-        Escala ocupando todo el espacio visible del widget donde debe dibujarse
-        """
-        rect = self.__visor_imagen.get_parent().get_allocation()
-        src_width, src_height = pixbuf.get_width(), pixbuf.get_height()
-        scale = min(float(rect.width) / src_width,
-            float(rect.height) / src_height)
-        new_width = int(scale * src_width)
-        new_height = int(scale * src_height)
-        pixbuf = pixbuf.scale_simple(new_width,
-            new_height, gtk.gdk.INTERP_BILINEAR)
-        return pixbuf
-
-    def __update_pixbuf(self, processor, pixbuf, info):
-        """
-        Solo Actualiza lo que se ve.
-        """
-        #print "FIXME: agregar rotaciones y escalas, actualizar StatusBars", self.__update_pixbuf
-
-        if pixbuf:
-            pixbuf = self.__scale_full(pixbuf)
-
-        self.__visor_imagen.set_from_pixbuf(pixbuf)
+    def __update_status_bar(self, info):
         text = "Img: "
-        if pixbuf:
+        if info:
             text = "%s %s   Size: %s   Ext: %s   Mime: %s   Kb: %.2f" % (
                 text, info.get("path", ""), info.get("size", ""),
                 info.get("name", ""), info.get("mime_types", ""),
@@ -132,10 +108,14 @@ class JAMediaImagenes(gtk.Window):
             if os.path.exists(filepath):
                 if os.path.isfile(filepath):
                     self.__close_file()
-                    if self.__processor.open(filepath):
-                        acceso = os.access(filepath, os.W_OK)
-                        self.__menu.has_file(True, acceso)
-                        #print "FIXME: Actualizar Toolbars", self.__open_file
+                    info = self.__processor.open(filepath)
+                    pixbuf = self.__processor.get_pixbuf(
+                        self.__visor_imagen, "Original")
+                    self.__visor_imagen.set_from_pixbuf(pixbuf)
+                    acceso = os.access(filepath, os.W_OK)
+                    self.__menu.has_file(True, acceso)
+                    self.__update_status_bar(info)
+                    #print "FIXME: Actualizar Toolbars", self.__open_file
 
     def __salir(self, widget=None, senial=None):
         gtk.main_quit()
