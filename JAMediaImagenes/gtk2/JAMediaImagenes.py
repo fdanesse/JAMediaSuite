@@ -108,7 +108,7 @@ class JAMediaImagenes(gtk.Window):
                 if os.path.isfile(filepath):
                     self.__close_file()
                     info = self.__processor.open(filepath)
-                    pixbuf = self.__processor.get_pixbuf(
+                    pixbuf = self.__processor.get_pixbuf_channles(
                         self.__visor_imagen, "Original")
                     self.__visor_imagen.set_from_pixbuf(pixbuf)
                     acceso = os.access(filepath, os.W_OK)

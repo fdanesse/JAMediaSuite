@@ -32,26 +32,18 @@ class ImgProcessor(gobject.GObject):
         _dict["mb"] = os.path.getsize(self.__file_path)
         self.__file_info = _dict
 
-    def __get_color(self, array, color):
+    def __get_colors(self, array, color):
+        R, G, B = color
         pixels = numpy.copy(array)
         i0 = 0
         for x in pixels:
             i1 = 0
             for i in x:
-                if "Rojo" in color:
-                    pixels[i0, i1, 1] = 0
-                    pixels[i0, i1, 2] = 0
-                elif "Verde" in color:
+                if not R:
                     pixels[i0, i1, 0] = 0
-                    pixels[i0, i1, 2] = 0
-                elif "Azul" in color:
-                    pixels[i0, i1, 0] = 0
+                if not G:
                     pixels[i0, i1, 1] = 0
-                elif "Cian" in color:
-                    pixels[i0, i1, 0] = 0
-                elif "Magenta" in color:
-                    pixels[i0, i1, 1] = 0
-                elif "Amarillo" in color:
+                if not B:
                     pixels[i0, i1, 2] = 0
                 i1 += 1
             i0 += 1
@@ -160,62 +152,36 @@ class ImgProcessor(gobject.GObject):
         self.__set_file_info()
         return self.__file_info
 
-    def get_pixbuf(self, widget, text):
-        pixbuf = self.scale_full(widget, self.__pixbuf)
-        array = pixbuf.get_pixels_array()
-        if "Original" in text:
-            pass
-        elif "Rojo" in text or "Verde" in text or "Azul" in text or "Cian" in text or "Magenta" in text or "Amarillo" in text:
-            array = self.__get_color(array, text)
-            pixbuf = gtk.gdk.pixbuf_new_from_array(
-                array, gtk.gdk.COLORSPACE_RGB, 8)
-        elif "Lightness" in text:
-            array = self.__get_lightness(array)
-            pixbuf = gtk.gdk.pixbuf_new_from_array(
-                array, gtk.gdk.COLORSPACE_RGB, 8)
-        elif "Luminosity" in text:
-            array = self.__get_luminosity(array)
-            pixbuf = gtk.gdk.pixbuf_new_from_array(
-                array, gtk.gdk.COLORSPACE_RGB, 8)
-        elif "Average" in text:
-            array = self.__get_average(array)
-            pixbuf = gtk.gdk.pixbuf_new_from_array(
-                array, gtk.gdk.COLORSPACE_RGB, 8)
-        elif "Percentual" in text:
-            array = self.__get_percentual(array)
-            pixbuf = gtk.gdk.pixbuf_new_from_array(
-                array, gtk.gdk.COLORSPACE_RGB, 8)
-        return pixbuf
-
     def get_pixbuf_channles(self, widget, canales):
-        print canales
         pixbuf = self.scale_full(widget, self.__pixbuf)
         array = pixbuf.get_pixels_array()
-        if "Original" in text:
+        if "Original" in canales:
             pass
-        elif "Rojo" in text or "Verde" in text or "Azul" in text:
-            R = "Rojo" in text
-            G = "Verde" in text
-            B = "Azul" in text
-            array = self.__get_color(array, (R, G, B))
+        elif "Rojo" in canales or "Verde" in canales or "Azul" in canales:
+            R = "Rojo" in canales
+            G = "Verde" in canales
+            B = "Azul" in canales
+            array = self.__get_colors(array, (R, G, B))
             pixbuf = gtk.gdk.pixbuf_new_from_array(
                 array, gtk.gdk.COLORSPACE_RGB, 8)
-        elif "Lightness" in text:
+
+        elif "Lightness" in canales:
             array = self.__get_lightness(array)
             pixbuf = gtk.gdk.pixbuf_new_from_array(
                 array, gtk.gdk.COLORSPACE_RGB, 8)
-        elif "Luminosity" in text:
+        elif "Luminosity" in canales:
             array = self.__get_luminosity(array)
             pixbuf = gtk.gdk.pixbuf_new_from_array(
                 array, gtk.gdk.COLORSPACE_RGB, 8)
-        elif "Average" in text:
+        elif "Average" in canales:
             array = self.__get_average(array)
             pixbuf = gtk.gdk.pixbuf_new_from_array(
                 array, gtk.gdk.COLORSPACE_RGB, 8)
-        elif "Percentual" in text:
+        elif "Percentual" in canales:
             array = self.__get_percentual(array)
             pixbuf = gtk.gdk.pixbuf_new_from_array(
                 array, gtk.gdk.COLORSPACE_RGB, 8)
+
         return pixbuf
 
     def get_file_path(self):
