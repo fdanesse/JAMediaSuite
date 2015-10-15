@@ -153,7 +153,10 @@ class ImgProcessor(gobject.GObject):
         return self.__file_info
 
     def get_pixbuf_channles(self, widget, canales):
-        pixbuf = self.scale_full(widget, self.__pixbuf)
+        if widget:
+            pixbuf = self.scale_full(widget, self.__pixbuf.copy())
+        else:
+            pixbuf = self.__pixbuf.copy()
         array = pixbuf.get_pixels_array()
         if "Original" in canales:
             pass
@@ -201,3 +204,9 @@ class ImgProcessor(gobject.GObject):
         pixbuf = pixbuf.scale_simple(new_width,
             new_height, gtk.gdk.INTERP_BILINEAR)
         return pixbuf
+
+    def save_png(self, path, canales):
+        pixbuf = self.get_pixbuf_channles(False, canales)
+        if not path.split(".")[-1] == "png":
+            path = "%s%s" % (path, ".png")
+        pixbuf.save(path, "png")

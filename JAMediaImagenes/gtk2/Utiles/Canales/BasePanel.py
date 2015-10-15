@@ -30,6 +30,15 @@ class BasePanel(gtk.Table):
         self.__grises.connect("toggled", self.__toggled_channel)
 
     def __toggled_channel(self, contenedor_canal, canal, active):
+        self.__canales.disconnect_by_func(self.__toggled_channel)
+        self.__grises.disconnect_by_func(self.__toggled_channel)
+        dialog = DialogoProcessor(self.get_toplevel(),
+            self.__make_image, contenedor_canal, canal, active)
+        dialog.run()
+        self.__canales.connect("toggled", self.__toggled_channel)
+        self.__grises.connect("toggled", self.__toggled_channel)
+
+    def __make_image(self, contenedor_canal, canal, active):
         if active:
             if "Colores" in contenedor_canal.get_label():
                 if "Original" in canal:
@@ -70,6 +79,12 @@ class BasePanel(gtk.Table):
     def run(self):
         self.__canales.open(self.__processor)
         self.__grises.open(self.__processor)
+
+    def get_canales(self):
+        canales = self.__canales.get_activos()
+        for canal in self.__grises.get_activos():
+            canales.append(canal)
+        return canales
 
 
 class ContenedorCanales(gtk.Frame):
@@ -179,3 +194,33 @@ class FrameCanal(gtk.Frame):
 
     def is_activo(self):
         return self.get_child().get_active()
+
+
+class DialogoProcessor(gtk.Dialog):
+
+    def __init__(self, parent, func, contenedor_canal, canal, active):
+
+        self.__func = func
+        self.__contenedor_canal = contenedor_canal
+        self.__canal = canal
+        self.__active = active
+
+        gtk.Dialog.__init__(self, parent=parent)
+
+        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#ff0000"))
+        self.set_decorated(False)
+        self.set_border_width(15)
+
+        label = gtk.Label("Creando Imagen...")
+        label.show()
+
+        self.vbox.pack_start(label, True, True, 5)
+        self.connect("realize", self.__do_realize)
+
+    def __do_realize(self, widget):
+        gobject.timeout_add(100, self.__run_load_imagen)
+
+    def __run_load_imagen(self):
+        self.__func(self.__contenedor_canal, self.__canal, self.__active)
+        self.destroy()
+        return False
