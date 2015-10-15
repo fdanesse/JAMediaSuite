@@ -88,7 +88,11 @@ class JAMediaImagenes(gtk.Window):
         self.__processor.close_file()
         self.__menu.has_file(False, False)
         self.__update_status_bar(False)
+        self.__visor_imagen.set_from_pixbuf(None)
         #print "FIXME: Resetear Toolbars y StatusBars", self.__close_file
+        utiles = self.__utiles.items()
+        for util in utiles:
+            util[1].run()
 
     def __update_status_bar(self, info):
         text = "Img: "
@@ -115,6 +119,10 @@ class JAMediaImagenes(gtk.Window):
                     self.__menu.has_file(True, acceso)
                     self.__update_status_bar(info)
                     #print "FIXME: Actualizar Toolbars", self.__open_file
+
+                    utiles = self.__utiles.items()
+                    for util in utiles:
+                        util[1].run()
 
     def __salir(self, widget=None, senial=None):
         gtk.main_quit()

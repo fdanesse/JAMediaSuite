@@ -153,6 +153,8 @@ class ImgProcessor(gobject.GObject):
         return self.__file_info
 
     def get_pixbuf_channles(self, widget, canales):
+        if not self.__pixbuf:
+            return None
         if widget:
             pixbuf = self.scale_full(widget, self.__pixbuf.copy())
         else:

@@ -34,18 +34,22 @@ class Canales(gtk.Window):
         self.show_all()
 
         self.__menu.connect("save", self.__save_file)
+        self.__base_panel.connect("has_pixbuf", self.__has_pixbuf)
 
-    def run(self):
-        self.__base_panel.run()
+    def __has_pixbuf(self, base_panel, has_pixbuf):
+        self.__menu.has_pixbuf(has_pixbuf)
 
     def __save_file(self, widget):
+        path = self.__processor.get_file_path()
+        if not path:
+            return
+        path = os.path.dirname(path)
         dialog = gtk.FileChooserDialog(parent=self.get_toplevel(),
             action=gtk.FILE_CHOOSER_ACTION_SAVE,
             title="Guardar Archivo",
             buttons=("Guardar", gtk.RESPONSE_ACCEPT,
             "Cancelar", gtk.RESPONSE_CANCEL))
         dialog.set_border_width(15)
-        path = os.path.dirname(self.__processor.get_file_path())
         dialog.set_current_folder_uri("file://%s" % path)
         dialog.set_select_multiple(False)
         filtro = gtk.FileFilter()
@@ -68,6 +72,9 @@ class Canales(gtk.Window):
                 self.__base_panel.get_canales())
             dial.run()
         dialog.destroy()
+
+    def run(self):
+        self.__base_panel.run()
 
 
 class DialogoGuardando(gtk.Dialog):

@@ -33,6 +33,9 @@ class Menu(gtk.MenuBar):
     def __emit_save_file(self, submenu):
         self.emit("save")
 
+    def has_pixbuf(self, has_pixbuf):
+        self.__marchivo.has_pixbuf(has_pixbuf)
+
 
 class MenuArchivo(gtk.Menu):
 
@@ -44,13 +47,16 @@ class MenuArchivo(gtk.Menu):
 
         gtk.Menu.__init__(self)
 
-        guardar_como = gtk.MenuItem("Guardar Como...")
-        self.append(guardar_como)
+        self.__guardar_como = gtk.MenuItem("Guardar Como...")
+        self.append(self.__guardar_como)
         self.show_all()
-        guardar_como.connect("activate", self.__emit_save_file)
+        self.__guardar_como.connect("activate", self.__emit_save_file)
 
     def __emit_save_file(self, widget):
         self.emit("save")
+
+    def has_pixbuf(self, has_pixbuf):
+        self.__guardar_como.set_sensitive(has_pixbuf)
 
 
 class MenuAyuda(gtk.Menu):

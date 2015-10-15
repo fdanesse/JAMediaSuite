@@ -7,6 +7,10 @@ import gobject
 
 class BasePanel(gtk.Table):
 
+    __gsignals__ = {
+    "has_pixbuf": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))}
+
     def __init__(self, processor):
 
         gtk.Table.__init__(self, columns=4, rows=4, homogeneous=True)
@@ -61,24 +65,30 @@ class BasePanel(gtk.Table):
                 self.__grises.desactivar_distintos(canal)
         else:
             # Si no hay ninguna activa, activar la original
-            canales = self.__canales.get_activos()
-            for canal in self.__grises.get_activos():
-                canales.append(canal)
+            canales = self.get_canales()
             if not len(canales):
                 self.__canales.activar("Original")
-        canales = self.__canales.get_activos()
-        for canal in self.__grises.get_activos():
-            canales.append(canal)
+        canales = self.get_canales()
         self.__view(canales)
 
     def __view(self, canales):
         pixbuf = self.__processor.get_pixbuf_channles(
             self.__visor_imagen, canales)
+        self.emit("has_pixbuf", bool(pixbuf))
         self.__visor_imagen.set_from_pixbuf(pixbuf)
 
     def run(self):
+        self.__canales.disconnect_by_func(self.__toggled_channel)
+        self.__grises.disconnect_by_func(self.__toggled_channel)
         self.__canales.open(self.__processor)
         self.__grises.open(self.__processor)
+        self.__canales.desactivar_all()
+        self.__grises.desactivar_all()
+        self.__canales.connect("toggled", self.__toggled_channel)
+        self.__grises.connect("toggled", self.__toggled_channel)
+        canales = self.get_canales()
+        if not len(canales):
+            self.__canales.activar("Original")
 
     def get_canales(self):
         canales = self.__canales.get_activos()
@@ -180,9 +190,9 @@ class FrameCanal(gtk.Frame):
         pixbuf = processor.get_pixbuf_channles(
             self.get_child(), [self.get_label().replace(":", "").strip()])
         image.set_from_pixbuf(pixbuf)
-        if "Original" in self.get_label():
-            if not self.get_child().get_active():
-                self.get_child().set_active(True)
+        #if "Original" in self.get_label():
+        #    if not self.get_child().get_active():
+        #        self.get_child().set_active(True)
 
     def desactivar(self):
         if self.get_child().get_active():
