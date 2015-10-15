@@ -25,5 +25,5 @@ class Canales(gtk.Window):
         self.add(self.__base_panel)
         self.show_all()
 
-    def set_file(self, file_path):
-        self.__base_panel.set_file(file_path)
+    def run(self):
+        self.__base_panel.run()

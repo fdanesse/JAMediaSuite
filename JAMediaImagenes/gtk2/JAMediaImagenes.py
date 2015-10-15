@@ -74,8 +74,7 @@ class JAMediaImagenes(gtk.Window):
         if not util:
             self.__utiles[text] = Canales(self, self.__processor)
             self.__utiles[text].connect("delete-event", self.__close_util)
-            gobject.idle_add(self.__utiles[text].set_file,
-                self.__processor.get_file_path())
+            gobject.idle_add(self.__utiles[text].run)
 
     def __close_util(self, widget=False, senial=False):
         utiles = self.__utiles.items()

@@ -187,6 +187,37 @@ class ImgProcessor(gobject.GObject):
                 array, gtk.gdk.COLORSPACE_RGB, 8)
         return pixbuf
 
+    def get_pixbuf_channles(self, widget, canales):
+        print canales
+        pixbuf = self.scale_full(widget, self.__pixbuf)
+        array = pixbuf.get_pixels_array()
+        if "Original" in text:
+            pass
+        elif "Rojo" in text or "Verde" in text or "Azul" in text:
+            R = "Rojo" in text
+            G = "Verde" in text
+            B = "Azul" in text
+            array = self.__get_color(array, (R, G, B))
+            pixbuf = gtk.gdk.pixbuf_new_from_array(
+                array, gtk.gdk.COLORSPACE_RGB, 8)
+        elif "Lightness" in text:
+            array = self.__get_lightness(array)
+            pixbuf = gtk.gdk.pixbuf_new_from_array(
+                array, gtk.gdk.COLORSPACE_RGB, 8)
+        elif "Luminosity" in text:
+            array = self.__get_luminosity(array)
+            pixbuf = gtk.gdk.pixbuf_new_from_array(
+                array, gtk.gdk.COLORSPACE_RGB, 8)
+        elif "Average" in text:
+            array = self.__get_average(array)
+            pixbuf = gtk.gdk.pixbuf_new_from_array(
+                array, gtk.gdk.COLORSPACE_RGB, 8)
+        elif "Percentual" in text:
+            array = self.__get_percentual(array)
+            pixbuf = gtk.gdk.pixbuf_new_from_array(
+                array, gtk.gdk.COLORSPACE_RGB, 8)
+        return pixbuf
+
     def get_file_path(self):
         return self.__file_path
 
