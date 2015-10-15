@@ -9,7 +9,7 @@ class BasePanel(gtk.Table):
 
     def __init__(self, processor):
 
-        gtk.Table.__init__(self, columns=4, rows=5, homogeneous=True)
+        gtk.Table.__init__(self, columns=4, rows=4, homogeneous=True)
 
         self.set_border_width(2)
 
@@ -20,9 +20,9 @@ class BasePanel(gtk.Table):
         self.__canales = ContenedorCanales(" Colores: ")
         self.__grises = ContenedorCanales(" Grises: ")
 
-        self.attach_defaults(self.__visor_imagen, 0, 4, 0, 3)
-        self.attach_defaults(self.__canales, 0, 4, 3, 4)
-        self.attach_defaults(self.__grises, 0, 4, 4, 5)
+        self.attach_defaults(self.__visor_imagen, 0, 4, 0, 2)
+        self.attach_defaults(self.__canales, 0, 4, 2, 3)
+        self.attach_defaults(self.__grises, 0, 4, 3, 4)
 
         self.show_all()
 
