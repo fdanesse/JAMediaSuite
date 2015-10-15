@@ -50,10 +50,23 @@ class JAMediaImagenes(gtk.Window):
         self.__menu.connect("close", self.__close_file)
         self.__menu.connect("open-util", self.__open_util)
         self.connect("delete-event", self.__salir)
+        #self.__visor_imagen.connect("size-allocate", self.__size_allocate)
         #self.connect("key-press-event", self.__key_press_event)
 
         print "JAMediaImagenes process:", os.getpid()
         self.__close_file(False)
+
+    #def __size_allocate(self, window, event):
+    #    self.__visor_imagen.disconnect_by_func(self.__size_allocate)
+    #    gobject.idle_add(self.__reload)
+    #    return True
+
+    #def __reload(self):
+    #    pixbuf = self.__processor.get_pixbuf_channles(
+    #        self.__visor_imagen, "Original")
+    #    self.__visor_imagen.set_from_pixbuf(pixbuf)
+    #    self.__visor_imagen.connect("size-allocate", self.__size_allocate)
+    #    return False
 
     #def __key_press_event(self, widget, event):
     #    key = gtk.gdk.keyval_name(event.keyval)
