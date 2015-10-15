@@ -95,7 +95,11 @@ class VTETerminal(Vte.Terminal):
             "", 0, None, None)
         self.child_focus(True)
 
-    def do_child_exited(self):
+    def do_child_exited(self, ret=0):
+        """
+        Cuando se hace exit en la terminal, esta se resetea.
+        FIXME: ret es un parámetro nuevo de VTE.
+        """
         self.emit("reset")
 
     def ejecute_script(self, dirpath, interprete, path_script, param):

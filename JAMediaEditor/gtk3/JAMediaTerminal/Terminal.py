@@ -362,9 +362,10 @@ class VTETerminal(Vte.Terminal):
         """
         self.set_font(fuente)
 
-    def do_child_exited(self):
+    def do_child_exited(self, ret=0):
         """
         Cuando se hace exit en la terminal, esta se resetea.
+        FIXME: ret es un parámetro nuevo de VTE.
         """
         self.__reset()
         self.emit("reset")
