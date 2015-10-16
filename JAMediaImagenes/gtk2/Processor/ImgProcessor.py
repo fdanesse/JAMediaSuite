@@ -6,6 +6,72 @@ import gobject
 import gtk
 import numpy
 
+
+def calc_luminosity(pixel):
+    """
+    The graylevel will be calculated as
+        Luminosity = 0.21 × R + 0.72 × G + 0.07 × B
+    R = 0.2126
+    G = 0.7152
+    B = 0.0722
+    """
+    luminosity = int(0.21 * float(pixel[0]) + 0.72 * float(
+        pixel[1]) + 0.07 * float(pixel[2]))
+    pixel[:] = luminosity
+
+
+def calc_percentual(pixel):
+    """
+    The graylevel will be calculated as
+        Percentual = R * 0.3 + G * 0.59 + B * 0.11
+    """
+    percentual = int(float(pixel[0]) * 0.3 + float(
+        pixel[1]) * 0.59 + float(pixel[2]) * 0.11)
+    pixel[:] = percentual
+
+
+def calc_average(pixel):
+    """
+    The graylevel will be calculated as Average Brightness = (R + G + B) / 3
+    """
+    average = numpy.mean(pixel)
+    pixel[:] = int(average)
+
+
+def calc_lightness(pixel):
+    """
+    The graylevel will be calculated as
+        Lightness = 1/2 × (max(R,G,B) + min(R,G,B))
+    La luminosidad se define como el promedio entre el mayor y el menor
+    componente de color RGB. Esta definición pone los colores primarios y
+    secundarios en un plano que pasa a mitad de camino entre el blanco y
+    el negro.
+    https://es.wikipedia.org/wiki/Modelo_de_color_HSL
+    """
+    #numpy.argmax([pixel[0], pixel[1], pixel[2]])
+    ma = max([pixel[0], pixel[1], pixel[2]])
+    #numpy.argmin([pixel[0], pixel[1], pixel[2]])
+    mi = min([pixel[0], pixel[1], pixel[2]])
+    lightness = int(1.0 / 2.0 * (float(ma) + float(mi)))
+    pixel[:] = int(lightness)
+
+
+def map_luminosity(pixels):
+    map(calc_luminosity, pixels[:])
+
+
+def map_percentual(pixels):
+    map(calc_percentual, pixels[:])
+
+
+def map_average(pixels):
+    map(calc_average, pixels[:])
+
+
+def map_lightness(pixels):
+    map(calc_lightness, pixels[:])
+
+
 #Escalar = pixels = pixels[::2,::2,:] (Recortar con pasos)
 #Recortar = pixels = pixels[50:-50, 200:, :]
 
@@ -47,103 +113,23 @@ class ImgProcessor(gobject.GObject):
         return pixels
 
     def __get_lightness(self, array):
-        """
-        The graylevel will be calculated as Lightness = 1/2 × (max(R,G,B) + min(R,G,B))
-        La luminosidad se define como el promedio entre el mayor y el menor
-        componente de color RGB. Esta definición pone los colores primarios y
-        secundarios en un plano que pasa a mitad de camino entre el blanco y el negro.
-        https://es.wikipedia.org/wiki/Modelo_de_color_HSL
-        """
         pixels = numpy.copy(array)
-        i0 = 0
-        for x in pixels:
-            i1 = 0
-            for i in x:
-                ma = pixels[i0, i1, numpy.argmax(pixels[i0, i1])]
-                mi = pixels[i0, i1, numpy.argmin(pixels[i0, i1])]
-                lightness = 1.0 / 2.0 * (float(ma) + float(mi))
-                if lightness < 0:
-                    lightness = 0
-                elif lightness > 255:
-                    lightness = 255
-                pixels[i0, i1, 0] = int(lightness)
-                pixels[i0, i1, 1] = int(lightness)
-                pixels[i0, i1, 2] = int(lightness)
-                i1 += 1
-            i0 += 1
+        map(map_lightness, pixels)
         return pixels
 
-    def __Calc_luminosity(self, pixel):
-        #R = 0.2126
-        #G = 0.7152
-        #B = 0.0722
-        luminosity = int(0.21 * float(pixel[0]) + 0.72 * float(pixel[1]) + 0.07 * float(pixel[2]))
-        pixel[:] = luminosity
-
-    def __map_luminosity(self, pixels):
-        map(self.__Calc_luminosity, pixels[:])
-
     def __get_luminosity(self, array):
-        """
-        The graylevel will be calculated as Luminosity = 0.21 × R + 0.72 × G + 0.07 × B
-        """
         pixels = numpy.copy(array)
-        map(self.__map_luminosity, pixels)
-        '''
-        i0 = 0
-        for x in pixels:
-            i1 = 0
-            for i in x:
-                #R = 0.2126
-                #G = 0.7152
-                #B = 0.0722
-                luminosity = 0.21 * pixels[i0, i1, 0] + 0.72 * \
-                    pixels[i0, i1, 1] + 0.07 * pixels[i0, i1, 2]
-                pixels[i0, i1, 0] = int(luminosity)
-                pixels[i0, i1, 1] = int(luminosity)
-                pixels[i0, i1, 2] = int(luminosity)
-                i1 += 1
-            i0 += 1
-        '''
+        map(map_luminosity, pixels)
         return pixels
 
     def __get_average(self, array):
-        """
-        The graylevel will be calculated as Average Brightness = (R + G + B) / 3
-        """
         pixels = numpy.copy(array)
-        i0 = 0
-        for x in pixels:
-            i1 = 0
-            for i in x:
-                average = numpy.mean(pixels[i0, i1])
-                pixels[i0, i1, 0] = int(average)
-                pixels[i0, i1, 1] = int(average)
-                pixels[i0, i1, 2] = int(average)
-                i1 += 1
-            i0 += 1
+        map(map_average, pixels)
         return pixels
 
     def __get_percentual(self, array):
-        """
-        The graylevel will be calculated as Percentual = R * 0.3 + G * 0.59 + B * 0.11
-        """
         pixels = numpy.copy(array)
-        i0 = 0
-        for x in pixels:
-            i1 = 0
-            for i in x:
-                percentual = float(pixels[i0, i1, 0]) * 0.3 + float(
-                    pixels[i0, i1, 1]) * 0.59 + float(pixels[i0, i1, 2]) * 0.11
-                if percentual < 0:
-                    percentual = 0
-                elif percentual > 255:
-                    percentual = 255
-                pixels[i0, i1, 0] = int(percentual)
-                pixels[i0, i1, 1] = int(percentual)
-                pixels[i0, i1, 2] = int(percentual)
-                i1 += 1
-            i0 += 1
+        map(map_percentual, pixels)
         return pixels
 
     def close_file(self):
