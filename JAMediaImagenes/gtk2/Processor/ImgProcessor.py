@@ -6,6 +6,9 @@ import gobject
 import gtk
 import numpy
 
+#Escalar = pixels = pixels[::2,::2,:] (Recortar con pasos)
+#Recortar = pixels = pixels[50:-50, 200:, :]
+
 
 class ImgProcessor(gobject.GObject):
 
@@ -35,23 +38,21 @@ class ImgProcessor(gobject.GObject):
     def __get_colors(self, array, color):
         R, G, B = color
         pixels = numpy.copy(array)
-        i0 = 0
-        for x in pixels:
-            i1 = 0
-            for i in x:
-                if not R:
-                    pixels[i0, i1, 0] = 0
-                if not G:
-                    pixels[i0, i1, 1] = 0
-                if not B:
-                    pixels[i0, i1, 2] = 0
-                i1 += 1
-            i0 += 1
+        if not R:
+            pixels[:, :, 0] = 0
+        if not G:
+            pixels[:, :, 1] = 0
+        if not B:
+            pixels[:, :, 2] = 0
         return pixels
 
     def __get_lightness(self, array):
         """
         The graylevel will be calculated as Lightness = 1/2 × (max(R,G,B) + min(R,G,B))
+        La luminosidad se define como el promedio entre el mayor y el menor
+        componente de color RGB. Esta definición pone los colores primarios y
+        secundarios en un plano que pasa a mitad de camino entre el blanco y el negro.
+        https://es.wikipedia.org/wiki/Modelo_de_color_HSL
         """
         pixels = numpy.copy(array)
         i0 = 0
@@ -72,11 +73,23 @@ class ImgProcessor(gobject.GObject):
             i0 += 1
         return pixels
 
+    def __Calc_luminosity(self, pixel):
+        #R = 0.2126
+        #G = 0.7152
+        #B = 0.0722
+        luminosity = int(0.21 * float(pixel[0]) + 0.72 * float(pixel[1]) + 0.07 * float(pixel[2]))
+        pixel[:] = luminosity
+
+    def __map_luminosity(self, pixels):
+        map(self.__Calc_luminosity, pixels[:])
+
     def __get_luminosity(self, array):
         """
         The graylevel will be calculated as Luminosity = 0.21 × R + 0.72 × G + 0.07 × B
         """
         pixels = numpy.copy(array)
+        map(self.__map_luminosity, pixels)
+        '''
         i0 = 0
         for x in pixels:
             i1 = 0
@@ -86,15 +99,12 @@ class ImgProcessor(gobject.GObject):
                 #B = 0.0722
                 luminosity = 0.21 * pixels[i0, i1, 0] + 0.72 * \
                     pixels[i0, i1, 1] + 0.07 * pixels[i0, i1, 2]
-                if luminosity < 0:
-                    luminosity = 0
-                elif luminosity > 255:
-                    luminosity = 255
                 pixels[i0, i1, 0] = int(luminosity)
                 pixels[i0, i1, 1] = int(luminosity)
                 pixels[i0, i1, 2] = int(luminosity)
                 i1 += 1
             i0 += 1
+        '''
         return pixels
 
     def __get_average(self, array):

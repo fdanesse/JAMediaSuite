@@ -95,6 +95,7 @@ class MenuArchivo(gtk.Menu):
         self.emit("close")
 
     def __open_file(self, widget):
+        #FIXME: Agregar preview para imagen seleccionada
         dialog = gtk.FileChooserDialog(parent=self.get_toplevel(),
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
             title="Abrir Archivo",
@@ -135,6 +136,7 @@ class MenuUtiles(gtk.Menu):
 
         self.__canales = gtk.MenuItem("Canales...")
         self.append(self.__canales)
+        #FIXME: Agregar Cerrar Todos
 
         self.show_all()
 

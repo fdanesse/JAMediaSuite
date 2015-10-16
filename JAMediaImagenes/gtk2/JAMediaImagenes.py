@@ -6,6 +6,7 @@ import os
 import gobject
 import gtk
 from Interfaz.MenuPrincipal import MenuPrincipal
+from Interfaz.ToolbarPrincipal import ToolbarPrincipal
 from Processor.ImgProcessor import ImgProcessor
 from Utiles.Canales.Canales import Canales
 
@@ -29,9 +30,10 @@ class JAMediaImagenes(gtk.Window):
         self.__utiles = {}
         self.__processor = ImgProcessor()
 
-        __vbox_base = gtk.VBox()
+        vbox_base = gtk.VBox()
 
         self.__menu = MenuPrincipal()
+        self.__toolbar = ToolbarPrincipal()
         self.__visor_imagen = gtk.Image()
         self.__status_bar = gtk.Statusbar()
 
@@ -39,11 +41,12 @@ class JAMediaImagenes(gtk.Window):
         scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         scroll.add_with_viewport(self.__visor_imagen)
 
-        __vbox_base.pack_start(self.__menu, False, False)
-        __vbox_base.pack_start(scroll, True, True, 0)
-        __vbox_base.pack_start(self.__status_bar, False, False)
+        vbox_base.pack_start(self.__menu, False, False)
+        vbox_base.pack_start(self.__toolbar, False, False)
+        vbox_base.pack_start(scroll, True, True, 0)
+        vbox_base.pack_start(self.__status_bar, False, False)
 
-        self.add(__vbox_base)
+        self.add(vbox_base)
         self.show_all()
 
         self.__menu.connect("open", self.__open_file)
