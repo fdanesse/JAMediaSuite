@@ -53,6 +53,7 @@ class JAMediaImagenes(gtk.Window):
         self.__menu.connect("close", self.__close_file)
         self.__menu.connect("open-util", self.__open_util)
         self.connect("delete-event", self.__salir)
+        self.__toolbar.connect("accion", self.__action_toolbar)
         #self.__visor_imagen.connect("size-allocate", self.__size_allocate)
         #self.connect("key-press-event", self.__key_press_event)
 
@@ -85,6 +86,9 @@ class JAMediaImagenes(gtk.Window):
     #        pass # zoom out
     #    return False
 
+    def __action_toolbar(self, toolbar, accion):
+        print accion
+
     def __open_util(self, menu, text):
         util = self.__utiles.get(text, False)
         if not util:
@@ -103,6 +107,7 @@ class JAMediaImagenes(gtk.Window):
         #    print "FIXME: Abrir Dialogo pidiendo confirmación para guardar o guardar como", self.__close_file
         self.__processor.close_file()
         self.__menu.has_file(False, False)
+        self.__toolbar.has_file(False, False)
         self.__update_status_bar(False)
         self.__visor_imagen.set_from_pixbuf(None)
         #print "FIXME: Resetear Toolbars y StatusBars", self.__close_file
@@ -128,14 +133,14 @@ class JAMediaImagenes(gtk.Window):
                 if os.path.isfile(filepath):
                     self.__close_file()
                     info = self.__processor.open(filepath)
-                    pixbuf = self.__processor.get_pixbuf_channles(
-                        self.__visor_imagen, "Original")
-                    self.__visor_imagen.set_from_pixbuf(pixbuf)
                     acceso = os.access(filepath, os.W_OK)
                     self.__menu.has_file(True, acceso)
                     self.__update_status_bar(info)
-                    #print "FIXME: Actualizar Toolbars", self.__open_file
-
+                    self.__toolbar.has_file(True, acceso,
+                        os.path.dirname(filepath))
+                    pixbuf = self.__processor.get_pixbuf_channles(
+                        self.__visor_imagen, "Original")
+                    self.__visor_imagen.set_from_pixbuf(pixbuf)
                     utiles = self.__utiles.items()
                     for util in utiles:
                         util[1].run()
