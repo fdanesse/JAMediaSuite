@@ -50,16 +50,15 @@ class JAMediaImagenes(gtk.Window):
         self.add(vbox_base)
         self.show_all()
 
-        self.__menu.connect("open", self.__open_file)
-        self.__menu.connect("close", self.__close_file)
+        self.__menu.connect("accion", self.__accion_menu)
         self.__menu.connect("open-util", self.__open_util)
-        self.connect("delete-event", self.__salir)
         self.__toolbar.connect("accion", self.__action_toolbar)
+        self.connect("delete-event", self.__salir)
         #self.__visor_imagen.connect("size-allocate", self.__size_allocate)
         #self.connect("key-press-event", self.__key_press_event)
 
         print "JAMediaImagenes process:", os.getpid()
-        self.__close_file(False)
+        self.__close_file()
 
     #def __size_allocate(self, window, event):
     #    self.__visor_imagen.disconnect_by_func(self.__size_allocate)
@@ -87,8 +86,10 @@ class JAMediaImagenes(gtk.Window):
     #        pass # zoom out
     #    return False
 
-    def __action_toolbar(self, toolbar, accion):
-        if "open" in accion:
+    def __accion_menu(self, menu, accion):
+        if accion == "open":
+        #if self.__processor.has_changes():
+        #    print "FIXME: Abrir Dialogo pidiendo confirmación para guardar o guardar como", self.__close_file
             dir_path = False
             file_path = self.__processor.get_file_path()
             if file_path:
@@ -98,8 +99,25 @@ class JAMediaImagenes(gtk.Window):
             if run == gtk.RESPONSE_ACCEPT:
                 filepath = os.path.realpath(dialog.get_filename())
                 self.__open_file(False, filepath)
-                dir_path = os.path.dirname(filepath)
-                self.__menu.set_dir_path(dir_path)
+            dialog.destroy()
+        elif accion == "close":
+            self.__close_file()
+        else:
+            print "Accion en Menu:", accion
+
+    def __action_toolbar(self, toolbar, accion):
+        if "open" in accion:
+        #if self.__processor.has_changes():
+        #    print "FIXME: Abrir Dialogo pidiendo confirmación para guardar o guardar como", self.__close_file
+            dir_path = False
+            file_path = self.__processor.get_file_path()
+            if file_path:
+                dir_path = os.path.dirname(self.__processor.get_file_path())
+            dialog = OpenDialog(parent=self.get_toplevel(), dir_path=dir_path)
+            run = dialog.run()
+            if run == gtk.RESPONSE_ACCEPT:
+                filepath = os.path.realpath(dialog.get_filename())
+                self.__open_file(False, filepath)
             dialog.destroy()
         else:
             print accion
@@ -117,15 +135,12 @@ class JAMediaImagenes(gtk.Window):
             if widget in util:
                 del(self.__utiles[util[0]])
 
-    def __close_file(self, menu=False):
-        #if self.__processor.has_changes():
-        #    print "FIXME: Abrir Dialogo pidiendo confirmación para guardar o guardar como", self.__close_file
+    def __close_file(self):
         self.__processor.close_file()
         self.__menu.has_file(False, False)
         self.__toolbar.has_file(False, False)
         self.__update_status_bar(False)
         self.__visor_imagen.set_from_pixbuf(None)
-        #print "FIXME: Resetear Toolbars y StatusBars", self.__close_file
         utiles = self.__utiles.items()
         for util in utiles:
             util[1].run()
@@ -143,22 +158,19 @@ class JAMediaImagenes(gtk.Window):
         """
         Cuando se abre un nuevo archivo.
         """
-        if filepath:
-            if os.path.exists(filepath):
-                if os.path.isfile(filepath):
-                    self.__close_file()
-                    info = self.__processor.open(filepath)
-                    acceso = os.access(filepath, os.W_OK)
-                    self.__menu.has_file(True, acceso)
-                    self.__update_status_bar(info)
-                    self.__toolbar.has_file(True, acceso,
-                        os.path.dirname(filepath))
-                    pixbuf = self.__processor.get_pixbuf_channles(
-                        self.__visor_imagen, "Original")
-                    self.__visor_imagen.set_from_pixbuf(pixbuf)
-                    utiles = self.__utiles.items()
-                    for util in utiles:
-                        util[1].run()
+        self.__close_file()
+        info = self.__processor.open(filepath)
+        acceso = os.access(filepath, os.W_OK)
+        self.__menu.has_file(True, acceso)
+        self.__update_status_bar(info)
+        self.__toolbar.has_file(True, acceso,
+            os.path.dirname(filepath))
+        pixbuf = self.__processor.get_pixbuf_channles(
+            self.__visor_imagen, "Original")
+        self.__visor_imagen.set_from_pixbuf(pixbuf)
+        utiles = self.__utiles.items()
+        for util in utiles:
+            util[1].run()
 
     def __salir(self, widget=None, senial=None):
         gtk.main_quit()

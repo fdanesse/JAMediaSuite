@@ -11,10 +11,8 @@ from Dialogos import OpenDialog
 class MenuPrincipal(gtk.MenuBar):
 
     __gsignals__ = {
-    "open": (gobject.SIGNAL_RUN_LAST,
+    "accion": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "close": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, []),
     "open-util": (gobject.SIGNAL_RUN_LAST,
         gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
@@ -39,35 +37,25 @@ class MenuPrincipal(gtk.MenuBar):
 
         self.show_all()
 
-        self.__marchivo.connect("open", self.__emit_open_file)
-        self.__marchivo.connect("close", self.__emit_close_file)
-
+        self.__marchivo.connect("accion", self.__emit_accion_archivo)
         self.__utiles.connect("open-util", self.__emit_util)
 
     def __emit_util(self, menu, text):
         self.emit("open-util", text)
 
-    def __emit_close_file(self, submenu):
-        self.emit("close")
-
-    def __emit_open_file(self, submenu, filepath):
-        self.emit("open", filepath)
+    def __emit_accion_archivo(self, submenu, accion):
+        self.emit("accion", accion)
 
     def has_file(self, hasfile, writable):
         self.__marchivo.has_file(hasfile, writable)
         self.__utiles.get_attach_widget().set_sensitive(hasfile)
 
-    def set_dir_path(self, dir_path):
-        self.__marchivo.set_dir_path(dir_path)
-
 
 class MenuArchivo(gtk.Menu):
 
     __gsignals__ = {
-    "open": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-    "close": (gobject.SIGNAL_RUN_LAST,
-        gobject.TYPE_NONE, [])}
+    "accion": (gobject.SIGNAL_RUN_LAST,
+        gobject.TYPE_NONE, (gobject.TYPE_STRING,))}
 
     def __init__(self):
 
@@ -93,21 +81,11 @@ class MenuArchivo(gtk.Menu):
 
         self.show_all()
 
-        self.__abrir.connect("activate", self.__open_file)
-        self.__cerrar.connect("activate", self.__close_file)
+        self.__abrir.connect("activate", self.__emit_accion, "open")
+        self.__cerrar.connect("activate", self.__emit_accion, "close")
 
-    def __close_file(self, widget):
-        self.emit("close")
-
-    def __open_file(self, widget):
-        dialog = OpenDialog(parent=self.get_toplevel(),
-            dir_path=self.__dir_path)
-        run = dialog.run()
-        if run == gtk.RESPONSE_ACCEPT:
-            filepath = os.path.realpath(dialog.get_filename())
-            self.__dir_path = os.path.dirname(filepath)
-            self.emit("open", filepath)
-        dialog.destroy()
+    def __emit_accion(self, widget, accion):
+        self.emit("accion", accion)
 
     def has_file(self, hasfile, writable):
         for item in [self.__guardar, self.__guardar_como, self.__imprimir,
@@ -115,9 +93,6 @@ class MenuArchivo(gtk.Menu):
                 item.set_sensitive(hasfile)
         if hasfile and not writable:
             self.__guardar.set_sensitive(False)
-
-    def set_dir_path(self, dir_path):
-        self.__dir_path = dir_path
 
 
 class MenuUtiles(gtk.Menu):
