@@ -5,6 +5,8 @@ import os
 import gobject
 import gtk
 
+from Dialogos import OpenDialog
+
 
 class MenuPrincipal(gtk.MenuBar):
 
@@ -98,20 +100,8 @@ class MenuArchivo(gtk.Menu):
         self.emit("close")
 
     def __open_file(self, widget):
-        #FIXME: Agregar preview para imagen seleccionada
-        dialog = gtk.FileChooserDialog(parent=self.get_toplevel(),
-            action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            title="Abrir Archivo",
-            buttons=("Abrir", gtk.RESPONSE_ACCEPT,
-            "Cancelar", gtk.RESPONSE_CANCEL))
-        dialog.set_border_width(15)
-        if self.__dir_path:
-            dialog.set_current_folder_uri("file://%s" % self.__dir_path)
-        dialog.set_select_multiple(False)
-        filtro = gtk.FileFilter()
-        filtro.set_name("image")
-        filtro.add_mime_type("image/*")
-        dialog.add_filter(filtro)
+        dialog = OpenDialog(parent=self.get_toplevel(),
+            dir_path=self.__dir_path)
         run = dialog.run()
         if run == gtk.RESPONSE_ACCEPT:
             filepath = os.path.realpath(dialog.get_filename())
