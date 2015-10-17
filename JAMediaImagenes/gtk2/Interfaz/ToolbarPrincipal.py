@@ -113,6 +113,5 @@ class ToolbarPrincipal(gtk.Toolbar):
                     paths += 1
                     if paths > 1:
                         break
-                print datos
         for button in [self.__anterior, self.__siguiente]:
             button.set_sensitive(bool(paths > 1))

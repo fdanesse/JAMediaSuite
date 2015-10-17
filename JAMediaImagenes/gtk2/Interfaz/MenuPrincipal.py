@@ -55,6 +55,9 @@ class MenuPrincipal(gtk.MenuBar):
         self.__marchivo.has_file(hasfile, writable)
         self.__utiles.get_attach_widget().set_sensitive(hasfile)
 
+    def set_dir_path(self, dir_path):
+        self.__marchivo.set_dir_path(dir_path)
+
 
 class MenuArchivo(gtk.Menu):
 
@@ -122,6 +125,9 @@ class MenuArchivo(gtk.Menu):
                 item.set_sensitive(hasfile)
         if hasfile and not writable:
             self.__guardar.set_sensitive(False)
+
+    def set_dir_path(self, dir_path):
+        self.__dir_path = dir_path
 
 
 class MenuUtiles(gtk.Menu):

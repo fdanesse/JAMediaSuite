@@ -87,7 +87,33 @@ class JAMediaImagenes(gtk.Window):
     #    return False
 
     def __action_toolbar(self, toolbar, accion):
-        print accion
+        if "open" in accion:
+            #FIXME: Agregar preview para imagen seleccionada
+            dialog = gtk.FileChooserDialog(parent=self.get_toplevel(),
+                action=gtk.FILE_CHOOSER_ACTION_OPEN,
+                title="Abrir Archivo",
+                buttons=("Abrir", gtk.RESPONSE_ACCEPT,
+                "Cancelar", gtk.RESPONSE_CANCEL))
+            dialog.set_border_width(15)
+            file_path = self.__processor.get_file_path()
+            if file_path:
+                dir_path = os.path.dirname(self.__processor.get_file_path())
+                dialog.set_current_folder_uri("file://%s" % dir_path)
+            dialog.set_select_multiple(False)
+            filtro = gtk.FileFilter()
+            filtro.set_name("image")
+            filtro.add_mime_type("image/*")
+            dialog.add_filter(filtro)
+            run = dialog.run()
+            if run == gtk.RESPONSE_ACCEPT:
+                filepath = os.path.realpath(dialog.get_filename())
+                self.__open_file(False, filepath)
+                dir_path = os.path.dirname(filepath)
+                self.__menu.set_dir_path(dir_path)
+            dialog.destroy()
+
+        else:
+            print accion
 
     def __open_util(self, menu, text):
         util = self.__utiles.get(text, False)
