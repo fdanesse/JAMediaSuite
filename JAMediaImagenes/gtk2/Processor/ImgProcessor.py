@@ -72,6 +72,16 @@ def map_lightness(pixels):
     map(calc_lightness, pixels[:])
 
 
+def pixelar(array):
+    pixels = array.copy()
+    x, y, z = pixels.shape
+    for a in range(0, x, 10):
+        for b in range(0, y, 10):
+            pixels[a:a+10, b:b+10, 0] = int(numpy.mean(pixels[a:a+10, b:b+10, 0]))
+            pixels[a:a+10, b:b+10, 1] = int(numpy.mean(pixels[a:a+10, b:b+10, 1]))
+            pixels[a:a+10, b:b+10, 2] = int(numpy.mean(pixels[a:a+10, b:b+10, 2]))
+
+
 #Escalar = pixels = pixels[::2,::2,:] (Recortar con pasos)
 #Recortar = pixels = pixels[50:-50, 200:, :]
 
