@@ -1,6 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# https://en.wikipedia.org/wiki/Luminance
+# https://en.wikipedia.org/wiki/Histogram_equalization
+# https://en.wikipedia.org/wiki/Color_constancy
+# https://en.wikipedia.org/wiki/Color_balance
+# https://en.wikipedia.org/wiki/Gamma_correction
+# https://en.wikipedia.org/wiki/Color_temperature
+# https://en.wikipedia.org/wiki/Color_correction
+# https://en.wikipedia.org/wiki/Color_mapping
+
+# Interpolacion:
+#   http://docs.gimp.org/es/gimp-tools-transform.html
+#   https://es.wikipedia.org/wiki/Funci%C3%B3n_sinc
+
+# RGB > 16777216 colores posibles
+
+"""
+Descripciones:
+    Funciones map:
+        Sobre filas. En (51, 82, 3), se ejecuta 51 veces.
+    Funciones calc:
+        Sobre cada pixel. En (51, 82, 3) se ejecuta 51*82 = 4182
+"""
+
 import os
 import gobject
 import gtk
@@ -15,9 +38,8 @@ def calc_luminosity(pixel):
     G = 0.7152
     B = 0.0722
     """
-    luminosity = int(0.21 * float(pixel[0]) + 0.72 * float(
+    pixel[:] = int(0.21 * float(pixel[0]) + 0.72 * float(
         pixel[1]) + 0.07 * float(pixel[2]))
-    pixel[:] = luminosity
 
 
 def calc_percentual(pixel):
@@ -25,17 +47,15 @@ def calc_percentual(pixel):
     The graylevel will be calculated as
         Percentual = R * 0.3 + G * 0.59 + B * 0.11
     """
-    percentual = int(float(pixel[0]) * 0.3 + float(
+    pixel[:] = int(float(pixel[0]) * 0.3 + float(
         pixel[1]) * 0.59 + float(pixel[2]) * 0.11)
-    pixel[:] = percentual
 
 
 def calc_average(pixel):
     """
     The graylevel will be calculated as Average Brightness = (R + G + B) / 3
     """
-    average = numpy.mean(pixel)
-    pixel[:] = int(average)
+    pixel[:] = int(numpy.mean(pixel))
 
 
 def calc_lightness(pixel):
@@ -48,12 +68,9 @@ def calc_lightness(pixel):
     el negro.
     https://es.wikipedia.org/wiki/Modelo_de_color_HSL
     """
-    #numpy.argmax([pixel[0], pixel[1], pixel[2]])
-    ma = max([pixel[0], pixel[1], pixel[2]])
-    #numpy.argmin([pixel[0], pixel[1], pixel[2]])
-    mi = min([pixel[0], pixel[1], pixel[2]])
-    lightness = int(1.0 / 2.0 * (float(ma) + float(mi)))
-    pixel[:] = int(lightness)
+    ma = max([pixel[0], pixel[1], pixel[2]])  #numpy.argmax
+    mi = min([pixel[0], pixel[1], pixel[2]])  #numpy.argmin
+    pixel[:] = int(1.0 / 2.0 * (float(ma) + float(mi)))
 
 
 def map_luminosity(pixels):
@@ -72,6 +89,7 @@ def map_lightness(pixels):
     map(calc_lightness, pixels[:])
 
 
+'''
 def pixelar(array):
     pixels = array.copy()
     x, y, z = pixels.shape
@@ -80,6 +98,12 @@ def pixelar(array):
             pixels[a:a+10, b:b+10, 0] = int(numpy.mean(pixels[a:a+10, b:b+10, 0]))
             pixels[a:a+10, b:b+10, 1] = int(numpy.mean(pixels[a:a+10, b:b+10, 1]))
             pixels[a:a+10, b:b+10, 2] = int(numpy.mean(pixels[a:a+10, b:b+10, 2]))
+
+def calc_cepia(pixel):
+    r, g, b = pixel
+    pixel[1] = r/1.5
+    pixel[2] = 0
+'''
 
 
 #Escalar = pixels = pixels[::2,::2,:] (Recortar con pasos)
