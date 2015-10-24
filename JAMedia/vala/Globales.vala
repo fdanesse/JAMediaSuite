@@ -4,6 +4,7 @@ using Json;
 
 
 private void __make_base_directory(){
+    // FIXME: DirUtils.create_with_parents(folder, 0666)
     try {
         string home = GLib.Environment.get_variable("HOME");
         string jamedia = GLib.Path.build_filename(home, "JAMediaDatos");
@@ -44,9 +45,9 @@ private SList<Streaming> __descarga_lista_de_streamings(string url){
 
         string? line;
         string text = "";
-		while ((line = data_stream.read_line()) != null){
-		    text += line;
-			}
+        while ((line = data_stream.read_line()) != null){
+            text += line;
+            }
 
         string streamings_text = text.split(cabecera)[1];
         string streamings_text1 = streamings_text.replace("</div>", "").replace("/>", "").replace("<div>", "");
@@ -92,7 +93,7 @@ private void __guarda_lista_de_streamings(string path, SList<Streaming> items){
     foreach (Streaming s in items){
         builder.set_member_name(s.nombre);
         builder.add_string_value(s.path);
-	    }
+        }
     builder.end_object();
 
     //No se entiende pero está acá :P
@@ -401,7 +402,7 @@ public Gtk.ToolButton get_button(string archivo, bool flip, Gdk.PixbufRotation r
         }
     pixbuf = pixbuf.rotate_simple(rotacion);
     Gtk.Image img = new Gtk.Image.from_pixbuf(pixbuf);
-	Gtk.ToolButton button = new Gtk.ToolButton(img, null);
-	button.set_tooltip_text(tooltip);
+    Gtk.ToolButton button = new Gtk.ToolButton(img, null);
+    button.set_tooltip_text(tooltip);
     return button;
     }

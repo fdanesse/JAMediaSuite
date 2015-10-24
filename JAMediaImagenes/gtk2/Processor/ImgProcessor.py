@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# https://en.wikipedia.org/wiki/Image_processing
 # https://en.wikipedia.org/wiki/Luminance
 # https://en.wikipedia.org/wiki/Histogram_equalization
 # https://en.wikipedia.org/wiki/Color_constancy
