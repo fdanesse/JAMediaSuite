@@ -66,7 +66,7 @@ internal class ImgProcessor : GLib.Object{
         this.pixbuf_view = this.pixbuf.copy();
         this.changed = true;
         this.emit_change(this.changed);
-        if (scale_factor != 1.0){
+        if (this.scale_factor != 1.0){
             return this.scale();
             }
         else{
@@ -86,7 +86,21 @@ internal class ImgProcessor : GLib.Object{
         return this.scale();
         }
 
+    public Gdk.Pixbuf get_pixbuf_scale(int w, int h){
+    //zoom sobre lo que se ve
+        double x_ratio = (double) w / (double) this.pixbuf.get_width();
+        double y_ratio = (double) h / (double) this.pixbuf.get_height();
+        if (y_ratio < x_ratio){
+            this.scale_factor = y_ratio;
+            }
+        else{
+            this.scale_factor = x_ratio;
+            }
+        return this.scale();
+        }
+
     private Gdk.Pixbuf scale(){
+        //zoom sobre lo que se ve
         //FIXME: Gdk.InterpType.HYPER maxima calidad, bajo rendimiento
         Gdk.Pixbuf pixbuf = this.pixbuf.copy();
         int new_width = (int)(pixbuf.get_width() * this.scale_factor);

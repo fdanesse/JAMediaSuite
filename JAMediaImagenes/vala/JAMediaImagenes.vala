@@ -78,7 +78,9 @@ public class JAMediaImagenes : Gtk.Window{
 
     private void toolbar_accion(string accion){
         if (accion == "Abrir"){
-            OpenDialog dialog = new OpenDialog(this.get_toplevel() as Gtk.Window, this.processor.get_dir_path());
+            OpenDialog dialog = new OpenDialog(
+                this.get_toplevel() as Gtk.Window,
+                this.processor.get_dir_path());
             int run = dialog.run();
             if (run == Gtk.ResponseType.ACCEPT){
                 this.open_file(dialog.get_filename());
@@ -98,8 +100,10 @@ public class JAMediaImagenes : Gtk.Window{
             this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Ocupar todo el espacio"){
-            //Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_channles(this.image, this.mode_view, this.channels);
-            //this.image.set_from_pixbuf(pixbuf);
+            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+                this.image.get_parent().get_allocated_width(),
+                this.image.get_parent().get_allocated_height());
+            this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Rotar a la izquierda"){
             Gdk.Pixbuf pixbuf = this.processor.rotate_left();
@@ -117,15 +121,22 @@ public class JAMediaImagenes : Gtk.Window{
 
     private void menu_accion(string accion){
         if (accion == "Abrir..."){
-            OpenDialog dialog = new OpenDialog(this.get_toplevel() as Gtk.Window, this.processor.get_dir_path());
+            OpenDialog dialog = new OpenDialog(
+                this.get_toplevel() as Gtk.Window,
+                this.processor.get_dir_path());
             int run = dialog.run();
             if (run == Gtk.ResponseType.ACCEPT){
                 this.open_file(dialog.get_filename());
                 }
             dialog.destroy();
             }
-        GLib.stdout.printf("Menu Accion: %s\n", accion);
-        GLib.stdout.flush();
+        else if (accion == "Cerrar"){
+            this.close_file();
+            }
+        else{
+            GLib.stdout.printf("Menu Accion: %s\n", accion);
+            GLib.stdout.flush();
+            }
         }
 
     private void close_file(){
