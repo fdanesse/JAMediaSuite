@@ -13,7 +13,7 @@ Compilar con:
 using Gtk;
 using Gdk;
 using Posix;
-using Gee;
+
 
 public class JAMediaImagenes : Gtk.Window{
 

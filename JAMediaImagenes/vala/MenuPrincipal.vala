@@ -33,6 +33,9 @@ internal class MenuPrincipal : Gtk.MenuBar{
         this.mutiles.accion.connect ((accion) => {
             this.re_emit_accion(accion);
          });
+        this.mayuda.accion.connect ((accion) => {
+            this.re_emit_accion(accion);
+         });
 
         }
 
@@ -155,8 +158,9 @@ internal class MenuUtiles : Gtk.Menu{
         }
 
     public void has_file(bool hasfile){
-        this.canales.set_sensitive(hasfile);
-        this.grises.set_sensitive(hasfile);
+        foreach(Gtk.Widget item in this.get_children()){
+            item.set_sensitive(hasfile);
+            }
         }
 
     }

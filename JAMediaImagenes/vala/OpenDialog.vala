@@ -1,4 +1,5 @@
-
+//FIXME: Agregar Preview.
+//FIXME: Mejorar Filtros para seleccionar tipos específicos de imagen?.
 
 internal class OpenDialog : Gtk.FileChooserDialog{
 
