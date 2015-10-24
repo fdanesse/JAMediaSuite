@@ -81,21 +81,25 @@ public class JAMediaImagenes : Gtk.Window{
             dialog.destroy();
             }
         else if (accion == "Acercar"){
+            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_zoom_in();
+            this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Alejar"){
+            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_zoom_out();
+            this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Ver tamaño original"){
             if (this.mode_view != "REAL"){
                 this.mode_view = "REAL";
-                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_channles(this.image, this.mode_view, this.channels);
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf();
                 this.image.set_from_pixbuf(pixbuf);
                 }
             }
         else if (accion == "Ocupar todo el espacio"){
             if (this.mode_view != "FULL"){
                 this.mode_view = "FULL";
-                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_channles(this.image, this.mode_view, this.channels);
-                this.image.set_from_pixbuf(pixbuf);
+                //Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_channles(this.image, this.mode_view, this.channels);
+                //this.image.set_from_pixbuf(pixbuf);
                 }
             }
         else if (accion == "Rotar a la izquierda"){
@@ -140,7 +144,7 @@ public class JAMediaImagenes : Gtk.Window{
         this.menu.has_file(true);
         this.update_status_bar(info);
         this.toolbar.has_file(true);
-        Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_channles(this.image, this.mode_view, this.channels);
+        Gdk.Pixbuf pixbuf = this.processor.get_pixbuf();
         this.image.set_from_pixbuf(pixbuf);
         }
 
