@@ -23,9 +23,6 @@ public class JAMediaImagenes : Gtk.Window{
     private Gtk.Statusbar statusbar = new Gtk.Statusbar();
     private ImgProcessor processor = new ImgProcessor();
 
-    string mode_view = "REAL";
-    string channels = "Original";
-
     public JAMediaImagenes(){
 
         this.set_title("JAMediaImagenes");
@@ -57,6 +54,9 @@ public class JAMediaImagenes : Gtk.Window{
         this.add(box);
         this.show_all();
 
+        this.processor.has_change.connect ((changed) => {
+            this.has_change_in_file(changed);
+         });
         this.menu.accion.connect ((accion) => {
             this.menu_accion(accion);
          });
@@ -69,6 +69,11 @@ public class JAMediaImagenes : Gtk.Window{
         GLib.stdout.flush();
 
         this.close_file();
+        }
+
+    private void has_change_in_file(bool changed){
+        this.menu.has_change(changed);
+        this.toolbar.has_change(changed);
         }
 
     private void toolbar_accion(string accion){
@@ -89,23 +94,20 @@ public class JAMediaImagenes : Gtk.Window{
             this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Ver tamaño original"){
-            if (this.mode_view != "REAL"){
-                this.mode_view = "REAL";
-                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf();
-                this.image.set_from_pixbuf(pixbuf);
-                }
+            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf();
+            this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Ocupar todo el espacio"){
-            if (this.mode_view != "FULL"){
-                this.mode_view = "FULL";
-                //Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_channles(this.image, this.mode_view, this.channels);
-                //this.image.set_from_pixbuf(pixbuf);
-                }
+            //Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_channles(this.image, this.mode_view, this.channels);
+            //this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Rotar a la izquierda"){
-            //FIXME: A diferencia de los demas visores, en este se debe respetar el zoom
+            Gdk.Pixbuf pixbuf = this.processor.rotate_left();
+            this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Rotar a la derecha"){
+            Gdk.Pixbuf pixbuf = this.processor.rotate_right();
+            this.image.set_from_pixbuf(pixbuf);
             }
         else{
             GLib.stdout.printf("Toolbar Accion: %s\n", accion);
@@ -132,8 +134,6 @@ public class JAMediaImagenes : Gtk.Window{
         this.toolbar.has_file(false);
         this.update_status_bar("");
         this.image.clear();
-        this.mode_view = "REAL";
-        this.channels = "Original";
         }
 
     private void open_file(string filepath){

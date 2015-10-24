@@ -4,9 +4,9 @@ internal class MenuPrincipal : Gtk.MenuBar{
 
     public signal void accion(string accion);
 
-    MenuArchivo marchivo = new MenuArchivo();
-    MenuUtiles mutiles = new MenuUtiles();
-    MenuAyuda mayuda = new MenuAyuda();
+    private MenuArchivo marchivo = new MenuArchivo();
+    private MenuUtiles mutiles = new MenuUtiles();
+    private MenuAyuda mayuda = new MenuAyuda();
 
     internal MenuPrincipal(){
 
@@ -48,6 +48,9 @@ internal class MenuPrincipal : Gtk.MenuBar{
         this.mutiles.has_file(hasfile);
         }
 
+    public void has_change(bool changed){
+        this.marchivo.has_change(changed);
+        }
     }
 
 
@@ -55,12 +58,12 @@ internal class MenuArchivo : Gtk.Menu{
 
     public signal void accion(string label);
 
-    Gtk.MenuItem abrir = new Gtk.MenuItem();
-    Gtk.MenuItem guardar = new Gtk.MenuItem();
-    Gtk.MenuItem guardar_como = new Gtk.MenuItem();
-    Gtk.MenuItem imprimir = new Gtk.MenuItem();
-    Gtk.MenuItem propiedades = new Gtk.MenuItem();
-    Gtk.MenuItem cerrar = new Gtk.MenuItem();
+    private Gtk.MenuItem abrir = new Gtk.MenuItem();
+    private Gtk.MenuItem guardar = new Gtk.MenuItem();
+    private Gtk.MenuItem guardar_como = new Gtk.MenuItem();
+    private Gtk.MenuItem imprimir = new Gtk.MenuItem();
+    private Gtk.MenuItem propiedades = new Gtk.MenuItem();
+    private Gtk.MenuItem cerrar = new Gtk.MenuItem();
 
     internal MenuArchivo(){
 
@@ -115,12 +118,15 @@ internal class MenuArchivo : Gtk.Menu{
         this.show_all();
         }
 
+    public void has_change(bool changed){
+        this.guardar.set_sensitive(changed);
+        }
+
     private void emit_accion(string label){
         this.accion(label);
         }
 
     public void has_file(bool hasfile){
-        this.guardar.set_sensitive(hasfile);
         this.guardar_como.set_sensitive(hasfile);
         this.imprimir.set_sensitive(hasfile);
         this.propiedades.set_sensitive(hasfile);
@@ -133,8 +139,8 @@ internal class MenuUtiles : Gtk.Menu{
 
     public signal void accion(string label);
 
-    Gtk.MenuItem canales = new Gtk.MenuItem();
-    Gtk.MenuItem grises = new Gtk.MenuItem();
+    private Gtk.MenuItem canales = new Gtk.MenuItem();
+    private Gtk.MenuItem grises = new Gtk.MenuItem();
 
     internal MenuUtiles(){
 

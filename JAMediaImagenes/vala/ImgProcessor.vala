@@ -2,14 +2,21 @@
 
 internal class ImgProcessor : GLib.Object{
 
+    public signal void has_change(bool changed);
+
     private string file_path = "";
     private Gdk.Pixbuf pixbuf = null;       //Lo que se va a guardar
     private Gdk.Pixbuf pixbuf_view = null;  //Lo que se muestra
     private double scale_factor = 1.0;
     private unowned uint8[] array;
+    private bool changed = false;
 
     internal ImgProcessor(){
 
+        }
+
+    private void emit_change(bool changed){
+        this.has_change(changed);
         }
 
     public void close_file(){
@@ -18,6 +25,8 @@ internal class ImgProcessor : GLib.Object{
         this.pixbuf = null;
         this.pixbuf_view = null;
         this.scale_factor = 1.0;
+        this.changed = false;
+        this.emit_change(this.changed);
         //self.__file_info = {}
         }
 
@@ -35,12 +44,44 @@ internal class ImgProcessor : GLib.Object{
         return "";  // Retorna info del archivo
         }
 
+    public Gdk.Pixbuf rotate_left(){
+        //Afecta lo que se va a guardar
+        Gdk.Pixbuf pixbuf = this.pixbuf.copy();
+        this.pixbuf = pixbuf.rotate_simple(Gdk.PixbufRotation.COUNTERCLOCKWISE);
+        this.pixbuf_view = this.pixbuf.copy();
+        this.changed = true;
+        this.emit_change(this.changed);
+        if (scale_factor != 1.0){
+            return this.scale();
+            }
+        else{
+            return this.pixbuf_view;
+            }
+        }
+
+    public Gdk.Pixbuf rotate_right(){
+        //Afecta lo que se va a guardar
+        Gdk.Pixbuf pixbuf = this.pixbuf.copy();
+        this.pixbuf = pixbuf.rotate_simple(Gdk.PixbufRotation.CLOCKWISE);
+        this.pixbuf_view = this.pixbuf.copy();
+        this.changed = true;
+        this.emit_change(this.changed);
+        if (scale_factor != 1.0){
+            return this.scale();
+            }
+        else{
+            return this.pixbuf_view;
+            }
+        }
+
     public Gdk.Pixbuf get_pixbuf_zoom_in(){
+        //zoom sobre lo que se ve
         this.scale_factor = this.scale_factor * 1.25;
         return this.scale();
         }
 
     public Gdk.Pixbuf get_pixbuf_zoom_out(){
+        //zoom sobre lo que se ve
         this.scale_factor = this.scale_factor * 0.8;
         return this.scale();
         }
@@ -56,6 +97,9 @@ internal class ImgProcessor : GLib.Object{
         }
 
     public Gdk.Pixbuf get_pixbuf(){
+        //Lo que se va a guardar y a tamaño original
+        this.scale_factor = 1.0;
+        this.pixbuf_view = this.pixbuf.copy();
         return this.pixbuf_view;
         }
 

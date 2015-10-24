@@ -100,8 +100,11 @@ internal class ToolbarPrincipal : Gtk.Toolbar{
         this.accion(accion);
         }
 
+    public void has_change(bool changed){
+        this.guardar.set_sensitive(changed);
+        }
+
     public void has_file(bool hasfile){
-        this.guardar.set_sensitive(hasfile);
         this.guardar_como.set_sensitive(hasfile);
         this.zoom_in.set_sensitive(hasfile);
         this.zoom_out.set_sensitive(hasfile);
