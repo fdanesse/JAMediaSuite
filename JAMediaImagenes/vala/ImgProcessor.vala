@@ -36,13 +36,34 @@ internal class ImgProcessor : GLib.Object{
         this.pixbuf_view = new Gdk.Pixbuf.from_file(filepath);
         this.array = this.pixbuf.get_pixels();
 
+        GLib.File file = GLib.File.new_for_path(filepath);
+        int64 size = file.query_info("*", GLib.FileQueryInfoFlags.NONE).get_size();
+        int w = this.pixbuf.get_width();
+        int h = this.pixbuf.get_height();
+        int rowstride = this.pixbuf.get_rowstride();
+        int channels = this.pixbuf.get_n_channels();
+        /*
         GLib.stdout.printf("Abriendo Archivo: %s\n", filepath);
-        GLib.stdout.printf("\tResolución: %i %i Pixeles Totales: %i\n", this.pixbuf.get_width(), this.pixbuf.get_height(), this.pixbuf.get_rowstride() * this.pixbuf.get_height());
-        GLib.stdout.printf("\tElementos por fila: %i Canales: %i\n", this.pixbuf.get_rowstride(), this.pixbuf.get_n_channels());
+        GLib.stdout.printf("\tResolución: %i %i Pixeles Totales: %i\n", w, h, rowstride * h);
+        GLib.stdout.printf("\tElementos por fila: %i Canales: %i\n", rowstride, channels);
         //GLib.stdout.printf("this.array.length: %u\n", this.array.length);
         GLib.stdout.flush();
+        */
+        string info = "Img: ";
+        info += filepath;
+        info += " ";
+        info += w.to_string();
+        info += " x ";
+        info += h.to_string();
+        info += " pixeles: ";
+        info += (w * h).to_string();
+        info += " Canales: ";
+        info += channels.to_string();
+        info += " ";
+        info += size.to_string();
+        info += " bytes";
 
-        return "";  // Retorna info del archivo
+        return info;
         }
 
     public Gdk.Pixbuf rotate_left(){

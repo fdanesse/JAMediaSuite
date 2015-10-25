@@ -177,7 +177,7 @@ public class JAMediaImagenes : Gtk.Window{
         this.processor.close_file();
         this.menu.has_file(false);
         this.toolbar.has_file(false);
-        this.update_status_bar("");
+        this.update_status_bar("Img:");
         this.image.clear();
         }
 
@@ -194,13 +194,7 @@ public class JAMediaImagenes : Gtk.Window{
         }
 
     private void update_status_bar(string info){
-        string text = "Img: ";
-        //if info:
-        //    text = "%s %s   Size: %s   Ext: %s   Mime: %s   Kb: %.2f" % (
-        //        text, info.get("path", ""), info.get("size", ""),
-        //        info.get("name", ""), info.get("mime_types", ""),
-        //        info.get("mb", 0.0) / 1024.0)
-        this.statusbar.push(0, text);
+        this.statusbar.push(0, info);
         }
 
     private void salir(){

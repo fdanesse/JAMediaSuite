@@ -139,22 +139,29 @@ internal class MenuUtiles : Gtk.Menu{
 
     public signal void accion(string label);
 
+    private Gtk.MenuItem escala = new Gtk.MenuItem();
     private Gtk.MenuItem canales = new Gtk.MenuItem();
     private Gtk.MenuItem grises = new Gtk.MenuItem();
 
     internal MenuUtiles(){
 
-        this.canales.set_label("Canales...");
-        this.canales.activate.connect ((source) => {
-            this.emit_accion(this.canales.get_label());
+        this.escala.set_label("Escala...");
+        this.escala.activate.connect ((source) => {
+            this.emit_accion(this.escala.get_label());
          });
-        this.append(this.canales);
+        this.append(this.escala);
 
         this.grises.set_label("Grises...");
         this.grises.activate.connect ((source) => {
             this.emit_accion(this.grises.get_label());
          });
         this.append(this.grises);
+
+        this.canales.set_label("Canales...");
+        this.canales.activate.connect ((source) => {
+            this.emit_accion(this.canales.get_label());
+         });
+        this.append(this.canales);
 
         this.show_all();
         }
