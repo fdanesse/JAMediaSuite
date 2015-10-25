@@ -4,25 +4,25 @@ internal class ToolbarPrincipal : Gtk.Toolbar{
 
     public signal void accion(string accion);
 
-    Gtk.ToolButton guardar = new Gtk.ToolButton.from_stock(Gtk.Stock.SAVE);
-    Gtk.ToolButton guardar_como = new Gtk.ToolButton.from_stock(Gtk.Stock.SAVE_AS);
-    Gtk.ToolButton zoom_in = new Gtk.ToolButton.from_stock(Gtk.Stock.ZOOM_IN);
-    Gtk.ToolButton zoom_out = new Gtk.ToolButton.from_stock(Gtk.Stock.ZOOM_OUT);
-    Gtk.ToolButton zoom_100 = new Gtk.ToolButton.from_stock(Gtk.Stock.ZOOM_100);
-    Gtk.ToolButton zoom_fit = new Gtk.ToolButton.from_stock(Gtk.Stock.ZOOM_FIT);
-    Gtk.ToolButton izquierda = new Gtk.ToolButton.from_stock(Gtk.Stock.UNDO);
-    Gtk.ToolButton derecha = new Gtk.ToolButton.from_stock(Gtk.Stock.REDO);
-    Gtk.ToolButton anterior = new Gtk.ToolButton.from_stock(Gtk.Stock.GO_BACK);
-    Gtk.ToolButton siguiente = new Gtk.ToolButton.from_stock(Gtk.Stock.GO_FORWARD);
+    private Gtk.ToolButton abrir = new Gtk.ToolButton.from_stock(Gtk.Stock.OPEN);
+    private Gtk.ToolButton guardar = new Gtk.ToolButton.from_stock(Gtk.Stock.SAVE);
+    private Gtk.ToolButton guardar_como = new Gtk.ToolButton.from_stock(Gtk.Stock.SAVE_AS);
+    private Gtk.ToolButton zoom_in = new Gtk.ToolButton.from_stock(Gtk.Stock.ZOOM_IN);
+    private Gtk.ToolButton zoom_out = new Gtk.ToolButton.from_stock(Gtk.Stock.ZOOM_OUT);
+    private Gtk.ToolButton zoom_100 = new Gtk.ToolButton.from_stock(Gtk.Stock.ZOOM_100);
+    private Gtk.ToolButton zoom_fit = new Gtk.ToolButton.from_stock(Gtk.Stock.ZOOM_FIT);
+    private Gtk.ToolButton izquierda = new Gtk.ToolButton.from_stock(Gtk.Stock.UNDO);
+    private Gtk.ToolButton derecha = new Gtk.ToolButton.from_stock(Gtk.Stock.REDO);
+    private Gtk.ToolButton anterior = new Gtk.ToolButton.from_stock(Gtk.Stock.GO_BACK);
+    private Gtk.ToolButton siguiente = new Gtk.ToolButton.from_stock(Gtk.Stock.GO_FORWARD);
 
     internal ToolbarPrincipal(){
 
-        Gtk.ToolButton abrir = new Gtk.ToolButton.from_stock(Gtk.Stock.OPEN);
-        abrir.set_tooltip_text("Abrir");
-        abrir.clicked.connect (() => {
+        this.abrir.set_tooltip_text("Abrir");
+        this.abrir.clicked.connect (() => {
             this.emit_accion("Abrir");
         });
-        this.insert(abrir, -1);
+        this.insert(this.abrir, -1);
 
         this.guardar.set_tooltip_text("Guardar");
         this.guardar.clicked.connect (() => {

@@ -37,7 +37,9 @@ internal class ImgProcessor : GLib.Object{
         this.array = this.pixbuf.get_pixels();
 
         GLib.File file = GLib.File.new_for_path(filepath);
-        int64 size = file.query_info("*", GLib.FileQueryInfoFlags.NONE).get_size();
+        var file_info = file.query_info ("*", GLib.FileQueryInfoFlags.NONE);
+        int64 size = file_info.get_size();
+        string tipo = file_info.get_content_type();
         int w = this.pixbuf.get_width();
         int h = this.pixbuf.get_height();
         int rowstride = this.pixbuf.get_rowstride();
@@ -52,6 +54,8 @@ internal class ImgProcessor : GLib.Object{
         string info = "Img: ";
         info += filepath;
         info += " ";
+        info += tipo;
+        info += " ";
         info += w.to_string();
         info += " x ";
         info += h.to_string();
@@ -59,9 +63,8 @@ internal class ImgProcessor : GLib.Object{
         info += (w * h).to_string();
         info += " Canales: ";
         info += channels.to_string();
-        info += " ";
+        info += " bytes ";
         info += size.to_string();
-        info += " bytes";
 
         return info;
         }
