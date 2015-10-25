@@ -82,10 +82,11 @@ public class JAMediaImagenes : Gtk.Window{
                 this.get_toplevel() as Gtk.Window,
                 this.processor.get_dir_path());
             int run = dialog.run();
-            if (run == Gtk.ResponseType.ACCEPT){
-                this.open_file(dialog.get_filename());
-                }
+            string filepath = dialog.get_filename();
             dialog.destroy();
+            if (run == Gtk.ResponseType.ACCEPT){
+                this.open_file(filepath);
+                }
             }
         else if (accion == "Acercar"){
             Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_zoom_in();
@@ -112,6 +113,39 @@ public class JAMediaImagenes : Gtk.Window{
         else if (accion == "Rotar a la derecha"){
             Gdk.Pixbuf pixbuf = this.processor.rotate_right();
             this.image.set_from_pixbuf(pixbuf);
+            }
+        else if (accion == "Ver imagen anterior"){
+            }
+        else if (accion == "Ver imagen siguiente"){
+            }
+        else if (accion == "Guardar"){
+            string filepath = this.processor.get_file_path();
+            try{
+                this.processor.save_file(filepath);
+                this.open_file(filepath);
+                }
+            catch(GLib.Error e){
+                GLib.stdout.printf("ERROR al Guardar: %s\n", e.message);
+                GLib.stdout.flush();
+                }
+            }
+        else if (accion == "Guardar Como"){
+            SaveDialog dialog = new SaveDialog(
+                this.get_toplevel() as Gtk.Window,
+                this.processor.get_dir_path());
+            int run = dialog.run();
+            string filepath = dialog.get_filename();
+            dialog.destroy();
+            if (run == Gtk.ResponseType.ACCEPT){
+                try{
+                    this.processor.save_file(filepath);
+                    this.open_file(filepath);
+                    }
+                catch(GLib.Error e){
+                    GLib.stdout.printf("ERROR al Guardar: %s\n", e.message);
+                    GLib.stdout.flush();
+                    }
+                }
             }
         else{
             GLib.stdout.printf("Toolbar Accion: %s\n", accion);

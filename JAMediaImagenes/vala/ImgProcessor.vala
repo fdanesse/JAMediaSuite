@@ -36,10 +36,11 @@ internal class ImgProcessor : GLib.Object{
         this.pixbuf_view = new Gdk.Pixbuf.from_file(filepath);
         this.array = this.pixbuf.get_pixels();
 
-        stdout.printf("Abriendo Archivo: %s\n", filepath);
-        stdout.printf("\tResolución: %i %i Pixeles Totales: %i\n", this.pixbuf.get_width(), this.pixbuf.get_height(), this.pixbuf.get_rowstride() * this.pixbuf.get_height());
-        stdout.printf("\tElementos por fila: %i Canales: %i\n", this.pixbuf.get_rowstride(), this.pixbuf.get_n_channels());
-        //stdout.printf("this.array.length: %u\n", this.array.length);
+        GLib.stdout.printf("Abriendo Archivo: %s\n", filepath);
+        GLib.stdout.printf("\tResolución: %i %i Pixeles Totales: %i\n", this.pixbuf.get_width(), this.pixbuf.get_height(), this.pixbuf.get_rowstride() * this.pixbuf.get_height());
+        GLib.stdout.printf("\tElementos por fila: %i Canales: %i\n", this.pixbuf.get_rowstride(), this.pixbuf.get_n_channels());
+        //GLib.stdout.printf("this.array.length: %u\n", this.array.length);
+        GLib.stdout.flush();
 
         return "";  // Retorna info del archivo
         }
@@ -149,5 +150,14 @@ internal class ImgProcessor : GLib.Object{
         else{
             return GLib.Environment.get_variable("HOME");
             }
+        }
+
+    public string get_file_path(){
+        return this.file_path;
+        }
+
+    public void save_file(string filepath) throws GLib.Error{
+        //FIXME: Asegurar extensión para el archivo
+        this.pixbuf.save(filepath, "png", null);
         }
     }
