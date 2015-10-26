@@ -75,6 +75,43 @@ internal class SaveDialog : Gtk.FileChooserDialog{
     }
 
 
+internal class CheckDialog : Gtk.Dialog{
+
+    public CheckDialog(Gtk.Window parent){
+
+        this.add_button("Guardar", Gtk.ResponseType.ACCEPT);
+        this.add_button("Cancelar", Gtk.ResponseType.CANCEL);
+        this.set_modal(true);
+        this.set_transient_for(parent);
+        string text = "El archivo actual contiene cambios sin guardar.\n";
+        text += "¿Deseas Guardar estos cambios?";
+        Gtk.Label label = new Gtk.Label(text);
+        Gtk.Box Box = this.get_content_area();
+        Box.pack_start(label, false, false, 0);
+        Box.show_all();
+
+        }
+    }
+
+
+internal class ExitDialog : Gtk.Dialog{
+
+    public ExitDialog(Gtk.Window parent){
+
+        this.add_button("Guardar", Gtk.ResponseType.ACCEPT);
+        this.add_button("Cancelar", Gtk.ResponseType.CANCEL);
+        this.set_modal(true);
+        this.set_transient_for(parent);
+        string text = "¿Confirmas salir de la aplicación?";
+        Gtk.Label label = new Gtk.Label(text);
+        Gtk.Box Box = this.get_content_area();
+        Box.pack_start(label, false, false, 0);
+        Box.show_all();
+
+        }
+    }
+
+
 //FIXME: Arreglar estética
 internal class Preview : Gtk.Frame{
 

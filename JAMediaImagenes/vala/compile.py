@@ -14,7 +14,7 @@ libgtk-3-dev
 
 
 def run():
-    comando = "valac --pkg posix --pkg glib-2.0 --pkg gtk+-3.0 --pkg gdk-3.0"
+    comando = "valac --pkg posix --pkg glib-2.0 --pkg gtk+-3.0 --pkg gdk-3.0 --pkg gee-1.0"
     comando = "%s %s" % (comando, "JAMediaImagenes.vala")
 
     for path in os.listdir(BASE_PATH):

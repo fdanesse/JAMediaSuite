@@ -12,7 +12,6 @@ internal class ImgProcessor : GLib.Object{
     private bool changed = false;
 
     internal ImgProcessor(){
-
         }
 
     private void emit_change(bool changed){
@@ -183,5 +182,9 @@ internal class ImgProcessor : GLib.Object{
     public void save_file(string filepath) throws GLib.Error{
         //FIXME: Asegurar extensión para el archivo
         this.pixbuf.save(filepath, "png", null);
+        }
+
+    public bool get_changed(){
+        return this.changed;
         }
     }

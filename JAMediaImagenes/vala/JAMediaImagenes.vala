@@ -13,6 +13,7 @@ Compilar con:
 using Gtk;
 using Gdk;
 using Posix;
+using Gee;
 
 
 public class JAMediaImagenes : Gtk.Window{
@@ -63,12 +64,41 @@ public class JAMediaImagenes : Gtk.Window{
         this.toolbar.accion.connect ((accion) => {
             this.toolbar_accion(accion);
          });
+
         this.destroy.connect(this.salir);
+        this.key_press_event.connect ((event) => {
+            this.do_key_press_event(event);
+            return true;
+            });
 
         GLib.stdout.printf("JAMediaImagenes process: %i\n", Posix.getpid());
         GLib.stdout.flush();
 
         this.close_file();
+        }
+
+    private void do_key_press_event(Gdk.EventKey event){
+        string filepath = this.processor.get_file_path();
+        if (filepath != ""){
+            if (event.keyval == 65307){
+                if (this.processor.get_changed()){
+                    this.confirmar_guardar();
+                    }
+                ExitDialog dialog = new ExitDialog(
+                this.get_toplevel() as Gtk.Window);
+                int run = dialog.run();
+                dialog.destroy();
+                if (run == Gtk.ResponseType.ACCEPT){
+                    this.salir();
+                    }
+                }
+            else if (event.keyval == 65361){
+                this.toolbar_accion("Ver imagen anterior");
+                }
+            else if (event.keyval == 65363){
+                this.toolbar_accion("Ver imagen siguiente");
+                }
+            }
         }
 
     private void has_change_in_file(bool changed){
@@ -115,8 +145,34 @@ public class JAMediaImagenes : Gtk.Window{
             this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Ver imagen anterior"){
+            if (this.processor.get_changed()){
+                this.confirmar_guardar();
+                }
+            Gee.ArrayList<string> items = this.list_dir();
+            int index = items.index_of(this.processor.get_file_path());
+            if (index > 1){
+                index--;
+                }
+            else{
+                index = items.size - 1;
+                }
+            string filepath = items[index];
+            this.open_file(filepath);
             }
         else if (accion == "Ver imagen siguiente"){
+            if (this.processor.get_changed()){
+                this.confirmar_guardar();
+                }
+            Gee.ArrayList<string> items = this.list_dir();
+            int index = items.index_of(this.processor.get_file_path());
+            if (index < items.size - 1){
+                index++;
+                }
+            else{
+                index = 0;
+                }
+            string filepath = items[index];
+            this.open_file(filepath);
             }
         else if (accion == "Guardar"){
             string filepath = this.processor.get_file_path();
@@ -151,6 +207,47 @@ public class JAMediaImagenes : Gtk.Window{
             GLib.stdout.printf("Toolbar Accion: %s\n", accion);
             GLib.stdout.flush();
             }
+        }
+
+    private void confirmar_guardar(){
+        CheckDialog dialog = new CheckDialog(
+            this.get_toplevel() as Gtk.Window);
+        int run = dialog.run();
+        dialog.destroy();
+        if (run == Gtk.ResponseType.ACCEPT){
+            try{
+                this.processor.save_file(this.processor.get_file_path());
+                }
+            catch(GLib.Error e){
+                GLib.stdout.printf("ERROR al Guardar: %s\n", e.message);
+                GLib.stdout.flush();
+                }
+            }
+        }
+
+    private Gee.ArrayList<string> list_dir(){
+        Gee.ArrayList<string> items = new Gee.ArrayList<string> ();
+        string dirpath = this.processor.get_dir_path();
+        int index = 0;
+        try{
+            GLib.Dir dir = GLib.Dir.open(dirpath, 0);
+            string? name = null;
+            while ((name = dir.read_name()) != null) {
+                string path = GLib.Path.build_filename(dirpath, name);
+                GLib.File file = GLib.File.parse_name(path);
+                var file_info = file.query_info ("*", GLib.FileQueryInfoFlags.NONE);
+                string tipo = file_info.get_content_type();
+                if ("image" in tipo){
+                    items.insert(index, path);
+                    index++;
+                    }
+                }
+            }
+        catch (GLib.FileError err) {
+            GLib.stderr.printf(err.message);
+            }
+        items.sort(GLib.strcmp);
+        return items;
         }
 
     private void menu_accion(string accion){
