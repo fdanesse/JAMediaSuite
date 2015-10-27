@@ -99,7 +99,23 @@ public class JAMediaImagenes : Gtk.Window{
                 this.toolbar_accion("Ver imagen siguiente");
                 }
             else if (event.keyval == 65535){
-                //FIXME: Eliminar el archivo
+                RemoveDialog dialog = new RemoveDialog(
+                this.get_toplevel() as Gtk.Window);
+                int run = dialog.run();
+                dialog.destroy();
+                if (run == Gtk.ResponseType.ACCEPT){
+                    Gee.ArrayList<string> items = this.list_dir();
+                    int index = items.index_of(filepath);
+                    if (index < items.size - 1){
+                        index++;
+                        }
+                    else{
+                        index = 0;
+                        }
+                    string newfilepath = items[index];
+                    this.open_file(newfilepath);
+                    GLib.FileUtils.remove(filepath);
+                    }
                 }
             }
         else{
@@ -153,34 +169,40 @@ public class JAMediaImagenes : Gtk.Window{
             this.image.set_from_pixbuf(pixbuf);
             }
         else if (accion == "Ver imagen anterior"){
-            if (this.processor.get_changed()){
-                this.confirmar_guardar();
+            string filepath = this.processor.get_file_path();
+            if (filepath != ""){
+                if (this.processor.get_changed()){
+                    this.confirmar_guardar();
+                    }
+                Gee.ArrayList<string> items = this.list_dir();
+                int index = items.index_of(this.processor.get_file_path());
+                if (index > 0){
+                    index--;
+                    }
+                else{
+                    index = items.size - 1;
+                    }
+                string newfilepath = items[index];
+                this.open_file(newfilepath);
                 }
-            Gee.ArrayList<string> items = this.list_dir();
-            int index = items.index_of(this.processor.get_file_path());
-            if (index > 1){
-                index--;
-                }
-            else{
-                index = items.size - 1;
-                }
-            string filepath = items[index];
-            this.open_file(filepath);
             }
         else if (accion == "Ver imagen siguiente"){
-            if (this.processor.get_changed()){
-                this.confirmar_guardar();
+            string filepath = this.processor.get_file_path();
+            if (filepath != ""){
+                if (this.processor.get_changed()){
+                    this.confirmar_guardar();
+                    }
+                Gee.ArrayList<string> items = this.list_dir();
+                int index = items.index_of(this.processor.get_file_path());
+                if (index < items.size - 1){
+                    index++;
+                    }
+                else{
+                    index = 0;
+                    }
+                string newfilepath = items[index];
+                this.open_file(newfilepath);
                 }
-            Gee.ArrayList<string> items = this.list_dir();
-            int index = items.index_of(this.processor.get_file_path());
-            if (index < items.size - 1){
-                index++;
-                }
-            else{
-                index = 0;
-                }
-            string filepath = items[index];
-            this.open_file(filepath);
             }
         else if (accion == "Guardar"){
             string filepath = this.processor.get_file_path();
@@ -294,7 +316,9 @@ public class JAMediaImagenes : Gtk.Window{
         this.menu.has_file(true);
         this.update_status_bar(info);
         this.toolbar.has_file(true);
-        Gdk.Pixbuf pixbuf = this.processor.get_pixbuf();
+        Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+            this.image.get_parent().get_allocated_width(),
+            this.image.get_parent().get_allocated_height());
         this.image.set_from_pixbuf(pixbuf);
         }
 

@@ -117,6 +117,25 @@ internal class ExitDialog : Gtk.Dialog{
     }
 
 
+internal class RemoveDialog : Gtk.Dialog{
+
+    public RemoveDialog(Gtk.Window parent){
+
+        this.add_button("Eliminar", Gtk.ResponseType.ACCEPT);
+        this.add_button("Cancelar", Gtk.ResponseType.CANCEL);
+        this.set_modal(true);
+        this.set("border_width", 10);
+        this.set_transient_for(parent);
+        string text = "¿Confirmas eliminar el archivo?";
+        Gtk.Label label = new Gtk.Label(text);
+        Gtk.Box Box = this.get_content_area();
+        Box.pack_start(label, false, false, 0);
+        Box.show_all();
+
+        }
+    }
+
+
 //FIXME: Arreglar estética
 internal class Preview : Gtk.Frame{
 
