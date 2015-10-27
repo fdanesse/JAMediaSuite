@@ -98,6 +98,14 @@ public class JAMediaImagenes : Gtk.Window{
             else if (event.keyval == 65363){
                 this.toolbar_accion("Ver imagen siguiente");
                 }
+            else if (event.keyval == 65535){
+                //FIXME: Eliminar el archivo
+                }
+            }
+        else{
+            if (event.keyval == 65307){
+                this.salir();
+                }
             }
         }
 

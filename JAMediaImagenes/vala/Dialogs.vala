@@ -25,15 +25,16 @@ internal class OpenDialog : Gtk.FileChooserDialog{
         this.filtro.add_mime_type("image/*");
         this.add_filter(this.filtro);
 
-        this.update_preview.connect (() => {
-            this.run_update_preview();
-            });
+        //FIXME: Hay un Error acá
+        //this.update_preview.connect (() => {
+        //    this.run_update_preview();
+        //    });
         }
 
-    private void run_update_preview(){
-        string filepath = this.get_filename();
-        this.preview.update(filepath);
-        }
+    //private void run_update_preview(){
+    //    string filepath = this.get_filename();
+    //    this.preview.update(filepath);
+    //    }
 
     }
 
@@ -63,15 +64,16 @@ internal class SaveDialog : Gtk.FileChooserDialog{
         this.filtro.add_mime_type("image/*");
         this.add_filter(this.filtro);
 
-        this.update_preview.connect (() => {
-            this.run_update_preview();
-            });
+        //FIXME: Hay un Error acá
+        //this.update_preview.connect (() => {
+        //    this.run_update_preview();
+        //    });
         }
 
-    private void run_update_preview(){
-        string filepath = this.get_filename();
-        this.preview.update(filepath);
-        }
+    //private void run_update_preview(){
+    //    string filepath = this.get_filename();
+    //    this.preview.update(filepath);
+    //    }
     }
 
 
@@ -82,12 +84,14 @@ internal class CheckDialog : Gtk.Dialog{
         this.add_button("Guardar", Gtk.ResponseType.ACCEPT);
         this.add_button("Cancelar", Gtk.ResponseType.CANCEL);
         this.set_modal(true);
+        this.set("border_width", 10);
         this.set_transient_for(parent);
-        string text = "El archivo actual contiene cambios sin guardar.\n";
-        text += "¿Deseas Guardar estos cambios?";
-        Gtk.Label label = new Gtk.Label(text);
+        Gtk.Label label1 = new Gtk.Label(
+            "El archivo actual contiene cambios sin guardar.");
+        Gtk.Label label2 = new Gtk.Label("¿Deseas Guardarlos?");
         Gtk.Box Box = this.get_content_area();
-        Box.pack_start(label, false, false, 0);
+        Box.pack_start(label1, false, false, 5);
+        Box.pack_start(label2, false, false, 5);
         Box.show_all();
 
         }
@@ -101,6 +105,7 @@ internal class ExitDialog : Gtk.Dialog{
         this.add_button("Guardar", Gtk.ResponseType.ACCEPT);
         this.add_button("Cancelar", Gtk.ResponseType.CANCEL);
         this.set_modal(true);
+        this.set("border_width", 10);
         this.set_transient_for(parent);
         string text = "¿Confirmas salir de la aplicación?";
         Gtk.Label label = new Gtk.Label(text);
