@@ -8,7 +8,7 @@ internal class ImgProcessor : GLib.Object{
     private Gdk.Pixbuf pixbuf = null;       //Lo que se va a guardar
     private Gdk.Pixbuf pixbuf_view = null;  //Lo que se muestra
     private double scale_factor = 1.0;
-    private unowned uint8[] array;
+    //private unowned uint8[] array;
     private bool changed = false;
 
     internal ImgProcessor(){
@@ -20,7 +20,7 @@ internal class ImgProcessor : GLib.Object{
 
     public void close_file(){
         this.file_path = "";
-        this.array = null;
+        //this.array = null;
         this.pixbuf = null;
         this.pixbuf_view = null;
         this.scale_factor = 1.0;
@@ -166,6 +166,35 @@ internal class ImgProcessor : GLib.Object{
         return pixbuf;
         }
     */
+
+    private uint8 average(uint8[] list){
+        uint8 mean;
+        int sum = 0;
+        foreach(uint8 number in list){
+            sum += (int)number;
+            }
+        mean = (uint8)(sum / list.length);
+        return mean;
+        }
+
+    public Gdk.Pixbuf pixbuf_to_average(Gdk.Pixbuf pixbuf){
+        //Convierte un pixbuf a escala de grises usando Average.
+        int width = pixbuf.get_width();
+        int height = pixbuf.get_height();
+        int rowstride = pixbuf.get_rowstride(); //Elementos por fila en imagen de 20 * 10 con [rgbh] = 80 (20*4) 20 elementos de 4 componentes
+        int channels = pixbuf.get_n_channels();
+        unowned uint8[] array = pixbuf.get_pixels ();
+        for (int row = 0; row < height; row++){
+            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
+                    uint8 prom = average(array[elem:elem + 3]);
+                    array[elem] = prom;
+                    array[elem + 1] = prom;
+                    array[elem + 2] = prom;
+                }
+            }
+        return pixbuf;
+        }
+
     public string get_dir_path(){
         if (this.file_path != ""){
             return GLib.Path.get_dirname(this.file_path);

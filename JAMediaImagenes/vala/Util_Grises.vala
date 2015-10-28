@@ -95,7 +95,13 @@ internal class FrameCanal : Gtk.Frame{
             Gdk.Pixbuf pixbuf = processor.get_pixbuf_scale(
                 this.image.get_parent().get_allocated_width(),
                 this.image.get_parent().get_allocated_height());
-            this.image.set_from_pixbuf(pixbuf);
+            if ("Average" in this.get_label()){
+                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_average(pixbuf);
+                this.image.set_from_pixbuf(newpixbuf);
+                }
+            //else{
+            //    this.image.set_from_pixbuf(pixbuf);
+            //    }
             }
         else{
             this.image.clear();
