@@ -33,7 +33,7 @@ internal class ImgProcessor : GLib.Object{
         this.file_path = filepath;
         this.pixbuf = new Gdk.Pixbuf.from_file(filepath);
         this.pixbuf_view = new Gdk.Pixbuf.from_file(filepath);
-        this.array = this.pixbuf.get_pixels();
+        //this.array = this.pixbuf.get_pixels();
 
         GLib.File file = GLib.File.new_for_path(filepath);
         var file_info = file.query_info ("*", GLib.FileQueryInfoFlags.NONE);
@@ -111,7 +111,7 @@ internal class ImgProcessor : GLib.Object{
         }
 
     public Gdk.Pixbuf get_pixbuf_scale(int w, int h){
-    //zoom sobre lo que se ve
+        //zoom sobre lo que se ve
         double x_ratio = (double) w / (double) this.pixbuf.get_width();
         double y_ratio = (double) h / (double) this.pixbuf.get_height();
         if (y_ratio < x_ratio){

@@ -15,8 +15,8 @@ internal class OpenDialog : Gtk.FileChooserDialog{
         this.set_transient_for(parent);
         this.set_resizable(true);
         this.set_size_request(320, 240);
-        this.set_preview_widget(this.preview);
-        this.set_use_preview_label(false);
+        //this.set_preview_widget(this.preview);
+        //this.set_use_preview_label(false);
         this.set_current_folder(dir_path);
         this.set_property("action", Gtk.FileChooserAction.OPEN);
         this.set_select_multiple(false);
@@ -54,8 +54,8 @@ internal class SaveDialog : Gtk.FileChooserDialog{
         this.set_resizable(true);
         this.set_size_request(320, 240);
         this.set_do_overwrite_confirmation(true);
-        this.set_preview_widget(this.preview);
-        this.set_use_preview_label(false);
+        //this.set_preview_widget(this.preview);
+        //this.set_use_preview_label(false);
         this.set_current_folder(dir_path);
         this.set_property("action", Gtk.FileChooserAction.SAVE);
         this.set_select_multiple(false);
@@ -102,7 +102,7 @@ internal class ExitDialog : Gtk.Dialog{
 
     public ExitDialog(Gtk.Window parent){
 
-        this.add_button("Guardar", Gtk.ResponseType.ACCEPT);
+        this.add_button("Salir", Gtk.ResponseType.ACCEPT);
         this.add_button("Cancelar", Gtk.ResponseType.CANCEL);
         this.set_modal(true);
         this.set("border_width", 10);

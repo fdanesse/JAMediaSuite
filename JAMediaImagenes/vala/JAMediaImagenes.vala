@@ -23,6 +23,7 @@ public class JAMediaImagenes : Gtk.Window{
     private Gtk.Image image = new Gtk.Image();
     private Gtk.Statusbar statusbar = new Gtk.Statusbar();
     private ImgProcessor processor = new ImgProcessor();
+    private Grises grises = null;
 
     public JAMediaImagenes(){
 
@@ -106,15 +107,28 @@ public class JAMediaImagenes : Gtk.Window{
                 if (run == Gtk.ResponseType.ACCEPT){
                     Gee.ArrayList<string> items = this.list_dir();
                     int index = items.index_of(filepath);
-                    if (index < items.size - 1){
-                        index++;
+                    if (items.size > 1){
+                        if (index < items.size - 1){
+                            index++;
+                            }
+                        else{
+                            index = 0;
+                            }
+                        string newfilepath = items[index];
+                        this.open_file(newfilepath);
                         }
                     else{
-                        index = 0;
+                        this.close_file();
                         }
-                    string newfilepath = items[index];
-                    this.open_file(newfilepath);
-                    GLib.FileUtils.remove(filepath);
+                    //GLib.FileUtils.remove(filepath);
+                    GLib.File file = GLib.File.parse_name(filepath);
+                    try{
+                        file.trash();
+                        }
+                    catch(Error e) {
+                        GLib.stderr.printf("ERROR al borrar un archivo: %s\n", e.message);
+                        GLib.stderr.flush();
+                        }
                     }
                 }
             }
@@ -143,30 +157,42 @@ public class JAMediaImagenes : Gtk.Window{
                 }
             }
         else if (accion == "Acercar"){
-            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_zoom_in();
-            this.image.set_from_pixbuf(pixbuf);
+            if (this.processor.get_file_path() != ""){
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_zoom_in();
+                this.image.set_from_pixbuf(pixbuf);
+                }
             }
         else if (accion == "Alejar"){
-            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_zoom_out();
-            this.image.set_from_pixbuf(pixbuf);
+            if (this.processor.get_file_path() != ""){
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_zoom_out();
+                this.image.set_from_pixbuf(pixbuf);
+                }
             }
         else if (accion == "Ver tamaño original"){
-            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf();
-            this.image.set_from_pixbuf(pixbuf);
+            if (this.processor.get_file_path() != ""){
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf();
+                this.image.set_from_pixbuf(pixbuf);
+                }
             }
         else if (accion == "Ocupar todo el espacio"){
-            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
-                this.image.get_parent().get_allocated_width(),
-                this.image.get_parent().get_allocated_height());
-            this.image.set_from_pixbuf(pixbuf);
+            if (this.processor.get_file_path() != ""){
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+                    this.image.get_parent().get_allocated_width(),
+                    this.image.get_parent().get_allocated_height());
+                this.image.set_from_pixbuf(pixbuf);
+                }
             }
         else if (accion == "Rotar a la izquierda"){
-            Gdk.Pixbuf pixbuf = this.processor.rotate_left();
-            this.image.set_from_pixbuf(pixbuf);
+            if (this.processor.get_file_path() != ""){
+                Gdk.Pixbuf pixbuf = this.processor.rotate_left();
+                this.image.set_from_pixbuf(pixbuf);
+                }
             }
         else if (accion == "Rotar a la derecha"){
-            Gdk.Pixbuf pixbuf = this.processor.rotate_right();
-            this.image.set_from_pixbuf(pixbuf);
+            if (this.processor.get_file_path() != ""){
+                Gdk.Pixbuf pixbuf = this.processor.rotate_right();
+                this.image.set_from_pixbuf(pixbuf);
+                }
             }
         else if (accion == "Ver imagen anterior"){
             string filepath = this.processor.get_file_path();
@@ -282,17 +308,25 @@ public class JAMediaImagenes : Gtk.Window{
 
     private void menu_accion(string accion){
         if (accion == "Abrir..."){
-            OpenDialog dialog = new OpenDialog(
-                this.get_toplevel() as Gtk.Window,
-                this.processor.get_dir_path());
-            int run = dialog.run();
-            if (run == Gtk.ResponseType.ACCEPT){
-                this.open_file(dialog.get_filename());
-                }
-            dialog.destroy();
+            this.toolbar_accion("Abrir");
+            }
+        else if (accion == "Guardar"){
+            this.toolbar_accion("Guardar");
+            }
+        else if (accion == "Guardar Como..."){
+            this.toolbar_accion("Guardar Como");
             }
         else if (accion == "Cerrar"){
             this.close_file();
+            }
+        else if (accion == "Grises..."){
+            if (this.grises == null){
+                this.grises = new Grises(this.get_toplevel() as Gtk.Window);
+                this.grises.set_processor(this.processor);
+                this.grises.destroy.connect ((source) => {
+                    this.util_exit("Grises");
+                 });
+                }
             }
         else{
             GLib.stdout.printf("Menu Accion: %s\n", accion);
@@ -306,6 +340,9 @@ public class JAMediaImagenes : Gtk.Window{
         this.toolbar.has_file(false);
         this.update_status_bar("Img:");
         this.image.clear();
+        if (this.grises != null){
+            this.grises.set_processor(this.processor);
+            }
         }
 
     private void open_file(string filepath){
@@ -320,10 +357,19 @@ public class JAMediaImagenes : Gtk.Window{
             this.image.get_parent().get_allocated_width(),
             this.image.get_parent().get_allocated_height());
         this.image.set_from_pixbuf(pixbuf);
+        if (this.grises != null){
+            this.grises.set_processor(this.processor);
+            }
         }
 
     private void update_status_bar(string info){
         this.statusbar.push(0, info);
+        }
+
+    private void util_exit(string util){
+        if (util == "Grises"){
+            this.grises = null;
+            }
         }
 
     private void salir(){
