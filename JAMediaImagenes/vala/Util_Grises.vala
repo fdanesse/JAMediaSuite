@@ -2,6 +2,8 @@
 
 internal class Grises : Gtk.Window{
 
+    public signal void change_channel(string channel);
+
     private Gtk.Grid grid = new Gtk.Grid();
     private FrameCanal lightness = new FrameCanal(" Lightness: ");
     private FrameCanal luminosity = new FrameCanal(" Luminosity: ");
@@ -49,7 +51,7 @@ internal class Grises : Gtk.Window{
                     frame.toggle(false);
                     }
                 }
-            //FIXME: enviar label
+            this.change_channel(label);
             }
         else{
             bool active = false;
@@ -60,9 +62,7 @@ internal class Grises : Gtk.Window{
                     }
                 }
             if (active == false){
-                //FIXME: enviar ""
-                GLib.stdout.printf("OK\n");
-                GLib.stdout.flush();
+                this.change_channel("Original");
                 }
             }
         }
@@ -79,7 +79,7 @@ internal class FrameCanal : Gtk.Frame{
     public FrameCanal(string text){
         this.set_border_width(4);
         this.set_label(text);
-        this.image.set_size_request(100, 100);
+        this.image.set_size_request(100, 75);
         this.button.set_image(this.image);
         this.add(this.button);
         this.show_all();
@@ -92,16 +92,14 @@ internal class FrameCanal : Gtk.Frame{
     public void set_processor(ImgProcessor processor){
         this.button.set_active(false);
         if (processor.get_file_path() != ""){
-            Gdk.Pixbuf pixbuf = processor.get_pixbuf_scale(
-                this.image.get_parent().get_allocated_width(),
-                this.image.get_parent().get_allocated_height());
+            Gdk.Pixbuf pixbuf = processor.get_pixbuf_scale(100, 100);
             if ("Average" in this.get_label()){
                 Gdk.Pixbuf newpixbuf = processor.pixbuf_to_average(pixbuf);
                 this.image.set_from_pixbuf(newpixbuf);
                 }
-            //else{
-            //    this.image.set_from_pixbuf(pixbuf);
-            //    }
+            else{
+                this.image.set_from_pixbuf(pixbuf);
+                }
             }
         else{
             this.image.clear();

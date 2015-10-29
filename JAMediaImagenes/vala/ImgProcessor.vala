@@ -31,10 +31,20 @@ internal class ImgProcessor : GLib.Object{
 
     public string open(string filepath){
         this.file_path = filepath;
-        this.pixbuf = new Gdk.Pixbuf.from_file(filepath);
-        this.pixbuf_view = new Gdk.Pixbuf.from_file(filepath);
+        pixbuf = new Gdk.Pixbuf.from_file(filepath);
+        pixbuf_view = new Gdk.Pixbuf.from_file(filepath);
+        //Siempre Agregar canal alpha
+        if (this.pixbuf.get_has_alpha()){
+            this.pixbuf = pixbuf;
+            this.pixbuf_view = pixbuf_view;
+            }
+        else{
+            this.pixbuf = pixbuf.add_alpha (false, 0, 0, 0);
+            this.pixbuf_view = pixbuf_view.add_alpha (false, 0, 0, 0);
+            this.changed = true;
+            this.emit_change(this.changed);
+            }
         //this.array = this.pixbuf.get_pixels();
-
         GLib.File file = GLib.File.new_for_path(filepath);
         var file_info = file.query_info ("*", GLib.FileQueryInfoFlags.NONE);
         int64 size = file_info.get_size();
@@ -64,7 +74,6 @@ internal class ImgProcessor : GLib.Object{
         info += channels.to_string();
         info += " bytes ";
         info += size.to_string();
-
         return info;
         }
 
@@ -75,7 +84,7 @@ internal class ImgProcessor : GLib.Object{
         this.pixbuf_view = this.pixbuf.copy();
         this.changed = true;
         this.emit_change(this.changed);
-        if (scale_factor != 1.0){
+        if (this.scale_factor != 1.0){
             return this.scale();
             }
         else{
@@ -112,8 +121,9 @@ internal class ImgProcessor : GLib.Object{
 
     public Gdk.Pixbuf get_pixbuf_scale(int w, int h){
         //zoom sobre lo que se ve
-        double x_ratio = (double) w / (double) this.pixbuf.get_width();
-        double y_ratio = (double) h / (double) this.pixbuf.get_height();
+        Gdk.Pixbuf pixbuf = this.pixbuf.copy();
+        double x_ratio = (double) w / (double) pixbuf.get_width();
+        double y_ratio = (double) h / (double) pixbuf.get_height();
         if (y_ratio < x_ratio){
             this.scale_factor = y_ratio;
             }
@@ -124,9 +134,8 @@ internal class ImgProcessor : GLib.Object{
         }
 
     private Gdk.Pixbuf scale(){
-        //zoom sobre lo que se ve
-        //FIXME: Gdk.InterpType.HYPER maxima calidad, bajo rendimiento
         Gdk.Pixbuf pixbuf = this.pixbuf.copy();
+        //FIXME: Gdk.InterpType.HYPER maxima calidad, bajo rendimiento
         int new_width = (int)(pixbuf.get_width() * this.scale_factor);
         int new_height = (int)(pixbuf.get_height() * this.scale_factor);
         this.pixbuf_view = pixbuf.scale_simple(new_width,
@@ -140,32 +149,6 @@ internal class ImgProcessor : GLib.Object{
         this.pixbuf_view = this.pixbuf.copy();
         return this.pixbuf_view;
         }
-
-    /*
-    public Gdk.Pixbuf get_pixbuf_channles(Gtk.Widget widget, string mode_view, string channels){
-        if (mode_view == "REAL" && "Original" in channels){
-            //return this.pixbuf;
-            pixbuf = this.scale_full(widget, this.pixbuf);
-            return pixbuf;
-            }
-        else{
-            return this.pixbuf;
-            }
-        }
-    */
-    /*
-    private Gdk.Pixbuf scale_full(Gtk.Widget widget, Gdk.Pixbuf pixbuf){
-        //rect = widget.get_allocation()
-        //src_width, src_height = pixbuf.get_width(), pixbuf.get_height()
-        //scale = min(float(rect.width) / src_width,
-        //    float(rect.height) / src_height)
-        //new_width = int(scale * src_width)
-        //new_height = int(scale * src_height)
-        //pixbuf = pixbuf.scale_simple(new_width,
-        //    new_height, gtk.gdk.INTERP_BILINEAR)
-        return pixbuf;
-        }
-    */
 
     private uint8 average(uint8[] list){
         uint8 mean;
@@ -193,6 +176,25 @@ internal class ImgProcessor : GLib.Object{
                 }
             }
         return pixbuf;
+        }
+
+    public void apply_average(){
+        //Convierte el pixbuf principal a escala de grises usando Average.
+        int width = this.pixbuf.get_width();
+        int height = this.pixbuf.get_height();
+        int rowstride = this.pixbuf.get_rowstride(); //Elementos por fila en imagen de 20 * 10 con [rgbh] = 80 (20*4) 20 elementos de 4 componentes
+        int channels = this.pixbuf.get_n_channels();
+        unowned uint8[] array = this.pixbuf.get_pixels ();
+        for (int row = 0; row < height; row++){
+            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
+                    uint8 prom = average(array[elem:elem + 3]);
+                    array[elem] = prom;
+                    array[elem + 1] = prom;
+                    array[elem + 2] = prom;
+                }
+            }
+        this.changed = true;
+        this.emit_change(this.changed);
         }
 
     public string get_dir_path(){

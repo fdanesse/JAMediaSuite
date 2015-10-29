@@ -323,6 +323,7 @@ public class JAMediaImagenes : Gtk.Window{
             if (this.grises == null){
                 this.grises = new Grises(this.get_toplevel() as Gtk.Window);
                 this.grises.set_processor(this.processor);
+                this.grises.change_channel.connect(this.change_channel);
                 this.grises.destroy.connect ((source) => {
                     this.util_exit("Grises");
                  });
@@ -332,6 +333,22 @@ public class JAMediaImagenes : Gtk.Window{
             GLib.stdout.printf("Menu Accion: %s\n", accion);
             GLib.stdout.flush();
             }
+        }
+
+    private void change_channel(string channel){
+        if ("Original" in channel){
+            string filepath = this.processor.get_file_path();
+            this.open_file(filepath);
+            }
+        else if ("Average" in channel){
+            this.processor.apply_average();
+            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+                this.image.get_parent().get_allocated_width(),
+                this.image.get_parent().get_allocated_height());
+            this.image.set_from_pixbuf(pixbuf);
+            }
+        GLib.stdout.printf("Activar: %s\n", channel);
+        GLib.stdout.flush();
         }
 
     private void close_file(){
