@@ -1,4 +1,18 @@
 
+/*
+public string open(string filepath)
+    puede modificar el original si no tiene alpha
+
+public Gdk.Pixbuf rotate_left()
+    modifica el original
+
+public Gdk.Pixbuf rotate_right()
+    modifica el original
+
+public void apply_average()
+    modifica el original
+*/
+
 
 internal class ImgProcessor : GLib.Object{
 
@@ -180,19 +194,7 @@ internal class ImgProcessor : GLib.Object{
 
     public void apply_average(){
         //Convierte el pixbuf principal a escala de grises usando Average.
-        int width = this.pixbuf.get_width();
-        int height = this.pixbuf.get_height();
-        int rowstride = this.pixbuf.get_rowstride(); //Elementos por fila en imagen de 20 * 10 con [rgbh] = 80 (20*4) 20 elementos de 4 componentes
-        int channels = this.pixbuf.get_n_channels();
-        unowned uint8[] array = this.pixbuf.get_pixels ();
-        for (int row = 0; row < height; row++){
-            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
-                    uint8 prom = average(array[elem:elem + 3]);
-                    array[elem] = prom;
-                    array[elem + 1] = prom;
-                    array[elem + 2] = prom;
-                }
-            }
+        this.pixbuf = this.pixbuf_to_average(this.pixbuf);
         this.changed = true;
         this.emit_change(this.changed);
         }
