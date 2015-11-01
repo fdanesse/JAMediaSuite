@@ -342,28 +342,28 @@ public class JAMediaImagenes : Gtk.Window{
                 this.open_file(filepath);
                 }
             else if ("Average" in channel){
-                this.processor.apply_average();
+                this.processor.apply_channel("average");
                 Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
                     this.image.get_parent().get_allocated_width(),
                     this.image.get_parent().get_allocated_height());
                 this.image.set_from_pixbuf(pixbuf);
                 }
             else if ("Percentual" in channel){
-                this.processor.apply_percentual();
+                this.processor.apply_channel("percentual");
                 Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
                     this.image.get_parent().get_allocated_width(),
                     this.image.get_parent().get_allocated_height());
                 this.image.set_from_pixbuf(pixbuf);
                 }
             else if ("Luminosity" in channel){
-                this.processor.apply_luminosity();
+                this.processor.apply_channel("luminosity");
                 Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
                     this.image.get_parent().get_allocated_width(),
                     this.image.get_parent().get_allocated_height());
                 this.image.set_from_pixbuf(pixbuf);
                 }
             else if ("Lightness" in channel){
-                this.processor.apply_lightness();
+                this.processor.apply_channel("lightness");
                 Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
                     this.image.get_parent().get_allocated_width(),
                     this.image.get_parent().get_allocated_height());

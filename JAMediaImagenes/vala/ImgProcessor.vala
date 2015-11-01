@@ -135,9 +135,8 @@ internal class ImgProcessor : GLib.Object{
 
     public Gdk.Pixbuf get_pixbuf_scale(int w, int h){
         //zoom sobre lo que se ve
-        Gdk.Pixbuf pixbuf = this.pixbuf.copy();
-        double x_ratio = (double) w / (double) pixbuf.get_width();
-        double y_ratio = (double) h / (double) pixbuf.get_height();
+        double x_ratio = (double) w / (double) this.pixbuf.get_width();
+        double y_ratio = (double) h / (double) this.pixbuf.get_height();
         if (y_ratio < x_ratio){
             this.scale_factor = y_ratio;
             }
@@ -165,104 +164,29 @@ internal class ImgProcessor : GLib.Object{
         }
 
     private uint8 average(uint8[] list){
-        uint8 mean;
+        uint8 ret;
         int sum = 0;
         foreach(uint8 number in list){
             sum += (int)number;
             }
-        mean = (uint8)(sum / list.length);
-        return mean;
-        }
-
-    public Gdk.Pixbuf pixbuf_to_average(Gdk.Pixbuf pixbuf){
-        //Convierte un pixbuf a escala de grises usando Average.
-        int width = pixbuf.get_width();
-        int height = pixbuf.get_height();
-        int rowstride = pixbuf.get_rowstride(); //Elementos por fila en imagen de 20 * 10 con [rgbh] = 80 (20*4) 20 elementos de 4 componentes
-        int channels = pixbuf.get_n_channels();
-        unowned uint8[] array = pixbuf.get_pixels ();
-        for (int row = 0; row < height; row++){
-            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
-                    uint8 prom = average(array[elem:elem + 3]);
-                    array[elem] = prom;
-                    array[elem + 1] = prom;
-                    array[elem + 2] = prom;
-                }
-            }
-        return pixbuf;
-        }
-
-    public void apply_average(){
-        //Convierte el pixbuf principal a escala de grises usando Average.
-        this.pixbuf = this.pixbuf_to_average(this.pixbuf);
-        this.changed = true;
-        this.emit_change(this.changed);
+        ret = (uint8)(sum / list.length);
+        return ret;
         }
 
     private uint8 percentual(uint8[] list){
         double a = (double)list[0];
         double b = (double)list[1];
         double c = (double)list[2];
-        uint8 per = (uint8)(a * 0.3 + b * 0.59 + c * 0.11);
-        return per;
-        }
-
-    public Gdk.Pixbuf pixbuf_to_percentual(Gdk.Pixbuf pixbuf){
-        //Convierte un pixbuf a escala de grises usando Percentual.
-        int width = pixbuf.get_width();
-        int height = pixbuf.get_height();
-        int rowstride = pixbuf.get_rowstride();
-        int channels = pixbuf.get_n_channels();
-        unowned uint8[] array = pixbuf.get_pixels ();
-        for (int row = 0; row < height; row++){
-            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
-                    uint8 per = percentual(array[elem:elem + 3]);
-                    array[elem] = per;
-                    array[elem + 1] = per;
-                    array[elem + 2] = per;
-                }
-            }
-        return pixbuf;
-        }
-
-    public void apply_percentual(){
-        //Convierte el pixbuf principal a escala de grises usando Percentual.
-        this.pixbuf = this.pixbuf_to_percentual(this.pixbuf);
-        this.changed = true;
-        this.emit_change(this.changed);
+        uint8 ret = (uint8)(a * 0.3 + b * 0.59 + c * 0.11);
+        return ret;
         }
 
     private uint8 luminosity(uint8[] list){
         double a = (double)list[0];
         double b = (double)list[1];
         double c = (double)list[2];
-        uint8 lum = (uint8)(0.21 * a + 0.72 * b + 0.07 * c);
-        return lum;
-        }
-
-    public Gdk.Pixbuf pixbuf_to_luminosity(Gdk.Pixbuf pixbuf){
-        //Convierte un pixbuf a escala de grises usando Luminosity.
-        int width = pixbuf.get_width();
-        int height = pixbuf.get_height();
-        int rowstride = pixbuf.get_rowstride();
-        int channels = pixbuf.get_n_channels();
-        unowned uint8[] array = pixbuf.get_pixels ();
-        for (int row = 0; row < height; row++){
-            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
-                    uint8 lum = luminosity(array[elem:elem + 3]);
-                    array[elem] = lum;
-                    array[elem + 1] = lum;
-                    array[elem + 2] = lum;
-                }
-            }
-        return pixbuf;
-        }
-
-    public void apply_luminosity(){
-        //Convierte el pixbuf principal a escala de grises usando Luminosity.
-        this.pixbuf = this.pixbuf_to_luminosity(this.pixbuf);
-        this.changed = true;
-        this.emit_change(this.changed);
+        uint8 ret = (uint8)(0.21 * a + 0.72 * b + 0.07 * c);
+        return ret;
         }
 
     private uint8 lightness(uint8[] list){
@@ -270,12 +194,11 @@ internal class ImgProcessor : GLib.Object{
         ma = uint8.max(ma, list[2]);
         uint8 mi = uint8.min(list[0], list[1]);
         mi = uint8.min(mi, list[2]);
-        uint8 lum = (uint8)(1.0 / 2.0 * ((double)ma + (double)mi));
-        return lum;
+        uint8 ret = (uint8)(1.0 / 2.0 * ((double)ma + (double)mi));
+        return ret;
         }
 
-
-    public Gdk.Pixbuf pixbuf_to_lightness(Gdk.Pixbuf pixbuf){
+    public Gdk.Pixbuf pixbuf_to_channel(Gdk.Pixbuf pixbuf, string channel){
         //Convierte un pixbuf a escala de grises usando Luminosity.
         int width = pixbuf.get_width();
         int height = pixbuf.get_height();
@@ -284,20 +207,33 @@ internal class ImgProcessor : GLib.Object{
         unowned uint8[] array = pixbuf.get_pixels ();
         for (int row = 0; row < height; row++){
             for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
-                    uint8 lum = lightness(array[elem:elem + 3]);
-                    array[elem] = lum;
-                    array[elem + 1] = lum;
-                    array[elem + 2] = lum;
+                uint8 ret = 0;
+                if (channel == "average"){
+                    ret = average(array[elem:elem + 3]);
+                    }
+                else if (channel == "percentual"){
+                    ret = percentual(array[elem:elem + 3]);
+                    }
+                else if (channel == "luminosity"){
+                    ret = luminosity(array[elem:elem + 3]);
+                    }
+                else if (channel == "lightness"){
+                    ret = lightness(array[elem:elem + 3]);
+                    }
+                array[elem] = ret;
+                array[elem + 1] = ret;
+                array[elem + 2] = ret;
                 }
             }
         return pixbuf;
         }
 
-    public void apply_lightness(){
-        //Convierte el pixbuf principal a escala de grises usando Luminosity.
-        this.pixbuf = this.pixbuf_to_lightness(this.pixbuf);
+    public void apply_channel(string channel){
+        this.pixbuf = this.pixbuf_to_channel(this.pixbuf, channel);
         this.changed = true;
         this.emit_change(this.changed);
+        GLib.stdout.printf("%s\n", channel);
+        GLib.stdout.flush();
         }
 
     public string get_dir_path(){
