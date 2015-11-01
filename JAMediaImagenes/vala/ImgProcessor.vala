@@ -199,6 +199,39 @@ internal class ImgProcessor : GLib.Object{
         this.emit_change(this.changed);
         }
 
+    private uint8 percentual(uint8[] list){
+        double a = (double)list[0];
+        double b = (double)list[1];
+        double c = (double)list[2];
+        uint8 per = (uint8)(a * 0.3 + b * 0.59 + c * 0.11);
+        return per;
+        }
+
+    public Gdk.Pixbuf pixbuf_to_percentual(Gdk.Pixbuf pixbuf){
+        //Convierte un pixbuf a escala de grises usando Percentual.
+        int width = pixbuf.get_width();
+        int height = pixbuf.get_height();
+        int rowstride = pixbuf.get_rowstride();
+        int channels = pixbuf.get_n_channels();
+        unowned uint8[] array = pixbuf.get_pixels ();
+        for (int row = 0; row < height; row++){
+            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
+                    uint8 per = percentual(array[elem:elem + 3]);
+                    array[elem] = per;
+                    array[elem + 1] = per;
+                    array[elem + 2] = per;
+                }
+            }
+        return pixbuf;
+        }
+
+    public void apply_percentual(){
+        //Convierte el pixbuf principal a escala de grises usando Percentual.
+        this.pixbuf = this.pixbuf_to_percentual(this.pixbuf);
+        this.changed = true;
+        this.emit_change(this.changed);
+        }
+
     public string get_dir_path(){
         if (this.file_path != ""){
             return GLib.Path.get_dirname(this.file_path);

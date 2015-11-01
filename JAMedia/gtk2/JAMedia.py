@@ -49,6 +49,7 @@ from Globales import describe_archivo
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
+#FIXME: Agregar en setup.py: python-gst0.10 gstreamer0.10-plugins-base gstreamer0.10-plugins-good gstreamer0.10-plugins-ugly gstreamer0.10-plugins-bad gstreamer0.10-tools python-gst0.10-rtsp
 
 """
 Necesita:

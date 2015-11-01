@@ -336,19 +336,28 @@ public class JAMediaImagenes : Gtk.Window{
         }
 
     private void change_channel(string channel){
-        if ("Original" in channel){
-            string filepath = this.processor.get_file_path();
-            this.open_file(filepath);
+        string filepath = this.processor.get_file_path();
+        if (filepath != ""){
+            if ("Original" in channel){
+                this.open_file(filepath);
+                }
+            else if ("Average" in channel){
+                this.processor.apply_average();
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+                    this.image.get_parent().get_allocated_width(),
+                    this.image.get_parent().get_allocated_height());
+                this.image.set_from_pixbuf(pixbuf);
+                }
+            else if ("Percentual" in channel){
+                this.processor.apply_percentual();
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+                    this.image.get_parent().get_allocated_width(),
+                    this.image.get_parent().get_allocated_height());
+                this.image.set_from_pixbuf(pixbuf);
+                }
+            GLib.stdout.printf("Activar: %s\n", channel);
+            GLib.stdout.flush();
             }
-        else if ("Average" in channel){
-            this.processor.apply_average();
-            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
-                this.image.get_parent().get_allocated_width(),
-                this.image.get_parent().get_allocated_height());
-            this.image.set_from_pixbuf(pixbuf);
-            }
-        GLib.stdout.printf("Activar: %s\n", channel);
-        GLib.stdout.flush();
         }
 
     private void close_file(){

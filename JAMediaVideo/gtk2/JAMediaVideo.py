@@ -35,6 +35,8 @@ from JAMedia.Toolbars import ToolbarSalir
 from JAMedia.Toolbars import ToolbarAccion
 from BasePanel import BasePanel
 
+#FIXME: Agregar en setup.py: python-gst0.10 gstreamer0.10-plugins-base gstreamer0.10-plugins-good gstreamer0.10-plugins-ugly gstreamer0.10-plugins-bad gstreamer0.10-tools python-gst0.10-rtsp
+
 BASE_PATH = os.path.dirname(__file__)
 
 gobject.threads_init()
