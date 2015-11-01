@@ -215,6 +215,7 @@ internal class ImgProcessor : GLib.Object{
         }
 
     public void apply_channel(string channel){
+        string info = this.open(this.get_file_path()); //Es necesario eliminar cambios previos por eso reabrimos.
         Gdk.Pixbuf pixbuf = this.pixbuf_to_channel(this.pixbuf, channel);
         this.changed = true;
         this.emit_change(this.changed);
