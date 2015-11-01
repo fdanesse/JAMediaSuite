@@ -355,8 +355,20 @@ public class JAMediaImagenes : Gtk.Window{
                     this.image.get_parent().get_allocated_height());
                 this.image.set_from_pixbuf(pixbuf);
                 }
-            GLib.stdout.printf("Activar: %s\n", channel);
-            GLib.stdout.flush();
+            else if ("Luminosity" in channel){
+                this.processor.apply_luminosity();
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+                    this.image.get_parent().get_allocated_width(),
+                    this.image.get_parent().get_allocated_height());
+                this.image.set_from_pixbuf(pixbuf);
+                }
+            else if ("Lightness" in channel){
+                this.processor.apply_lightness();
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+                    this.image.get_parent().get_allocated_width(),
+                    this.image.get_parent().get_allocated_height());
+                this.image.set_from_pixbuf(pixbuf);
+                }
             }
         }
 

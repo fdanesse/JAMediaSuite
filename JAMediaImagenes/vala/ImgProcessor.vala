@@ -232,6 +232,74 @@ internal class ImgProcessor : GLib.Object{
         this.emit_change(this.changed);
         }
 
+    private uint8 luminosity(uint8[] list){
+        double a = (double)list[0];
+        double b = (double)list[1];
+        double c = (double)list[2];
+        uint8 lum = (uint8)(0.21 * a + 0.72 * b + 0.07 * c);
+        return lum;
+        }
+
+    public Gdk.Pixbuf pixbuf_to_luminosity(Gdk.Pixbuf pixbuf){
+        //Convierte un pixbuf a escala de grises usando Luminosity.
+        int width = pixbuf.get_width();
+        int height = pixbuf.get_height();
+        int rowstride = pixbuf.get_rowstride();
+        int channels = pixbuf.get_n_channels();
+        unowned uint8[] array = pixbuf.get_pixels ();
+        for (int row = 0; row < height; row++){
+            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
+                    uint8 lum = luminosity(array[elem:elem + 3]);
+                    array[elem] = lum;
+                    array[elem + 1] = lum;
+                    array[elem + 2] = lum;
+                }
+            }
+        return pixbuf;
+        }
+
+    public void apply_luminosity(){
+        //Convierte el pixbuf principal a escala de grises usando Luminosity.
+        this.pixbuf = this.pixbuf_to_luminosity(this.pixbuf);
+        this.changed = true;
+        this.emit_change(this.changed);
+        }
+
+    private uint8 lightness(uint8[] list){
+        uint8 ma = uint8.max(list[0], list[1]);
+        ma = uint8.max(ma, list[2]);
+        uint8 mi = uint8.min(list[0], list[1]);
+        mi = uint8.min(mi, list[2]);
+        uint8 lum = (uint8)(1.0 / 2.0 * ((double)ma + (double)mi));
+        return lum;
+        }
+
+
+    public Gdk.Pixbuf pixbuf_to_lightness(Gdk.Pixbuf pixbuf){
+        //Convierte un pixbuf a escala de grises usando Luminosity.
+        int width = pixbuf.get_width();
+        int height = pixbuf.get_height();
+        int rowstride = pixbuf.get_rowstride();
+        int channels = pixbuf.get_n_channels();
+        unowned uint8[] array = pixbuf.get_pixels ();
+        for (int row = 0; row < height; row++){
+            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
+                    uint8 lum = lightness(array[elem:elem + 3]);
+                    array[elem] = lum;
+                    array[elem + 1] = lum;
+                    array[elem + 2] = lum;
+                }
+            }
+        return pixbuf;
+        }
+
+    public void apply_lightness(){
+        //Convierte el pixbuf principal a escala de grises usando Luminosity.
+        this.pixbuf = this.pixbuf_to_lightness(this.pixbuf);
+        this.changed = true;
+        this.emit_change(this.changed);
+        }
+
     public string get_dir_path(){
         if (this.file_path != ""){
             return GLib.Path.get_dirname(this.file_path);

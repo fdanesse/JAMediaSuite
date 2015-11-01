@@ -97,8 +97,16 @@ internal class FrameCanal : Gtk.Frame{
                 Gdk.Pixbuf newpixbuf = processor.pixbuf_to_average(pixbuf);
                 this.image.set_from_pixbuf(newpixbuf);
                 }
-            if ("Percentual" in this.get_label()){
+            else if ("Percentual" in this.get_label()){
                 Gdk.Pixbuf newpixbuf = processor.pixbuf_to_percentual(pixbuf);
+                this.image.set_from_pixbuf(newpixbuf);
+                }
+            else if ("Luminosity" in this.get_label()){
+                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_luminosity(pixbuf);
+                this.image.set_from_pixbuf(newpixbuf);
+                }
+            else if ("Lightness" in this.get_label()){
+                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_lightness(pixbuf);
                 this.image.set_from_pixbuf(newpixbuf);
                 }
             else{
