@@ -19,10 +19,8 @@ internal class ImgProcessor : GLib.Object{
     public signal void has_change(bool changed);
 
     private string file_path = "";
-    private Gdk.Pixbuf pixbuf = null;       //Lo que se va a guardar
-    private Gdk.Pixbuf pixbuf_view = null;  //Lo que se muestra
+    private Gdk.Pixbuf pixbuf = null;
     private double scale_factor = 1.0;
-    //private unowned uint8[] array;
     private bool changed = false;
 
     internal ImgProcessor(){
@@ -34,31 +32,24 @@ internal class ImgProcessor : GLib.Object{
 
     public void close_file(){
         this.file_path = "";
-        //this.array = null;
         this.pixbuf = null;
-        this.pixbuf_view = null;
         this.scale_factor = 1.0;
         this.changed = false;
         this.emit_change(this.changed);
-        //self.__file_info = {}
         }
 
     public string open(string filepath){
         this.file_path = filepath;
-        pixbuf = new Gdk.Pixbuf.from_file(filepath);
-        pixbuf_view = new Gdk.Pixbuf.from_file(filepath);
+        Gdk.Pixbuf pixbuf = new Gdk.Pixbuf.from_file(filepath);
         //Siempre Agregar canal alpha
-        if (this.pixbuf.get_has_alpha()){
+        if (pixbuf.get_has_alpha()){
             this.pixbuf = pixbuf;
-            this.pixbuf_view = pixbuf_view;
             }
         else{
             this.pixbuf = pixbuf.add_alpha (false, 0, 0, 0);
-            this.pixbuf_view = pixbuf_view.add_alpha (false, 0, 0, 0);
             this.changed = true;
             this.emit_change(this.changed);
             }
-        //this.array = this.pixbuf.get_pixels();
         GLib.File file = GLib.File.new_for_path(filepath);
         var file_info = file.query_info ("*", GLib.FileQueryInfoFlags.NONE);
         int64 size = file_info.get_size();
@@ -93,31 +84,27 @@ internal class ImgProcessor : GLib.Object{
 
     public Gdk.Pixbuf rotate_left(){
         //Afecta lo que se va a guardar
-        Gdk.Pixbuf pixbuf = this.pixbuf.copy();
-        this.pixbuf = pixbuf.rotate_simple(Gdk.PixbufRotation.COUNTERCLOCKWISE);
-        this.pixbuf_view = this.pixbuf.copy();
+        this.pixbuf = this.pixbuf.rotate_simple(Gdk.PixbufRotation.COUNTERCLOCKWISE);
         this.changed = true;
         this.emit_change(this.changed);
         if (this.scale_factor != 1.0){
             return this.scale();
             }
         else{
-            return this.pixbuf_view;
+            return this.pixbuf;
             }
         }
 
     public Gdk.Pixbuf rotate_right(){
         //Afecta lo que se va a guardar
-        Gdk.Pixbuf pixbuf = this.pixbuf.copy();
-        this.pixbuf = pixbuf.rotate_simple(Gdk.PixbufRotation.CLOCKWISE);
-        this.pixbuf_view = this.pixbuf.copy();
+        this.pixbuf = this.pixbuf.rotate_simple(Gdk.PixbufRotation.CLOCKWISE);
         this.changed = true;
         this.emit_change(this.changed);
         if (this.scale_factor != 1.0){
             return this.scale();
             }
         else{
-            return this.pixbuf_view;
+            return this.pixbuf;
             }
         }
 
@@ -147,20 +134,19 @@ internal class ImgProcessor : GLib.Object{
         }
 
     private Gdk.Pixbuf scale(){
-        Gdk.Pixbuf pixbuf = this.pixbuf.copy();
+        //Gdk.Pixbuf pixbuf = this.pixbuf.copy();
         //FIXME: Gdk.InterpType.HYPER maxima calidad, bajo rendimiento
         int new_width = (int)(pixbuf.get_width() * this.scale_factor);
         int new_height = (int)(pixbuf.get_height() * this.scale_factor);
-        this.pixbuf_view = pixbuf.scale_simple(new_width,
+        Gdk.Pixbuf preview = this.pixbuf.scale_simple(new_width,
             new_height, Gdk.InterpType.HYPER);
-        return this.pixbuf_view;
+        return preview;
         }
 
     public Gdk.Pixbuf get_pixbuf(){
         //Lo que se va a guardar y a tamaño original
         this.scale_factor = 1.0;
-        this.pixbuf_view = this.pixbuf.copy();
-        return this.pixbuf_view;
+        return this.pixbuf;
         }
 
     private uint8 average(uint8[] list){
@@ -199,7 +185,7 @@ internal class ImgProcessor : GLib.Object{
         }
 
     public Gdk.Pixbuf pixbuf_to_channel(Gdk.Pixbuf pixbuf, string channel){
-        //Convierte un pixbuf a escala de grises usando Luminosity.
+        //Convierte un pixbuf a escala de grises
         int width = pixbuf.get_width();
         int height = pixbuf.get_height();
         int rowstride = pixbuf.get_rowstride();
@@ -229,11 +215,9 @@ internal class ImgProcessor : GLib.Object{
         }
 
     public void apply_channel(string channel){
-        this.pixbuf = this.pixbuf_to_channel(this.pixbuf, channel);
+        Gdk.Pixbuf pixbuf = this.pixbuf_to_channel(this.pixbuf, channel);
         this.changed = true;
         this.emit_change(this.changed);
-        GLib.stdout.printf("%s\n", channel);
-        GLib.stdout.flush();
         }
 
     public string get_dir_path(){
