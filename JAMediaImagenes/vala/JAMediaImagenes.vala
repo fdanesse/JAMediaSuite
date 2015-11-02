@@ -380,6 +380,11 @@ public class JAMediaImagenes : Gtk.Window{
                     this.image.get_parent().get_allocated_height());
                 this.image.set_from_pixbuf(pixbuf);
                 }
+
+            //FIXME: Siempre se deben actualizar los demas utiles abiertos
+            if (this.canales != null){
+                this.canales.set_processor(this.processor);
+                }
             }
         }
 

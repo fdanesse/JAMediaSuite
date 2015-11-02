@@ -4,7 +4,7 @@ internal class Canales : Gtk.Window{
 
     public signal void change_channel(string channel);
 
-    private ImgProcessor processor;
+    private ImgProcessor processor = null;
     private Gtk.Image image = new Gtk.Image();
     private Gtk.Grid grid = new Gtk.Grid();
     private FrameCanal red = new FrameCanal(" Red ");
@@ -44,18 +44,25 @@ internal class Canales : Gtk.Window{
         }
 
     private void update_image(double valor){
-        if (this.processor.get_file_path() != ""){
-            double r = this.red.escala.ajuste.get_value() * 100.0 / 255.0;
-            double g = this.green.escala.ajuste.get_value() * 100.0 / 255.0;
-            double b = this.blue.escala.ajuste.get_value() * 100.0 / 255.0;
-            double a = this.alpha.escala.ajuste.get_value() * 100.0 / 255.0;
-            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(320, 240);
-            Gdk.Pixbuf newpixbuf = this.processor.pixbuf_to_levels(pixbuf, r, g, b, a);
-            this.image.set_from_pixbuf(newpixbuf);
+        if (this.processor != null){
+            if (this.processor.get_file_path() != ""){
+                double r = this.red.escala.ajuste.get_value() * 100.0 / 255.0;
+                double g = this.green.escala.ajuste.get_value() * 100.0 / 255.0;
+                double b = this.blue.escala.ajuste.get_value() * 100.0 / 255.0;
+                double a = this.alpha.escala.ajuste.get_value() * 100.0 / 255.0;
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(320, 240);
+                Gdk.Pixbuf newpixbuf = this.processor.pixbuf_to_levels(pixbuf, r, g, b, a);
+                this.image.set_from_pixbuf(newpixbuf);
+                }
             }
         }
 
     public void set_processor(ImgProcessor processor){
+        this.processor = null;
+        this.red.set_progress(255);
+        this.green.set_progress(255);
+        this.blue.set_progress(255);
+        this.alpha.set_progress(255);
         this.processor = processor;
         if (this.processor.get_file_path() != ""){
             Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(320, 240);
@@ -64,11 +71,6 @@ internal class Canales : Gtk.Window{
         else{
             this.image.clear();
             }
-        //FIXME: Bloquear this.update_image hasta completar estos seteos
-        this.red.set_progress(255);
-        this.green.set_progress(255);
-        this.blue.set_progress(255);
-        this.alpha.set_progress(255);
         }
     }
 
