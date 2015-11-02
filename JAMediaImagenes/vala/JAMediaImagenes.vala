@@ -24,6 +24,7 @@ public class JAMediaImagenes : Gtk.Window{
     private Gtk.Statusbar statusbar = new Gtk.Statusbar();
     private ImgProcessor processor = new ImgProcessor();
     private Grises grises = null;
+    private Canales canales = null;
 
     public JAMediaImagenes(){
 
@@ -329,6 +330,16 @@ public class JAMediaImagenes : Gtk.Window{
                  });
                 }
             }
+        else if (accion == "Canales..."){
+            if (this.canales == null){
+                this.canales = new Canales(this.get_toplevel() as Gtk.Window);
+                this.canales.set_processor(this.processor);
+                //this.canales.change_channel.connect(this.change_channel);
+                this.canales.destroy.connect ((source) => {
+                    this.util_exit("Canales");
+                 });
+                }
+            }
         else{
             GLib.stdout.printf("Menu Accion: %s\n", accion);
             GLib.stdout.flush();
@@ -407,6 +418,9 @@ public class JAMediaImagenes : Gtk.Window{
     private void util_exit(string util){
         if (util == "Grises"){
             this.grises = null;
+            }
+        else if (util == "Canales"){
+            this.canales = null;
             }
         }
 

@@ -5,10 +5,10 @@ internal class Grises : Gtk.Window{
     public signal void change_channel(string channel);
 
     private Gtk.Grid grid = new Gtk.Grid();
-    private FrameCanal lightness = new FrameCanal(" Lightness: ");
-    private FrameCanal luminosity = new FrameCanal(" Luminosity: ");
-    private FrameCanal average = new FrameCanal(" Average: ");
-    private FrameCanal percentual = new FrameCanal(" Percentual: ");
+    private FrameGris lightness = new FrameGris(" Lightness: ");
+    private FrameGris luminosity = new FrameGris(" Luminosity: ");
+    private FrameGris average = new FrameGris(" Average: ");
+    private FrameGris percentual = new FrameGris(" Percentual: ");
 
     public Grises(Gtk.Window top){
 
@@ -40,13 +40,13 @@ internal class Grises : Gtk.Window{
         }
 
     private void do_toggled(string label, bool valor){
-        Gee.ArrayList<FrameCanal> items = new Gee.ArrayList<FrameCanal>();
+        Gee.ArrayList<FrameGris> items = new Gee.ArrayList<FrameGris>();
         items.add(this.lightness);
         items.add(this.luminosity);
         items.add(this.average);
         items.add(this.percentual);
         if (valor){
-            foreach (FrameCanal frame in items){
+            foreach (FrameGris frame in items){
                 if (label != frame.get_label()){
                     frame.toggle(false);
                     }
@@ -55,7 +55,7 @@ internal class Grises : Gtk.Window{
             }
         else{
             bool active = false;
-            foreach (FrameCanal frame in items){
+            foreach (FrameGris frame in items){
                 if (frame.get_active()){
                     active = frame.get_active();
                     break;
@@ -69,14 +69,14 @@ internal class Grises : Gtk.Window{
     }
 
 
-internal class FrameCanal : Gtk.Frame{
+internal class FrameGris : Gtk.Frame{
 
     public signal void toggled(string label, bool valor);
 
     private Gtk.ToggleButton button = new Gtk.ToggleButton();
     private Gtk.Image image = new Gtk.Image();
 
-    public FrameCanal(string text){
+    public FrameGris(string text){
         this.set_border_width(4);
         this.set_label(text);
         this.image.set_size_request(100, 75);
