@@ -184,13 +184,31 @@ internal class ImgProcessor : GLib.Object{
         return ret;
         }
 
+    public Gdk.Pixbuf pixbuf_to_levels(Gdk.Pixbuf pixbuf, double r, double g, double b, double a){
+        //Modifica en porcentajes los niveles de cada canal.
+        int width = pixbuf.get_width();
+        int height = pixbuf.get_height();
+        int rowstride = pixbuf.get_rowstride();
+        int channels = pixbuf.get_n_channels();
+        unowned uint8[] array = pixbuf.get_pixels();
+        for (int row = 0; row < height; row++){
+            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
+                array[elem] = (uint8)((double)array[elem] * r / 100.0);
+                array[elem + 1] = (uint8)((double)array[elem + 1] * g / 100.0);
+                array[elem + 2] = (uint8)((double)array[elem + 2] * b / 100.0);
+                array[elem + 3] = (uint8)((double)array[elem + 3] * a / 100.0);
+                }
+            }
+        return pixbuf;
+        }
+
     public Gdk.Pixbuf pixbuf_to_channel(Gdk.Pixbuf pixbuf, string channel){
         //Convierte un pixbuf a escala de grises
         int width = pixbuf.get_width();
         int height = pixbuf.get_height();
         int rowstride = pixbuf.get_rowstride();
         int channels = pixbuf.get_n_channels();
-        unowned uint8[] array = pixbuf.get_pixels ();
+        unowned uint8[] array = pixbuf.get_pixels();
         for (int row = 0; row < height; row++){
             for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
                 uint8 ret = 0;

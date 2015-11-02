@@ -4,6 +4,7 @@ internal class Canales : Gtk.Window{
 
     public signal void change_channel(string channel);
 
+    private ImgProcessor processor;
     private Gtk.Image image = new Gtk.Image();
     private Gtk.Grid grid = new Gtk.Grid();
     private FrameCanal red = new FrameCanal(" Red ");
@@ -35,26 +36,48 @@ internal class Canales : Gtk.Window{
 
         this.add(box);
         this.show_all();
+
+        this.red.user_set_value.connect(this.update_image);
+        this.green.user_set_value.connect(this.update_image);
+        this.blue.user_set_value.connect(this.update_image);
+        this.alpha.user_set_value.connect(this.update_image);
+        }
+
+    private void update_image(double valor){
+        if (this.processor.get_file_path() != ""){
+            double r = this.red.escala.ajuste.get_value() * 100.0 / 255.0;
+            double g = this.green.escala.ajuste.get_value() * 100.0 / 255.0;
+            double b = this.blue.escala.ajuste.get_value() * 100.0 / 255.0;
+            double a = this.alpha.escala.ajuste.get_value() * 100.0 / 255.0;
+            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(320, 240);
+            Gdk.Pixbuf newpixbuf = this.processor.pixbuf_to_levels(pixbuf, r, g, b, a);
+            this.image.set_from_pixbuf(newpixbuf);
+            }
         }
 
     public void set_processor(ImgProcessor processor){
-        this.red.set_progress(100);
-        this.green.set_progress(100);
-        this.blue.set_progress(100);
-        this.alpha.set_progress(100);
-        //this.red.set_processor(processor);
-        //this.green.set_processor(processor);
-        //this.blue.set_processor(processor);
-        //this.alpha.set_processor(processor);
+        this.processor = processor;
+        if (this.processor.get_file_path() != ""){
+            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(320, 240);
+            this.image.set_from_pixbuf(pixbuf);
+            }
+        else{
+            this.image.clear();
+            }
+        //FIXME: Bloquear this.update_image hasta completar estos seteos
+        this.red.set_progress(255);
+        this.green.set_progress(255);
+        this.blue.set_progress(255);
+        this.alpha.set_progress(255);
         }
     }
 
 
 internal class FrameCanal : Gtk.Frame{
 
-    //public signal void user_set_value(double valor);
+    public signal void user_set_value(double valor);
 
-    private SlicerBalance escala = new SlicerBalance();
+    public SlicerBalance escala = new SlicerBalance();
     private Gtk.Label label = new Gtk.Label("");
 
     public FrameCanal(string titulo){
@@ -73,20 +96,17 @@ internal class FrameCanal : Gtk.Frame{
         this.show_all();
 
         this.escala.user_set_value.connect(this.__user_set_value);
-    }
+        }
 
     public void __user_set_value(double valor){
-        if (valor > 99.4){
-            valor = 100.0;
-            }
-        int v = (int) valor;
         string str1 = this.label.get_text();
-        string str2 = v.to_string();
+        int p = (int)(valor * 100.0 / 255.0);
+        string str2 = p.to_string();
         string str3 = "%";
         string text = @"$str1: $str2$str3";
         this.set_label(text);
-        //this.user_set_value(valor);
-    }
+        this.user_set_value(valor);
+        }
 
     public void set_progress(double valor){
         this.escala.set_progress(valor);
@@ -98,10 +118,9 @@ internal class SlicerBalance : Gtk.EventBox{
 
     public signal void user_set_value(double valor);
 
-    private Gtk.Scale escala = new Gtk.Scale(Gtk.Orientation.HORIZONTAL,
-        new Gtk.Adjustment(0.0, 0.0, 101.0, 0.1, 1.0, 1.0));
+    private Gtk.Scale escala;
     public Gtk.Adjustment ajuste = new Gtk.Adjustment(
-        0.0, 0.0, 101.0, 0.1, 1.0, 1.0);
+        0.0, 0.0, 256.0, 0.1, 1.0, 1.0);
 
     public SlicerBalance(){
 

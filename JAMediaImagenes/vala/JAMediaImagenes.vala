@@ -409,6 +409,9 @@ public class JAMediaImagenes : Gtk.Window{
         if (this.grises != null){
             this.grises.set_processor(this.processor);
             }
+        if (this.canales != null){
+            this.canales.set_processor(this.processor);
+            }
         }
 
     private void update_status_bar(string info){
