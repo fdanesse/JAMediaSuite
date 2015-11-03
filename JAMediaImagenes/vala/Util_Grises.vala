@@ -13,7 +13,7 @@ internal class Grises : Gtk.Window{
     public Grises(Gtk.Window top){
 
         this.set_title("Grises");
-        this.window_position = Gtk.WindowPosition.CENTER;
+        this.window_position = Gtk.WindowPosition.NONE;
         this.set_resizable(false);
         this.set("border_width", 2);
         this.set_transient_for(top);
@@ -25,12 +25,22 @@ internal class Grises : Gtk.Window{
         this.grid.attach(this.percentual, 3, 0, 1, 1);
 
         this.add(this.grid);
+        this.realize.connect(this.realized);
         this.show_all();
 
         this.lightness.toggled.connect(this.do_toggled);
         this.luminosity.toggled.connect(this.do_toggled);
         this.average.toggled.connect(this.do_toggled);
         this.percentual.toggled.connect(this.do_toggled);
+        }
+
+    private void realized(){
+        Gtk.Allocation rect;
+        this.get_allocation(out rect);
+        Gdk.Screen screen = Gdk.Screen.get_default();
+        int w = screen.get_width();
+        int h = screen.get_height();
+        this.move(w - rect.width, 0);
         }
 
     public void set_processor(ImgProcessor processor){

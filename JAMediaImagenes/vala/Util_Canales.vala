@@ -14,7 +14,7 @@ internal class Canales : Gtk.Window{
     public Canales(Gtk.Window top){
 
         this.set_title("Canales");
-        this.window_position = Gtk.WindowPosition.CENTER;
+        this.window_position = Gtk.WindowPosition.NONE;
         this.set_resizable(false);
         this.set("border_width", 2);
         this.set_transient_for(top);
@@ -42,12 +42,22 @@ internal class Canales : Gtk.Window{
         box.pack_start(frame, false, false, 0);
 
         this.add(box);
+        this.realize.connect(this.realized);
         this.show_all();
 
         this.red.user_set_value.connect(this.update_image);
         this.green.user_set_value.connect(this.update_image);
         this.blue.user_set_value.connect(this.update_image);
         this.alpha.user_set_value.connect(this.update_image);
+        }
+
+    private void realized(){
+        Gtk.Allocation rect;
+        this.get_allocation(out rect);
+        Gdk.Screen screen = Gdk.Screen.get_default();
+        int w = screen.get_width();
+        int h = screen.get_height();
+        this.move(w - rect.width, 0);
         }
 
     private void update_image(double valor){
