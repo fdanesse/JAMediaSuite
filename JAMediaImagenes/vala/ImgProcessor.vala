@@ -184,7 +184,7 @@ internal class ImgProcessor : GLib.Object{
         return ret;
         }
 
-    public Gdk.Pixbuf pixbuf_to_levels(Gdk.Pixbuf pixbuf, double r, double g, double b, double a){
+    public Gdk.Pixbuf pixbuf_to_canales(Gdk.Pixbuf pixbuf, double r, double g, double b, double a){
         //Modifica en porcentajes los niveles de cada canal.
         int width = pixbuf.get_width();
         int height = pixbuf.get_height();
@@ -202,7 +202,7 @@ internal class ImgProcessor : GLib.Object{
         return pixbuf;
         }
 
-    public Gdk.Pixbuf pixbuf_to_channel(Gdk.Pixbuf pixbuf, string channel){
+    public Gdk.Pixbuf pixbuf_to_gris(Gdk.Pixbuf pixbuf, string channel){
         //Convierte un pixbuf a escala de grises
         int width = pixbuf.get_width();
         int height = pixbuf.get_height();
@@ -232,9 +232,16 @@ internal class ImgProcessor : GLib.Object{
         return pixbuf;
         }
 
-    public void apply_channel(string channel){
+    public void apply_canales(double r, double g, double b, double a){
         string info = this.open(this.get_file_path()); //Es necesario eliminar cambios previos por eso reabrimos.
-        Gdk.Pixbuf pixbuf = this.pixbuf_to_channel(this.pixbuf, channel);
+        Gdk.Pixbuf pixbuf = this.pixbuf_to_canales(this.pixbuf, r, g, b, a);
+        this.changed = true;
+        this.emit_change(this.changed);
+        }
+
+    public void apply_gris(string channel){
+        string info = this.open(this.get_file_path()); //Es necesario eliminar cambios previos por eso reabrimos.
+        Gdk.Pixbuf pixbuf = this.pixbuf_to_gris(this.pixbuf, channel);
         this.changed = true;
         this.emit_change(this.changed);
         }
@@ -255,6 +262,9 @@ internal class ImgProcessor : GLib.Object{
     public void save_file(string filepath) throws GLib.Error{
         //FIXME: Asegurar extensión para el archivo
         this.pixbuf.save(filepath, "png", null);
+        this.file_path = filepath;
+        this.changed = false;
+        this.emit_change(this.changed);
         }
 
     public bool get_changed(){

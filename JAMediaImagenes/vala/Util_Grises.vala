@@ -2,7 +2,7 @@
 
 internal class Grises : Gtk.Window{
 
-    public signal void change_channel(string channel);
+    public signal void gris_changed(string channel);
 
     private Gtk.Grid grid = new Gtk.Grid();
     private FrameGris lightness = new FrameGris(" Lightness: ");
@@ -51,7 +51,7 @@ internal class Grises : Gtk.Window{
                     frame.toggle(false);
                     }
                 }
-            this.change_channel(label);
+            this.gris_changed(label);
             }
         else{
             bool active = false;
@@ -62,7 +62,7 @@ internal class Grises : Gtk.Window{
                     }
                 }
             if (active == false){
-                this.change_channel("Original");
+                this.gris_changed("Original");
                 }
             }
         }
@@ -94,19 +94,19 @@ internal class FrameGris : Gtk.Frame{
         if (processor.get_file_path() != ""){
             Gdk.Pixbuf pixbuf = processor.get_pixbuf_scale(100, 100);
             if ("Average" in this.get_label()){
-                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_channel(pixbuf, "average");
+                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_gris(pixbuf, "average");
                 this.image.set_from_pixbuf(newpixbuf);
                 }
             else if ("Percentual" in this.get_label()){
-                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_channel(pixbuf, "percentual");
+                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_gris(pixbuf, "percentual");
                 this.image.set_from_pixbuf(newpixbuf);
                 }
             else if ("Luminosity" in this.get_label()){
-                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_channel(pixbuf, "luminosity");
+                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_gris(pixbuf, "luminosity");
                 this.image.set_from_pixbuf(newpixbuf);
                 }
             else if ("Lightness" in this.get_label()){
-                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_channel(pixbuf, "lightness");
+                Gdk.Pixbuf newpixbuf = processor.pixbuf_to_gris(pixbuf, "lightness");
                 this.image.set_from_pixbuf(newpixbuf);
                 }
             else{

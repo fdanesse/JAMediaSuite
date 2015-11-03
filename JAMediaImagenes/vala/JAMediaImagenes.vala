@@ -83,9 +83,6 @@ public class JAMediaImagenes : Gtk.Window{
         string filepath = this.processor.get_file_path();
         if (filepath != ""){
             if (event.keyval == 65307){
-                if (this.processor.get_changed()){
-                    this.confirmar_guardar();
-                    }
                 ExitDialog dialog = new ExitDialog(
                 this.get_toplevel() as Gtk.Window);
                 int run = dialog.run();
@@ -198,9 +195,6 @@ public class JAMediaImagenes : Gtk.Window{
         else if (accion == "Ver imagen anterior"){
             string filepath = this.processor.get_file_path();
             if (filepath != ""){
-                if (this.processor.get_changed()){
-                    this.confirmar_guardar();
-                    }
                 Gee.ArrayList<string> items = this.list_dir();
                 int index = items.index_of(this.processor.get_file_path());
                 if (index > 0){
@@ -216,9 +210,6 @@ public class JAMediaImagenes : Gtk.Window{
         else if (accion == "Ver imagen siguiente"){
             string filepath = this.processor.get_file_path();
             if (filepath != ""){
-                if (this.processor.get_changed()){
-                    this.confirmar_guardar();
-                    }
                 Gee.ArrayList<string> items = this.list_dir();
                 int index = items.index_of(this.processor.get_file_path());
                 if (index < items.size - 1){
@@ -273,7 +264,9 @@ public class JAMediaImagenes : Gtk.Window{
         dialog.destroy();
         if (run == Gtk.ResponseType.ACCEPT){
             try{
-                this.processor.save_file(this.processor.get_file_path());
+                string filepath = this.processor.get_file_path();
+                this.processor.save_file(filepath);
+                this.open_file(filepath);
                 }
             catch(GLib.Error e){
                 GLib.stdout.printf("ERROR al Guardar: %s\n", e.message);
@@ -322,9 +315,12 @@ public class JAMediaImagenes : Gtk.Window{
             }
         else if (accion == "Grises..."){
             if (this.grises == null){
+                if (this.canales != null){
+                    this.canales.destroy();
+                    }
                 this.grises = new Grises(this.get_toplevel() as Gtk.Window);
                 this.grises.set_processor(this.processor);
-                this.grises.change_channel.connect(this.change_channel);
+                this.grises.gris_changed.connect(this.gris_changed);
                 this.grises.destroy.connect ((source) => {
                     this.util_exit("Grises");
                  });
@@ -332,9 +328,12 @@ public class JAMediaImagenes : Gtk.Window{
             }
         else if (accion == "Canales..."){
             if (this.canales == null){
+                if (this.grises != null){
+                    this.grises.destroy();
+                    }
                 this.canales = new Canales(this.get_toplevel() as Gtk.Window);
                 this.canales.set_processor(this.processor);
-                //this.canales.change_channel.connect(this.change_channel);
+                this.canales.canal_changed.connect(this.canal_changed);
                 this.canales.destroy.connect ((source) => {
                     this.util_exit("Canales");
                  });
@@ -346,57 +345,60 @@ public class JAMediaImagenes : Gtk.Window{
             }
         }
 
-    private void change_channel(string channel){
+    private void canal_changed(double r, double g, double b, double a){
         string filepath = this.processor.get_file_path();
         if (filepath != ""){
-            if ("Original" in channel){
-                this.open_file(filepath);
-                }
-            else if ("Average" in channel){
-                this.processor.apply_channel("average");
+            GLib.Idle.add (() => {
+                this.processor.apply_canales(r, g, b, a);
                 Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
                     this.image.get_parent().get_allocated_width(),
                     this.image.get_parent().get_allocated_height());
                 this.image.set_from_pixbuf(pixbuf);
-                }
-            else if ("Percentual" in channel){
-                this.processor.apply_channel("percentual");
-                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
-                    this.image.get_parent().get_allocated_width(),
-                    this.image.get_parent().get_allocated_height());
-                this.image.set_from_pixbuf(pixbuf);
-                }
-            else if ("Luminosity" in channel){
-                this.processor.apply_channel("luminosity");
-                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
-                    this.image.get_parent().get_allocated_width(),
-                    this.image.get_parent().get_allocated_height());
-                this.image.set_from_pixbuf(pixbuf);
-                }
-            else if ("Lightness" in channel){
-                this.processor.apply_channel("lightness");
-                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
-                    this.image.get_parent().get_allocated_width(),
-                    this.image.get_parent().get_allocated_height());
-                this.image.set_from_pixbuf(pixbuf);
-                }
-
-            //FIXME: Siempre se deben actualizar los demas utiles abiertos
-            if (this.canales != null){
-                this.canales.set_processor(this.processor);
-                }
+                return false;
+                });
             }
         }
 
+    private void gris_changed(string channel){
+        string filepath = this.processor.get_file_path();
+        string info = this.processor.open(filepath);
+        if ("Original" in channel){
+            }
+        else if ("Average" in channel){
+            this.processor.apply_gris("average");
+            }
+        else if ("Percentual" in channel){
+            this.processor.apply_gris("percentual");
+            }
+        else if ("Luminosity" in channel){
+            this.processor.apply_gris("luminosity");
+            }
+        else if ("Lightness" in channel){
+            this.processor.apply_gris("lightness");
+            }
+        Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+            this.image.get_parent().get_allocated_width(),
+            this.image.get_parent().get_allocated_height());
+        this.image.set_from_pixbuf(pixbuf);
+        }
+
     private void close_file(){
+        if (this.grises != null){
+            this.grises.destroy();
+            this.grises = null;
+            }
+        else if (this.canales != null){
+            this.canales.destroy();
+            this.canales = null;
+            }
+        if (this.processor.get_changed()){
+            this.confirmar_guardar();
+            }
         this.processor.close_file();
         this.menu.has_file(false);
         this.toolbar.has_file(false);
         this.update_status_bar("Img:");
         this.image.clear();
-        if (this.grises != null){
-            this.grises.set_processor(this.processor);
-            }
         }
 
     private void open_file(string filepath){
@@ -411,12 +413,6 @@ public class JAMediaImagenes : Gtk.Window{
             this.image.get_parent().get_allocated_width(),
             this.image.get_parent().get_allocated_height());
         this.image.set_from_pixbuf(pixbuf);
-        if (this.grises != null){
-            this.grises.set_processor(this.processor);
-            }
-        if (this.canales != null){
-            this.canales.set_processor(this.processor);
-            }
         }
 
     private void update_status_bar(string info){
@@ -424,15 +420,22 @@ public class JAMediaImagenes : Gtk.Window{
         }
 
     private void util_exit(string util){
-        if (util == "Grises"){
-            this.grises = null;
+        if (this.processor.get_changed()){
+            string filepath = this.processor.get_file_path();
+            this.open_file(filepath);
             }
-        else if (util == "Canales"){
-            this.canales = null;
+        else{
+            if (util == "Grises"){
+                this.grises = null;
+                }
+            else if (util == "Canales"){
+                this.canales = null;
+                }
             }
         }
 
     private void salir(){
+        this.close_file();
         Gtk.main_quit();
         }
     }

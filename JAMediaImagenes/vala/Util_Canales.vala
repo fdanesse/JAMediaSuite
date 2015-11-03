@@ -2,10 +2,9 @@
 
 internal class Canales : Gtk.Window{
 
-    public signal void change_channel(string channel);
+    public signal void canal_changed(double r, double g, double b, double h);
 
     private ImgProcessor processor = null;
-    private Gtk.Image image = new Gtk.Image();
     private Gtk.Grid grid = new Gtk.Grid();
     private FrameCanal red = new FrameCanal(" Red ");
     private FrameCanal green = new FrameCanal(" Green ");
@@ -19,12 +18,7 @@ internal class Canales : Gtk.Window{
         this.set_resizable(false);
         this.set("border_width", 2);
         this.set_transient_for(top);
-
-        this.image.set_size_request(320, 240);
-
-        Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-        box.pack_start(this.image, false, false, 0);
-        box.pack_start(this.grid, false, false, 0);
+        this.set_default_size(500, 100);
 
         this.grid.set_property("column_homogeneous", true);
         this.grid.set_property("row_homogeneous", true);
@@ -34,7 +28,7 @@ internal class Canales : Gtk.Window{
         this.grid.attach(this.blue, 0, 2, 1, 1);
         this.grid.attach(this.alpha, 0, 3, 1, 1);
 
-        this.add(box);
+        this.add(this.grid);
         this.show_all();
 
         this.red.user_set_value.connect(this.update_image);
@@ -50,9 +44,7 @@ internal class Canales : Gtk.Window{
                 double g = this.green.escala.ajuste.get_value() * 100.0 / 255.0;
                 double b = this.blue.escala.ajuste.get_value() * 100.0 / 255.0;
                 double a = this.alpha.escala.ajuste.get_value() * 100.0 / 255.0;
-                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(320, 240);
-                Gdk.Pixbuf newpixbuf = this.processor.pixbuf_to_levels(pixbuf, r, g, b, a);
-                this.image.set_from_pixbuf(newpixbuf);
+                this.canal_changed(r, g, b, a);
                 }
             }
         }
@@ -64,13 +56,6 @@ internal class Canales : Gtk.Window{
         this.blue.set_progress(255);
         this.alpha.set_progress(255);
         this.processor = processor;
-        if (this.processor.get_file_path() != ""){
-            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(320, 240);
-            this.image.set_from_pixbuf(pixbuf);
-            }
-        else{
-            this.image.clear();
-            }
         }
     }
 
