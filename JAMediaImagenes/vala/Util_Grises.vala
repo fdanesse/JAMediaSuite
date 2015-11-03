@@ -23,6 +23,7 @@ internal class Grises : Gtk.Window{
         this.grid.attach(this.luminosity, 1, 0, 1, 1);
         this.grid.attach(this.average, 2, 0, 1, 1);
         this.grid.attach(this.percentual, 3, 0, 1, 1);
+
         this.add(this.grid);
         this.show_all();
 
