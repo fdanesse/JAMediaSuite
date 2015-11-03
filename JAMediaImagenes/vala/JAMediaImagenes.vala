@@ -223,14 +223,29 @@ public class JAMediaImagenes : Gtk.Window{
                 }
             }
         else if (accion == "Guardar"){
-            string filepath = this.processor.get_file_path();
-            try{
-                this.processor.save_file(filepath);
-                this.open_file(filepath);
-                }
-            catch(GLib.Error e){
-                GLib.stdout.printf("ERROR al Guardar: %s\n", e.message);
-                GLib.stdout.flush();
+            Gtk.Dialog dialog = new Gtk.Dialog();
+            dialog.add_button("Guardar", Gtk.ResponseType.ACCEPT);
+            dialog.add_button("Cancelar", Gtk.ResponseType.CANCEL);
+            dialog.set_modal(true);
+            dialog.set("border_width", 10);
+            dialog.set_transient_for(this.get_toplevel() as Gtk.Window);
+            string text = "¿Sobre Escribir el Archivo Original?";
+            Gtk.Label label = new Gtk.Label(text);
+            Gtk.Box Box = dialog.get_content_area();
+            Box.pack_start(label, false, false, 0);
+            Box.show_all();
+            int run = dialog.run();
+            dialog.destroy();
+            if (run == Gtk.ResponseType.ACCEPT){
+                string filepath = this.processor.get_file_path();
+                try{
+                    this.processor.save_file(filepath);
+                    this.open_file(filepath);
+                    }
+                catch(GLib.Error e){
+                    GLib.stdout.printf("ERROR al Guardar: %s\n", e.message);
+                    GLib.stdout.flush();
+                    }
                 }
             }
         else if (accion == "Guardar Como"){
@@ -262,7 +277,7 @@ public class JAMediaImagenes : Gtk.Window{
             this.get_toplevel() as Gtk.Window);
         int run = dialog.run();
         dialog.destroy();
-        if (run == Gtk.ResponseType.ACCEPT){
+        if (run == Gtk.ResponseType.APPLY){
             try{
                 string filepath = this.processor.get_file_path();
                 this.processor.save_file(filepath);
@@ -272,6 +287,9 @@ public class JAMediaImagenes : Gtk.Window{
                 GLib.stdout.printf("ERROR al Guardar: %s\n", e.message);
                 GLib.stdout.flush();
                 }
+            }
+        else if (run == Gtk.ResponseType.ACCEPT){
+            this.toolbar_accion("Guardar Como");
             }
         }
 

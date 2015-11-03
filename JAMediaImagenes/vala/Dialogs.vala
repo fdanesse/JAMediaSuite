@@ -81,8 +81,9 @@ internal class CheckDialog : Gtk.Dialog{
 
     public CheckDialog(Gtk.Window parent){
 
-        this.add_button("Guardar", Gtk.ResponseType.ACCEPT);
-        this.add_button("Cancelar", Gtk.ResponseType.CANCEL);
+        this.add_button("Guardar", Gtk.ResponseType.APPLY);
+        this.add_button("Guardar con otro nombre", Gtk.ResponseType.ACCEPT);
+        this.add_button("No Guardar", Gtk.ResponseType.CANCEL);
         this.set_modal(true);
         this.set("border_width", 10);
         this.set_transient_for(parent);
@@ -93,7 +94,6 @@ internal class CheckDialog : Gtk.Dialog{
         Box.pack_start(label1, false, false, 5);
         Box.pack_start(label2, false, false, 5);
         Box.show_all();
-
         }
     }
 
