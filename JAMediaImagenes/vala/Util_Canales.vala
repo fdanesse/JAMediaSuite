@@ -5,11 +5,11 @@ internal class Canales : Gtk.Window{
     public signal void canal_changed(double r, double g, double b, double h);
 
     private ImgProcessor processor = null;
-    private Gtk.Grid grid = new Gtk.Grid();
     private FrameCanal red = new FrameCanal(" Red ");
     private FrameCanal green = new FrameCanal(" Green ");
     private FrameCanal blue = new FrameCanal(" Blue ");
-    private FrameCanal alpha = new FrameCanal(" Alpha ");
+    private FrameCanal alpha = new FrameCanal(" Alpha (Transparencia) ");
+    private Gtk.Image image = new Gtk.Image();
 
     public Canales(Gtk.Window top){
 
@@ -20,15 +20,15 @@ internal class Canales : Gtk.Window{
         this.set_transient_for(top);
         this.set_default_size(500, 100);
 
-        this.grid.set_property("column_homogeneous", true);
-        this.grid.set_property("row_homogeneous", true);
+        Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        this.image.set_size_request(300, 20);
+        box.pack_start(this.image, false, false, 0);
+        box.pack_start(this.red, false, false, 0);
+        box.pack_start(this.green, false, false, 0);
+        box.pack_start(this.blue, false, false, 0);
+        box.pack_start(this.alpha, false, false, 0);
 
-        this.grid.attach(this.red, 0, 0, 1, 1);
-        this.grid.attach(this.green, 0, 1, 1, 1);
-        this.grid.attach(this.blue, 0, 2, 1, 1);
-        this.grid.attach(this.alpha, 0, 3, 1, 1);
-
-        this.add(this.grid);
+        this.add(box);
         this.show_all();
 
         this.red.user_set_value.connect(this.update_image);
@@ -45,6 +45,17 @@ internal class Canales : Gtk.Window{
                 double b = this.blue.escala.ajuste.get_value() * 100.0 / 255.0;
                 double a = this.alpha.escala.ajuste.get_value() * 100.0 / 255.0;
                 this.canal_changed(r, g, b, a);
+
+                uint16 rr = (uint16)(65535 * r / 100);
+                uint16 gg = (uint16)(65535 * g / 100);
+                uint16 bb = (uint16)(65535 * b / 100);
+
+                Gdk.Color color = new Gdk.Color();
+                color.pixel = 8;
+                color.red = rr;
+                color.green = gg;
+                color.blue = bb;
+                this.image.modify_bg(Gtk.StateType.NORMAL, color);
                 }
             }
         }
@@ -56,6 +67,12 @@ internal class Canales : Gtk.Window{
         this.blue.set_progress(255);
         this.alpha.set_progress(255);
         this.processor = processor;
+        Gdk.Color color = new Gdk.Color();
+        color.pixel = 8;
+        color.red = 65535;
+        color.green = 65535;
+        color.blue = 65535;
+        this.image.modify_bg(Gtk.StateType.NORMAL, color);
         }
     }
 
@@ -75,11 +92,7 @@ internal class FrameCanal : Gtk.Frame{
         this.set("label_yalign", 0.5);
         this.set_border_width(4);
 
-        Gtk.EventBox event = new Gtk.EventBox();
-        event.set_border_width(4);
-        event.add(this.escala);
-        this.add(event);
-
+        this.add(this.escala);
         this.show_all();
 
         this.escala.user_set_value.connect(this.__user_set_value);
@@ -111,6 +124,7 @@ internal class SlicerBalance : Gtk.EventBox{
 
     public SlicerBalance(){
 
+        this.set("border_width", 4);
         this.escala = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, this.ajuste);
         this.escala.set_digits(0);
         this.escala.set_draw_value(false);
