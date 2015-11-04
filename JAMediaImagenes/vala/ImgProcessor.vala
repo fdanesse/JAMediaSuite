@@ -1,4 +1,9 @@
 
+// https://wiki.gnome.org/Projects/Vala/StatusIcon
+// https://github.com/polymeris/shotwell/blob/master/thumbnailer/shotwell-video-thumbnailer.vala
+// https://developer.gnome.org/gdk-pixbuf/stable/gdk-pixbuf-The-GdkPixbuf-Structure.html#image-data
+// http://stackoverflow.com/questions/2744118/how-do-i-remove-or-apply-transparency-on-a-gdk-pixbuf
+
 /*
 public string open(string filepath)
     puede modificar el original si no tiene alpha
@@ -261,6 +266,10 @@ internal class ImgProcessor : GLib.Object{
 
     public void save_file(string filepath) throws GLib.Error{
         //FIXME: Asegurar extensión para el archivo
+        //Gdk.Pixbuf pix = new Gdk.Pixbuf.with_unowned_data(
+        //    this.pixels, Gdk.Colorspace.RGB, this.pixbuf.has_alpha,
+        //    this.pixbuf.bits_per_sample, this.pixbuf.width,
+        //    this.pixbuf.height, this.pixbuf.rowstride, null);
         this.pixbuf.save(filepath, "png", null);
         this.file_path = filepath;
         this.changed = false;
