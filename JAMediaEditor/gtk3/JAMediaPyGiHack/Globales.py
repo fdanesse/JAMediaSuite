@@ -140,7 +140,7 @@ def get_dict():
             'nxt.motor', 'nxt.bluesock', 'nxt.compass', 'nxt.error',
             'nxt.locator', 'nxt.sensor', 'nxt.system', 'nxt.usbsock',
             'nxt.brick', 'nxt.direct', 'nxt.htcompass', 'nxt.lightblueglue',
-            'nxt.telegram', 'nxt.server', 'IPython']),
+            'nxt.telegram', 'nxt.server', 'IPython', 'gps']),
             }
 
     '''python-gi
