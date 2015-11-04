@@ -140,8 +140,9 @@ internal class MenuUtiles : Gtk.Menu{
     public signal void accion(string label);
 
     private Gtk.MenuItem escala = new Gtk.MenuItem();
-    private Gtk.MenuItem canales = new Gtk.MenuItem();
     private Gtk.MenuItem grises = new Gtk.MenuItem();
+    private Gtk.MenuItem canales = new Gtk.MenuItem();
+    private Gtk.MenuItem saturar = new Gtk.MenuItem();
 
     internal MenuUtiles(){
 
@@ -162,6 +163,12 @@ internal class MenuUtiles : Gtk.Menu{
             this.emit_accion(this.canales.get_label());
          });
         this.append(this.canales);
+
+        this.saturar.set_label("Saturar...");
+        this.saturar.activate.connect ((source) => {
+            this.emit_accion(this.saturar.get_label());
+         });
+        this.append(this.saturar);
 
         this.show_all();
         }

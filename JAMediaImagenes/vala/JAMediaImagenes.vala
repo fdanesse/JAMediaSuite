@@ -25,6 +25,7 @@ public class JAMediaImagenes : Gtk.Window{
     private ImgProcessor processor = new ImgProcessor();
     private Grises grises = null;
     private Canales canales = null;
+    private Saturar saturar = null;
 
     public JAMediaImagenes(){
 
@@ -319,6 +320,16 @@ public class JAMediaImagenes : Gtk.Window{
         }
 
     private void menu_accion(string accion){
+        if (this.canales != null){
+            this.canales.destroy();
+            }
+        if (this.grises != null){
+            this.grises.destroy();
+            }
+        if (this.saturar != null){
+            this.saturar.destroy();
+            }
+
         if (accion == "Abrir..."){
             this.toolbar_accion("Abrir");
             }
@@ -332,30 +343,35 @@ public class JAMediaImagenes : Gtk.Window{
             this.close_file();
             }
         else if (accion == "Grises..."){
-            if (this.grises == null){
-                if (this.canales != null){
-                    this.canales.destroy();
-                    }
-                this.grises = new Grises(this.get_toplevel() as Gtk.Window);
-                this.grises.set_processor(this.processor);
-                this.grises.gris_changed.connect(this.gris_changed);
-                this.grises.destroy.connect ((source) => {
-                    this.util_exit("Grises");
-                 });
-                }
+            this.grises = new Grises(this.get_toplevel() as Gtk.Window);
+            this.grises.set_processor(this.processor);
+            this.grises.gris_changed.connect(this.gris_changed);
+            this.grises.destroy.connect ((source) => {
+                this.util_exit("Grises");
+                });
             }
         else if (accion == "Canales..."){
-            if (this.canales == null){
-                if (this.grises != null){
-                    this.grises.destroy();
-                    }
-                this.canales = new Canales(this.get_toplevel() as Gtk.Window);
-                this.canales.set_processor(this.processor);
-                this.canales.canal_changed.connect(this.canal_changed);
-                this.canales.destroy.connect ((source) => {
-                    this.util_exit("Canales");
-                 });
-                }
+            this.canales = new Canales(this.get_toplevel() as Gtk.Window);
+            this.canales.set_processor(this.processor);
+            this.canales.canal_changed.connect(this.canal_changed);
+            this.canales.destroy.connect ((source) => {
+                this.util_exit("Canales");
+                });
+            }
+        else if (accion == "Saturar..."){
+            this.saturar = new Saturar(this.get_toplevel() as Gtk.Window);
+            this.saturar.set_processor(this.processor);
+            //this.saturar.canal_changed.connect(this.canal_changed);
+            this.saturar.changed.connect ((source) => {
+                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+                    this.image.get_parent().get_allocated_width(),
+                    this.image.get_parent().get_allocated_height());
+                //pixbuf.saturate_and_pixelate(pixbuf, (float)valor, false);
+                this.image.set_from_pixbuf(pixbuf);
+                });
+            this.saturar.destroy.connect ((source) => {
+                this.util_exit("Saturar");
+                });
             }
         else{
             GLib.stdout.printf("Menu Accion: %s\n", accion);
@@ -409,6 +425,10 @@ public class JAMediaImagenes : Gtk.Window{
             this.canales.destroy();
             this.canales = null;
             }
+        else if (this.saturar != null){
+            this.saturar.destroy();
+            this.saturar = null;
+            }
         if (this.processor.get_changed()){
             this.confirmar_guardar();
             }
@@ -448,6 +468,9 @@ public class JAMediaImagenes : Gtk.Window{
                 }
             else if (util == "Canales"){
                 this.canales = null;
+                }
+            else if (util == "Saturar"){
+                this.saturar = null;
                 }
             }
         }

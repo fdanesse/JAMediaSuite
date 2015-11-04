@@ -251,6 +251,13 @@ internal class ImgProcessor : GLib.Object{
         this.emit_change(this.changed);
         }
 
+    public void apply_saturacion(float saturar, bool pixelar){
+        string info = this.open(this.get_file_path()); //Es necesario eliminar cambios previos por eso reabrimos.
+        this.pixbuf.saturate_and_pixelate(this.pixbuf, saturar, pixelar);
+        this.changed = true;
+        this.emit_change(this.changed);
+        }
+
     public string get_dir_path(){
         if (this.file_path != ""){
             return GLib.Path.get_dirname(this.file_path);

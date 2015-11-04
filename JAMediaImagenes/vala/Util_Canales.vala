@@ -84,11 +84,6 @@ internal class Canales : Gtk.Window{
         }
 
     public void set_processor(ImgProcessor processor){
-        this.processor = null;
-        this.red.set_progress(255);
-        this.green.set_progress(255);
-        this.blue.set_progress(255);
-        this.alpha.set_progress(255);
         this.processor = processor;
         Gdk.Color color = Gdk.Color();
         color.pixel = 8;
@@ -104,7 +99,7 @@ internal class FrameCanal : Gtk.Frame{
 
     public signal void user_set_value(double valor);
 
-    public SlicerBalance escala = new SlicerBalance();
+    public SlicerCanal escala = new SlicerCanal();
     private Gtk.Label label = new Gtk.Label("");
 
     public FrameCanal(string titulo){
@@ -130,22 +125,18 @@ internal class FrameCanal : Gtk.Frame{
         this.set_label(text);
         this.user_set_value(valor);
         }
-
-    public void set_progress(double valor){
-        this.escala.set_progress(valor);
-        }
     }
 
 
-internal class SlicerBalance : Gtk.EventBox{
+internal class SlicerCanal : Gtk.EventBox{
 
     public signal void user_set_value(double valor);
 
     private Gtk.Scale escala;
     public Gtk.Adjustment ajuste = new Gtk.Adjustment(
-        0.0, 0.0, 256.0, 0.1, 1.0, 1.0);
+        255.0, 0.0, 256.0, 0.1, 1.0, 1.0);
 
-    public SlicerBalance(){
+    public SlicerCanal(){
 
         this.set("border_width", 4);
         this.escala = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, this.ajuste);
@@ -157,11 +148,6 @@ internal class SlicerBalance : Gtk.EventBox{
 
         this.escala.value_changed.connect (() => {
             this.user_set_value(this.ajuste.get_value());
-        });
-    }
-
-    public void set_progress(double valor){
-        this.ajuste.set_value(valor);
-        this.escala.queue_draw();
+            });
         }
     }
