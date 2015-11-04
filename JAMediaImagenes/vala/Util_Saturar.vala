@@ -2,9 +2,8 @@
 
 internal class Saturar : Gtk.Window{
 
-    public signal void changed();
+    public signal void changed(float valor);
 
-    private ImgProcessor processor = null;
     private FrameSaturar saturar = new FrameSaturar(" Saturación: ");
 
     public Saturar(Gtk.Window top){
@@ -14,13 +13,15 @@ internal class Saturar : Gtk.Window{
         this.set_resizable(false);
         this.set("border_width", 2);
         this.set_transient_for(top);
-        this.set_default_size(500, -1);
+        this.set_size_request(500, -1);
 
         this.add(this.saturar);
         this.realize.connect(this.realized);
         this.show_all();
 
-        this.saturar.user_set_value.connect(this.update_image);
+        this.saturar.user_set_value.connect((source, valor) => {
+            this.changed(valor);
+            });
         }
 
     private void realized(){
@@ -31,21 +32,12 @@ internal class Saturar : Gtk.Window{
         int h = screen.get_height();
         this.move(w - rect.width, 0);
         }
-
-    private void update_image(double valor){
-        this.processor.apply_saturacion((float)valor, false);
-        this.changed();
-        }
-
-    public void set_processor(ImgProcessor processor){
-        this.processor = processor;
-        }
     }
 
 
 internal class FrameSaturar : Gtk.Frame{
 
-    public signal void user_set_value(double valor);
+    public signal void user_set_value(float valor);
 
     public SliceSaturar escala = new SliceSaturar();
     private Gtk.Label label = new Gtk.Label("");
@@ -64,10 +56,10 @@ internal class FrameSaturar : Gtk.Frame{
         this.escala.user_set_value.connect(this.__user_set_value);
         }
 
-    public void __user_set_value(double valor){
+    public void __user_set_value(float valor){
         string str1 = this.label.get_text();
         string str2 = valor.to_string();
-        string text = @"$str1: $str2";
+        string text = @"$str1 $str2";
         this.set_label(text);
         this.user_set_value(valor);
         }
@@ -76,11 +68,11 @@ internal class FrameSaturar : Gtk.Frame{
 
 internal class SliceSaturar : Gtk.EventBox{
 
-    public signal void user_set_value(double valor);
+    public signal void user_set_value(float valor);
 
     private Gtk.Scale escala;
     public Gtk.Adjustment ajuste = new Gtk.Adjustment(
-        1.0, 0.0, 3.1, 0.1, 0.1, 0.1);
+        1.0, 0.0, 2.6, 0.1, 0.1, 0.1);
 
     public SliceSaturar(){
 
@@ -93,7 +85,10 @@ internal class SliceSaturar : Gtk.EventBox{
         this.show_all();
 
         this.escala.value_changed.connect (() => {
-            this.user_set_value(this.ajuste.get_value());
+            string displayed = "%.1f".printf((float)this.ajuste.get_value());
+            unowned float valor;
+            displayed.scanf("%f", out valor);
+            this.user_set_value(valor);
             });
         }
     }

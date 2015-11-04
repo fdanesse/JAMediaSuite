@@ -31,7 +31,7 @@ public class JAMediaImagenes : Gtk.Window{
 
         this.set_title("JAMediaImagenes");
         this.window_position = Gtk.WindowPosition.CENTER;
-        this.set_default_size(640, 480);
+        this.set_size_request(640, 480);
         this.set_resizable(true);
         this.set("border_width", 2);
 
@@ -360,14 +360,11 @@ public class JAMediaImagenes : Gtk.Window{
             }
         else if (accion == "Saturar..."){
             this.saturar = new Saturar(this.get_toplevel() as Gtk.Window);
-            this.saturar.set_processor(this.processor);
-            //this.saturar.canal_changed.connect(this.canal_changed);
-            this.saturar.changed.connect ((source) => {
-                Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
-                    this.image.get_parent().get_allocated_width(),
-                    this.image.get_parent().get_allocated_height());
-                //pixbuf.saturate_and_pixelate(pixbuf, (float)valor, false);
-                this.image.set_from_pixbuf(pixbuf);
+            this.saturar.changed.connect ((source, valor) => {
+                GLib.Idle.add (() => {
+                this.run_saturar(valor);
+                return false;
+                });
                 });
             this.saturar.destroy.connect ((source) => {
                 this.util_exit("Saturar");
@@ -377,6 +374,14 @@ public class JAMediaImagenes : Gtk.Window{
             GLib.stdout.printf("Menu Accion: %s\n", accion);
             GLib.stdout.flush();
             }
+        }
+
+    private void run_saturar(float valor){
+        this.processor.apply_saturacion(valor, false);
+        Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+            this.image.get_parent().get_allocated_width(),
+            this.image.get_parent().get_allocated_height());
+        this.image.set_from_pixbuf(pixbuf);
         }
 
     private void canal_changed(double r, double g, double b, double a){

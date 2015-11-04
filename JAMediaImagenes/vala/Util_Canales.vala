@@ -18,7 +18,7 @@ internal class Canales : Gtk.Window{
         this.set_resizable(false);
         this.set("border_width", 2);
         this.set_transient_for(top);
-        this.set_default_size(500, 100);
+        this.set_size_request(500, 100);
 
         Gtk.Box box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         this.image.set_size_request(300, 20);

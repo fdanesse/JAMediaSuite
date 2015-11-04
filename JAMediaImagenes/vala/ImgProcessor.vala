@@ -3,6 +3,8 @@
 // https://github.com/polymeris/shotwell/blob/master/thumbnailer/shotwell-video-thumbnailer.vala
 // https://developer.gnome.org/gdk-pixbuf/stable/gdk-pixbuf-The-GdkPixbuf-Structure.html#image-data
 // http://stackoverflow.com/questions/2744118/how-do-i-remove-or-apply-transparency-on-a-gdk-pixbuf
+// https://github.com/GNOME/shotwell/blob/master/src/photos/PngSupport.vala
+// https://github.com/GNOME/model-examples/blob/master/examples/filesystem/view.vala
 
 /*
 public string open(string filepath)
