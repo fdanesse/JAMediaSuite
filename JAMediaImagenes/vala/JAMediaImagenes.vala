@@ -26,6 +26,7 @@ public class JAMediaImagenes : Gtk.Window{
     private Grises grises = null;
     private Canales canales = null;
     private Saturar saturar = null;
+    private Escala escala = null;
 
     public JAMediaImagenes(){
 
@@ -329,6 +330,9 @@ public class JAMediaImagenes : Gtk.Window{
         if (this.saturar != null){
             this.saturar.destroy();
             }
+        if (this.escala != null){
+            this.escala.destroy();
+            }
 
         if (accion == "Abrir..."){
             this.toolbar_accion("Abrir");
@@ -341,6 +345,14 @@ public class JAMediaImagenes : Gtk.Window{
             }
         else if (accion == "Cerrar"){
             this.close_file();
+            }
+        else if (accion == "Escala..."){
+            this.escala = new Escala(this.get_toplevel() as Gtk.Window);
+            //this.escala.set_processor(this.processor);
+            //this.escala.gris_changed.connect(this.gris_changed);
+            this.escala.destroy.connect ((source) => {
+                this.util_exit("Escala");
+                });
             }
         else if (accion == "Grises..."){
             this.grises = new Grises(this.get_toplevel() as Gtk.Window);
@@ -434,6 +446,10 @@ public class JAMediaImagenes : Gtk.Window{
             this.saturar.destroy();
             this.saturar = null;
             }
+        else if (this.escala != null){
+            this.escala.destroy();
+            this.escala = null;
+            }
         if (this.processor.get_changed()){
             this.confirmar_guardar();
             }
@@ -476,6 +492,9 @@ public class JAMediaImagenes : Gtk.Window{
                 }
             else if (util == "Saturar"){
                 this.saturar = null;
+                }
+            else if (util == "Escala"){
+                this.escala = null;
                 }
             }
         }
