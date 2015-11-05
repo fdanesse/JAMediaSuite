@@ -2,25 +2,27 @@
 
 internal class Escala : Gtk.Window{
 
-    //public signal void canal_changed(double r, double g, double b, double h);
+    public signal void changed(GLib.List<int> res);
 
-    //private ImgProcessor processor = null;
-    private FrameEscala escala = new FrameEscala(" Tamaño de la Imagen ");
+    private FrameEscala escala = null;
 
-    public Escala(Gtk.Window top){
+    public Escala(Gtk.Window top, GLib.List<int> res){
 
         this.set_title("Escala");
         this.window_position = Gtk.WindowPosition.NONE;
         this.set_resizable(false);
         this.set("border_width", 2);
         this.set_transient_for(top);
-        //this.set_size_request(500, 100);
 
+        this.escala = new FrameEscala(" Tamaño de la Imagen ", res);
         this.add(this.escala);
+
         this.realize.connect(this.realized);
         this.show_all();
 
-        //this.escala.user_set_value.connect(this.update_image);
+        this.escala.user_set_value.connect((source, res) => {
+            this.changed(res);
+            });
         }
 
     private void realized(){
@@ -31,57 +33,27 @@ internal class Escala : Gtk.Window{
         int h = screen.get_height();
         this.move(w - rect.width, 0);
         }
-
-    /*
-    private void update_image(double valor){
-        if (this.processor != null){
-            if (this.processor.get_file_path() != ""){
-                double r = this.escala.escala.ajuste.get_value() * 100.0 / 255.0;
-                double g = this.green.escala.ajuste.get_value() * 100.0 / 255.0;
-                double b = this.blue.escala.ajuste.get_value() * 100.0 / 255.0;
-                double a = this.alpha.escala.ajuste.get_value() * 100.0 / 255.0;
-                this.canal_changed(r, g, b, a);
-
-                uint16 rr = (uint16)(65535 * r / 100);
-                uint16 gg = (uint16)(65535 * g / 100);
-                uint16 bb = (uint16)(65535 * b / 100);
-
-                Gdk.Color color = Gdk.Color();
-                color.pixel = 8;
-                color.escala = rr;
-                color.green = gg;
-                color.blue = bb;
-                this.image.modify_bg(Gtk.StateType.NORMAL, color);
-                }
-            }
-        }
-    */
-
-    public void set_processor(ImgProcessor processor){
-        /*
-        this.processor = processor;
-        Gdk.Color color = Gdk.Color();
-        color.pixel = 8;
-        color.escala = 65535;
-        color.green = 65535;
-        color.blue = 65535;
-        this.image.modify_bg(Gtk.StateType.NORMAL, color);
-        */
-        }
     }
 
 
 internal class FrameEscala : Gtk.Frame{
 
-    //public signal void user_set_value(double valor);
+    public signal void user_set_value(GLib.List<int> res);
 
+    private double escale_factor = 0.0;
+    private bool bloquear = false;
     private Gtk.SpinButton ancho = new Gtk.SpinButton.with_range(1.0, 50000.0, 1.0);
     private Gtk.SpinButton alto = new Gtk.SpinButton.with_range(1.0, 50000.0, 1.0);
+    private Gtk.CheckButton button = new Gtk.CheckButton();
 
-    public FrameEscala(string titulo){
+    public FrameEscala(string titulo, GLib.List<int> _res){
 
         this.set_label(titulo);
         this.set_border_width(4);
+
+        this.ancho.set_value((double)_res.nth_data(0));
+        this.alto.set_value((double)_res.nth_data(1));
+        this.escale_factor = (double)_res.nth_data(0) / (double)_res.nth_data(1);
 
         Gtk.Grid grid = new Gtk.Grid();
         grid.set_property("column_homogeneous", true);
@@ -104,25 +76,56 @@ internal class FrameEscala : Gtk.Frame{
         frame2.add(event2);
         grid.attach(frame2, 0, 3, 1, 3);
 
-        Gtk.CheckButton button = new Gtk.CheckButton();
-        button.set_label("Mantener Proporción");
-        grid.attach(button, 1, 2, 1, 2);
+        this.button.set_label("Mantener Proporción");
+        this.button.set_active(true);
+        grid.attach(this.button, 1, 2, 1, 2);
 
         this.add(grid);
         this.show_all();
 
-        //this.escala.user_set_value.connect(this.__user_set_value);
-        }
+        this.ancho.value_changed.connect (() => {
+            if (this.bloquear == false){
+                this.bloquear = true;
+                unowned int w = this.ancho.get_value_as_int();
+                unowned int h = this.alto.get_value_as_int();
+                if (this.button.get_active()){
+                    h = (int)(this.ancho.get_value() / this.escale_factor);
+                    this.alto.set_value((double)h);
+                    }
+                GLib.List<int> res = new GLib.List<int>();
+                res.append(w);
+                res.append(h);
+                this.user_set_value(res);
+                this.bloquear = false;
+                }
+            });
 
-    /*
-    public void __user_set_value(double valor){
-        string str1 = this.label.get_text();
-        int p = (int)(valor * 100.0 / 255.0);
-        string str2 = p.to_string();
-        string str3 = "%";
-        string text = @"$str1: $str2$str3";
-        this.set_label(text);
-        //this.user_set_value(valor);
+        this.alto.value_changed.connect (() => {
+            if (this.bloquear == false){
+                this.bloquear = true;
+                unowned int w = this.ancho.get_value_as_int();
+                unowned int h = this.alto.get_value_as_int();
+                if (this.button.get_active()){
+                    w = (int)(this.alto.get_value() * this.escale_factor);
+                    this.ancho.set_value((double)w);
+                    }
+                GLib.List<int> res = new GLib.List<int>();
+                res.append(w);
+                res.append(h);
+                this.user_set_value(res);
+                this.bloquear = false;
+                }
+            });
+
+        this.button.toggled.connect (() => {
+            if (this.button.get_active()) {
+                unowned double h = this.alto.get_value();
+                h = this.ancho.get_value() / this.escale_factor;
+                if (this.alto.get_value() != h){
+                    this.alto.set_value(h);
+                    }
+                }
+            });
+
         }
-    */
     }

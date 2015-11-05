@@ -347,9 +347,18 @@ public class JAMediaImagenes : Gtk.Window{
             this.close_file();
             }
         else if (accion == "Escala..."){
-            this.escala = new Escala(this.get_toplevel() as Gtk.Window);
-            //this.escala.set_processor(this.processor);
-            //this.escala.gris_changed.connect(this.gris_changed);
+            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf();
+            this.image.set_from_pixbuf(pixbuf);
+            this.escala = new Escala(this.get_toplevel() as Gtk.Window,
+                this.processor.get_resolucion());
+            this.escala.changed.connect((source, res) => {
+                int w = res.nth_data(0);
+                int h = res.nth_data(1);
+                GLib.Idle.add (() => {
+                    this.run_escalar(w, h);
+                    return false;
+                    });
+                });
             this.escala.destroy.connect ((source) => {
                 this.util_exit("Escala");
                 });
@@ -374,9 +383,9 @@ public class JAMediaImagenes : Gtk.Window{
             this.saturar = new Saturar(this.get_toplevel() as Gtk.Window);
             this.saturar.changed.connect ((source, valor) => {
                 GLib.Idle.add (() => {
-                this.run_saturar(valor);
-                return false;
-                });
+                    this.run_saturar(valor);
+                    return false;
+                    });
                 });
             this.saturar.destroy.connect ((source) => {
                 this.util_exit("Saturar");
@@ -386,6 +395,12 @@ public class JAMediaImagenes : Gtk.Window{
             GLib.stdout.printf("Menu Accion: %s\n", accion);
             GLib.stdout.flush();
             }
+        }
+
+    private void run_escalar(int w, int h){
+        this.processor.apply_escala(w, h);
+        Gdk.Pixbuf pixbuf = this.processor.get_pixbuf();
+        this.image.set_from_pixbuf(pixbuf);
         }
 
     private void run_saturar(float valor){

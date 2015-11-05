@@ -260,6 +260,14 @@ internal class ImgProcessor : GLib.Object{
         this.emit_change(this.changed);
         }
 
+    public void apply_escala(int w, int h){
+        //GLib.stdout.printf("%i x %i\n", w, h);
+        string info = this.open(this.get_file_path()); //Es necesario eliminar cambios previos por eso reabrimos.
+        this.pixbuf = this.pixbuf.scale_simple(w, h, Gdk.InterpType.HYPER);
+        this.changed = true;
+        this.emit_change(this.changed);
+        }
+
     public string get_dir_path(){
         if (this.file_path != ""){
             return GLib.Path.get_dirname(this.file_path);
@@ -287,5 +295,12 @@ internal class ImgProcessor : GLib.Object{
 
     public bool get_changed(){
         return this.changed;
+        }
+
+    public GLib.List get_resolucion(){
+        GLib.List<int> res = new GLib.List<int>();
+        res.append(this.pixbuf.get_width());
+        res.append(this.pixbuf.get_height());
+        return res;
         }
     }
