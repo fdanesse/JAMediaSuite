@@ -48,23 +48,22 @@ def get_contenido_python(texto):
     for linea in lineas:
         temp = linea.strip()
         contador += 1
-        # FIXME: Corregir casos con varias comillas
-        # Bloquear comentarios multilinea.
         if temp:
             if temp.startswith("\'\'\'") or \
                 temp.startswith("\"\"\"") or \
                 temp.endswith("\'\'\'") or \
                 temp.endswith("\"\"\""):
                 bloqueo = bool(not bloqueo)
+                continue
             if bloqueo:
                 continue
-            #elif temp and not bloqueo:
-            if temp.split()[0] in buscar:
-                l = linea.strip().split(":")[0]
-                if temp.split()[0] == "class" or \
-                    temp.split()[0] == "def":
-                    l = "%s:" % l
-                _dict[str(contador)] = l
+            items = list(shlex.shlex(temp))
+            if items:
+                if items[0] in buscar:
+                    l = linea.strip().split(":")[0]
+                    if items[0] == "class" or items[0] == "def":
+                        l = "%s:" % l
+                    _dict[str(contador)] = l
     return _dict
 
 
@@ -90,12 +89,13 @@ def get_contenido_vala(texto):
             if bloqueo:
                 continue
             items = list(shlex.shlex(temp))
-            if not "signal" in items and items[0] in buscar and not "=" in items:
-                if "{" in linea:
-                    linea = linea.split("{")[0]
-                if ";" in linea:
-                    linea = linea.split(";")[0]
-                _dict[str(contador)] = linea
+            if items:
+                if not "signal" in items and items[0] in buscar and not "=" in items:
+                    if "{" in linea:
+                        linea = linea.split("{")[0]
+                    if ";" in linea:
+                        linea = linea.split(";")[0]
+                    _dict[str(contador)] = linea
     return _dict
 
 
@@ -405,14 +405,15 @@ class Introspeccion(Gtk.TreeView):
         if tipo == "python":
             for key in self._dict.keys():
                 temp = self._dict[key].strip()
-                if temp.startswith("class "):
+                items = list(shlex.shlex(temp))
+                if "class" in items:
                     color = Gdk.color_parse("#a40000")
                     new_class = self.__append(iterbase, key, color, temp)
                     new_funcion = new_class
-                elif temp.startswith("import ") or temp.startswith("from "):
+                elif "import" in items:
                     color = Gdk.color_parse("#006e00")
                     self.__append(new_funcion, key, color, temp)
-                elif temp.startswith("def "):
+                else:  #"def" in items
                     color = Gdk.color_parse("#000091")
                     new_funcion = self.__append(new_class, key, color, temp)
         elif tipo == "vala":
