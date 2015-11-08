@@ -24,6 +24,7 @@ import os
 import commands
 from collections import OrderedDict
 #import shutil
+import shlex
 
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -77,20 +78,19 @@ def get_contenido_vala(texto):
     for linea in lineas:
         temp = linea.strip()
         contador += 1
-        # FIXME: Corregir casos con varias comillas
-        # Bloquear comentarios multilinea.
         if temp:
-            if temp.startswith("/*") or temp.startswith("*/"):
-                bloqueo = bool(not bloqueo)
+            if temp.startswith("//"):
+                continue
+            if temp.startswith("/*"):
+                bloqueo = True
+                continue
+            if temp.startswith("*/"):
+                bloqueo = False
+                continue
             if bloqueo:
                 continue
-            #elif temp and not bloqueo:
-            items = temp.split()
-            if items[0] in buscar and not \
-                "signal" in items[1]:
-                if len(items) > 3:
-                    if "=" in items[3]:
-                        continue
+            items = list(shlex.shlex(temp))
+            if not "signal" in items and items[0] in buscar and not "=" in items:
                 if "{" in linea:
                     linea = linea.split("{")[0]
                 if ";" in linea:
@@ -417,17 +417,16 @@ class Introspeccion(Gtk.TreeView):
                     new_funcion = self.__append(new_class, key, color, temp)
         elif tipo == "vala":
             for key in self._dict.keys():
-                # FIXME: Verificar Otros Casos
                 temp = self._dict[key].strip()
-                if temp.startswith("public class "):
+                items = list(shlex.shlex(temp))
+                if "class" in items:
                     color = Gdk.color_parse("#a40000")
                     new_class = self.__append(iterbase, key, color, temp)
                     new_funcion = new_class
-                elif temp.startswith("using "):
+                elif "using" in items:
                     color = Gdk.color_parse("#006e00")
                     self.__append(new_funcion, key, color, temp)
-                elif temp.startswith("public ") or \
-                    temp.startswith("private ") and not "=" in temp:
+                else:
                     color = Gdk.color_parse("#000091")
                     new_funcion = self.__append(new_class, key, color, temp)
         else:

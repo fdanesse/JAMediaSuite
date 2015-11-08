@@ -1,0 +1,10 @@
+Índices de Vegetación Normalizados NDVI es un indice cuyo valor se encuentra entre -1,0 y 1,0
+Estos índices se calculan a partir de las bandas 1 y 2 (canal visible e infrarojo cercano) de las imágenes diurnas obtenidas por el sensor AVHRR de los satélites NOAA-14, 15, 16, 17 y 18:
+NDVI = (IR - R) / (IR + R)
+http://help.arcgis.com/es/arcgisdesktop/10.0/help/index.html#//009t000000v2000000
+
+La banda visible (b1) proporciona información de la cantidad de energía absorbida por las plantas.
+La banda infrarroja (b2) actúa a la inversa, por lo que su diferencia muestra la respuesta de la vegetación.
+El intervalo de valores obtenidos estará normalizado entre +1 y -1. De ellos, los valores positivos corresponderán a zonas de vegetación, mientras que los negativos se referirán a aquellos elementos (nubes, nieve, agua) que poseen una mayor reflectancia en el visible que en el infrarrojo.
+
+NDVI indica la abundancia y el estado de la vegetación, basados en el comportamiento reflectivo peculiar de la vegetación. En resumen, la firma espectral característica de la vegetación sana muestra un fuerte contraste entre la baja reflectividad en el rojo y una alta reflectividad en el infrarrojo cercano; esta diferencia es tanto mayor cuanto mayor es la densidad de la vegetación y mejor su estado fitosanitario.
