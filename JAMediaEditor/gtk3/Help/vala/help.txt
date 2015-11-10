@@ -1,0 +1,56 @@
+Tipos de Datos:
+
+En Vala, un tipo de dato, generalmente consiste en:
+
+Un nombre, que se utiliza para significar una instancia del tipo.
+Una estructura de datos que define la forma en que se representa una instancia del tipo en la memoria.
+Un conjunto de métodos que se puede llamar en una instancia del tipo.
+
+Estos elementos se combinan como la definición del tipo.
+La definición se da a Vala en la forma de una declaración, por ejemplo, una declaración de la clase.
+
+Vala soporta tres tipos de tipos de datos: los tipos de valores, tipos de referencia y tipos de metadatos.
+Los tipos de valor incluyen tipos simples (por ejemplo, char, int y float), tipos de enumeración y tipos struct.
+Tipos de referencia incluyen tipos de objetos, tipos de matriz, tipos de delegados, y los tipos de error.
+
+type:
+    value-type
+    reference-type
+    meta-type
+
+
+value-type:
+    fundamental-struct-type
+    user-defined-struct-type
+    enumerated-type
+
+
+fundamental-struct-type:
+    integral-type
+    floating-point-type
+    bool
+
+    integral-type:
+        char
+        uchar
+        short
+        ushort
+        int
+        uint
+        long
+        ulong
+        size_t
+        ssize_t
+        int8
+        uint8
+        int16
+        uint16
+        int32
+        uint32
+        int64
+        uint64
+        unichar
+
+    floating-point-type:
+        float
+        double

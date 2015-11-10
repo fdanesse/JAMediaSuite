@@ -7,6 +7,22 @@
 // https://github.com/GNOME/model-examples/blob/master/examples/filesystem/view.vala
 
 /*
+uint8 r = array[elem];
+uint8 g = array[elem + 1];
+uint8 b = array[elem + 2];
+//Deteccion de piel = r > 95 and g > 40 and b > 20 and max([r, g, b]) - min([r, g, b]) > 15 and (r - g) > 15 and r > g and r > b
+uint8 ma = uint8.max(r, g);
+ma = uint8.max(ma, b);
+uint8 mi = uint8.min(r, g);
+mi = uint8.min(mi, b);
+if (r > 95 && g > 40 && b > 20 && ma - mi > 15 && (r - g) > 15 && r > b){
+    }
+else{
+    array[elem + 3] = 0;
+    }
+*/
+
+/*
 public string open(string filepath)
     puede modificar el original si no tiene alpha
 

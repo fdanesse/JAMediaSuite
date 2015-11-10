@@ -57,13 +57,16 @@ def get_contenido_python(texto):
                 continue
             if bloqueo:
                 continue
-            items = list(shlex.shlex(temp))
-            if items:
-                if items[0] in buscar:
-                    l = linea.strip().split(":")[0]
-                    if items[0] == "class" or items[0] == "def":
-                        l = "%s:" % l
-                    _dict[str(contador)] = l
+            try:
+                items = list(shlex.shlex(temp))
+                if items:
+                    if items[0] in buscar:
+                        l = linea.strip().split(":")[0]
+                        if items[0] == "class" or items[0] == "def":
+                            l = "%s:" % l
+                        _dict[str(contador)] = l
+            except:
+                print "Error:", get_contenido_python, temp
     return _dict
 
 
@@ -88,14 +91,17 @@ def get_contenido_vala(texto):
                 continue
             if bloqueo:
                 continue
-            items = list(shlex.shlex(temp))
-            if items:
-                if not "signal" in items and items[0] in buscar and not "=" in items:
-                    if "{" in linea:
-                        linea = linea.split("{")[0]
-                    if ";" in linea:
-                        linea = linea.split(";")[0]
-                    _dict[str(contador)] = linea
+            try:
+                items = list(shlex.shlex(temp))
+                if items:
+                    if not "signal" in items and items[0] in buscar and not "=" in items:
+                        if "{" in linea:
+                            linea = linea.split("{")[0]
+                        if ";" in linea:
+                            linea = linea.split(";")[0]
+                        _dict[str(contador)] = linea
+            except:
+                print "Error:", get_contenido_vala, temp
     return _dict
 
 
