@@ -143,6 +143,10 @@ internal class MenuUtiles : Gtk.Menu{
     private Gtk.MenuItem grises = new Gtk.MenuItem();
     private Gtk.MenuItem canales = new Gtk.MenuItem();
     private Gtk.MenuItem saturar = new Gtk.MenuItem();
+    private Gtk.MenuItem pixelar = new Gtk.MenuItem();
+    private Gtk.MenuItem ecualizar = new Gtk.MenuItem();
+    private Gtk.MenuItem posterizar = new Gtk.MenuItem();
+    private Gtk.MenuItem invertir = new Gtk.MenuItem();
 
     internal MenuUtiles(){
 
@@ -169,6 +173,30 @@ internal class MenuUtiles : Gtk.Menu{
             this.emit_accion(this.saturar.get_label());
          });
         this.append(this.saturar);
+
+        this.pixelar.set_label("Pixelar...");
+        this.pixelar.activate.connect ((source) => {
+            this.emit_accion(this.pixelar.get_label());
+         });
+        this.append(this.pixelar);
+
+        this.ecualizar.set_label("Ecualizar...");
+        this.ecualizar.activate.connect ((source) => {
+            this.emit_accion(this.ecualizar.get_label());
+         });
+        this.append(this.ecualizar);
+
+        this.posterizar.set_label("Posterizar...");
+        this.posterizar.activate.connect ((source) => {
+            this.emit_accion(this.posterizar.get_label());
+         });
+        this.append(this.posterizar);
+
+        this.invertir.set_label("Invertir");
+        this.invertir.activate.connect ((source) => {
+            this.emit_accion(this.invertir.get_label());
+         });
+        this.append(this.invertir);
 
         this.show_all();
         }

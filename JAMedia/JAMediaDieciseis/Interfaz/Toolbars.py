@@ -56,7 +56,7 @@ class Toolbar(gtk.Toolbar):
             pixels=24, tooltip_text="Televisión")
         self.tele.connect("toggled", self.__toggled_button)
         self.insert(self.tele, -1)
-        #self.tele.set_sensitive(False)  #FIXME: Problemas en webkit
+        self.tele.set_sensitive(False)  #FIXME: Problemas en webkit
 
         archivo = os.path.join(ICONS, "Music-Radio-1-icon.png")
         self.radio = get_ToggleToolButton(archivo, flip=False,

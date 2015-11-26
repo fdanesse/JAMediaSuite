@@ -7,7 +7,7 @@ from Globales import get_colors
 from Toolbars import Toolbar
 from AudioVideoPlayer.VideoPanel import VideoPanel
 from RadioPlayer.RadioPanel import RadioPanel
-from TvPlayer.TvPanel import TvPanel
+#from TvPlayer.TvPanel import TvPanel
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -41,7 +41,7 @@ class JAMedia(gtk.Window):
         #self.creditos = VideoPanel()
         #self.ayuda = VideoPanel()
         ##self.config = VideoPanel()
-        self.television = TvPanel()
+        #self.television = TvPanel()
         self.radio = RadioPanel()
         self.audiovideo = VideoPanel()
 
@@ -49,7 +49,7 @@ class JAMedia(gtk.Window):
         #self.vbox.pack_start(self.creditos, False, False, 0)
         #self.vbox.pack_start(self.ayuda, False, False, 0)
         #self.vbox.pack_start(self.config, False, False, 0)
-        self.vbox.pack_start(self.television, True, True, 0)
+        #self.vbox.pack_start(self.television, True, True, 0)
         self.vbox.pack_start(self.radio, True, True, 0)
         self.vbox.pack_start(self.audiovideo, True, True, 0)
         self.add(self.vbox)
@@ -57,12 +57,12 @@ class JAMedia(gtk.Window):
         self.toolbar.connect("toggled", self.__switch)
         self.audiovideo.connect("playing", self.__playing)
         self.radio.connect("playing", self.__playing)
-        self.television.connect("playing", self.__playing)
+        #self.television.connect("playing", self.__playing)
 
         self.show_all()
         self.audiovideo.hide()
         self.radio.hide()
-        self.television.hide()
+        #self.television.hide()
         self.resize(640, 480)
 
     def __playing(self, widget):
@@ -91,11 +91,11 @@ class JAMedia(gtk.Window):
                 self.audiovideo.show()
             elif text == "Radio":
                 self.radio.show()
-            elif text == "Televisión":
-                self.television.show()
+            #elif text == "Televisión":
+            #    self.television.show()
 
     def stop(self):
         self.radio.stop()
         self.audiovideo.stop()
-        self.television.stop()
+        #self.television.stop()
         self.destroy()

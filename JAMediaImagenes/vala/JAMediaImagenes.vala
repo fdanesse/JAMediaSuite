@@ -391,6 +391,13 @@ public class JAMediaImagenes : Gtk.Window{
                 this.util_exit("Saturar");
                 });
             }
+        else if (accion == "Invertir"){
+            this.processor.apply_invertir();
+            Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+                this.image.get_parent().get_allocated_width(),
+                this.image.get_parent().get_allocated_height());
+            this.image.set_from_pixbuf(pixbuf);
+            }
         else{
             GLib.stdout.printf("Menu Accion: %s\n", accion);
             GLib.stdout.flush();

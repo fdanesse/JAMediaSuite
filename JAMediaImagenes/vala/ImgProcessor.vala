@@ -284,6 +284,24 @@ internal class ImgProcessor : GLib.Object{
         this.emit_change(this.changed);
         }
 
+    public void apply_invertir(){
+        string info = this.open(this.get_file_path()); //Es necesario eliminar cambios previos por eso reabrimos.
+        int w = this.pixbuf.get_width();
+        int h = this.pixbuf.get_height();
+        int rowstride = this.pixbuf.get_rowstride();
+        int channels = this.pixbuf.get_n_channels();
+        unowned uint8[] array = this.pixbuf.get_pixels();
+        for (int row = 0; row < h; row++){
+            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
+                array[elem] = 255 - array[elem];
+                array[elem + 1] = 255 - array[elem + 1];
+                array[elem + 2] = 255 - array[elem + 2];
+                }
+            }
+        this.changed = true;
+        this.emit_change(this.changed);
+        }
+
     public string get_dir_path(){
         if (this.file_path != ""){
             return GLib.Path.get_dirname(this.file_path);
