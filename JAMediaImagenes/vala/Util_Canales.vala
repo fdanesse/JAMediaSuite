@@ -28,18 +28,18 @@ internal class Canales : Gtk.Window{
         box.pack_start(this.blue, false, false, 0);
         box.pack_start(this.alpha, false, false, 0);
 
-        Gtk.Frame frame = new Gtk.Frame("");
+        //Gtk.Frame frame = new Gtk.Frame("");
         //frame.set_border_width(4);
-        Gtk.TextView view = new Gtk.TextView();
-        view.set_wrap_mode (Gtk.WrapMode.WORD);
-        view.set_property("editable", false);
-        string text = "En cada pixel, pinta el porcentaje elegido del valor que posee en ese canal.\n\n";
-        text += "Por ejemplo:\n\tEn un pixel que tiene 200 en el canal rojo, cuando seleccionas 10 por ciento en ese canal, pasará a tener 20.\n\n";
-        text += "Esta operación se repite en cada pixel de la imagen.";
-        view.buffer.text = text;
-        view.set_border_width(4);
-        frame.add(view);
-        box.pack_start(frame, false, false, 0);
+        //Gtk.TextView view = new Gtk.TextView();
+        //view.set_wrap_mode (Gtk.WrapMode.WORD);
+        //view.set_property("editable", false);
+        //string text = "En cada pixel, pinta el porcentaje elegido del valor que posee en ese canal.\n\n";
+        //text += "Por ejemplo:\n\tEn un pixel que tiene 200 en el canal rojo, cuando seleccionas 10 por ciento en ese canal, pasará a tener 20.\n\n";
+        //text += "Esta operación se repite en cada pixel de la imagen.";
+        //view.buffer.text = text;
+        //view.set_border_width(4);
+        //frame.add(view);
+        //box.pack_start(frame, false, false, 0);
 
         this.add(box);
         this.realize.connect(this.realized);

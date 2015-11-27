@@ -27,6 +27,7 @@ public class JAMediaImagenes : Gtk.Window{
     private Canales canales = null;
     private Saturar saturar = null;
     private Escala escala = null;
+    private Posterizar posterizar = null;
 
     public JAMediaImagenes(){
 
@@ -79,6 +80,15 @@ public class JAMediaImagenes : Gtk.Window{
         GLib.stdout.flush();
 
         this.close_file();
+
+        this.size_allocate.connect(this.new_allocation);
+        }
+
+    private void new_allocation(Gtk.Allocation allocation){
+        int w = allocation.width;
+        int h = allocation.height;
+        GLib.stdout.printf("new size: %i x %i\n", w, h);
+        GLib.stdout.flush();
         }
 
     private void do_key_press_event(Gdk.EventKey event){
@@ -321,6 +331,8 @@ public class JAMediaImagenes : Gtk.Window{
         }
 
     private void menu_accion(string accion){
+        this.util_exit("");
+
         if (this.canales != null){
             this.canales.destroy();
             }
@@ -332,6 +344,9 @@ public class JAMediaImagenes : Gtk.Window{
             }
         if (this.escala != null){
             this.escala.destroy();
+            }
+        if (this.posterizar != null){
+            this.posterizar.destroy();
             }
 
         if (accion == "Abrir..."){
@@ -391,6 +406,18 @@ public class JAMediaImagenes : Gtk.Window{
                 this.util_exit("Saturar");
                 });
             }
+        else if (accion == "Posterizar..."){
+            this.posterizar = new Posterizar(this.get_toplevel() as Gtk.Window);
+            this.posterizar.changed.connect ((source, valor) => {
+                GLib.Idle.add (() => {
+                    this.run_posterizar(valor);
+                    return false;
+                    });
+                });
+            this.posterizar.destroy.connect ((source) => {
+                this.util_exit("Posterizar");
+                });
+            }
         else if (accion == "Invertir"){
             this.processor.apply_invertir();
             Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
@@ -412,6 +439,14 @@ public class JAMediaImagenes : Gtk.Window{
 
     private void run_saturar(float valor){
         this.processor.apply_saturacion(valor, false);
+        Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
+            this.image.get_parent().get_allocated_width(),
+            this.image.get_parent().get_allocated_height());
+        this.image.set_from_pixbuf(pixbuf);
+        }
+
+    private void run_posterizar(int valor){
+        this.processor.apply_posterizar(valor);
         Gdk.Pixbuf pixbuf = this.processor.get_pixbuf_scale(
             this.image.get_parent().get_allocated_width(),
             this.image.get_parent().get_allocated_height());
@@ -517,6 +552,9 @@ public class JAMediaImagenes : Gtk.Window{
                 }
             else if (util == "Escala"){
                 this.escala = null;
+                }
+            else if (util == "Posterizar"){
+                this.posterizar = null;
                 }
             }
         }

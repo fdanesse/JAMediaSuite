@@ -207,6 +207,29 @@ internal class ImgProcessor : GLib.Object{
         return ret;
         }
 
+    private void posterizar(int val){
+        int width = this.pixbuf.get_width();
+        int height = this.pixbuf.get_height();
+        int rowstride = this.pixbuf.get_rowstride();
+        int channels = this.pixbuf.get_n_channels();
+        unowned uint8[] array = this.pixbuf.get_pixels();
+        int bin;
+        uint8 n;
+        for (int row = 0; row < height; row++){
+            for (int elem = rowstride * row; elem < rowstride * row + rowstride; elem += channels){
+                bin = (int)((double)array[elem] / 255.0 * (double)(val - 1));
+                n = (uint8)(bin * 255 / (val - 1));
+                array[elem] = n;
+                bin = (int)((double)array[elem + 1] / 255.0 * (double)(val - 1));
+                n = (uint8)(bin * 255 / (val - 1));
+                array[elem + 1] = n;
+                bin = (int)((double)array[elem + 2] / 255.0 * (double)(val - 1));
+                n = (uint8)(bin * 255 / (val - 1));
+                array[elem + 2] = n;
+                }
+            }
+        }
+
     public Gdk.Pixbuf pixbuf_to_canales(Gdk.Pixbuf pixbuf, double r, double g, double b, double a){
         //Modifica en porcentajes los niveles de cada canal.
         int width = pixbuf.get_width();
@@ -272,6 +295,13 @@ internal class ImgProcessor : GLib.Object{
     public void apply_saturacion(float saturar, bool pixelar){
         string info = this.open(this.get_file_path()); //Es necesario eliminar cambios previos por eso reabrimos.
         this.pixbuf.saturate_and_pixelate(this.pixbuf, saturar, pixelar);
+        this.changed = true;
+        this.emit_change(this.changed);
+        }
+
+    public void apply_posterizar(int val){
+        string info = this.open(this.get_file_path()); //Es necesario eliminar cambios previos por eso reabrimos.
+        this.posterizar(val);
         this.changed = true;
         this.emit_change(this.changed);
         }
