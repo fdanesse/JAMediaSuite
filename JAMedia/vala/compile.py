@@ -27,20 +27,19 @@ def run():
     comando = "%s %s" % (comando, "--pkg gstreamer-1.0 --pkg gstreamer-video-1.0")
     comando = "%s %s" % (comando, "--pkg cairo JAMedia.vala")
 
-    for path in os.listdir(BASE_PATH):
-        file_path = os.path.join(BASE_PATH, path)
-        if os.path.splitext(file_path)[1] == ".vala":
-            if path != "JAMedia.vala":
-                comando = "%s %s" % (comando, path)
+    for (f, d, fs) in os.walk(BASE_PATH):
+        for fn in fs:
+            if fn != "JAMedia.vala":
+                fp = os.path.join(f, fn)
+                fp = fp.replace(BASE_PATH, ".")
+                if os.path.splitext(fp)[1] == ".vala":
+                    comando = "%s %s" % (comando, fp)
 
-    log = open(os.path.join("/tmp", "compile.log"), "w")
+    print "*** Ejecutando Comando... ***"
     text = commands.getoutput(comando)
-    log.write(text)
-    log.close()
     print text
-
-    #for item in comando.split():
-    #    print item
+    print "*** Comando Utilizado:\n", comando, "\n***"
+    print "*** Errores:", "error" in text.lower()
 
 
 if __name__ == "__main__":
