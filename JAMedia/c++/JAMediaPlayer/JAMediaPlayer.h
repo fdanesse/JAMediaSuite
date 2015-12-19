@@ -26,6 +26,7 @@ class JAMediaPlayer : public Glib::Object{
         void seek_pos(gint64 val);
         void rotar(Glib::ustring valor);
         void set_balance(Glib::ustring prop, double valor);
+        void load_sub(Glib::ustring file);
 
     private:
         gulong xid;

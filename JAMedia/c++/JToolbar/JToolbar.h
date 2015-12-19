@@ -19,6 +19,7 @@ class JToolbar : public Gtk::Toolbar{
         JToolbar();
 
         bool get_view_controls();
+        bool get_view_list();
         void video(bool val);
 
     private:
@@ -27,6 +28,7 @@ class JToolbar : public Gtk::Toolbar{
         Gtk::ToolButton *izq;
         Gtk::ToolButton *der;
 
+        Gtk::ToggleToolButton *lis;
         Gtk::ToggleToolButton *con;
         Gtk::ToggleToolButton *ful;
 

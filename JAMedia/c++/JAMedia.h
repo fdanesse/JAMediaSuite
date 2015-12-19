@@ -1,16 +1,25 @@
 #ifndef JAMedia_H
 #define JAMedia_H
 
+#include <ctime>
+#include <sys/types.h>
 #include <iostream>
 #include <sigc++/sigc++.h>
 #include <vector>
+#include <dirent.h>
+#include <giomm/file.h>
 #include <glibmm/ustring.h>
+
+#include <gdkmm/cursor.h>
+#include <gdkmm/display.h>
+#include <gdkmm/pixbuf.h>
+
 #include <gtkmm/window.h>
 #include <gtkmm/box.h>
-#include <glibmm/fileutils.h>
 #include <gtkmm/filechooserdialog.h>
 #include <gtkmm/hvscale.h>
 #include <gtkmm/adjustment.h>
+
 #include "JToolbar/JToolbar.h"
 #include "JPaned/JPaned.h"
 #include "Controls/Controls.h"
@@ -30,6 +39,7 @@ class JAMedia : public Gtk::Window{
         void open_files();
         void add_files();
         void load_file(Glib::ustring track);
+        void load_sub();
         void previous_track();
         void next_track();
         void set_balance(Glib::ustring text, double val);
@@ -42,8 +52,16 @@ class JAMedia : public Gtk::Window{
         Controls *controls;
         JAMediaPlayer *player = NULL;
 
+        int mov;
         double vol;
+        Glib::ustring default_dirpath;
+        Glib::RefPtr< Gdk::Cursor > jamedia_cursor;
+        Glib::RefPtr< Gdk::Cursor > cursor_blank;
 
+        bool do_motion(const GdkEventMotion *event);
+        bool set_mouse();
+
+        void do_realize();
         void video();
         void set_progress(double val);
         void estado_update(Glib::ustring valor);

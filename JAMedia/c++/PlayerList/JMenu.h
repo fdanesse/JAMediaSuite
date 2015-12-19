@@ -13,7 +13,7 @@ class JMenu : public Gtk::Menu{
 
     public:
         ~JMenu(){};
-        JMenu(Gtk::TreePath path);
+        JMenu(Gtk::TreePath path, bool is_file, bool is_video);
 
     private:
 

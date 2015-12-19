@@ -1,16 +1,13 @@
 #ifndef JTreeView_H
 #define JTreeView_H
 
-#include <cstdio>
-#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <sigc++/sigc++.h>
 #include <vector>
+#include <gstreamermm.h>
 #include <giomm/file.h>
 #include <giomm/fileinfo.h>
-#include <glibmm/fileutils.h>
 #include <gdkmm/pixbuf.h>
 #include <gtkmm/treeview.h>
 #include <gtkmm/liststore.h>
@@ -43,8 +40,12 @@ class JTreeView : public Gtk::TreeView{
         //  const Gtk::TreeModel::Path& path, bool);
         void row_activated(const Gtk::TreePath &path, Gtk::TreeViewColumn*);
         bool on_button_press_event(GdkEventButton* event);
-        Glib::ustring save_file(Glib::ustring process);
+
+        void save_file(Glib::ustring process, Glib::ustring accion);
         void delete_file(Glib::ustring process);
+
+        void append_file_track(std::basic_string<char> path);
+        void pls_read(std::basic_string<char> path);
 
         class ModelColumns : public Gtk::TreeModel::ColumnRecord{
             public:

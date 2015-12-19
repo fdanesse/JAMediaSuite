@@ -22,6 +22,7 @@ JAMediaPlayer::JAMediaPlayer(){
     videoflip = Gst::ElementFactory::create_element("videoflip", "videoflip");
     Glib::RefPtr<Gst::XvImageSink> pantalla = Gst::XvImageSink::create();
 
+    rate->set_property("max-rate", 30);
     pantalla->property_force_aspect_ratio() = true; pantalla->set_sync(true);
 
     video->add(convert); video->add(rate); video->add(videobalance);
@@ -169,3 +170,6 @@ void JAMediaPlayer::set_balance(Glib::ustring prop, double valor){
         videobalance->set_property("hue", val);}
     else if (prop == "Gamma"){double val = (10.0 * valor / 100.0);
         gamma->set_property("gamma", val);}}
+
+void JAMediaPlayer::load_sub(Glib::ustring file){
+    playbin->set_property("suburi", file);}

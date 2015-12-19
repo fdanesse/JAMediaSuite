@@ -15,6 +15,7 @@ Balance::Balance(){
     pbri->signal_value_changed().connect(sigc::bind<Glib::ustring> (
         sigc::mem_fun(*this, &Balance::on_adjustment_value_changed), "Brillo"));
     pbri->set_value(50.0);
+    pbri->set_draw_value(false);
     event = new Gtk::EventBox();
     event->set_border_width(4);
     fbri->add(*event);
@@ -28,6 +29,7 @@ Balance::Balance(){
     pcon->signal_value_changed().connect(sigc::bind<Glib::ustring> (
         sigc::mem_fun(*this, &Balance::on_adjustment_value_changed), "Contraste"));
     pcon->set_value(50.0);
+    pcon->set_draw_value(false);
     event = new Gtk::EventBox();
     event->set_border_width(4);
     fcon->add(*event);
@@ -41,6 +43,7 @@ Balance::Balance(){
     psat->signal_value_changed().connect(sigc::bind<Glib::ustring> (
         sigc::mem_fun(*this, &Balance::on_adjustment_value_changed), "Saturacion"));
     psat->set_value(50.0);
+    psat->set_draw_value(false);
     event = new Gtk::EventBox();
     event->set_border_width(4);
     fsat->add(*event);
@@ -54,6 +57,7 @@ Balance::Balance(){
     pmat->signal_value_changed().connect(sigc::bind<Glib::ustring> (
         sigc::mem_fun(*this, &Balance::on_adjustment_value_changed), "Matiz"));
     pmat->set_value(50.0);
+    pmat->set_draw_value(false);
     event = new Gtk::EventBox();
     event->set_border_width(4);
     fmat->add(*event);
@@ -67,6 +71,7 @@ Balance::Balance(){
     pgam->signal_value_changed().connect(sigc::bind<Glib::ustring> (
         sigc::mem_fun(*this, &Balance::on_adjustment_value_changed), "Gamma"));
     pgam->set_value(10.0);
+    pgam->set_draw_value(false);
     event = new Gtk::EventBox();
     event->set_border_width(4);
     fgam->add(*event);
@@ -85,11 +90,21 @@ void Balance::on_adjustment_value_changed(Glib::ustring text){
 
 bool Balance::run_adjustment_value(Glib::ustring text){
     double val = 0.0;
-    if (text == "Brillo"){val = pbri->get_value();}
-    else if (text == "Contraste"){val = pcon->get_value();}
-    else if (text == "Saturacion"){val = psat->get_value();}
-    else if (text == "Matiz"){val = pmat->get_value();}
-    else if (text == "Gamma"){val = pgam->get_value();}
+    if (text == "Brillo"){val = pbri->get_value();
+        std::ostringstream os; os << (int)val;Glib::ustring str = os.str();
+        fbri->set_label(" Brillo: " + str + "%");}
+    else if (text == "Contraste"){val = pcon->get_value();
+        std::ostringstream os; os << (int)val;Glib::ustring str = os.str();
+        fcon->set_label(" Contraste: " + str + "%");}
+    else if (text == "Saturacion"){val = psat->get_value();
+        std::ostringstream os; os << (int)val;Glib::ustring str = os.str();
+        fsat->set_label(" Saturacion: " + str + "%");}
+    else if (text == "Matiz"){val = pmat->get_value();
+        std::ostringstream os; os << (int)val;Glib::ustring str = os.str();
+        fmat->set_label(" Matiz: " + str + "%");}
+    else if (text == "Gamma"){val = pgam->get_value();
+        std::ostringstream os; os << (int)val;Glib::ustring str = os.str();
+        fgam->set_label(" Gamma: " + str + "%");}
     JAMedia *top = dynamic_cast<JAMedia*> (this->get_toplevel());
     top->set_balance(text, val);
     return false;}

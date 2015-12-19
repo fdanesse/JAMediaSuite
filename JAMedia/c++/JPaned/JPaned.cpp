@@ -31,9 +31,7 @@ bool JPaned::motion(const GdkEventMotion *event){
     top->motion(ret);return true;}
 
 void JPaned::list_view(bool val){
-    //Mostrar / Ocultar todo el lado derecho del panel.
-    if (val) {playerlist->show();} else {playerlist->hide();}}
-
+    if (val){playerlist->show();}else{playerlist->hide();}}
 void JPaned::open_files(std::vector<std::basic_string<char> > lista){
     playerlist->open_files(lista);}
 void JPaned::select_begin(){playerlist->select_begin();}

@@ -4,27 +4,36 @@
 //using namespace std;
 
 
-JMenu::JMenu(Gtk::TreePath p){
+JMenu::JMenu(Gtk::TreePath p, bool is_file, bool is_video){
 
     path = p;
-    Gtk::MenuItem *item = new Gtk::MenuItem();
 
-    item->add_label("Quitar de la Lista");
-    item->signal_button_press_event().connect(sigc::bind<Glib::ustring> (
+    if (is_video){
+        Gtk::MenuItem *item = new Gtk::MenuItem();
+        item->add_label("Abrir Subtítulos");
+        item->signal_button_press_event().connect(sigc::bind<Glib::ustring> (
+        sigc::mem_fun(*this, &JMenu::__on_button_press_event), "Subtitulos"));
+        append(*item);}
+
+    Gtk::MenuItem *item1 = new Gtk::MenuItem();
+    item1->add_label("Quitar de la Lista");
+    item1->signal_button_press_event().connect(sigc::bind<Glib::ustring> (
         sigc::mem_fun(*this, &JMenu::__on_button_press_event), "Quitar"));
-    append(*item);
+    append(*item1);
 
-    Gtk::MenuItem *item4 = new Gtk::MenuItem();
-    item4->add_label("Guardar...");
-    item4->signal_button_press_event().connect(sigc::bind<Glib::ustring> (
-        sigc::mem_fun(*this, &JMenu::__on_button_press_event), "Guardar"));
-    append(*item4);
+    if (is_file){
+        Gtk::MenuItem *item4 = new Gtk::MenuItem();
+        item4->add_label("Copiar...");
+        item4->signal_button_press_event().connect(sigc::bind<Glib::ustring> (
+            sigc::mem_fun(*this, &JMenu::__on_button_press_event), "Copiar"));
+        append(*item4);}
 
-    Gtk::MenuItem *item5 = new Gtk::MenuItem();
-    item5->add_label("Mover a...");
-    item5->signal_button_press_event().connect(sigc::bind<Glib::ustring> (
-        sigc::mem_fun(*this, &JMenu::__on_button_press_event), "Mover"));
-    append(*item5);
+    if (is_file){
+        Gtk::MenuItem *item5 = new Gtk::MenuItem();
+        item5->add_label("Mover a...");
+        item5->signal_button_press_event().connect(sigc::bind<Glib::ustring> (
+            sigc::mem_fun(*this, &JMenu::__on_button_press_event), "Mover"));
+        append(*item5);}
 
     Gtk::MenuItem *item3 = new Gtk::MenuItem();
     item3->add_label("Grabar/Convertir/Extraer...");
@@ -32,11 +41,12 @@ JMenu::JMenu(Gtk::TreePath p){
         sigc::mem_fun(*this, &JMenu::__on_button_press_event), "Grabar"));
     append(*item3);
 
-    Gtk::MenuItem *item2 = new Gtk::MenuItem();
-    item2->add_label("Borrar Definitivamente");
-    item2->signal_button_press_event().connect(sigc::bind<Glib::ustring> (
-        sigc::mem_fun(*this, &JMenu::__on_button_press_event), "Borrar"));
-    append(*item2);
+    if (is_file){
+        Gtk::MenuItem *item2 = new Gtk::MenuItem();
+        item2->add_label("Borrar Definitivamente");
+        item2->signal_button_press_event().connect(sigc::bind<Glib::ustring> (
+            sigc::mem_fun(*this, &JMenu::__on_button_press_event), "Borrar"));
+        append(*item2);}
 
     show_all();}
 

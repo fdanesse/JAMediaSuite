@@ -2,6 +2,7 @@
 #define Balance_H
 
 #include <iostream>
+#include <sstream>
 #include <sigc++/sigc++.h>
 #include <gtkmm/box.h>
 #include <gtkmm/frame.h>

@@ -461,6 +461,9 @@ class My_FileChooser(gtk.FileChooserDialog):
         gtk.FileChooserDialog.__init__(self, title=title, parent=parent,
             action=action)
 
+        print filter_type
+        print mime
+
         self.modify_bg(gtk.STATE_NORMAL, get_colors("window"))
         self.set_resizable(True)
         self.set_size_request(320, 240)
