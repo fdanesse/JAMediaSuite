@@ -66,7 +66,7 @@ void JTreeView::accion_menu(Glib::ustring text, Gtk::TreePath path){
         if (not iter3){top->init();}}
 
     else if (text == "Subtitulos"){top->load_sub();}
-    else if (text == "Grabar"){}
+    else if (text == "Grabar"){std::cout << "Grabar/Convertir/Extraer: " << process << std::endl;}
         //FIXME: Grabar/Convertir/Extraer en el directorio seleccionado
 }
 
