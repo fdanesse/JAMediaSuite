@@ -11,8 +11,12 @@ Controls::Controls(){
     pixbufpause = Gdk::Pixbuf::create_from_file("./Iconos/play.svg");
     pixbufpause = pixbufpause->scale_simple(24, 24, Gdk::INTERP_BILINEAR);
 
-    {Gtk::SeparatorToolItem *sep = new Gtk::SeparatorToolItem();
-    sep->set_draw(false); sep->set_expand(true); insert(*sep, -1);}
+    {
+        Gtk::SeparatorToolItem *sep = new Gtk::SeparatorToolItem();
+        sep->set_draw(false);
+        sep->set_expand(true);
+        insert(*sep, -1);
+    }
 
     ant = new Gtk::ToolButton(
         *Controls::get_imagen("./Iconos/siguiente.svg", true), "");
@@ -48,36 +52,51 @@ Controls::Controls(){
     vol->signal_value_changed().connect(
         sigc::mem_fun(*this, &Controls::vol_changed));
 
-    {Gtk::ToolItem *item = new Gtk::ToolItem(); item->add(*vol);
-    insert(*item, -1);
-    Gtk::SeparatorToolItem *sep = new Gtk::SeparatorToolItem();
-    sep->set_draw(false); sep->set_expand(true); insert(*sep, -1);}
-    show_all();}
+    {
+        Gtk::ToolItem *item = new Gtk::ToolItem(); item->add(*vol);
+        insert(*item, -1);
+        Gtk::SeparatorToolItem *sep = new Gtk::SeparatorToolItem();
+        sep->set_draw(false);
+        sep->set_expand(true);
+        insert(*sep, -1);}
+        show_all();
+    }
 
 Gtk::Image * Controls::get_imagen(Glib::ustring file, bool flip){
-    try{Glib::RefPtr<Gdk::Pixbuf> pixbuf = Gdk::Pixbuf::create_from_file(file);
+    try{
+        Glib::RefPtr<Gdk::Pixbuf> pixbuf = Gdk::Pixbuf::create_from_file(file);
         pixbuf = pixbuf->scale_simple(24, 24, Gdk::INTERP_BILINEAR);
-        if (flip) {pixbuf = pixbuf->flip(true);}
-        Gtk::Image *imagen = new Gtk::Image(pixbuf); return imagen;}
-    catch(const Glib::FileError& e){std::cout << e.what() << std::endl;
-        Gtk::Image *imagen = new Gtk::Image(); return imagen;}}
+        if (flip) {
+            pixbuf = pixbuf->flip(true);}
+        Gtk::Image *imagen = new Gtk::Image(pixbuf);
+        return imagen;}
+    catch(const Glib::FileError& e){
+        std::cout << e.what() << std::endl;
+        Gtk::Image *imagen = new Gtk::Image();
+        return imagen;}}
 
-void Controls::init(){set_sensitive(false); set_estado("paused");}
+void Controls::init(){
+    set_sensitive(false);
+    set_estado("paused");}
 
 //void Controls::toggled(Glib::ustring text, Gtk::ToggleToolButton *button){
     //JAMedia *top = dynamic_cast<JAMedia*> (this->get_toplevel());
     //top->toolbar_accion(text, button->get_active());}
 
 void Controls::set_estado(Glib::ustring valor){
-    Glib::signal_idle().connect( sigc::bind<Glib::ustring> (
+    Glib::signal_idle().connect(sigc::bind<Glib::ustring>(
         sigc::mem_fun(*this, &Controls::run_set_estado), valor));}
 
 bool Controls::run_set_estado(Glib::ustring valor){
-    if (estado != valor){estado = valor;
+    if (estado != valor){
+        estado = valor;
         Gtk::Image *img = dynamic_cast<Gtk::Image*> (pla->get_icon_widget());
         if (estado == "playing"){
-            img->set(pixbufplay);pla->set_tooltip_text("Pausar");}
-        else{img->set(pixbufpause);pla->set_tooltip_text("Reproducir");}}
+            img->set(pixbufplay);
+            pla->set_tooltip_text("Pausar");}
+        else{
+            img->set(pixbufpause);
+            pla->set_tooltip_text("Reproducir");}}
     return false;}
 
 void Controls::clicked(Glib::ustring text){
@@ -88,4 +107,5 @@ void Controls::vol_changed(double value){
     JAMedia *top = dynamic_cast<JAMedia*> (this->get_toplevel());
     top->vol_changed(value);}
 
-void Controls::set_vol(double valor){vol->set_value(valor);}
+void Controls::set_vol(double valor){
+    vol->set_value(valor);}

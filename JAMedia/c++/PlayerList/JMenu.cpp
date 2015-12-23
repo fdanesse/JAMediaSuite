@@ -52,4 +52,5 @@ JMenu::JMenu(Gtk::TreePath p, bool is_file, bool is_video){
 
 bool JMenu::__on_button_press_event(GdkEventButton *button_event, Glib::ustring text){
     JTreeView *treeview = dynamic_cast<JTreeView*> (get_attach_widget());
-    treeview->accion_menu(text, path); return true;}
+    treeview->accion_menu(text, path);
+    return true;}
