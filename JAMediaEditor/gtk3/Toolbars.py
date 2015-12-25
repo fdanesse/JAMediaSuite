@@ -372,10 +372,13 @@ class ToolbarEstado(Gtk.Statusbar):
         carac = _dict['caracteres']
         arch = _dict['archivo']
         text = self.pop(0)
-        new_text = u"Archivo: %s  Lineas: %s  Caracteres: %s" % (
-            arch, reng, carac)
         try:
+            new_text = u"Archivo: %s  Lineas: %s  Caracteres: %s" % (
+                arch, reng, carac)
             if text != new_text:
                 self.push(0, new_text)
         except:
+            new_text = u"Lineas: %s  Caracteres: %s" % (reng, carac)
+            self.push(0, new_text)
+            #FIXME: UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 30: ordinal not in range(128)
             pass
