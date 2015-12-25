@@ -78,6 +78,10 @@ Balance::Balance(){
     event->add(*pgam);
     pack_start(*fgam, false, false, 0);
 
+    //textview = new Gtk::TextView();
+    //pack_start(*textview, true, true, 0);
+    //textview->set_editable(false);
+
     show_all();}
 
 void Balance::init(){
@@ -85,7 +89,13 @@ void Balance::init(){
     pcon->set_value(50.0);
     psat->set_value(50.0);
     pmat->set_value(50.0);
-    pgam->set_value(10.0);}
+    pgam->set_value(10.0);
+    //textview->get_buffer()->set_text("");
+    }
+
+//void Balance::set_info(Glib::ustring info){
+//    Glib::ustring text = textview->get_buffer()->get_text();
+//    textview->get_buffer()->set_text(text + info + "\n");}
 
 void Balance::on_adjustment_value_changed(Glib::ustring text){
     Glib::signal_idle().connect( sigc::bind<Glib::ustring> (

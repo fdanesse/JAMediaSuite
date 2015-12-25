@@ -109,6 +109,7 @@ bool JAMediaPlayer::on_bus_message(const Glib::RefPtr<Gst::Bus>& bus,
             size_t found = info.find("video-codec");
             if (found!=std::string::npos){
                 signal_video.emit();}
+            signal_info_update.emit(info);
             break;}
 
         //elif message.type == gst.MESSAGE_BUFFERING:

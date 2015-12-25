@@ -9,6 +9,7 @@
 #include <gtkmm/eventbox.h>
 #include <gtkmm/hvscale.h>
 #include <gtkmm/adjustment.h>
+#include <gtkmm/textview.h>
 
 
 class Balance : public Gtk::VBox{
@@ -17,6 +18,7 @@ class Balance : public Gtk::VBox{
         ~Balance(){};
         Balance();
         void init();
+        //void set_info(Glib::ustring info);
 
     private:
         Gtk::Frame *fbri;
@@ -29,6 +31,7 @@ class Balance : public Gtk::VBox{
         Gtk::HScale *pmat;
         Gtk::Frame *fgam;
         Gtk::HScale *pgam;
+        //Gtk::TextView *textview;
 
         void on_adjustment_value_changed(Glib::ustring text);
         bool run_adjustment_value(Glib::ustring text);

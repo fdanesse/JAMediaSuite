@@ -17,6 +17,7 @@ class JAMediaPlayer : public Glib::Object{
         sigc::signal<void> signal_video;
         sigc::signal<void, gint64> signal_progress_update;
         sigc::signal<void, Glib::ustring> signal_estado_update;
+        sigc::signal<void, Glib::ustring> signal_info_update;
 
         void load(Glib::ustring track, const gulong ventana_id);
         void set_vol(double value);

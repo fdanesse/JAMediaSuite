@@ -63,6 +63,7 @@ class JAMedia : public Gtk::Window{
 
         void do_realize();
         void video();
+        //void info(Glib::ustring info);
         void set_progress(double val);
         void estado_update(Glib::ustring valor);
         void progress_update(gint64 valor);

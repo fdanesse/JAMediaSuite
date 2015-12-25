@@ -239,6 +239,7 @@ void JAMedia::load_file(Glib::ustring track){
     player->signal_estado_update.connect(
         sigc::mem_fun(*this, &JAMedia::estado_update));
     player->signal_video.connect(sigc::mem_fun(*this, &JAMedia::video));
+    //player->signal_info_update.connect(sigc::mem_fun(*this, &JAMedia::info));
     controls->set_sensitive(true);
     player->load(track, panel->get_xid());
     player->play();}
@@ -246,6 +247,9 @@ void JAMedia::load_file(Glib::ustring track){
 void JAMedia::video(){
     toolbar->video(true);
     panel->video(true);}
+
+//void JAMedia::info(Glib::ustring info){
+//    panel->set_info(info);}
 
 void JAMedia::set_balance(Glib::ustring text, double val){
     if (player != NULL){

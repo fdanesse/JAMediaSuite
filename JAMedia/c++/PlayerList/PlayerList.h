@@ -27,6 +27,7 @@ class PlayerList : public Gtk::Frame{
         void view_conf_or_list(Glib::ustring text, bool active);
         void video(bool val);
         void new_file();
+        //void set_info(Glib::ustring info);
 
     private:
         Gtk::VBox *vbox;

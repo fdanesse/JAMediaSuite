@@ -30,6 +30,7 @@ class JPaned : public Gtk::HPaned{
         gulong get_xid();
         void video(bool val);
         void new_file();
+        //void set_info(Glib::ustring info);
 
     private:
         Gtk::DrawingArea *drawing;

@@ -22,6 +22,9 @@ PlayerList::PlayerList(){
     add(*vbox);
     show_all();}
 
+//void PlayerList::set_info(Glib::ustring info){
+//    balance->set_info(info);}
+
 void PlayerList::view_conf_or_list(Glib::ustring text, bool active){
     if (active){
         balance->show();
@@ -60,4 +63,5 @@ void PlayerList::video(bool val){
         treeview->show();}}
 
 void PlayerList::new_file(){
-    video(false);balance->init();}
+    video(false);
+    balance->init();}

@@ -17,6 +17,9 @@ JPaned::JPaned(){
     drawing->signal_motion_notify_event().connect(
         sigc::mem_fun(*this, &JPaned::motion));}
 
+//void JPaned::set_info(Glib::ustring info){
+//    playerlist->set_info(info);}
+
 void JPaned::view_conf_or_list(Glib::ustring text, bool active){
     playerlist->view_conf_or_list(text, active);}
 
