@@ -244,7 +244,8 @@ void JAMedia::load_file(Glib::ustring track){
     player->play();}
 
 void JAMedia::video(){
-    toolbar->video(true); panel->video(true);}
+    toolbar->video(true);
+    panel->video(true);}
 
 void JAMedia::set_balance(Glib::ustring text, double val){
     if (player != NULL){

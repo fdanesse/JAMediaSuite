@@ -42,7 +42,7 @@ class JAMediaPlayer : public Glib::Object{
         Glib::RefPtr<Gst::Bus> bus;
         Gst::State estado;
 
-        void on_bus_message_sync(const Glib::RefPtr<Gst::Message>& message);
+        //void on_bus_message_sync(const Glib::RefPtr<Gst::Message>& message);
         bool on_bus_message(const Glib::RefPtr<Gst::Bus>& bus,
             const Glib::RefPtr<Gst::Message>& message);
         void new_handler(bool reset);

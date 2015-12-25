@@ -47,13 +47,16 @@ JAMediaPlayer::JAMediaPlayer(){
 
     Glib::RefPtr<Gst::Bus> bus = playbin->get_bus();
     bus->add_watch(sigc::mem_fun(*this, &JAMediaPlayer::on_bus_message));
-
-    bus->enable_sync_message_emission();
-    bus->signal_sync_message().connect(
-        sigc::mem_fun(*this, &JAMediaPlayer::on_bus_message_sync));
+    //bus->enable_sync_message_emission();
+    //bus->signal_sync_message().connect(
+    //  sigc::mem_fun(*this, &JAMediaPlayer::on_bus_message_sync));
 }
 
-void JAMediaPlayer::on_bus_message_sync(const Glib::RefPtr<Gst::Message>& message){
+//void JAMediaPlayer::on_bus_message_sync(const Glib::RefPtr<Gst::Message>& message){
+
+bool JAMediaPlayer::on_bus_message(const Glib::RefPtr<Gst::Bus>& bus,
+    const Glib::RefPtr<Gst::Message>& message){
+
     switch(message->get_message_type()){
         case Gst::MESSAGE_ELEMENT: {
             if (message->get_structure().has_name("prepare-xwindow-id")){
@@ -63,20 +66,7 @@ void JAMediaPlayer::on_bus_message_sync(const Glib::RefPtr<Gst::Message>& messag
                     Gst::Interface::cast <Gst::XOverlay>(element);
                 if (xoverlay){
                     xoverlay->set_xwindow_id(xid);}}
-            break;}}}
-
-bool JAMediaPlayer::on_bus_message(const Glib::RefPtr<Gst::Bus>& bus,
-    const Glib::RefPtr<Gst::Message>& message){
-
-    switch(message->get_message_type()){
-
-        //case Gst::MESSAGE_ELEMENT: {
-        //    if (message->get_structure().has_name("prepare-xwindow-id")){
-        //        Glib::RefPtr<Gst::Element> element =
-        //            Glib::RefPtr<Gst::Element>::cast_dynamic(message->get_source());
-        //        Glib::RefPtr< Gst::ElementInterfaced<Gst::XOverlay> > xoverlay =
-        //            Gst::Interface::cast <Gst::XOverlay>(element);
-        //        if (xoverlay){xoverlay->set_xwindow_id(xid);}}break;}
+            break;}
 
         case Gst::MESSAGE_STATE_CHANGED:{
             Glib::RefPtr<Gst::MessageStateChanged> stateChangeMsg =
@@ -147,11 +137,13 @@ void JAMediaPlayer::pause_play(){
 
 void JAMediaPlayer::stop(){
     new_handler(false);
-    posicion = 0; playbin->set_state(Gst::STATE_NULL);
+    posicion = 0;
+    playbin->set_state(Gst::STATE_NULL);
     signal_progress_update.emit(posicion);}
 
 void JAMediaPlayer::load(Glib::ustring track, const gulong ventana_id){
-    xid = ventana_id;posicion = 0;
+    xid = ventana_id;
+    posicion = 0;
     signal_progress_update.emit(posicion);
     //self.emit("loading-buffer", 100)
     if (gst_uri_is_valid(track.c_str())){
