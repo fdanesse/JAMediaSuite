@@ -7,6 +7,7 @@ int main(int argc, char** argv, char** env) {
     std::cout << std::endl << "JAMedia 16 (c++)" << std::endl;
     std::cout << "Requiere gtkmm para Gtk3 y ";
     std::cout << "gstreamermm para gstreamer-0.10" << std::endl;
+    std::cout << "libgstreamermm-0.10" << std::endl;
     std::cout << "Por más información visita: ";
     std::cout << "https://sites.google.com/site/sugaractivities/";
     std::cout << "jamediaobjects/jam" << std::endl;

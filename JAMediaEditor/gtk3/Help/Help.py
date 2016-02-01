@@ -24,7 +24,8 @@ from gi.repository import GdkX11
 from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import GdkPixbuf
-
+import gi
+gi.require_version('WebKit', '3.0')
 from gi.repository import WebKit
 
 screen = GdkX11.X11Screen.get_default()

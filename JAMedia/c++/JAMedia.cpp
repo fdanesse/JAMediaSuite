@@ -27,7 +27,6 @@ JAMedia::JAMedia(){
     panel = new JPaned();
     progress = new Gtk::HScale(
         Gtk::Adjustment::create(0.0, 0.0, 101.0, 0.1, 1.0, 1.0));
-    progress->property_digits() = 0;
     progress->set_draw_value(false);
     controls = new Controls();
 
@@ -45,9 +44,11 @@ JAMedia::JAMedia(){
     signal_realize().connect(sigc::mem_fun(*this, &JAMedia::do_realize));
     progress->signal_adjust_bounds().connect(
         sigc::mem_fun(*this, &JAMedia::set_progress));
-    show_all(); resize(640, 480);
+    show_all();
+    resize(640, 480);
 
-    time_t t = time(0);struct tm *now = localtime(&t);
+    time_t t = time(0);
+    struct tm *now = localtime(&t);
     mov = (now->tm_hour * 60 * 60) + (now->tm_min * 60) + now->tm_sec;
 
     signal_motion_notify_event().connect(

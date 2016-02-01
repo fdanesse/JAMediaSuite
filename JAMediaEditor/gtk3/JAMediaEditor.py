@@ -70,7 +70,7 @@ class JAMediaEditor(Gtk.Window):
         self.set_border_width(5)
         self.set_position(Gtk.WindowPosition.CENTER)
 
-        self.help = False
+        self._help = False
 
         accel_group = Gtk.AccelGroup()
         self.add_accel_group(accel_group)
@@ -134,13 +134,13 @@ class JAMediaEditor(Gtk.Window):
         self.base_panel.external_open_file(modulo_path)
 
     def __run_help(self, widget, texto, titulo):
-        if self.help:
-            self.help.destroy()
-            self.help = False
-        self.help = Help(self, titulo)
-        self.help.set_help(texto)
+        if self._help:
+            self._help.destroy()
+            self._help = False
+        self._help = Help(self, titulo)
+        self._help.set_help(texto)
         if self.base_panel.instalador:
-            self.help.move(0, 40)
+            self._help.move(0, 40)
 
     def __run_editor(self, widget):
         self.jamediapygihack.hide()

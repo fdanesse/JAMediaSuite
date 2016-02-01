@@ -53,7 +53,7 @@ class SourceView(GtkSource.View):
         GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,
         GObject.TYPE_STRING)),
     "update-label": (GObject.SIGNAL_RUN_LAST,
-        GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, ))}
+        GObject.TYPE_NONE, (GObject.TYPE_STRING, ))}
 
     def __init__(self, config):
 
