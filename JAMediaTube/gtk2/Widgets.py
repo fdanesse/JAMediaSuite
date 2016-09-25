@@ -33,7 +33,7 @@ from Globales import get_separador
 from Globales import get_boton
 
 BASE_PATH = os.path.dirname(__file__)
-youtubedl = os.path.join(BASE_PATH, "youtube-dl")
+youtubedl = "/usr/bin/youtube-dl" #os.path.join(BASE_PATH, "youtube-dl")
 
 
 class Toolbar(gtk.Toolbar):
@@ -407,6 +407,7 @@ class WidgetVideoItem(gtk.EventBox):
         previews y demás metadatos, utilizando un subproceso para no afectar a
         la interfaz gráfica.
         """
+
         _url = self.videodict["url"]
         STDOUT = "/tmp/jamediatube-dl%s" % self.videodict["id"]
         STERR = "/tmp/jamediatube-dlERR%s" % self.videodict["id"]

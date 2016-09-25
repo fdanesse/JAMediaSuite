@@ -138,9 +138,13 @@ class Terminal(Gtk.EventBox):
             self.notebook.get_current_page()].get_child()
         pty_flags = Vte.PtyFlags(0)
         # FIXME: en versiones nuevas es spawn_sync
-        self.fork_command_full(pty_flags, dirpath,
-            (interprete, path_script, param), "", 0, None, None)
-
+        try:
+            self.fork_command_full(pty_flags, dirpath,
+                (interprete, path_script, param), "", 0, None, None)
+        except:
+            self.spawn_sync(pty_flags, dirpath,
+                (interprete, path_script, param), "", 0, None, None)
+            
 
 class NoteBookTerminal(Gtk.Notebook):
     """
@@ -348,14 +352,22 @@ class VTETerminal(Vte.Terminal):
             path = os.path.dirname(archivo)
             pty_flags = Vte.PtyFlags(0)
             # FIXME: en versiones nuevas es spawn_sync
-            self.fork_command_full(pty_flags, path,
-                (interprete, archivo), "", 0, None, None)
+            try:
+                self.fork_command_full(pty_flags, path,
+                    (interprete, archivo), "", 0, None, None)
+            except:
+                self.spawn_sync(pty_flags, path,
+                    (interprete, archivo), "", 0, None, None)
         else:
             interprete = self.interprete
             path = self.path
             pty_flags = Vte.PtyFlags(0)
             # FIXME: en versiones nuevas es spawn_sync
-            self.fork_command_full(pty_flags, path,
+            try:
+                self.fork_command_full(pty_flags, path,
+                    (interprete,), "", 0, None, None)
+            except:
+                self.spawn_sync(pty_flags, path,
                 (interprete,), "", 0, None, None)
         self.child_focus(True)
 
