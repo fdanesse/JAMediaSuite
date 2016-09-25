@@ -14,11 +14,10 @@ from ..utils import (
 
 class XHamsterIE(InfoExtractor):
     """Information Extractor for xHamster"""
-    _VALID_URL = r'http://(?:www\.)?xhamster\.com/movies/(?P<id>[0-9]+)/(?P<seo>.+?)\.html(?:\?.*)?'
+    _VALID_URL = r'(?P<proto>https?)://(?:.+?\.)?xhamster\.com/movies/(?P<id>[0-9]+)/(?P<seo>.+?)\.html(?:\?.*)?'
     _TESTS = [
         {
             'url': 'http://xhamster.com/movies/1509445/femaleagent_shy_beauty_takes_the_bait.html',
-            'md5': '8281348b8d3c53d39fffb377d24eac4e',
             'info_dict': {
                 'id': '1509445',
                 'ext': 'mp4',
@@ -31,7 +30,6 @@ class XHamsterIE(InfoExtractor):
         },
         {
             'url': 'http://xhamster.com/movies/2221348/britney_spears_sexy_booty.html?hd',
-            'md5': '4cbd8d56708ecb4fb4124c23e4acb81a',
             'info_dict': {
                 'id': '2221348',
                 'ext': 'mp4',
@@ -41,10 +39,14 @@ class XHamsterIE(InfoExtractor):
                 'duration': 200,
                 'age_limit': 18,
             }
-        }
+        },
+        {
+            'url': 'https://xhamster.com/movies/2272726/amber_slayed_by_the_knight.html',
+            'only_matching': True,
+        },
     ]
 
-    def _real_extract(self,url):
+    def _real_extract(self, url):
         def extract_video_url(webpage):
             mp4 = re.search(r'<video\s+.*?file="([^"]+)".*?>', webpage)
             if mp4 is None:
@@ -59,7 +61,8 @@ class XHamsterIE(InfoExtractor):
 
         video_id = mobj.group('id')
         seo = mobj.group('seo')
-        mrss_url = 'http://xhamster.com/movies/%s/%s.html' % (video_id, seo)
+        proto = mobj.group('proto')
+        mrss_url = '%s://xhamster.com/movies/%s/%s.html' % (proto, video_id, seo)
         webpage = self._download_webpage(mrss_url, video_id)
 
         title = self._html_search_regex(r'<title>(?P<title>.+?) - xHamster\.com</title>', webpage, 'title')
@@ -69,17 +72,17 @@ class XHamsterIE(InfoExtractor):
         description = mobj.group(1) if mobj else None
 
         upload_date = self._html_search_regex(r'hint=\'(\d{4}-\d{2}-\d{2}) \d{2}:\d{2}:\d{2} [A-Z]{3,4}\'',
-            webpage, 'upload date', fatal=False)
+                                              webpage, 'upload date', fatal=False)
         if upload_date:
             upload_date = unified_strdate(upload_date)
 
         uploader_id = self._html_search_regex(r'<a href=\'/user/[^>]+>(?P<uploader_id>[^<]+)',
-            webpage, 'uploader id', default='anonymous')
+                                              webpage, 'uploader id', default='anonymous')
 
         thumbnail = self._html_search_regex(r'<video\s+.*?poster="([^"]+)".*?>', webpage, 'thumbnail', fatal=False)
 
         duration = parse_duration(self._html_search_regex(r'<span>Runtime:</span> (\d+:\d+)</div>',
-            webpage, 'duration', fatal=False))
+                                                          webpage, 'duration', fatal=False))
 
         view_count = self._html_search_regex(r'<span>Views:</span> ([^<]+)</div>', webpage, 'view count', fatal=False)
         if view_count:

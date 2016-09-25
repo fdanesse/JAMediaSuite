@@ -33,7 +33,7 @@ from Globales import get_tube_directory
 
 BASE_PATH = os.path.dirname(__file__)
 STDERR = "/dev/null"
-youtubedl = "/usr/bin/youtube-dl" #os.path.join(BASE_PATH, "youtube-dl")
+youtubedl = os.path.join(BASE_PATH, "youtube-dl") #"/usr/bin/youtube-dl"
 
 FEED = {
     "id": "",

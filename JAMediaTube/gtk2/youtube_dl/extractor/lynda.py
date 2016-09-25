@@ -3,21 +3,22 @@ from __future__ import unicode_literals
 import re
 import json
 
-from .subtitles import SubtitlesInfoExtractor
 from .common import InfoExtractor
-from ..utils import (
+from ..compat import (
+    compat_str,
     compat_urllib_parse,
     compat_urllib_request,
+)
+from ..utils import (
     ExtractorError,
     int_or_none,
-    compat_str,
 )
 
 
-class LyndaIE(SubtitlesInfoExtractor):
+class LyndaIE(InfoExtractor):
     IE_NAME = 'lynda'
     IE_DESC = 'lynda.com videos'
-    _VALID_URL = r'https?://www\.lynda\.com/[^/]+/[^/]+/\d+/(\d+)-\d\.html'
+    _VALID_URL = r'https?://www\.lynda\.com/(?:[^/]+/[^/]+/\d+|player/embed)/(\d+)'
     _LOGIN_URL = 'https://www.lynda.com/login/login.aspx'
     _NETRC_MACHINE = 'lynda'
 
@@ -26,7 +27,7 @@ class LyndaIE(SubtitlesInfoExtractor):
 
     ACCOUNT_CREDENTIALS_HINT = 'Use --username and --password options to provide lynda.com account credentials.'
 
-    _TEST = {
+    _TESTS = [{
         'url': 'http://www.lynda.com/Bootstrap-tutorials/Using-exercise-files/110885/114408-4.html',
         'md5': 'ecfc6862da89489161fb9cd5f5a6fac1',
         'info_dict': {
@@ -35,7 +36,10 @@ class LyndaIE(SubtitlesInfoExtractor):
             'title': 'Using the exercise files',
             'duration': 68
         }
-    }
+    }, {
+        'url': 'https://www.lynda.com/player/embed/133770?tr=foo=1;bar=g;fizz=rt&fs=0',
+        'only_matching': True,
+    }]
 
     def _real_initialize(self):
         self._login()
@@ -45,7 +49,7 @@ class LyndaIE(SubtitlesInfoExtractor):
         video_id = mobj.group(1)
 
         page = self._download_webpage('http://www.lynda.com/ajax/player?videoId=%s&type=video' % video_id, video_id,
-            'Downloading video JSON')
+                                      'Downloading video JSON')
         video_json = json.loads(page)
 
         if 'Status' in video_json:
@@ -83,13 +87,10 @@ class LyndaIE(SubtitlesInfoExtractor):
                 } for format_id, video_url in prioritized_streams['0'].items()
             ])
 
+        self._check_formats(formats, video_id)
         self._sort_formats(formats)
 
-        if self._downloader.params.get('listsubtitles', False):
-            self._list_available_subtitles(video_id, page)
-            return
-
-        subtitles = self._fix_subtitles(self.extract_subtitles(video_id, page))
+        subtitles = self.extract_subtitles(video_id, page)
 
         return {
             'id': video_id,
@@ -109,7 +110,7 @@ class LyndaIE(SubtitlesInfoExtractor):
             'password': password,
             'remember': 'false',
             'stayPut': 'false'
-        }        
+        }
         request = compat_urllib_request.Request(self._LOGIN_URL, compat_urllib_parse.urlencode(login_form))
         login_page = self._download_webpage(request, None, 'Logging in as %s' % username)
 
@@ -117,7 +118,7 @@ class LyndaIE(SubtitlesInfoExtractor):
         m = re.search(r'loginResultJson = \'(?P<json>[^\']+)\';', login_page)
         if m is not None:
             response = m.group('json')
-            response_json = json.loads(response)            
+            response_json = json.loads(response)
             state = response_json['state']
 
             if state == 'notlogged':
@@ -141,38 +142,31 @@ class LyndaIE(SubtitlesInfoExtractor):
         if re.search(self._SUCCESSFUL_LOGIN_REGEX, login_page) is None:
             raise ExtractorError('Unable to log in')
 
-    def _fix_subtitles(self, subtitles):
-        if subtitles is None:
-            return subtitles  # subtitles not requested
-
-        fixed_subtitles = {}
-        for k, v in subtitles.items():
-            subs = json.loads(v)
-            if len(subs) == 0:
+    def _fix_subtitles(self, subs):
+        srt = ''
+        for pos in range(0, len(subs) - 1):
+            seq_current = subs[pos]
+            m_current = re.match(self._TIMECODE_REGEX, seq_current['Timecode'])
+            if m_current is None:
                 continue
-            srt = ''
-            for pos in range(0, len(subs) - 1):
-                seq_current = subs[pos]
-                m_current = re.match(self._TIMECODE_REGEX, seq_current['Timecode'])
-                if m_current is None:
-                    continue
-                seq_next = subs[pos + 1]
-                m_next = re.match(self._TIMECODE_REGEX, seq_next['Timecode'])
-                if m_next is None:
-                    continue
-                appear_time = m_current.group('timecode')
-                disappear_time = m_next.group('timecode')
-                text = seq_current['Caption']
-                srt += '%s\r\n%s --> %s\r\n%s' % (str(pos), appear_time, disappear_time, text)
-            if srt:
-                fixed_subtitles[k] = srt
-        return fixed_subtitles
+            seq_next = subs[pos + 1]
+            m_next = re.match(self._TIMECODE_REGEX, seq_next['Timecode'])
+            if m_next is None:
+                continue
+            appear_time = m_current.group('timecode')
+            disappear_time = m_next.group('timecode')
+            text = seq_current['Caption'].lstrip()
+            srt += '%s\r\n%s --> %s\r\n%s' % (str(pos), appear_time, disappear_time, text)
+        if srt:
+            return srt
 
-    def _get_available_subtitles(self, video_id, webpage):
+    def _get_subtitles(self, video_id, webpage):
         url = 'http://www.lynda.com/ajax/player?videoId=%s&type=transcript' % video_id
-        sub = self._download_webpage(url, None, False)
-        sub_json = json.loads(sub)
-        return {'en': url} if len(sub_json) > 0 else {}
+        subs = self._download_json(url, None, False)
+        if subs:
+            return {'en': [{'ext': 'srt', 'data': self._fix_subtitles(subs)}]}
+        else:
+            return {}
 
 
 class LyndaCourseIE(InfoExtractor):
@@ -187,7 +181,7 @@ class LyndaCourseIE(InfoExtractor):
         mobj = re.match(self._VALID_URL, url)
         course_path = mobj.group('coursepath')
         course_id = mobj.group('courseid')
-        
+
         page = self._download_webpage('http://www.lynda.com/ajax/player?courseId=%s&type=course' % course_id,
                                       course_id, 'Downloading course JSON')
         course_json = json.loads(page)

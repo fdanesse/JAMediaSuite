@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import re
-
 from .common import InfoExtractor
 
 
@@ -25,7 +23,7 @@ class CBSIE(InfoExtractor):
     }, {
         'url': 'http://www.cbs.com/shows/liveonletterman/artist/221752/st-vincent/',
         'info_dict': {
-            'id': 'P9gjWjelt6iP',
+            'id': 'WWF_5KqY3PK1',
             'ext': 'flv',
             'title': 'Live on Letterman - St. Vincent',
             'description': 'Live On Letterman: St. Vincent in concert from New York\'s Ed Sullivan Theater on Tuesday, July 16, 2014.',
@@ -39,10 +37,9 @@ class CBSIE(InfoExtractor):
     }]
 
     def _real_extract(self, url):
-        mobj = re.match(self._VALID_URL, url)
-        video_id = mobj.group('id')
+        video_id = self._match_id(url)
         webpage = self._download_webpage(url, video_id)
         real_id = self._search_regex(
             r"video\.settings\.pid\s*=\s*'([^']+)';",
             webpage, 'real video ID')
-        return self.url_result(u'theplatform:%s' % real_id)
+        return self.url_result('theplatform:%s' % real_id)
