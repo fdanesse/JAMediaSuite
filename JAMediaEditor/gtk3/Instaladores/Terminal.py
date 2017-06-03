@@ -83,16 +83,21 @@ class VTETerminal(Vte.Terminal):
         self.set_encoding('utf-8')
         self.set_font(Pango.FontDescription("Monospace %s" % 10))
 
-        self.set_colors(Gdk.color_parse('#ffffff'),
-            Gdk.color_parse('#000000'), [])
+        # FIXME: TypeError: argument foreground: Expected Gdk.RGBA, but got gi.overrides.Gdk.Color
+        #self.set_colors(Gdk.color_parse('#ffffff'),
+        #    Gdk.color_parse('#000000'), [])
 
         self.show_all()
         self.reset()
 
     def reset(self, path=os.environ["HOME"], interprete="/bin/bash"):
         pty_flags = Vte.PtyFlags(0)
-        self.fork_command_full(pty_flags, path, (interprete,),
-            "", 0, None, None)
+        try:
+            self.fork_command_full(pty_flags, path,
+                (interprete,), "", 0, None, None)
+        except:
+            self.spawn_sync(pty_flags, path,
+                (interprete,), "", 0, None, None)
         self.child_focus(True)
 
     def do_child_exited(self, ret=0):
@@ -114,5 +119,9 @@ class VTETerminal(Vte.Terminal):
             param       =   'sdist' en est caso
         """
         pty_flags = Vte.PtyFlags(0)
-        self.fork_command_full(pty_flags, dirpath,
-            (interprete, path_script, param), "", 0, None, None)
+        try:
+            self.fork_command_full(pty_flags, dirpath,
+                (interprete, path_script, param), "", 0, None, None)
+        except:
+            self.spawn_sync(pty_flags, dirpath,
+                (interprete, path_script, param), "", 0, None, None)

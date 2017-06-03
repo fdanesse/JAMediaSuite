@@ -808,6 +808,7 @@ class YoutubeIE(YoutubeBaseInfoExtractor):
 
         # Extract original video URL from URL with redirection, like age verification, using next_url parameter
         mobj = re.search(self._NEXT_URL_RE, url)
+
         if mobj:
             url = proto + '://www.youtube.com/' + compat_urllib_parse.unquote(mobj.group(1)).lstrip('/')
         video_id = self.extract_id(url)
@@ -1000,6 +1001,7 @@ class YoutubeIE(YoutubeBaseInfoExtractor):
                     'url': video_real_url,
                     'player_url': player_url,
                 }
+                print video_real_url
                 if itag in self._formats:
                     dct.update(self._formats[itag])
                 formats.append(dct)
