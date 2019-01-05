@@ -117,22 +117,12 @@ class SourceView(GtkSource.View):
         GLib.idle_add(self.scroll_to_iter, linea_iter, 0.1, 1, 1, 0.1)
 
     def __limpiar_codigo(self, texto):
-        # Cuando se abre o guarda un archivo, se limpia el código en él.
         limpio = ""
         for line in texto.splitlines():
-            # Eliminar espacios al final de la linea y en lineas vacías.
             text_line = "%s\n" % (line.rstrip())
-            # Cambiar Tabulaciones por 4 espacios
-            ret = []
-            for l in text_line:
-                x = l
-                if ord("\t") == ord(l):
-                    x = "    "
-                ret.append(x)
-            text_line = ""
+            ret = text_line.replace("\t", "    ")
             for l in ret:
-                text_line = "%s%s" % (text_line, l)
-            limpio = "%s%s" % (limpio, text_line)
+                limpio = "%s%s" % (limpio, l)
         return limpio
 
     def __guardar_como(self, widget, archivo):

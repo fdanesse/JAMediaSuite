@@ -52,6 +52,7 @@ proyecto
             proyecto
                 (la aplicación a instalar)
 """
+# https://ubunlog.com/como-distribuir-nuestro-software-en-ubuntu-y-otras-distros/
 
 
 class DebianWidget(Gtk.EventBox):
@@ -124,7 +125,7 @@ class DebianWidget(Gtk.EventBox):
             self.proyecto["version"].replace(".", "_")))
         print commands.getoutput('dpkg -b %s %s' % (
             self.install_path, destino))
-        os.chmod(destino, 0755)
+        os.chmod(destino, 0755)  # FIXME: Cuelga si se escribe algo mal en el archivo control
         dialogo.destroy()
         t = "Proceso Concluido."
         t = "%s\n%s" % (t, "El instalador se encuentra en")

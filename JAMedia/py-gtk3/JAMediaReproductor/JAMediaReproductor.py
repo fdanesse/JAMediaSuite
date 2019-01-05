@@ -362,6 +362,15 @@ class JAMediaReproductor(GObject.GObject):
             print "\n Gst.MessageType.BUFFERING:"
             print mensaje.parse_buffering()
             print mensaje.parse_buffering_stats()
+            '''
+            buf = int(message.structure["buffer-percent"])
+            if buf < 100 and self.estado == gst.STATE_PLAYING:
+                self.emit("loading-buffer", buf)
+                self.__pause()
+            elif buf > 99 and self.estado != gst.STATE_PLAYING:
+                self.emit("loading-buffer", buf)
+                self.play()
+            '''
 
         elif mensaje.type == Gst.MessageType.RESET_TIME:
             #print "\n Gst.MessageType.RESET_TIME:"
@@ -450,7 +459,6 @@ class JAMediaReproductor(GObject.GObject):
         """
         Rota el Video.
         """
-
         self.video_pipeline.rotar(valor)
         self.config['rotacion'] = self.video_pipeline.get_rotacion()
 
@@ -460,7 +468,6 @@ class JAMediaReproductor(GObject.GObject):
         Seteos de balance en video.
         Recibe % en float y convierte a los valores del filtro.
         """
-
         if brillo:
             self.config['brillo'] = brillo
 
@@ -487,7 +494,6 @@ class JAMediaReproductor(GObject.GObject):
         """
         Retorna los valores actuales de balance en % float.
         """
-
         # No funciona llamar a los valores reales.
         #return self.video_pipeline.get_balance()
         return self.config
@@ -496,27 +502,23 @@ class JAMediaReproductor(GObject.GObject):
         """
         Pone el pipe de Gst en Gst.State.NULL
         """
-
         self.player.set_state(Gst.State.NULL)
 
     def load(self, uri):
         """
         Carga un archivo o stream en el pipe de Gst.
         """
-
         self.stop()
         self.__reset()
 
         GLib.idle_add(self.__load, uri)
 
     def __load(self, uri):
-
         if os.path.exists(uri):
             # Archivo
             direccion = Gst.filename_to_uri(uri)
             self.player.set_property("uri", direccion)
             self.__play()
-
         else:
             # Streaming
             if Gst.uri_is_valid(uri):
@@ -528,7 +530,6 @@ class JAMediaReproductor(GObject.GObject):
         Permite desplazarse por
         la pista que se esta reproduciendo.
         """
-
         if self.duracion < posicion:
             self.emit("newposicion", self.posicion)
             return
@@ -545,12 +546,10 @@ class JAMediaReproductor(GObject.GObject):
         """
         Cambia el volúmen de Reproducción.
         """
-
         self.volumen = float(valor / 100)
         self.player.set_property('volume', self.volumen)
 
     def agregar_efecto(self, nombre_efecto):
-
         self.__new_handle(False)
         self.stop()
 
@@ -564,12 +563,10 @@ class JAMediaReproductor(GObject.GObject):
         self.__new_handle(True)
 
     def quitar_efecto(self, indice_efecto):
-
         if type(indice_efecto) == int:
             self.efectos.remove(self.efectos[indice_efecto])
             #if self.efectos[indice_efecto] in self.config_efectos.keys():
             #    del (self.config_efectos[self.efectos[indice_efecto]])
-
         elif type(indice_efecto) == str:
             for efecto in self.efectos:
                 if efecto == indice_efecto:
@@ -590,7 +587,6 @@ class JAMediaReproductor(GObject.GObject):
         """
         Configura un efecto en el pipe.
         """
-
         self.video_pipeline.configurar_efecto(nombre_efecto, propiedad, valor)
 
 

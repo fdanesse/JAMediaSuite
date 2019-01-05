@@ -67,9 +67,9 @@ class ToolbarTerminal(Gtk.Toolbar):
             if bash_path and python_path:
                 break
 
-        for path in paths:
-            if 'ipython' in os.listdir(path):
-                python_path = os.path.join(path, 'ipython')
+        #for path in paths:
+        #    if 'ipython' in os.listdir(path):
+        #        python_path = os.path.join(path, 'ipython')
 
         ### Construcción.
         archivo = os.path.join(BASE_PATH, "Iconos", "edit-copy.svg")

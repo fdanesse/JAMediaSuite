@@ -58,6 +58,7 @@ def get_dict():
     print "JAMediaPyGiHack está Obteniendo Modulos instalados en el Sistema..."
     # http://docs.python.org/2.7/py-modindex.html
     BASEDICT = {
+        "python3": sorted(["mmap"]),
         "python": sorted([
             '__builtin__', '__future__', '__main__',
             'abc', 'aifc', 'anydbm', 'argparse', 'array',
@@ -140,7 +141,7 @@ def get_dict():
             'nxt.motor', 'nxt.bluesock', 'nxt.compass', 'nxt.error',
             'nxt.locator', 'nxt.sensor', 'nxt.system', 'nxt.usbsock',
             'nxt.brick', 'nxt.direct', 'nxt.htcompass', 'nxt.lightblueglue',
-            'nxt.telegram', 'nxt.server', 'IPython', 'gps']),
+            'nxt.telegram', 'nxt.server', 'IPython', 'gps', 'PyQt5']),
             }
 
     '''python-gi

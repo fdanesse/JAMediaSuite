@@ -480,7 +480,7 @@ def set_listas_default():
     Crea las listas para JAMedia si es que no existen y
     llena las default en caso de estar vacías.
     """
-
+    
     import os
     import shelve
 

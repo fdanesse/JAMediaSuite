@@ -21,7 +21,15 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+
+os.putenv('GDK_BACKEND', 'x11')
+
 import sys
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('GtkSource', '3.0')
+gi.require_version('Vte', '2.91')
 
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -31,8 +39,8 @@ from gi.repository import GObject
 from Menu import Menu
 from BasePanel import BasePanel
 from Toolbars import ToolbarEstado
-from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack
-from Help.Help import Help
+#from JAMediaPyGiHack.JAMediaPyGiHack import JAMediaPyGiHack  FIXME: ValueError: Namespace WebKit not available
+#from Help.Help import Help  FIXME: ValueError: Namespace WebKit not available
 
 home = os.environ["HOME"]
 BatovideWorkSpace = os.path.join(home, 'BatovideWorkSpace')
@@ -70,7 +78,7 @@ class JAMediaEditor(Gtk.Window):
         self.set_border_width(5)
         self.set_position(Gtk.WindowPosition.CENTER)
 
-        self._help = False
+        #self._help = False
 
         accel_group = Gtk.AccelGroup()
         self.add_accel_group(accel_group)
@@ -80,18 +88,18 @@ class JAMediaEditor(Gtk.Window):
         self.menu = Menu(accel_group)
         self.base_panel = BasePanel()
         self.toolbar_estado = ToolbarEstado()
-        self.jamediapygihack = JAMediaPyGiHack()
+        #self.jamediapygihack = JAMediaPyGiHack()
 
         base_widget.pack_start(self.menu, False, False, 0)
         base_widget.pack_start(self.base_panel, True, True, 0)
-        base_widget.pack_start(self.jamediapygihack, True, True, 0)
+        #base_widget.pack_start(self.jamediapygihack, True, True, 0)
         base_widget.pack_start(self.toolbar_estado, False, False, 0)
 
         self.add(base_widget)
         self.show_all()
         self.maximize()
 
-        self.jamediapygihack.hide()
+        #self.jamediapygihack.hide()
 
         self.menu.connect('accion_ver', self.__ejecutar_accion_ver)
         self.menu.connect('accion_codigo', self.__ejecutar_accion_codigo)
@@ -99,8 +107,8 @@ class JAMediaEditor(Gtk.Window):
         self.menu.connect('accion_archivo', self.__ejecutar_accion_archivo)
         self.menu.connect('run_jamediapygihack', self.__run_jamediapygihack)
         self.menu.connect('help', self.__run_help)
-        self.jamediapygihack.connect('salir', self.__run_editor)
-        self.jamediapygihack.connect('abrir', self.__open_modulo)
+        #self.jamediapygihack.connect('salir', self.__run_editor)
+        #self.jamediapygihack.connect('abrir', self.__open_modulo)
         self.base_panel.connect("update", self.__set_toolbar_archivo_and_menu)
         self.base_panel.connect("proyecto_abierto",
             self.__set_toolbar_proyecto_and_menu)
@@ -134,16 +142,17 @@ class JAMediaEditor(Gtk.Window):
         self.base_panel.external_open_file(modulo_path)
 
     def __run_help(self, widget, texto, titulo):
-        if self._help:
+        pass
+        '''if self._help:
             self._help.destroy()
             self._help = False
         self._help = Help(self, titulo)
         self._help.set_help(texto)
         if self.base_panel.instalador:
-            self._help.move(0, 40)
+            self._help.move(0, 40)'''
 
     def __run_editor(self, widget):
-        self.jamediapygihack.hide()
+        #self.jamediapygihack.hide()
         self.menu.show()
         self.base_panel.show()
         self.toolbar_estado.show()
@@ -152,7 +161,7 @@ class JAMediaEditor(Gtk.Window):
         self.menu.hide()
         self.base_panel.hide()
         self.toolbar_estado.hide()
-        self.jamediapygihack.show()
+        #self.jamediapygihack.show()
 
     def __exit(self, widget=False, event=False):
         Gtk.main_quit()

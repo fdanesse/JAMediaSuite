@@ -21,6 +21,8 @@
 
 import os
 
+os.putenv('GDK_BACKEND', 'x11')
+
 from gi.repository import Gtk
 from gi.repository import GLib
 
